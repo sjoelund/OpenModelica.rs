@@ -148,8 +148,7 @@ pub fn expandArray(mut arr: metamodelica::Array<Arc<Expression::NFExpression>>) 
     let mut res: bool = false;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     outArray = metamodelica::arrayFromVec(arr.clone().borrow().clone());
-    let __range0 = 1..=(outArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(outArray.clone()) {
         (e, res) = expand(metamodelica::Dangerous::arrayGetNoBoundsChecking(outArray.clone(), i.clone()), false, false)?;
         if !(res.clone()) {
             expanded = false;
@@ -875,7 +874,7 @@ pub fn makeBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
         exp = Expression::makeZero(mat_ty.clone())?;
     } else {
         row_ty = Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![p.clone()] });
-        len = (arr1.clone().borrow().len() as i32);
+        len = metamodelica::arrayLength(arr1.clone());
         arr = metamodelica::arrayCreate(len.clone(), exp1.clone());
         for mut i in 1..=len.clone() {
             e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());

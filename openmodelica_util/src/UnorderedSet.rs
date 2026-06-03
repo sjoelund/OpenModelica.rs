@@ -139,7 +139,7 @@ pub fn add<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Res
 pub fn addNew<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut hashfn: Hash<T> = set.hashFn.clone();
     let mut hash: i32 = 0;
-    hash = intMod(hashfn(key.clone())?, (Mutable::access(set.buckets.clone()).borrow().len() as i32));
+    hash = intMod(hashfn(key.clone())?, metamodelica::arrayLength(Mutable::access(set.buckets.clone())));
     addKey(key.clone(), hash.clone(), set.clone())?;
     Ok(())
 }
@@ -163,7 +163,7 @@ pub fn remove<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> 
     let mut hash: i32 = 0;
     let mut bucket: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut okey: Option<T> = None;
-    hash = intMod(hashfn(key.clone())?, (buckets.clone().borrow().len() as i32));
+    hash = intMod(hashfn(key.clone())?, metamodelica::arrayLength(buckets.clone()));
     bucket = buckets.clone().borrow()[(hash.clone() + 1-1) as usize].clone();
     (bucket, okey) = List::deleteMemberOnTrue(key.clone(), bucket.clone(), eqfn.clone())?;
     removed = isSome(okey.clone());
@@ -421,7 +421,7 @@ pub fn isEmpty<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> bool {
 }
 
 pub fn bucketCount<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> i32 {
-    let mut count: i32 = (Mutable::access(set.buckets.clone()).borrow().len() as i32);
+    let mut count: i32 = metamodelica::arrayLength(Mutable::access(set.buckets.clone()));
     count
 }
 
@@ -683,7 +683,7 @@ fn find<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result
     let mut eqfn: KeyEq<T> = set.eqFn.clone();
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<T>>> = Mutable::access(set.buckets.clone());
     let mut bucket: Arc<metamodelica::List<T>> = metamodelica::nil();
-    hash = intMod(hashfn(key.clone())?, (buckets.clone().borrow().len() as i32));
+    hash = intMod(hashfn(key.clone())?, metamodelica::arrayLength(buckets.clone()));
     bucket = buckets.clone().borrow()[(hash.clone() + 1-1) as usize].clone();
     for mut k in &*bucket.clone() {
         let mut k = k.clone();
@@ -703,7 +703,7 @@ fn addKey<T: Clone + 'static>(mut key: T, mut hash: i32, mut set: Arc<UnorderedS
         rehash(set.clone())?;
         hashfn = set.hashFn.clone();
         buckets = Mutable::access(set.buckets.clone());
-        h = intMod(hashfn(key.clone())?, (buckets.clone().borrow().len() as i32));
+        h = intMod(hashfn(key.clone())?, metamodelica::arrayLength(buckets.clone()));
     } else {
         buckets = Mutable::access(set.buckets.clone());
         h = hash.clone();

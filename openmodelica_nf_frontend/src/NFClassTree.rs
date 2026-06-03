@@ -221,8 +221,7 @@ pub mod ClassTree {
     } });
             }
             imports = metamodelica::arrayFromVec(init_imports.clone().into_iter().cloned().collect());
-            let __range1 = (1..=(imports.clone().borrow().len() as i32)).rev();
-            for mut i in __range1 {
+            for mut i in (1..=metamodelica::arrayLength(imports.clone())).rev() {
                 ltree = addImport(imports.borrow()[(i.clone()-1) as usize].clone(), i.clone(), ltree.clone(), imports.clone())?;
             }
             assign_variant_field!(tree => ClassTree::PARTIAL_TREE;
@@ -285,8 +284,8 @@ pub mod ClassTree {
         comp_arr = __pa2.clone();
         imports = __pa3.clone();
         duplicates = __pa4.clone();
-        cls_idx = (cls_arr.clone().borrow().len() as i32);
-        comp_idx = (comp_arr.clone().borrow().len() as i32);
+        cls_idx = metamodelica::arrayLength(cls_arr.clone());
+        comp_idx = metamodelica::arrayLength(comp_arr.clone());
         for mut e in &*elements.clone() {
             let mut e = e.clone();
             if InstNode::isComponent(e.clone())? {
@@ -329,7 +328,7 @@ pub mod ClassTree {
         exts = __pa3.clone();
         imps = __pa4.clone();
         dups = __pa5.clone();
-        cls_idx = (clss.clone().borrow().len() as i32) + 1;
+        cls_idx = metamodelica::arrayLength(clss.clone()) + 1;
         let __range6 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut c in __range6 {
             let () = (::match_deref::match_deref! { match &(c.clone()) {
@@ -423,23 +422,22 @@ pub mod ClassTree {
             exts = __pa3.clone();
             imps = __pa4.clone();
             dups = __pa5.clone();
-            classCount = (old_clss.clone().borrow().len() as i32);
-            compCount = (old_comps.clone().borrow().len() as i32) - (exts.clone().borrow().len() as i32);
+            classCount = metamodelica::arrayLength(old_clss.clone());
+            compCount = metamodelica::arrayLength(old_comps.clone()) - metamodelica::arrayLength(exts.clone());
             exts = metamodelica::arrayFromVec(exts.clone().borrow().clone());
-            let __range6 = 1..=(exts.clone().borrow().len() as i32);
-            for mut i in __range6 {
+            for mut i in 1..=metamodelica::arrayLength(exts.clone()) {
                 node = exts.borrow()[(i.clone()-1) as usize].clone();
-                let (__pa7, __pa8) = ::match_deref::match_deref! { match &(InstNode::nodeType(node.clone())?) {
-                    Deref @ InstNodeType::BASE_CLASS { ty: __pa7, definition: __pa8, .. } => (__pa7.clone(), __pa8.clone()),
+                let (__pa6, __pa7) = ::match_deref::match_deref! { match &(InstNode::nodeType(node.clone())?) {
+                    Deref @ InstNodeType::BASE_CLASS { ty: __pa6, definition: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
                     _ => bail!("pattern mismatch"),
                 } };
-                inst_ty = __pa7.clone();
-                ext_def = __pa8.clone();
+                inst_ty = __pa6.clone();
+                ext_def = __pa7.clone();
                 node = InstNode::setNodeType(Arc::new(InstNodeType::BASE_CLASS { parent: instance.clone(), definition: ext_def.clone(), ty: inst_ty.clone() }), node.clone());
                 (node, _, cls_count, comp_count) = instantiate(node.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), inst_scope.clone())?;
                 {
-                    let __cell9 = node.clone();
-                    exts.clone().borrow_mut()[(i.clone()-1) as usize] = __cell9;
+                    let __cell8 = node.clone();
+                    exts.clone().borrow_mut()[(i.clone()-1) as usize] = __cell8;
                 }
                 classCount = cls_count.clone() + classCount.clone();
                 compCount = comp_count.clone() + compCount.clone();
@@ -447,8 +445,8 @@ pub mod ClassTree {
             comps = metamodelica::arrayCreate(compCount.clone(), Mutable::create(Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE)));
             clss = metamodelica::arrayCreate(classCount.clone(), Mutable::create(Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE)));
             is_typish = Restriction::isType(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone()) || Restriction::isOperatorRecord(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone()) || Restriction::isOperator(var_field!((*cls).restriction, Class::NFClass::EXPANDED_CLASS).clone());
-            let __range10 = old_clss.clone().borrow().iter().cloned().collect::<Vec<_>>();
-            for mut c in __range10 {
+            let __range9 = old_clss.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut c in __range9 {
                 if is_typish.clone() {
                     c = InstNode::setParent(clsNode.clone(), c.clone())?;
                 } else {
@@ -462,11 +460,11 @@ pub mod ClassTree {
                 unsafe { metamodelica::Dangerous::arrayInitSlot(clss.clone(), cls_idx.clone(), Mutable::create(c.clone())) };
                 cls_idx = cls_idx.clone() + 1;
             }
-            let __range11 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
-            for mut ext in __range11 {
+            let __range10 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut ext in __range10 {
                 let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(ext.clone())?)?) {
         Deref @ INSTANTIATED_TREE { classes: ext_clss, .. } => {
-            cls_count = (ext_clss.clone().borrow().len() as i32);
+            cls_count = metamodelica::arrayLength(ext_clss.clone());
             if cls_count.clone() > 0 {
                 Array::copyRange(ext_clss.clone(), clss.clone(), 1, cls_count.clone(), cls_idx.clone())?;
                 cls_idx = cls_idx.clone() + cls_count.clone();
@@ -477,8 +475,8 @@ pub mod ClassTree {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            let __range12 = old_comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
-            for mut c in __range12 {
+            let __range11 = old_comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut c in __range11 {
                 let () = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ InstNode::COMPONENT_NODE { .. } => {
             node = InstNode::cloneComponent(c.clone(), instance.clone())?;
@@ -527,7 +525,7 @@ pub mod ClassTree {
             instance = if (InstNode::isEmpty(instance.clone())) {clsNode.clone()} else {instance.clone()};
             assign_variant_field!(tree => ClassTree::FLAT_TREE; components = Array::map(old_comps.clone(), (std::sync::Arc::new({ let __pe_b1 = instance.clone(); move |__pe_a0| InstNode::cloneComponent(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>))?);
             assign_variant_field!(cls => Class::NFClass::PARTIAL_BUILTIN; elements = tree.clone());
-            compCount = (old_comps.clone().borrow().len() as i32);
+            compCount = metamodelica::arrayLength(old_comps.clone());
             for mut bm in &*getBreakModsInExtend(instance.clone())? {
                 let mut bm = bm.clone();
                 Error::addSourceMessage(Error::NON_BREAKABLE_ELEMENT.clone(), list![(bm.ident.clone()).clone()], SCodeUtil::getModifierInfo(bm.r#mod.clone()))?;
@@ -634,7 +632,7 @@ pub mod ClassTree {
         Deref @ INSTANTIATED_TREE { .. } => {
             let mut comp_idx: i32 = 0;
             let mut local_comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            comp_idx = (var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32);
+            comp_idx = metamodelica::arrayLength(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone());
             assign_variant_field!(tree => ClassTree::INSTANTIATED_TREE; components = Array::appendList(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), components.clone())?);
             local_comps = var_field!((*tree).localComponents, ClassTree::INSTANTIATED_TREE).clone();
             for mut i in comp_idx.clone() + 1..=comp_idx.clone() + (components.clone().len() as i32) {
@@ -685,8 +683,8 @@ pub mod ClassTree {
             let mut dup_comp: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut ltree: Arc<LookupTree::Tree> = Arc::new(LookupTree::Tree::EMPTY);
             (_, dup_comp) = enumerateDuplicates(var_field!((*tree).duplicates, ClassTree::INSTANTIATED_TREE).clone())?;
-            clsc = (var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32);
-            compc = (var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32) - (dup_comp.clone().len() as i32);
+            clsc = metamodelica::arrayLength(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone());
+            compc = metamodelica::arrayLength(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone()) - (dup_comp.clone().len() as i32);
             clss = metamodelica::arrayCreate(clsc.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
             comps = metamodelica::arrayCreate(compc.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
             flattenElements(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone(), clss.clone());
@@ -694,7 +692,7 @@ pub mod ClassTree {
                 flattenElements(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), comps.clone());
                 ltree = var_field!((*tree).tree, ClassTree::INSTANTIATED_TREE).clone();
             } else {
-                comp_offsets = createFlatOffsets((var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32), dup_comp.clone())?;
+                comp_offsets = createFlatOffsets(metamodelica::arrayLength(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone()), dup_comp.clone())?;
                 flattenElementsWithOffset(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), comps.clone(), comp_offsets.clone());
                 ltree = flattenLookupTree(var_field!((*tree).tree, ClassTree::INSTANTIATED_TREE).clone(), comp_offsets.clone())?;
             }
@@ -709,8 +707,7 @@ pub mod ClassTree {
     }
 
     pub fn flattenElements(mut elements: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>>, mut flatElements: metamodelica::Array<Arc<InstNode::InstNode>>) -> () {
-        let __range0 = 1..=(elements.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(elements.clone()) {
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone(), Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
         }
         ()
@@ -718,8 +715,7 @@ pub mod ClassTree {
 
     pub fn flattenElementsWithOffset(mut elements: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>>, mut flatElements: metamodelica::Array<Arc<InstNode::InstNode>>, mut offsets: metamodelica::Array<i32>) -> () {
         let mut offset: i32 = 0;
-        let __range0 = 1..=(elements.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(elements.clone()) {
             offset = metamodelica::Dangerous::arrayGetNoBoundsChecking(offsets.clone(), i.clone());
             if offset.clone() >= 0 {
                 metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone() - offset.clone(), Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
@@ -838,8 +834,7 @@ pub mod ClassTree {
         pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>;
 
         let mut clss: metamodelica::Array<Arc<InstNode::InstNode>> = getClasses(tree.clone())?;
-        let __range0 = 1..=(clss.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(clss.clone()) {
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(clss.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(clss.clone(), i.clone()))?);
         }
         Ok(())
@@ -872,8 +867,7 @@ pub mod ClassTree {
         pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>;
 
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = getExtends(tree.clone());
-        let __range0 = 1..=(exts.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(exts.clone()) {
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(exts.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(exts.clone(), i.clone()))?);
         }
         Ok(())
@@ -897,8 +891,7 @@ pub mod ClassTree {
         let mut arg: ArgT = arg;
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = getExtends(tree.clone());
         let mut ext: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let __range0 = 1..=(exts.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(exts.clone()) {
             (ext, arg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(exts.clone(), i.clone()), arg.clone())?;
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(exts.clone(), i.clone(), ext.clone());
         }
@@ -1066,10 +1059,10 @@ pub mod ClassTree {
     pub fn classCount(mut tree: Arc<ClassTree>) -> i32 {
         let mut count: i32 = 0;
         count = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => (var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone().borrow().len() as i32),
-        Deref @ EXPANDED_TREE { .. } => (var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone().borrow().len() as i32),
-        Deref @ INSTANTIATED_TREE { .. } => (var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32),
-        Deref @ FLAT_TREE { .. } => (var_field!((*tree).classes, ClassTree::FLAT_TREE).clone().borrow().len() as i32),
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone()),
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone()),
+        Deref @ INSTANTIATED_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone()),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).classes, ClassTree::FLAT_TREE).clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1079,10 +1072,10 @@ pub mod ClassTree {
     pub fn componentCount(mut tree: Arc<ClassTree>) -> i32 {
         let mut count: i32 = 0;
         count = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => (var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone().borrow().len() as i32) - (var_field!((*tree).exts, ClassTree::PARTIAL_TREE).clone().borrow().len() as i32),
-        Deref @ EXPANDED_TREE { .. } => (var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone().borrow().len() as i32) - (var_field!((*tree).exts, ClassTree::EXPANDED_TREE).clone().borrow().len() as i32),
-        Deref @ INSTANTIATED_TREE { .. } => (var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow().len() as i32),
-        Deref @ FLAT_TREE { .. } => (var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow().len() as i32),
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone()) - metamodelica::arrayLength(var_field!((*tree).exts, ClassTree::PARTIAL_TREE).clone()),
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone()) - metamodelica::arrayLength(var_field!((*tree).exts, ClassTree::EXPANDED_TREE).clone()),
+        Deref @ INSTANTIATED_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone()),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayLength(var_field!((*tree).components, ClassTree::FLAT_TREE).clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1090,7 +1083,7 @@ pub mod ClassTree {
     }
 
     pub fn extendsCount(mut tree: Arc<ClassTree>) -> i32 {
-        let mut count: i32 = (getExtends(tree.clone()).borrow().len() as i32);
+        let mut count: i32 = metamodelica::arrayLength(getExtends(tree.clone()));
         count
     }
 
@@ -1310,7 +1303,7 @@ pub mod ClassTree {
         let mut tree: Arc<LookupTree::Tree> = tree;
         let mut classes: metamodelica::Array<Arc<InstNode::InstNode>> = classes;
         let mut index: i32 = 0;
-        index = (classes.clone().borrow().len() as i32);
+        index = metamodelica::arrayLength(classes.clone());
         classes = Array::appendList(classes.clone(), clsNodes.clone())?;
         for mut c in &*clsNodes.clone() {
             let mut c = c.clone();
@@ -1339,7 +1332,7 @@ pub mod ClassTree {
         let mut comp_count: i32 = 0;
         let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extNode.clone())?)?) {
         Deref @ INSTANTIATED_TREE { components: ext_comps_ptrs, .. } => {
-            comp_count = (ext_comps_ptrs.clone().borrow().len() as i32);
+            comp_count = metamodelica::arrayLength(ext_comps_ptrs.clone());
             if comp_count.clone() > 0 {
                 Array::copyRange(ext_comps_ptrs.clone(), comps.clone(), 1, comp_count.clone(), index.clone())?;
                 index = index.clone() + comp_count.clone();
@@ -1347,7 +1340,7 @@ pub mod ClassTree {
             ()
         },
         Deref @ FLAT_TREE { components: ext_comps, .. } => {
-            comp_count = (ext_comps.clone().borrow().len() as i32);
+            comp_count = metamodelica::arrayLength(ext_comps.clone());
             if comp_count.clone() > 0 {
                 for mut i in index.clone()..=index.clone() + comp_count.clone() - 1 {
                     {let _arr = comps.clone(); let _val = Mutable::create(ext_comps.borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
@@ -1658,8 +1651,8 @@ pub mod ClassTree {
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extendsNode.clone())?)?) {
         Deref @ EXPANDED_TREE { exts, components: comps, classes: clss, .. } => {
-            componentCount = componentCount.clone() + (comps.clone().borrow().len() as i32) - (exts.clone().borrow().len() as i32);
-            classCount = classCount.clone() + (clss.clone().borrow().len() as i32);
+            componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone()) - metamodelica::arrayLength(exts.clone());
+            classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
             let __range0 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range0 {
                 (classCount, componentCount) = countInheritedElements(ext.clone(), classCount.clone(), componentCount.clone())?;
@@ -1667,8 +1660,8 @@ pub mod ClassTree {
             ()
         },
         Deref @ FLAT_TREE { components: comps, classes: clss, .. } => {
-            componentCount = componentCount.clone() + (comps.clone().borrow().len() as i32);
-            classCount = classCount.clone() + (clss.clone().borrow().len() as i32);
+            componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone());
+            classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
             ()
         },
         _ => (),

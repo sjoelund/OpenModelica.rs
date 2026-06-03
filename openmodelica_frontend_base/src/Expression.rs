@@ -4750,8 +4750,8 @@ pub fn makeProductVector(mut e1: Arc<DAE::Exp>, mut v: Arc<metamodelica::List<Ar
 
 pub fn makeScalarProduct(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Array<Arc<DAE::Exp>>) -> Result<Arc<DAE::Exp>> {
     let mut s: Arc<DAE::Exp> = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
-    let mut size1: i32 = (v.clone().borrow().len() as i32);
-    let mut size2: i32 = (w.clone().borrow().len() as i32);
+    let mut size1: i32 = metamodelica::arrayLength(v.clone());
+    let mut size2: i32 = metamodelica::arrayLength(w.clone());
     if size1.clone() != size2.clone() {
         println!("{}", (literal!("makeScalarProduct faili.\n")).clone());
         return Ok(s.clone());
@@ -4776,8 +4776,8 @@ pub fn lenVec(mut v: metamodelica::Array<Arc<DAE::Exp>>) -> Result<Arc<DAE::Exp>
 
 pub fn subVec(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Array<Arc<DAE::Exp>>) -> Result<metamodelica::Array<Arc<DAE::Exp>>> {
     let mut y: metamodelica::Array<Arc<DAE::Exp>> = Default::default();
-    let mut size1: i32 = (v.clone().borrow().len() as i32);
-    let mut size2: i32 = (w.clone().borrow().len() as i32);
+    let mut size1: i32 = metamodelica::arrayLength(v.clone());
+    let mut size2: i32 = metamodelica::arrayLength(w.clone());
     if size1.clone() != size2.clone() {
         println!("{}", (literal!("subVec fail.\n")).clone());
         bail!("fail");

@@ -1324,7 +1324,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     if debug.clone() {
         println!("{}", (literal!("\nEquations with KnownBindings:\n===================================")).clone());
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nAdjacency Matrix                     :")); __mm_s.push_str(&*anyString(adjacencyMatrix.clone())); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nLength of Adjacency Matrix           :")); __mm_s.push_str(&*intString((adjacencyMatrix.clone().borrow().len() as i32))); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nLength of Adjacency Matrix           :")); __mm_s.push_str(&*intString(metamodelica::arrayLength(adjacencyMatrix.clone()))); ArcStr::from(__mm_s) }).clone());
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nList of known equation with bindings :")); __mm_s.push_str(&*anyString(knownVariablesWithEquationBinding.clone())); ArcStr::from(__mm_s) }).clone());
         println!("{}", (literal!("\n")).clone());
     }
@@ -1374,7 +1374,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     (match1, match2, _, _, _) = Matching::RegularMatching(adjacencyMatrix.clone(), varCount.clone(), eqCount.clone())?;
     BackendDump::dumpMatching(match1.clone())?;
-    s_BLTBlocks = Sorting::Tarjan(adjacencyMatrix.clone(), match1.clone(), (match1.clone().borrow().len() as i32))?;
+    s_BLTBlocks = Sorting::Tarjan(adjacencyMatrix.clone(), match1.clone(), metamodelica::arrayLength(match1.clone()))?;
     sBltAdjacencyMatrix = getSBLTAdjacencyMatrix(adjacencyMatrix.clone());
     (solvedEqsAndVarsInfo, _) = getSolvedEquationAndVarsInfo(match1.clone());
     s_BLTBlockRanks = List::toListWithPositions(s_BLTBlocks.clone());

@@ -340,8 +340,7 @@ fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partit
                 _ => bail!("pattern mismatch"),
             } };
             full = __pa1.clone();
-            let __range2 = 1..=(strongComponents.clone().borrow().len() as i32);
-            for mut i in __range2 {
+            for mut i in 1..=metamodelica::arrayLength(strongComponents.clone()) {
                 tmp = strongComponents.borrow()[(i.clone()-1) as usize].clone();
                 for mut func in &*funcs.clone() {
                     let mut func = func.clone();
@@ -609,7 +608,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
     comp = (::match_deref::match_deref! { match &((comp.clone(), full.clone())) {
         (Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. }, Deref @ Adjacency::Matrix::FULL { .. }) => {
             let mut strict = (*strict).clone();
-            nEqn = (var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).clone().borrow().len() as i32);
+            nEqn = metamodelica::arrayLength(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).clone());
             (inner_vars, guru_vars) = List::splitOnTrue(strict.iteration_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = NFBackendExtension::TearingSelect::PREFER.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>); move |__pe_a0| BVariable::hasTearingSelect(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); move |__pe_a0| Slice::check(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             if guru_vars.clone().is_empty() {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. No guru variables provided for strong component:\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;

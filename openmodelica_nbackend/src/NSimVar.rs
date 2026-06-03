@@ -1263,8 +1263,7 @@ pub mod SimVars {
         let mut result: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         (match partition.strongComponents.clone() {
         Some(mut comps) => {
-            let __range0 = 1..=(comps.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 result = metamodelica::cons(getStrongComponentVars(comps.borrow()[(i.clone()-1) as usize].clone(), simcode_map.clone())?, result.clone());
             }
             List::flatten(result.clone())?

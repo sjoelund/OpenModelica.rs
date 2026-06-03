@@ -194,7 +194,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     eorphans = getOrphans(1, size.clone(), ass2.clone(), metamodelica::nil())?;
                     ass1 = BackendDAETransform::varAssignmentNonScalar(ass1.clone(), mapIncRowEqn.clone());
                     ass22 = BackendDAETransform::eqnAssignmentNonScalar(mapEqnIncRow.clone(), ass2.clone())?;
-                    eorphans = List::uniqueIntN(List::map1r(eorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?, (mapIncRowEqn.clone().borrow().len() as i32))?;
+                    eorphans = List::uniqueIntN(List::map1r(eorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?, metamodelica::arrayLength(mapIncRowEqn.clone()))?;
                     (subsyst, m, mt) = BackendDAEUtil::getAdjacencyMatrix(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
                     rowmarks = arrayCreate(size.clone(), -1);
                     colummarks = arrayCreate(size.clone(), -1);
@@ -458,7 +458,7 @@ fn generateCliquesResidual(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1
                     rlst = m.borrow()[(o.clone()-1) as usize].clone();
                     elst = List::select1(List::flatten(List::map1r(rlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mt.clone())?)?, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
                     partner = List::select1(elst.clone(), (std::sync::Arc::new(fnptr!(isResOrphan, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<bool> + 'static>), ass2.clone())?;
-                    partner = List::uniqueIntN(List::removeOnTrue(o.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), partner.clone())?, (colummarks.clone().borrow().len() as i32))?;
+                    partner = List::uniqueIntN(List::removeOnTrue(o.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), partner.clone())?, metamodelica::arrayLength(colummarks.clone()))?;
                     List::map2_0(partner.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), colummarks.clone(), mark.clone())?;
                     vlst = List::map1r(rlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
                     blst = List::map(vlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isFlowVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
@@ -1289,8 +1289,8 @@ fn getOrphansOrderEdvanced3(mut roots: Arc<metamodelica::List<i32>>, mut otheror
     let mut comps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut linkslst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     map = metamodelica::arrayFromVec(vorphans.clone().into_iter().cloned().collect());
-    size = (map.clone().borrow().len() as i32);
-    invmap = arrayCreate((vorphansarray.clone().borrow().len() as i32), 0);
+    size = metamodelica::arrayLength(map.clone());
+    invmap = arrayCreate(metamodelica::arrayLength(vorphansarray.clone()), 0);
     List::fold1(vorphans.clone(), (std::sync::Arc::new(getInvMap) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<i32> + 'static>), invmap.clone(), 1)?;
     range = List::intRange(size.clone());
     (m, mt) = getOrphansAdjacencyMatrix(vorphans.clone(), invmap.clone(), vorphansarray.clone(), arrayCreate(size.clone(), metamodelica::nil()), true)?;
@@ -1300,7 +1300,7 @@ fn getOrphansOrderEdvanced3(mut roots: Arc<metamodelica::List<i32>>, mut otheror
     (m, mt) = getOrphansAdjacencyMatrix(vorphans.clone(), invmap.clone(), vorphansarray.clone(), arrayCreate(size.clone(), metamodelica::nil()), false)?;
     reduceOrphancMatrix(comps.clone().reverse(), m.clone())?;
     omark = getOrphansOrderEdvanced4(linkslst.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), order.clone(), metamodelica::nil())?;
-    mt = AdjacencyMatrix::transposeAdjacencyMatrix(m.clone(), (mt.clone().borrow().len() as i32))?;
+    mt = AdjacencyMatrix::transposeAdjacencyMatrix(m.clone(), metamodelica::arrayLength(mt.clone()))?;
     comps = Sorting::TarjanTransposed(mt.clone(), ass.clone())?;
     sortvorphans = List::flattenReverse(comps.clone())?;
     sortvorphans = List::map1r(sortvorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), map.clone())?;
@@ -2217,7 +2217,7 @@ fn sortVarsforOrder2(mut index: i32, mut inVarLst: Arc<metamodelica::List<Backen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let true = (intGt(index.clone(), (vararray.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
+                    let true = (intGt(index.clone(), metamodelica::arrayLength(vararray.clone()))) else { bail!("pattern mismatch") };
                     Ok(iAcc.clone().reverse())
                 }
                 _ => bail!("nomatch"),

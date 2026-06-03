@@ -1850,11 +1850,11 @@ pub fn partitionIndependentBlocksHelper(mut isyst: Arc<BackendDAE::EqSystem>, mu
                     funcs = BackendDAEUtil::getFunctions(ishared.clone())?;
                     (syst, m, mT) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), isInitial.clone())?;
                     (rm, rmT) = BackendDAEUtil::removedAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), isInitial.clone())?;
-                    eqPartMap = arrayCreate((m.clone().borrow().len() as i32), 0);
-                    varPartMap = arrayCreate((mT.clone().borrow().len() as i32), 0);
-                    rixs = arrayCreate((rm.clone().borrow().len() as i32), 0);
-                    vars = arrayCreate((mT.clone().borrow().len() as i32), false);
-                    rvars = arrayCreate((rmT.clone().borrow().len() as i32), false);
+                    eqPartMap = arrayCreate(metamodelica::arrayLength(m.clone()), 0);
+                    varPartMap = arrayCreate(metamodelica::arrayLength(mT.clone()), 0);
+                    rixs = arrayCreate(metamodelica::arrayLength(rm.clone()), 0);
+                    vars = arrayCreate(metamodelica::arrayLength(mT.clone()), false);
+                    rvars = arrayCreate(metamodelica::arrayLength(rmT.clone()), false);
                     i = SynchronousFeatures::partitionIndependentBlocks0(m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), rixs.clone(), vars.clone(), rvars.clone())?;
                     b = i.clone() > 1;
                     systs = if (b.clone()) {(SynchronousFeatures::partitionIndependentBlocksSplitBlocks(i.clone(), syst.clone(), eqPartMap.clone(), rixs.clone(), mT.clone(), rmT.clone(), throwNoError.clone(), funcs.clone(), isInitial.clone())?).0} else {list![syst.clone()]};
@@ -3803,7 +3803,7 @@ fn semiLinearSort(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>
                     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     ht = BaseHashTable::add((y.clone(), size.clone()), iHt.clone())?;
-                    eqnsarray = if (intGt(size.clone(), (iEqnsarray.clone().borrow().len() as i32))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
+                    eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
                     eqnsarray = {let _arr = eqnsarray.clone(); _arr.borrow_mut()[(size.clone()-1) as usize] = list![(eqn.clone(), index.clone())]; _arr};
                     Ok(semiLinearSort(rest.clone(), ht.clone(), size.clone() + 1, eqnsarray.clone())?)
                 }
@@ -3825,7 +3825,7 @@ fn semiLinearSort1(mut eqnslstlst: Arc<metamodelica::List<Arc<metamodelica::List
         },
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: tpl, tail: Deref @ metamodelica::List::Nil }, tail: rest } => {
             let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
-            eqnsarray = if (intGt(size.clone(), (iEqnsarray.clone().borrow().len() as i32))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
+            eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
             eqnsarray = {let _arr = eqnsarray.clone(); _arr.borrow_mut()[(size.clone()-1) as usize] = list![tpl.clone()]; _arr};
             semiLinearSort1(rest.clone(), size.clone() + 1, eqnsarray.clone())?
         },
@@ -3877,7 +3877,7 @@ fn semiLinearSort2(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation
                     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr));
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     ht = BaseHashTable::add((x.clone(), size.clone()), iHt.clone())?;
-                    eqnsarray = if (intGt(size.clone(), (iEqnsarray.clone().borrow().len() as i32))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
+                    eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
                     eqnsarray = {let _arr = eqnsarray.clone(); _arr.borrow_mut()[(size.clone()-1) as usize] = list![(eqn.clone(), index.clone())]; _arr};
                     (i, eqnsarray) = semiLinearSort2(rest.clone(), ht.clone(), size.clone() + 1, eqnsarray.clone())?;
                     Ok((i.clone(), eqnsarray.clone()))
@@ -6670,7 +6670,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         let HpcOmTaskGraph::TASKGRAPHMETA { eqCompMapping: __pa9, varCompMapping: __pa10, .. } = (taskGraphData.clone()) else { bail!("pattern mismatch") };
         eqCompMapping = __pa9.clone();
         varCompMapping = __pa10.clone();
-        size = (taskGraph.clone().borrow().len() as i32);
+        size = metamodelica::arrayLength(taskGraph.clone());
         taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(taskGraph.clone(), size.clone())?;
         let __pa11 = ::match_deref::match_deref! { match &(syst.clone()) {
             Deref @ BackendDAE::EqSystem { orderedVars: __pa11, .. } => __pa11.clone(),

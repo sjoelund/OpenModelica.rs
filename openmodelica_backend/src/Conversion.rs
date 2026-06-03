@@ -1416,9 +1416,8 @@ fn dumpRules(mut rules: Arc<ConversionRules::ConversionRules>, mut indent: ArcSt
             dumpRule(rule.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("├─")); ArcStr::from(__mm_s) }).clone())?;
         }
     }
-    let __range2 = 1..=(keys.clone().borrow().len() as i32);
-    for mut i in __range2 {
-        if i.clone() == (keys.clone().borrow().len() as i32) {
+    for mut i in 1..=metamodelica::arrayLength(keys.clone()) {
+        if i.clone() == metamodelica::arrayLength(keys.clone()) {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("└─")); ArcStr::from(__mm_s) }).clone());
             println!("{}", (keys.borrow()[(i.clone()-1) as usize].clone()).clone());
             println!("{}", (literal!("\n")).clone());
@@ -1892,10 +1891,10 @@ fn convertTypePath(mut path: Arc<Path>, mut rule: ConversionRule, mut importPath
     let mut path: Arc<Path> = path;
     let () = (match rule.clone() {
         ConversionRule::CLASS { .. } => {
-            if AbsynUtil::pathPartCount(path.clone(), 0)? == (var_field!(rule.oldPath, ConversionRule::CLASS).clone().borrow().len() as i32) {
+            if AbsynUtil::pathPartCount(path.clone(), 0)? == metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::CLASS).clone()) {
                 path = var_field!(rule.newPath, ConversionRule::CLASS).clone();
             } else {
-                path = Util::foldcallN((var_field!(rule.oldPath, ConversionRule::CLASS).clone().borrow().len() as i32), (std::sync::Arc::new(AbsynUtil::pathRest) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>) -> Result<Arc<Path>> + 'static>), path.clone())?;
+                path = Util::foldcallN(metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::CLASS).clone()), (std::sync::Arc::new(AbsynUtil::pathRest) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>) -> Result<Arc<Path>> + 'static>), path.clone())?;
                 path = AbsynUtil::joinPaths(var_field!(rule.newPath, ConversionRule::CLASS).clone(), path.clone())?;
             }
             ()
@@ -2635,19 +2634,19 @@ fn applyRulesPath(mut path: Arc<Path>, mut rules: Arc<metamodelica::List<Arc<met
             let mut rule = rule.clone();
             found = (match rule.clone() {
         ConversionRule::CLASS { .. } => {
-            if path_len.clone() == (var_field!(rule.oldPath, ConversionRule::CLASS).clone().borrow().len() as i32) {
+            if path_len.clone() == metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::CLASS).clone()) {
                 path = var_field!(rule.newPath, ConversionRule::CLASS).clone();
             } else {
-                path = Util::foldcallN((var_field!(rule.oldPath, ConversionRule::CLASS).clone().borrow().len() as i32), (std::sync::Arc::new(AbsynUtil::pathRest) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>) -> Result<Arc<Path>> + 'static>), path.clone())?;
+                path = Util::foldcallN(metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::CLASS).clone()), (std::sync::Arc::new(AbsynUtil::pathRest) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Path>) -> Result<Arc<Path>> + 'static>), path.clone())?;
                 path = AbsynUtil::joinPaths(var_field!(rule.newPath, ConversionRule::CLASS).clone(), path.clone())?;
             }
             true
         },
-        ConversionRule::ELEMENT { .. } if (path_len.clone() > (var_field!(rule.oldPath, ConversionRule::ELEMENT).clone().borrow().len() as i32) && AbsynUtil::pathNthIdent(path.clone(), (var_field!(rule.oldPath, ConversionRule::ELEMENT).clone().borrow().len() as i32) + 1)? == var_field!(rule.oldName, ConversionRule::ELEMENT).clone()) => {
-            if path_len.clone() == (var_field!(rule.oldPath, ConversionRule::ELEMENT).clone().borrow().len() as i32) - 1 {
+        ConversionRule::ELEMENT { .. } if (path_len.clone() > metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::ELEMENT).clone()) && AbsynUtil::pathNthIdent(path.clone(), metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::ELEMENT).clone()) + 1)? == var_field!(rule.oldName, ConversionRule::ELEMENT).clone()) => {
+            if path_len.clone() == metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::ELEMENT).clone()) - 1 {
                 path = AbsynUtil::pathSetLastIdent(path.clone(), (var_field!(rule.newName, ConversionRule::ELEMENT).clone()).clone())?;
             } else {
-                path = AbsynUtil::pathSetNthIdent(path.clone(), (var_field!(rule.newName, ConversionRule::ELEMENT).clone()).clone(), (var_field!(rule.oldPath, ConversionRule::ELEMENT).clone().borrow().len() as i32) + 1)?;
+                path = AbsynUtil::pathSetNthIdent(path.clone(), (var_field!(rule.newName, ConversionRule::ELEMENT).clone()).clone(), metamodelica::arrayLength(var_field!(rule.oldPath, ConversionRule::ELEMENT).clone()) + 1)?;
             }
             true
         },

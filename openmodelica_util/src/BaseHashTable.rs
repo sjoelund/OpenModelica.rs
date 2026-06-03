@@ -178,14 +178,14 @@ pub fn dumpHashTableStatistics<Key: Clone + 'static, Value: Clone + 'static>(mut
             __acc += __x;
         }
         __acc
-    })))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (hvec.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    })))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(hvec.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("max element: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
         let mut __acc: Option<i32> = None;
         for mut l in (hvec.clone()).borrow().iter() {
             let __x = (l.clone().len() as i32);
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction")).unwrap()
+        __acc.unwrap_or((-i32::MAX))
     })))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("total entries: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
         let mut __acc: i32 = 0;
@@ -671,8 +671,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
         }
     }
     if workaroundForBug.clone() {
-        let __range8 = 1..=(hv.clone().borrow().len() as i32);
-        for mut i in __range8 {
+        for mut i in 1..=metamodelica::arrayLength(hv.clone()) {
             if !(hv.clone().borrow()[(i.clone()-1) as usize].clone().is_empty()) {
                 if debug.clone() {
                     println!("{}", (literal!("hv not empty\n")).clone());

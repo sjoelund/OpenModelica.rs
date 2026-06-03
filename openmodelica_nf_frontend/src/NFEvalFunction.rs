@@ -755,20 +755,18 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             let mut sub = (*sub).clone();
             subs = Expression::arrayElements(sub.clone())?;
             vals = Expression::arrayElements(value.clone())?;
-            if (subs.clone().borrow().len() as i32) > (vals.clone().borrow().len() as i32) {
+            if metamodelica::arrayLength(subs.clone()) > metamodelica::arrayLength(vals.clone()) {
                 bail!("fail");
             }
             if rest_subs.clone().is_empty() {
-                let __range0 = 1..=(subs.clone().borrow().len() as i32);
-                for mut i in __range0 {
+                for mut i in 1..=metamodelica::arrayLength(subs.clone()) {
                     sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
                     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
                     {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = val.clone(); _arr};
                 }
             } else {
-                let __range1 = 1..=(subs.clone().borrow().len() as i32);
-                for mut i in __range1 {
+                for mut i in 1..=metamodelica::arrayLength(subs.clone()) {
                     sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
                     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;

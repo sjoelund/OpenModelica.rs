@@ -428,9 +428,8 @@ fn checkOverloadedBinaryArrayAddSub2(mut exp1: Arc<Expression::NFExpression>, mu
             } else {
                 ty1 = Type::unliftArray(type1.clone())?;
                 ty2 = Type::unliftArray(type2.clone())?;
-                arr = metamodelica::arrayCreateDefault((arr1.clone().borrow().len() as i32));
-                let __range1 = 1..=(arr1.clone().borrow().len() as i32);
-                for mut i in __range1 {
+                arr = metamodelica::arrayCreateDefault(metamodelica::arrayLength(arr1.clone()));
+                for mut i in 1..=metamodelica::arrayLength(arr1.clone()) {
                     e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
                     e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone());
                     (e, ty) = checkOverloadedBinaryArrayAddSub2(e1.clone(), ty1.clone(), var1.clone(), op.clone(), e2.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
@@ -525,9 +524,8 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
         },
         Deref @ Expression::ARRAY { .. } => {
             ty = Type::unliftArray(type2.clone())?;
-            arr = metamodelica::arrayCreate((var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32), exp2.clone());
-            let __range0 = 1..=(arr.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            arr = metamodelica::arrayCreate(metamodelica::arrayLength(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone()), exp2.clone());
+            for mut i in 1..=metamodelica::arrayLength(arr.clone()) {
                 e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryScalarArray2(exp1.clone(), type1.clone(), var1.clone(), op.clone(), e2.clone(), ty.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
@@ -574,9 +572,8 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
         },
         Deref @ Expression::ARRAY { .. } => {
             ty = Type::unliftArray(type1.clone())?;
-            arr = metamodelica::arrayCreate((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32), exp1.clone());
-            let __range0 = 1..=(arr.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            arr = metamodelica::arrayCreate(metamodelica::arrayLength(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone()), exp1.clone());
+            for mut i in 1..=metamodelica::arrayLength(arr.clone()) {
                 e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryArrayScalar2(e1.clone(), ty.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
@@ -651,11 +648,10 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
             ty2 = Type::unliftArray(type2.clone())?;
             expl1 = Expression::arrayElements(exp1.clone())?;
             expl2 = Expression::arrayElements(exp2.clone())?;
-            if (expl1.clone().borrow().len() as i32) > (expl2.clone().borrow().len() as i32) {
+            if metamodelica::arrayLength(expl1.clone()) > metamodelica::arrayLength(expl2.clone()) {
                 bail!("fail");
             }
-            let __range1 = 1..=(expl1.clone().borrow().len() as i32);
-            for mut i in __range1 {
+            for mut i in 1..=metamodelica::arrayLength(expl1.clone()) {
                 e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(expl1.clone(), i.clone());
                 e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(expl2.clone(), i.clone());
                 (e1, ty) = checkOverloadedBinaryArrayEW2(e1.clone(), ty1.clone(), var1.clone(), op.clone(), e2.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
@@ -664,16 +660,16 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
         } else if is_array1.clone() {
             ty1 = Type::unliftArray(type1.clone())?;
             expl1 = Expression::arrayElements(exp1.clone())?;
-            let __range2 = expl1.clone().borrow().iter().cloned().collect::<Vec<_>>();
-            for mut e in __range2 {
+            let __range1 = expl1.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut e in __range1 {
                 (e, ty) = checkOverloadedBinaryArrayEW2(e.clone(), ty1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
                 expl = metamodelica::cons(e.clone(), expl.clone());
             }
         } else if is_array2.clone() {
             ty2 = Type::unliftArray(type2.clone())?;
             expl2 = Expression::arrayElements(exp2.clone())?;
-            let __range3 = expl2.clone().borrow().iter().cloned().collect::<Vec<_>>();
-            for mut e in __range3 {
+            let __range2 = expl2.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut e in __range2 {
                 (e, ty) = checkOverloadedBinaryArrayEW2(exp1.clone(), type1.clone(), var1.clone(), op.clone(), e.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
                 expl = metamodelica::cons(e.clone(), expl.clone());
             }
@@ -1426,7 +1422,7 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
             ()
         },
         (Deref @ Class::INSTANCED_CLASS { elements: ctree @ Deref @ ClassTree::FLAT_TREE { components: comps1, .. }, .. }, _, Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps2, .. }, .. }, _) => {
-            if (comps1.clone().borrow().len() as i32) != (comps2.clone().borrow().len() as i32) {
+            if metamodelica::arrayLength(comps1.clone()) != metamodelica::arrayLength(comps2.clone()) {
                 matchKind = MatchKind::NOT_COMPATIBLE.clone();
                 return Ok((expression.clone(), compatibleType.clone(), matchKind.clone()));
             }
@@ -1434,15 +1430,14 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
             elem_arr = (::match_deref::match_deref! { match &(expression.clone()) {
         Deref @ Expression::RECORD { .. } => metamodelica::arrayFromVec(var_field!((*expression).elements, Expression::NFExpression::RECORD).clone().into_iter().cloned().collect()),
         _ => {
-            elem_arr = metamodelica::arrayCreate((comps1.clone().borrow().len() as i32), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
+            elem_arr = metamodelica::arrayCreate(metamodelica::arrayLength(comps1.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
             dims = Type::arrayDims(Expression::typeOf(expression.clone()));
-            let __range0 = (1..=(comps1.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(comps1.clone())).rev() {
                 ty = Component::getType(InstNode::component(comps1.borrow()[(i.clone()-1) as usize].clone())?)?;
                 ty = Type::liftArrayRightList(ty.clone(), dims.clone());
                 {
-                    let __cell1 = Arc::new(Expression::NFExpression::RECORD_ELEMENT { recordExp: expression.clone(), index: i.clone(), fieldName: (InstNode::name(comps1.borrow()[(i.clone()-1) as usize].clone())?).clone(), ty: ty.clone() });
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(elem_arr.clone().clone(), i.clone(), __cell1); }
+                    let __cell0 = Arc::new(Expression::NFExpression::RECORD_ELEMENT { recordExp: expression.clone(), index: i.clone(), fieldName: (InstNode::name(comps1.borrow()[(i.clone()-1) as usize].clone())?).clone(), ty: ty.clone() });
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(elem_arr.clone().clone(), i.clone(), __cell0); }
                 }
             }
             elem_arr.clone()
@@ -1474,20 +1469,19 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
     let mut idx: i32 = 0;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut mk: MatchKind = MatchKind::EXACT;
-    if (actualComponents.clone().borrow().len() as i32) != (expectedComponents.clone().borrow().len() as i32) || (actualComponents.clone().borrow().len() as i32) != (expressions.clone().borrow().len() as i32) {
+    if metamodelica::arrayLength(actualComponents.clone()) != metamodelica::arrayLength(expectedComponents.clone()) || metamodelica::arrayLength(actualComponents.clone()) != metamodelica::arrayLength(expressions.clone()) {
         matchKind = MatchKind::NOT_COMPATIBLE.clone();
         return Ok((matchedExpressions.clone(), matchKind.clone()));
     }
-    let __range0 = 1..=(actualComponents.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(actualComponents.clone()) {
         enode = expectedComponents.borrow()[(i.clone()-1) as usize].clone();
         ecomp = InstNode::component(enode.clone())?;
         anode = actualComponents.borrow()[(i.clone()-1) as usize].clone();
         if InstNode::name(anode.clone())? == InstNode::name(enode.clone())? {
             idx = i.clone();
         } else {
-            if let Ok(__iflet1) = ClassTree::lookupComponentIndex((InstNode::name(enode.clone())?).clone(), classTree.clone()) {
-                idx = __iflet1;
+            if let Ok(__iflet0) = ClassTree::lookupComponentIndex((InstNode::name(enode.clone())?).clone(), classTree.clone()) {
+                idx = __iflet0;
             } else {
                 matchKind = MatchKind::NOT_COMPATIBLE.clone();
                 return Ok((matchedExpressions.clone(), matchKind.clone()));

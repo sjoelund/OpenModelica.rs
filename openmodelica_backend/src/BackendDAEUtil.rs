@@ -1510,7 +1510,7 @@ fn markStateEquationsWork(mut inEqns: Arc<metamodelica::List<i32>>, mut m: metam
     let mut queue: Arc<metamodelica::List<i32>> = inEqns.clone();
     let mut j: i32 = 0;
     let mut eqn: i32 = 0;
-    let mut len: i32 = (ass1.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(ass1.clone());
     let mut positiveAndUnmarked: bool = false;
     while !(queue.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(queue.clone()) {
@@ -1580,7 +1580,7 @@ pub fn varsInEqn(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut s: ArcStr = arcstr::literal!("");
-            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAEUtil.varsInEqn failed, indx= ")); __mm_s.push_str(&*intString(indx.clone())); __mm_s.push_str(&*literal!("array length: ")); __mm_s.push_str(&*intString((m.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAEUtil.varsInEqn failed, indx= ")); __mm_s.push_str(&*intString(indx.clone())); __mm_s.push_str(&*literal!("array length: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(m.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(s.clone()).clone()])?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
@@ -1678,8 +1678,7 @@ fn setMarkedEqnsEvalStage(mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<Bac
 
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = eqns;
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let __range0 = 1..=(markEqns.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(markEqns.clone()) {
         if markEqns.borrow()[(i.clone()-1) as usize].clone() > 0 {
             eqn = BackendEquation::get(eqns.clone(), i.clone())?;
             eqn = BackendEquation::setEquationEvalStage(eqn.clone(), func.clone())?;
@@ -4382,10 +4381,10 @@ pub fn updateAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIn
                     let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     let mut mt = (*mt).clone();
                     let mut m = (*m).clone();
-                    oldsize = (iMapEqnIncRow.clone().borrow().len() as i32);
+                    oldsize = metamodelica::arrayLength(iMapEqnIncRow.clone());
                     newsize = BackendEquation::getNumberOfEquations(daeeqns.clone());
                     mapEqnIncRow = Array::expand(newsize.clone() - oldsize.clone(), iMapEqnIncRow.clone(), metamodelica::nil())?;
-                    oldsize1 = (iMapIncRowEqn.clone().borrow().len() as i32);
+                    oldsize1 = metamodelica::arrayLength(iMapIncRowEqn.clone());
                     newsize1 = BackendEquation::equationArraySize(daeeqns.clone())?;
                     deltasize = newsize1.clone() - oldsize1.clone();
                     mapIncRowEqn = Array::expand(deltasize.clone(), iMapIncRowEqn.clone(), 0)?;
@@ -4570,7 +4569,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
 
 fn getOldVars(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut pos: i32) -> Arc<metamodelica::List<i32>> {
     let mut oldvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    oldvars = if (pos.clone() <= (m.clone().borrow().len() as i32)) {m.borrow()[(pos.clone()-1) as usize].clone()} else {metamodelica::nil()};
+    oldvars = if (pos.clone() <= metamodelica::arrayLength(m.clone())) {m.borrow()[(pos.clone()-1) as usize].clone()} else {metamodelica::nil()};
     oldvars
 }
 
@@ -8006,7 +8005,7 @@ pub fn traverseBackendDAEExpsVars<Type_a: Clone + 'static>(mut inVariables: Back
         if let Ok(__v) = (|| -> Result<_> {
             let BackendDAE::Variables { varArr: BackendDAE::VariableArray { varOptArr: mut varOptArr, .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut ext_arg_1: Type_a;
-            ext_arg_1 = traverseArrayNoCopy(varOptArr.clone(), func.clone(), (std::sync::Arc::new(traverseBackendDAEExpsVar) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inTypeA.clone(), (varOptArr.clone().borrow().len() as i32))?;
+            ext_arg_1 = traverseArrayNoCopy(varOptArr.clone(), func.clone(), (std::sync::Arc::new(traverseBackendDAEExpsVar) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inTypeA.clone(), metamodelica::arrayLength(varOptArr.clone()))?;
             Ok(ext_arg_1.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -8031,7 +8030,7 @@ pub fn traverseBackendDAEExpsVarsWithUpdate<Type_a: Clone + 'static>(mut inVaria
         if let Ok(__v) = (|| -> Result<_> {
             let BackendDAE::Variables { varArr: BackendDAE::VariableArray { varOptArr: mut varOptArr, .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut ext_arg_1: Type_a;
-            (_, ext_arg_1) = traverseArrayNoCopyWithUpdate(varOptArr.clone(), func.clone(), (std::sync::Arc::new(traverseBackendDAEExpsVarWithUpdate) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inTypeA.clone(), (varOptArr.clone().borrow().len() as i32))?;
+            (_, ext_arg_1) = traverseArrayNoCopyWithUpdate(varOptArr.clone(), func.clone(), (std::sync::Arc::new(traverseBackendDAEExpsVarWithUpdate) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inTypeA.clone(), metamodelica::arrayLength(varOptArr.clone()))?;
             Ok(ext_arg_1.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -8052,7 +8051,7 @@ pub fn traverseArrayNoCopy<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: 
     pub type ArrayFuncType<ArrT: Clone + 'static, ElemT: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(ArrT, Arc<dyn ::std::ops::Fn(ElemT, ArgT) -> Result<(ElemT, ArgT)> + 'static>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut outArg: ArgT = inArg.clone();
-    let true = (inLength.clone() <= (inArray.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
+    let true = (inLength.clone() <= metamodelica::arrayLength(inArray.clone())) else { bail!("pattern mismatch") };
     for mut i in 1..=inLength.clone() {
         outArg = inArrayFunc(inArray.borrow()[(i.clone()-1) as usize].clone(), inElemFunc.clone(), outArg.clone())?;
     }
@@ -8066,7 +8065,7 @@ pub fn traverseArrayNoCopyWithStop<ArrT: Clone + 'static, ElemT: Clone + 'static
 
     let mut outArg: ArgT = inArg.clone();
     let mut cont: bool = false;
-    let true = (inLength.clone() <= (inArray.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
+    let true = (inLength.clone() <= metamodelica::arrayLength(inArray.clone())) else { bail!("pattern mismatch") };
     for mut i in 1..=inLength.clone() {
         (cont, outArg) = inArrayFunc(inArray.borrow()[(i.clone()-1) as usize].clone(), inElemFunc.clone(), outArg.clone())?;
         if !(cont.clone()) {
@@ -8085,7 +8084,7 @@ pub fn traverseArrayNoCopyWithUpdate<ArrT: Clone + 'static, ElemT: Clone + 'stat
     let mut outArg: ArgT = inArg.clone();
     let mut e: ArrT;
     let mut new_e: ArrT;
-    let true = (inLength.clone() <= (inArray.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
+    let true = (inLength.clone() <= metamodelica::arrayLength(inArray.clone())) else { bail!("pattern mismatch") };
     for mut i in 1..=inLength.clone() {
         e = inArray.borrow()[(i.clone()-1) as usize].clone();
         (new_e, outArg) = inArrayFunc(e.clone(), inElemFunc.clone(), outArg.clone())?;
@@ -8893,7 +8892,7 @@ pub fn sortGlobalKnownVarsInDAE(mut backendDAE: Arc<BackendDAE::BackendDAE>) -> 
     paramSystem = createEqSystem(globalKnownVars.clone(), parameterEqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (m, _) = adjacencyMatrix(paramSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, isInitializationDAE(backendDAE.shared.clone()))?;
     (ass1, ass2) = Matching::PerfectMatching(m.clone())?;
-    comps = Sorting::Tarjan(m.clone(), ass1.clone(), (ass1.clone().borrow().len() as i32))?;
+    comps = Sorting::Tarjan(m.clone(), ass1.clone(), metamodelica::arrayLength(ass1.clone()))?;
     flatComps = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut comp in (comps.clone()).into_iter().cloned() {
@@ -10542,10 +10541,9 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
     (_, mOrig, mTOrig) = getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(functionTree.clone()), isInitial.clone())?;
     m = metamodelica::arrayFromVec(mOrig.clone().borrow().clone());
     mT = metamodelica::arrayFromVec(mTOrig.clone().borrow().clone());
-    solvedVars = arrayCreate((mT.clone().borrow().len() as i32), 0);
-    solvedEqs = arrayCreate((m.clone().borrow().len() as i32), metamodelica::nil());
-    let __range0 = 1..=(m.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    solvedVars = arrayCreate(metamodelica::arrayLength(mT.clone()), 0);
+    solvedEqs = arrayCreate(metamodelica::arrayLength(m.clone()), metamodelica::nil());
+    for mut i in 1..=metamodelica::arrayLength(m.clone()) {
         _equation = BackendEquation::get(eqsArray.clone(), i.clone())?;
         info = BackendEquation::equationInfo(_equation.clone())?;
         eqSize = BackendEquation::equationSize(_equation.clone())?;
@@ -10564,14 +10562,13 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
         }
     }
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Got adjacency matrix ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", varSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (m.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", eqnSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (mT.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Got adjacency matrix ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", varSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(m.clone())))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", eqnSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(mT.clone())))); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
     }
     count = 0;
     while cont.clone() && count.clone() < 1000 {
         cont = false;
         count = count.clone() + 1;
-        let __range1 = 1..=(m.clone().borrow().len() as i32);
-        for mut i in __range1 {
+        for mut i in 1..=metamodelica::arrayLength(m.clone()) {
             if !(solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone().is_empty()) {
                 continue;
             }
@@ -10611,8 +10608,7 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of equations solved: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", numSolved.clone() - errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of errors: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        let __range2 = 1..=(mT.clone().borrow().len() as i32);
-        for mut i in __range2 {
+        for mut i in 1..=metamodelica::arrayLength(mT.clone()) {
             if 0 != solvedVars.clone().borrow()[(i.clone()-1) as usize].clone() {
                 continue;
             }
@@ -10637,11 +10633,11 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
     }))], info.clone())?;
                 {let _arr = solvedVars.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = -1; _arr};
             } else if (eqs.clone().len() as i32) == 1 {
-                let __pa3 = ::match_deref::match_deref! { match &(eqs.clone()) {
-                    Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } => __pa3.clone(),
+                let __pa0 = ::match_deref::match_deref! { match &(eqs.clone()) {
+                    Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
-                eq = __pa3.clone();
+                eq = __pa0.clone();
                 eqSize = BackendEquation::equationSize(BackendEquation::get(eqsArray.clone(), eq.clone())?)?;
                 names = solvedEqs.clone().borrow()[(eq.clone()-1) as usize].clone();
                 lenInfos = (names.clone().len() as i32);
@@ -10672,15 +10668,13 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
         return Ok(());
     }
     if debug.clone() {
-        let __range5 = 1..=(mT.clone().borrow().len() as i32);
-        for mut i in __range5 {
+        for mut i in 1..=metamodelica::arrayLength(mT.clone()) {
             var = BackendVariable::getVarAt(varsArray.clone(), i.clone())?;
             if 0 == solvedVars.clone().borrow()[(i.clone()-1) as usize].clone() {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining unsolved variable:")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var.varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
-        let __range6 = 1..=(m.clone().borrow().len() as i32);
-        for mut i in __range6 {
+        for mut i in 1..=metamodelica::arrayLength(m.clone()) {
             _equation = BackendEquation::get(eqsArray.clone(), i.clone())?;
             eqnSize = BackendEquation::equationSize(_equation.clone())?;
             count = (solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone().len() as i32);

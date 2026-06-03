@@ -245,7 +245,7 @@ fn pantelidesIndexReductionMSS(mut unassignedStates: Arc<metamodelica::List<i32>
                     let mut mapEqnIncRow = (*mapEqnIncRow).clone();
                     let mut mapIncRowEqn = (*mapIncRowEqn).clone();
                     MSSSeqs1 = List::map1r(MSSSeqs.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
-                    MSSSeqs1 = List::uniqueIntN(MSSSeqs1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
+                    MSSSeqs1 = List::uniqueIntN(MSSSeqs1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
                     MSSSeqs1 = List::select1(MSSSeqs1.clone(), (std::sync::Arc::new(fnptr!(intLe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), noofeqns.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("##############--MSSS--##############\n")); __mm_s.push_str(&*literal!("Indices of constraint equations: ")); ArcStr::from(__mm_s) }).clone());
@@ -355,7 +355,7 @@ fn singularSystemError(mut b: bool, mut unassignedStates: Arc<metamodelica::List
                 println!("{}", (literal!("Reduce Index failed! Found empty set of continuous equations.\nmarked equations:\n")).clone());
             }
             eqns1 = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
-            eqns1 = List::uniqueIntN(eqns1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
+            eqns1 = List::uniqueIntN(eqns1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 println!("{}", (BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
             }
@@ -375,7 +375,7 @@ fn singularSystemError(mut b: bool, mut unassignedStates: Arc<metamodelica::List
                 BackendDump::debuglst(eqns.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
             }
             eqns1 = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
-            eqns1 = List::uniqueIntN(eqns1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
+            eqns1 = List::uniqueIntN(eqns1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 println!("{}", (BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
                 println!("{}", (literal!("\n\nunassigned states:\n")).clone());
@@ -521,7 +521,7 @@ fn differentiateEqns(mut inEqnsTpl: Arc<metamodelica::List<(i32, Option<Arc<Back
         assEqs = List::select1(assEqs.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
         outAss2 = List::fold1r(assEqs.clone(), Arc::new(arrayUpdate.clone()), -1, inAss2.clone())?;
         outAss1 = List::fold1r(changedVars.clone(), Arc::new(arrayUpdate.clone()), -1, inAss1.clone())?;
-        eqnslst1 = collectVarEqns(changedVars.clone(), mt.clone(), (mt.clone().borrow().len() as i32), (m.clone().borrow().len() as i32))?;
+        eqnslst1 = collectVarEqns(changedVars.clone(), mt.clone(), metamodelica::arrayLength(mt.clone()), metamodelica::arrayLength(m.clone()))?;
         assign_field!(
             syst.orderedVars = v1.clone(),
             syst.orderedEqs = eqns_1.clone()
@@ -890,7 +890,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     }
                     varlst = BackendVariable::setVarsKind(varlst.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     assign_field!(syst.orderedVars = BackendVariable::addVars(varlst.clone(), syst.orderedVars.clone())?);
-                    eqnslst1 = collectVarEqns(statesWithUnusedDer.clone(), mt.clone(), (mt.clone().borrow().len() as i32), (m.clone().borrow().len() as i32))?;
+                    eqnslst1 = collectVarEqns(statesWithUnusedDer.clone(), mt.clone(), metamodelica::arrayLength(mt.clone()), metamodelica::arrayLength(m.clone()))?;
                     eqnslst1 = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapIncRowEqn.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
@@ -926,7 +926,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         println!("{}", (literal!("Other Candidates are\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
-                    eqnslst1 = collectVarEqns(list![i.clone()], mt.clone(), (mt.clone().borrow().len() as i32), (m.clone().borrow().len() as i32))?;
+                    eqnslst1 = collectVarEqns(list![i.clone()], mt.clone(), metamodelica::arrayLength(mt.clone()), metamodelica::arrayLength(m.clone()))?;
                     eqnslst1 = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapIncRowEqn.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
@@ -1331,7 +1331,7 @@ fn countOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<Ba
     let mut size: i32 = 0;
     let mut numEqs: i32 = 0;
     let mut e: i32 = 0;
-    numEqs = (inOrgEqns.clone().borrow().len() as i32);
+    numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
         orgeqns = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
         size = BackendEquation::equationLstSize(orgeqns.clone())?;
@@ -1346,7 +1346,7 @@ fn inlineOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<B
     let mut e: i32 = 0;
     let mut numEqs: i32 = 0;
     outOrgEqns = inOrgEqns.clone();
-    numEqs = (inOrgEqns.clone().borrow().len() as i32);
+    numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
         orgeqns = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
         (orgeqns, _) = BackendInline::inlineEqs(orgeqns.clone(), inA.clone(), metamodelica::nil(), false)?;
@@ -2296,9 +2296,9 @@ fn partitionSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut
     let mut nsystems: i32 = 0;
     let mut neqns: i32 = 0;
     let mut systsarr: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    neqns = (m.clone().borrow().len() as i32);
+    neqns = metamodelica::arrayLength(m.clone());
     rowmarkarr = arrayCreate(neqns.clone(), 0);
-    collmarkarr = arrayCreate((mT.clone().borrow().len() as i32), 0);
+    collmarkarr = arrayCreate(metamodelica::arrayLength(mT.clone()), 0);
     nsystems = partitionSystem1(neqns.clone(), m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), 1)?;
     systsarr = arrayCreate(nsystems.clone(), metamodelica::nil());
     systsarr = partitionSystemSplitt(neqns.clone(), rowmarkarr.clone(), systsarr.clone())?;
@@ -2411,7 +2411,7 @@ fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32
             let mut seteqns = seteqns.clone();
             if !(unwrap_break_err!(List::select1r(seteqns.clone(), (std::sync::Arc::new(fnptr!(Matching::isUnAssigned, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), vec1.clone()), '__try0).is_empty()) {
                 unassigned = unwrap_break_err!(List::select1r(seteqns.clone(), (std::sync::Arc::new(fnptr!(Matching::isUnAssigned, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), vec1.clone()), '__try0);
-                n = (inM.clone().borrow().len() as i32);
+                n = metamodelica::arrayLength(inM.clone());
                 set = unwrap_break_err!(getEqnsforDynamicStateSelection(unassigned.clone(), n.clone(), inM.clone(), inMT.clone(), vec1.clone(), vec2.clone(), inMapEqnIncRow.clone(), inMapIncRowEqn.clone()), '__try0);
                 assigned = unwrap_break_err!(List::select1r(set.clone(), (std::sync::Arc::new(fnptr!(Matching::isAssigned, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), vec1.clone()), '__try0);
                 flag = arrayCreate(inVarSize.clone(), true);
@@ -2422,7 +2422,7 @@ fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32
                 ass2 = List::consN(nunassigned.clone(), -1, metamodelica::nil());
                 varlst = unwrap_break_err!(List::map1r(statevars.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), iVars.clone()), '__try0);
                 assigend1 = unwrap_break_err!(List::map1r(unassigned.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), inMapIncRowEqn.clone()), '__try0);
-                n = (inMapIncRowEqn.clone().borrow().len() as i32);
+                n = metamodelica::arrayLength(inMapIncRowEqn.clone());
                 assigend1 = unwrap_break_err!(List::uniqueIntN(assigend1.clone(), n.clone()), '__try0);
                 eqnlst = unwrap_break_err!(BackendEquation::getList(assigend1.clone(), eqns1.clone()), '__try0);
                 eqns1 = unwrap_break_err!(List::fold(assigend1.clone(), (std::sync::Arc::new(BackendEquation::delete) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>), eqns1.clone()), '__try0);
@@ -2434,7 +2434,7 @@ fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32
                 syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
                 (_, _, _, mapIncRowEqn1) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), iShared.clone(), false), '__try0);
                 ass1arr = metamodelica::arrayFromVec(ass1.clone().into_iter().cloned().collect());
-                nass1arr = (ass1arr.clone().borrow().len() as i32);
+                nass1arr = metamodelica::arrayLength(ass1arr.clone());
                 (dstates1, states1) = unwrap_break_err!(checkAssignment(1, nass1arr.clone(), ass1arr.clone(), vars.clone()), '__try0);
                 assigend1 = if (!(assigned.clone().is_empty())) {List::intRange2(1, nassigned.clone())} else {metamodelica::nil()};
                 nunassigned = nassigned.clone() + nunassigned.clone();
@@ -2649,7 +2649,7 @@ fn removeFirstOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<
     let mut e: i32 = 0;
     let mut numEqs: i32 = 0;
     outOrgEqns = inOrgEqns.clone();
-    numEqs = (inOrgEqns.clone().borrow().len() as i32);
+    numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
         orgeqns = outOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
         if !(orgeqns.clone().is_empty()) {
@@ -2796,7 +2796,7 @@ fn varStateSelectHeuristicPrio5(mut v: BackendDAE::Var, mut index: i32, mut om: 
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut n: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             row = m.borrow()[(index.clone()-1) as usize].clone();
-            n = intReal((m.clone().borrow().len() as i32)) + metamodelica::OrderedFloat(1.0_f64);
+            n = intReal(metamodelica::arrayLength(m.clone())) + metamodelica::OrderedFloat(1.0_f64);
             n = intReal((row.clone().len() as i32)) / n.clone();
             metamodelica::OrderedFloat(0.3_f64) * n.clone()
         },

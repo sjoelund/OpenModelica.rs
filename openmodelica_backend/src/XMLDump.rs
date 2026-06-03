@@ -732,7 +732,7 @@ fn dumpComponentsWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Backe
     dumpStrOpenTag((arcstr::literal!(BLT_REPRESENTATION)).clone())?;
     dumpComponents1(comps.clone(), voffset.clone(), eoffset.clone())?;
     dumpStrCloseTag((arcstr::literal!(BLT_REPRESENTATION)).clone())?;
-    outOffset = (voffset.clone() + (v2.clone().borrow().len() as i32), eoffset.clone() + (v1.clone().borrow().len() as i32));
+    outOffset = (voffset.clone() + metamodelica::arrayLength(v2.clone()), eoffset.clone() + metamodelica::arrayLength(v1.clone()));
     Ok(outOffset)
 }
 
@@ -2305,7 +2305,7 @@ fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
     (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     Array::fold(m.clone(), (std::sync::Arc::new(dumpAdjacencyMatrix2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (inOffset.clone(), 1))?;
-    outOffset = inOffset.clone() + (m.clone().borrow().len() as i32);
+    outOffset = inOffset.clone() + metamodelica::arrayLength(m.clone());
     Ok(outOffset)
 }
 
@@ -2541,7 +2541,7 @@ fn dumpMatchingWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Backend
     v2 = __pa1.clone();
     (voffset, eoffset) = inOffset.clone();
     dumpMatching1(v1.clone(), voffset.clone(), eoffset.clone())?;
-    outOffset = (voffset.clone() + (v1.clone().borrow().len() as i32), eoffset.clone() + (v2.clone().borrow().len() as i32));
+    outOffset = (voffset.clone() + metamodelica::arrayLength(v1.clone()), eoffset.clone() + metamodelica::arrayLength(v2.clone()));
     Ok(outOffset)
 }
 
@@ -2550,12 +2550,12 @@ fn dumpMatching1(mut v: metamodelica::Array<i32>, mut voffset: i32, mut eoffset:
         let __mc_input = eoffset.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let false = (intGt((v.clone().borrow().len() as i32), 0)) else { bail!("pattern mismatch") };
+            let false = (intGt(metamodelica::arrayLength(v.clone()), 0)) else { bail!("pattern mismatch") };
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (intGt((v.clone().borrow().len() as i32), 0)) else { bail!("pattern mismatch") };
+            let true = (intGt(metamodelica::arrayLength(v.clone()), 0)) else { bail!("pattern mismatch") };
             Array::fold(v.clone(), (std::sync::Arc::new(dumpMatching2) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, i32, i32)) -> Result<(i32, i32, i32)> + 'static>), (1, voffset.clone(), eoffset.clone()))?;
             Ok(())
         })() { break 'mc __v; }

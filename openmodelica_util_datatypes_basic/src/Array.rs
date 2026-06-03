@@ -49,8 +49,7 @@ pub fn mapNoCopy<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut in
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>;
 
     let mut outArray: metamodelica::Array<T> = inArray.clone();
-    let __range0 = 1..=(inArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(inArray.clone()) {
         metamodelica::Dangerous::arrayUpdateNoBoundsChecking(inArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()))?);
     }
     Ok(outArray)
@@ -62,8 +61,7 @@ pub fn mapNoCopy_1<T: Clone + 'static, ArgT: Clone + 'static>(mut inArray: metam
     let mut outArray: metamodelica::Array<T> = inArray.clone();
     let mut outArg: ArgT = inArg.clone();
     let mut e: T;
-    let __range0 = 1..=(inArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(inArray.clone()) {
         (e, outArg) = inFunc((metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), outArg.clone()))?;
         metamodelica::Dangerous::arrayUpdateNoBoundsChecking(inArray.clone(), i.clone(), e.clone());
     }
@@ -101,7 +99,7 @@ fn downheap(mut inArray: metamodelica::Array<i32>, mut n: i32, mut vIn: i32) -> 
 
 pub fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
     let mut inArray: metamodelica::Array<i32> = inArray;
-    let mut n: i32 = (inArray.clone().borrow().len() as i32);
+    let mut n: i32 = metamodelica::arrayLength(inArray.clone());
     let mut tmp: i32 = 0;
     for mut v in (0..=intDiv(n.clone(), 2) - 1).rev() {
         inArray = downheap(inArray.clone(), n.clone(), v.clone());
@@ -171,7 +169,7 @@ pub fn map<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
     let mut outArray: metamodelica::Array<TO> = Default::default();
-    let mut len: i32 = (inArray.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -190,7 +188,7 @@ pub fn map1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
     let mut outArray: metamodelica::Array<TO> = Default::default();
-    let mut len: i32 = (inArray.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -209,7 +207,7 @@ pub fn map1Ind<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, i32, ArgT) -> Result<TO> + 'static>;
 
     let mut outArray: metamodelica::Array<TO> = Default::default();
-    let mut len: i32 = (inArray.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     let mut res: TO;
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -262,8 +260,7 @@ pub fn foldIndex<T: Clone + 'static, FoldT: Clone + 'static>(mut inArray: metamo
 
     let mut outResult: FoldT = inStartValue.clone();
     let mut e: T;
-    let __range0 = 1..=(inArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(inArray.clone()) {
         e = inArray.clone().borrow()[(i.clone()-1) as usize].clone();
         outResult = inFoldFunc(e.clone(), i.clone(), outResult.clone())?;
     }
@@ -275,8 +272,7 @@ pub fn reduce<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inRed
 
     let mut outResult: T;
     outResult = inArray.clone().borrow()[(1-1) as usize].clone();
-    let __range0 = 2..=(inArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 2..=metamodelica::arrayLength(inArray.clone()) {
         outResult = inReduceFunc(outResult.clone(), inArray.clone().borrow()[(i.clone()-1) as usize].clone())?;
     }
     Ok(outResult)
@@ -301,7 +297,7 @@ pub fn replaceAtWithFill<T: Clone + 'static>(mut inPos: i32, mut inTypeReplace: 
 
 pub fn expandToSize<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metamodelica::Array<T>, mut inFill: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
-    if inNewSize.clone() <= (inArray.clone().borrow().len() as i32) {
+    if inNewSize.clone() <= metamodelica::arrayLength(inArray.clone()) {
         outArray = inArray.clone();
     } else {
         outArray = arrayCreate(inNewSize.clone(), inFill.clone());
@@ -316,7 +312,7 @@ pub fn expand<T: Clone + 'static>(mut inN: i32, mut inArray: metamodelica::Array
     if inN.clone() < 1 {
         outArray = inArray.clone();
     } else {
-        len = (inArray.clone().borrow().len() as i32);
+        len = metamodelica::arrayLength(inArray.clone());
         outArray = metamodelica::arrayCreate(len.clone() + inN.clone(), inFill.clone());
         copy(inArray.clone(), outArray.clone())?;
         setRange(len.clone() + 1, len.clone() + inN.clone(), outArray.clone(), inFill.clone())?;
@@ -327,7 +323,7 @@ pub fn expand<T: Clone + 'static>(mut inN: i32, mut inArray: metamodelica::Array
 pub fn expandOnDemand<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metamodelica::Array<T>, mut inExpansionFactor: metamodelica::Real, mut inFillValue: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
     let mut new_size: i32 = 0;
-    let mut len: i32 = (inArray.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(inArray.clone());
     if inNewSize.clone() <= len.clone() {
         outArray = inArray.clone();
     } else {
@@ -353,7 +349,7 @@ pub fn appendToElement<T: Clone + 'static>(mut inIndex: i32, mut inElements: Arc
 
 pub fn appendList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
-    let mut arr_len: i32 = (arr.clone().borrow().len() as i32);
+    let mut arr_len: i32 = metamodelica::arrayLength(arr.clone());
     let mut lst_len: i32 = 0;
     let mut e: T;
     let mut rest: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -381,8 +377,8 @@ pub fn appendList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: 
 
 pub fn join<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
-    let mut len1: i32 = (arr1.clone().borrow().len() as i32);
-    let mut len2: i32 = (arr2.clone().borrow().len() as i32);
+    let mut len1: i32 = metamodelica::arrayLength(arr1.clone());
+    let mut len2: i32 = metamodelica::arrayLength(arr2.clone());
     if len1.clone() == 0 {
         outArray = metamodelica::arrayFromVec(arr2.clone().borrow().clone());
     } else if len2.clone() == 0 {
@@ -397,11 +393,10 @@ pub fn join<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: meta
 
 pub fn copy<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inArrayDest: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = inArrayDest.clone();
-    if (inArraySrc.clone().borrow().len() as i32) > (inArrayDest.clone().borrow().len() as i32) {
+    if metamodelica::arrayLength(inArraySrc.clone()) > metamodelica::arrayLength(inArrayDest.clone()) {
         bail!("fail");
     }
-    let __range0 = 1..=(inArraySrc.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(inArraySrc.clone()) {
         metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArraySrc.clone(), i.clone()));
     }
     Ok(outArray)
@@ -409,7 +404,7 @@ pub fn copy<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inAr
 
 pub fn copyN<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inArrayDest: metamodelica::Array<T>, mut inN: i32, mut srcOffset: i32, mut dstOffset: i32) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = inArrayDest.clone();
-    if inN.clone() + dstOffset.clone() > (inArrayDest.clone().borrow().len() as i32) || inN.clone() + srcOffset.clone() > (inArraySrc.clone().borrow().len() as i32) {
+    if inN.clone() + dstOffset.clone() > metamodelica::arrayLength(inArrayDest.clone()) || inN.clone() + srcOffset.clone() > metamodelica::arrayLength(inArraySrc.clone()) {
         bail!("fail");
     }
     for mut i in 1..=inN.clone() {
@@ -420,7 +415,7 @@ pub fn copyN<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inA
 
 pub fn copyRange<T: Clone + 'static>(mut srcArray: metamodelica::Array<T>, mut dstArray: metamodelica::Array<T>, mut srcFirst: i32, mut srcLast: i32, mut dstPos: i32) -> Result<()> {
     let mut offset: i32 = dstPos.clone() - srcFirst.clone();
-    if srcFirst.clone() > srcLast.clone() || srcLast.clone() > (srcArray.clone().borrow().len() as i32) || offset.clone() + srcLast.clone() > (dstArray.clone().borrow().len() as i32) {
+    if srcFirst.clone() > srcLast.clone() || srcLast.clone() > metamodelica::arrayLength(srcArray.clone()) || offset.clone() + srcLast.clone() > metamodelica::arrayLength(dstArray.clone()) {
         bail!("fail");
     }
     for mut i in srcFirst.clone()..=srcLast.clone() {
@@ -440,7 +435,7 @@ pub fn createIntRange(mut inLen: i32) -> metamodelica::Array<i32> {
 
 pub fn setRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArray: metamodelica::Array<T>, mut inValue: T) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = inArray.clone();
-    if inStart.clone() > (inArray.clone().borrow().len() as i32) {
+    if inStart.clone() > metamodelica::arrayLength(inArray.clone()) {
         bail!("fail");
     }
     for mut i in inStart.clone()..=inEnd.clone() {
@@ -452,7 +447,7 @@ pub fn setRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArra
 pub fn getRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArray: metamodelica::Array<T>) -> Result<Arc<metamodelica::List<T>>> {
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut value: T;
-    if inStart.clone() > (inArray.clone().borrow().len() as i32) {
+    if inStart.clone() > metamodelica::arrayLength(inArray.clone()) {
         bail!("fail");
     }
     for mut i in inStart.clone()..=inEnd.clone() {
@@ -479,8 +474,7 @@ pub fn getMemberOnTrue<VT: Clone + 'static, ET: Clone + 'static>(mut inValue: VT
 
     let mut outElement: ET;
     let mut outIndex: i32 = 0;
-    let __range0 = 1..=(inArray.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(inArray.clone()) {
         if inCompFunc(inValue.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()))? {
             outElement = metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone());
             outIndex = i.clone();
@@ -498,7 +492,7 @@ pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Resul
     let mut elem1: T;
     let mut elem2: T;
     outArray = inArray.clone();
-    size = (inArray.clone().borrow().len() as i32);
+    size = metamodelica::arrayLength(inArray.clone());
     for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
         elem1 = inArray.clone().borrow()[(i.clone()-1) as usize].clone();
         elem2 = inArray.clone().borrow()[(size.clone() - i.clone() + 1-1) as usize].clone();
@@ -514,7 +508,7 @@ pub fn toString<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inP
     let mut outString: ArcStr = arcstr::literal!("");
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut endStr: ArcStr = inEndStr.clone();
-    if maxLength.clone() > 0 && (inArray.clone().borrow().len() as i32) > maxLength.clone() {
+    if maxLength.clone() > 0 && metamodelica::arrayLength(inArray.clone()) > maxLength.clone() {
         lst = List::firstN(Arc::new(inArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), maxLength.clone())?;
         endStr = stringAppendList(list![(inDelimitStr.clone()).clone(), (literal!("...")).clone(), (inEndStr.clone()).clone()]);
     } else {
@@ -541,8 +535,8 @@ pub fn toString<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inP
 pub fn isEqual<T: Clone + 'static + PartialEq>(mut inArr1: metamodelica::Array<T>, mut inArr2: metamodelica::Array<T>) -> Result<bool> {
     let mut outIsEqual: bool = true;
     let mut arrLength: i32 = 0;
-    arrLength = (inArr1.clone().borrow().len() as i32);
-    if !(intEq(arrLength.clone(), (inArr2.clone().borrow().len() as i32))) {
+    arrLength = metamodelica::arrayLength(inArr1.clone());
+    if !(intEq(arrLength.clone(), metamodelica::arrayLength(inArr2.clone()))) {
         bail!("fail");
     }
     for mut i in 1..=arrLength.clone() {
@@ -558,12 +552,11 @@ pub fn isEqualOnTrue<T1: Clone + 'static, T2: Clone + 'static>(mut arr1: metamod
     pub type PredFunc<T1: Clone + 'static, T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>;
 
     let mut equal: bool = false;
-    equal = (arr1.clone().borrow().len() as i32) == (arr2.clone().borrow().len() as i32);
+    equal = metamodelica::arrayLength(arr1.clone()) == metamodelica::arrayLength(arr2.clone());
     if !(equal.clone()) {
         return Ok(equal.clone());
     }
-    let __range0 = 1..=(arr1.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(arr1.clone()) {
         if !(pred(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone()))?) {
             equal = false;
             return Ok(equal.clone());
@@ -579,8 +572,7 @@ pub fn allEqual<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut pred: A
     if arr.clone().borrow().is_empty() {
         return Ok(equal.clone());
     }
-    let __range0 = 2..=(arr.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 2..=metamodelica::arrayLength(arr.clone()) {
         if !(pred(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()))?) {
             equal = false;
             return Ok(equal.clone());
@@ -597,8 +589,8 @@ pub fn isLess<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: me
     let mut len2: i32 = 0;
     let mut e1: T;
     let mut e2: T;
-    len1 = (arr1.clone().borrow().len() as i32);
-    len2 = (arr2.clone().borrow().len() as i32);
+    len1 = metamodelica::arrayLength(arr1.clone());
+    len2 = metamodelica::arrayLength(arr2.clone());
     for mut i in 1..=std::cmp::min(len1.clone(), len2.clone()) {
         e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
         e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone());
@@ -630,7 +622,7 @@ pub fn insertList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: 
 
 pub fn remove<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i32) -> Result<metamodelica::Array<T>> {
     let mut outArr: metamodelica::Array<T> = Default::default();
-    let mut len: i32 = (arr.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(arr.clone());
     let true = (index.clone() <= len.clone() && index.clone() >= 1) else { bail!("pattern mismatch") };
     if len.clone() <= 1 {
         outArr = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -682,8 +674,7 @@ pub fn minElement<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lessF
     let mut res: T;
     let mut e: T;
     res = arr.borrow()[(1-1) as usize].clone();
-    let __range0 = 2..=(arr.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 2..=metamodelica::arrayLength(arr.clone()) {
         e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone());
         if lessFn(e.clone(), res.clone())? {
             res = e.clone();
@@ -698,8 +689,7 @@ pub fn maxElement<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lessF
     let mut res: T;
     let mut e: T;
     res = arr.borrow()[(1-1) as usize].clone();
-    let __range0 = 2..=(arr.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 2..=metamodelica::arrayLength(arr.clone()) {
         e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone());
         if lessFn(res.clone(), e.clone())? {
             res = e.clone();
@@ -714,8 +704,8 @@ pub fn compare<T1: Clone + 'static, T2: Clone + 'static>(mut arr1: metamodelica:
     let mut res: i32 = 0;
     let mut l1: i32 = 0;
     let mut l2: i32 = 0;
-    l1 = (arr1.clone().borrow().len() as i32);
-    l2 = (arr2.clone().borrow().len() as i32);
+    l1 = metamodelica::arrayLength(arr1.clone());
+    l2 = metamodelica::arrayLength(arr2.clone());
     res = if (l1.clone() == l2.clone()) {0} else if (l1.clone() > l2.clone()) {1} else {-1};
     if res.clone() != 0 {
         return Ok(res.clone());
@@ -734,7 +724,7 @@ pub fn mapFold<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
 
     let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut outArg: ArgT = arg.clone();
-    let mut len: i32 = (arr.clone().borrow().len() as i32);
+    let mut len: i32 = metamodelica::arrayLength(arr.clone());
     let mut res: TO;
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -766,8 +756,8 @@ pub fn transpose<T: Clone + 'static>(mut arr: metamodelica::Array<metamodelica::
         return outArray.clone();
     }
     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(row.clone(), 1);
-    c_len = (arr.clone().borrow().len() as i32);
-    r_len = (row.clone().borrow().len() as i32);
+    c_len = metamodelica::arrayLength(arr.clone());
+    r_len = metamodelica::arrayLength(row.clone());
     outArray = metamodelica::arrayCreate(r_len.clone(), row.clone());
     for mut i in 1..=r_len.clone() {
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), metamodelica::arrayCreate(c_len.clone(), val.clone())) };
@@ -792,8 +782,8 @@ pub fn threadMap<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static>(
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
         return Ok(outArray.clone());
     }
-    len1 = (arr1.clone().borrow().len() as i32);
-    len2 = (arr2.clone().borrow().len() as i32);
+    len1 = metamodelica::arrayLength(arr1.clone());
+    len2 = metamodelica::arrayLength(arr2.clone());
     if len1.clone() != len2.clone() {
         bail!("fail");
     }
@@ -831,7 +821,7 @@ pub fn filter<T: Clone + 'static + Default>(mut arr: metamodelica::Array<T>, mut
     let mut new_size: i32 = 0;
     let mut dummy: T;
     let mut index: i32 = 1;
-    new_size = (arr.clone().borrow().len() as i32) - ({
+    new_size = metamodelica::arrayLength(arr.clone()) - ({
         let mut __acc: i32 = 0;
         for mut e in (arr.clone()).borrow().iter() {
             if !(fun(e.clone())?) { continue; }

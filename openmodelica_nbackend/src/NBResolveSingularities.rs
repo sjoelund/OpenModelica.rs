@@ -155,7 +155,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    if !((msss.clone().borrow().len() as i32) == 0) {
+    if !(metamodelica::arrayLength(msss.clone()) == 0) {
         changed = true;
         marked_eqns = UnorderedSet::unique_list(List::flatten(Arc::new(msss.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()))?, std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
         (constraint_ptrs, candidate_ptrs, constraint_eqns) = getConstraintsAndCandidates(equations.clone(), marked_eqns.clone(), mapping.clone())?;
@@ -411,11 +411,10 @@ fn getMSSS(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: met
     let mut msss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut eqn_candidates: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut color_clustering: metamodelica::Array<i32> = Default::default();
-    let mut eqn_coloring: metamodelica::Array<i32> = arrayCreate((m.clone().borrow().len() as i32), -1);
-    let mut var_coloring: metamodelica::Array<i32> = arrayCreate((mT.clone().borrow().len() as i32), -1);
+    let mut eqn_coloring: metamodelica::Array<i32> = arrayCreate(metamodelica::arrayLength(m.clone()), -1);
+    let mut var_coloring: metamodelica::Array<i32> = arrayCreate(metamodelica::arrayLength(mT.clone()), -1);
     let mut color: i32 = 0;
-    let __range0 = 1..=(matching.eqn_to_var.clone().borrow().len() as i32);
-    for mut eqn in __range0 {
+    for mut eqn in 1..=metamodelica::arrayLength(matching.eqn_to_var.clone()) {
         if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() == -1 {
             eqn_candidates = metamodelica::cons(eqn.clone(), eqn_candidates.clone());
         }
@@ -437,13 +436,12 @@ fn getMSSS(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: met
     }
     resolveClustering(color_clustering.clone())?;
     msss = arrayCreate(color.clone(), metamodelica::nil());
-    let __range1 = 1..=(eqn_coloring.clone().borrow().len() as i32);
-    for mut eqn in __range1 {
+    for mut eqn in 1..=metamodelica::arrayLength(eqn_coloring.clone()) {
         if eqn_coloring.borrow()[(eqn.clone()-1) as usize].clone() != -1 && !(excluded_eqns.borrow()[(mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone()-1) as usize].clone()) {
             color = color_clustering.borrow()[(eqn_coloring.borrow()[(eqn.clone()-1) as usize].clone()-1) as usize].clone();
             {
-                let __cell2 = metamodelica::cons(eqn.clone(), msss.borrow()[(color.clone()-1) as usize].clone());
-                msss.clone().borrow_mut()[(color.clone()-1) as usize] = __cell2;
+                let __cell0 = metamodelica::cons(eqn.clone(), msss.borrow()[(color.clone()-1) as usize].clone());
+                msss.clone().borrow_mut()[(color.clone()-1) as usize] = __cell0;
             }
         }
     }
@@ -494,8 +492,7 @@ fn colorClustering(mut old_color: i32, mut new_color: i32, mut color_clustering:
 
 fn resolveClustering(mut color_clustering: metamodelica::Array<i32>) -> Result<()> {
     let mut color: i32 = 0;
-    let __range0 = 1..=(color_clustering.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(color_clustering.clone()) {
         color = i.clone();
         while color_clustering.borrow()[(color.clone()-1) as usize].clone() != color.clone() {
             color = color_clustering.borrow()[(color.clone()-1) as usize].clone();

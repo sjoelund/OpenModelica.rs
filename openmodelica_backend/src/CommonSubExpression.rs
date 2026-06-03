@@ -2122,7 +2122,7 @@ fn commonSubExpressionFind(mut mIn: metamodelica::Array<Arc<metamodelica::List<i
     let mut shortenPathsCSE: Arc<metamodelica::List<CommonSubExp>> = metamodelica::nil();
     let mut varIdcsSet: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     match '__try0: {
-        range = List::intRange((mIn.clone().borrow().len() as i32));
+        range = List::intRange(metamodelica::arrayLength(mIn.clone()));
         lengthLst = unwrap_break_err!(List::mapArray(mIn.clone(), std::sync::Arc::new(fnptr!(listLength, _))), '__try0);
         (_, eqIdcs) = unwrap_break_err!(List::filter1OnTrueSync(lengthLst.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 2, range.clone()), '__try0);
         (eqLst, eqIdcs) = unwrap_break_err!(List::filterOnTrueSync(unwrap_break_err!(BackendEquation::getList(eqIdcs.clone(), eqsIn.clone()), '__try0), (std::sync::Arc::new(fnptr!(BackendEquation::isNotAlgorithm, Arc<BackendDAE::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<bool> + 'static>), eqIdcs.clone()), '__try0);
@@ -2199,8 +2199,7 @@ fn shortenPaths(mut allPartitions: Arc<metamodelica::List<Arc<metamodelica::List
                 eqs = unwrap_break_err!(BackendEquation::listEquation(eqLst.clone()), '__try0);
                 eqSys = BackendDAEUtil::createEqSystem(pathVars.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
                 (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, None, isInitial.clone()), '__try0);
-                let __range1 = 1..=(mT.clone().borrow().len() as i32);
-                for mut idx in __range1 {
+                for mut idx in 1..=metamodelica::arrayLength(mT.clone()) {
                     adjEqs = metamodelica::Dangerous::arrayGetNoBoundsChecking(mT.clone(), idx.clone());
                     if (adjEqs.clone().len() as i32) == 2 {
                         adjEqs = ({

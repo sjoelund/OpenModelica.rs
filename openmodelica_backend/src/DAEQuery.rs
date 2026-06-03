@@ -172,7 +172,7 @@ fn getAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<ArcStr>>
     let mut mlen_str: ArcStr = arcstr::literal!("");
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     let mut mstr: ArcStr = arcstr::literal!("");
-    mlen = (m.clone().borrow().len() as i32);
+    mlen = metamodelica::arrayLength(m.clone());
     mlen_str = (intString(mlen.clone())).clone();
     m_1 = Arc::new(m.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     mstr = (getAdjacencyMatrix2(m_1.clone(), 1)).clone();

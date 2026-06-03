@@ -5848,7 +5848,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
     } });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     }) {
                 (res, successResult) = (::match_deref::match_deref! { match &(item.clone()) {
         Some((tppath, compitem)) => {

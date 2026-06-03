@@ -59,8 +59,7 @@ pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
     onStack = arrayCreate(N.clone(), false);
-    let __range0 = 1..=(ass1.clone().borrow().len() as i32);
-    for mut var in __range0 {
+    for mut var in 1..=metamodelica::arrayLength(ass1.clone()) {
         eqn = ass1.borrow()[(var.clone()-1) as usize].clone();
         if eqn.clone() > 0 && number.borrow()[(eqn.clone()-1) as usize].clone() == -1 {
             (stack, index, outComponents) = StrongConnect(m.clone(), ass1.clone(), eqn.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
@@ -124,7 +123,7 @@ pub fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>
     let mut number: metamodelica::Array<i32> = Default::default();
     let mut lowlink: metamodelica::Array<i32> = Default::default();
     let mut onStack: metamodelica::Array<bool> = Default::default();
-    let mut N: i32 = (ass2.clone().borrow().len() as i32);
+    let mut N: i32 = metamodelica::arrayLength(ass2.clone());
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
     onStack = arrayCreate(N.clone(), false);

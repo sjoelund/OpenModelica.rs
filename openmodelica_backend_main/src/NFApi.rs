@@ -695,7 +695,7 @@ pub fn getInheritedClasses(mut classPath: Arc<Path>, mut program: Absyn::Program
             start_idx = if (SCodeUtil::isClassExtends(InstNode::definition(cls_node.clone())?)) {2} else {1};
             ({
         let mut __acc: Arc<metamodelica::List<Arc<Path>>> = metamodelica::nil();
-        for mut i in (start_idx.clone()..=(exts.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (start_idx.clone()..=metamodelica::arrayLength(exts.clone())).into_iter() {
             let __x = InstNode::fullPath(exts.borrow()[(i.clone()-1) as usize].clone(), true)?;
             __acc = cons(__x, __acc);
         }
@@ -742,7 +742,7 @@ pub fn getNthInheritedClass(mut classPath: Arc<Path>, mut index: i32, mut progra
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-    if index.clone() < 1 || index.clone() > (exts.clone().borrow().len() as i32) {
+    if index.clone() < 1 || index.clone() > metamodelica::arrayLength(exts.clone()) {
         result = ValuesMake::makeBoolean(false);
         return Ok(result.clone());
     }
@@ -1013,8 +1013,7 @@ pub fn buildInstanceTreeGeneratedInners(mut classTree: Arc<ClassTree::ClassTree>
         _ => bail!("pattern mismatch"),
     } };
     comps = __pa0.clone();
-    let __range1 = (1..=(comps.clone().borrow().len() as i32)).rev();
-    for mut i in __range1 {
+    for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
         if InstNode::isGeneratedInner(Mutable::access(comps.borrow()[(i.clone()-1) as usize].clone())) {
             elems = metamodelica::cons(buildInstanceTreeComponent(Mutable::access(comps.borrow()[(i.clone()-1) as usize].clone()))?, elems.clone());
         } else {
@@ -1381,8 +1380,7 @@ pub fn dumpJSONEnumType(mut tree: Arc<InstanceTree>, mut enumNode: Arc<InstNode:
 
 pub fn dumpJSONEnumTypeLiterals(mut literals: metamodelica::Array<Arc<InstNode::InstNode>>, mut scope: Arc<InstNode::InstNode>, mut json: Arc<JSON::JSON>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = json;
-    let __range0 = 6..=(literals.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 6..=metamodelica::arrayLength(literals.clone()) {
         json = JSON::addElement(dumpJSONEnumTypeLiteral(literals.borrow()[(i.clone()-1) as usize].clone(), scope.clone())?, json.clone())?;
     }
     Ok(json)

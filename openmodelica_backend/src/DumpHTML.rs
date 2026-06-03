@@ -463,7 +463,7 @@ fn dumpMatching(mut v: metamodelica::Array<i32>, mut prefixId: ArcStr, mut inTag
     let mut len_str: ArcStr = arcstr::literal!("");
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     outTags = addHeadingTag(2, (literal!("Matching")).clone(), inTags.clone());
-    len = (v.clone().borrow().len() as i32);
+    len = metamodelica::arrayLength(v.clone());
     len_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(len.clone())); __mm_s.push_str(&*literal!(" variables and equations\n")); ArcStr::from(__mm_s) }).clone();
     outTags = addLineTag((len_str.clone()).clone(), outTags.clone());
     tags = dumpMatching2(v.clone(), 1, len.clone(), (prefixId.clone()).clone(), metamodelica::nil());
@@ -522,7 +522,7 @@ pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     scripts = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var blockSize = ")); __mm_s.push_str(&*intString(blockSize.clone())); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
     scripts = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var matrixMargin = ")); __mm_s.push_str(&*intString(matrixMargin.clone())); __mm_s.push_str(&*literal!(";\n\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
     scripts = metamodelica::cons((literal!("\nfunction drawRectangle(px, py, blockSize, margin, ctx) {\n   ctx.fillRect(((py-1)*blockSize) + matrixMargin,((px-1)*blockSize) + matrixMargin, blockSize, blockSize);\n   return ctx;\n     }\n\nfunction rowName(name, rowIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(rowIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction colName(name, colIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(colIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction makeLines(blockSize, margin,  n,  ctx) {\n     for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo( x*blockSize + margin, margin);\n     ctx.lineTo( x*blockSize + margin, margin + (n)*blockSize);\n     ctx.stroke();\n     }\n\n\n    for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo(margin, x*blockSize + margin);\n     ctx.lineTo(margin + (n)*blockSize, x*blockSize + margin);\n     ctx.stroke();\n    }\n\n  return ctx;\n  }\n  ")).clone(), scripts.clone());
-    size = (m.clone().borrow().len() as i32);
+    size = metamodelica::arrayLength(m.clone());
     for mut rowIdx in 1..=size.clone() {
         row = m.clone().borrow()[(rowIdx.clone()-1) as usize].clone();
         rowLabelDraw = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ctx = rowName(\"eq_")); __mm_s.push_str(&*(rowNames.clone()).get(rowIdx.clone())?); __mm_s.push_str(&*literal!("\", ")); __mm_s.push_str(&*intString(rowIdx.clone())); __mm_s.push_str(&*literal!(", blockSize, matrixMargin, ctx);\n")); ArcStr::from(__mm_s) }).clone();

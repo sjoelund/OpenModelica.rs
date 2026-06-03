@@ -75,7 +75,7 @@ pub fn new(mut dom: metamodelica::Array<Arc<SBSet::SBSet>>, mut lmap: metamodeli
     let mut map: Arc<SBPWLinearMap> = Arc::new(<SBPWLinearMap as ::std::default::Default>::default());
     let mut dim: i32 = 0;
     let mut same_dims: bool = false;
-    if (dom.clone().borrow().len() as i32) != (lmap.clone().borrow().len() as i32) {
+    if metamodelica::arrayLength(dom.clone()) != metamodelica::arrayLength(lmap.clone()) {
         map = newEmpty();
         return Ok(map.clone());
     }
@@ -157,8 +157,7 @@ pub fn image(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Result<
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
     let mut ss: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut partial_res: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let __range0 = 1..=(dom.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         ss = dom.borrow()[(i.clone()-1) as usize].clone();
         ss = SBSet::intersection(ss.clone(), set.clone())?;
         partial_res = UnorderedSet::fold(SBSet::asets(ss.clone()), (std::sync::Arc::new({ let __pe_b1 = lmap.borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0, __pe_a2| add_set(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> + 'static>), SBSet::newEmpty())?;
@@ -186,8 +185,7 @@ pub fn preImage(mut map: Arc<SBPWLinearMap>, mut set: Arc<SBSet::SBSet>) -> Resu
     let mut partial_res: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut sets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
     sets = UnorderedSet::toArray(SBSet::asets(set.clone()));
-    let __range0 = 1..=(dom.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         ss = dom.borrow()[(i.clone()-1) as usize].clone();
         partial_res = SBSet::newEmpty();
         partial_res = UnorderedSet::fold(SBSet::asets(ss.clone()), (std::sync::Arc::new({ let __pe_b1 = lmap.borrow()[(i.clone()-1) as usize].clone(); let __pe_b2 = sets.clone(); move |__pe_a0, __pe_a3| add_set(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet::SBSet>) -> Result<Arc<SBSet::SBSet>> + 'static>), SBSet::newEmpty())?;
@@ -217,11 +215,9 @@ pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Res
     }
     ress = Vector::new(0);
     reslm = Vector::new(0);
-    let __range0 = 1..=(dom1.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dom1.clone()) {
         d1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(dom1.clone(), i.clone());
-        let __range1 = 1..=(dom2.clone().borrow().len() as i32);
-        for mut j in __range1 {
+        for mut j in 1..=metamodelica::arrayLength(dom2.clone()) {
             d2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(dom2.clone(), j.clone());
             aux_dom = image(map2.clone(), d2.clone())?;
             aux_dom = SBSet::intersection(aux_dom.clone(), d1.clone())?;
@@ -251,7 +247,7 @@ pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> 
     let mut reso: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
-    if (map.dom.clone().borrow().len() as i32) != 1 {
+    if metamodelica::arrayLength(map.dom.clone()) != 1 {
         outMap = newEmpty();
         return Ok(outMap.clone());
     }
@@ -262,27 +258,26 @@ pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> 
     min = SBSet::minElem(aux_dom.clone())?;
     g = SBLinearMap::gain(map_inv.clone());
     o = SBLinearMap::offset(map_inv.clone());
-    resg = metamodelica::arrayCreate((g.clone().borrow().len() as i32), metamodelica::OrderedFloat(0.0_f64));
-    reso = metamodelica::arrayCreate((o.clone().borrow().len() as i32), metamodelica::OrderedFloat(0.0_f64));
-    let __range0 = 1..=(g.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    resg = metamodelica::arrayCreate(metamodelica::arrayLength(g.clone()), metamodelica::OrderedFloat(0.0_f64));
+    reso = metamodelica::arrayCreate(metamodelica::arrayLength(o.clone()), metamodelica::OrderedFloat(0.0_f64));
+    for mut i in 1..=metamodelica::arrayLength(g.clone()) {
         if g.borrow()[(i.clone()-1) as usize].clone() == intReal(System::intMaxLit()) {
             {
-                let __cell1 = metamodelica::OrderedFloat((0) as f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell1); }
+                let __cell0 = metamodelica::OrderedFloat((0) as f64);
+                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell0); }
             }
             {
-                let __cell2 = intReal(min.borrow()[(i.clone()-1) as usize].clone());
-                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell2); }
+                let __cell1 = intReal(min.borrow()[(i.clone()-1) as usize].clone());
+                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell1); }
             }
         } else {
             {
-                let __cell3 = g.borrow()[(i.clone()-1) as usize].clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell3); }
+                let __cell2 = g.borrow()[(i.clone()-1) as usize].clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell2); }
             }
             {
-                let __cell4 = o.borrow()[(i.clone()-1) as usize].clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell4); }
+                let __cell3 = o.borrow()[(i.clone()-1) as usize].clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell3); }
             }
         }
     }
@@ -322,8 +317,7 @@ pub fn combine(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Re
     dom2 = map2.dom.clone();
     lm2 = map2.lmap.clone();
     aux1 = wholeDom(map1.clone())?;
-    let __range0 = 1..=(dom2.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dom2.clone()) {
         s2 = dom2.borrow()[(i.clone()-1) as usize].clone();
         new_dom = SBSet::complement(s2.clone(), aux1.clone())?;
         if !(SBSet::isEmpty(new_dom.clone())) {
@@ -345,13 +339,12 @@ pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
     let mut aux: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut l: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
     let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
-    let __range0 = 1..=(dom.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         d = dom.borrow()[(i.clone()-1) as usize].clone();
         l = lm.borrow()[(i.clone()-1) as usize].clone();
         asets = UnorderedSet::toArray(SBSet::asets(d.clone()));
-        let __range1 = asets.clone().borrow().iter().cloned().collect::<Vec<_>>();
-        for mut s in __range1 {
+        let __range0 = asets.clone().borrow().iter().cloned().collect::<Vec<_>>();
+        for mut s in __range0 {
             aux = SBSet::newEmpty();
             aux = SBSet::addAtomicSet(s.clone(), aux.clone())?;
             dres = metamodelica::cons(aux.clone(), dres.clone());
@@ -379,8 +372,7 @@ pub fn toString(mut map: Arc<SBPWLinearMap>) -> Result<ArcStr> {
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let __range0 = (1..=(dom.clone().borrow().len() as i32)).rev();
-    for mut i in __range0 {
+    for mut i in (1..=metamodelica::arrayLength(dom.clone())).rev() {
         strl = metamodelica::cons((UnorderedSet::toString(SBSet::asets(dom.borrow()[(i.clone()-1) as usize].clone()), (std::sync::Arc::new({ let __pe_b1 = lmap.borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0| Ok(helper(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<ArcStr> + 'static>), (literal!("U")).clone())?).clone(), strl.clone());
     }
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(strl.clone(), (literal!(",")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();

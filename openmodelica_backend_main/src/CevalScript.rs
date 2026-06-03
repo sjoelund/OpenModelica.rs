@@ -3087,7 +3087,7 @@ fn isSimpleAPIFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
     } });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     }),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3113,7 +3113,7 @@ fn isSimpleAPIFunctionArg(mut ty: Arc<DAE::Type>) -> bool {
             let __x = isSimpleAPIFunctionArg(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction")).unwrap()
+        __acc.unwrap_or(true)
     }),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

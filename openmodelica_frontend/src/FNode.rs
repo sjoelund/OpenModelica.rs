@@ -1738,7 +1738,7 @@ pub fn scopePathEq(mut scope1: Scope, mut scope2: Scope) -> Result<bool> {
             let __x = refName(r1.clone())? == refName(r2.clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     });
     Ok(eq)
 }

@@ -12977,7 +12977,7 @@ fn fun_496(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_assignLocks: Tpl
             l_threadReleaseLocks = lm_484(l_threadReleaseLocks.clone(), ret_22.clone(), a_type.clone())?;
             l_threadReleaseLocks = Tpl::popIter(l_threadReleaseLocks.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("// number of threads: ")).clone() }))?;
-            ret_23 = (a_hpcOmSchedule_threadTasks.clone().borrow().len() as i32);
+            ret_23 = metamodelica::arrayLength(a_hpcOmSchedule_threadTasks.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_23.clone())).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("static int finished; //set to 1 if the hpcom-threads should be destroyed\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
@@ -13507,7 +13507,7 @@ fn fun_511(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_odeEqs: Tpl::
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("if (omp_get_dynamic())\n")).clone(), (literal!("  omp_set_dynamic(0);\n")).clone(), (literal!("#pragma omp parallel sections num_threads(")).clone()], lastHasNewLine: false }))?;
-            ret_0 = (a_threadTasks.clone().borrow().len() as i32);
+            ret_0 = metamodelica::arrayLength(a_threadTasks.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(")\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 3 }))?;
@@ -26198,7 +26198,7 @@ pub fn subIterator(mut in_txt: Tpl::Text, mut in_a_iter: (Arc<DAE::ComponentRef>
             l_range__ = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             (l_range__, a_auxFunction, a_varDecls, a_preExp) = lm_979(l_range__.clone(), ret_3.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_preExp.clone(), a_context.clone())?;
             l_range__ = Tpl::popIter(l_range__.clone())?;
-            ret_5 = (i_range.clone().borrow().len() as i32);
+            ret_5 = metamodelica::arrayLength(i_range.clone());
             l_size__ = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_5.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("static const ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_type__.clone())?;

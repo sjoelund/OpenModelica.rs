@@ -1081,11 +1081,11 @@ fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
 fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i32, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
-    if index.clone() < 1 || index.clone() > (arr.clone().borrow().len() as i32) {
+    if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
         let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
         lineStart = __pa0.clone();
         filename = __pa1.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (arr.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
     Ok(())
@@ -1094,11 +1094,11 @@ fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i3
 fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut info: SourceInfo) -> Result<()> {
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
-    if index.clone() < 1 || index.clone() > (arr.clone().borrow().len() as i32) {
+    if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
         let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
         lineStart = __pa0.clone();
         filename = __pa1.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", (arr.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
     Ok(())

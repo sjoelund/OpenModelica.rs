@@ -509,8 +509,7 @@ fn inlineVarOptArray(mut inVarArray: metamodelica::Array<Option<BackendDAE::Var>
     let mut oInlined: bool = false;
     let mut b: bool = false;
     let mut var: Option<BackendDAE::Var> = None;
-    let __range0 = 1..=(inVarArray.clone().borrow().len() as i32);
-    for mut index in __range0 {
+    for mut index in 1..=metamodelica::arrayLength(inVarArray.clone()) {
         var = inVarArray.borrow()[(index.clone()-1) as usize].clone();
         (var, b) = inlineVarOpt(var.clone(), fns.clone())?;
         if b.clone() {

@@ -79,8 +79,8 @@ pub fn diff<T: Clone + 'static>(mut seq1: Arc<metamodelica::List<T>>, mut seq2: 
     arr2 = metamodelica::arrayFromVec(seq2.clone().into_iter().cloned().collect());
     start1 = 1;
     start2 = 1;
-    end1 = (arr1.clone().borrow().len() as i32);
-    end2 = (arr2.clone().borrow().len() as i32);
+    end1 = metamodelica::arrayLength(arr1.clone());
+    end2 = metamodelica::arrayLength(arr2.clone());
     out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone(), metamodelica::nil(), metamodelica::nil())?;
     Ok(out)
 }
@@ -171,7 +171,7 @@ fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metam
             let __x = equals(arr1.borrow()[(e.clone() + start1.clone() - 1-1) as usize].clone(), arr2.borrow()[(e.clone() + start2.clone() - 1-1) as usize].clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })} else {false} {
         out = list![(Diff::Equal.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();

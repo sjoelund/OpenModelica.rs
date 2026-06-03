@@ -1247,10 +1247,10 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     }
                     depCompRefsLst = List::map(dependentVars.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
                     depCompRefs = metamodelica::arrayFromVec(depCompRefsLst.clone().into_iter().cloned().collect());
-                    sizeM = (depCompRefs.clone().borrow().len() as i32);
+                    sizeM = metamodelica::arrayLength(depCompRefs.clone());
                     (jacDiffVars, inDepCompRefsLst) = createInDepVars(independentVars.clone(), true)?;
                     inDepCompRefs = metamodelica::arrayFromVec(inDepCompRefsLst.clone().into_iter().cloned().collect());
-                    sizeN = (inDepCompRefs.clone().borrow().len() as i32);
+                    sizeN = metamodelica::arrayLength(inDepCompRefs.clone());
                     let (__pa2, __pa0, __pa1) = ::match_deref::match_deref! { match &(BackendDAEUtil::addVarsToEqSystem(syst.clone(), jacDiffVars.clone())?) {
                         __pa2 @ Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1259,8 +1259,8 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     varswithDiffs = __pa1.clone();
                     syst1 = __pa2.clone();
                     (adjMatrix, adjMatrixT) = BackendDAEUtil::adjacencyMatrix(syst1.clone(), openmodelica_backend_types::BackendDAE::IndexType::SPARSE, None, BackendDAEUtil::isInitializationDAE(inBackendDAE.shared.clone()))?;
-                    adjSize = (adjMatrix.clone().borrow().len() as i32);
-                    adjSizeT = (adjMatrixT.clone().borrow().len() as i32);
+                    adjSize = metamodelica::arrayLength(adjMatrix.clone());
+                    adjSizeT = metamodelica::arrayLength(adjMatrixT.clone());
                     if Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone())? {
                         BackendDump::printVarList(BackendVariable::varList(varswithDiffs.clone())?)?;
                         BackendDump::printEquationList(BackendEquation::equationList(orderedEqns.clone())?)?;
@@ -4348,8 +4348,7 @@ pub mod LinearJacobian {
     pub fn toString(mut linJac: Arc<LinearJacobian>, mut heading: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("######################################################\n")); __mm_s.push_str(&*literal!(" LinearJacobian sparsity pattern: ")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("######################################################\n")); __mm_s.push_str(&*literal!("(scal_idx|arr_idx|changed) [var_index, value] || RHS_EXPRESSION\n")); ArcStr::from(__mm_s) }).clone();
-        let __range0 = 1..=(linJac.rows.clone().borrow().len() as i32);
-        for mut idx in __range0 {
+        for mut idx in 1..=metamodelica::arrayLength(linJac.rows.clone()) {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*rowToString(linJac.rows.borrow()[(idx.clone()-1) as usize].clone(), linJac.rhs.borrow()[(idx.clone()-1) as usize].clone(), linJac.ind.borrow()[(idx.clone()-1) as usize].clone(), linJac.eq_marks.borrow()[(idx.clone()-1) as usize].clone())?); ArcStr::from(__mm_s) }).clone();
         }
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
@@ -4440,7 +4439,7 @@ pub mod LinearJacobian {
     }
 
     pub fn emptyOrSingle(mut linJac: Arc<LinearJacobian>) -> bool {
-        let mut empty: bool = (linJac.rows.clone().borrow().len() as i32) < 2 && (linJac.rhs.clone().borrow().len() as i32) < 2 && (linJac.ind.clone().borrow().len() as i32) < 2 && (linJac.eq_marks.clone().borrow().len() as i32) < 2;
+        let mut empty: bool = metamodelica::arrayLength(linJac.rows.clone()) < 2 && metamodelica::arrayLength(linJac.rhs.clone()) < 2 && metamodelica::arrayLength(linJac.ind.clone()) < 2 && metamodelica::arrayLength(linJac.eq_marks.clone()) < 2;
         empty
     }
 
@@ -4449,22 +4448,20 @@ pub mod LinearJacobian {
         let mut col_index: i32 = 0;
         let mut piv_value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
         let mut row_value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-        let __range0 = 1..=(linJac.rows.clone().borrow().len() as i32);
-        for mut i in __range0 {
-            if '__try1: {
-                (col_index, piv_value) = unwrap_break_err!(getPivot(linJac.rows.borrow()[(i.clone()-1) as usize].clone()), '__try1);
-                let __range2 = i.clone() + 1..=(linJac.rows.clone().borrow().len() as i32);
-                for mut j in __range2 {
-                    row_value = unwrap_break_err!(UnorderedMap::getOrDefault(col_index.clone(), linJac.rows.borrow()[(j.clone()-1) as usize].clone(), metamodelica::OrderedFloat(0.0_f64)), '__try1);
+        for mut i in 1..=metamodelica::arrayLength(linJac.rows.clone()) {
+            if '__try0: {
+                (col_index, piv_value) = unwrap_break_err!(getPivot(linJac.rows.borrow()[(i.clone()-1) as usize].clone()), '__try0);
+                for mut j in i.clone() + 1..=metamodelica::arrayLength(linJac.rows.clone()) {
+                    row_value = unwrap_break_err!(UnorderedMap::getOrDefault(col_index.clone(), linJac.rows.borrow()[(j.clone()-1) as usize].clone(), metamodelica::OrderedFloat(0.0_f64)), '__try0);
                     if !(realEq(row_value.clone(), metamodelica::OrderedFloat(0.0_f64))) {
                         {
-                            let __cell3 = true;
-                            linJac.eq_marks.clone().borrow_mut()[(j.clone()-1) as usize] = __cell3;
+                            let __cell1 = true;
+                            linJac.eq_marks.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;
                         }
-                        unwrap_break_err!(solveRow(linJac.rows.borrow()[(i.clone()-1) as usize].clone(), linJac.rows.borrow()[(j.clone()-1) as usize].clone(), piv_value.clone(), row_value.clone()), '__try1);
+                        unwrap_break_err!(solveRow(linJac.rows.borrow()[(i.clone()-1) as usize].clone(), linJac.rows.borrow()[(j.clone()-1) as usize].clone(), piv_value.clone(), row_value.clone()), '__try0);
                         {
-                            let __cell4 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: linJac.rhs.borrow()[(j.clone()-1) as usize].clone(), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: piv_value.clone() }) }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: linJac.rhs.borrow()[(i.clone()-1) as usize].clone(), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: row_value.clone() }) }) });
-                            linJac.rhs.clone().borrow_mut()[(j.clone()-1) as usize] = __cell4;
+                            let __cell2 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: linJac.rhs.borrow()[(j.clone()-1) as usize].clone(), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: piv_value.clone() }) }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: linJac.rhs.borrow()[(i.clone()-1) as usize].clone(), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: row_value.clone() }) }) });
+                            linJac.rhs.clone().borrow_mut()[(j.clone()-1) as usize] = __cell2;
                         }
                     }
                 }
@@ -4553,17 +4550,16 @@ pub mod LinearJacobian {
         let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
         let mut indexType: BackendDAE::IndexType = BackendDAE::IndexType::ABSOLUTE;
         let mut fullASSC: bool = Flags::getConfigBool(Flags::FULL_ASSC.clone())?;
-        let __range0 = 1..=(linJac.rows.clone().borrow().len() as i32);
-        for mut r in __range0 {
+        for mut r in 1..=metamodelica::arrayLength(linJac.rows.clone()) {
             if linJac.eq_marks.borrow()[(r.clone()-1) as usize].clone() && (UnorderedMap::isEmpty(linJac.rows.borrow()[(r.clone()-1) as usize].clone()) || fullASSC.clone()) {
                 (i_arr, i_scal) = linJac.ind.borrow()[(r.clone()-1) as usize].clone();
                 {
-                    let __cell1 = -1;
-                    ass2.clone().borrow_mut()[(ass1.borrow()[(i_scal.clone()-1) as usize].clone()-1) as usize] = __cell1;
+                    let __cell0 = -1;
+                    ass2.clone().borrow_mut()[(ass1.borrow()[(i_scal.clone()-1) as usize].clone()-1) as usize] = __cell0;
                 }
                 {
-                    let __cell2 = -1;
-                    ass1.clone().borrow_mut()[(i_scal.clone()-1) as usize] = __cell2;
+                    let __cell1 = -1;
+                    ass1.clone().borrow_mut()[(i_scal.clone()-1) as usize] = __cell1;
                 }
                 (rhs, _) = ExpressionSimplify::simplify(linJac.rhs.borrow()[(r.clone()-1) as usize].clone())?;
                 lhs = generateLHSfromList(UnorderedMap::keyArray(linJac.rows.borrow()[(r.clone()-1) as usize].clone()), UnorderedMap::valueArray(linJac.rows.borrow()[(r.clone()-1) as usize].clone()), syst.orderedVars.clone())?;
@@ -4577,19 +4573,19 @@ pub mod LinearJacobian {
             }
         }
         if !(updateList_arr.clone().is_empty()) {
-            match '__try3: {
-                let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(syst.mapping.clone()) {
-                    Some((__pa4, __pa5, __pa6, true, _)) => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
-                    _ => break '__try3 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+            match '__try2: {
+                let (__pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(syst.mapping.clone()) {
+                    Some((__pa3, __pa4, __pa5, true, _)) => (__pa3.clone(), __pa4.clone(), __pa5.clone()),
+                    _ => break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
-                mapEqnIncRow = __pa4.clone();
-                mapIncRowEqn = __pa5.clone();
-                indexType = __pa6.clone();
-                (syst, _, _) = unwrap_break_err!(BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), indexType.clone(), None, updateList_arr.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), false), '__try3);
+                mapEqnIncRow = __pa3.clone();
+                mapIncRowEqn = __pa4.clone();
+                indexType = __pa5.clone();
+                (syst, _, _) = unwrap_break_err!(BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), indexType.clone(), None, updateList_arr.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), false), '__try2);
                 Ok::<_, anyhow::Error>((syst.clone(),))
             } {
-                Ok((__try3_o0,)) => {
-                    syst = __try3_o0;
+                Ok((__try2_o0,)) => {
+                    syst = __try2_o0;
                 }
                 Err(_) => {
                     syst = BackendDAEUtil::updateAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, None, updateList_arr.clone(), false)?;
@@ -4604,14 +4600,13 @@ pub mod LinearJacobian {
 
     fn generateLHSfromList(mut row_indices: metamodelica::Array<i32>, mut row_values: metamodelica::Array<metamodelica::Real>, mut vars: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
         let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-        let mut length: i32 = (row_indices.clone().borrow().len() as i32);
+        let mut length: i32 = metamodelica::arrayLength(row_indices.clone());
         if length.clone() == 0 {
             lhs = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
         } else {
             lhs = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: row_values.borrow()[(1-1) as usize].clone() }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: BackendVariable::varExp(BackendVariable::getVarAt(vars.clone(), row_indices.borrow()[(1-1) as usize].clone())?)? });
         }
-        let __range0 = 2..=(row_indices.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 2..=metamodelica::arrayLength(row_indices.clone()) {
             lhs = Arc::new(DAE::Exp::BINARY { exp1: lhs.clone(), operator: DAE::Operator::ADD { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: row_values.borrow()[(i.clone()-1) as usize].clone() }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: BackendVariable::varExp(BackendVariable::getVarAt(vars.clone(), row_indices.borrow()[(i.clone()-1) as usize].clone())?)? }) });
         }
         Ok(lhs)
@@ -4619,8 +4614,7 @@ pub mod LinearJacobian {
 
     pub fn anyChanges(mut linJac: Arc<LinearJacobian>) -> bool {
         let mut changed: bool = false;
-        let __range0 = 1..=(linJac.eq_marks.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(linJac.eq_marks.clone()) {
             if linJac.eq_marks.borrow()[(i.clone()-1) as usize].clone() {
                 changed = true;
                 return changed.clone();

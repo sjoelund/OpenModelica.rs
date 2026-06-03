@@ -223,8 +223,8 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
             let mut nonLoopVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut deadEndEqsMark: metamodelica::Array<i32> = deadEndEqsMark.clone();
             let mut deadEndVarsMark: metamodelica::Array<i32> = deadEndVarsMark.clone();
-            numVars = (mTIn.clone().borrow().len() as i32);
-            numEqs = (mIn.clone().borrow().len() as i32);
+            numVars = metamodelica::arrayLength(mTIn.clone());
+            numEqs = metamodelica::arrayLength(mIn.clone());
             nonLoopVars = List::filter2OnTrue(List::intRange(numVars.clone()), (std::sync::Arc::new(arrayEntryLengthIs) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, i32) -> Result<bool> + 'static>), mTIn.clone(), 1)?;
             deadEndVarsMark = arrayCreate(numVars.clone(), 0);
             deadEndEqsMark = arrayCreate(numVars.clone(), 0);
@@ -316,8 +316,7 @@ fn getSimpleEquationVariables(mut markLinEqVars: metamodelica::Array<i32>, mut v
     let mut varIdx: i32 = 0;
     let mut varMap: Arc<metamodelica::List<i32>> = metamodelica::nil();
     varMap = metamodelica::nil();
-    let __range0 = 1..=(markLinEqVars.clone().borrow().len() as i32);
-    for mut varIdx in __range0 {
+    for mut varIdx in 1..=metamodelica::arrayLength(markLinEqVars.clone()) {
         if markLinEqVars.borrow()[(varIdx.clone()-1) as usize].clone() > 0 {
             varMap = metamodelica::cons(varIdx.clone(), varMap.clone());
             simpVars = metamodelica::cons(BackendVariable::getVarAt(vars.clone(), varIdx.clone())?, simpVars.clone());
@@ -473,12 +472,10 @@ fn resolveLoops_findLoops2(mut eqsIn: Arc<metamodelica::List<i32>>, mut eqCrossL
         (Deref @ metamodelica::List::Cons { head: _, tail: _ }, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
             let mut paths: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut eqCrossSet: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-            let __range0 = 1..=(mIn.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(mIn.clone()) {
                 {let _arr = mIn.clone(); let _val = List::heapSortIntList(mIn.borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
             }
-            let __range1 = 1..=(mTIn.clone().borrow().len() as i32);
-            for mut i in __range1 {
+            for mut i in 1..=metamodelica::arrayLength(mTIn.clone()) {
                 {let _arr = mTIn.clone(); let _val = List::heapSortIntList(mTIn.borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
             }
             eqCrossSet = AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), eqCrossLstIn.clone())?;
@@ -508,7 +505,7 @@ fn findEqualPathStructure(mut crossNodes: Arc<metamodelica::List<i32>>, mut uniq
             let __x = cn.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     }), metamodelica::nil()), metamodelica::nil())?;
     mapping = (mapIndices.clone(), map.clone());
     Ok((crossNodes, uniquePaths, mapping, minAdj))
@@ -522,7 +519,7 @@ fn getMinimalAdjacencyMatrix(mut crossNodes: Arc<metamodelica::List<i32>>, mut u
             let __x = cn.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     }), metamodelica::nil());
     for mut path in &*uniquePaths.clone() {
         let mut path = path.clone();
@@ -1885,8 +1882,8 @@ pub fn partitionBipartiteGraph(mut m: metamodelica::Array<Arc<metamodelica::List
     let mut numVars: i32 = 0;
     let mut markEqs: metamodelica::Array<i32> = Default::default();
     let mut markVars: metamodelica::Array<i32> = Default::default();
-    numEqs = (m.clone().borrow().len() as i32);
-    numVars = (mT.clone().borrow().len() as i32);
+    numEqs = metamodelica::arrayLength(m.clone());
+    numVars = metamodelica::arrayLength(mT.clone());
     if numEqs.clone() == 0 || numVars.clone() == 0 {
         partitions = list![metamodelica::nil()];
     } else {
@@ -1942,8 +1939,7 @@ fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
         Deref @ metamodelica::List::Nil => {
             eq = 0;
             next_index = nextIndex.clone();
-            let __range0 = nextIndex.clone()..=(markEqs.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in nextIndex.clone()..=metamodelica::arrayLength(markEqs.clone()) {
                 if markEqs.borrow()[(i.clone()-1) as usize].clone() == -1 {
                     eq = i.clone();
                     next_index = i.clone() + 1;
@@ -2441,7 +2437,7 @@ fn reshuffling_post3_selectShuffleEqs(mut me: metamodelica::Array<Arc<metamodeli
             let mut suitableEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqPairs: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             bArr = Array::map1(me.clone(), (std::sync::Arc::new(chooseEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<bool> + 'static>), meT.clone())?;
-            (_, suitableEqs) = List::filter1OnTrueSync(Arc::new(bArr.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(boolEq, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), true, List::intRange((me.clone().borrow().len() as i32)))?;
+            (_, suitableEqs) = List::filter1OnTrueSync(Arc::new(bArr.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(boolEq, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), true, List::intRange(metamodelica::arrayLength(me.clone())))?;
             eqPairs = List::map2(suitableEqs.clone(), (std::sync::Arc::new(getEqPairs) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), me.clone(), meT.clone())?;
             eqPairs = List::filterOnTrue(eqPairs.clone(), std::sync::Arc::new(fnptr!(List::hasSeveralElements, _)))?;
             Ok(eqPairs.clone())
@@ -2541,7 +2537,7 @@ fn getDoublicates(mut lstIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamod
     max = List::fold(lstIn.clone(), (std::sync::Arc::new(fnptr!(intMax, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), listHead(lstIn.clone())?)?;
     arr = arrayCreate(max.clone(), -1);
     List::map1_0(lstIn.clone(), (std::sync::Arc::new(getDoublicates2) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<()> + 'static>), arr.clone())?;
-    (_, lstOut) = List::filter1OnTrueSync(Arc::new(arr.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(intGe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 1, List::intRange((arr.clone().borrow().len() as i32)))?;
+    (_, lstOut) = List::filter1OnTrueSync(Arc::new(arr.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(fnptr!(intGe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 1, List::intRange(metamodelica::arrayLength(arr.clone())))?;
     Ok(lstOut)
 }
 
@@ -3084,7 +3080,7 @@ fn gramSchmidtProcessHelper(mut w: metamodelica::Array<Arc<DAE::Exp>>, mut u: me
     let mut ovars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut oshared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut h: Arc<DAE::Exp> = Expression::makeScalarProduct(w.clone(), u.clone())?;
-    let mut n: i32 = (w.clone().borrow().len() as i32);
+    let mut n: i32 = metamodelica::arrayLength(w.clone());
     (h, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(h.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_h")); ArcStr::from(__mm_s) }).clone(), offset.clone(), ieqns.clone(), ivars.clone(), ishared.clone(), false)?;
     v = Array::map1(u.clone(), (std::sync::Arc::new(Expression::expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), h.clone())?;
     v = Expression::subVec(w.clone(), v.clone())?;

@@ -2128,7 +2128,7 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
             let __x = 0 == SemanticVersion::compare(pkgInfo.version.clone(), candidate.clone(), true, false)?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     }) {
                 success = true;
                 return Ok((success.clone(), packagesToInstall.clone()));
@@ -2184,7 +2184,7 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
             let __x = 0 == SemanticVersion::compare(semver.clone(), candidate.clone(), true, false)?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) {
             if !(fallbackOnNonExactMatch.clone()) {
                 Error::addSourceMessage(Error::ERROR_PKG_NOT_EXACT_MATCH.clone(), list![(pkg.clone()).clone(), (version.clone()).clone(), stringDelimitList(candidates.clone(), (literal!(", ")).clone())], makeSourceInfo((getIndexPath()?).clone()))?;

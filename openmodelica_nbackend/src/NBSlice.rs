@@ -340,7 +340,7 @@ pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::L
             let __x = i.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     }))?, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     }
     Ok(indices)
@@ -406,11 +406,10 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
         }
         mode = mode.clone() + 1;
     }
-    let __range2 = 1..=(indices.clone().borrow().len() as i32);
-    for mut i in __range2 {
+    for mut i in 1..=metamodelica::arrayLength(indices.clone()) {
         {
-            let __cell3 = List::sort(UnorderedSet::unique_list(indices.borrow()[(i.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-            indices.clone().borrow_mut()[(i.clone()-1) as usize] = __cell3;
+            let __cell2 = List::sort(UnorderedSet::unique_list(indices.borrow()[(i.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            indices.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
         }
     }
     Ok((indices, mode_to_var))
@@ -451,11 +450,10 @@ pub fn getDependentCrefIndicesPseudoFor(mut dependencies: Arc<metamodelica::List
         fillDependencyArray(dep.clone(), body_size.clone(), frames.clone(), mapping.clone(), map.clone(), func.clone(), 0, true)?;
         mode = mode.clone() + 1;
     }
-    let __range1 = 1..=(indices.clone().borrow().len() as i32);
-    for mut i in __range1 {
+    for mut i in 1..=metamodelica::arrayLength(indices.clone()) {
         {
-            let __cell2 = List::sort(UnorderedSet::unique_list(indices.borrow()[(i.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-            indices.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
+            let __cell1 = List::sort(UnorderedSet::unique_list(indices.borrow()[(i.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            indices.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
         }
     }
     Ok((indices, mode_to_var))
@@ -740,11 +738,10 @@ pub fn transposeLocations(mut locations: Arc<metamodelica::List<Arc<metamodelica
             idx = idx.clone() + 1;
         }
     }
-    let __range1 = 1..=(lT_tmp.clone().borrow().len() as i32);
-    for mut j in __range1 {
+    for mut j in 1..=metamodelica::arrayLength(lT_tmp.clone()) {
         {
-            let __cell2 = metamodelica::arrayFromVec(lT_tmp.borrow()[(j.clone()-1) as usize].clone().reverse().into_iter().cloned().collect());
-            lT_tmp2.clone().borrow_mut()[(j.clone()-1) as usize] = __cell2;
+            let __cell1 = metamodelica::arrayFromVec(lT_tmp.borrow()[(j.clone()-1) as usize].clone().reverse().into_iter().cloned().collect());
+            lT_tmp2.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;
         }
     }
     locations_transposed = Arc::new(lT_tmp2.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()).reverse();
@@ -781,7 +778,7 @@ fn frameLocationInertia(mut frameLocation: (metamodelica::Array<i32>, (Arc<Compo
     let mut inertia: i32 = 1;
     let mut dim: metamodelica::Array<i32> = Default::default();
     dim = Util::tuple21(frameLocation.clone());
-    while inertia.clone() < (dim.clone().borrow().len() as i32) && dim.borrow()[(inertia.clone()-1) as usize].clone() == dim.borrow()[(inertia.clone() + 1-1) as usize].clone() {
+    while inertia.clone() < metamodelica::arrayLength(dim.clone()) && dim.borrow()[(inertia.clone()-1) as usize].clone() == dim.borrow()[(inertia.clone() + 1-1) as usize].clone() {
         inertia = inertia.clone() + 1;
     }
     inertia
@@ -815,10 +812,10 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
             let mut linMap: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             addOp = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
             mulOp = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
-            if (loc1.clone().borrow().len() as i32) != (loc2.clone().borrow().len() as i32) {
+            if metamodelica::arrayLength(loc1.clone()) != metamodelica::arrayLength(loc2.clone()) {
                 status = FrameOrderingStatus::FAILURE.clone();
                 return Ok((resolved.clone(), status.clone()));
-            } else if (loc1.clone().borrow().len() as i32) == 1 {
+            } else if metamodelica::arrayLength(loc1.clone()) == 1 {
                 b = loc2.borrow()[(1-1) as usize].clone() - loc1.borrow()[(1-1) as usize].clone();
                 linMap = Expression::fromCref(name1.clone(), false)?;
                 if b.clone() != 0 {
@@ -829,8 +826,7 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
             } else {
                 m = (((metamodelica::OrderedFloat((loc2.borrow()[(1-1) as usize].clone() - loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone()) as f64)) / (metamodelica::OrderedFloat((loc1.borrow()[(1-1) as usize].clone() - loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone()) as f64))).0 as i32);
                 b = loc2.borrow()[(1-1) as usize].clone() - m.clone() * loc1.borrow()[(1-1) as usize].clone();
-                let __range0 = 2..=(loc1.clone().borrow().len() as i32);
-                for mut i in __range0 {
+                for mut i in 2..=metamodelica::arrayLength(loc1.clone()) {
                     if loc2.borrow()[(i.clone()-1) as usize].clone() != m.clone() * loc1.borrow()[(i.clone()-1) as usize].clone() + b.clone() {
                         status = FrameOrderingStatus::FAILURE.clone();
                         return Ok((resolved.clone(), status.clone()));
@@ -891,7 +887,7 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
         fail_ = false;
         (dim, frame) = tpl.clone();
         pre_shift = shift.clone();
-        max_size = (dim.clone().borrow().len() as i32);
+        max_size = metamodelica::arrayLength(dim.clone());
         if max_size.clone() == 1 {
             frames = metamodelica::cons(applyNewFrameRange(frame.clone(), (dim.borrow()[(1-1) as usize].clone(), 1, dim.borrow()[(1-1) as usize].clone()))?, frames.clone());
             starts = metamodelica::cons(dim.borrow()[(1-1) as usize].clone(), starts.clone());
@@ -945,7 +941,7 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
             let __x = d.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(i32::MAX)
     });
                 max_dim = ({
         let mut __acc: Option<i32> = None;
@@ -953,7 +949,7 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
             let __x = d.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     });
                 if fail_.clone() {
                     if step.clone() > 0 {
@@ -1033,8 +1029,7 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
         missing_dims = metamodelica::nil();
         pos = start.clone();
         if fail_.clone() {
-            let __range8 = ({let __s=1; let __e=(dim.clone().borrow().len() as i32); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize);
-            for mut i in __range8 {
+            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize) {
                 while dim.borrow()[(i.clone()-1) as usize].clone() != pos.clone() {
                     missing_dims = metamodelica::cons(pos.clone(), missing_dims.clone());
                     pos = pos.clone() + step.clone();
@@ -1053,18 +1048,17 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
                 pos = pos.clone() + step.clone();
             }
         } else {
-            let __range9 = ({let __s=1; let __e=(dim.clone().borrow().len() as i32); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize);
-            for mut i in __range9 {
+            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize) {
                 missing_dims = metamodelica::cons(dim.borrow()[(i.clone()-1) as usize].clone(), missing_dims.clone());
             }
         }
         diagonal = metamodelica::cons((metamodelica::arrayFromVec(missing_dims.clone().reverse().into_iter().cloned().collect()), frame.clone()), diagonal.clone());
-        let (__pa10, __pa11) = ::match_deref::match_deref! { match &(shift_rest.clone()) {
-            Deref @ metamodelica::List::Cons { head: __pa10, tail: __pa11 } => (__pa10.clone(), __pa11.clone()),
+        let (__pa8, __pa9) = ::match_deref::match_deref! { match &(shift_rest.clone()) {
+            Deref @ metamodelica::List::Cons { head: __pa8, tail: __pa9 } => (__pa8.clone(), __pa9.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        shift = __pa10.clone();
-        shift_rest = __pa11.clone();
+        shift = __pa8.clone();
+        shift_rest = __pa9.clone();
     }
     diagonal = diagonal.clone().reverse();
     Ok(diagonal)
@@ -1558,7 +1552,7 @@ fn addMatrixEntry(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.addMatrixEntry")); __mm_s.push_str(&*literal!(" failed because index ")); __mm_s.push_str(&*intString(eqn_idx.clone())); __mm_s.push_str(&*literal!(" could not be added. Matrix size: ")); __mm_s.push_str(&*intString((m.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.addMatrixEntry")); __mm_s.push_str(&*literal!(" failed because index ")); __mm_s.push_str(&*intString(eqn_idx.clone())); __mm_s.push_str(&*literal!(" could not be added. Matrix size: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(m.clone()))); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             return Err(__try0_err);
         }
     }

@@ -948,7 +948,7 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
     preRef = makeSMSPrefix(initStateRef.clone())?;
     activeRef = qCref((literal!("active")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), preRef.clone())?;
     resetRef = qCref((literal!("reset")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), preRef.clone())?;
-    nStates = (inSem.smComps.clone().borrow().len() as i32);
+    nStates = metamodelica::arrayLength(inSem.smComps.clone());
     tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::BOOLEAN), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
     if isNone(enclosingSmSemOpt.clone()) {
         initRef = qCref((literal!("init")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), preRef.clone())?;
@@ -1294,7 +1294,7 @@ fn createResetEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
         }
         i = i.clone() + 1;
     }
-    nStates = (sem.smComps.clone().borrow().len() as i32);
+    nStates = metamodelica::arrayLength(sem.smComps.clone());
     tArrayBool = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::BOOLEAN), dimensions: list![Arc::new(Dimension::NFDimension::INTEGER { size: nStates.clone(), var: Variability::STRUCTURAL_PARAMETER.clone() })] });
     activeResetExp = makeCrefExp(qCref((literal!("activeReset")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), preRef.clone())?, Arc::new(crate::NFType::BOOLEAN));
     activeResetStatesExp = makeCrefExp(qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) })], preRef.clone())?, Arc::new(crate::NFType::BOOLEAN));

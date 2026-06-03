@@ -591,7 +591,7 @@ fn causalFinder(mut foundSimple: bool, mut simpleContainerIn: Arc<metamodelica::
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     if foundSimple.clone() {
         simpleContainer = List::listArrayReverse(simpleContainerIn.clone())?;
-        (vars, eqnslst, shared, repl, b) = handleSets((simpleContainer.clone().borrow().len() as i32), 1, simpleContainer.clone(), iMT.clone(), iUnreplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
+        (vars, eqnslst, shared, repl, b) = handleSets(metamodelica::arrayLength(simpleContainer.clone()), 1, simpleContainer.clone(), iMT.clone(), iUnreplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
         warnAliasConflicts = warnAliasConflicts.clone() || b.clone();
         (eqnslst, b1) = BackendVarTransform::replaceEquations(eqnslst.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
         (outVars, outShared, outRepl, outUnReplaceable, outEqnslst, warnAliasConflicts) = causalFinder1(intGt(traversalIdx.clone(), maxTraversals.clone()), b1.clone(), eqnslst.clone(), traversalIdx.clone() + 1, maxTraversals.clone(), vars.clone(), shared.clone(), repl.clone(), iUnreplaceable.clone(), iMT.clone(), iGlobalEqnslst.clone(), inGlobalFoundSimple.clone(), warnAliasConflicts.clone())?;
@@ -894,7 +894,7 @@ fn allCausalFinder1(mut foundSimple: bool, mut didReplacement: bool, mut iSimple
             let mut eqnslst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             simpleeqns = List::listArrayReverse(iSimpleeqnslst.clone())?;
-            (vars, eqnslst, shared, repl, b) = handleSets((simpleeqns.clone().borrow().len() as i32), 1, simpleeqns.clone(), iMT.clone(), iUnreplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
+            (vars, eqnslst, shared, repl, b) = handleSets(metamodelica::arrayLength(simpleeqns.clone()), 1, simpleeqns.clone(), iMT.clone(), iUnreplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
             warnAliasConflicts = warnAliasConflicts.clone() || b.clone();
             (eqnslst, b1) = BackendVarTransform::replaceEquations(eqnslst.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
             allCausalFinder2(b1.clone(), eqnslst.clone(), vars.clone(), shared.clone(), repl.clone(), iUnreplaceable.clone(), iMT.clone(), iGlobalEqnslst.clone(), true, warnAliasConflicts.clone())?

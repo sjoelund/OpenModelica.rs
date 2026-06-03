@@ -2107,8 +2107,7 @@ fn vararrayList(mut inArray: BackendDAE::VariableArray) -> Result<Arc<metamodeli
     let BackendDAE::VARIABLE_ARRAY { varOptArr: __pa0, .. } = (inArray.clone()) else { bail!("pattern mismatch") };
     varOptArr = __pa0.clone();
     outVars = metamodelica::nil();
-    let __range1 = (1..=(varOptArr.clone().borrow().len() as i32)).rev();
-    for mut i in __range1 {
+    for mut i in (1..=metamodelica::arrayLength(varOptArr.clone())).rev() {
         if isSome(varOptArr.borrow()[(i.clone()-1) as usize].clone()) {
             outVars = metamodelica::cons(Util::getOption(varOptArr.borrow()[(i.clone()-1) as usize].clone())?, outVars.clone());
         }

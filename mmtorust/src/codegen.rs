@@ -6979,6 +6979,17 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 BinOpKind::Add if *ty == Ty::Str => format!("(*{l}).clone() + &*{r}"),
                 // For +,-,*,/ the i32→Real promotion was already applied to
                 // `l`/`r` by the general block above; don't wrap twice.
+                //
+                // MetaModelica `Integer` is the C runtime's `modelica_integer`
+                // (a `long`): its arithmetic wraps on overflow and OMC relies on
+                // that (DJB2-style hashes like `hashComponentRef`, tick counters,
+                // bit twiddling). We model that by disabling overflow checks for
+                // the whole workspace (`overflow-checks = false` on every profile
+                // in the root Cargo.toml) instead of emitting `wrapping_*` here —
+                // that keeps generated code readable and, crucially, covers *all*
+                // integer arithmetic (reductions, `+=`, unary negation, builtins),
+                // not just these binary operators. Release already wraps (checks
+                // are off by default there), so this also makes debug == release.
                 BinOpKind::Add => format!("{l} + {r}"),
                 BinOpKind::Sub => format!("{l} - {r}"),
                 BinOpKind::Mul => format!("{l} * {r}"),
@@ -8227,11 +8238,38 @@ fn emit_reduction<'a>(
             )
         }
         "min" | "max" => {
-            // Empty reduction is a runtime error: surface it as Result via
-            // the caller's qmode so it joins the surrounding error path.
+            // An empty `min`/`max` reduction is NOT an error in MetaModelica: it
+            // yields the element type's identity element (the value `v` returned
+            // by `reductionInfo` in FrontEnd/Static.mo). `min` over an empty
+            // collection is the type's maximum, `max` its minimum, so that
+            // combining the identity with any element leaves the element
+            // unchanged. Using `unwrap_or(identity)` keeps the computed min/max
+            // for the non-empty case and supplies the identity only when empty —
+            // e.g. `not min(p.. for p in {})` over `Boolean` must be `not true`.
             let cmp = if func == "min" { "<" } else { ">" };
             let elem_ty = ty_or_underscore(&body_ty, ctx);
-            let final_expr = ctx.q(&format!("__acc.ok_or_else(|| anyhow::anyhow!(\"empty {func} reduction\"))"));
+            // Identity per `reductionInfo`; `None` for the (rare) element types
+            // OMC leaves without a default (`min` over String / enumerations,
+            // whose identity needs the enum's literal list). Those keep the
+            // fail-on-empty form rather than inventing a value.
+            let identity: Option<String> = match (&body_ty, func) {
+                (Ty::Bool, "min") => Some("true".to_owned()),
+                (Ty::Bool, "max") => Some("false".to_owned()),
+                // `Integer` lowers to i32; OMC uses ±intMaxLit() (note: not
+                // i32::MIN, mirroring intNeg(intMaxLit())).
+                (Ty::I32, "min") => Some("i32::MAX".to_owned()),
+                (Ty::I32, "max") => Some("(-i32::MAX)".to_owned()),
+                (Ty::F64, "min") => Some("metamodelica::OrderedFloat(f64::MAX)".to_owned()),
+                (Ty::F64, "max") => Some("metamodelica::OrderedFloat(-f64::MAX)".to_owned()),
+                (Ty::Str, "max") => Some("arcstr::literal!(\"\")".to_owned()),
+                _ => None,
+            };
+            let final_expr = match identity {
+                Some(id) => format!("__acc.unwrap_or({id})"),
+                // No identity for this element type: an empty reduction stays a
+                // runtime error, surfaced as Result via the caller's qmode.
+                None => ctx.q(&format!("__acc.ok_or_else(|| anyhow::anyhow!(\"empty {func} reduction\"))")),
+            };
             (
                 format!("let mut __acc: Option<{elem_ty}> = None;"),
                 format!("__acc = Some(match __acc {{ None => __x, Some(__cur) => if __x {cmp} __cur {{ __x }} else {{ __cur }} }});"),
@@ -8915,9 +8953,18 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             }
         },
         "arrayLength" => {
-            // `Array<T>` is `Rc<RefCell<Vec<T>>>` so we go through `.borrow()`.
+            // `Array<T>` is `Rc<RefCell<Vec<T>>>`. Call the runtime helper rather
+            // than inlining `{arg}.borrow().len()`: an inline `.borrow()` in
+            // argument position produces a `Ref` temporary whose lifetime
+            // extends to the end of the *enclosing* statement, so
+            // `f(arrayLength(arr), …)` would hold a shared borrow of `arr` for
+            // the whole `f(…)` call — and panic if `f` (e.g.
+            // `traverseArrayNoCopyWithUpdate`, called with the defaulted
+            // `inLength = arrayLength(inArray)`) takes a `borrow_mut()` on the
+            // same array. `arrayLength` contains and drops its borrow before
+            // returning the `i32`.
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("({}.borrow().len() as i32)", arg))
+            Ok(format!("metamodelica::arrayLength({arg})"))
         },
         "listLength" | "stringLength" => {
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();

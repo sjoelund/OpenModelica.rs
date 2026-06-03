@@ -271,8 +271,7 @@ pub mod SimJacobian {
             let mut generic_loop_calls: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>> = metamodelica::nil();
             sim_map = indices.generic_call_map.clone();
             indices.generic_call_map = UnorderedMap::new((std::sync::Arc::new(SimCode::Identifier::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCode::Identifier::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>, Arc<Identifier::Identifier>) -> Result<bool> + 'static>), 1);
-            let __range0 = (1..=(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).clone())).rev() {
                 (columnEqn, indices, _) = SimStrongComponent::Block::fromStrongComponent(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(), indices.clone(), Partition::Kind::JAC.clone(), dummy_sim_map.clone(), dummy_eqn_map.clone())?;
                 columnEqns = metamodelica::cons(columnEqn.clone(), columnEqns.clone());
             }
@@ -304,44 +303,44 @@ pub mod SimJacobian {
             SimCodeUtil::addListSimCodeMap(seedVars.clone(), jac_map.clone())?;
             SimCodeUtil::addListSimCodeMap(resVars.clone(), jac_map.clone())?;
             SimCodeUtil::addListSimCodeMap(tmpVars.clone(), jac_map.clone())?;
-            match '__try1: {
+            match '__try0: {
                 local_idx_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), (seedVars.clone().len() as i32) + (resVars.clone().len() as i32));
                 for mut var in &*seedVars.clone() {
                     let mut var = var.clone();
                     cref = SimVar::getName(var.clone());
-                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try1) {
-                        cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try1);
+                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try0) {
+                        cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try0);
                     }
-                    unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try1);
+                    unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try0);
                 }
                 for mut var in &*resVars.clone() {
                     let mut var = var.clone();
                     cref = SimVar::getName(var.clone());
-                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isPDer, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try1) {
-                        cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(BVariable::getVarPDer(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try1);
+                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isPDer, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try0) {
+                        cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(BVariable::getVarPDer(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try0);
                     }
-                    unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try1);
+                    unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try0);
                 }
-                (sparsity, sparsityT, coloring, rowColoring) = unwrap_break_err!(createSparsity(jacobian.clone(), local_idx_map.clone()), '__try1);
+                (sparsity, sparsityT, coloring, rowColoring) = unwrap_break_err!(createSparsity(jacobian.clone(), local_idx_map.clone()), '__try0);
                 jac = Arc::new(SimJacobian { isAdjoint: var_field!((*jacobian).isAdjoint, BackendDAE::NBackendDAE::JACOBIAN).clone(), jac_map: Some(jac_map.clone()), generic_loop_calls: generic_loop_calls.clone(), numColors: (coloring.clone().len() as i32), rowColoring: rowColoring.clone(), coloring: coloring.clone(), sparsityT: sparsityT.clone(), sparsity: sparsity.clone(), seedVars: seedVars.clone(), columnVars: tmpVars.clone(), constantEqns: metamodelica::nil(), columnEqns: columnEqns.clone(), numberOfResultVars: (resVars.clone().len() as i32), partitionIndex: 0, jacobianIndex: indices.jacobianIndex.clone(), name: (var_field!((*jacobian).name, BackendDAE::NBackendDAE::JACOBIAN).clone()).clone() });
                 indices.jacobianIndex = indices.jacobianIndex.clone() + 1;
                 simJacobian = Some(jac.clone());
                 Ok::<_, anyhow::Error>((coloring.clone(), indices.clone(), jac.clone(), local_idx_map.clone(), rowColoring.clone(), simJacobian.clone(), sparsity.clone(), sparsityT.clone()))
             } {
-                Ok((__try1_o0, __try1_o1, __try1_o2, __try1_o3, __try1_o4, __try1_o5, __try1_o6, __try1_o7)) => {
-                    coloring = __try1_o0;
-                    indices = __try1_o1;
-                    jac = __try1_o2;
-                    local_idx_map = __try1_o3;
-                    rowColoring = __try1_o4;
-                    simJacobian = __try1_o5;
-                    sparsity = __try1_o6;
-                    sparsityT = __try1_o7;
+                Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
+                    coloring = __try0_o0;
+                    indices = __try0_o1;
+                    jac = __try0_o2;
+                    local_idx_map = __try0_o3;
+                    rowColoring = __try0_o4;
+                    simJacobian = __try0_o5;
+                    sparsity = __try0_o6;
+                    sparsityT = __try0_o7;
                 }
-                Err(__try1_err) => {
+                Err(__try0_err) => {
                     simJacobian = None;
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.create")); __mm_s.push_str(&*literal!(" could not generate sparsity pattern of Jacobian ")); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*jacobian).jacType, BackendDAE::NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone())?;
-                    return Err(__try1_err);
+                    return Err(__try0_err);
                 }
             }
             simJacobian.clone()

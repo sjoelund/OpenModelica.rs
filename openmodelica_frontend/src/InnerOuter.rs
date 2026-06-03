@@ -1467,7 +1467,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { valueArray: mut arr, numberOfElements: mut n } = __mc_input.clone() else { bail!("nomatch") };
-            if !((n.clone() < (arr.clone().borrow().len() as i32))) { bail!("guard") }
+            if !((n.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             let mut n_1: i32 = 0;
             let mut arr_1: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>> = Default::default();
             n_1 = n.clone() + 1;
@@ -1476,7 +1476,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { valueArray: mut arr, numberOfElements: mut n } = __mc_input.clone() else { bail!("nomatch") };
-            if !((n.clone() < (arr.clone().borrow().len() as i32))) { bail!("guard") }
+            if !((n.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             let mut n_1: i32 = 0;
             let mut size: i32 = 0;
             let mut expandsize: i32 = 0;
@@ -1485,7 +1485,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
             let mut arr_2: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>> = Default::default();
             let mut rsize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rexpandsize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            size = (arr.clone().borrow().len() as i32);
+            size = metamodelica::arrayLength(arr.clone());
             rsize = intReal(size.clone());
             rexpandsize = rsize.clone() * metamodelica::OrderedFloat(0.4_f64);
             expandsize = ((rexpandsize.clone()).0 as i32);
@@ -1511,7 +1511,7 @@ fn valueArraySetnth(mut valueArray: ValueArray, mut pos: i32, mut entry: (Arc<DA
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
-            if !((pos.clone() < (arr.clone().borrow().len() as i32))) { bail!("guard") }
+            if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
             Ok(valueArray.clone())
         })() { break 'mc __v; }
@@ -1531,7 +1531,7 @@ fn valueArrayClearnth(mut valueArray: ValueArray, mut pos: i32) -> Result<ValueA
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
-            if !((pos.clone() < (arr.clone().borrow().len() as i32))) { bail!("guard") }
+            if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = None; _arr};
             Ok(valueArray.clone())
         })() { break 'mc __v; }

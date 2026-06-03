@@ -2227,7 +2227,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             let __x = parseTreeIsWhitespace(middleItem.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })} else {false} {
             if addedBeforeDeleted.clone() {
                 before = listAppend(before.clone(), middle.clone());
@@ -2460,7 +2460,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })} else {false}) => {
             diff = metamodelica::cons((Diff::Equal.clone(), tree.clone()), diff.clone());
             diffLocal.clone()
@@ -2471,7 +2471,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => {
             diff = metamodelica::cons((Diff::Equal.clone(), tree.clone()), metamodelica::cons(diff1.clone(), diff.clone()));
             diffLocal.clone()
@@ -2482,7 +2482,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => {
             diff = metamodelica::cons((Diff::Equal.clone(), tree.clone()), metamodelica::cons(diff1.clone(), diff.clone()));
             metamodelica::nil()
@@ -2493,7 +2493,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = isEmpty(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => diffLocal.clone(),
         Deref @ metamodelica::List::Cons { head: diff1, tail: Deref @ metamodelica::List::Cons { head: (_, tree), tail: diffLocal } } if (({
         let mut __acc: Option<bool> = None;
@@ -2501,7 +2501,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = isEmpty(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => metamodelica::cons(diff1.clone(), diffLocal.clone()),
         Deref @ metamodelica::List::Cons { head: (diffEnum, tree), tail: diffLocal } if (({
         let mut __acc: Option<bool> = None;
@@ -2509,7 +2509,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = isEmpty(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) => metamodelica::cons((diffEnum.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
         for mut t in (tree.clone()).into_iter().cloned() {
@@ -2525,7 +2525,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = isEmpty(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) => metamodelica::cons(diff1.clone(), metamodelica::cons((diffEnum.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
         for mut t in (tree.clone()).into_iter().cloned() {
@@ -2541,14 +2541,14 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     }) && ({
         let mut __acc: Option<bool> = None;
         for mut t in (tree3.clone()).into_iter().cloned() {
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     }) && modelicaDiffTokenEq(lastToken(firstTreeLast.clone())?, firstTokenInTree(tree4First.clone())?)?) => metamodelica::cons((Diff::Delete.clone(), removeLastTokenInTrees(tree1.clone())?), metamodelica::cons((Diff::Equal.clone(), list![Arc::new(ParseTree::LEAF { token: lastToken(firstTreeLast.clone())? })]), metamodelica::cons((Diff::Add.clone(), metamodelica::cons(removeFirstTokenInTree(tree4First.clone())?, tree4.clone())), metamodelica::cons(diff2.clone(), metamodelica::cons(diff3.clone(), diffLocal.clone()))))),
         Deref @ metamodelica::List::Cons { head: diff1 @ (DiffAlgorithm::Diff::Equal, tree1 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, tree), tail: diffLocal @ Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Equal, tree2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }), tail: _ } } } if (needsWhitespaceBetweenTokens(lastToken(firstTreeLast.clone())?, firstTokenInTree((tree2.clone()).get(1)?)?)?) => {
             diff = metamodelica::cons((Diff::Equal.clone(), list![Arc::new(ParseTree::LEAF { token: makeToken(TokenId::WHITESPACE.clone(), (literal!(" ")).clone()) })]), metamodelica::cons(diff1.clone(), diff.clone()));
@@ -2569,7 +2569,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })} else {false}) => diffLocal.clone(),
         Deref @ metamodelica::List::Cons { head: diff1 @ (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, tree), tail: diffLocal @ Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Equal, _), tail: _ } } } if (({
         let mut __acc: Option<bool> = None;
@@ -2577,7 +2577,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => {
             diff = metamodelica::cons(diff1.clone(), diff.clone());
             diffLocal.clone()
@@ -2595,7 +2595,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => metamodelica::cons(diff1.clone(), metamodelica::cons(diff3.clone(), metamodelica::cons(diff2.clone(), metamodelica::cons(diff4.clone(), diffLocal.clone())))),
         Deref @ metamodelica::List::Cons { head: diff1 @ (DiffAlgorithm::Diff::Equal, tree1), tail: Deref @ metamodelica::List::Cons { head: diff2 @ (DiffAlgorithm::Diff::Add, tree2), tail: Deref @ metamodelica::List::Cons { head: diff3 @ (DiffAlgorithm::Diff::Equal, tree3), tail: Deref @ metamodelica::List::Cons { head: diff4 @ (DiffAlgorithm::Diff::Delete, Deref @ metamodelica::List::Cons { head: tree4First, tail: tree4 }), tail: diffLocal } } } } if (parseTreeIsNewLine(firstTreeLast.clone()) && ({
         let mut __acc: Option<bool> = None;
@@ -2603,7 +2603,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = parseTreeIsWhitespaceNotComment(t.clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) => metamodelica::cons(diff1.clone(), metamodelica::cons(diff3.clone(), metamodelica::cons(diff2.clone(), metamodelica::cons(diff4.clone(), diffLocal.clone())))),
         Deref @ metamodelica::List::Cons { head: (diffEnum1, tree1), tail: Deref @ metamodelica::List::Cons { head: (diffEnum2, tree2), tail: diffLocal } } if (diffEnum1.clone() == diffEnum2.clone()) => metamodelica::cons((diffEnum1.clone(), listAppend(tree1.clone(), tree2.clone())), diffLocal.clone()),
         Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, tree1), tail: diffLocal @ Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Equal, tree2), tail: _ } } if (tokenId(lastToken(firstTreeLast.clone())?)? == TokenId::WHITESPACE.clone() && tokenId(firstToken(tree2.clone()))? == TokenId::NEWLINE.clone()) => {
@@ -2685,7 +2685,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             let __x = l.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(i32::MAX)
     });
     indentationStr = (StringUtil::repeat((literal!(" ")).clone(), level.clone())).clone();
     diffLocal = metamodelica::nil();
@@ -2800,7 +2800,7 @@ fn replaceLabeledDiff(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica
             let __x = compare(nodeLabel(t.clone()), labelOfDiffedAddedNodes.clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     }))) => metamodelica::cons(diff.clone(), res.clone()),
         (DiffAlgorithm::Diff::Delete, lst) if (!(({
         let mut __acc: Option<bool> = None;
@@ -2808,7 +2808,7 @@ fn replaceLabeledDiff(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica
             let __x = compare(nodeLabel(t.clone()), labelOfDiffedDeletedNodes.clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     }))) => metamodelica::cons(diff.clone(), res.clone()),
         (DiffAlgorithm::Diff::Add, lst) if (allLabelsAreInOrder.clone()) => metamodelica::cons((Diff::Add.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
@@ -2917,7 +2917,7 @@ fn parseTreeEq(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut diffSubtreeWo
         }
     }
     for mut i in 1..=commentLen1.clone() {
-        if !(modelicaDiffTokenEq(diffSubtreeWorkArray1.borrow()[((diffSubtreeWorkArray1.clone().borrow().len() as i32) - (i.clone() - 1)-1) as usize].clone(), diffSubtreeWorkArray2.borrow()[((diffSubtreeWorkArray2.clone().borrow().len() as i32) - (i.clone() - 1)-1) as usize].clone())?) {
+        if !(modelicaDiffTokenEq(diffSubtreeWorkArray1.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray1.clone()) - (i.clone() - 1)-1) as usize].clone(), diffSubtreeWorkArray2.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray2.clone()) - (i.clone() - 1)-1) as usize].clone())?) {
             return Ok(b.clone());
         }
     }
@@ -2929,7 +2929,7 @@ fn findTokens(mut t: Arc<ParseTree>, mut work: metamodelica::Array<Token>, mut i
     let mut count: i32 = inCount.clone();
     let mut commentCount: i32 = inCommentCount.clone();
     if parseTreeIsComment(t.clone()) {
-        {let _arr = work.clone(); _arr.borrow_mut()[((work.clone().borrow().len() as i32) - commentCount.clone()-1) as usize] = firstTokenInTree(t.clone())?; _arr};
+        {let _arr = work.clone(); _arr.borrow_mut()[(metamodelica::arrayLength(work.clone()) - commentCount.clone()-1) as usize] = firstTokenInTree(t.clone())?; _arr};
         commentCount = commentCount.clone() + 1;
         return Ok((count.clone(), commentCount.clone()));
     } else if parseTreeIsWhitespace(t.clone()) {

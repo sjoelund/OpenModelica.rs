@@ -3768,7 +3768,7 @@ fn lm_176(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            ret_0 = (a_threadTasksOde.clone().borrow().len() as i32);
+            ret_0 = metamodelica::arrayLength(a_threadTasksOde.clone());
             ret_1 = intSub(ret_0.clone(), 1);
             txt_2 = CodegenCpp::lastIdentOfPath(Tpl::emptyTxt.clone(), a_name.clone())?;
             (txt, a_varDecls, a_extraFuncs, a_extraFuncsDecl, txt_2) = parallelThreadCodeWithSplit(txt.clone(), a_allEquationsPlusWhen.clone(), i_tt.clone(), x_i0.clone(), ret_1.clone(), (Tpl::textString(a_type.clone())?).clone(), (literal!("_lockOde")).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), txt_2.clone(), (literal!("evaluateODE")).clone(), a_useFlatArrayNotation.clone())?;
@@ -3800,7 +3800,7 @@ fn lm_177(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            ret_0 = (a_threadTasksDae.clone().borrow().len() as i32);
+            ret_0 = metamodelica::arrayLength(a_threadTasksDae.clone());
             ret_1 = intSub(ret_0.clone(), 1);
             txt_2 = CodegenCpp::lastIdentOfPath(Tpl::emptyTxt.clone(), a_name.clone())?;
             (txt, a_varDecls, a_extraFuncs, a_extraFuncsDecl, txt_2) = parallelThreadCodeWithSplit(txt.clone(), a_allEquationsPlusWhen.clone(), i_tt.clone(), x_i0.clone(), ret_1.clone(), (Tpl::textString(a_type.clone())?).clone(), (literal!("_lockDae")).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), txt_2.clone(), (literal!("evaluateAll")).clone(), a_useFlatArrayNotation.clone())?;
@@ -3832,7 +3832,7 @@ fn lm_178(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
-            ret_0 = (a_threadTasksZeroFunc.clone().borrow().len() as i32);
+            ret_0 = metamodelica::arrayLength(a_threadTasksZeroFunc.clone());
             ret_1 = intSub(ret_0.clone(), 1);
             txt_2 = CodegenCpp::lastIdentOfPath(Tpl::emptyTxt.clone(), a_name.clone())?;
             (txt, a_varDecls, a_extraFuncs, a_extraFuncsDecl, txt_2) = parallelThreadCodeWithSplit(txt.clone(), a_allEquationsPlusWhen.clone(), i_tt.clone(), x_i0.clone(), ret_1.clone(), (Tpl::textString(a_type.clone())?).clone(), (literal!("_lockZeroFunc")).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), txt_2.clone(), (literal!("evaluateZeroFunc")).clone(), a_useFlatArrayNotation.clone())?;
@@ -4083,7 +4083,7 @@ fn fun_182(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixS
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             l_mainThreadCode = Tpl::emptyTxt.clone();
-            ret_23 = (a_odeSchedule_threadTasks.clone().borrow().len() as i32);
+            ret_23 = metamodelica::arrayLength(a_odeSchedule_threadTasks.clone());
             ret_24 = List::intRange(ret_23.clone());
             l_threadFuncs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             (l_threadFuncs, l_mainThreadCode, a_extraFuncsDecl, a_extraFuncs, a_varDecls) = lm_179(l_threadFuncs.clone(), ret_24.clone(), a_useFlatArrayNotation.clone(), l_mainThreadCode.clone(), a_name.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_modelNamePrefixStr.clone()).clone(), a_type.clone(), a_zeroFuncSchedule_threadTasks.clone(), a_daeSchedule_threadTasks.clone(), a_odeSchedule_threadTasks.clone(), a_allEquationsPlusWhen.clone())?;

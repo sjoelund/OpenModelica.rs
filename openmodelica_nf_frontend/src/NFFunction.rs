@@ -978,8 +978,7 @@ pub mod Function {
                 let mut derivative = derivative.clone();
                 annMod = SCodeUtil::prependSubModToMod(FunctionDerivative::toSubMod(derivative.clone())?, annMod.clone())?;
             }
-            let __range1 = (1..=(r#fn.inverses.clone().borrow().len() as i32)).rev();
-            for mut i in __range1 {
+            for mut i in (1..=metamodelica::arrayLength(r#fn.inverses.clone())).rev() {
                 annMod = SCodeUtil::prependSubModToMod(FunctionInverse::toSubMod(r#fn.inverses.borrow()[(i.clone()-1) as usize].clone())?, annMod.clone())?;
             }
             if !(SCodeUtil::emptyModOrEquality(annMod.clone())) {
@@ -1071,22 +1070,21 @@ pub mod Function {
         let mut matching: bool = true;
         let mut s: Arc<Slot::Slot> = Arc::new(<Slot::Slot as ::std::default::Default>::default());
         let mut arg_name: ArcStr = arcstr::literal!("");
-        let __range0 = (1..=(slots.clone().borrow().len() as i32)).rev();
-        for mut i in __range0 {
+        for mut i in (1..=metamodelica::arrayLength(slots.clone())).rev() {
             s = slots.borrow()[(i.clone()-1) as usize].clone();
-            let __pa1 = ::match_deref::match_deref! { match &(arg.name.clone()) {
-                Some(__pa1) => __pa1.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(arg.name.clone()) {
+                Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
-            arg_name = __pa1.clone();
+            arg_name = __pa0.clone();
             if Slot::name(s.clone())? == arg_name.clone() {
                 if !(Slot::named(s.clone())) {
                     matching = false;
                 } else if isNone(s.arg.clone()) {
                     assign_field!(s.arg = Some(arg.clone()));
                     {
-                        let __cell2 = s.clone();
-                        slots.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
+                        let __cell1 = s.clone();
+                        slots.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
                     }
                 } else {
                     Error::addSourceMessage(Error::FUNCTION_SLOT_ALREADY_FILLED.clone(), list![(arg_name.clone()).clone(), (literal!("")).clone()], info.clone())?;
@@ -2125,8 +2123,7 @@ pub mod Function {
         cls = InstNode::getClass(node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
-            let __range0 = (1..=(comps.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
                 n = comps.borrow()[(i.clone()-1) as usize].clone();
                 check_vis = !(Flags::getConfigBool(Flags::BASE_MODELICA.clone())?);
                 let () = (match paramDirection(n.clone(), check_vis.clone())? {

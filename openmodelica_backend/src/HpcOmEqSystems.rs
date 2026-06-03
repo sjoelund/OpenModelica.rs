@@ -247,7 +247,7 @@ fn reduceLinearTornSystem1(mut compIdx: i32, mut compsIn: Arc<metamodelica::List
                     otherComps = __pa7.clone();
                     numNewSingleEqs = (compsNew.clone().len() as i32) - (tvarIdcs.clone().len() as i32);
                     compsTmp = List::replaceAtWithList(listAppend(compsNew.clone(), otherComps.clone()), compIdx.clone() - 1, compsIn.clone())?;
-                    (ass1All, ass2All) = List::fold2(List::intRange((ass1New.clone().borrow().len() as i32)), (std::sync::Arc::new(updateMatching) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, i32), (metamodelica::Array<i32>, metamodelica::Array<i32>), (metamodelica::Array<i32>, metamodelica::Array<i32>)) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> + 'static>), ((eqsOld.clone().len() as i32), (varsOld.clone().len() as i32)), (ass1New.clone(), ass2New.clone()), (ass1All.clone(), ass2All.clone()))?;
+                    (ass1All, ass2All) = List::fold2(List::intRange(metamodelica::arrayLength(ass1New.clone())), (std::sync::Arc::new(updateMatching) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, i32), (metamodelica::Array<i32>, metamodelica::Array<i32>), (metamodelica::Array<i32>, metamodelica::Array<i32>)) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> + 'static>), ((eqsOld.clone().len() as i32), (varsOld.clone().len() as i32)), (ass1New.clone(), ass2New.clone()), (ass1All.clone(), ass2All.clone()))?;
                     assign_field!(syst.matching = Arc::new(BackendDAE::Matching::MATCHING { ass1: ass1All.clone(), ass2: ass2All.clone(), comps: compsTmp.clone() }));
                     syst = BackendDAEUtil::setEqSystMatrices(syst.clone(), None, None, None)?;
                     (syst, _, _) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(sharedIn.clone()))?;
@@ -1997,7 +1997,7 @@ fn determinant(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::E
             let mut a22: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut det: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let true = ((matrix.clone().borrow().len() as i32) == 2) else { bail!("pattern mismatch") };
+            let true = (metamodelica::arrayLength(matrix.clone()) == 2) else { bail!("pattern mismatch") };
             a11 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(1)?;
             a12 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(2)?;
             a21 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(1)?;
@@ -2026,7 +2026,7 @@ fn determinant(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::E
             let mut s6: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut det: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let true = ((matrix.clone().borrow().len() as i32) == 3) else { bail!("pattern mismatch") };
+            let true = (metamodelica::arrayLength(matrix.clone()) == 3) else { bail!("pattern mismatch") };
             a11 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(1)?;
             a12 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(2)?;
             a13 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(3)?;
@@ -2089,7 +2089,7 @@ fn getMatrixFromJac(mut jacValuesIn: metamodelica::Array<Arc<metamodelica::List<
 fn transposeMatrix(mut matrixIn: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>> {
     let mut matrixOut: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = Default::default();
     let mut size: i32 = 0;
-    size = (matrixIn.clone().borrow().len() as i32);
+    size = metamodelica::arrayLength(matrixIn.clone());
     matrixOut = arrayCreate(size.clone(), metamodelica::nil());
     matrixOut = List::fold1(List::intRange(size.clone()).reverse(), (std::sync::Arc::new(transposeMatrix1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>, metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>> + 'static>), matrixIn.clone(), matrixOut.clone())?;
     Ok(matrixOut)
@@ -2099,7 +2099,7 @@ fn transposeMatrix1(mut idx: i32, mut matrixOrig: metamodelica::Array<Arc<metamo
     let mut matrixOut: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = Default::default();
     let mut row: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     row = matrixOrig.clone().borrow()[(idx.clone()-1) as usize].clone();
-    matrixOut = List::threadFold(List::intRange((matrixOrig.clone().borrow().len() as i32)), row.clone(), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), matrixIn.clone())?;
+    matrixOut = List::threadFold(List::intRange(metamodelica::arrayLength(matrixOrig.clone())), row.clone(), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), matrixIn.clone())?;
     Ok(matrixOut)
 }
 
@@ -2156,7 +2156,7 @@ fn dumpVarArrLst(mut inArrLst: metamodelica::Array<Arc<metamodelica::List<Backen
     let mut inLstLst: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>> = metamodelica::nil();
     inLstLst = Arc::new(inArrLst.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-variables\n---------\n")); ArcStr::from(__mm_s) }).clone());
-    r#str = (List::fold1(List::intRange((inArrLst.clone().borrow().len() as i32)), (std::sync::Arc::new(dumpVarArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
+    r#str = (List::fold1(List::intRange(metamodelica::arrayLength(inArrLst.clone())), (std::sync::Arc::new(dumpVarArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
     Ok(())
 }
 
@@ -2176,7 +2176,7 @@ fn dumpEqArrLst(mut inArrLst: metamodelica::Array<Arc<metamodelica::List<Arc<Bac
     let mut inLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
     inLstLst = Arc::new(inArrLst.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-equations\n---------\n")); ArcStr::from(__mm_s) }).clone());
-    r#str = (List::fold1(List::intRange((inArrLst.clone().borrow().len() as i32)), (std::sync::Arc::new(dumpEqArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
+    r#str = (List::fold1(List::intRange(metamodelica::arrayLength(inArrLst.clone())), (std::sync::Arc::new(dumpEqArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
     Ok(())
 }
 
@@ -2395,7 +2395,7 @@ fn pts_transformScheduleToTask(mut otherEqSys: Arc<HpcOmSimCode::Schedule>, mut 
                 Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks, .. } => {
                     let mut numThreads: i32 = 0;
                     let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
-                    numThreads = (threadTasks.clone().borrow().len() as i32);
+                    numThreads = metamodelica::arrayLength(threadTasks.clone());
                     schedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: threadTasks.clone(), outgoingDepTasks: outgoingDepTasks.clone(), scheduledTasks: metamodelica::nil(), allCalcTasks: allCalcTasks.clone() });
                     Ok(Arc::new(HpcOmSimCode::Task::SCHEDULED_TASK { compIdx: compIdx.clone(), numThreads: numThreads.clone(), taskSchedule: schedule.clone() }))
                 }
@@ -2508,7 +2508,7 @@ fn buildTaskgraphMetaForTornSystem(mut graph: metamodelica::Array<Arc<metamodeli
     compParamMapping = __pa2.clone();
     eqCompMapping = __pa3.clone();
     varCompMapping = __pa4.clone();
-    numNodes = (graph.clone().borrow().len() as i32);
+    numNodes = metamodelica::arrayLength(graph.clone());
     inComps = metamodelica::arrayFromVec(List::map(List::intRange(numNodes.clone()), std::sync::Arc::new(fnptr!(List::create, _)))?.into_iter().cloned().collect());
     compNames = metamodelica::arrayFromVec(List::map(List::intRange(numNodes.clone()), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?.into_iter().cloned().collect());
     exeCosts = arrayCreate(numNodes.clone(), (3, metamodelica::OrderedFloat(20.0_f64)));
@@ -2545,7 +2545,7 @@ pub fn createSingleBlockSchedule(mut graphIn: metamodelica::Array<Arc<metamodeli
     let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, .. } = (metaIn.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
-    nodes = List::intRange((graphIn.clone().borrow().len() as i32));
+    nodes = List::intRange(metamodelica::arrayLength(graphIn.clone()));
     comps = List::map1(nodes.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), inComps.clone())?;
     simEqSys = HpcOmScheduler::getSimEqSysIdcsForNodeLst(comps.clone(), sccSimEqMapping.clone())?;
     simEqSys = List::map1(simEqSys.clone(), (std::sync::Arc::new(List::sort) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;

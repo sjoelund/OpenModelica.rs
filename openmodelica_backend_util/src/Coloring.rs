@@ -119,7 +119,7 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
 
 fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    if inNode.clone() >= 1 && inNode.clone() <= (inSparsePattern.clone().borrow().len() as i32) {
+    if inNode.clone() >= 1 && inNode.clone() <= metamodelica::arrayLength(inSparsePattern.clone()) {
         outEdges = inSparsePattern.clone().borrow()[(inNode.clone()-1) as usize].clone();
     } else {
         outEdges = metamodelica::nil();

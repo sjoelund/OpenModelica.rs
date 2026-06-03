@@ -193,7 +193,7 @@ fn foundSingularSystem(mut eqns: Arc<metamodelica::List<Arc<metamodelica::List<i
         n = BackendDAEUtil::systemSize(isyst.clone())?;
         unmatched = List::flatten(eqns.clone())?;
         unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
-        unmatched1 = List::uniqueIntN(unmatched1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
+        unmatched1 = List::uniqueIntN(unmatched1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
         eqn_str = (BackendDump::dumpMarkedEqns(isyst.clone(), List::sort(unmatched1.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?).clone();
         vars = Matching::getUnassigned(n.clone(), inAssignments2.clone(), metamodelica::nil());
         vars = List::fold1(unmatched.clone(), (std::sync::Arc::new(fnptr!(getAssignedVars, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), inAssignments1.clone(), vars.clone())?;

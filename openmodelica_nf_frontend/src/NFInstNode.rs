@@ -2238,7 +2238,7 @@ pub mod InstNode {
         isDiscrete = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => {
             exts = ClassTree::getExtends(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone());
-            if ((exts.clone().borrow().len() as i32) == 1) {isDiscreteClass(exts.borrow()[(1-1) as usize].clone())?} else {false}
+            if (metamodelica::arrayLength(exts.clone()) == 1) {isDiscreteClass(exts.borrow()[(1-1) as usize].clone())?} else {false}
         },
         _ => Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

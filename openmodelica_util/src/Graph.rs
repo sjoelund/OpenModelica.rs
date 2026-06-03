@@ -565,10 +565,10 @@ pub fn partialDistance2color<NodeType: Clone + 'static>(mut toColorNodes: Arc<me
                     let mut colored: metamodelica::Array<i32> = Default::default();
                     let mut color: i32 = 0;
                     let mut index: i32 = 0;
-                    index = (inColored.clone().borrow().len() as i32) - (rest.clone().len() as i32);
+                    index = metamodelica::arrayLength(inColored.clone()) - (rest.clone().len() as i32);
                     (_, nodes) = findNodeInGraph(node.clone(), inGraphT.clone(), inEqualFunc.clone())?;
                     forbiddenColor = addForbiddenColors(node.clone(), nodes.clone(), inColored.clone(), inforbiddenColor.clone(), inGraph.clone(), inEqualFunc.clone(), inPrintFunc.clone())?;
-                    color = arrayFindMinColorIndex(forbiddenColor.clone(), node.clone(), 1, (inColored.clone().borrow().len() as i32) + 1, inEqualFunc.clone(), inPrintFunc.clone())?;
+                    color = arrayFindMinColorIndex(forbiddenColor.clone(), node.clone(), 1, metamodelica::arrayLength(inColored.clone()) + 1, inEqualFunc.clone(), inPrintFunc.clone())?;
                     colored = {let _arr = inColored.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = color.clone(); _arr};
                     colored = partialDistance2color(rest.clone(), forbiddenColor.clone(), inColors.clone(), inGraph.clone(), inGraphT.clone(), colored.clone(), inEqualFunc.clone(), inPrintFunc.clone())?;
                     Ok(colored.clone())

@@ -745,7 +745,7 @@ pub fn makeExternalObjectType(mut tree: Arc<ClassTree::ClassTree>, mut node: Arc
                     bail!("fail");
                 }
             }
-            if (var_field!((*tree).exts, ClassTree::ClassTree::PARTIAL_TREE).clone().borrow().len() as i32) > 1 {
+            if metamodelica::arrayLength(var_field!((*tree).exts, ClassTree::ClassTree::PARTIAL_TREE).clone()) > 1 {
                 let __range1 = var_field!((*tree).exts, ClassTree::ClassTree::PARTIAL_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut ext in __range1 {
                     if InstNode::name(ext.clone())? != literal!("ExternalObject") && ClassTree::recursiveElementCount(Class::classTree(InstNode::getClass(ext.clone())?)?)? != 0 {
@@ -1938,7 +1938,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             for mut ext in __range0 {
                 instExpressions(ext.clone(), ext.clone(), sections.clone(), connectBreaks.clone(), context.clone(), settings.clone())?;
             }
-            if (exts.clone().borrow().len() as i32) == 1 {
+            if metamodelica::arrayLength(exts.clone()) == 1 {
                 ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: Arc::new(ComplexType::NFComplexType::EXTENDS_TYPE { baseClass: exts.borrow()[(1-1) as usize].clone() }) });
             } else if SCodeUtil::hasBooleanNamedAnnotationInClass(InstNode::definition(node.clone())?, (literal!("__OpenModelica_builtinType")).clone())? {
                 ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: Arc::new(crate::NFComplexType::CLASS) });
@@ -1980,11 +1980,10 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
         Deref @ Class::EXPANDED_DERIVED { dims, .. } => {
             sections = instExpressions(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), scope.clone(), sections.clone(), connectBreaks.clone(), context.clone(), settings.clone())?;
             info = InstNode::info(node.clone())?;
-            let __range0 = 1..=(dims.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
-                    let __cell1 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), info.clone())?;
-                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), info.clone())?;
+                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
             if Restriction::isRecord(var_field!((*cls).restriction, Class::NFClass::EXPANDED_DERIVED).clone()) {
@@ -2103,11 +2102,10 @@ pub fn instComponentExpressions(mut component: Arc<InstNode::InstNode>, mut cont
             if !(InstNode::isEmpty(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone())) {
                 instExpressions(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone(), node.clone(), Arc::new(crate::NFSections::EMPTY), ConnectBreakTree::new(), context.clone(), settings.clone())?;
             }
-            let __range0 = 1..=(dims.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
-                    let __cell1 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
-                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
+                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
             InstNode::updateComponent(c.clone(), node.clone())?;

@@ -1491,7 +1491,7 @@ fn getRecordBindings(mut binding: Arc<Binding::NFBinding>, mut comps: metamodeli
     }),
         Deref @ Expression::ARRAY { .. } if (Type::isRecord(Type::arrayElementType(Expression::typeOf(binding_exp.clone())))) => ({
         let mut __acc: Arc<metamodelica::List<Arc<Binding::NFBinding>>> = metamodelica::nil();
-        for mut i in (1..=(comps.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(comps.clone())).into_iter() {
             let __x = Binding::makeFlat(Expression::nthRecordElement(i.clone(), binding_exp.clone())?, var.clone(), bind_src.clone(), confidence.clone());
             __acc = cons(__x, __acc);
         }
@@ -1503,7 +1503,7 @@ fn getRecordBindings(mut binding: Arc<Binding::NFBinding>, mut comps: metamodeli
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Error::assertion((recordBindings.clone().len() as i32) == (comps.clone().borrow().len() as i32), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got record binding with wrong number of elements for ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion((recordBindings.clone().len() as i32) == metamodelica::arrayLength(comps.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got record binding with wrong number of elements for ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     Ok(recordBindings)
 }
 
@@ -1602,8 +1602,7 @@ fn splitRecordCref(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Express
         Deref @ Expression::CREF { cref: cr, ty: Deref @ Type::COMPLEX { cls, .. } } => {
             comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(cls.clone())?)?)?;
             fields = metamodelica::nil();
-            let __range0 = (1..=(comps.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
                 ty = InstNode::getType(comps.borrow()[(i.clone()-1) as usize].clone())?;
                 field_cr = ComponentRef::prefixCref(comps.borrow()[(i.clone()-1) as usize].clone(), ty.clone(), metamodelica::nil(), cr.clone());
                 field_cr = flattenCref(field_cr.clone(), Arc::new(Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cr.clone() }), Absyn::dummyInfo.clone())?;

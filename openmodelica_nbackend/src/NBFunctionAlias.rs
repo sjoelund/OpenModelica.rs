@@ -390,7 +390,7 @@ fn aliasListToString<T1: Clone + 'static, T2: Clone + 'static>(mut aux_lst: Arc<
             let __x = ((Util::tuple21(tpl.clone())).clone().len() as i32);
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     }) + 3;
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(str_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = max_length.clone(); move |__pe_a0| Ok(functionAliasTplString(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
     }

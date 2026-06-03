@@ -408,11 +408,10 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
     vc_dom = SBPWLinearMap::wholeDom(pw.clone())?;
     vc_im = SBPWLinearMap::image(pw.clone(), vc_dom.clone())?;
     iterators = arrayCreate(Vector::size(vCount.clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
-    let __range0 = 1..=(iterators.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(iterators.clone()) {
         {
-            let __cell1 = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
-            iterators.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+            let __cell0 = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
+            iterators.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
         }
     }
     iter_expl = ({
@@ -424,8 +423,8 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
         __acc.reverse()
     });
     (pot_vars, flow_vars) = getConnectors(flatModel.clone());
-    let __range2 = UnorderedSet::toArray(SBSet::asets(vc_im.clone())).borrow().iter().cloned().collect::<Vec<_>>();
-    for mut aset in __range2 {
+    let __range1 = UnorderedSet::toArray(SBSet::asets(vc_im.clone())).borrow().iter().cloned().collect::<Vec<_>>();
+    for mut aset in __range1 {
         aux_s = SBSet::newEmpty();
         aux_s = SBSet::addAtomicSet(aset.clone(), aux_s.clone())?;
         vc_domi = SBPWLinearMap::preImage(pw.clone(), aux_s.clone())?;
@@ -585,8 +584,7 @@ fn generateConnector(mut cr: Arc<ComponentRef::NFComponentRef>, mut indices: Arc
 fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut iterators: metamodelica::Array<Arc<InstNode::InstNode>>, mut ranges: metamodelica::Array<Arc<Expression::NFExpression>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = connects.clone();
-    let __range0 = (1..=(iterators.clone().borrow().len() as i32)).rev();
-    for mut i in __range0 {
+    for mut i in (1..=metamodelica::arrayLength(iterators.clone())).rev() {
         if Expression::isInteger(ranges.borrow()[(i.clone()-1) as usize].clone()) {
             body = Equation::replaceIteratorList(body.clone(), iterators.borrow()[(i.clone()-1) as usize].clone(), ranges.borrow()[(i.clone()-1) as usize].clone())?;
         } else {
@@ -634,18 +632,17 @@ fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodel
     let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut i: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     let mut o: i32 = 0;
-    if SBMultiInterval::ndim(mi.clone()) != (off.clone().borrow().len() as i32) || off.clone().borrow().is_empty() {
+    if SBMultiInterval::ndim(mi.clone()) != metamodelica::arrayLength(off.clone()) || off.clone().borrow().is_empty() {
         outMI = SBMultiInterval::newEmpty();
     } else {
         ints = SBMultiInterval::intervals(mi.clone());
-        res = metamodelica::arrayCreate((ints.clone().borrow().len() as i32), ints.borrow()[(1-1) as usize].clone());
-        let __range0 = 1..=(ints.clone().borrow().len() as i32);
-        for mut j in __range0 {
+        res = metamodelica::arrayCreate(metamodelica::arrayLength(ints.clone()), ints.borrow()[(1-1) as usize].clone());
+        for mut j in 1..=metamodelica::arrayLength(ints.clone()) {
             i = ints.borrow()[(j.clone()-1) as usize].clone();
             o = off.borrow()[(j.clone()-1) as usize].clone();
             {
-                let __cell1 = SBInterval::new(SBInterval::lowerBound(i.clone()) - o.clone() + 1, SBInterval::stepValue(i.clone()), SBInterval::upperBound(i.clone()) - o.clone() + 1);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), j.clone(), __cell1); }
+                let __cell0 = SBInterval::new(SBInterval::lowerBound(i.clone()) - o.clone() + 1, SBInterval::stepValue(i.clone()), SBInterval::upperBound(i.clone()) - o.clone() + 1);
+                unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), j.clone(), __cell0); }
             }
         }
         outMI = SBMultiInterval::fromArray(res.clone())?;
@@ -691,8 +688,7 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
     }
     ints1 = SBMultiInterval::intervals(mi1.clone());
     ints2 = SBMultiInterval::intervals(mi2.clone());
-    let __range0 = 1..=(ints1.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(ints1.clone()) {
         i1 = ints1.borrow()[(i.clone()-1) as usize].clone();
         i2 = ints2.borrow()[(i.clone()-1) as usize].clone();
         i1_sz = SBInterval::size(i1.clone());

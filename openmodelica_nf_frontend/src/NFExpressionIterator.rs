@@ -150,7 +150,7 @@ pub fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<NFExpress
 pub fn hasNext(mut iterator: Arc<NFExpressionIterator>) -> Result<bool> {
     let mut hasNext: bool = false;
     hasNext = (::match_deref::match_deref! { match &(iterator.clone()) {
-        Deref @ ARRAY_ITERATOR { .. } => var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() <= (var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone().borrow().len() as i32),
+        Deref @ ARRAY_ITERATOR { .. } => var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() <= metamodelica::arrayLength(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone()),
         Deref @ SCALAR_ITERATOR { .. } => true,
         Deref @ EACH_ITERATOR { .. } => true,
         Deref @ NONE_ITERATOR { .. } => false,
@@ -168,7 +168,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
             let mut next: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut arrs: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = metamodelica::nil();
             next = var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone().borrow()[(var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone()-1) as usize].clone();
-            if var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() >= (var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone().borrow().len() as i32) {
+            if var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() >= metamodelica::arrayLength(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone()) {
                 arrs = var_field!((*iterator).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone();
                 while !(arrs.clone().is_empty()) && listHead(arrs.clone())?.borrow().is_empty() {
                     arrs = listRest(arrs.clone())?;

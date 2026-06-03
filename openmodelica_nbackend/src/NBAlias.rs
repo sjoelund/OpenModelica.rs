@@ -1094,8 +1094,7 @@ fn checkNominalThreshold(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRe
     }).into_iter().cloned().collect());
     while ExpressionIterator::hasNext(arr_iter.borrow()[(1-1) as usize].clone())? {
         current = metamodelica::nil();
-        let __range0 = 1..=(arr_iter.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(arr_iter.clone()) {
             (iter, exp) = ExpressionIterator::next(arr_iter.borrow()[(i.clone()-1) as usize].clone())?;
             {let _arr = arr_iter.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = iter.clone(); _arr};
             current = metamodelica::cons(exp.clone(), current.clone());
@@ -1397,8 +1396,7 @@ pub mod AttributeCollector {
         let mut array_names: metamodelica::Array<ArcStr> = Default::default();
         array_maps = metamodelica::arrayFromVec(list![attrcollector.min_val_map.clone(), attrcollector.max_val_map.clone(), attrcollector.start_map.clone(), attrcollector.fixed_map.clone(), attrcollector.nominal_map.clone()].into_iter().cloned().collect());
         array_names = metamodelica::arrayFromVec(list![(literal!("Min map")).clone(), (literal!("Max map")).clone(), (literal!("Start map")).clone(), (literal!("Fixed map")).clone(), (literal!("Nominal map")).clone()].into_iter().cloned().collect());
-        let __range0 = 1..=(array_maps.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(array_maps.clone()) {
             if UnorderedMap::isEmpty(array_maps.borrow()[(i.clone()-1) as usize].clone()) == false {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*array_names.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(":\n\t")); __mm_s.push_str(&*UnorderedMap::toString(array_maps.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("\n\t")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }

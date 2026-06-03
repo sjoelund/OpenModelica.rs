@@ -1270,8 +1270,7 @@ fn setArrayAddConnections(mut connections: Arc<metamodelica::List<(i32, i32)>>, 
     let mut graph: SetGraph = Default::default();
     graph = arrayCreate(setCount.clone(), metamodelica::nil());
     graph = List::fold(connections.clone(), (std::sync::Arc::new(addConnectionToGraph) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), graph.clone())?;
-    let __range0 = 1..=(graph.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(graph.clone()) {
         (sets, graph) = setArrayAddConnection(i.clone(), graph.borrow()[(i.clone()-1) as usize].clone(), sets.clone(), graph.clone())?;
     }
     Ok(sets)

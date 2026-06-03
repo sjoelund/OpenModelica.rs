@@ -617,8 +617,7 @@ pub mod Block {
             let mut index: i32 = 0;
             let mut alias_index: i32 = 0;
             kind = Partition::Partition::getKind(partition.clone());
-            let __range0 = (1..=(comps.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
                 (tmp, simCodeIndices, index) = fromStrongComponent(comps.borrow()[(i.clone()-1) as usize].clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
                 alias_index = (::match_deref::match_deref! { match &(comps.borrow()[(i.clone()-1) as usize].clone()) {
         Deref @ StrongComponent::ALIAS { aliasInfo, .. } => {
@@ -734,8 +733,7 @@ pub mod Block {
             let mut tmp: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut jacobian: Option<Arc<SimJacobian::SimJacobian>> = None;
-            let __range0 = 1..=(strict.innerEquations.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(strict.innerEquations.clone()) {
                 (tmp, simCodeIndices, _) = fromStrongComponent(strict.innerEquations.borrow()[(i.clone()-1) as usize].clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
                 eqns = metamodelica::cons(tmp.clone(), eqns.clone());
             }

@@ -267,8 +267,7 @@ pub fn printShared(mut inShared: Arc<BackendDAE::Shared>) -> Result<()> {
 pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>) -> Result<()> {
     let mut clkExpStr: ArcStr = arcstr::literal!("");
     let mut nSubClocksStr: ArcStr = arcstr::literal!("");
-    let __range0 = 1..=(basePartitions.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(basePartitions.clone()) {
         clkExpStr = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpClockKind) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::ClockKind>, ArcStr) -> Result<Tpl::Text> + 'static>), basePartitions.borrow()[(i.clone()-1) as usize].clock.clone(), (literal!("")).clone())?).clone();
         nSubClocksStr = (intString(basePartitions.borrow()[(i.clone()-1) as usize].nSubClocks.clone())).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*clkExpStr.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*nSubClocksStr.clone()); __mm_s.push_str(&*literal!("]")); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -279,8 +278,7 @@ pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::B
 pub fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>) -> Result<()> {
     let mut subClockStr: ArcStr = arcstr::literal!("");
     let mut eventStr: ArcStr = arcstr::literal!("");
-    let __range0 = 1..=(subPartitions.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(subPartitions.clone()) {
         subClockStr = (subClockString(subPartitions.borrow()[(i.clone()-1) as usize].clock.clone())?).clone();
         eventStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("event(")); __mm_s.push_str(&*boolString(subPartitions.borrow()[(i.clone()-1) as usize].holdEvents.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*subClockStr.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*eventStr.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -618,8 +616,8 @@ pub fn dumpEqSystems(mut inEqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqS
 }
 
 pub fn dumpBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>, mut heading: ArcStr) -> Result<()> {
-    if (basePartitions.clone().borrow().len() as i32) > 0 {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((basePartitions.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    if metamodelica::arrayLength(basePartitions.clone()) > 0 {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(basePartitions.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printBasePartitions(basePartitions.clone())?;
         println!("{}", (literal!("\n")).clone());
     }
@@ -627,8 +625,8 @@ pub fn dumpBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::Ba
 }
 
 pub fn dumpSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>, mut heading: ArcStr) -> Result<()> {
-    if (subPartitions.clone().borrow().len() as i32) > 0 {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((subPartitions.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    if metamodelica::arrayLength(subPartitions.clone()) > 0 {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(subPartitions.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         printSubPartitions(subPartitions.clone())?;
         println!("{}", (literal!("\n")).clone());
     }
@@ -2185,7 +2183,7 @@ pub fn dumpConstraints(mut ionstrs: Arc<metamodelica::List<Arc<DAE::Constraint>>
 }
 
 pub fn dumpSparsePatternArray(mut inSparsePatter: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString((inSparsePatter.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(inSparsePatter.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     dumpSparsePattern2(Arc::new(inSparsePatter.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), 1)?;
     println!("{}", (literal!("\n")).clone());
     Ok(())
@@ -2872,7 +2870,7 @@ fn optBooleanString(mut inExp: Option<bool>, mut inString: ArcStr) -> ArcStr {
 pub fn dumpAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut rowIndex: i32 = 0;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nAdjacency Matrix (row: equation)\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString((m.clone().borrow().len() as i32))); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(m.clone()))); ArcStr::from(__mm_s) }).clone());
     let __range0 = m.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut row in __range0 {
         rowIndex = rowIndex.clone() + 1;
@@ -2889,7 +2887,7 @@ pub fn dumpAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32
 pub fn dumpAdjacencyMatrixT(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut rowIndex: i32 = 0;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTransposed Adjacency Matrix (row: variable)\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString((mT.clone().borrow().len() as i32))); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of rows: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(mT.clone()))); ArcStr::from(__mm_s) }).clone());
     let __range0 = mT.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut row in __range0 {
         rowIndex = rowIndex.clone() + 1;
@@ -2928,7 +2926,7 @@ pub fn dumpAdjacencyMatrixEnhanced(mut m: metamodelica::Array<Arc<metamodelica::
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>> = metamodelica::nil();
     println!("{}", (literal!("Adjacency Matrix Enhanced (row == equation)\n")).clone());
     println!("{}", (literal!("====================================\n")).clone());
-    mlen = (m.clone().borrow().len() as i32);
+    mlen = metamodelica::arrayLength(m.clone());
     mlen_str = (intString(mlen.clone())).clone();
     println!("{}", (literal!("number of rows: ")).clone());
     println!("{}", (mlen_str.clone()).clone());
@@ -2944,7 +2942,7 @@ pub fn dumpAdjacencyMatrixTEnhanced(mut m: metamodelica::Array<Arc<metamodelica:
     let mut m_1: Arc<metamodelica::List<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>> = metamodelica::nil();
     println!("{}", (literal!("Transpose Adjacency Matrix Enhanced (row == var)\n")).clone());
     println!("{}", (literal!("=====================================\n")).clone());
-    mlen = (m.clone().borrow().len() as i32);
+    mlen = metamodelica::arrayLength(m.clone());
     mlen_str = (intString(mlen.clone())).clone();
     println!("{}", (literal!("number of rows: ")).clone());
     println!("{}", (mlen_str.clone()).clone());
@@ -3057,7 +3055,7 @@ pub fn dumpMatching(mut v: metamodelica::Array<i32>) -> Result<()> {
     let mut len_str: ArcStr = arcstr::literal!("");
     println!("{}", (literal!("Matching\n")).clone());
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    len = (v.clone().borrow().len() as i32);
+    len = metamodelica::arrayLength(v.clone());
     len_str = (intString(len.clone())).clone();
     println!("{}", (len_str.clone()).clone());
     println!("{}", (literal!(" variables and equations\n")).clone());
@@ -3093,7 +3091,7 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32) -> R
 pub fn dumpMatchingVars(mut ass1: metamodelica::Array<i32>) -> Result<()> {
     let mut varIndex: i32 = 0;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nMatching\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString((ass1.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(" variables\n")); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(ass1.clone()))); __mm_s.push_str(&*literal!(" variables\n")); ArcStr::from(__mm_s) }).clone());
     let __range0 = ass1.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut i in __range0 {
         varIndex = varIndex.clone() + 1;
@@ -3105,7 +3103,7 @@ pub fn dumpMatchingVars(mut ass1: metamodelica::Array<i32>) -> Result<()> {
 pub fn dumpMatchingEqns(mut ass2: metamodelica::Array<i32>) -> Result<()> {
     let mut eqnIndex: i32 = 0;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nMatching\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString((ass2.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(" equations\n")); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(ass2.clone()))); __mm_s.push_str(&*literal!(" equations\n")); ArcStr::from(__mm_s) }).clone());
     let __range0 = ass2.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut i in __range0 {
         eqnIndex = eqnIndex.clone() + 1;
@@ -3988,7 +3986,7 @@ pub fn dumpEqSystemBLTmatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<(
 
 pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowNames: Arc<metamodelica::List<ArcStr>>, mut columNames: Arc<metamodelica::List<ArcStr>>, mut fileName: ArcStr) -> Result<()> {
     let mut size: i32 = 0;
-    size = (m.clone().borrow().len() as i32);
+    size = metamodelica::arrayLength(m.clone());
     if (rowNames.clone().len() as i32) == size.clone() && (columNames.clone().len() as i32) == size.clone() {
         DumpHTML::dumpMatrixHTML(m.clone(), rowNames.clone(), columNames.clone(), (fileName.clone()).clone())?;
     } else {
@@ -4276,7 +4274,7 @@ fn buildGraphInfoDAG(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32
     let mut nodes: Arc<metamodelica::List<GraphML::Node>> = metamodelica::nil();
     let mut nameAttIdx: i32 = 0;
     nameAttIdx = listHead(attIdcs.clone())?;
-    nodeIdcs = List::intRange((graphIn.clone().borrow().len() as i32));
+    nodeIdcs = List::intRange(metamodelica::arrayLength(graphIn.clone()));
     graphInfoOut = List::fold4(nodeIdcs.clone(), (std::sync::Arc::new(addNodeToDAG) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, i32, Arc<metamodelica::List<i32>>, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), graphIn.clone(), metaIn.clone(), graphIdx.clone(), list![nameAttIdx.clone()], graphInfoIn.clone())?;
     let GraphML::GRAPHINFO { nodes: __pa0, .. } = (graphInfoOut.clone()) else { bail!("pattern mismatch") };
     nodes = __pa0.clone();
@@ -4528,10 +4526,9 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
             }
             order = order.clone() + 1;
         }
-        let __range23 = 1..=(m.clone().borrow().len() as i32);
-        for mut eqIdx in __range23 {
-            let __range24 = &*m.clone().borrow()[(eqIdx.clone()-1) as usize].clone();
-            for mut varIdx in __range24 {
+        for mut eqIdx in 1..=metamodelica::arrayLength(m.clone()) {
+            let __range23 = &*m.clone().borrow()[(eqIdx.clone()-1) as usize].clone();
+            for mut varIdx in __range23 {
                 let mut varIdx = varIdx.clone();
                 if intLe(varIdx.clone(), 0) {
                     lineType = openmodelica_susan::GraphML::LineType::DASHED;
@@ -4617,8 +4614,7 @@ pub fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamod
     let mut s: ArcStr = literal!("");
     let mut i: i32 = 0;
     let mut s1: ArcStr = arcstr::literal!("");
-    let __range0 = 1..=(constraints.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(constraints.clone()) {
         s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(constraints.clone().borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n------------------\n")); ArcStr::from(__mm_s) }).clone();
         if constraints.clone().borrow()[(i.clone()-1) as usize].clone().is_empty() {
             s1 = (literal!("empty Constraints\n")).clone();

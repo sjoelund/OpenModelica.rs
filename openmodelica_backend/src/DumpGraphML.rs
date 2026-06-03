@@ -79,7 +79,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
             (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(inSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
-            mapIncRowEqn = Array::createIntRange((m.clone().borrow().len() as i32));
+            mapIncRowEqn = Array::createIntRange(metamodelica::arrayLength(m.clone()));
             graphInfo = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
@@ -113,7 +113,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             graph = __pa3.clone();
             neqns = BackendEquation::getNumberOfEquations(eqns.clone());
             eqnsids = List::intRange(neqns.clone());
-            mapIncRowEqn = Array::createIntRange((m.clone().borrow().len() as i32));
+            mapIncRowEqn = Array::createIntRange(metamodelica::arrayLength(m.clone()));
             (graphInfo, graph) = List::fold3(eqnsids.clone(), (std::sync::Arc::new(addEqnGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>, bool, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), eqns.clone(), mapIncRowEqn.clone(), numberMode.clone(), (graphInfo.clone(), graph.clone()))?;
             (_, _, graphInfo) = List::fold(eqnsids.clone(), (std::sync::Arc::new(addEdgesGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)> + 'static>), (1, m.clone(), graphInfo.clone()))?;
             GraphML::dumpGraph(graphInfo.clone(), (filename.clone()).clone())?;
@@ -193,9 +193,9 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
             graph = __pa1.clone();
-            vec3 = arrayCreate((mt.clone().borrow().len() as i32), -1);
+            vec3 = arrayCreate(metamodelica::arrayLength(mt.clone()), -1);
             (graphInfo, graph) = addCompsGraph(comps.clone(), vars.clone(), vec3.clone(), 1, (graphInfo.clone(), graph.clone()))?;
-            mapIncRowEqn = arrayCreate((mt.clone().borrow().len() as i32), -1);
+            mapIncRowEqn = arrayCreate(metamodelica::arrayLength(mt.clone()), -1);
             graphInfo = addCompsEdgesGraph(comps.clone(), m.clone(), vec3.clone(), 1, 1, mapIncRowEqn.clone(), 1, graphInfo.clone())?;
             GraphML::dumpGraph(graphInfo.clone(), (filename.clone()).clone())?;
             ()

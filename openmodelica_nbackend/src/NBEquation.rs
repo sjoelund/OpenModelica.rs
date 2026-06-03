@@ -337,13 +337,12 @@ pub mod Iterator {
         },
         Deref @ NESTED { .. } => {
             let mut replacor: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let __range0 = 1..=(var_field!((*iter).names, Iterator::NESTED).clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                 replacor = ComponentRef::rename(({ let mut __mm_s = String::new(); __mm_s.push_str(&*newBaseName.clone()); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone())?;
                 UnorderedMap::add(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), Expression::fromCref(replacor.clone(), false)?, replacements.clone())?;
                 {
-                    let __cell1 = replacor.clone();
-                    var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = replacor.clone();
+                    var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
             iter.clone()
@@ -359,16 +358,14 @@ pub mod Iterator {
         (Deref @ EMPTY { .. }, Deref @ EMPTY { .. }) => true,
         (Deref @ SINGLE { .. }, Deref @ SINGLE { .. }) => Expression::isEqual(var_field!((*iter1).range, Iterator::SINGLE).clone(), var_field!((*iter2).range, Iterator::SINGLE).clone())? && Util::optionEqual(var_field!((*iter1).map, Iterator::SINGLE).clone(), var_field!((*iter2).map, Iterator::SINGLE).clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Iterator>, Arc<Iterator>) -> Result<bool> + 'static>))?,
         (Deref @ NESTED { .. }, Deref @ NESTED { .. }) => {
-            if (var_field!((*iter1).ranges, Iterator::NESTED).clone().borrow().len() as i32) == (var_field!((*iter2).ranges, Iterator::NESTED).clone().borrow().len() as i32) && (var_field!((*iter1).maps, Iterator::NESTED).clone().borrow().len() as i32) == (var_field!((*iter2).maps, Iterator::NESTED).clone().borrow().len() as i32) {
-                let __range0 = 1..=(var_field!((*iter1).ranges, Iterator::NESTED).clone().borrow().len() as i32);
-                for mut i in __range0 {
+            if metamodelica::arrayLength(var_field!((*iter1).ranges, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*iter2).ranges, Iterator::NESTED).clone()) && metamodelica::arrayLength(var_field!((*iter1).maps, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*iter2).maps, Iterator::NESTED).clone()) {
+                for mut i in 1..=metamodelica::arrayLength(var_field!((*iter1).ranges, Iterator::NESTED).clone()) {
                     b = Expression::isEqual(var_field!((*iter1).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter2).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone())?;
                     if !(b.clone()) {
                         break;
                     }
                 }
-                let __range1 = 1..=(var_field!((*iter1).maps, Iterator::NESTED).clone().borrow().len() as i32);
-                for mut i in __range1 {
+                for mut i in 1..=metamodelica::arrayLength(var_field!((*iter1).maps, Iterator::NESTED).clone()) {
                     b = Util::optionEqual(var_field!((*iter1).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter2).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Iterator>, Arc<Iterator>) -> Result<bool> + 'static>))?;
                     if !(b.clone()) {
                         break;
@@ -454,7 +451,7 @@ pub mod Iterator {
         Deref @ SINGLE { .. } => list![Expression::typeOf(var_field!((*iter).range, Iterator::SINGLE).clone())],
         Deref @ NESTED { .. } => ({
         let mut __acc: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((*iter).ranges, Iterator::NESTED).clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone())).into_iter() {
             let __x = Expression::typeOf(var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone());
             __acc = cons(__x, __acc);
         }
@@ -476,7 +473,7 @@ pub mod Iterator {
         Deref @ SINGLE { .. } => list![Expression::rangeSize(var_field!((*iter).range, Iterator::SINGLE).clone(), resize.clone())?],
         Deref @ NESTED { .. } => ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((*iter).ranges, Iterator::NESTED).clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone())).into_iter() {
             let __x = Expression::rangeSize(var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), resize.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -520,7 +517,7 @@ pub mod Iterator {
         let mut num: i32 = 0;
         num = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SINGLE { .. } => 1,
-        Deref @ NESTED { .. } => (var_field!((*iter).names, Iterator::NESTED).clone().borrow().len() as i32),
+        Deref @ NESTED { .. } => metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -532,7 +529,7 @@ pub mod Iterator {
             let mut exp: Arc<Expression::NFExpression> = exp;
             exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RANGE { .. } => Expression::makeRange(var_field!((*exp).start, Expression::NFExpression::RANGE).clone(), None, var_field!((*exp).start, Expression::NFExpression::RANGE).clone())?,
-        Deref @ Expression::ARRAY { .. } => if ((var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) > 0) {Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(openmodelica_nf_frontend::NFType::INTEGER), dimensions: list![Dimension::fromInteger(1, Variability::CONSTANT.clone())] }), arrayCreate(1, var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone()), Expression::isLiteral(var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone())?)} else {exp.clone()},
+        Deref @ Expression::ARRAY { .. } => if (metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) > 0) {Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(openmodelica_nf_frontend::NFType::INTEGER), dimensions: list![Dimension::fromInteger(1, Variability::CONSTANT.clone())] }), arrayCreate(1, var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone()), Expression::isLiteral(var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(1-1) as usize].clone())?)} else {exp.clone()},
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -558,7 +555,7 @@ pub mod Iterator {
 
     pub fn createLocationReplacements(mut iter: Arc<Iterator>, mut location: metamodelica::Array<i32>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
         let () = (::match_deref::match_deref! { match &(iter.clone()) {
-        Deref @ SINGLE { .. } if ((location.clone().borrow().len() as i32) == 1) => {
+        Deref @ SINGLE { .. } if (metamodelica::arrayLength(location.clone()) == 1) => {
             let mut start: i32 = 0;
             let mut step: i32 = 0;
             (start, step, _) = Expression::getIntegerRange(var_field!((*iter).range, Iterator::SINGLE).clone(), true)?;
@@ -566,11 +563,10 @@ pub mod Iterator {
             createMappedLocationReplacement(var_field!((*iter).map, Iterator::SINGLE).clone(), location.borrow()[(1-1) as usize].clone(), replacements.clone())?;
             ()
         },
-        Deref @ NESTED { .. } if ((location.clone().borrow().len() as i32) == (var_field!((*iter).ranges, Iterator::NESTED).clone().borrow().len() as i32)) => {
+        Deref @ NESTED { .. } if (metamodelica::arrayLength(location.clone()) == metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone())) => {
             let mut start: i32 = 0;
             let mut step: i32 = 0;
-            let __range0 = 1..=(location.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(location.clone()) {
                 (start, step, _) = Expression::getIntegerRange(var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), true)?;
                 UnorderedMap::add(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), Arc::new(Expression::NFExpression::INTEGER { value: start.clone() + location.borrow()[(i.clone()-1) as usize].clone() * step.clone() }), replacements.clone())?;
                 createMappedLocationReplacement(var_field!((*iter).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), location.borrow()[(i.clone()-1) as usize].clone(), replacements.clone())?;
@@ -608,9 +604,8 @@ pub mod Iterator {
             failed.clone()
         },
         (Deref @ NESTED { .. }, Deref @ NESTED { .. }) => {
-            if (var_field!((*replacor).names, Iterator::NESTED).clone().borrow().len() as i32) == (var_field!((*replacee).names, Iterator::NESTED).clone().borrow().len() as i32) {
-                let __range0 = 1..=(var_field!((*replacor).names, Iterator::NESTED).clone().borrow().len() as i32);
-                for mut i in __range0 {
+            if metamodelica::arrayLength(var_field!((*replacor).names, Iterator::NESTED).clone()) == metamodelica::arrayLength(var_field!((*replacee).names, Iterator::NESTED).clone()) {
+                for mut i in 1..=metamodelica::arrayLength(var_field!((*replacor).names, Iterator::NESTED).clone()) {
                     failed = createSingleReplacement(var_field!((*replacor).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*replacor).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*replacee).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*replacee).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), replacements.clone())?;
                     if failed.clone() {
                         break;
@@ -1095,11 +1090,10 @@ pub mod Iterator {
             iter.clone()
         },
         Deref @ NESTED { .. } => {
-            let __range0 = 1..=(var_field!((*iter).names, Iterator::NESTED).clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                 {
-                    let __cell1 = applySingleOrder(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), order.clone())?;
-                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = applySingleOrder(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), order.clone())?;
+                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
             iter.clone()
@@ -1126,7 +1120,7 @@ pub mod Iterator {
         Deref @ SINGLE { .. } => singleStr(var_field!((*iter).name, Iterator::SINGLE).clone(), var_field!((*iter).range, Iterator::SINGLE).clone(), var_field!((*iter).map, Iterator::SINGLE).clone())?,
         Deref @ NESTED { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((*iter).names, Iterator::NESTED).clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone())).into_iter() {
             let __x = singleStr(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), var_field!((*iter).maps, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone())?;
             __acc = cons(__x, __acc);
         }
@@ -1157,19 +1151,17 @@ pub mod Iterator {
         Deref @ NESTED { .. } => {
             if isSome(funcCrefOpt.clone()) {
                 funcCref = Util::getOption(funcCrefOpt.clone())?;
-                let __range0 = 1..=(var_field!((*iter).names, Iterator::NESTED).clone().borrow().len() as i32);
-                for mut i in __range0 {
+                for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                     {
-                        let __cell1 = funcCref(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone())?;
-                        var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                        let __cell0 = funcCref(var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone())?;
+                        var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                     }
                 }
             }
-            let __range2 = 1..=(var_field!((*iter).ranges, Iterator::NESTED).clone().borrow().len() as i32);
-            for mut i in __range2 {
+            for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone()) {
                 {
-                    let __cell3 = mapFunc(var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), funcExp.clone())?;
-                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell3;
+                    let __cell1 = mapFunc(var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(), funcExp.clone())?;
+                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
                 }
             }
             iter.clone()
@@ -1561,7 +1553,7 @@ pub mod Equation {
             Arc::new(Equation::RECORD_EQUATION { recordSize: Type::sizeOf(ty.clone(), false)?, attr: attr.clone(), source: DAE::emptyElementSource().clone(), rhs: rhs.clone(), lhs: lhs.clone(), ty: ty.clone() })
         },
         Deref @ Type::COMPLEX { complexTy: ct @ Deref @ ComplexType::RECORD { .. }, .. } => {
-            Arc::new(Equation::RECORD_EQUATION { recordSize: (var_field!((**ct).fields, ComplexType::NFComplexType::RECORD).clone().borrow().len() as i32), attr: attr.clone(), source: DAE::emptyElementSource().clone(), rhs: rhs.clone(), lhs: lhs.clone(), ty: ty.clone() })
+            Arc::new(Equation::RECORD_EQUATION { recordSize: metamodelica::arrayLength(var_field!((**ct).fields, ComplexType::NFComplexType::RECORD).clone()), attr: attr.clone(), source: DAE::emptyElementSource().clone(), rhs: rhs.clone(), lhs: lhs.clone(), ty: ty.clone() })
         },
         _ => {
             Arc::new(Equation::SCALAR_EQUATION { attr: attr.clone(), source: DAE::emptyElementSource().clone(), rhs: rhs.clone(), lhs: lhs.clone(), ty: ty.clone() })
@@ -3549,11 +3541,10 @@ pub mod IfEquationBody {
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
         let mut tmp: Option<Arc<IfEquationBody>> = None;
         (conditions, then_eqns) = splitCollect(sortForSplit(body.clone())?, conditions.clone(), then_eqns.clone())?;
-        let __range0 = 1..=(then_eqns.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(then_eqns.clone()) {
             tmp = None;
-            let __range1 = &*List::zip(conditions.clone(), then_eqns.borrow()[(i.clone()-1) as usize].clone());
-            for mut tpl in __range1 {
+            let __range0 = &*List::zip(conditions.clone(), then_eqns.borrow()[(i.clone()-1) as usize].clone());
+            for mut tpl in __range0 {
                 let mut tpl = tpl.clone();
                 (condition, eqn) = tpl.clone();
                 tmp = Some(Arc::new(IfEquationBody { condition: condition.clone(), then_eqns: list![eqn.clone()], else_if: tmp.clone() }));

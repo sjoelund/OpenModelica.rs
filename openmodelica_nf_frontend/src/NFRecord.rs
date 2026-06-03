@@ -200,8 +200,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ClassTree::FLAT_TREE { components: comps, .. } => {
-            let __range0 = (1..=(comps.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
                 comp = comps.borrow()[(i.clone()-1) as usize].clone();
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
                 allParams = metamodelica::cons(comp.clone(), allParams.clone());
@@ -209,8 +208,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
             ()
         },
         Deref @ ClassTree::INSTANTIATED_TREE { components: pcomps, .. } => {
-            let __range0 = (1..=(pcomps.clone().borrow().len() as i32)).rev();
-            for mut i in __range0 {
+            for mut i in (1..=metamodelica::arrayLength(pcomps.clone())).rev() {
                 comp = Mutable::access(pcomps.borrow()[(i.clone()-1) as usize].clone());
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
                 allParams = metamodelica::cons(comp.clone(), allParams.clone());
@@ -260,7 +258,7 @@ pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(meta
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     field_lst = ClassTree::foldComponents(tree.clone(), (std::sync::Arc::new(collectRecordField) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> + 'static>), metamodelica::nil())?;
     fields = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(field_lst.clone()).into_iter().cloned().collect());
-    indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (fields.clone().borrow().len() as i32));
+    indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), metamodelica::arrayLength(fields.clone()));
     Type::updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;
     Ok((fields, indexMap))
 }

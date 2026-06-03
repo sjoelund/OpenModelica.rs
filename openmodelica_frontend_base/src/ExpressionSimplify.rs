@@ -2011,9 +2011,9 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, tail: Deref @ metamodelica::List::Nil } => e.clone(),
         _ => {
                     marr = metamodelica::arrayFromVec(List::map(mexpl.clone(), Arc::new(fnptr!(listArray, Arc<metamodelica::List<Arc<DAE::Exp>>>)))?.into_iter().cloned().collect());
-                    let true = ((marr.clone().borrow().len() as i32) == (marr.clone().borrow()[(1-1) as usize].clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
-                    let true = ((marr.clone().borrow().len() as i32) > 1) else { bail!("pattern mismatch") };
-                    simplifySymmetric(marr.clone(), (marr.clone().borrow().len() as i32) - 1, (marr.clone().borrow().len() as i32))?;
+                    let true = (metamodelica::arrayLength(marr.clone()) == metamodelica::arrayLength(marr.clone().borrow()[(1-1) as usize].clone())) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::arrayLength(marr.clone()) > 1) else { bail!("pattern mismatch") };
+                    simplifySymmetric(marr.clone(), metamodelica::arrayLength(marr.clone()) - 1, metamodelica::arrayLength(marr.clone()))?;
                     mexpl = List::mapArray(marr.clone(), Arc::new(fnptr!(arrayList, metamodelica::Array<Arc<DAE::Exp>>)))?;
                     tp1 = Expression::unliftArray(tp.clone())?;
                     es = List::map2(mexpl.clone(), (std::sync::Arc::new(fnptr!(Expression::makeArray, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Type>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Type>, bool) -> Result<Arc<DAE::Exp>> + 'static>), tp1.clone(), !(Types::isArray(tp1.clone())))?;

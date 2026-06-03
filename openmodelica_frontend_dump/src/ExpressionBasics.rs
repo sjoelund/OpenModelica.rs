@@ -327,7 +327,7 @@ pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::L
             let __x = listHead(d.clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(i32::MAX)
     });
         if j.clone() != ({
         let mut __acc: Option<i32> = None;
@@ -335,7 +335,7 @@ pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::L
             let __x = listHead(d.clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     }) {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionBasics.evalCat")); __mm_s.push_str(&*literal!(": cat got uneven dimensions for dim=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", i.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();

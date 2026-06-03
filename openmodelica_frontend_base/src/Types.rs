@@ -8429,7 +8429,7 @@ pub fn isArrayWithUnknownDimension(mut ty: Arc<DAE::Type>) -> bool {
     } });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction")).unwrap()
+        __acc.unwrap_or(false)
     }),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

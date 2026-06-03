@@ -115,7 +115,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     taskGraphDataOde = HpcOmTaskGraph::copyTaskGraphMeta(taskGraphData.clone())?;
                     (taskGraphOde, taskGraphDataOde) = HpcOmTaskGraph::getOdeSystem(taskGraphOde.clone(), taskGraphDataOde.clone(), inBackendDAE.clone())?;
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("_ODE.graphml")); ArcStr::from(__mm_s) }).clone();
-                    schedulerInfo = arrayCreate((taskGraphOde.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+                    schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphOde.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphOde.clone(), taskGraphDataOde.clone(), (fileName.clone()).clone(), (literal!("")).clone(), metamodelica::nil(), metamodelica::nil(), daeSccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     partData = HpcOmTaskGraph::multirate_partitioning(taskGraphOde.clone(), taskGraphDataOde.clone(), inBackendDAE.clone(), simCode.clone(), sccSimEqMapping.clone())?;
                     simCode.partitionData = partData.clone();
@@ -184,7 +184,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     taskGraphDae = metamodelica::arrayFromVec(taskGraph.clone().borrow().clone());
                     taskGraphDataDae = HpcOmTaskGraph::copyTaskGraphMeta(taskGraphData.clone())?;
                     (taskGraphDae, taskGraphDataDae) = HpcOmTaskGraph::appendRemovedEquations(inBackendDAE.clone(), taskGraphDae.clone(), taskGraphDataDae.clone())?;
-                    schedulerInfo = arrayCreate((taskGraphDae.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+                    schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphDae.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
                     ExecStat::execStat((literal!("hpcom create DAE TaskGraph")).clone())?;
                     checkTaskGraphMetaConsistency(taskGraphDae.clone(), taskGraphDataDae.clone(), (literal!("DAE system")).clone())?;
                     ExecStat::execStat((literal!("hpcom validate DAE TaskGraph")).clone())?;
@@ -204,16 +204,16 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     taskGraphZeroFuncs = metamodelica::arrayFromVec(taskGraphDae.clone().borrow().clone());
                     taskGraphDataZeroFuncs = HpcOmTaskGraph::copyTaskGraphMeta(taskGraphDataDae.clone())?;
                     zeroFuncsSimEqIdc = List::map(simCode.equationsForZeroCrossings.clone(), (std::sync::Arc::new(SimCodeUtil::simEqSystemIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>) -> Result<i32> + 'static>))?;
-                    (taskGraphZeroFuncs, taskGraphDataZeroFuncs) = HpcOmTaskGraph::getZeroFuncsSystem(taskGraphZeroFuncs.clone(), taskGraphDataZeroFuncs.clone(), inBackendDAE.clone(), (daeSccSimEqMapping.clone().borrow().len() as i32), zeroFuncsSimEqIdc.clone(), simeqCompMapping.clone())?;
+                    (taskGraphZeroFuncs, taskGraphDataZeroFuncs) = HpcOmTaskGraph::getZeroFuncsSystem(taskGraphZeroFuncs.clone(), taskGraphDataZeroFuncs.clone(), inBackendDAE.clone(), metamodelica::arrayLength(daeSccSimEqMapping.clone()), zeroFuncsSimEqIdc.clone(), simeqCompMapping.clone())?;
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("_ZeroFuncs.graphml")); ArcStr::from(__mm_s) }).clone();
-                    schedulerInfo = arrayCreate((taskGraphZeroFuncs.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+                    schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphZeroFuncs.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphZeroFuncs.clone(), taskGraphDataZeroFuncs.clone(), (fileName.clone()).clone(), (literal!("")).clone(), metamodelica::nil(), metamodelica::nil(), daeSccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     ExecStat::execStat((literal!("hpcom create and dump zeroFuncs TaskGraph")).clone())?;
                     taskGraphDataDae = HpcOmTaskGraph::markSystemComponents(taskGraphZeroFuncs.clone(), taskGraphDataZeroFuncs.clone(), (true, false, false), taskGraphDataDae.clone())?;
                     checkTaskGraphMetaConsistency(taskGraphZeroFuncs.clone(), taskGraphDataZeroFuncs.clone(), (literal!("ZeroFunc system")).clone())?;
                     checkEquationCount(taskGraphDataZeroFuncs.clone(), (literal!("ZeroFunc system")).clone(), (zeroFuncsSimEqIdc.clone().len() as i32), sccSimEqMapping.clone())?;
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("DAE.graphml")); ArcStr::from(__mm_s) }).clone();
-                    schedulerInfo = arrayCreate((taskGraphDae.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+                    schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphDae.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphDae.clone(), taskGraphDataDae.clone(), (fileName.clone()).clone(), (literal!("")).clone(), metamodelica::nil(), metamodelica::nil(), daeSccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     ExecStat::execStat((literal!("hpcom dump DAE TaskGraph")).clone())?;
                     let ((__pa3, __pa4), (__pa5, __pa6)) = HpcOmTaskGraph::getCriticalPaths(taskGraphOde.clone(), taskGraphDataOde.clone())?;
@@ -226,7 +226,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     graphCosts = HpcOmTaskGraph::roundReal(graphCosts.clone(), 2);
                     criticalPathInfo = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*criticalPathInfo.clone()); __mm_s.push_str(&*literal!(" sum: (")); __mm_s.push_str(&*realString(graphCosts.clone())); __mm_s.push_str(&*literal!(" ; ")); __mm_s.push_str(&*intString(graphOps.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("ODE.graphml")); ArcStr::from(__mm_s) }).clone();
-                    schedulerInfo = arrayCreate((taskGraphOde.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+                    schedulerInfo = arrayCreate(metamodelica::arrayLength(taskGraphOde.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
                     ExecStat::execStat((literal!("hpcom assign levels / get crit. path")).clone())?;
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphOde.clone(), taskGraphDataOde.clone(), (fileName.clone()).clone(), (criticalPathInfo.clone()).clone(), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPaths.clone())?)?, HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPathsWoC.clone())?)?, sccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: true, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     ExecStat::execStat((literal!("hpcom dump ODE TaskGraph")).clone())?;
@@ -244,7 +244,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphOdeSimplified.clone(), taskGraphDataOdeSimplified.clone(), (fileName.clone()).clone(), (criticalPathInfo.clone()).clone(), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPaths.clone())?)?, HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPathsWoC.clone())?)?, sccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: true, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     ExecStat::execStat((literal!("hpcom dump simplified TaskGraph")).clone())?;
                     if Flags::isSet(Flags::HPCOM_DUMP.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Filter successfully applied. Merged ")); __mm_s.push_str(&*intString(intSub((taskGraphOde.clone().borrow().len() as i32), (taskGraphOdeSimplified.clone().borrow().len() as i32)))); __mm_s.push_str(&*literal!(" tasks.\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Filter successfully applied. Merged ")); __mm_s.push_str(&*intString(intSub(metamodelica::arrayLength(taskGraphOde.clone()), metamodelica::arrayLength(taskGraphOdeSimplified.clone())))); __mm_s.push_str(&*literal!(" tasks.\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     (numProc, _) = setNumProc(numProc.clone(), cpCostsWoC.clone(), taskGraphDataOde.clone())?;
@@ -253,7 +253,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     (scheduleZeroFunc, simCode, _, _, sccSimEqMapping) = createSchedule(taskGraphZeroFuncSimplified.clone(), taskGraphDataZeroFuncSimplified.clone(), daeSccSimEqMapping.clone(), simVarMapping.clone(), (filenamePrefix.clone()).clone(), numProc.clone(), numProc.clone(), simCode.clone(), scheduledTasksZeroFunc.clone(), (literal!("ZeroFunc system")).clone(), (Flags::getConfigString(Flags::HPCOM_SCHEDULER.clone())?).clone())?;
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     criticalPathInfo = (HpcOmScheduler::analyseScheduledTaskGraph(scheduleOde.clone(), numProc.clone(), taskGraphOdeScheduled.clone(), taskGraphDataOdeScheduled.clone(), (literal!("ODE system")).clone())?).clone();
-                    schedulerInfo = HpcOmScheduler::convertScheduleStrucToInfo(scheduleOde.clone(), (taskGraphOdeScheduled.clone().borrow().len() as i32))?;
+                    schedulerInfo = HpcOmScheduler::convertScheduleStrucToInfo(scheduleOde.clone(), metamodelica::arrayLength(taskGraphOdeScheduled.clone()))?;
                     ExecStat::execStat((literal!("hpcom create schedule")).clone())?;
                     fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*filenamePrefix.clone()); __mm_s.push_str(&*literal!("ODE_schedule.graphml")); ArcStr::from(__mm_s) }).clone();
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphOdeScheduled.clone(), taskGraphDataOdeScheduled.clone(), (fileName.clone()).clone(), (criticalPathInfo.clone()).clone(), HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPaths.clone())?)?, HpcOmTaskGraph::convertNodeListToEdgeTuples(listHead(criticalPathsWoC.clone())?)?, sccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: true, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
@@ -264,7 +264,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     System::realtimeTick(ClockIndexes::RT_CLOCK_EXECSTAT_HPCOM_MODULES.clone())?;
                     checkOdeSystemSize(taskGraphDataOdeScheduled.clone(), simCode.odeEquations.clone(), sccSimEqMapping.clone())?;
                     ExecStat::execStat((literal!("hpcom check ODE system size")).clone())?;
-                    (optTmpMemoryMap, varToArrayIndexMapping, varToIndexMapping) = HpcOmMemory::createMemoryMap(simCode.modelInfo.clone(), simCode.varToArrayIndexMapping.clone(), simCode.varToIndexMapping.clone(), taskGraphOdeSimplified.clone(), AdjacencyMatrix::transposeAdjacencyMatrix(taskGraphOdeSimplified.clone(), (taskGraphOdeSimplified.clone().borrow().len() as i32))?, taskGraphDataOdeSimplified.clone(), eqs.clone(), (filenamePrefix.clone()).clone(), schedulerInfo.clone(), scheduleOde.clone(), sccSimEqMapping.clone(), criticalPaths.clone(), criticalPathsWoC.clone(), (criticalPathInfo.clone()).clone(), numProc.clone(), (HpcOmTaskGraph::getSystemComponents(inBackendDAE.clone())?).0, BackendDAEUtil::isInitializationDAE(inBackendDAE.shared.clone()))?;
+                    (optTmpMemoryMap, varToArrayIndexMapping, varToIndexMapping) = HpcOmMemory::createMemoryMap(simCode.modelInfo.clone(), simCode.varToArrayIndexMapping.clone(), simCode.varToIndexMapping.clone(), taskGraphOdeSimplified.clone(), AdjacencyMatrix::transposeAdjacencyMatrix(taskGraphOdeSimplified.clone(), metamodelica::arrayLength(taskGraphOdeSimplified.clone()))?, taskGraphDataOdeSimplified.clone(), eqs.clone(), (filenamePrefix.clone()).clone(), schedulerInfo.clone(), scheduleOde.clone(), sccSimEqMapping.clone(), criticalPaths.clone(), criticalPathsWoC.clone(), (criticalPathInfo.clone()).clone(), numProc.clone(), (HpcOmTaskGraph::getSystemComponents(inBackendDAE.clone())?).0, BackendDAEUtil::isInitializationDAE(inBackendDAE.shared.clone()))?;
                     ExecStat::execStat((literal!("hpcom create memory map")).clone())?;
                     simCode.varToArrayIndexMapping = varToArrayIndexMapping.clone();
                     simCode.varToIndexMapping = varToIndexMapping.clone();
@@ -301,8 +301,8 @@ fn createAndExportInitialSystemTaskGraph(mut iInitDae: Option<Arc<BackendDAE::Ba
         Some(initDAE) => {
             (tmpTaskGraph, tmpTaskGraphMeta) = HpcOmTaskGraph::createTaskGraph(initDAE.clone(), false)?;
             fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*iFileNamePrefix.clone()); __mm_s.push_str(&*literal!("_init.graphml")); ArcStr::from(__mm_s) }).clone();
-            schedulerInfo = arrayCreate((tmpTaskGraph.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
-            sccSimEqMapping = arrayCreate((tmpTaskGraph.clone().borrow().len() as i32), metamodelica::nil());
+            schedulerInfo = arrayCreate(metamodelica::arrayLength(tmpTaskGraph.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
+            sccSimEqMapping = arrayCreate(metamodelica::arrayLength(tmpTaskGraph.clone()), metamodelica::nil());
             HpcOmTaskGraph::dumpAsGraphMLSccLevel(tmpTaskGraph.clone(), tmpTaskGraphMeta.clone(), (fileName.clone()).clone(), (literal!("")).clone(), metamodelica::nil(), metamodelica::nil(), sccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
             ()
         },
@@ -362,9 +362,9 @@ pub fn applyGRS(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>
     let mut taskGraphMeta1: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
     let mut contractedTasks: metamodelica::Array<i32> = Default::default();
     taskGraph1 = metamodelica::arrayFromVec(iTaskGraph.clone().borrow().clone());
-    taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(taskGraph1.clone(), (taskGraph1.clone().borrow().len() as i32))?;
+    taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(taskGraph1.clone(), metamodelica::arrayLength(taskGraph1.clone()))?;
     taskGraphMeta1 = HpcOmTaskGraph::copyTaskGraphMeta(iTaskGraphMeta.clone())?;
-    contractedTasks = arrayCreate((taskGraph1.clone().borrow().len() as i32), 0);
+    contractedTasks = arrayCreate(metamodelica::arrayLength(taskGraph1.clone()), 0);
     (taskGraph1, taskGraphT, taskGraphMeta1) = applyGRS1(taskGraph1.clone(), taskGraphT.clone(), taskGraphMeta1.clone(), contractedTasks.clone(), true)?;
     (oTaskGraph, oTaskGraphMeta) = GRS_newGraph(taskGraph1.clone(), taskGraphMeta1.clone(), contractedTasks.clone())?;
     Ok((oTaskGraph, oTaskGraphMeta))
@@ -446,12 +446,12 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
         (HpcOmTaskGraph::TaskGraphMeta { inComps, exeCosts, .. }, Deref @ metamodelica::List::Cons { head: head, tail: rest }) => {
             sortedHead = List::sort(head.clone(), (std::sync::Arc::new({ let __pe_b2 = inComps.clone(); let __pe_b3 = exeCosts.clone(); let __pe_b4 = false; move |__pe_a0, __pe_a1| HpcOmTaskGraph::compareTasksByExecTime(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             sortedHeadArray = metamodelica::arrayFromVec(sortedHead.clone().into_iter().cloned().collect());
-            if intGt((sortedHeadArray.clone().borrow().len() as i32), 0) {
-                bigTaskExecTime = HpcOmTaskGraph::getExeCostReqCycles(sortedHeadArray.clone().borrow()[((sortedHeadArray.clone().borrow().len() as i32)-1) as usize].clone(), iTaskGraphMeta.clone())?;
+            if intGt(metamodelica::arrayLength(sortedHeadArray.clone()), 0) {
+                bigTaskExecTime = HpcOmTaskGraph::getExeCostReqCycles(sortedHeadArray.clone().borrow()[(metamodelica::arrayLength(sortedHeadArray.clone())-1) as usize].clone(), iTaskGraphMeta.clone())?;
             } else {
                 bigTaskExecTime = metamodelica::OrderedFloat(0.0_f64);
             }
-            tmpContractedLevelfixTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), 500, sortedHeadArray.clone(), 1, ((sortedHeadArray.clone().borrow().len() as i32), metamodelica::nil(), bigTaskExecTime.clone()), iContractedLevelfixTasks.clone())?;
+            tmpContractedLevelfixTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), 500, sortedHeadArray.clone(), 1, (metamodelica::arrayLength(sortedHeadArray.clone()), metamodelica::nil(), bigTaskExecTime.clone()), iContractedLevelfixTasks.clone())?;
             tmpContractedLevelfixTasks = applyGRSForLevelFixScheduler(iTaskGraphMeta.clone(), iContractedTasks.clone(), rest.clone(), tmpContractedLevelfixTasks.clone())?;
             tmpContractedLevelfixTasks.clone()
         },
@@ -559,8 +559,8 @@ fn GRS_newGraph(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     let mut inCompsNew: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, .. } = (metaIn.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
-    notRemovedNodes = HpcOmTaskGraph::filterContractedNodes(List::intRange((graphIn.clone().borrow().len() as i32)), contrTasks.clone())?;
-    removedNodes = HpcOmTaskGraph::filterNonContractedNodes(List::intRange((graphIn.clone().borrow().len() as i32)), contrTasks.clone())?;
+    notRemovedNodes = HpcOmTaskGraph::filterContractedNodes(List::intRange(metamodelica::arrayLength(graphIn.clone())), contrTasks.clone())?;
+    removedNodes = HpcOmTaskGraph::filterNonContractedNodes(List::intRange(metamodelica::arrayLength(graphIn.clone())), contrTasks.clone())?;
     newSize = (notRemovedNodes.clone().len() as i32);
     graphOut = arrayCreate(newSize.clone(), metamodelica::nil());
     inCompsNew = arrayCreate(newSize.clone(), metamodelica::nil());
@@ -863,11 +863,11 @@ fn checkTaskGraphMetaConsistency(mut iTaskGraph: metamodelica::Array<Arc<metamod
     let mut oIsCorrect: bool = false;
     let mut numberOfNodes: i32 = 0;
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    numberOfNodes = (iTaskGraph.clone().borrow().len() as i32);
+    numberOfNodes = metamodelica::arrayLength(iTaskGraph.clone());
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
-    if boolNot(intEq(numberOfNodes.clone(), (inComps.clone().borrow().len() as i32))) {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the number of nodes in the ")); __mm_s.push_str(&*iSystemName.clone()); __mm_s.push_str(&*literal!(" task graph (")); __mm_s.push_str(&*intString(numberOfNodes.clone())); __mm_s.push_str(&*literal!(") is distinguished from the number of nodes in task graph meta (")); __mm_s.push_str(&*intString((inComps.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
+    if boolNot(intEq(numberOfNodes.clone(), metamodelica::arrayLength(inComps.clone()))) {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("the number of nodes in the ")); __mm_s.push_str(&*iSystemName.clone()); __mm_s.push_str(&*literal!(" task graph (")); __mm_s.push_str(&*intString(numberOfNodes.clone())); __mm_s.push_str(&*literal!(") is distinguished from the number of nodes in task graph meta (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(inComps.clone()))); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
         oIsCorrect = false;
     } else {
         oIsCorrect = true;
@@ -884,7 +884,7 @@ fn checkEquationCount(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSy
     let mut compEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
-    inCompsIdx = (inComps.clone().borrow().len() as i32);
+    inCompsIdx = metamodelica::arrayLength(inComps.clone());
     eqCount = 0;
     while intGt(inCompsIdx.clone(), 0) {
         comps = inComps.clone().borrow()[(inCompsIdx.clone()-1) as usize].clone();

@@ -134,7 +134,7 @@ pub mod Rational {
 pub fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::List<i32>> {
     let mut indices: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in ((1..=(arr.clone().borrow().len() as i32)).rev()).into_iter() {
+        for mut i in ((1..=metamodelica::arrayLength(arr.clone())).rev()).into_iter() {
             if !(arr.borrow()[(i.clone()-1) as usize].clone()) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);

@@ -216,8 +216,7 @@ pub fn toString(mut bdae: Arc<NBackendDAE>, mut r#str: ArcStr) -> Result<ArcStr>
         Deref @ JACOBIAN { .. } => {
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*bdae).jacType, NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(" Jacobian ")); __mm_s.push_str(&*var_field!((*bdae).name, NBackendDAE::JACOBIAN).clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*BVariable::VarData::toString(var_field!((*bdae).varData, NBackendDAE::JACOBIAN).clone(), 1)?); ArcStr::from(__mm_s) }).clone();
-            let __range0 = 1..=(var_field!((*bdae).comps, NBackendDAE::JACOBIAN).clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(var_field!((*bdae).comps, NBackendDAE::JACOBIAN).clone()) {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*StrongComponent::toString(var_field!((*bdae).comps, NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(), i.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*Jacobian::SparsityPattern::toString(var_field!((*bdae).sparsityPattern, NBackendDAE::JACOBIAN).clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Jacobian::SparsityColoring::toString(var_field!((*bdae).sparsityColoring, NBackendDAE::JACOBIAN).clone())?); ArcStr::from(__mm_s) }).clone();

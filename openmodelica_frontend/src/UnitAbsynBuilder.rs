@@ -329,7 +329,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
             let ref st @ UnitAbsyn::Store { numElts: ref numElts, storeVector: ref vector } = __mc_input.clone() else { bail!("nomatch") };
             let mut st = st.clone();
             let mut index: i32 = index.clone();
-            let true = (numElts.clone() == (vector.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
+            let true = (numElts.clone() == metamodelica::arrayLength(vector.clone())) else { bail!("pattern mismatch") };
             st = expandStore(st.clone())?;
             (st, index) = add(unit.clone(), st.clone())?;
             Ok(((st.clone(), index.clone()), index.clone()))

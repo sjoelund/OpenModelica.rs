@@ -712,7 +712,7 @@ pub fn restrictionEqual(mut restr1: SCode::Restriction, mut restr2: SCode::Restr
             let __x = t1.clone() == t2.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction")).unwrap()
+        __acc.unwrap_or(true)
     })
         },
         _ => {

@@ -519,7 +519,7 @@ pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<boo
 pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut hasDims: bool = false;
     hasDims = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ EXPANDED_DERIVED { .. } => (var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone().borrow().len() as i32) > 0 || hasDimensions(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
+        Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()) > 0 || hasDimensions(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
         Deref @ TYPED_DERIVED { .. } => Type::isArray(var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone()),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -542,7 +542,7 @@ pub fn getDimensions(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Dimens
 pub fn dimensionCount(mut cls: Arc<NFClass>) -> i32 {
     let mut count: i32 = 0;
     count = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ EXPANDED_DERIVED { .. } => (var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone().borrow().len() as i32),
+        Deref @ EXPANDED_DERIVED { .. } => metamodelica::arrayLength(var_field!((*cls).dims, NFClass::EXPANDED_DERIVED).clone()),
         Deref @ INSTANCED_CLASS { .. } => Type::dimensionCount(var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone()),
         Deref @ INSTANCED_BUILTIN { .. } => Type::dimensionCount(var_field!((*cls).ty, NFClass::INSTANCED_BUILTIN).clone()),
         Deref @ TYPED_DERIVED { .. } => Type::dimensionCount(var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone()),

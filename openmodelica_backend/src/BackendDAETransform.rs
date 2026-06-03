@@ -116,8 +116,7 @@ pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamode
     let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let __range0 = 1..=(mapEqnIncRow.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(mapEqnIncRow.clone()) {
         elst = mapEqnIncRow.borrow()[(i.clone()-1) as usize].clone();
         vlst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -136,9 +135,8 @@ pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamode
 
 pub fn varAssignmentNonScalar(mut ass1: metamodelica::Array<i32>, mut mapIncRowEqn: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
     let mut outAcc: metamodelica::Array<i32> = Default::default();
-    outAcc = metamodelica::arrayCreate((ass1.clone().borrow().len() as i32), -1);
-    let __range0 = 1..=(ass1.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    outAcc = metamodelica::arrayCreate(metamodelica::arrayLength(ass1.clone()), -1);
+    for mut i in 1..=metamodelica::arrayLength(ass1.clone()) {
         unsafe { metamodelica::Dangerous::arrayInitSlot(outAcc.clone(), i.clone(), if (metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone()) > 0) {mapIncRowEqn.borrow()[(metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone())-1) as usize].clone()} else {-1}) };
     }
     outAcc
@@ -296,7 +294,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                         (jac, shared) = SymbolicJacobian::calculateJacobian(vars_1.clone(), eqns_1.clone(), m.clone(), true, ishared.clone())?;
                         (jac_tp, jacConstant) = SymbolicJacobian::analyzeJacobian(vars_1.clone(), eqns_1.clone(), jac.clone())?;
                         if jacConstant.clone() && isSome(jac.clone()) {
-                            let true = (analyzeConstantJacobian(Util::getOption(jac.clone())?, (mt.clone().borrow().len() as i32), var_lst.clone(), eqn_lst.clone(), shared.clone())?) else { bail!("pattern mismatch") };
+                            let true = (analyzeConstantJacobian(Util::getOption(jac.clone())?, metamodelica::arrayLength(mt.clone()), var_lst.clone(), eqn_lst.clone(), shared.clone())?) else { bail!("pattern mismatch") };
                         }
                     } else {
                         jac = None;

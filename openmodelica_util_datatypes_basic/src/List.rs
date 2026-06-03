@@ -1113,8 +1113,8 @@ pub fn transposeList<T: Clone + 'static>(mut inList: Arc<metamodelica::List<Arc<
         }
         __acc.reverse()
     }).into_iter().cloned().collect());
-    c_len = (arr.clone().borrow().len() as i32);
-    r_len = (arr.clone().borrow()[(1-1) as usize].clone().borrow().len() as i32);
+    c_len = metamodelica::arrayLength(arr.clone());
+    r_len = metamodelica::arrayLength(arr.clone().borrow()[(1-1) as usize].clone());
     for mut i in (1..=r_len.clone()).rev() {
         new_row = metamodelica::nil();
         for mut j in (1..=c_len.clone()).rev() {

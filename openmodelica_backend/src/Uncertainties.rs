@@ -414,7 +414,7 @@ pub fn dataReconciliation(mut inDae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
             (match1, _) = Matching::PerfectMatching(m.clone())?;
             var = dumpMatching(match1.clone());
             BackendDump::dumpMatching(match1.clone())?;
-            bltblocks = Sorting::Tarjan(m.clone(), match1.clone(), (match1.clone().borrow().len() as i32))?;
+            bltblocks = Sorting::Tarjan(m.clone(), match1.clone(), metamodelica::arrayLength(match1.clone()))?;
             dumpListList(bltblocks.clone(), (literal!("BLT_BLOCKS")).clone())?;
             let true = (eqsyslist.clone().is_empty()) else { bail!("pattern mismatch") };
             mExt = getExtAdjacencyMatrix(m.clone());
@@ -2448,12 +2448,12 @@ fn getComponentsWrapper(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>
         let __mc_input = ass2.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (intEq(0, (m.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
+            let true = (intEq(0, metamodelica::arrayLength(m.clone()))) else { bail!("pattern mismatch") };
             Ok(list![metamodelica::nil()])
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (intEq(1, (m.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
+            let true = (intEq(1, metamodelica::arrayLength(m.clone()))) else { bail!("pattern mismatch") };
             Ok(list![list![1]])
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2466,7 +2466,7 @@ fn getComponentsWrapper(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>
             }.is_ok() { bail!("failure(): body succeeded") }
             println!("{}", (literal!("TarjanAlgorithm failed\n")).clone());
             Error::clearMessages();
-            comp = List::intRange((m.clone().borrow().len() as i32));
+            comp = List::intRange(metamodelica::arrayLength(m.clone()));
             comps = list![comp.clone()];
             Ok(comps.clone())
         })() { break 'mc __v; }

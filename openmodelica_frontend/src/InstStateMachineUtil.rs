@@ -786,7 +786,7 @@ fn createAdjacencyTable(mut smNodes: SMNodeTable, mut nStates: i32) -> Result<Ad
     let mut crefs1: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
     let mut crefs2: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
     crefs1 = metamodelica::arrayFromVec(BaseHashTable::hashTableKeyList(smNodes.clone())?.into_iter().cloned().collect());
-    n = (crefs1.clone().borrow().len() as i32);
+    n = metamodelica::arrayLength(crefs1.clone());
     cref2index = HashTable::emptyHashTableSized(n.clone());
     assert!(n.clone() == nStates.clone(), "{}", &*(literal!("Value of nStates needs to be equal to number of modes within mode table argument.")).clone());
     adjacency = metamodelica::arrayFromVec(({
@@ -804,7 +804,7 @@ fn createAdjacencyTable(mut smNodes: SMNodeTable, mut nStates: i32) -> Result<Ad
         let SMNode { edges: __pa0, .. } = (BaseHashTable::get(crefs1.borrow()[(i.clone()-1) as usize].clone(), smNodes.clone())?) else { bail!("pattern mismatch") };
         edges = __pa0.clone();
         crefs2 = metamodelica::arrayFromVec(BaseHashSet::hashSetList(edges.clone())?.into_iter().cloned().collect());
-        m = (crefs2.clone().borrow().len() as i32);
+        m = metamodelica::arrayLength(crefs2.clone());
         for mut j in 1..=m.clone() {
             cref = crefs2.borrow()[(j.clone()-1) as usize].clone();
             k = BaseHashTable::get(cref.clone(), cref2index.clone())?;

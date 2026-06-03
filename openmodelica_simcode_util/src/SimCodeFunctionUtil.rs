@@ -2064,11 +2064,11 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
             let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) {
         let () = (match resources.clone() {
         Some(mut resourcesStr) => {
@@ -2170,11 +2170,11 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
             let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) {
             if !(Testsuite::isRunning()?) {
                 Error::addSourceMessage(Error::EXT_LIBRARY_NOT_FOUND.clone(), list![(name.clone()).clone(), (({

@@ -170,7 +170,7 @@ pub mod ConnectionSets {
         elements = __pa1.clone();
         node_count = __pa2.clone();
         index = node_count.clone() + 1;
-        if index.clone() > (nodes.clone().borrow().len() as i32) {
+        if index.clone() > metamodelica::arrayLength(nodes.clone()) {
             nodes = Array::expand(((intReal(index.clone()) * metamodelica::OrderedFloat(1.4_f64)).0 as i32), nodes.clone(), -1)?;
         }
         UnorderedMap::addNew(entry.clone(), index.clone(), elements.clone())?;
@@ -192,7 +192,7 @@ pub mod ConnectionSets {
         sz = (entries.clone().len() as i32);
         index = node_count.clone() + 1;
         node_count = node_count.clone() + sz.clone();
-        if node_count.clone() > (nodes.clone().borrow().len() as i32) {
+        if node_count.clone() > metamodelica::arrayLength(nodes.clone()) {
             nodes = Array::expand(((intReal(node_count.clone()) * metamodelica::OrderedFloat(1.4_f64)).0 as i32), nodes.clone(), -1)?;
         }
         for mut e in &*entries.clone() {
@@ -242,8 +242,7 @@ pub mod ConnectionSets {
         }
         setsArray = arrayCreate(set_idx.clone(), metamodelica::nil());
         entries = UnorderedMap::toArray(sets.elements.clone());
-        let __range1 = (1..=(entries.clone().borrow().len() as i32)).rev();
-        for mut i in __range1 {
+        for mut i in (1..=metamodelica::arrayLength(entries.clone())).rev() {
             (e, idx) = metamodelica::Dangerous::arrayGetNoBoundsChecking(entries.clone(), i.clone());
             set_idx = nodes.borrow()[(idx.clone()-1) as usize].clone();
             while set_idx.clone() > 0 {
@@ -251,8 +250,8 @@ pub mod ConnectionSets {
             }
             set_idx = -(set_idx.clone());
             {
-                let __cell2 = metamodelica::cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
-                setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell2;
+                let __cell1 = metamodelica::cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
+                setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell1;
             }
         }
         assignedSets = Sets { nodes: nodes.clone(), elements: sets.elements.clone(), nodeCount: sets.nodeCount.clone() };

@@ -2695,19 +2695,17 @@ pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::L
         if isReverse.clone() {
             assign_field!(diffArguments.current_grad = current_grad.clone());
         } else {
-            let __range0 = 1..=(diff_lists.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(diff_lists.clone()) {
                 {
-                    let __cell1 = if (i.clone() == idx.clone()) {metamodelica::cons(diff_arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())} else {metamodelica::cons(arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())};
-                    diff_lists.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = if (i.clone() == idx.clone()) {metamodelica::cons(diff_arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())} else {metamodelica::cons(arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())};
+                    diff_lists.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
         }
         idx = idx.clone() + 1;
     }
     if !(isReverse.clone()) {
-        let __range2 = (1..=(diff_lists.clone().borrow().len() as i32)).rev();
-        for mut i in __range2 {
+        for mut i in (1..=metamodelica::arrayLength(diff_lists.clone())).rev() {
             new_arguments = metamodelica::cons(Arc::new(Expression::NFExpression::MULTARY { arguments: diff_lists.borrow()[(i.clone()-1) as usize].clone().reverse(), inv_arguments: metamodelica::nil(), operator: operator.clone() }), new_arguments.clone());
         }
     }

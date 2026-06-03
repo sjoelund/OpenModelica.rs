@@ -88,11 +88,11 @@ pub fn serialize(mut code: SimCode::SimCode) -> Result<ArcStr> {
         }
         __acc.reverse()
     }))?.into_iter().cloned().collect());
-            serializeJacobian((fname.clone()).clone(), (columnPointers.clone().borrow().len() as i32), (rowIndices.clone().borrow().len() as i32), columnPointers.clone(), rowIndices.clone());
+            serializeJacobian((fname.clone()).clone(), metamodelica::arrayLength(columnPointers.clone()), metamodelica::arrayLength(rowIndices.clone()), columnPointers.clone(), rowIndices.clone());
             for mut color in &*colorList.clone() {
                 let mut color = color.clone();
                 columns = metamodelica::arrayFromVec(color.clone().into_iter().cloned().collect());
-                serializeColor((fname.clone()).clone(), (columns.clone().borrow().len() as i32), columns.clone());
+                serializeColor((fname.clone()).clone(), metamodelica::arrayLength(columns.clone()), columns.clone());
             }
         }
     }

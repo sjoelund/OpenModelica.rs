@@ -3,6 +3,13 @@ cargo-features = ["codegen-backend"]
 codegen-backend = "cranelift"
 opt-level = 0
 debug = false
+# MetaModelica `Integer` is the C runtime's `modelica_integer` (a `long`):
+# its arithmetic wraps on overflow and OMC relies on that (DJB2-style hashes,
+# tick counters, bit twiddling). Rust's debug builds otherwise *panic* on
+# overflow, which diverges from both the C runtime and our own release build
+# (where checks are off by default). Disable the checks so debug == release ==
+# MetaModelica wrapping semantics.
+overflow-checks = false
 
 [workspace]
 resolver = "3"

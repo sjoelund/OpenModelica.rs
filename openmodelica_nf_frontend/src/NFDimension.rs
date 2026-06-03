@@ -190,7 +190,7 @@ pub fn fromInteger(mut n: i32, mut var: Variability) -> Arc<NFDimension> {
 }
 
 pub fn fromExpArray(mut expl: metamodelica::Array<Arc<Expression::NFExpression>>) -> Arc<NFDimension> {
-    let mut dim: Arc<NFDimension> = Arc::new(NFDimension::INTEGER { size: (expl.clone().borrow().len() as i32), var: Variability::CONSTANT.clone() });
+    let mut dim: Arc<NFDimension> = Arc::new(NFDimension::INTEGER { size: metamodelica::arrayLength(expl.clone()), var: Variability::CONSTANT.clone() });
     dim
 }
 

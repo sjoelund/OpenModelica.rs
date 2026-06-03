@@ -970,8 +970,7 @@ pub fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<VariableP
         }
         __acc.reverse()
     });
-            let __range3 = 1..=(strict.innerEquations.clone().borrow().len() as i32);
-            for mut i in __range3 {
+            for mut i in 1..=metamodelica::arrayLength(strict.innerEquations.clone()) {
                 collectCrefs(strict.innerEquations.borrow()[(i.clone()-1) as usize].clone(), var_rep.clone(), eqn_rep.clone(), var_rep_mapping.clone(), eqn_rep_mapping.clone(), map.clone(), set.clone(), jacType.clone())?;
                 loop_vars = listAppend(({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();

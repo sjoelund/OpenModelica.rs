@@ -750,7 +750,7 @@ fn createResetEquationCT(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc
     preRef = ComponentReference::crefPrefixString((arcstr::literal!(SMS_PRE)).clone(), initStateRef.clone());
     i = List::position1OnTrue(Arc::new(enclosingFlatSMComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(sMCompEqualsRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), inStateCref.clone())?;
     activeResetExp = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("activeReset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
-    nStates = (enclosingFlatSMComps.clone().borrow().len() as i32);
+    nStates = metamodelica::arrayLength(enclosingFlatSMComps.clone());
     tArrayBool = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_BOOL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nStates.clone() })] });
     activeResetStatesExp = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
     orExp = Arc::new(DAE::Exp::LBINARY { exp1: activeResetExp.clone(), operator: DAE::Operator::OR { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: activeResetStatesExp.clone() });
@@ -836,7 +836,7 @@ fn createResetEquation(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc<D
     preRef = ComponentReference::crefPrefixString((arcstr::literal!(SMS_PRE)).clone(), initStateRef.clone());
     i = List::position1OnTrue(Arc::new(enclosingFlatSMComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(sMCompEqualsRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), inStateCref.clone())?;
     activeResetExp = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("activeReset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
-    nStates = (enclosingFlatSMComps.clone().borrow().len() as i32);
+    nStates = metamodelica::arrayLength(enclosingFlatSMComps.clone());
     tArrayBool = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_BOOL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nStates.clone() })] });
     activeResetStatesExp = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
     orExp = Arc::new(DAE::Exp::LBINARY { exp1: activeResetExp.clone(), operator: DAE::Operator::OR { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: activeResetStatesExp.clone() });
@@ -1110,7 +1110,7 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         enclosingFlatSMInitStateRef = __pa9.clone();
         enclosingPreRef = ComponentReference::crefPrefixString((arcstr::literal!(SMS_PRE)).clone(), enclosingFlatSMInitStateRef.clone());
         posOfEnclosingSMComp = List::position1OnTrue(Arc::new(enclosingFlatSMComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), (std::sync::Arc::new(sMCompEqualsRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), enclosingStateCref.clone())?;
-        nStates = (enclosingFlatSMComps.clone().borrow().len() as i32);
+        nStates = metamodelica::arrayLength(enclosingFlatSMComps.clone());
         tArrayBool = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_BOOL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nStates.clone() })] });
         tArrayInteger = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nStates.clone() })] });
         enclosingActiveResetStateRef = qCref((literal!("activeResetStates")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: posOfEnclosingSMComp.clone() }) })], enclosingPreRef.clone())?;
@@ -1123,21 +1123,20 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         rhs = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: enclosingActiveStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: posOfEnclosingSMComp.clone() }), index: -1, optionExpisASUB: None });
         peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
     }
-    let __range10 = 1..=(smComps.clone().borrow().len() as i32);
-    for mut i in __range10 {
-        let __pa11 = ::match_deref::match_deref! { match &(smComps.clone().borrow()[(i.clone()-1) as usize].clone()) {
-            Deref @ DAE::Element::SM_COMP { componentRef: __pa11, .. } => __pa11.clone(),
+    for mut i in 1..=metamodelica::arrayLength(smComps.clone()) {
+        let __pa10 = ::match_deref::match_deref! { match &(smComps.clone().borrow()[(i.clone()-1) as usize].clone()) {
+            Deref @ DAE::Element::SM_COMP { componentRef: __pa10, .. } => __pa10.clone(),
             _ => bail!("pattern mismatch"),
         } };
-        stateRef = __pa11.clone();
+        stateRef = __pa10.clone();
         (activePlotIndicatorVar, activePlotIndicatorEqn) = createActiveIndicator(stateRef.clone(), preRef.clone(), i.clone())?;
         pvars = metamodelica::cons(activePlotIndicatorVar.clone(), pvars.clone());
         peqs = metamodelica::cons(activePlotIndicatorEqn.clone(), peqs.clone());
-        let __pa12 = ::match_deref::match_deref! { match &(activePlotIndicatorVar.clone()) {
-            Deref @ DAE::Element::VAR { componentRef: __pa12, .. } => __pa12.clone(),
+        let __pa11 = ::match_deref::match_deref! { match &(activePlotIndicatorVar.clone()) {
+            Deref @ DAE::Element::VAR { componentRef: __pa11, .. } => __pa11.clone(),
             _ => bail!("pattern mismatch"),
         } };
-        activePlotIndicatorRef = __pa12.clone();
+        activePlotIndicatorRef = __pa11.clone();
         (ticksInStateVar, ticksInStateEqn) = createTicksInStateIndicator(stateRef.clone(), activePlotIndicatorRef.clone())?;
         pvars = metamodelica::cons(ticksInStateVar.clone(), pvars.clone());
         peqs = metamodelica::cons(ticksInStateEqn.clone(), peqs.clone());

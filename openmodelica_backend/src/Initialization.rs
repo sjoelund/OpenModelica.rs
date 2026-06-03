@@ -729,7 +729,7 @@ fn selectInitializationVariablesDAE(mut dae: Arc<BackendDAE::BackendDAE>) -> Res
         globalKnownVarsSystem = BackendDAEUtil::createEqSystem(globalKnownVars.clone(), globalKnownVarsEqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         (m, mT) = BackendDAEUtil::adjacencyMatrix(globalKnownVarsSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(dae.shared.clone()))?;
         (ass1, ass2) = Matching::PerfectMatching(m.clone())?;
-        comps = Sorting::Tarjan(m.clone(), ass1.clone(), (ass1.clone().borrow().len() as i32))?;
+        comps = Sorting::Tarjan(m.clone(), ass1.clone(), metamodelica::arrayLength(ass1.clone()))?;
         comps = mapListIndices(comps.clone(), ass2.clone())?;
         flatComps = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -987,7 +987,7 @@ fn preBalanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut initVa
     let mut b: bool = false;
     let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (_, mt) = BackendDAEUtil::adjacencyMatrix(inEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, true)?;
-    (orderedVars, orderedEqs, b, outDumpVars) = preBalanceInitialSystem1((mt.clone().borrow().len() as i32), mt.clone(), inEqSystem.orderedVars.clone(), inEqSystem.orderedEqs.clone(), initVars.clone(), isLambda0.clone(), false, metamodelica::nil())?;
+    (orderedVars, orderedEqs, b, outDumpVars) = preBalanceInitialSystem1(metamodelica::arrayLength(mt.clone()), mt.clone(), inEqSystem.orderedVars.clone(), inEqSystem.orderedEqs.clone(), initVars.clone(), isLambda0.clone(), false, metamodelica::nil())?;
     if b.clone() {
         assign_field!(
             outEqSystem.orderedEqs = orderedEqs.clone(),
@@ -1154,7 +1154,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
         (eqn_to_var, var_to_eqn, _, _, _) = Matching::ContinueMatching(mT.clone(), nEqns.clone(), nVars.clone(), eqn_to_var.clone(), var_to_eqn.clone(), false)?;
         unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(var_to_eqn.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_to_eqn.clone())).into_iter() {
             if !(var_to_eqn.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1163,7 +1163,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     });
         redundantEqns = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(eqn_to_var.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(eqn_to_var.clone())).into_iter() {
             if !(eqn_to_var.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1212,7 +1212,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                 (eqn_to_var, var_to_eqn, _, _, _) = Matching::ContinueMatching(mT.clone(), nEqns.clone(), nVars.clone(), eqn_to_var.clone(), var_to_eqn.clone(), false)?;
                 unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(var_to_eqn.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_to_eqn.clone())).into_iter() {
             if !(var_to_eqn.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1221,7 +1221,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     });
                 redundantEqns = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(eqn_to_var.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(eqn_to_var.clone())).into_iter() {
             if !(eqn_to_var.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1384,7 +1384,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
     if Flags::isSet(Flags::INITIALIZATION.clone())? {
         overDetIndex = (({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(ass1.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(ass1.clone())).into_iter() {
             if !(ass1.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1393,7 +1393,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
     }).len() as i32);
         underDetIndex = (({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(ass2.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(ass2.clone())).into_iter() {
             if !(ass2.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -1402,7 +1402,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
     }).len() as i32);
         singular_eqns_idx = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (1..=(mapIncRowEqn.clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(mapIncRowEqn.clone())).into_iter() {
             if !(eMarks.borrow()[(i.clone()-1) as usize].clone()) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
@@ -2197,7 +2197,7 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
         if Flags::isSet(Flags::BLT_DUMP.clone())? || Flags::isSet(Flags::INITIALIZATION.clone())? {
             BackendDump::dumpEquationList(list![eqn.clone()], (literal!("initial state selection equation generated:")).clone())?;
         }
-        if (stateSetFixCounts.clone().borrow().len() as i32) >= stateSet.index.clone() && stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone() > 0 {
+        if metamodelica::arrayLength(stateSetFixCounts.clone()) >= stateSet.index.clone() && stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone() > 0 {
             unfixedStates = metamodelica::nil();
             for mut state in &*stateSet.statescandidates.clone() {
                 let mut state = state.clone();
@@ -2271,7 +2271,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let __x = AvlSetCR::hasKey(allPrimaryParameters.clone(), p.clone())?;
                     __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) {
                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Expression::crefExp(startCR.clone())?, scalar: startExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
                         eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;
@@ -2546,7 +2546,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let __x = AvlSetCR::hasKey(allPrimaryParameters.clone(), p.clone())?;
                     __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) {
                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Expression::crefExp(startCR.clone())?, scalar: startExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
                         eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;
@@ -2610,7 +2610,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let __x = AvlSetCR::hasKey(allPrimaryParameters.clone(), p.clone())?;
                     __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(true)
     })) {
                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Expression::crefExp(startCR.clone())?, scalar: startExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
                         eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;

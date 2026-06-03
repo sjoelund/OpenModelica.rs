@@ -306,7 +306,7 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**lhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
             elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone())).into_iter() {
             let __x = unwrap_break_err!(Expression::applySubscripts(list![unwrap_break_err!(Subscript::nth(dim.clone(), i.clone()), '__try0)], lhs.clone(), true), '__try0);
             __acc = cons(__x, __acc);
         }
@@ -320,7 +320,7 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**rhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
             elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((**lhs).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((**lhs).elements, Expression::NFExpression::ARRAY).clone())).into_iter() {
             let __x = unwrap_break_err!(Expression::applySubscripts(list![unwrap_break_err!(Subscript::nth(dim.clone(), i.clone()), '__try0)], rhs.clone(), true), '__try0);
             __acc = cons(__x, __acc);
         }
@@ -481,8 +481,7 @@ fn inlineArrayEquation(mut eqn: Arc<Equation::Equation>, mut lhs_elements: metam
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     eqns = Pointer::access(new_eqns.clone());
-    let __range0 = 1..=(lhs_elements.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(lhs_elements.clone()) {
         eqns = createInlinedEquation(eqns.clone(), lhs_elements.borrow()[(i.clone()-1) as usize].clone(), rhs_elements.borrow()[(i.clone()-1) as usize].clone(), attr.clone(), iter.clone(), variables.clone(), set.clone(), index.clone())?;
     }
     Pointer::update(new_eqns.clone(), eqns.clone());
@@ -688,7 +687,7 @@ fn inlineCatCallLiterals(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
                 sub_idx = bumpShift(sub_idx.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?;
             }
             if is_cat_dim.clone() {
-                shift = bumpShift(shift.clone(), Arc::new(Expression::NFExpression::INTEGER { value: (var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) }))?;
+                shift = bumpShift(shift.clone(), Arc::new(Expression::NFExpression::INTEGER { value: metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) }))?;
             }
             ()
         },
@@ -860,18 +859,17 @@ pub mod InlineRating {
             __acc += __x;
         }
         __acc
-    })) as f64) / metamodelica::OrderedFloat(((ir.input_rating.clone().borrow().len() as i32)) as f64) + intReal(ir.constant_rating.clone());
+    })) as f64) / metamodelica::OrderedFloat((metamodelica::arrayLength(ir.input_rating.clone())) as f64) + intReal(ir.constant_rating.clone());
         r
     }
 
     pub fn add(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>) -> Result<Arc<InlineRating>> {
         let mut dst: Arc<InlineRating> = dst;
-        if (dst.input_rating.clone().borrow().len() as i32) == (src.input_rating.clone().borrow().len() as i32) {
-            let __range0 = 1..=(dst.input_rating.clone().borrow().len() as i32);
-            for mut i in __range0 {
+        if metamodelica::arrayLength(dst.input_rating.clone()) == metamodelica::arrayLength(src.input_rating.clone()) {
+            for mut i in 1..=metamodelica::arrayLength(dst.input_rating.clone()) {
                 {
-                    let __cell1 = dst.input_rating.borrow()[(i.clone()-1) as usize].clone() + src.input_rating.borrow()[(i.clone()-1) as usize].clone();
-                    dst.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = dst.input_rating.borrow()[(i.clone()-1) as usize].clone() + src.input_rating.borrow()[(i.clone()-1) as usize].clone();
+                    dst.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
             assign_field!(dst.constant_rating = dst.constant_rating.clone() + src.constant_rating.clone());
@@ -884,11 +882,10 @@ pub mod InlineRating {
 
     pub fn multiply(mut ir: Arc<InlineRating>, mut i: i32) -> Arc<InlineRating> {
         let mut ir: Arc<InlineRating> = ir;
-        let __range0 = 1..=(ir.input_rating.clone().borrow().len() as i32);
-        for mut i in __range0 {
+        for mut i in 1..=metamodelica::arrayLength(ir.input_rating.clone()) {
             {
-                let __cell1 = i.clone() * ir.input_rating.borrow()[(i.clone()-1) as usize].clone();
-                ir.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                let __cell0 = i.clone() * ir.input_rating.borrow()[(i.clone()-1) as usize].clone();
+                ir.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
             }
         }
         assign_field!(ir.constant_rating = i.clone() * ir.constant_rating.clone());
@@ -903,10 +900,9 @@ pub mod InlineRating {
 
     pub fn addMapped(mut dst: Arc<InlineRating>, mut src: Arc<InlineRating>, mut args: metamodelica::Array<Arc<Expression::NFExpression>>, mut local_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<InlineRating>>>) -> Result<Arc<InlineRating>> {
         let mut dst: Arc<InlineRating> = dst;
-        let mut irp: Pointer::Pointer<Arc<InlineRating>> = Pointer::create(Arc::new(InlineRating { input_rating: arrayCreate((dst.input_rating.clone().borrow().len() as i32), 0), constant_rating: src.constant_rating.clone() }));
-        if (src.input_rating.clone().borrow().len() as i32) == (args.clone().borrow().len() as i32) {
-            let __range0 = 1..=(src.input_rating.clone().borrow().len() as i32);
-            for mut i in __range0 {
+        let mut irp: Pointer::Pointer<Arc<InlineRating>> = Pointer::create(Arc::new(InlineRating { input_rating: arrayCreate(metamodelica::arrayLength(dst.input_rating.clone()), 0), constant_rating: src.constant_rating.clone() }));
+        if metamodelica::arrayLength(src.input_rating.clone()) == metamodelica::arrayLength(args.clone()) {
+            for mut i in 1..=metamodelica::arrayLength(src.input_rating.clone()) {
                 if src.input_rating.borrow()[(i.clone()-1) as usize].clone() != 0 {
                     Expression::map(args.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new({ let __pe_b1 = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); let __pe_b2 = irp.clone(); let __pe_b3 = local_map.clone(); move |__pe_a0| addMappedExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 }

@@ -408,8 +408,7 @@ pub mod Partition {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(partition.index.clone())); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Association::toStringShort(partition.association.clone())?); __mm_s.push_str(&*literal!(" Partition")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         r#str = ((match partition.strongComponents.clone() {
         Some(mut comps) => {
-            let __range0 = 1..=(comps.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StrongComponent::toString(comps.borrow()[(i.clone()-1) as usize].clone(), i.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
@@ -754,11 +753,10 @@ pub mod Partition {
                 _ => bail!("pattern mismatch"),
             } };
             comps = __pa0.clone();
-            let __range1 = 1..=(comps.clone().borrow().len() as i32);
-            for mut i in __range1 {
+            for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 {
-                    let __cell2 = func(comps.borrow()[(i.clone()-1) as usize].clone())?;
-                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
+                    let __cell1 = func(comps.borrow()[(i.clone()-1) as usize].clone())?;
+                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
                 }
             }
             assign_field!(partition.strongComponents = Some(comps.clone()));
@@ -835,11 +833,10 @@ pub mod Partition {
         let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>> = Default::default();
         if isSome(par.strongComponents.clone()) {
             comps = Util::getOption(par.strongComponents.clone())?;
-            let __range0 = 1..=(comps.clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 {
-                    let __cell1 = StrongComponent::removeAlias(comps.borrow()[(i.clone()-1) as usize].clone());
-                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __cell0 = StrongComponent::removeAlias(comps.borrow()[(i.clone()-1) as usize].clone());
+                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
         }

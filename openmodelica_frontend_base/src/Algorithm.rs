@@ -275,7 +275,7 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
             let __x = SCodeUtil::commentHasBooleanNamedAnnotation(comment.clone(), (literal!("__OpenModelica_DisableListAppendWarning")).clone())?;
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or(false)
     })) {
                 Error::addSourceMessage(Error::LIST_REVERSE_WRONG_ORDER.clone(), list![(ExpressionBasics::printExpStr(e1.clone())?).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
                 bail!("fail");

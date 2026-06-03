@@ -2261,7 +2261,7 @@ pub mod VariablePointers {
     pub fn getMarkedVars(mut variables: Arc<VariablePointers>, mut marks: metamodelica::Array<bool>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
         let mut marked_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         let mut indices: Arc<metamodelica::List<i32>> = BackendUtil::findTrueIndices(marks.clone());
-        if (marks.clone().borrow().len() as i32) == size(variables.clone()) {
+        if metamodelica::arrayLength(marks.clone()) == size(variables.clone()) {
             marked_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut index in (indices.clone()).into_iter().cloned() {
@@ -2271,7 +2271,7 @@ pub mod VariablePointers {
         __acc.reverse()
     });
         } else {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.VariablePointers.getMarkedVars")); __mm_s.push_str(&*literal!(" failed because the number var marks (")); __mm_s.push_str(&*intString((marks.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(") is not equal to the number of variables (")); __mm_s.push_str(&*intString(size(variables.clone()))); __mm_s.push_str(&*literal!(").")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.VariablePointers.getMarkedVars")); __mm_s.push_str(&*literal!(" failed because the number var marks (")); __mm_s.push_str(&*intString(metamodelica::arrayLength(marks.clone()))); __mm_s.push_str(&*literal!(") is not equal to the number of variables (")); __mm_s.push_str(&*intString(size(variables.clone()))); __mm_s.push_str(&*literal!(").")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
         }
         Ok(marked_vars)

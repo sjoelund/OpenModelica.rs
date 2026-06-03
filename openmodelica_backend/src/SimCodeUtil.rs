@@ -877,7 +877,7 @@ fn translateClockedEquations(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
     let mut subPartition: BackendDAE::SubPartition = <BackendDAE::SubPartition as ::std::default::Default>::default();
     let mut isPrevVar: metamodelica::Array<bool> = Default::default();
     let mut simEq: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
-    simSubPartitions = arrayCreate((inShared.partitionsInfo.subPartitions.clone().borrow().len() as i32), None);
+    simSubPartitions = arrayCreate(metamodelica::arrayLength(inShared.partitionsInfo.subPartitions.clone()), None);
     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
     for mut syst in &*inSysts.clone() {
         let mut syst = syst.clone();
@@ -938,8 +938,7 @@ fn createClockedSimPartitions(mut basePartitions: metamodelica::Array<BackendDAE
     let mut off: i32 = 1;
     let mut basePartition: BackendDAE::BasePartition = <BackendDAE::BasePartition as ::std::default::Default>::default();
     let mut simSubPartitions: Arc<metamodelica::List<SimCode::SubPartition>> = metamodelica::nil();
-    let __range0 = 1..=(basePartitions.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(basePartitions.clone()) {
         basePartition = basePartitions.borrow()[(i.clone()-1) as usize].clone();
         if basePartition.nSubClocks.clone() > 0 {
             simSubPartitions = List::map(Array::getRange(off.clone(), off.clone() + basePartition.nSubClocks.clone() - 1, subPartitions.clone())?, (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
@@ -7591,7 +7590,7 @@ pub fn createModelInfo(mut class_: Arc<Absyn::Path>, mut program: Absyn::Program
         if debug.clone() {
             unwrap_break_err!(execStat((literal!("simCode: hasLargeEquationSystems")).clone()), '__try0);
         }
-        modelInfo = SimCode::ModelInfo { name: class_.clone(), description: (dlow.shared.info.description.clone()).clone(), version: (version.clone()).clone(), author: (author.clone()).clone(), license: (license.clone()).clone(), copyright: (copyright.clone()).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), varInfo: varInfo.clone(), vars: vars.clone(), functions: functions.clone(), labels: labels.clone(), resourcePaths: if (unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) {unwrap_break_err!(getResources(program.classes.clone(), dlow.clone(), inInitDAE.clone()), '__try0)} else {metamodelica::nil()}, sortedClasses: unwrap_break_err!(List::sort(program.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::classNameGreater, Arc<Absyn::Class>, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0), nClocks: (dlow.shared.partitionsInfo.basePartitions.clone().borrow().len() as i32), nSubClocks: (dlow.shared.partitionsInfo.subPartitions.clone().borrow().len() as i32), nSpatialDistributions: numSpatialDistributions.clone() + 1, hasLargeLinearEquationSystems: hasLargeEqSystems.clone(), linearSystems: metamodelica::nil(), nonLinearSystems: metamodelica::nil(), unitDefinitions: unitDefinitions.clone() };
+        modelInfo = SimCode::ModelInfo { name: class_.clone(), description: (dlow.shared.info.description.clone()).clone(), version: (version.clone()).clone(), author: (author.clone()).clone(), license: (license.clone()).clone(), copyright: (copyright.clone()).clone(), directory: (directory.clone()).clone(), fileName: (fileName.clone()).clone(), varInfo: varInfo.clone(), vars: vars.clone(), functions: functions.clone(), labels: labels.clone(), resourcePaths: if (unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) {unwrap_break_err!(getResources(program.classes.clone(), dlow.clone(), inInitDAE.clone()), '__try0)} else {metamodelica::nil()}, sortedClasses: unwrap_break_err!(List::sort(program.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::classNameGreater, Arc<Absyn::Class>, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0), nClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.basePartitions.clone()), nSubClocks: metamodelica::arrayLength(dlow.shared.partitionsInfo.subPartitions.clone()), nSpatialDistributions: numSpatialDistributions.clone() + 1, hasLargeLinearEquationSystems: hasLargeEqSystems.clone(), linearSystems: metamodelica::nil(), nonLinearSystems: metamodelica::nil(), unitDefinitions: unitDefinitions.clone() };
         Ok::<_, anyhow::Error>((author.clone(), copyright.clone(), description.clone(), directory.clone(), fileName.clone(), hasLargeEqSystems.clone(), license.clone(), modelInfo.clone(), na.clone(), na_bool.clone(), na_int.clone(), na_string.clone(), ndy.clone(), next.clone(), np.clone(), np_bool.clone(), np_int.clone(), np_string.clone(), numInVars.clone(), numOptimizeConstraints.clone(), numOptimizeFinalConstraints.clone(), numOutVars.clone(), numRealInputVars.clone(), nx.clone(), ny.clone(), ny_bool.clone(), ny_int.clone(), ny_string.clone(), unitDefinitions.clone(), varInfo.clone(), vars.clone(), version.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10, __try0_o11, __try0_o12, __try0_o13, __try0_o14, __try0_o15, __try0_o16, __try0_o17, __try0_o18, __try0_o19, __try0_o20, __try0_o21, __try0_o22, __try0_o23, __try0_o24, __try0_o25, __try0_o26, __try0_o27, __try0_o28, __try0_o29, __try0_o30, __try0_o31)) => {
@@ -7810,7 +7809,7 @@ fn preCalculateStartValues(mut systIn: Arc<BackendDAE::EqSystem>, mut globalKnow
     syst = BackendDAEUtil::createEqSystem(vars1.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (syst, mStart, mTStart) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     varMapArr = metamodelica::arrayFromVec(varMap.clone().into_iter().cloned().collect());
-    vars = preCalculateStartValues1(List::intRange((mStart.clone().borrow().len() as i32)), mStart.clone(), mTStart.clone(), varMapArr.clone(), eqs.clone(), vars.clone())?;
+    vars = preCalculateStartValues1(List::intRange(metamodelica::arrayLength(mStart.clone())), mStart.clone(), mTStart.clone(), varMapArr.clone(), eqs.clone(), vars.clone())?;
     stateIdcs = List::map(stateInfo.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
     stateKinds = List::map(stateInfo.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
     vars = List::threadFold(stateIdcs.clone(), stateKinds.clone(), (std::sync::Arc::new(BackendVariable::setVarKindForVar) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::VarKind, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), vars.clone())?;
@@ -12345,11 +12344,11 @@ fn getVarIndexInfosByMapping(mut iVarToArrayIndexMapping: (metamodelica::Array<A
     varName = ComponentReferenceBasics::crefStripLastSubs(varName.clone())?;
     if BaseHashTable::hasKey(varName.clone(), iVarToArrayIndexMapping.clone())? {
         (arrayDimensions, varIndices) = BaseHashTable::get(varName.clone(), iVarToArrayIndexMapping.clone())?;
-        isContiguous = (varIndices.clone().borrow().len() as i32) == 1;
+        isContiguous = metamodelica::arrayLength(varIndices.clone()) == 1;
         if isContiguous.clone() {
             arraySize = List::fold(arrayDimensions.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
         } else {
-            arraySize = (varIndices.clone().borrow().len() as i32);
+            arraySize = metamodelica::arrayLength(varIndices.clone());
         }
         concreteVarIndex = SimCodeUtilShared::getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone());
         toColumnMajor = iColumnMajor.clone() && (arrayDimensions.clone().len() as i32) > 1;
@@ -12426,7 +12425,7 @@ pub fn isVarIndexListConsecutive(mut iVarToArrayIndexMapping: (metamodelica::Arr
     varName = ComponentReferenceBasics::crefStripLastSubs(varName.clone())?;
     if BaseHashTable::hasKey(varName.clone(), iVarToArrayIndexMapping.clone())? {
         (_, varIndices) = BaseHashTable::get(varName.clone(), iVarToArrayIndexMapping.clone())?;
-        arraySize = (varIndices.clone().borrow().len() as i32);
+        arraySize = metamodelica::arrayLength(varIndices.clone());
         for mut arrayIdx in 0..=arraySize.clone() - 1 {
             idx = varIndices.clone().borrow()[(arraySize.clone() - arrayIdx.clone()-1) as usize].clone();
             if intLt(idx.clone(), 0) {
@@ -14687,7 +14686,7 @@ fn getHighestDerivation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<i32> {
             let __x = i.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     });
     GCExt::free(ders.clone());
     GCExt::free(depth.clone());
@@ -14960,7 +14959,7 @@ pub fn getInputIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
     let mut inputIndex: i32 = 0;
     let mut v: metamodelica::Array<i32> = Default::default();
     inputIndex = (match var.clone() {
-        SimCodeVar::SimVar { inputIndex: Some(mut v), .. } if ((v.clone().borrow().len() as i32) == 1) => v.clone().borrow()[(1-1) as usize].clone(),
+        SimCodeVar::SimVar { inputIndex: Some(mut v), .. } if (metamodelica::arrayLength(v.clone()) == 1) => v.clone().borrow()[(1-1) as usize].clone(),
         SimCodeVar::SimVar { inputIndex: Some(_), .. } => {
             Error::addInternalError((literal!("Failed to SimCodeUtil.getInputIndex of variable")).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")

@@ -958,7 +958,7 @@ fn optimalValuesToString(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<
             let __x = ((n.clone()).clone().len() as i32);
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     });
     while !(names.clone().is_empty()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(names.clone()) {

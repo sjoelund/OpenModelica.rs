@@ -699,11 +699,11 @@ fn sortResidualDepentOnTVars(mut iResiduals: Arc<metamodelica::List<i32>>, mut i
     let mut v1: metamodelica::Array<i32> = Default::default();
     let mut v2: metamodelica::Array<i32> = Default::default();
     eqnLocalGlobal = metamodelica::arrayFromVec(iResiduals.clone().into_iter().cloned().collect());
-    varGlobalLocal = arrayCreate((m.clone().borrow().len() as i32), -1);
+    varGlobalLocal = arrayCreate(metamodelica::arrayLength(m.clone()), -1);
     varGlobalLocal = getGlobalLocal(iTVars.clone(), 1, varGlobalLocal.clone())?;
     (oMark, maplst) = tVarsofResidualEqns(iResiduals.clone(), m.clone(), ass1.clone(), mT.clone(), varGlobalLocal.clone(), visited.clone(), iMark.clone())?;
     map = metamodelica::arrayFromVec(maplst.clone().into_iter().cloned().collect());
-    size = (map.clone().borrow().len() as i32);
+    size = metamodelica::arrayLength(map.clone());
     Matching::matchingExternalsetAdjacencyMatrix(size.clone(), size.clone(), map.clone());
     BackendDAEEXT::matching(size.clone(), size.clone(), 5, -1, metamodelica::OrderedFloat(1.0_f64), 1);
     v1 = arrayCreate(size.clone(), -1);
@@ -933,7 +933,7 @@ fn omcTearingSelectTearingVar(mut vars: BackendDAE::Variables, mut ass1: metamod
                     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPoints after 'calcVarWeights':\n")); __mm_s.push_str(&*stringDelimitList(List::mapArray(points.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     }
-                    eqns = Matching::getUnassigned((m.clone().borrow().len() as i32), ass2.clone(), metamodelica::nil());
+                    eqns = Matching::getUnassigned(metamodelica::arrayLength(m.clone()), ass2.clone(), metamodelica::nil());
                     points = List::fold2(eqns.clone(), (std::sync::Arc::new(addEqnWeights) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), m.clone(), ass1.clone(), points.clone())?;
                     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Points after 'addEqnWeights':\n")); __mm_s.push_str(&*stringDelimitList(List::mapArray(points.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -2114,7 +2114,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of selectTearingVar\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            {let _arr = ass1In.clone(); let _val = (ass1In.clone().borrow().len() as i32) * 2; _arr.borrow_mut()[(tvar.clone()-1) as usize] = _val; _arr};
+            {let _arr = ass1In.clone(); _arr.borrow_mut()[(tvar.clone()-1) as usize] = metamodelica::arrayLength(ass1In.clone()) * 2; _arr};
             deleteEntriesFromAdjacencyMatrix(mIn.clone(), mtIn.clone(), list![tvar.clone()])?;
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 println!("{}", (literal!("\n\n###BEGIN print Adjacency Matrix w/o tvar############\n(Function: CellierTearing2)\n")).clone());
@@ -2147,7 +2147,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 BackendDump::dumpMatching(ass1In.clone())?;
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\norder: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            unsolvables = getUnsolvableVarsConsiderMatching((meTIn.clone().borrow().len() as i32), meTIn.clone(), ass1In.clone(), ass2In.clone())?;
+            unsolvables = getUnsolvableVarsConsiderMatching(metamodelica::arrayLength(meTIn.clone()), meTIn.clone(), ass1In.clone(), ass2In.clone())?;
             if debug.clone() {
                 execStat((literal!("Tearing.CellierTearing2 - 1.3")).clone())?;
             }
@@ -2201,7 +2201,7 @@ fn CellierTearing2(mut inCausal: bool, mut mIn: metamodelica::Array<Arc<metamode
                 BackendDump::dumpMatching(ass1In.clone())?;
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\norder: ")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
-            unsolvables = getUnsolvableVarsConsiderMatching((meTIn.clone().borrow().len() as i32), meTIn.clone(), ass1In.clone(), ass2In.clone())?;
+            unsolvables = getUnsolvableVarsConsiderMatching(metamodelica::arrayLength(meTIn.clone()), meTIn.clone(), ass1In.clone(), ass2In.clone())?;
             (_, unsolvables, _) = List::intersection1OnTrue(unsolvables.clone(), tvars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             if debug.clone() {
                 execStat((literal!("Tearing.CellierTearing2 - 2")).clone())?;
@@ -2294,7 +2294,7 @@ fn ModifiedCellierHeuristic_1(mut mIn: metamodelica::Array<Arc<metamodelica::Lis
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n3rd: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Chosen tearing variable. One from (2nd) causalizing most equations [")); __mm_s.push_str(&*intString(edges.clone())); __mm_s.push_str(&*literal!("])\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2317,7 +2317,7 @@ fn ModifiedCellierHeuristic_2(mut mIn: metamodelica::Array<Arc<metamodelica::Lis
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n2nd: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Chosen tearing variable. One from (1st) causalizing most equations [")); __mm_s.push_str(&*intString(edges.clone())); __mm_s.push_str(&*literal!("])\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2346,7 +2346,7 @@ fn ModifiedCellierHeuristic_1_1(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, _) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, _) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n3rd: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Variables from (2nd) causalizing most equations)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2373,7 +2373,7 @@ fn ModifiedCellierHeuristic_2_1(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, _) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, _) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n2nd: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Variables from (1st) causalizing most equations)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2410,7 +2410,7 @@ fn ModifiedCellierHeuristic_1_2(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n4th: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Chosen tearing variable.One from (3rd) causalizing most equations [")); __mm_s.push_str(&*intString(edges.clone())); __mm_s.push_str(&*literal!("])\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2437,7 +2437,7 @@ fn ModifiedCellierHeuristic_2_2(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentials, edges) = selectOneMostCausalizingVar(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n3rd: ")); __mm_s.push_str(&*stringDelimitList(List::map(potentials.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Chosen tearing variable. One from (2nd) causalizing most equations [")); __mm_s.push_str(&*intString(edges.clone())); __mm_s.push_str(&*literal!("])\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -2470,7 +2470,7 @@ fn ModifiedCellierHeuristic_1_3(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     counts1 = counts1.clone().reverse();
     (_, counts2, _) = getAllVarsWithMostImpAss(selectedcols1.clone(), ass2In.clone(), metIn.clone())?;
     points = List::threadMap(counts1.clone(), counts2.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?;
@@ -2504,7 +2504,7 @@ fn ModifiedCellierHeuristic_2_3(mut mIn: metamodelica::Array<Arc<metamodelica::L
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     counts1 = counts1.clone().reverse();
     (_, counts2, _) = getAllVarsWithMostImpAss(selectedcols1.clone(), ass2In.clone(), metIn.clone())?;
     points = List::threadMap(counts1.clone(), counts2.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?;
@@ -2546,7 +2546,7 @@ fn ModifiedCellierHeuristic_2_3_1(mut mIn: metamodelica::Array<Arc<metamodelica:
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(selectedrows.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n(Equations which could be causalized by knowing one more Var)\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     counts1 = counts1.clone().reverse();
     (_, counts2, _) = getAllVarsWithMostImpAss(selectedcols1.clone(), ass2In.clone(), metIn.clone())?;
     points1 = List::threadMap(counts1.clone(), counts2.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?;
@@ -2568,7 +2568,7 @@ fn ModifiedCellierHeuristic_2_3_1(mut mIn: metamodelica::Array<Arc<metamodelica:
         potentials = potentials1.clone();
         potpoints2 = 0;
     } else {
-        (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+        (_, counts1) = selectMostCausalizingVars(mtIn.clone(), selectedcols1.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(selectedrows.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
         counts1 = counts1.clone().reverse();
         (_, counts2, _) = getAllVarsWithMostImpAss(selectedcols1.clone(), ass2In.clone(), metIn.clone())?;
         points2 = List::threadMap(counts1.clone(), counts2.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?;
@@ -2636,7 +2636,7 @@ fn ModifiedCellierHeuristic_3(mut mIn: metamodelica::Array<Arc<metamodelica::Lis
     if debug.clone() {
         execStat((literal!("TEARINGHEURISTIC3")).clone())?;
     }
-    (potentialTVars, counts1) = selectCausalizingVars(mtIn.clone(), potentialTVars2.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(causEq.clone(), (ass1In.clone().borrow().len() as i32))?)?;
+    (potentialTVars, counts1) = selectCausalizingVars(mtIn.clone(), potentialTVars2.clone(), meIn.clone(), ass1In.clone(), selectCausalVarsPrepareSelectionSet(causEq.clone(), metamodelica::arrayLength(ass1In.clone()))?)?;
     if potentialTVars.clone().is_empty() {
         potentialTVars = potentialTVars2.clone();
         counts1 = List::fill(0, (potentialTVars2.clone().len() as i32));
@@ -2906,7 +2906,7 @@ fn getOneVarWithMostPoints(mut inVarList: Arc<metamodelica::List<i32>>, mut inPo
             let __x = i.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction")).unwrap()
+        __acc.unwrap_or((-i32::MAX))
     });
     for mut i in &*inPointsLst.clone() {
         let mut i = i.clone();
@@ -3089,8 +3089,7 @@ fn traverseSingleEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut m: m
     let mut eqnSize: i32 = 0;
     let mut delst: DoubleEnded::MutableList<i32> = <DoubleEnded::MutableList<i32> as ::std::default::Default>::default();
     delst = DoubleEnded::empty(0);
-    let __range0 = 1..=(inAss.clone().borrow().len() as i32);
-    for mut e in __range0 {
+    for mut e in 1..=metamodelica::arrayLength(inAss.clone()) {
         if inAss.clone().borrow()[(e.clone()-1) as usize].clone() != -1 {
             continue;
         }
@@ -3259,7 +3258,7 @@ fn findConstraintForInnerEquation(mut meRow: Arc<metamodelica::List<(i32, Backen
 fn markTVarsOrResiduals(mut markList: Arc<metamodelica::List<i32>>, mut assIn: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     let mut assOut: metamodelica::Array<i32> = assIn.clone();
     let mut len: i32 = 0;
-    len = (assIn.clone().borrow().len() as i32);
+    len = metamodelica::arrayLength(assIn.clone());
     for mut i in &*markList.clone() {
         let mut i = i.clone();
         {let _arr = assOut.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = len.clone() * 2; _arr};
@@ -3339,7 +3338,7 @@ fn maxListInt(mut inList: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::Lis
             let __x = i.clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction")).unwrap()
+        __acc.unwrap_or((-i32::MAX))
     });
     for mut i in &*inList.clone() {
         let mut i = i.clone();
@@ -3360,7 +3359,7 @@ fn getMostNonlinearEquation(mut inArray: metamodelica::Array<i32>, mut inList: A
             let __x = inArray.borrow()[(listHead(mapEqnIncRow.borrow()[(i.clone()-1) as usize].clone())?-1) as usize].clone();
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     });
     for mut i in &*inList.clone() {
         let mut i = i.clone();
@@ -3436,13 +3435,12 @@ fn getVarsOfEqnsWithMostVars(mut inVars: Arc<metamodelica::List<i32>>, mut mIn: 
     let mut maxSize: i32 = 0;
     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqn_size_arr: metamodelica::Array<i32> = Default::default();
-    eqn_size_arr = arrayCreate((mIn.clone().borrow().len() as i32), -1);
-    let __range0 = 1..=(mIn.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    eqn_size_arr = arrayCreate(metamodelica::arrayLength(mIn.clone()), -1);
+    for mut i in 1..=metamodelica::arrayLength(mIn.clone()) {
         size = (mIn.borrow()[(i.clone()-1) as usize].clone().len() as i32);
         {
-            let __cell1 = size.clone();
-            eqn_size_arr.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+            let __cell0 = size.clone();
+            eqn_size_arr.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
         }
         if size.clone() > maxSize.clone() {
             maxSize = size.clone();
@@ -3810,8 +3808,7 @@ fn recursiveTearingCollect(mut tear_exp: metamodelica::Array<Arc<DAE::Exp>>, mut
     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (e1, e2) = ExpressionSolve::collectX(inExp.clone(), tear_exp.clone().borrow()[(1-1) as usize].clone(), true)?;
-    let __range0 = 2..=(tear_exp.clone().borrow().len() as i32);
-    for mut k in __range0 {
+    for mut k in 2..=metamodelica::arrayLength(tear_exp.clone()) {
         (lhs, e2) = ExpressionSolve::collectX(e2.clone(), tear_exp.clone().borrow()[(k.clone()-1) as usize].clone(), true)?;
         e1 = Expression::expAdd(e1.clone(), lhs.clone())?;
     }
@@ -3861,8 +3858,7 @@ fn recursiveTearingReplace(mut inExp: Arc<DAE::Exp>, mut inSourceExp: Arc<DAE::C
 
 fn getUnassigned(mut ass: metamodelica::Array<i32>) -> Arc<metamodelica::List<i32>> {
     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let __range0 = 1..=(ass.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(ass.clone()) {
         if metamodelica::Dangerous::arrayGetNoBoundsChecking(ass.clone(), i.clone()) < 0 {
             unassigned = metamodelica::cons(i.clone(), unassigned.clone());
         }

@@ -242,7 +242,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
             let __x = (d.clone().len() as i32);
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+        __acc.unwrap_or((-i32::MAX))
     });
     if maxn.clone() != ({
         let mut __acc: Option<i32> = None;
@@ -250,7 +250,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
             let __x = (d.clone().len() as i32);
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
-        __acc.ok_or_else(|| anyhow::anyhow!("empty min reduction"))?
+        __acc.unwrap_or(i32::MAX)
     }) {
         Error::addSourceMessageAndFail(Error::NF_DIFFERENT_NUM_DIM_IN_ARGUMENTS.clone(), list![stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();

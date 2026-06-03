@@ -520,8 +520,7 @@ pub fn typeIterator(mut iterator: Arc<InstNode::InstNode>, mut range: Arc<Expres
 
 pub fn typeDimensions(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimension>>, mut component: Arc<InstNode::InstNode>, mut binding: Arc<Binding::NFBinding>, mut context: i32, mut info: SourceInfo) -> Result<metamodelica::Array<Arc<Dimension::NFDimension>>> {
     let mut dimensions: metamodelica::Array<Arc<Dimension::NFDimension>> = dimensions;
-    let __range0 = 1..=(dimensions.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(dimensions.clone()) {
         typeDimension(dimensions.clone(), i.clone(), component.clone(), binding.clone(), context.clone(), info.clone())?;
     }
     Ok(dimensions)
@@ -1489,7 +1488,7 @@ pub fn typeCrefDim(mut cref: Arc<ComponentRef::NFComponentRef>, mut dimIndex: i3
             }
             dim_count = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: dims, .. }, .. } => {
-            dim_count = (dims.clone().borrow().len() as i32);
+            dim_count = metamodelica::arrayLength(dims.clone());
             if index.clone() <= dim_count.clone() && index.clone() > 0 {
                 dim = typeDimension(dims.clone(), index.clone(), node.clone(), var_field!((*c).binding, Component::NFComponent::COMPONENT).clone(), context.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
                 checkCyclicDimension(dim.clone(), node.clone(), index.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
@@ -1770,7 +1769,7 @@ pub fn typeArray(mut elements: metamodelica::Array<Arc<Expression::NFExpression>
     let mut idx: i32 = 0;
     let mut next_context: i32 = 0;
     next_context = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
-    array_len = (elements.clone().borrow().len() as i32);
+    array_len = metamodelica::arrayLength(elements.clone());
     if array_len.clone() > 0 {
         (exp, ty1, variability, purity) = typeExp(elements.clone().borrow()[(1-1) as usize].clone(), next_context.clone(), info.clone(), false)?;
         expl = metamodelica::cons(exp.clone(), expl.clone());
@@ -2366,7 +2365,7 @@ pub fn makeDefaultExternalCall(mut extDecl: Arc<Sections::NFSections>, mut fnNod
                 assign_variant_field!(extDecl => Sections::NFSections::EXTERNAL; outputRef = ComponentRef::fromNode(node.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()));
             }
             comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(r#fn.node.clone())?)?)?;
-            if (comps.clone().borrow().len() as i32) > 0 {
+            if metamodelica::arrayLength(comps.clone()) > 0 {
                 args = metamodelica::nil();
                 let __range4 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range4 {

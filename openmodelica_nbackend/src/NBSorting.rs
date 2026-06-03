@@ -189,8 +189,7 @@ pub mod PseudoBucket {
         let mut mode_opt: Option<Arc<Mode::Mode>> = None;
         let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
         let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let __range0 = 1..=(eqn_to_var.clone().borrow().len() as i32);
-        for mut eqn_scal_idx in __range0 {
+        for mut eqn_scal_idx in 1..=metamodelica::arrayLength(eqn_to_var.clone()) {
             mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone()), modes.clone())?;
             if isSome(mode_opt.clone()) {
                 mode = Util::getOption(mode_opt.clone())?;
@@ -349,8 +348,8 @@ pub fn tarjanScalar(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mu
     let mut number: metamodelica::Array<i32> = Default::default();
     let mut lowlink: metamodelica::Array<i32> = Default::default();
     let mut onStack: metamodelica::Array<bool> = Default::default();
-    let mut N: i32 = (matching.var_to_eqn.clone().borrow().len() as i32);
-    let mut M: i32 = (matching.eqn_to_var.clone().borrow().len() as i32);
+    let mut N: i32 = metamodelica::arrayLength(matching.var_to_eqn.clone());
+    let mut M: i32 = metamodelica::arrayLength(matching.eqn_to_var.clone());
     let mut eqn: i32 = 0;
     number = arrayCreate(M.clone(), -1);
     lowlink = arrayCreate(M.clone(), -1);
@@ -569,29 +568,29 @@ pub mod SuperNode {
             shift = (algebraic_loops.clone().len() as i32) + (buckets.clone().len() as i32);
             super_nodes = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<SuperNode>>> = metamodelica::nil();
-        for mut i in (1..=(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone().borrow().len() as i32) + shift.clone()).into_iter() {
+        for mut i in (1..=metamodelica::arrayLength(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone()) + shift.clone()).into_iter() {
             let __x = Arc::new(SuperNode::SINGLE { index: i.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }).into_iter().cloned().collect());
-            index = (phase2_matching.eqn_to_var.clone().borrow().len() as i32);
-            assign_field!(phase2_matching.eqn_to_var = Array::expandToSize((phase2_matching.eqn_to_var.clone().borrow().len() as i32) + shift.clone(), phase2_matching.eqn_to_var.clone(), -1)?);
+            index = metamodelica::arrayLength(phase2_matching.eqn_to_var.clone());
+            assign_field!(phase2_matching.eqn_to_var = Array::expandToSize(metamodelica::arrayLength(phase2_matching.eqn_to_var.clone()) + shift.clone(), phase2_matching.eqn_to_var.clone(), -1)?);
             for mut i in index.clone() + 1..=index.clone() + shift.clone() {
                 {
                     let __cell0 = i.clone();
                     phase2_matching.eqn_to_var.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
-            index = (phase2_matching.var_to_eqn.clone().borrow().len() as i32);
-            assign_field!(phase2_matching.var_to_eqn = Array::expandToSize((phase2_matching.var_to_eqn.clone().borrow().len() as i32) + shift.clone(), phase2_matching.var_to_eqn.clone(), -1)?);
+            index = metamodelica::arrayLength(phase2_matching.var_to_eqn.clone());
+            assign_field!(phase2_matching.var_to_eqn = Array::expandToSize(metamodelica::arrayLength(phase2_matching.var_to_eqn.clone()) + shift.clone(), phase2_matching.var_to_eqn.clone(), -1)?);
             for mut i in index.clone() + 1..=index.clone() + shift.clone() {
                 {
                     let __cell1 = i.clone();
                     phase2_matching.var_to_eqn.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
                 }
             }
-            index = (var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone().borrow().len() as i32) + 1;
+            index = metamodelica::arrayLength(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone()) + 1;
             assign_variant_field!(phase2_adj => Adjacency::Matrix::Matrix::FINAL; mT = Adjacency::Matrix::expandMatrix(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone(), shift.clone())?);
             for mut scc in &*algebraic_loops.clone() {
                 let mut scc = scc.clone();
@@ -630,8 +629,8 @@ pub mod SuperNode {
     } });
                 index = mergeRows(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone(), phase2_matching.var_to_eqn.clone(), super_nodes.clone(), var_lst.clone(), index.clone())?;
             }
-            index = (var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone().borrow().len() as i32) + 1;
-            assign_variant_field!(phase2_adj => Adjacency::Matrix::Matrix::FINAL; m = Adjacency::Matrix::transposeScalar(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone(), (var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone().borrow().len() as i32) + shift.clone())?);
+            index = metamodelica::arrayLength(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone()) + 1;
+            assign_variant_field!(phase2_adj => Adjacency::Matrix::Matrix::FINAL; m = Adjacency::Matrix::transposeScalar(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone(), metamodelica::arrayLength(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone()) + shift.clone())?);
             for mut scc in &*algebraic_loops.clone() {
                 let mut scc = scc.clone();
                 mergeLoopNodes(super_nodes.clone(), scc.clone(), index.clone(), true)?;
@@ -654,7 +653,7 @@ pub mod SuperNode {
     } });
                 index = mergeRows(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), phase2_matching.eqn_to_var.clone(), super_nodes.clone(), eqn_lst.clone(), index.clone())?;
             }
-            assign_variant_field!(phase2_adj => Adjacency::Matrix::Matrix::FINAL; mT = Adjacency::Matrix::transposeScalar(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), (var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone().borrow().len() as i32))?);
+            assign_variant_field!(phase2_adj => Adjacency::Matrix::Matrix::FINAL; mT = Adjacency::Matrix::transposeScalar(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), metamodelica::arrayLength(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone()))?);
             phase2_adj.clone()
         },
         _ => {

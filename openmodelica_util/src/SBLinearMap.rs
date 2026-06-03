@@ -74,7 +74,7 @@ pub fn new(mut gain: metamodelica::Array<metamodelica::Real>, mut offset: metamo
     let mut map: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
     if Array::any(gain.clone(), (std::sync::Arc::new(fnptr!(Util::realNegative, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))? {
         map = newEmpty();
-    } else if (gain.clone().borrow().len() as i32) == (offset.clone().borrow().len() as i32) {
+    } else if metamodelica::arrayLength(gain.clone()) == metamodelica::arrayLength(offset.clone()) {
         map = Arc::new(SBLinearMap { gain: metamodelica::arrayFromVec(gain.clone().borrow().clone()), offset: metamodelica::arrayFromVec(offset.clone().borrow().clone()) });
     } else {
         map = newEmpty();
@@ -100,12 +100,12 @@ pub fn copy(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
 }
 
 pub fn ndim(mut map: Arc<SBLinearMap>) -> i32 {
-    let mut ndim: i32 = (map.gain.clone().borrow().len() as i32);
+    let mut ndim: i32 = metamodelica::arrayLength(map.gain.clone());
     ndim
 }
 
 pub fn isDim(mut map: Arc<SBLinearMap>, mut dim: i32) -> bool {
-    let mut res: bool = (map.gain.clone().borrow().len() as i32) == dim.clone();
+    let mut res: bool = metamodelica::arrayLength(map.gain.clone()) == dim.clone();
     res
 }
 
@@ -226,8 +226,7 @@ pub fn applyInterval(mut interval: Arc<SBInterval::SBInterval>, mut gain: metamo
 pub fn toString(mut map: Arc<SBLinearMap>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let __range0 = (1..=(map.gain.clone().borrow().len() as i32)).rev();
-    for mut i in __range0 {
+    for mut i in (1..=metamodelica::arrayLength(map.gain.clone())).rev() {
         strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone())))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone())))); ArcStr::from(__mm_s) }).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());

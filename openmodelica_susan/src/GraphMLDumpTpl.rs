@@ -89,10 +89,10 @@ pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML:
             txt = Tpl::writeText(txt.clone(), l_attDefDump.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("<!-- Graph Idx: ")).clone()], lastHasNewLine: false }))?;
-            ret_3 = (i_graphs.clone().borrow().len() as i32);
+            ret_3 = metamodelica::arrayLength(i_graphs.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_3.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" -->\n")).clone() }))?;
-            ret_4 = (i_graphs.clone().borrow().len() as i32);
+            ret_4 = metamodelica::arrayLength(i_graphs.clone());
             ret_5 = i_graphs.clone().borrow()[(ret_4.clone()-1) as usize].clone();
             txt = dumpGraph(txt.clone(), ret_5.clone(), i_graphs.clone(), i_nodes.clone(), (Tpl::textString(l_edgeDump.clone())?).clone(), (i_graphNodeKey.clone()).clone(), i_attributes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -121,7 +121,7 @@ fn lm_8(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut i
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
-            ret_0 = (a_allNodes.clone().borrow().len() as i32);
+            ret_0 = metamodelica::arrayLength(a_allNodes.clone());
             ret_1 = intSub(ret_0.clone(), i_idc.clone());
             ret_2 = intAdd(1, ret_1.clone());
             ret_3 = a_allNodes.clone().borrow()[(ret_2.clone()-1) as usize].clone();
@@ -354,12 +354,12 @@ pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_al
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("  </y:GroupNode>\n")).clone(), (literal!("</y:Realizers>\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("  </y:ProxyAutoBoundsNode>\n")).clone(), (literal!("</data>\n")).clone(), (literal!("<!-- Graph Idx: ")).clone()], lastHasNewLine: false }))?;
-            ret_4 = (a_allGraphs.clone().borrow().len() as i32);
+            ret_4 = metamodelica::arrayLength(a_allGraphs.clone());
             ret_5 = intSub(ret_4.clone(), i_internalGraphIdx.clone());
             ret_6 = intAdd(1, ret_5.clone());
             txt = Tpl::writeStr(txt.clone(), (intString(ret_6.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" -->\n")).clone() }))?;
-            ret_7 = (a_allGraphs.clone().borrow().len() as i32);
+            ret_7 = metamodelica::arrayLength(a_allGraphs.clone());
             ret_8 = intSub(ret_7.clone(), i_internalGraphIdx.clone());
             ret_9 = intAdd(1, ret_8.clone());
             ret_10 = a_allGraphs.clone().borrow()[(ret_9.clone()-1) as usize].clone();

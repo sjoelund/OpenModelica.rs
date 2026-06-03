@@ -398,7 +398,7 @@ pub fn removeSizeOneArraysAndRecords(mut ty: Arc<NFType>) -> Result<Arc<NFType>>
     }));
             if (var_field!((*ty).dimensions, NFType::ARRAY).clone().is_empty()) {removeSizeOneArraysAndRecords(var_field!((*ty).elementType, NFType::ARRAY).clone())?} else {ty.clone()}
         },
-        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } if ((fields.clone().borrow().len() as i32) == 1) => {
+        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } if (metamodelica::arrayLength(fields.clone()) == 1) => {
             removeSizeOneArraysAndRecords(lookupRecordFieldType((Record::Field::name(fields.borrow()[(1-1) as usize].clone())?).clone(), ty.clone())?)?
         },
         _ => {
@@ -870,8 +870,7 @@ pub fn applyToDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dim
             ty.clone()
         },
         Deref @ UNTYPED { .. } => {
-            let __range0 = 1..=(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().len() as i32);
-            for mut i in __range0 {
+            for mut i in 1..=metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()) {
                 {let _arr = var_field!((*ty).dimensions, NFType::UNTYPED).clone(); let _val = func(var_field!((*ty).dimensions, NFType::UNTYPED).borrow()[(i.clone()-1) as usize].clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
             }
             ty.clone()
@@ -906,7 +905,7 @@ pub fn dimensionCount(mut ty: Arc<NFType>) -> i32 {
         Deref @ CONDITIONAL_ARRAY { .. } => dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
         Deref @ FUNCTION { .. } => dimensionCount(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
         Deref @ METABOXED { .. } => dimensionCount(var_field!((*ty).ty, NFType::METABOXED).clone()),
-        Deref @ UNTYPED { .. } => (var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().len() as i32),
+        Deref @ UNTYPED { .. } => metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1408,7 +1407,7 @@ pub fn recordFieldCount(mut recordType: Arc<NFType>) -> i32 {
     let mut fieldCount: i32 = 0;
     let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = Default::default();
     fieldCount = (::match_deref::match_deref! { match &(recordType.clone()) {
-        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } => (fields.clone().borrow().len() as i32),
+        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } => metamodelica::arrayLength(fields.clone()),
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1436,7 +1435,7 @@ pub fn setRecordFields(mut field_lst: Arc<metamodelica::List<Arc<Record::Field::
         (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. } => {
             let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
-            indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (fields.clone().borrow().len() as i32));
+            indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), metamodelica::arrayLength(fields.clone()));
             updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;
             Arc::new(NFType::COMPLEX { cls: var_field!((*recordType).cls, NFType::COMPLEX).clone(), complexTy: Arc::new(ComplexType::NFComplexType::RECORD { constructor: rec_node.clone(), fields: fields.clone(), indexMap: indexMap.clone() }) })
         },
@@ -1450,8 +1449,7 @@ pub fn setRecordFields(mut field_lst: Arc<metamodelica::List<Arc<Record::Field::
 }
 
 pub fn updateRecordFieldsIndexMap(mut fields: metamodelica::Array<Arc<Record::Field::Field>>, mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<()> {
-    let __range0 = 1..=(fields.clone().borrow().len() as i32);
-    for mut i in __range0 {
+    for mut i in 1..=metamodelica::arrayLength(fields.clone()) {
         UnorderedMap::add((Record::Field::name(fields.borrow()[(i.clone()-1) as usize].clone())?).clone(), i.clone(), indexMap.clone())?;
     }
     Ok(())
