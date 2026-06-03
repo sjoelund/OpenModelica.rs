@@ -21,9 +21,11 @@
 //   4 = Optimica       → `Grammar::Optimica`
 //   5 = PDEModelica    → `Grammar::Modelica3`        (no dedicated grammar yet)
 //
-// Functions that are not yet implementable on top of the current parser
-// (e.g. statement / .mos parsing, the library-vendor-executable hooks)
-// stay as `todo!()` with a comment so the gap is explicit.
+// The interactive entry points (`parseexp`, `parsestringexp`, `stringPath`,
+// `stringCref`, `stringMod`, `stringEq`) forward to the corresponding
+// per-construct parser entry points (`parser::parse_statements` etc.),
+// mirroring how `parse.c` selects an ANTLR entry rule from the `PARSE_*`
+// flags.
 
 #![allow(non_snake_case)]
 
@@ -103,73 +105,86 @@ pub fn parsestring(
 }
 
 // ---------------------------------------------------------------------
-// The remaining entry points are interactive-mode helpers (parse a
-// single expression / path / cref / equation, or drive the .mos script
-// front-end).  The winnow parser currently only exposes a top-level
-// `stored_definition` entry point; the per-construct entry points need
-// to be added before these can be implemented properly.  Leaving them
-// as `todo!()` keeps callers honest instead of silently returning
-// garbage AST.
+// Interactive-mode entry points: parse a .mos script / statement
+// sequence, or a single path / cref / modification / equation.  Each
+// maps to one ANTLR entry rule selected by `parse.c`'s `PARSE_*` flags;
+// the Rust parser exposes them as dedicated `parse_*` functions.
 // ---------------------------------------------------------------------
 
 pub fn parseexp(
-    _filename: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    filename: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
-    todo!("ParserExt::parseexp: .mos / interactive statement parsing not yet ported")
+    let src = std::fs::read_to_string(filename.as_str())
+        .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_statements(&src, infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn parsestringexp(
-    _str: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    r#str: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
-    todo!("ParserExt::parsestringexp: interactive statement parsing not yet ported")
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_statements(r#str.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn stringPath(
-    _str: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    r#str: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::Path>> {
-    todo!("ParserExt::stringPath: no `name_path` entry point exposed on the parser yet")
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_path(r#str.as_str(), infoFilename.as_str(), grammar)
+        .map(Arc::new)
+        .map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn stringCref(
-    _str: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    r#str: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::ComponentRef>> {
-    todo!("ParserExt::stringCref: no `component_reference` entry point exposed on the parser yet")
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_cref(r#str.as_str(), infoFilename.as_str(), grammar)
+        .map(Arc::new)
+        .map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn stringMod(
-    _str: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    r#str: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::ElementArg>> {
-    todo!("ParserExt::stringMod: no `element_modification` entry point exposed on the parser yet")
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_modification(r#str.as_str(), infoFilename.as_str(), grammar)
+        .map(Arc::new)
+        .map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn stringEq(
-    _str: ArcStr,
-    _infoFilename: ArcStr,
-    _acceptedGram: i32,
-    _languageStandardInt: i32,
+    r#str: ArcStr,
+    infoFilename: ArcStr,
+    acceptedGram: i32,
+    languageStandardInt: i32,
     _runningTestsuite: bool,
-) -> Arc<Absyn::EquationItem> {
-    todo!("ParserExt::stringEq: no `equation` entry point exposed on the parser yet")
+) -> Result<Arc<Absyn::EquationItem>> {
+    let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::parse_equation(r#str.as_str(), infoFilename.as_str(), grammar)
+        .map(Arc::new)
+        .map_err(|e| anyhow!(e.to_string()))
 }
 
 // ---------------------------------------------------------------------

@@ -911,19 +911,27 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
     //
     // For functions with an `external` clause, look up the classification in
     // priority order:
-    //   1. The MM-side bare name in [`builtin_fallibility`] — this is where
+    //   1. The C symbol in [`external_c_calls`] — the strict registry of
+    //      genuine `OMCompiler/Compiler/runtime/*.c` symbols. An explicit
+    //      registry entry is authoritative: it is keyed by the exact C
+    //      symbol, whereas the builtin table below is keyed by bare MM name
+    //      and would mis-classify same-named functions (e.g.
+    //      `ParserExt.stringEq` → C symbol `ParserExt_stringEq`, a fallible
+    //      parser entry point, must not be classified as the infallible
+    //      `stringEq` string-comparison builtin).
+    //   2. The MM-side bare name in [`builtin_fallibility`] — this is where
     //      Modelica language built-ins (`sin`, `cos`, `assert`, the array
     //      constructors, the signal operators, …) live. They are declared
     //      with `external "C"` in `ModelicaBuiltin.mo` but the compiler
     //      implements them directly; they are NOT calls into the OpenModelica
-    //      C runtime, so they must not consult [`external_c_calls`].
-    //   2. The C symbol in [`external_c_calls`] — the strict registry of
-    //      genuine `OMCompiler/Compiler/runtime/*.c` symbols. Panics on
-    //      unlisted entries (unless `MMTORUST_LENIENT_EXTERNALS=1`).
+    //      C runtime, so they have no registry entry.
+    //   3. Neither table knows the symbol: `lookup_or_panic` reports the
+    //      missing registry entry (unless `MMTORUST_LENIENT_EXTERNALS=1`).
     for (qname, w) in &walks {
         let local = if let Some(c_name) = &w.external {
             let simple = qname.rsplit_once('.').map(|(_, s)| s).unwrap_or(qname.as_str());
-            let f = builtin_fallibility(simple)
+            let f = external_c_calls::lookup(c_name)
+                .or_else(|| builtin_fallibility(simple))
                 .unwrap_or_else(|| external_c_calls::lookup_or_panic(c_name, qname));
             matches!(f, Fallibility::Fallible)
         } else {

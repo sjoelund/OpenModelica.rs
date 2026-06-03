@@ -202,17 +202,69 @@ impl std::error::Error for ParserError {}
 // Public entry point
 // ---------------------------------------------------------------------------
 
-/// Lex then parse `src`.  Returns the AST or the first error encountered.
-pub fn parse(src: &str, filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
+/// Lex `src` and run a single grammar entry point over the token stream,
+/// requiring all tokens to be consumed.
+///
+/// This mirrors how `OMCompiler/Parser/parse.c` selects an entry rule from
+/// the `PARSE_*` flags (`stored_definition`, `interactive_stmt`,
+/// `name_path_end`, `component_reference_end`,
+/// `element_modification_or_replaceable`, `equation`); each public
+/// `parse_*` function below corresponds to one of those rules.
+fn run_entry<T>(
+    src: &str,
+    filename: &str,
+    grammar: Grammar,
+    mut entry: fn(&mut &[LexToken]) -> ModalResult<T>,
+) -> Result<T, Box<dyn std::error::Error>> {
     CURRENT_FILE.with(|f| *f.borrow_mut() = ArcStr::from(filename));
     let (tokens, comments) = lexer::lex_with_comments(src, grammar)?;
     COMMENT_STREAM.with(|s| *s.borrow_mut() = CommentStream::new(comments));
-    let result = stored_definition
+    let result = entry
         .parse(tokens.as_slice())
         .map_err(|e| Box::new(ParserError::from_parse_error(e, &tokens)) as Box<dyn std::error::Error>);
     // Don't keep references to the previous file's comments alive across calls.
     COMMENT_STREAM.with(|s| *s.borrow_mut() = CommentStream::empty());
     result
+}
+
+/// Lex then parse `src`.  Returns the AST or the first error encountered.
+pub fn parse(src: &str, filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, stored_definition)
+}
+
+/// Parse a `.mos` script / sequence of interactive statements (ANTLR3 rule
+/// `interactive_stmt`; entry point for `ParserExt.parseexp` and
+/// `ParserExt.parsestringexp`).
+pub fn parse_statements(
+    src: &str,
+    filename: &str,
+    grammar: Grammar,
+) -> Result<crate::GlobalScript::Statements, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, interactive_stmt)
+}
+
+/// Parse a dotted name path such as `Modelica.Blocks.Sources` (ANTLR3 rule
+/// `name_path_end`; entry point for `ParserExt.stringPath`).
+pub fn parse_path(src: &str, filename: &str, grammar: Grammar) -> Result<Path, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, name_path)
+}
+
+/// Parse a component reference such as `a.b[1].c` (ANTLR3 rule
+/// `component_reference_end`; entry point for `ParserExt.stringCref`).
+pub fn parse_cref(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ComponentRef, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, component_reference)
+}
+
+/// Parse a single element modification such as `x(start = 1.0)` (ANTLR3 rule
+/// `element_modification_or_replaceable`; entry point for `ParserExt.stringMod`).
+pub fn parse_modification(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ElementArg, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, element_modification_or_replaceable)
+}
+
+/// Parse a single equation such as `x = y + 1` (ANTLR3 rule `equation`;
+/// entry point for `ParserExt.stringEq`).
+pub fn parse_equation(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::EquationItem, Box<dyn std::error::Error>> {
+    run_entry(src, filename, grammar, equation_item)
 }
 
 // ---------------------------------------------------------------------------
@@ -1819,6 +1871,117 @@ fn failure_algorithm(input: &mut TokenInput) -> ModalResult<Algorithm> {
 }
 
 // ---------------------------------------------------------------------------
+// Interactive (.mos) statements
+// ---------------------------------------------------------------------------
+
+/// `interactive_stmt` (Modelica.g):
+/// `BOM? interactive_stmt_list (SEMICOLON)? EOF` where `interactive_stmt_list`
+/// is `top_algorithm (SEMICOLON top_algorithm)*`.  The trailing-semicolon flag
+/// is recorded in `Statements.semicolon` (a statement ending in `;` does not
+/// print its result in the interactive environment).
+fn interactive_stmt(input: &mut TokenInput) -> ModalResult<crate::GlobalScript::Statements> {
+    if matches!(peek_kind(input), Some(TK::BOM)) { next_tok(input)?; }
+    let mut stmts: Arc<List<crate::GlobalScript::Statement>> = Arc::new(List::Nil);
+    let mut semicolon = false;
+    // The ANTLR rule requires at least one statement; we are slightly more
+    // lenient and accept an empty token stream (e.g. a script containing
+    // only comments) as an empty statement list.
+    if !input.is_empty() {
+        stmts = cons(top_algorithm(input)?, stmts);
+        while opt(t(TK::Semi)).parse_next(input)?.is_some() {
+            if input.is_empty() {
+                // The optional final semicolon before EOF.
+                semicolon = true;
+                break;
+            }
+            // After a non-final ';' another statement is the only valid
+            // continuation, so commit to it for a precise error position.
+            stmts = cons(
+                cut_err(top_algorithm)
+                    .context(StrContext::Label("interactive statement"))
+                    .parse_next(input)?,
+                stmts,
+            );
+        }
+    }
+    Ok(crate::GlobalScript::Statements { interactiveStmtLst: stmts.reverse(), semicolon })
+}
+
+/// `top_algorithm` (Modelica.g): one interactive statement.
+///
+/// Mirrors the ANTLR syntactic predicate
+/// `(expression (SEMICOLON|EOF)) => expression`: a bare expression is only
+/// accepted when followed by `;` or end-of-input, and yields `IEXP`.
+/// Otherwise one of the statement forms (assignment, if, for, while, try)
+/// is parsed and yields `IALG`.  An assignment like `a := f()` fails the
+/// expression predicate (the next token is `:=`) and lands in
+/// [`assign_clause_a`].
+fn top_algorithm(input: &mut TokenInput) -> ModalResult<crate::GlobalScript::Statement> {
+    let start = *input;
+    let cursor = save_comment_cursor();
+    match expression(input) {
+        Ok(e) if input.is_empty() || matches!(peek_kind(input), Some(TK::Semi)) => {
+            return Ok(crate::GlobalScript::Statement::IEXP {
+                exp: Arc::new(e),
+                info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+            });
+        }
+        _ => {
+            // Predicate failed (either the expression did not parse, or it
+            // is not followed by ';'/EOF).  Rewind the token cursor and the
+            // comment stream and try the statement alternatives, exactly
+            // like ANTLR's backtracking over the predicate.
+            *input = start;
+            restore_comment_cursor(cursor);
+        }
+    }
+
+    let alg = match peek_kind(input) {
+        Some(TK::If)    => if_algorithm(input)?,    // conditional_equation_a
+        Some(TK::For)   => for_algorithm(input)?,   // for_clause_a
+        Some(TK::While) => while_algorithm(input)?, // while_clause
+        Some(TK::Try)   => try_algorithm(input)?,   // try_clause
+        // NOTE: `parfor_clause_a` (ParModelica) is not implemented — the
+        // algorithm-section parser does not support parfor loops either.
+        _               => assign_clause_a(input)?, // top_assign_clause_a
+    };
+    let cmt = comment(input)?;
+    Ok(crate::GlobalScript::Statement::IALG {
+        algItem: Arc::new(AlgorithmItem::ALGORITHMITEM {
+            algorithm_: Arc::new(alg),
+            comment: cmt.map(Arc::new),
+            info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        }),
+    })
+}
+
+/// `element_modification_or_replaceable` (Modelica.g):
+/// `EACH? FINAL? (element_modification | element_replaceable)`.
+/// Entry point used by `ParserExt.stringMod`.
+fn element_modification_or_replaceable(input: &mut TokenInput) -> ModalResult<ElementArg> {
+    let each_  = opt(t(TK::Each)).parse_next(input)?.is_some();
+    let final_ = opt(t(TK::Final)).parse_next(input)?.is_some();
+    let mut res = alt((element_replaceable, element_modification)).parse_next(input)?;
+    // The ANTLR rule threads each/final into the sub-rules as parameters;
+    // here the sub-parsers build the node with default prefixes and we patch
+    // the prefix fields afterwards.
+    match &mut res {
+        ElementArg::MODIFICATION { eachPrefix, finalPrefix, .. }
+        | ElementArg::REDECLARATION { eachPrefix, finalPrefix, .. } => {
+            *eachPrefix  = if each_ { Each::EACH {} } else { Each::NON_EACH {} };
+            *finalPrefix = final_;
+        }
+        // element_modification/element_replaceable only build the two
+        // variants above; the comment/inheritance-break variants come from
+        // other producers.
+        ElementArg::ELEMENTARGCOMMENT { .. } | ElementArg::INHERITANCEBREAK { .. } => {
+            unreachable!("element_modification/element_replaceable produced an unexpected ElementArg variant")
+        }
+    }
+    Ok(res)
+}
+
+// ---------------------------------------------------------------------------
 // Match expression helpers
 // ---------------------------------------------------------------------------
 
@@ -3055,5 +3218,120 @@ end P;\n\
         if let Err(e) = parse(&code, "CodegenC.mo", Grammar::MetaModelica) {
             panic!("expected CodegenC.mo to parse: {e}");
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Interactive (.mos) entry points
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn interactive_stmt_mos_script() {
+        // The shape of a typical .mos script: expression statements separated
+        // by semicolons, several on one line, with a trailing semicolon.
+        let code = "loadFile(\"a.mo\");getErrorString();\nsimulate(M);getErrorString();\n";
+        let stmts = parse_statements(code, "t.mos", Grammar::Modelica3).expect("parse");
+        assert!(stmts.semicolon, "script ends with ';' — results must not print");
+        let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
+        assert_eq!(items.len(), 4);
+        for item in &items {
+            assert!(matches!(item, crate::GlobalScript::Statement::IEXP { .. }),
+                    "function calls parse as IEXP, got {item:?}");
+        }
+        // First statement is the loadFile(...) call.
+        let crate::GlobalScript::Statement::IEXP { exp, .. } = items[0] else { unreachable!() };
+        assert!(matches!(&**exp, Exp::CALL { .. }));
+    }
+
+    #[test]
+    fn interactive_stmt_no_trailing_semicolon() {
+        let stmts = parse_statements("1 + 2", "t.mos", Grammar::Modelica3).expect("parse");
+        assert!(!stmts.semicolon, "no trailing ';' — result prints");
+        assert_eq!((&*stmts.interactiveStmtLst).into_iter().count(), 1);
+    }
+
+    #[test]
+    fn interactive_stmt_assignment() {
+        // `x := f(1)` must fail the expression predicate (next token is `:=`)
+        // and land in the assignment clause as IALG.
+        let stmts = parse_statements("x := f(1);", "t.mos", Grammar::Modelica3).expect("parse");
+        let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
+        assert_eq!(items.len(), 1);
+        let crate::GlobalScript::Statement::IALG { algItem } = items[0] else {
+            panic!("expected IALG, got {:?}", items[0]);
+        };
+        let AlgorithmItem::ALGORITHMITEM { algorithm_, .. } = &**algItem else {
+            panic!("expected ALGORITHMITEM");
+        };
+        assert!(matches!(&**algorithm_, Algorithm::ALG_ASSIGN { .. }));
+    }
+
+    #[test]
+    fn interactive_stmt_for_loop() {
+        let stmts = parse_statements("for i in 1:10 loop x := i; end for;", "t.mos", Grammar::Modelica3)
+            .expect("parse");
+        let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
+        assert_eq!(items.len(), 1);
+        let crate::GlobalScript::Statement::IALG { algItem } = items[0] else {
+            panic!("expected IALG, got {:?}", items[0]);
+        };
+        let AlgorithmItem::ALGORITHMITEM { algorithm_, .. } = &**algItem else {
+            panic!("expected ALGORITHMITEM");
+        };
+        assert!(matches!(&**algorithm_, Algorithm::ALG_FOR { .. }));
+    }
+
+    #[test]
+    fn interactive_stmt_rejects_trailing_junk() {
+        assert!(parse_statements("foo() end", "t.mos", Grammar::Modelica3).is_err());
+    }
+
+    #[test]
+    fn interactive_stmt_empty_input_is_empty_list() {
+        // More lenient than ANTLR (which requires at least one statement):
+        // a script of only comments yields an empty statement list.
+        let stmts = parse_statements("// nothing here\n", "t.mos", Grammar::Modelica3).expect("parse");
+        assert!(matches!(&*stmts.interactiveStmtLst, List::Nil));
+        assert!(!stmts.semicolon);
+    }
+
+    #[test]
+    fn string_path_entry_point() {
+        let path = parse_path("Modelica.Blocks.Sources", "<internal>", Grammar::Modelica3).expect("parse");
+        let Path::QUALIFIED { name, .. } = &path else { panic!("expected QUALIFIED, got {path:?}") };
+        assert_eq!(&**name, "Modelica");
+        // Trailing junk must be rejected.
+        assert!(parse_path("A.B C", "<internal>", Grammar::Modelica3).is_err());
+    }
+
+    #[test]
+    fn string_cref_entry_point() {
+        let cref = parse_cref("a.b[1].c", "<internal>", Grammar::Modelica3).expect("parse");
+        assert!(matches!(cref, ComponentRef::CREF_QUAL { .. }));
+    }
+
+    #[test]
+    fn string_mod_entry_point() {
+        let m = parse_modification("x(start = 1.0)", "<internal>", Grammar::Modelica3).expect("parse");
+        let ElementArg::MODIFICATION { finalPrefix, eachPrefix, .. } = &m else {
+            panic!("expected MODIFICATION, got {m:?}");
+        };
+        assert!(!finalPrefix);
+        assert!(matches!(eachPrefix, Each::NON_EACH {}));
+        // each/final prefixes are threaded into the node.
+        let m = parse_modification("each final x = 2", "<internal>", Grammar::Modelica3).expect("parse");
+        let ElementArg::MODIFICATION { finalPrefix, eachPrefix, .. } = &m else {
+            panic!("expected MODIFICATION, got {m:?}");
+        };
+        assert!(finalPrefix);
+        assert!(matches!(eachPrefix, Each::EACH {}));
+    }
+
+    #[test]
+    fn string_eq_entry_point() {
+        let eq = parse_equation("x = y + 1", "<internal>", Grammar::Modelica3).expect("parse");
+        let EquationItem::EQUATIONITEM { equation_, .. } = &eq else {
+            panic!("expected EQUATIONITEM, got {eq:?}");
+        };
+        assert!(matches!(&**equation_, Equation::EQ_EQUALS { .. }));
     }
 }
