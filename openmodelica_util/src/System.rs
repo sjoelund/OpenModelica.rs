@@ -1591,10 +1591,41 @@ pub fn stat(filename: ArcStr) -> (bool, metamodelica::Real, metamodelica::Real, 
     }
 }
 
-pub fn alarm(_seconds: i32) -> i32 {
-    // POSIX SIGALRM scheduling. Rust signal handling lives in `signal-hook`
-    // which isn't a workspace dep; not needed by current Rust callers.
-    todo!("System.alarm: SIGALRM scheduling not yet ported")
+/// Mirrors `SystemImpl__alarm`: schedule a SIGALRM `seconds` from now and, on
+/// the first call, install a handler that broadcasts SIGALRM to the whole
+/// process group (so child processes die too) and then restores the default
+/// disposition. Used by `--alarm=N` to force-terminate omc after a timeout.
+/// Returns the number of seconds remaining on the previously scheduled alarm.
+#[cfg(unix)]
+pub fn alarm(seconds: i32) -> i32 {
+    use std::sync::atomic::{AtomicBool, Ordering};
+    static HANDLER_INSTALLED: AtomicBool = AtomicBool::new(false);
+
+    extern "C" fn alarm_handler(signo: libc::c_int) {
+        unsafe {
+            // Forward the alarm to every process in our group, then reset
+            // SIGALRM to its default action so the signal terminates us.
+            libc::kill(-libc::getpid(), signo);
+            libc::signal(libc::SIGALRM, libc::SIG_DFL);
+        }
+    }
+
+    unsafe {
+        if HANDLER_INSTALLED
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+        {
+            libc::signal(libc::SIGALRM, alarm_handler as *const () as libc::sighandler_t);
+        }
+        libc::alarm(seconds as libc::c_uint) as i32
+    }
+}
+
+#[cfg(not(unix))]
+pub fn alarm(seconds: i32) -> i32 {
+    // The Windows runtime uses the C library's `alarm` directly without a
+    // custom SIGALRM disposition; no MSVC target is built here yet.
+    todo!("System.alarm: non-unix SIGALRM scheduling not yet ported")
 }
 
 pub fn covertTextFileToCLiteral(_textFile: ArcStr, _outFile: ArcStr, _target: ArcStr) -> bool {
