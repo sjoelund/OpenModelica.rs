@@ -3651,40 +3651,40 @@ fn expandFactorsWork3(mut inExp: Arc<DAE::Exp>, mut acc: Arc<metamodelica::List<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: e2 } => {
                     let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = acc.clone();
                     acc = expandFactorsWork(e1.clone(), acc.clone(), doInverseFactors.clone())?;
                     acc = expandFactorsWork(e2.clone(), acc.clone(), doInverseFactors.clone())?;
-                    Ok(acc.clone())
+                    Ok((acc.clone(), acc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { acc = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e, operator: op @ DAE::Operator::DIV { .. }, exp2: e1 }, operator: DAE::Operator::DIV { .. }, exp2: e2 } => {
                     let mut e = (*e).clone();
                     let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = acc.clone();
                     e = Arc::new(DAE::Exp::BINARY { exp1: e.clone(), operator: op.clone(), exp2: expMul(e1.clone(), e2.clone())? });
                     acc = expandFactorsWork(e.clone(), acc.clone(), doInverseFactors.clone())?;
-                    Ok(acc.clone())
+                    Ok((acc.clone(), acc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { acc = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::BINARY { exp1: e, operator: DAE::Operator::MUL { .. }, exp2: e1 }, operator: op @ DAE::Operator::DIV { .. }, exp2: e2 } => {
                     let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = acc.clone();
                     acc = expandFactorsWork(e.clone(), acc.clone(), doInverseFactors.clone())?;
                     acc = expandFactorsWork(Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() }), acc.clone(), doInverseFactors.clone())?;
-                    Ok(acc.clone())
+                    Ok((acc.clone(), acc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { acc = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3857,50 +3857,50 @@ pub fn flattenArrayExpToList(mut e: Arc<DAE::Exp>) -> Result<Arc<metamodelica::L
     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     expLst = 'mc: {
         let __mc_input = e.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::ARRAY { array: expl, .. }, operator: DAE::Operator::UMINUS_ARR { .. } } => {
                     let mut expl = (*expl).clone();
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
                     expl = List::flatten(List::map(expl.clone(), (std::sync::Arc::new(flattenArrayExpToList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?)?;
                     expLst = List::map(expl.clone(), (std::sync::Arc::new(negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
-                    Ok(expLst.clone())
+                    Ok((expLst.clone(), expLst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { expLst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ARRAY { array: expl, .. } => {
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
                     expLst = List::flatten(List::map(expl.clone(), (std::sync::Arc::new(flattenArrayExpToList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?)?;
-                    Ok(expLst.clone())
+                    Ok((expLst.clone(), expLst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { expLst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::MATRIX { matrix: mexpl, .. }, operator: DAE::Operator::UMINUS_ARR { .. } } => {
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
                     expl = List::flatten(List::map(List::flatten(mexpl.clone())?, (std::sync::Arc::new(flattenArrayExpToList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?)?;
                     expLst = List::map(expl.clone(), (std::sync::Arc::new(negate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
-                    Ok(expLst.clone())
+                    Ok((expLst.clone(), expLst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { expLst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::MATRIX { matrix: mexpl, .. } => {
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
                     expLst = List::flatten(List::map(List::flatten(mexpl.clone())?, (std::sync::Arc::new(flattenArrayExpToList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?)?;
-                    Ok(expLst.clone())
+                    Ok((expLst.clone(), expLst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { expLst = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -5203,18 +5203,18 @@ pub fn listToArray(mut inList: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut dims:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: exp, tail: _ }, _) => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut oExp: Arc<DAE::Exp> = oExp.clone();
                     ty = r#typeof(exp.clone())?;
                     oExp = listToArray2(inList.clone(), dims.clone(), ty.clone())?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oExp = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(oExp)

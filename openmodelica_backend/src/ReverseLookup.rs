@@ -885,7 +885,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::QUALIFIED { .. } => {
                     let mut entry: Arc<PathEntry> = entry.clone();
@@ -898,11 +898,11 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
                     } else {
                         found = lookupPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone())?;
                     }
-                    Ok(found.clone())
+                    Ok((found.clone(), found.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { found = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
@@ -947,7 +947,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
                     let mut entry: Arc<PathEntry> = entry.clone();
@@ -960,11 +960,11 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
                     } else {
                         found = lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), entry.tree.clone(), exactMatch.clone(), fullyQualified.clone())?;
                     }
-                    Ok(found.clone())
+                    Ok((found.clone(), found.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { found = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => {

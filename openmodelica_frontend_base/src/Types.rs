@@ -2765,16 +2765,16 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: _, tail: vars } } => {
                     let mut fixed: bool = fixed.clone();
                     fixed = getFixedVarAttribute(Arc::new(DAE::Type::T_REAL { varLst: vars.clone() }))?;
-                    Ok(fixed.clone())
+                    Ok((fixed.clone(), fixed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { fixed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
@@ -2799,16 +2799,16 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: _, tail: vars } } => {
                     let mut fixed: bool = fixed.clone();
                     fixed = getFixedVarAttribute(Arc::new(DAE::Type::T_INTEGER { varLst: vars.clone() }))?;
-                    Ok(fixed.clone())
+                    Ok((fixed.clone(), fixed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { fixed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
@@ -2833,16 +2833,16 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: _, tail: vars } } => {
                     let mut fixed: bool = fixed.clone();
                     fixed = getFixedVarAttribute(Arc::new(DAE::Type::T_BOOL { varLst: vars.clone() }))?;
-                    Ok(fixed.clone())
+                    Ok((fixed.clone(), fixed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { fixed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_ARRAY { ty, .. } => {
@@ -7329,7 +7329,7 @@ fn subtypePolymorphic(mut actual: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_FUNCTION { funcArg: farg1, funcResultType: ty1, functionAttributes: _, path: path1 }, Deref @ DAE::Type::T_FUNCTION { funcArg: farg2, funcResultType: ty2, functionAttributes: _, path: _ }) => {
                     let mut prefix: ArcStr = arcstr::literal!("");
@@ -7356,12 +7356,12 @@ fn subtypePolymorphic(mut actual: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, 
                         bindings = subtypePolymorphicList(tList1.clone(), tList2.clone(), envPath.clone(), inBindings.clone())?;
                         bindings = subtypePolymorphic(ty1.clone(), ty2.clone(), envPath.clone(), bindings.clone())?;
                     }
-                    Ok(bindings.clone())
+                    Ok((bindings.clone(), bindings.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { bindings = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_UNKNOWN { .. }, ty2) => {
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -7370,12 +7370,12 @@ fn subtypePolymorphic(mut actual: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, 
                     tys = getAllInnerTypesOfType(ty2.clone(), (std::sync::Arc::new(fnptr!(isPolymorphic, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
                     ids = List::map(tys.clone(), (std::sync::Arc::new(polymorphicTypeName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?;
                     bindings = List::fold1(ids.clone(), (std::sync::Arc::new(addPolymorphicBinding) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::Type>, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Result<Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>> + 'static>), actual.clone(), inBindings.clone())?;
-                    Ok(bindings.clone())
+                    Ok((bindings.clone(), bindings.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { bindings = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ANYTYPE { .. }, ty2) => {
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -7384,11 +7384,11 @@ fn subtypePolymorphic(mut actual: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, 
                     tys = getAllInnerTypesOfType(ty2.clone(), (std::sync::Arc::new(fnptr!(isPolymorphic, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
                     ids = List::map(tys.clone(), (std::sync::Arc::new(polymorphicTypeName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?;
                     bindings = List::fold1(ids.clone(), (std::sync::Arc::new(addPolymorphicBinding) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::Type>, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Result<Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>> + 'static>), actual.clone(), inBindings.clone())?;
-                    Ok(bindings.clone())
+                    Ok((bindings.clone(), bindings.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { bindings = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

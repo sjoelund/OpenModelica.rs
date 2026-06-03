@@ -481,15 +481,15 @@ fn emptyReplacementsArray2(mut n: i32) -> Result<Arc<metamodelica::List<Variable
             println!("{}", (literal!("Internal error, emptyReplacementsArray2 called with negative n!")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
             let mut replLst: Arc<metamodelica::List<VariableReplacements>> = replLst.clone();
             let true = (n.clone() > 0) else { bail!("pattern mismatch") };
             r = emptyReplacements();
             replLst = emptyReplacementsArray2(n.clone() - 1)?;
-            Ok(metamodelica::cons(r.clone(), replLst.clone()))
-        })() { break 'mc __v; }
+            Ok((metamodelica::cons(r.clone(), replLst.clone()), replLst.clone()))
+        })() { replLst = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(replLst)

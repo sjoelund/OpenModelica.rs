@@ -902,7 +902,7 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "topics", tail: Deref @ metamodelica::List::Nil } => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -913,32 +913,32 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                     r#str = (System::gettext((literal!("The available topics (help(\"topics\")) are as follows:\n")).clone())).clone();
                     strs = List::map(topics.clone(), (std::sync::Arc::new(makeTopicString) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>))?;
                     help = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*stringDelimitList(strs.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { help = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "simulation", tail: Deref @ metamodelica::List::Nil } => {
                     let mut help: ArcStr = help.clone();
                     help = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("The simulation executable takes the following flags:\n\n")).clone())); __mm_s.push_str(&*System::getSimulationHelpText(true, false)); ArcStr::from(__mm_s) }).clone();
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { help = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "simulation-sphinxoutput", tail: Deref @ metamodelica::List::Nil } => {
                     let mut help: ArcStr = help.clone();
                     help = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("The simulation executable takes the following flags:\n\n")).clone())); __mm_s.push_str(&*System::getSimulationHelpText(true, true)); ArcStr::from(__mm_s) }).clone();
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { help = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "debug", tail: Deref @ metamodelica::List::Nil } => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -956,12 +956,12 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
         __acc.reverse()
     });
                     help = stringAppendList(metamodelica::cons((str1.clone()).clone(), metamodelica::cons((str2.clone()).clone(), strs.clone())));
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { help = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "optmodules", tail: Deref @ metamodelica::List::Nil } => {
                     let mut data: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1022,12 +1022,12 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                     str9b = (System::gettext((literal!("The valid modules are:")).clone())).clone();
                     str10 = (printFlagValidOptionsDesc(Flags::POST_OPT_MODULES.clone())?).clone();
                     help = stringAppendList(list![(str1.clone()).clone(), (literal!("\n\n")).clone(), (str1a.clone()).clone(), (literal!("\n\n")).clone(), (str1b.clone()).clone(), (literal!("\n")).clone(), (str2.clone()).clone(), (literal!("\n")).clone(), (str3.clone()).clone(), (literal!("\n\n")).clone(), (str3a.clone()).clone(), (literal!("\n\n")).clone(), (str3b.clone()).clone(), (literal!("\n")).clone(), (str4.clone()).clone(), (literal!("\n")).clone(), (str5.clone()).clone(), (literal!("\n\n")).clone(), (str5a.clone()).clone(), (literal!("\n\n")).clone(), (str5b.clone()).clone(), (literal!("\n")).clone(), (str6.clone()).clone(), (literal!("\n")).clone(), (str7.clone()).clone(), (literal!("\n\n")).clone(), (str7a.clone()).clone(), (literal!("\n\n")).clone(), (str7b.clone()).clone(), (literal!("\n")).clone(), (str8.clone()).clone(), (literal!("\n")).clone(), (str9.clone()).clone(), (literal!("\n\n")).clone(), (str9a.clone()).clone(), (literal!("\n\n")).clone(), (str9b.clone()).clone(), (literal!("\n")).clone(), (str10.clone()).clone(), (literal!("\n")).clone()]);
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { help = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } => {
                     let mut desc: Gettext::TranslatableContent = <Gettext::TranslatableContent as ::std::default::Default>::default();
@@ -1045,11 +1045,11 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                     str2 = stringAppendList(StringUtil::wordWrap((Gettext::translateContent(desc.clone())?).clone(), System::getTerminalWidth(), (literal!("\n")).clone(), metamodelica::OrderedFloat(0.3_f64))?);
                     r#str = (printFlagValidOptionsDesc(config_flag.clone())?).clone();
                     help = stringAppendList(list![(str1.clone()).clone(), (literal!("\n")).clone(), (str2.clone()).clone(), (literal!("\n")).clone(), (r#str.clone()).clone()]);
-                    Ok(help.clone())
+                    Ok((help.clone(), help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { help = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r#str, tail: Deref @ metamodelica::List::Nil } => {
@@ -1058,18 +1058,18 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r#str, tail: rest_topics @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } => {
                     let mut r#str = (*r#str).clone();
                     let mut help: ArcStr = help.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*printHelp(list![(r#str.clone()).clone()])?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     help = (printHelp(rest_topics.clone())?).clone();
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*help.clone()); ArcStr::from(__mm_s) })
+                    Ok(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*help.clone()); ArcStr::from(__mm_s) }, help.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { help = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(help)

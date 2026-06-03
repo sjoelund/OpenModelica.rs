@@ -1175,16 +1175,16 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ FOR { .. } => {
                     let mut size: i32 = size.clone();
                     size = Type::sizeOf(Expression::typeOf(Util::getOption(var_field!((*eq).range, NFEquation::FOR).clone())?), false)?;
-                    Ok(size.clone() * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone())?)
+                    Ok((size.clone() * sizeOfList(var_field!((*eq).body, NFEquation::FOR).clone())?, size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { size = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ IF { .. } => {

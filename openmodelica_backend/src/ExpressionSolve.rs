@@ -1075,7 +1075,7 @@ fn preprocessingSolveTmpVars(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp
     let mut odepth: i32 = 0;
     (x, y, new_x, eqnForNewVars, newVarsCrefs, odepth) = 'mc: {
         let __mc_input = inExp1.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name }, .. } => {
                     if !((expHasCref(arg.clone(), inExp3.clone())? && !(expHasCref(inExp2.clone(), inExp3.clone())?))) { bail!("guard") }
@@ -1098,11 +1098,11 @@ fn preprocessingSolveTmpVars(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                     }
-                    Ok((if (new_x.clone()) {arg.clone()} else {inExp1.clone()}, y.clone(), new_x.clone(), eqnForNewVars_.clone(), listAppend(newVarsCrefs_.clone(), inewVarsCrefs.clone()), odepth.clone()))
+                    Ok(((if (new_x.clone()) {arg.clone()} else {inExp1.clone()}, y.clone(), new_x.clone(), eqnForNewVars_.clone(), listAppend(newVarsCrefs_.clone(), inewVarsCrefs.clone()), odepth.clone()), new_x.clone(), odepth.clone(), y.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { new_x = __wb0; odepth = __wb1; y = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 } => {

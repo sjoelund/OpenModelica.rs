@@ -233,30 +233,30 @@ pub fn getDerivativePaths(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDe
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { lowerOrderDerivatives: pLst1, defaultDerivative: Some(p2), derivativeFunction: p1, .. }, tail: funcDefs } => {
                     let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
                     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
                     pLst2 = getDerivativePaths(funcDefs.clone())?;
                     paths = List::union(metamodelica::cons(p1.clone(), metamodelica::cons(p2.clone(), pLst1.clone())), pLst2.clone());
-                    Ok(paths.clone())
+                    Ok((paths.clone(), paths.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { paths = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DER_MAPPER { lowerOrderDerivatives: pLst1, defaultDerivative: None, derivativeFunction: p1, .. }, tail: funcDefs } => {
                     let mut pLst2: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
                     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
                     pLst2 = getDerivativePaths(funcDefs.clone())?;
                     paths = List::union(metamodelica::cons(p1.clone(), pLst1.clone()), pLst2.clone());
-                    Ok(paths.clone())
+                    Ok((paths.clone(), paths.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { paths = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: funcDefs } => {
@@ -2012,28 +2012,28 @@ pub fn getBindings(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>)
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: Some(e), componentRef: cr, .. }, tail: rest } => {
                     let mut outc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outc.clone();
                     let mut oute: Arc<metamodelica::List<Arc<DAE::Exp>>> = oute.clone();
                     (outc, oute) = getBindings(rest.clone())?;
-                    Ok((metamodelica::cons(cr.clone(), outc.clone()), metamodelica::cons(e.clone(), oute.clone())))
+                    Ok(((metamodelica::cons(cr.clone(), outc.clone()), metamodelica::cons(e.clone(), oute.clone())), outc.clone(), oute.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outc = __wb0; oute = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: None, .. }, tail: rest } => {
                     let mut outc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outc.clone();
                     let mut oute: Arc<metamodelica::List<Arc<DAE::Exp>>> = oute.clone();
                     (outc, oute) = getBindings(rest.clone())?;
-                    Ok((outc.clone(), oute.clone()))
+                    Ok(((outc.clone(), oute.clone()), outc.clone(), oute.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outc = __wb0; oute = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4440,7 +4440,7 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
         let mut stmt = stmt.clone();
         outStmts = 'mc: {
         let __mc_input = stmt.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN { source, exp: e, exp1: e2, type_: tp } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4448,12 +4448,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut extraArg: Type_a = extraArg.clone();
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
                     (e_2, extraArg) = func(e2.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e_2.clone(), exp: e_1.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: e_2.clone(), exp: e_1.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, exp: e, expExpLst: expl1, type_: tp } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4461,12 +4461,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut extraArg: Type_a = extraArg.clone();
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
                     (expl2, extraArg) = traverseDAEExpListStmt(expl1.clone(), func.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(expl2.clone()),&*(expl1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: expl2.clone(), exp: e_1.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(expl2.clone()),&*(expl1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp.clone(), expExpLst: expl2.clone(), exp: e_1.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN_ARR { source, exp: e2, lhs: e, type_: tp } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4489,12 +4489,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                             e_1 = e.clone();
                         }
                     }
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_1.clone(), exp: e_2.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_1.clone(), exp: e_2.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_IF { source, else_: algElse, statementLst: stmts, exp: e } => {
                     let mut algElse = (*algElse).clone();
@@ -4506,12 +4506,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
                     (stmts1, _) = Algorithm::optimizeIf(e_1.clone(), stmts2.clone(), algElse.clone(), source.clone());
-                    Ok(List::append_reverse(stmts1.clone(), outStmts.clone()))
+                    Ok((List::append_reverse(stmts1.clone(), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FOR { source, statementLst: stmts, range: e, iter: id1, iterIsArray: b1, type_: tp } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4519,12 +4519,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts2.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_PARFOR { source, loopPrlVars, statementLst: stmts, range: e, iter: id1, iterIsArray: b1, type_: tp } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4532,12 +4532,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts2.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_PARFOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), loopPrlVars: loopPrlVars.clone(), source: source.clone() }), outStmts.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_PARFOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e_1.clone(), statementLst: stmts2.clone(), loopPrlVars: loopPrlVars.clone(), source: source.clone() }), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHILE { source, statementLst: stmts, exp: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4545,12 +4545,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts2.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e_1.clone(), statementLst: stmts2.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { source, elseWhen: None, statementLst: stmts, initialCall, conditions, exp: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4558,12 +4558,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts2.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: None, source: source.clone() }), outStmts.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: None, source: source.clone() }), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { source, elseWhen: Some(ew), statementLst: stmts, initialCall, conditions, exp: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4576,12 +4576,12 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     extraArg = __pa0.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: Some(ew.clone()), source: source.clone() }), outStmts.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e_1.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts2.clone(), elseWhen: Some(ew.clone()), source: source.clone() }), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSERT { source, level: e3, msg: e2, cond: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4591,23 +4591,23 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
                     (e_2, extraArg) = func(e2.clone(), stmt.clone(), extraArg.clone())?;
                     (e_3, extraArg) = func(e3.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone())) && referenceEq(&*(e3.clone()),&*(e_3.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e_1.clone(), msg: e_2.clone(), level: e_3.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone())) && referenceEq(&*(e3.clone()),&*(e_3.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e_1.clone(), msg: e_2.clone(), level: e_3.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TERMINATE { source, msg: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
                     let mut extraArg: Type_a = extraArg.clone();
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_TERMINATE { msg: e_1.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_TERMINATE { msg: e_1.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_REINIT { source, value: e2, var: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
@@ -4615,63 +4615,63 @@ pub fn traverseDAEStmts<Type_a: Clone + 'static>(mut inStmts: Arc<metamodelica::
                     let mut extraArg: Type_a = extraArg.clone();
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
                     (e_2, extraArg) = func(e2.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_REINIT { var: e_1.clone(), value: e_2.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone())) && referenceEq(&*(e2.clone()),&*(e_2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_REINIT { var: e_1.clone(), value: e_2.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_NORETCALL { source, exp: e } => {
                     let mut e_1: Arc<DAE::Exp> = e_1.clone();
                     let mut extraArg: Type_a = extraArg.clone();
                     (e_1, extraArg) = func(e.clone(), stmt.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(e.clone()),&*(e_1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_NORETCALL { exp: e_1.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(e.clone()),&*(e_1.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_NORETCALL { exp: e_1.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_RETURN { .. } => {
                     let mut extraArg: Type_a = extraArg.clone();
                     (_, extraArg) = func(Arc::new(DAE::Exp::ICONST { integer: -1 }), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(stmt.clone(), outStmts.clone()))
+                    Ok((metamodelica::cons(stmt.clone(), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_BREAK { .. } => {
                     let mut extraArg: Type_a = extraArg.clone();
                     (_, extraArg) = func(Arc::new(DAE::Exp::ICONST { integer: -1 }), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(stmt.clone(), outStmts.clone()))
+                    Ok((metamodelica::cons(stmt.clone(), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_CONTINUE { .. } => {
                     let mut extraArg: Type_a = extraArg.clone();
                     (_, extraArg) = func(Arc::new(DAE::Exp::ICONST { integer: -1 }), stmt.clone(), extraArg.clone())?;
-                    Ok(metamodelica::cons(stmt.clone(), outStmts.clone()))
+                    Ok((metamodelica::cons(stmt.clone(), outStmts.clone()), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FAILURE { source, body: stmts } => {
                     let mut extraArg: Type_a = extraArg.clone();
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts2.clone();
                     (stmts2, extraArg) = traverseDAEStmts(stmts.clone(), func.clone(), extraArg.clone())?;
-                    Ok(if (referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_FAILURE { body: stmts2.clone(), source: source.clone() }), outStmts.clone())})
+                    Ok((if (referenceEq(&*(stmts.clone()),&*(stmts2.clone()))) {metamodelica::cons(stmt.clone(), outStmts.clone())} else {metamodelica::cons(Arc::new(DAE::Statement::STMT_FAILURE { body: stmts2.clone(), source: source.clone() }), outStmts.clone())}, extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { extraArg = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -5191,7 +5191,7 @@ pub fn getUniontypePaths(mut funcs: Arc<metamodelica::List<DAE::Function>>, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = outPaths.clone();
@@ -5200,11 +5200,11 @@ pub fn getUniontypePaths(mut funcs: Arc<metamodelica::List<DAE::Function>>, mut 
                     paths1 = getUniontypePathsFunctions(funcs.clone())?;
                     paths2 = getUniontypePathsElements(els.clone(), metamodelica::nil())?;
                     outPaths = listAppend(paths1.clone(), paths2.clone());
-                    Ok(outPaths.clone())
+                    Ok((outPaths.clone(), outPaths.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outPaths = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outPaths)

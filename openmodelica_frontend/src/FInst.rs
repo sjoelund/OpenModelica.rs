@@ -200,17 +200,17 @@ fn doSCodeDep(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut i
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outProgram = 'mc: {
         let __mc_input = inPath.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = outProgram.clone();
                     let true = (Flags::isSet(Flags::GRAPH_INST_RUN_DEP.clone())?) else { bail!("pattern mismatch") };
                     outProgram = InstUtil::scodeFlatten(inProgram.clone(), inPath.clone())?;
-                    Ok(outProgram.clone())
+                    Ok((outProgram.clone(), outProgram.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outProgram = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

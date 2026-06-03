@@ -70,7 +70,7 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
     let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (outCache, startTime, stopTime, numberOfIntervals) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
                     let mut intervals: i32 = 0;
@@ -103,12 +103,12 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     stopTime = __pa7.clone();
                     intervals = (((rstopTime.clone() - rstartTime.clone()) / rstepTime.clone()).0 as i32);
                     numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: intervals.clone() });
-                    Ok((cache.clone(), startTime.clone(), stopTime.clone(), numberOfIntervals.clone()))
+                    Ok(((cache.clone(), startTime.clone(), stopTime.clone(), numberOfIntervals.clone()), numberOfIntervals.clone(), startTime.clone(), stopTime.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { numberOfIntervals = __wb0; startTime = __wb1; stopTime = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, args, r#impl, pre, info) => {
                     let mut cache = (*cache).clone();
@@ -118,11 +118,11 @@ fn calculateSimulationTimes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     (cache, startTime) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("startTime")).clone(), DAE::T_REAL_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(inSimOpt.clone(), (literal!("startTime")).clone())?, pre.clone(), info.clone())?;
                     (cache, stopTime) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("stopTime")).clone(), DAE::T_REAL_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(inSimOpt.clone(), (literal!("stopTime")).clone())?, pre.clone(), info.clone())?;
                     (cache, numberOfIntervals) = Static::getOptionalNamedArg(cache.clone(), env.clone(), r#impl.clone(), (literal!("numberOfIntervals")).clone(), DAE::T_INTEGER_DEFAULT().clone(), args.clone(), CevalScriptBackend::getSimulationOption(inSimOpt.clone(), (literal!("numberOfIntervals")).clone())?, pre.clone(), info.clone())?;
-                    Ok((cache.clone(), startTime.clone(), stopTime.clone(), numberOfIntervals.clone()))
+                    Ok(((cache.clone(), startTime.clone(), stopTime.clone(), numberOfIntervals.clone()), numberOfIntervals.clone(), startTime.clone(), stopTime.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { numberOfIntervals = __wb0; startTime = __wb1; stopTime = __wb2; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCache, startTime, stopTime, numberOfIntervals))

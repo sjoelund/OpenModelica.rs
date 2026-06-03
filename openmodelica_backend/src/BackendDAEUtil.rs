@@ -3438,7 +3438,7 @@ fn traversingadjacencyRowIfExpSolvableFinder(mut e: Arc<DAE::Exp>, mut tpl: (Bac
     let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = tpl;
     tpl = 'mc: {
         let __mc_input = e.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     if !((Expression::containsInitialCall(expCond.clone())?)) { bail!("guard") }
@@ -3457,12 +3457,12 @@ fn traversingadjacencyRowIfExpSolvableFinder(mut e: Arc<DAE::Exp>, mut tpl: (Bac
                     } else {
                         (_, tpl) = Expression::traverseExpTopDown(expElse.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), tpl.clone())?;
                     }
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tpl = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     let mut expCond = (*expCond).clone();
@@ -3484,11 +3484,11 @@ fn traversingadjacencyRowIfExpSolvableFinder(mut e: Arc<DAE::Exp>, mut tpl: (Bac
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tpl = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3513,7 +3513,7 @@ fn traversingadjacencyRowIfExp(mut e: Arc<DAE::Exp>, mut tpl: (BackendDAE::Varia
     let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = tpl;
     tpl = 'mc: {
         let __mc_input = e.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     if !((Expression::containsInitialCall(expCond.clone())?)) { bail!("guard") }
@@ -3532,12 +3532,12 @@ fn traversingadjacencyRowIfExp(mut e: Arc<DAE::Exp>, mut tpl: (BackendDAE::Varia
                     } else {
                         (_, tpl) = Expression::traverseExpTopDown(expElse.clone(), traFunc.clone(), tpl.clone())?;
                     }
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tpl = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     let mut expCond = (*expCond).clone();
@@ -3560,11 +3560,11 @@ fn traversingadjacencyRowIfExp(mut e: Arc<DAE::Exp>, mut tpl: (BackendDAE::Varia
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tpl = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3589,7 +3589,7 @@ fn traversingAdjacencyRowIfExpEnhanced(mut e: Arc<DAE::Exp>, mut tpl: (BackendDA
     let mut tpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) = tpl;
     tpl = 'mc: {
         let __mc_input = e.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     if !((Expression::containsInitialCall(expCond.clone())?)) { bail!("guard") }
@@ -3608,12 +3608,12 @@ fn traversingAdjacencyRowIfExpEnhanced(mut e: Arc<DAE::Exp>, mut tpl: (BackendDA
                     } else {
                         (_, tpl) = Expression::traverseExpTopDown(expElse.clone(), traFunc.clone(), tpl.clone())?;
                     }
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tpl = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse, expThen, expCond } => {
                     let mut isInitial: bool = false;
@@ -3657,11 +3657,11 @@ fn traversingAdjacencyRowIfExpEnhanced(mut e: Arc<DAE::Exp>, mut tpl: (BackendDA
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    Ok(tpl.clone())
+                    Ok((tpl.clone(), tpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tpl = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3709,26 +3709,26 @@ pub fn traversingAdjacencyRowExpFinderBaseClock(mut inExp: Arc<DAE::Exp>, mut in
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, .. }, _) => {
                     let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = outTpl.clone();
                     (_, outTpl) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(traversingAdjacencyRowExpFinderBaseClock) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), inTpl.clone())?;
-                    Ok((inExp.clone(), false, outTpl.clone()))
+                    Ok(((inExp.clone(), false, outTpl.clone()), outTpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outTpl = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::SOLVER_CLOCK { c: e, .. } }, _) => {
                     let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = outTpl.clone();
                     (_, outTpl) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(traversingAdjacencyRowExpFinderBaseClock) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), inTpl.clone())?;
-                    Ok((inExp.clone(), true, outTpl.clone()))
+                    Ok(((inExp.clone(), true, outTpl.clone()), outTpl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outTpl = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::EVENT_CLOCK { .. } }, _) => {
@@ -4802,52 +4802,52 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
         let mut stmt = stmt.clone();
         extraArg = 'mc: {
         let __mc_input = stmt.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN { exp: e, exp1: e2, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     extraArg = func(e2.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: e, expExpLst: expl1, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     extraArg = List::fold(expl1.clone(), func.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN_ARR { exp: e, lhs: e2, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     extraArg = func(e2.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_IF { else_: algElse, statementLst: stmts, exp: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = traverseStmtsElse(algElse.clone(), func.clone(), extraArg.clone())?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     extraArg = func(e.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FOR { statementLst: stmts, range: e, iter: id1, type_: tp, .. } => {
                     let mut stmts = (*stmts).clone();
@@ -4857,12 +4857,12 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                     cr = ComponentReferenceBasics::makeCrefIdent((id1.clone()).clone(), tp.clone(), metamodelica::nil());
                     (stmts, _) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(Expression::replaceCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>))> + 'static>), (cr.clone(), e.clone())))?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_PARFOR { statementLst: stmts, range: e, iter: id1, type_: tp, .. } => {
                     let mut stmts = (*stmts).clone();
@@ -4872,56 +4872,56 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                     cr = ComponentReferenceBasics::makeCrefIdent((id1.clone()).clone(), tp.clone(), metamodelica::nil());
                     (stmts, _) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(Expression::replaceCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>))> + 'static>), (cr.clone(), e.clone())))?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHILE { statementLst: stmts, exp: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     extraArg = func(e.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { elseWhen: None, statementLst: stmts, exp: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     extraArg = func(e.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { elseWhen: Some(ew), statementLst: stmts, exp: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = traverseStmts(list![ew.clone()], func.clone(), extraArg.clone())?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
                     extraArg = func(e.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { extraArg = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSERT { msg: e2, cond: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     extraArg = func(e2.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { extraArg = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TERMINATE { msg: e, .. } => {
@@ -4930,17 +4930,17 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_REINIT { value: e2, var: e, .. } => {
                     let mut extraArg: ArgT = extraArg.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     extraArg = func(e2.clone(), extraArg.clone())?;
-                    Ok(extraArg.clone())
+                    Ok((extraArg.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { extraArg = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_NORETCALL { exp: e, .. } => {
@@ -5346,7 +5346,7 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, dimSize: ds, .. }) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5356,11 +5356,11 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                     lst = adjacencyRowExpEnhanced(e2.clone(), vars.clone(), mark.clone(), rowmark.clone(), isInitial.clone(), lst.clone())?;
                     size = List::fold(ds.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
                     row = adjacencyRowEnhanced1(lst.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::nil(), trytosolve.clone(), size.clone(), shared.clone())?;
-                    Ok((row.clone(), size.clone()))
+                    Ok(((row.clone(), size.clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { size = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e, componentRef: cr, .. }) => {
@@ -5388,7 +5388,7 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: elsewe, size, .. }) => {
                     let mut varsSolvedInWhenEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5396,11 +5396,11 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                     let mut varsSolvedInWhenEqnsTuple: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = varsSolvedInWhenEqnsTuple.clone();
                     (row, varsSolvedInWhenEqns) = adjacencyRowWhenEnhanced(elsewe.clone(), mark.clone(), rowmark.clone(), vars.clone(), globalKnownVars.clone(), metamodelica::nil(), metamodelica::nil(), shared.clone())?;
                     varsSolvedInWhenEqnsTuple = list![(mark.clone(), varsSolvedInWhenEqns.clone())];
-                    Ok((row.clone(), size.clone()))
+                    Ok(((row.clone(), size.clone()), varsSolvedInWhenEqnsTuple.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { varsSolvedInWhenEqnsTuple = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::ALGORITHM { expand: crefExpand, source, alg, size, .. }) => {
@@ -5417,7 +5417,7 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ BackendDAE::Equation::IF_EQUATION { eqnsfalse: eqnselse, eqnstrue: Deref @ metamodelica::List::Cons { head: eqns, tail: Deref @ metamodelica::List::Nil }, conditions: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initial" }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
                     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
@@ -5427,12 +5427,12 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                     } else {
                         (row, size) = adjacencyRowEnhancedEqnLst(eqnselse.clone(), inVariables.clone(), mark.clone(), rowmark.clone(), globalKnownVars.clone(), trytosolve.clone(), shared.clone())?;
                     }
-                    Ok((row.clone(), size.clone()))
+                    Ok(((row.clone(), size.clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { size = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ BackendDAE::Equation::IF_EQUATION { eqnsfalse: eqnselse, eqnstrue: Deref @ metamodelica::List::Cons { head: eqns, tail: Deref @ metamodelica::List::Nil }, conditions: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { .. }, exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initial" }, .. } }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
                     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
@@ -5442,12 +5442,12 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                     } else {
                         (row, size) = adjacencyRowEnhancedEqnLst(eqns.clone(), inVariables.clone(), mark.clone(), rowmark.clone(), globalKnownVars.clone(), trytosolve.clone(), shared.clone())?;
                     }
-                    Ok((row.clone(), size.clone()))
+                    Ok(((row.clone(), size.clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { size = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::IF_EQUATION { eqnsfalse: eqnselse, eqnstrue: eqnslst, conditions: expl, .. }) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5468,11 +5468,11 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
                     (_, lst, _) = List::intersection1OnTrue(lstall.clone(), lst.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     List::fold1(lst.clone(), (std::sync::Arc::new(markNegativ) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<i32> + 'static>), rowmark.clone(), mark.clone())?;
                     row = listAppend(row1.clone(), row.clone());
-                    Ok((row.clone(), size.clone()))
+                    Ok(((row.clone(), size.clone()), size.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { size = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -6121,7 +6121,7 @@ fn replaceDerCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
         let __mc_input = inExp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -6130,11 +6130,11 @@ fn replaceDerCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                     v = BackendVariable::createAliasDerVar(cr.clone())?;
                     cr = BackendVariable::varCref(v.clone())?;
                     outExp = Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() });
-                    Ok(outExp.clone())
+                    Ok((outExp.clone(), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
@@ -7689,7 +7689,7 @@ fn getEqnsysRhsExp3(mut b: bool, mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendVar
     let mut notfound: bool = false;
     (oExp, notfound) = 'mc: {
         let __mc_input = (b.clone(), iTpl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (false, (_, _, funcs, _)) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -7702,11 +7702,11 @@ fn getEqnsysRhsExp3(mut b: bool, mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendVar
                     let (__pa1, (_, _, _, __pa2)) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(getEqnsysRhsExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool))> + 'static>), iTpl.clone())?;
                     e = __pa1.clone();
                     notfound = __pa2.clone();
-                    Ok((e.clone(), notfound.clone()))
+                    Ok(((e.clone(), notfound.clone()), notfound.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { notfound = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -7794,13 +7794,13 @@ fn makeZeroReplacement(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransfo
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     (var, repl) = 'mc: {
         let __mc_input = (inVar.clone(), inRepl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (mut var, mut repl) = __mc_input.clone() else { bail!("nomatch") };
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr = BackendVariable::varCref(var.clone())?;
             repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), Expression::makeConstZero(ComponentReference::crefLastType(cr.clone())?), None)?;
-            Ok((var.clone(), repl.clone()))
-        })() { break 'mc __v; }
+            Ok(((var.clone(), repl.clone()), repl.clone()))
+        })() { repl = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((inVar.clone(), inRepl.clone()))

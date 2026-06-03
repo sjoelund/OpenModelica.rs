@@ -3307,18 +3307,18 @@ pub fn getMatchArgName(mut inArgExp: Expression) -> Result<(Ident, Ident)> {
     let mut outMatchArgName: Ident = arcstr::literal!("");
     (outInputValueName, outMatchArgName) = 'mc: {
         let __mc_input = inArgExp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ ExpressionBase::BOUND_VALUE { boundPath: path }, _) => {
                     let mut outInputValueName: ArcStr = outInputValueName.clone();
                     let mut outMatchArgName: ArcStr = outMatchArgName.clone();
                     outInputValueName = (pathIdentString(path.clone())?).clone();
                     outMatchArgName = (encodeIdent((outInputValueName.clone()).clone(), (arcstr::literal!(funArgNamePrefix)).clone())?).clone();
-                    Ok((outInputValueName.clone(), outMatchArgName.clone()))
+                    Ok(((outInputValueName.clone(), outMatchArgName.clone()), outInputValueName.clone(), outMatchArgName.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outInputValueName = __wb0; outMatchArgName = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

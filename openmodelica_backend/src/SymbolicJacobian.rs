@@ -471,7 +471,7 @@ pub fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::Backe
     let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     outBackendDAE = 'mc: {
         let __mc_input = inBackendDAE.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
@@ -493,11 +493,11 @@ pub fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::Backe
                     functionTree = AvlTreePathFunction::join(functionTree.clone(), funcs.clone(), (std::sync::Arc::new(fnptr!(AvlTreePathFunction::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
                     shared = BackendDAEUtil::setSharedFunctionTree(shared.clone(), functionTree.clone())?;
                     outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: eqs.clone(), shared: shared.clone() });
-                    Ok(outBackendDAE.clone())
+                    Ok((outBackendDAE.clone(), outBackendDAE.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBackendDAE = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1206,7 +1206,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: syst @ Deref @ BackendDAE::EqSystem { matching: bdaeMatching @ Deref @ BackendDAE::Matching::MATCHING { ass1, comps, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, independentVars, dependentVars) => {
                     let mut syst1: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
@@ -1408,11 +1408,11 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     if debug.clone() {
                         execStat((literal!("generateSparsePattern -> final end ")).clone())?;
                     }
-                    Ok((outSparsePattern.clone(), coloring.clone()))
+                    Ok(((outSparsePattern.clone(), coloring.clone()), outSparsePattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outSparsePattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -648,7 +648,7 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
     });
     outExp = 'mc: {
         let __mc_input = iters.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
@@ -679,11 +679,11 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
                     } else {
                         bail!("fail");
                     }
-                    Ok(outExp.clone())
+                    Ok((outExp.clone(), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -730,7 +730,7 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
     });
             'mc: {
         let __mc_input = iters.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
@@ -757,11 +757,11 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
                     } else {
                         bail!("fail");
                     }
-                    Ok(outExp.clone())
+                    Ok((outExp.clone(), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -1121,12 +1121,12 @@ pub fn makePrefixString(mut pre: DAE::Prefix) -> Result<ArcStr> {
             let DAE::Prefix::NOPRE { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!("from top scope"))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r#str: ArcStr = r#str.clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("from calling scope: ")); __mm_s.push_str(&*printPrefixStr(pre.clone())?); ArcStr::from(__mm_s) }).clone();
-            Ok(r#str.clone())
-        })() { break 'mc __v; }
+            Ok((r#str.clone(), r#str.clone()))
+        })() { r#str = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(r#str)
@@ -1146,7 +1146,7 @@ pub fn prefixExpressionsInType(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outCache: FCore::Cache = outCache.clone();
@@ -1154,11 +1154,11 @@ pub fn prefixExpressionsInType(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     let (__pa0, (__pa1, _, _, _)) = Types::traverseType(inTy.clone(), (inCache.clone(), inEnv.clone(), inIH.clone(), inPre.clone()), (std::sync::Arc::new(prefixArrayDimensions) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix))> + 'static>))?;
                     outTy = __pa0.clone();
                     outCache = __pa1.clone();
-                    Ok((outCache.clone(), outTy.clone()))
+                    Ok(((outCache.clone(), outTy.clone()), outCache.clone(), outTy.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; outTy = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCache, outTy))

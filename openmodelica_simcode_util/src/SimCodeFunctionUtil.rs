@@ -1106,18 +1106,18 @@ fn findIndexInList(mut cref: Arc<DAE::ComponentRef>, mut outVars: Arc<metamodeli
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: restOutVars }, currentIndex) => {
                     let mut currentIndex = (*currentIndex).clone();
                     let mut hasBinding: bool = hasBinding.clone();
                     currentIndex = currentIndex.clone() + 1;
                     (currentIndex, hasBinding) = findIndexInList(cref.clone(), restOutVars.clone(), currentIndex.clone())?;
-                    Ok((currentIndex.clone(), hasBinding.clone()))
+                    Ok(((currentIndex.clone(), hasBinding.clone()), hasBinding.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { hasBinding = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((crefIndexInOutVars, hasBinding))
@@ -2259,18 +2259,18 @@ fn getLinkerLibraryPaths(mut uri: ArcStr, mut path: Arc<Absyn::Path>, mut inLibs
     installationDir = (Settings::getInstallationDirectoryPath()?).clone();
     let () = 'mc: {
         let __mc_input = (uri.clone(), path.clone(), inLibs.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ metamodelica::List::Cons { head: Deref @ "-lWinmm", tail: Deref @ metamodelica::List::Nil }) => {
                     if !((arcstr::literal!(Autoconf::os) == literal!("Windows_NT"))) { bail!("guard") }
                     let mut libPaths: Arc<metamodelica::List<ArcStr>> = libPaths.clone();
                     libPaths = list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone()];
-                    Ok(())
+                    Ok(((), libPaths.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { libPaths = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _) => {
                     let mut libPaths: Arc<metamodelica::List<ArcStr>> = libPaths.clone();
@@ -2278,11 +2278,11 @@ fn getLinkerLibraryPaths(mut uri: ArcStr, mut path: Arc<Absyn::Path>, mut inLibs
                     if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
                         libPaths = List::appendElt(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installationDir.clone()); __mm_s.push_str(&*literal!("/bin/")); ArcStr::from(__mm_s) }).clone(), libPaths.clone());
                     }
-                    Ok(())
+                    Ok(((), libPaths.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { libPaths = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(libPaths)
@@ -2480,17 +2480,17 @@ fn getLibraryStringInMSVCFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamod
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: Deref @ "omcruntime" } => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     let true = (literal!("Windows_NT") == arcstr::literal!(Autoconf::os)) else { bail!("pattern mismatch") };
                     strs = list![(literal!("f2c.lib")).clone(), (literal!("initialization.lib")).clone(), (literal!("libexpat.lib")).clone(), (literal!("math-support.lib")).clone(), (literal!("meta.lib")).clone(), (literal!("ModelicaExternalC.lib")).clone(), (literal!("results.lib")).clone(), (literal!("simulation.lib")).clone(), (literal!("solver.lib")).clone(), (literal!("sundials_kinsol.lib")).clone(), (literal!("sundials_nvecserial.lib")).clone(), (literal!("sundials_sunlinsolklu")).clone(), (literal!("util.lib")).clone(), (literal!("lapack_win32_MT.lib")).clone()];
-                    Ok((strs.clone(), metamodelica::nil()))
+                    Ok(((strs.clone(), metamodelica::nil()), strs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { strs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: Deref @ "OpenModelicaCorba" } => {
@@ -2625,7 +2625,7 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: r#str @ Deref @ "omcruntime" } => {
                     let mut r#str = (*r#str).clone();
@@ -2636,11 +2636,11 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                     } else {
                         strs = Autoconf::systemLibs.clone();
                     }
-                    Ok((strs.clone(), metamodelica::nil()))
+                    Ok(((strs.clone(), metamodelica::nil()), strs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { strs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: Deref @ "OpenModelicaCorba" } => {
@@ -2659,7 +2659,7 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::STRING { value: r#str } => {
                     let mut strs1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2686,11 +2686,11 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                         strs = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-l")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone(), strs.clone());
                         names = metamodelica::cons((r#str.clone()).clone(), names.clone());
                     }
-                    Ok((strs.clone(), names.clone()))
+                    Ok(((strs.clone(), names.clone()), names.clone(), strs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { names = __wb0; strs = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2727,7 +2727,7 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "msvc" => {
                     let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2739,11 +2739,11 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                     } };
                     exp = __pa0.clone();
                     (libs, names) = getLibraryStringInMSVCFormat(exp.clone())?;
-                    Ok((libs.clone(), names.clone()))
+                    Ok(((libs.clone(), names.clone()), names.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { names = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2761,7 +2761,7 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2773,11 +2773,11 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                     } };
                     exp = __pa0.clone();
                     (libs, names) = getLibraryStringInGccFormat(exp.clone())?;
-                    Ok((libs.clone(), names.clone()))
+                    Ok(((libs.clone(), names.clone()), names.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { names = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2795,7 +2795,7 @@ fn generateExtFunctionIncludesIncludestr(mut inMod: Arc<SCode::Mod>) -> Result<A
     let mut includes: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     includes = 'mc: {
         let __mc_input = inMod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut inc: ArcStr = arcstr::literal!("");
@@ -2814,11 +2814,11 @@ fn generateExtFunctionIncludesIncludestr(mut inMod: Arc<SCode::Mod>) -> Result<A
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#line ")); __mm_s.push_str(&*intString(lineNumberStart.clone())); __mm_s.push_str(&*literal!(" \"")); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
                     inc_1 = (System::unescapedString((inc.clone()).clone())).clone();
                     includes = if (Flags::isSet(Flags::GEN_DEBUG_SYMBOLS.clone())?) {list![(r#str.clone()).clone(), (inc_1.clone()).clone()]} else {list![(inc_1.clone()).clone()]};
-                    Ok(includes.clone())
+                    Ok((includes.clone(), includes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { includes = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

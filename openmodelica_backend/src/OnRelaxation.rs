@@ -442,7 +442,7 @@ fn generateCliquesResidual(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: o, tail: rest } => {
                     let mut constraints: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -468,22 +468,22 @@ fn generateCliquesResidual(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1
                     generateCliquesResidual2(rlst.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone() + 1, rowmarks.clone(), colummarks.clone(), metamodelica::cons(o.clone(), partner.clone()))?;
                     constraints = if (!(foundflow.clone())) {listAppend(metamodelica::cons(o.clone(), partner.clone()), iconstraints.clone())} else {iconstraints.clone()};
                     (omark, constraints) = generateCliquesResidual(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), vars.clone(), constraints.clone())?;
-                    Ok((omark.clone(), constraints.clone()))
+                    Ok(((omark.clone(), constraints.clone()), omark.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { omark = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut constraints: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut omark: i32 = omark.clone();
                     (omark, constraints) = generateCliquesResidual(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), vars.clone(), iconstraints.clone())?;
-                    Ok((omark.clone(), constraints.clone()))
+                    Ok(((omark.clone(), constraints.clone()), omark.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { omark = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((omark, oconstraints))
@@ -3429,7 +3429,7 @@ fn getConstOneVariable(mut vlst: Arc<metamodelica::List<BackendDAE::Var>>, mut e
     let mut i: i32 = 0;
     (outCr, i) = 'mc: {
         let __mc_input = vlst.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: _ } => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3446,22 +3446,22 @@ fn getConstOneVariable(mut vlst: Arc<metamodelica::List<BackendDAE::Var>>, mut e
                     e1 = Differentiate::differentiateExpSolve(e.clone(), cr.clone(), None)?;
                     (e2, _) = ExpressionSimplify::simplify(e1.clone())?;
                     let true = (Expression::isConstOne(e2.clone()) || Expression::isConstMinusOne(e2.clone())) else { bail!("pattern mismatch") };
-                    Ok((cr.clone(), i.clone()))
+                    Ok(((cr.clone(), i.clone()), i.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { i = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut i: i32 = i.clone();
                     (cr, i) = getConstOneVariable(rest.clone(), e.clone(), vec1.clone(), vars.clone())?;
-                    Ok((cr.clone(), i.clone()))
+                    Ok(((cr.clone(), i.clone()), i.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { i = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCr, i))

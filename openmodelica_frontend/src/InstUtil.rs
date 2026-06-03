@@ -140,26 +140,26 @@ pub fn scodeFlatten(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::IDENT { name: Deref @ "" } => {
                     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = outProgram.clone();
                     outProgram = scodeFlattenProgram(inProgram.clone())?;
-                    Ok(outProgram.clone())
+                    Ok((outProgram.clone(), outProgram.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outProgram = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = outProgram.clone();
                     (outProgram, _) = NFSCodeFlatten::flattenClassInProgram(inPath.clone(), inProgram.clone())?;
-                    Ok(outProgram.clone())
+                    Ok((outProgram.clone(), outProgram.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outProgram = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outProgram)
@@ -169,18 +169,18 @@ fn scodeFlattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outProgram = 'mc: {
         let __mc_input = inProgram.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = outProgram.clone();
                     ErrorExt::setCheckpoint((literal!("scodeFlattenProgram")).clone());
                     outProgram = NFSCodeFlatten::flattenCompleteProgram(inProgram.clone())?;
                     ErrorExt::delCheckpoint((literal!("scodeFlattenProgram")).clone());
-                    Ok(outProgram.clone())
+                    Ok((outProgram.clone(), outProgram.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outProgram = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -524,17 +524,17 @@ fn updateCrefTypesWithConnectorPrefix(mut cr1: Arc<DAE::ComponentRef>, mut cr2: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident: name, identType: ty, subscriptLst: subs, componentRef: child }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: name2, identType: _, subscriptLst: _, componentRef: child2 }) => {
                     let mut outCref: Arc<DAE::ComponentRef> = outCref.clone();
                     let true = (stringEq((name.clone()).clone(), (name2.clone()).clone())) else { bail!("pattern mismatch") };
                     outCref = updateCrefTypesWithConnectorPrefix(child.clone(), child2.clone())?;
-                    Ok(ComponentReferenceBasics::makeCrefQual((name.clone()).clone(), ty.clone(), subs.clone(), outCref.clone()))
+                    Ok((ComponentReferenceBasics::makeCrefQual((name.clone()).clone(), ty.clone(), subs.clone(), outCref.clone()), outCref.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCref = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -992,7 +992,7 @@ pub fn extractConstantPlusDepsTpl(mut inComps: Arc<metamodelica::List<(Arc<SCode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Some(_)) => {
                     let mut lst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1002,11 +1002,11 @@ pub fn extractConstantPlusDepsTpl(mut inComps: Arc<metamodelica::List<(Arc<SCode
                     let false = (lst.clone().is_empty()) else { bail!("pattern mismatch") };
                     lst = lst.clone().reverse();
                     oel = List::filter1OnTrue(inComps.clone(), (std::sync::Arc::new(fnptr!(elementNameMember, (Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<Arc<SCode::Element>>>)) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<bool> + 'static>), lst.clone())?;
-                    Ok((oel.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()))
+                    Ok(((oel.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()), oel.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oel = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Some(cr)) => {
@@ -1035,18 +1035,18 @@ pub fn extractConstantPlusDeps(mut inComps: Arc<metamodelica::List<Arc<SCode::El
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(_) => {
                     let mut outComps: Arc<metamodelica::List<Arc<SCode::Element>>> = outComps.clone();
                     outComps = extractConstantPlusDeps2(inComps.clone(), ocr.clone(), allComps.clone(), (className.clone()).clone(), metamodelica::nil())?;
                     let false = (outComps.clone().is_empty()) else { bail!("pattern mismatch") };
                     outComps = outComps.clone().reverse();
-                    Ok(outComps.clone())
+                    Ok((outComps.clone(), outComps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComps = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(cr) => {
@@ -1091,7 +1091,7 @@ fn extractConstantPlusDeps2(mut inComps: Arc<metamodelica::List<Arc<SCode::Eleme
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: selem @ Deref @ SCode::Element::CLASS { name: name2, .. }, tail: comps }, Some(Deref @ DAE::ComponentRef::CREF_IDENT { .. }), allComps, existing) => {
                     let mut allComps = (*allComps).clone();
@@ -1100,11 +1100,11 @@ fn extractConstantPlusDeps2(mut inComps: Arc<metamodelica::List<Arc<SCode::Eleme
                     allComps = metamodelica::cons(selem.clone(), allComps.clone());
                     existing = metamodelica::cons((name2.clone()).clone(), existing.clone());
                     outComps = extractConstantPlusDeps2(comps.clone(), ocr.clone(), allComps.clone(), (className.clone()).clone(), existing.clone())?;
-                    Ok(metamodelica::cons(selem.clone(), outComps.clone()))
+                    Ok((metamodelica::cons(selem.clone(), outComps.clone()), outComps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComps = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: selem @ Deref @ SCode::Element::COMPONENT { modifications: scmod, name: name2, .. }, tail: comps }, Some(Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }), allComps, existing) => {
@@ -1212,16 +1212,16 @@ fn extractConstantPlusDeps3(mut inAcrefs: Arc<metamodelica::List<Arc<Absyn::Comp
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentRef::CREF_QUAL { name: _, subscripts: _, componentRef: _ }, tail: acrefs }, existing) => {
                     let mut outComps: Arc<metamodelica::List<Arc<SCode::Element>>> = outComps.clone();
                     outComps = extractConstantPlusDeps3(acrefs.clone(), remainingComps.clone(), (className.clone()).clone(), existing.clone())?;
-                    Ok(outComps.clone())
+                    Ok((outComps.clone(), outComps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComps = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentRef::CREF_IDENT { name: s1, subscripts: _ }, tail: acrefs }, existing) => {
@@ -1231,7 +1231,7 @@ fn extractConstantPlusDeps3(mut inAcrefs: Arc<metamodelica::List<Arc<Absyn::Comp
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentRef::CREF_IDENT { name: s1, subscripts: _ }, tail: acrefs }, existing) => {
                     let mut localComps: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1245,11 +1245,11 @@ fn extractConstantPlusDeps3(mut inAcrefs: Arc<metamodelica::List<Arc<Absyn::Comp
                     existing = listAppend(names.clone(), existing.clone());
                     outComps = extractConstantPlusDeps3(acrefs.clone(), remainingComps.clone(), (className.clone()).clone(), existing.clone())?;
                     outComps = listAppend(localComps.clone(), outComps.clone());
-                    Ok(outComps.clone())
+                    Ok((outComps.clone(), outComps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComps = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outComps)
@@ -1562,7 +1562,7 @@ pub fn getCrefFromMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::Li
     let mut outCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outCrefs = 'mc: {
         let __mc_input = inMod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut l1: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
@@ -1570,11 +1570,11 @@ pub fn getCrefFromMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::Li
                     let mut outCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = outCrefs.clone();
                     (l1, l2) = getExpsFromMod(inMod.clone())?;
                     outCrefs = List::flatten(List::map2(listAppend(l1.clone(), l2.clone()), (std::sync::Arc::new(AbsynUtil::getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), true, true)?)?;
-                    Ok(outCrefs.clone())
+                    Ok((outCrefs.clone(), outCrefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCrefs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2072,18 +2072,18 @@ fn elementName(mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<Ar
     let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outName = ('mc: {
         let __mc_input = inElement.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut elem: Arc<SCode::Element> = elem.clone();
                     let mut outName: ArcStr = outName.clone();
                     (elem, _) = inElement.clone();
                     outName = (SCodeUtil::elementName(elem.clone())?).clone();
-                    Ok(outName.clone())
+                    Ok((outName.clone(), outName.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2366,7 +2366,7 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { attributes: attr @ SCode::Attributes { .. }, prefixes: prefs @ Deref @ SCode::Prefixes { .. }, .. } => {
                     let mut cache: FCore::Cache = cache.clone();
@@ -2390,11 +2390,11 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
                     cmod = Mod::merge(comp_mod.clone(), cmod.clone(), (literal!("")).clone(), true)?;
                     dattr = DAEUtil::translateSCodeAttrToDAEAttr(attr.clone(), prefs.clone())?;
                     env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone(), attributes: dattr.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), comp.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
-                    Ok(false)
+                    Ok((false, cache.clone(), env.clone(), ih.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cache = __wb0; env = __wb1; ih = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { .. } => {
@@ -2532,7 +2532,7 @@ pub fn chainRedeclare_dispatch(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: Deref @ metamodelica::List::Cons { head: sm, tail: rest }, binding: b, comment: cmt, info } => {
                     let mut subs: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
@@ -2543,11 +2543,11 @@ pub fn chainRedeclare_dispatch(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Ar
                     } };
                     subs = __pa0.clone();
                     change = __pa1.clone();
-                    Ok((Arc::new(SCode::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: metamodelica::cons(sm.clone(), subs.clone()), binding: b.clone(), comment: cmt.clone(), info: info.clone() }), change.clone()))
+                    Ok(((Arc::new(SCode::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: metamodelica::cons(sm.clone(), subs.clone()), binding: b.clone(), comment: cmt.clone(), info: info.clone() }), change.clone()), change.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { change = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2626,7 +2626,7 @@ pub fn checkMultiplyDeclared(mut cache: FCore::Cache, mut env: FCore::Graph, mut
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 newComp @ (Deref @ SCode::Element::COMPONENT { name: n, .. }, _) => {
                     let mut oldElt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -2637,11 +2637,11 @@ pub fn checkMultiplyDeclared(mut cache: FCore::Cache, mut env: FCore::Graph, mut
                     checkMultipleElementsIdentical(cache.clone(), env.clone(), (oldElt.clone(), oldMod.clone()), newComp.clone())?;
                     alreadyDeclared = instStatusToBool(instStatus.clone())?;
                     ErrorExt::delCheckpoint((literal!("checkMultiplyDeclared")).clone());
-                    Ok(alreadyDeclared.clone())
+                    Ok((alreadyDeclared.clone(), alreadyDeclared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { alreadyDeclared = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::COMPONENT { name: n, .. }, _) => {
@@ -4286,7 +4286,7 @@ fn getDeriveCondition(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "noDerivative", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: acr }), .. } }, tail: subs } => {
                     let mut name: ArcStr = arcstr::literal!("");
@@ -4295,12 +4295,12 @@ fn getDeriveCondition(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
                     name = (Dump::printComponentRefStr(acr.clone())?).clone();
                     outconds = getDeriveCondition(subs.clone(), elemDecl.clone(), inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), info.clone())?;
                     varPos = setFunctionInputIndex(elemDecl.clone(), (name.clone()).clone(), 1)?;
-                    Ok(metamodelica::cons((varPos.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 99 }) }), outconds.clone()))
+                    Ok((metamodelica::cons((varPos.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 99 }) }), outconds.clone()), outconds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outconds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "zeroDerivative", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: acr }), .. } }, tail: subs } => {
                     let mut name: ArcStr = arcstr::literal!("");
@@ -4309,12 +4309,12 @@ fn getDeriveCondition(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
                     name = (Dump::printComponentRefStr(acr.clone())?).clone();
                     outconds = getDeriveCondition(subs.clone(), elemDecl.clone(), inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), info.clone())?;
                     varPos = setFunctionInputIndex(elemDecl.clone(), (name.clone()).clone(), 1)?;
-                    Ok(metamodelica::cons((varPos.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE), outconds.clone()))
+                    Ok((metamodelica::cons((varPos.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE), outconds.clone()), outconds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outconds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "noDerivative", r#mod: m @ Deref @ SCode::Mod::MOD { .. } }, tail: subs } => {
                     let mut sub: Arc<DAE::SubMod> = Arc::new(<DAE::SubMod as ::std::default::Default>::default());
@@ -4332,11 +4332,11 @@ fn getDeriveCondition(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
                     (name, cond) = extractNameAndExp(sub.clone());
                     outconds = getDeriveCondition(subs.clone(), elemDecl.clone(), cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), info.clone())?;
                     varPos = setFunctionInputIndex(elemDecl.clone(), (name.clone()).clone(), 1)?;
-                    Ok(metamodelica::cons((varPos.clone(), cond.clone()), outconds.clone()))
+                    Ok((metamodelica::cons((varPos.clone(), cond.clone()), outconds.clone()), outconds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outconds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: subs } => {
@@ -4593,17 +4593,17 @@ fn checkExpInputUsed(mut inExp: Arc<DAE::Exp>, mut inEls: Arc<metamodelica::List
     let mut els: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     (exp, els) = 'mc: {
         let __mc_input = (inExp.clone(), inEls.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, els) => {
                     let mut els = (*els).clone();
                     els = List::select1(els.clone(), (std::sync::Arc::new(checkExpInputUsed3) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), cr.clone())?;
-                    Ok((exp.clone(), els.clone()))
+                    Ok(((exp.clone(), els.clone()), els.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { els = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp @ Deref @ DAE::Exp::CALL { path, .. }, els) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -4611,11 +4611,11 @@ fn checkExpInputUsed(mut inExp: Arc<DAE::Exp>, mut inEls: Arc<metamodelica::List
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     cr = ComponentReference::pathToCref(path.clone())?;
                     els = List::select1(els.clone(), (std::sync::Arc::new(checkExpInputUsed3) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), cr.clone())?;
-                    Ok((exp.clone(), els.clone()))
+                    Ok(((exp.clone(), els.clone()), els.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { els = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

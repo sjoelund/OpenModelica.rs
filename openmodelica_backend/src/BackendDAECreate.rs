@@ -1005,17 +1005,17 @@ fn lowerVar(mut inElement: Arc<DAE::Element>, mut inFunctions: Arc<AvlTreePathFu
     let mut outInlineHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (HashTableExpToExp::FuncHashCref, HashTableExpToExp::FuncCrefEqual, HashTableExpToExp::FuncCrefStr, HashTableExpToExp::FuncExpStr)) = inInlineHT.clone();
     let () = 'mc: {
         let __mc_input = inElement.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { .. }, .. }, .. } => {
                     let mut outExVars: Arc<metamodelica::List<BackendDAE::Var>> = outExVars.clone();
                     outExVars = metamodelica::cons(lowerExtObjVar(inElement.clone(), inFunctions.clone())?, outExVars.clone());
-                    Ok(())
+                    Ok(((), outExVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outExVars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { source: src, binding: Some(e2), componentRef: cr, .. } => {
                     if !((isStateOrAlgvar(inElement.clone()))) { bail!("guard") }
@@ -1047,23 +1047,23 @@ fn lowerVar(mut inElement: Arc<DAE::Element>, mut inFunctions: Arc<AvlTreePathFu
                     } else {
                         outEqns = metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: Expression::dimensionsSizes(dims.clone())?, left: e1.clone(), right: e2.clone(), source: src.clone(), attr: attr.clone(), recordSize: recordSize.clone() }), outEqns.clone());
                     }
-                    Ok(())
+                    Ok(((), outEqns.clone(), outVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outEqns = __wb0; outVars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { binding: None, .. } => {
                     if !((isStateOrAlgvar(inElement.clone()))) { bail!("guard") }
                     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = outVars.clone();
                     outVars = metamodelica::cons(lowerDynamicVar(inElement.clone(), inFunctions.clone())?, outVars.clone());
-                    Ok(())
+                    Ok(((), outVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { .. } => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -1072,11 +1072,11 @@ fn lowerVar(mut inElement: Arc<DAE::Element>, mut inFunctions: Arc<AvlTreePathFu
                     let mut outREqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = outREqns.clone();
                     (var, outInlineHT, outREqns) = lowerKnownVar(inElement.clone(), inFunctions.clone(), outInlineHT.clone(), outREqns.clone())?;
                     outGlobalKnownVars = metamodelica::cons(var.clone(), outGlobalKnownVars.clone());
-                    Ok(())
+                    Ok(((), outGlobalKnownVars.clone(), outInlineHT.clone(), outREqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outGlobalKnownVars = __wb0; outInlineHT = __wb1; outREqns = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2440,7 +2440,7 @@ fn lowerWhenEqn(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTreeP
     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = inVars.clone();
     (outEquationLst, outREquationLst) = 'mc: {
         let __mc_input = inElement.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::WHEN_EQUATION { source, elsewhen_: None, equations: eqnl, condition: cond } => {
                     let mut res: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2455,12 +2455,12 @@ fn lowerWhenEqn(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTreeP
                     (res, rEqns, outVars) = lowerWhenEqn2(eqnl.clone().reverse(), cond.clone(), functionTree.clone(), metamodelica::nil(), metamodelica::nil(), outVars.clone())?;
                     res = mergeWhenEqns(inEquationLst.clone(), res.clone(), metamodelica::nil())?;
                     rEqns = mergeWhenEqns(inREquationLst.clone(), rEqns.clone(), metamodelica::nil())?;
-                    Ok((res.clone(), rEqns.clone()))
+                    Ok(((res.clone(), rEqns.clone()), outVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::WHEN_EQUATION { source, elsewhen_: Some(elsePart), equations: eqnl, condition: cond } => {
                     let mut res: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2478,11 +2478,11 @@ fn lowerWhenEqn(mut inElement: Arc<DAE::Element>, mut functionTree: Arc<AvlTreeP
                     res = mergeWhenEqns(inEquationLst.clone(), trueEqnLst.clone(), metamodelica::nil())?;
                     rEqns = mergeWhenEqns(inREquationLst.clone(), trueREqns.clone(), metamodelica::nil())?;
                     (res, rEqns, outVars) = lowerWhenEqn(elsePart.clone(), functionTree.clone(), res.clone(), rEqns.clone(), outVars.clone())?;
-                    Ok((res.clone(), rEqns.clone()))
+                    Ok(((res.clone(), rEqns.clone()), outVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outVars = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2515,7 +2515,7 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { source, cr2, cr1: cr }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2530,12 +2530,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 1, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), metamodelica::cons(eq.clone(), iEquationLst.clone()), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { source, exp: e, componentRef: cr }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2557,12 +2557,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 1, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), metamodelica::cons(eq.clone(), iEquationLst.clone()), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { source, scalar: e @ Deref @ DAE::Exp::CALL { path: _, .. }, exp: lhs @ Deref @ DAE::Exp::TUPLE { .. } }, tail: xs } => {
                     let mut size: i32 = 0;
@@ -2576,12 +2576,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![BackendDAE::WhenOperator::ASSIGN { left: lhs.clone(), right: e.clone(), source: source.clone() }], elsewhenPart: None }), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     eqnl = metamodelica::cons(eq.clone(), iEquationLst.clone());
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), eqnl.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { source, scalar: e, exp: Deref @ DAE::Exp::TUPLE { PR: expl } }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2589,12 +2589,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     let mut outVar_lst: Arc<metamodelica::List<BackendDAE::Var>> = outVar_lst.clone();
                     eqnl = lowerWhenTupleEqn(expl.clone(), inCond.clone(), e.clone(), source.clone(), 1, iEquationLst.clone())?;
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), eqnl.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: el @ Deref @ DAE::Element::EQUATION { source, scalar: e, exp: cre @ Deref @ DAE::Exp::CREF { .. } }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2621,12 +2621,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 1, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), metamodelica::cons(eq.clone(), iEquationLst.clone()), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { source, rhs: e, lhs: cre @ Deref @ DAE::Exp::CREF { .. } }, tail: xs } => {
                     let mut size: i32 = 0;
@@ -2649,12 +2649,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), metamodelica::cons(eq.clone(), iEquationLst.clone()), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { source, rhs: e, lhs: cre @ Deref @ DAE::Exp::TUPLE { PR: expl } }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2670,12 +2670,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     source = __pa1.clone();
                     eqnl = lowerWhenTupleEqn(expl.clone(), inCond.clone(), e.clone(), source.clone(), 1, iEquationLst.clone())?;
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), eqnl.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { source, equations3: eqns, equations2: eqnslst, condition1: expl }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2689,12 +2689,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     crexplst = BaseHashTable::hashTableList(ht.clone())?;
                     eqnl = lowerWhenIfEqns2(crexplst.clone(), inCond.clone(), source.clone(), iEquationLst.clone())?;
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), eqnl.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { source, array: e, exp: cre @ Deref @ DAE::Exp::CREF { .. }, dimension: ds }, tail: xs } => {
                     let mut size: i32 = 0;
@@ -2717,12 +2717,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), metamodelica::cons(eq.clone(), iEquationLst.clone()), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { source, array: e, exp: cre @ Deref @ DAE::Exp::TUPLE { PR: expl }, .. }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2738,12 +2738,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     source = __pa1.clone();
                     eqnl = lowerWhenTupleEqn(expl.clone(), inCond.clone(), e.clone(), source.clone(), 1, iEquationLst.clone())?;
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), eqnl.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { source, level, message: e, condition: cond }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2756,12 +2756,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), iEquationLst.clone(), metamodelica::cons(eq.clone(), iREquationLst.clone()), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::REINIT { source, exp: e, componentRef: cr }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2786,12 +2786,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     }
                     outVar_lst = BackendVariable::varList(vars.clone())?;
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), iEquationLst.clone(), metamodelica::cons(eq.clone(), iREquationLst.clone()), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::TERMINATE { source, message: e }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2804,12 +2804,12 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), iEquationLst.clone(), metamodelica::cons(eq.clone(), iREquationLst.clone()), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outVar_lst = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::NORETCALL { source, exp: e }, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2822,11 +2822,11 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     whenEq = Arc::new(BackendDAE::WhenEquation { condition: inCond.clone(), whenStmtLst: list![whenOp.clone()], elsewhenPart: None });
                     eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: whenEq.clone(), source: source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), iEquationLst.clone(), metamodelica::cons(eq.clone(), iREquationLst.clone()), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outVar_lst = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: el, tail: _ } => {
@@ -2837,7 +2837,7 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
                     let mut eqnl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2845,11 +2845,11 @@ fn lowerWhenEqn2(mut inDAEElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>
                     let mut outVar_lst: Arc<metamodelica::List<BackendDAE::Var>> = outVar_lst.clone();
                     let true = (Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) else { bail!("pattern mismatch") };
                     (eqnl, reqnl, outVar_lst) = lowerWhenEqn2(xs.clone(), inCond.clone(), functionTree.clone(), iEquationLst.clone(), iREquationLst.clone(), outVar_lst.clone())?;
-                    Ok((eqnl.clone(), reqnl.clone()))
+                    Ok(((eqnl.clone(), reqnl.clone()), outVar_lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outVar_lst = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outEquationLst, outREquationLst, outVar_lst))

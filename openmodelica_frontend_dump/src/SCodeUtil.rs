@@ -796,7 +796,7 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
     let mut equal: bool = false;
     equal = 'mc: {
         let __mc_input = (ai1.clone(), ai2.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Statement::ALG_ASSIGN { value: e1, assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr1 }, .. }, Deref @ SCode::Statement::ALG_ASSIGN { value: e2, assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr2 }, .. }) => {
                     let mut b1: bool = false;
@@ -805,12 +805,12 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
                     b1 = AbsynUtil::crefEqual(cr1.clone(), cr2.clone())?;
                     b2 = AbsynUtil::expEqual(e1.clone(), e2.clone())?;
                     equal = boolAnd(b1.clone(), b2.clone());
-                    Ok(equal.clone())
+                    Ok((equal.clone(), equal.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { equal = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Statement::ALG_ASSIGN { value: e12, assignComponent: e11 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, .. }, Deref @ SCode::Statement::ALG_ASSIGN { value: e22, assignComponent: e21 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, .. }) => {
                     let mut b1: bool = false;
@@ -819,11 +819,11 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
                     b1 = AbsynUtil::expEqual(e11.clone(), e21.clone())?;
                     b2 = AbsynUtil::expEqual(e12.clone(), e22.clone())?;
                     equal = boolAnd(b1.clone(), b2.clone());
-                    Ok(equal.clone())
+                    Ok((equal.clone(), equal.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equal = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (a1, a2) => {
@@ -3945,7 +3945,7 @@ pub fn mergeWithOriginal(mut newClass: Arc<SCode::Element>, mut oldClass: Arc<SC
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { classDef: cd1, prefixes: prefixes1, .. }, Deref @ SCode::Element::CLASS { classDef: cd2, prefixes: prefixes2, .. }) => {
                     let mut mCCNew: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
@@ -3957,11 +3957,11 @@ pub fn mergeWithOriginal(mut newClass: Arc<SCode::Element>, mut oldClass: Arc<SC
                         classDef = mergeClassDef(cd1.clone(), cd2.clone(), mCCNew.clone(), mCCOld.clone())?,
                         prefixes = propagatePrefixes(prefixes1.clone(), prefixes2.clone())?
                     );
-                    Ok(())
+                    Ok(((), newClass.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { newClass = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -157,7 +157,7 @@ pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Already visited: ")); __mm_s.push_str(&*FNode::toStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!(" seq: ")); __mm_s.push_str(&*intString(seq(v.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let FCore::Visited { tree: ref a, next: _ } = __mc_input.clone() else { bail!("nomatch") };
             let mut s: Seq = 0;
             let mut n: Next = 0;
@@ -174,8 +174,8 @@ pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
             s = __pa2.clone();
             a = avlTreeAdd(a.clone(), id.clone(), FCore::Visit { r#ref: inRef.clone(), seq: s.clone() })?;
             outVisited = FCore::Visited { tree: a.clone(), next: n.clone() };
-            Ok(outVisited.clone())
-        })() { break 'mc __v; }
+            Ok((outVisited.clone(), outVisited.clone()))
+        })() { outVisited = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outVisited)

@@ -356,7 +356,7 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::EQUATION { scalar: e12, exp: e11, .. }, Deref @ BackendDAE::Equation::EQUATION { scalar: e22, exp: e21, .. }) => {
                     let mut terms1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -380,52 +380,52 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
                             res = false;
                         }
                     }
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e12, left: e11, .. }, Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e22, left: e21, .. }) => {
                     let mut res: bool = res.clone();
                     res = boolAnd(expEqualNoCrefSubs(e11.clone(), e21.clone())?, expEqualNoCrefSubs(e12.clone(), e22.clone())?);
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e12, left: e11, .. }, Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e22, left: e21, .. }) => {
                     let mut res: bool = res.clone();
                     res = boolAnd(expEqualNoCrefSubs(e11.clone(), e21.clone())?, expEqualNoCrefSubs(e12.clone(), e22.clone())?);
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: exp1, componentRef: cr1, .. }, Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: exp2, componentRef: cr2, .. }) => {
                     let mut res: bool = res.clone();
                     res = boolAnd(ComponentReferenceBasics::crefEqualWithoutSubs(cr1.clone(), cr2.clone()), expEqualNoCrefSubs(exp1.clone(), exp2.clone())?);
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: exp1, .. }, Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: exp2, .. }) => {
                     let mut res: bool = res.clone();
                     res = expEqualNoCrefSubs(exp1.clone(), exp2.clone())?;
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::ALGORITHM { alg: alg1, .. }, Deref @ BackendDAE::Equation::ALGORITHM { alg: alg2, .. }) => {
                     let mut explst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -434,11 +434,11 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
                     explst1 = Algorithm::getAllExps(alg1.clone())?;
                     explst2 = Algorithm::getAllExps(alg2.clone())?;
                     res = List::isEqualOnTrue(explst1.clone(), explst2.clone(), (std::sync::Arc::new(expEqualNoCrefSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

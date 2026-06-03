@@ -1302,30 +1302,30 @@ fn getOperatorFuncsOrEmpty(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
     let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     (cache, funcs) = 'mc: {
         let __mc_input = tys.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: ty, tail: rest } => {
                     let mut cache: FCore::Cache = cache.clone();
                     let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = funcs.clone();
                     (cache, funcs) = getOperatorFuncsOrEmptySingleTy(inCache.clone(), env.clone(), ty.clone(), (opName.clone()).clone(), info.clone())?;
                     (cache, funcs) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), rest.clone(), (opName.clone()).clone(), info.clone(), listAppend(funcs.clone(), acc.clone()))?;
-                    Ok((cache.clone(), funcs.clone()))
+                    Ok(((cache.clone(), funcs.clone()), cache.clone(), funcs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cache = __wb0; funcs = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut cache: FCore::Cache = cache.clone();
                     let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = funcs.clone();
                     (cache, funcs) = getOperatorFuncsOrEmpty(inCache.clone(), env.clone(), rest.clone(), (opName.clone()).clone(), info.clone(), acc.clone())?;
-                    Ok((cache.clone(), funcs.clone()))
+                    Ok(((cache.clone(), funcs.clone()), cache.clone(), funcs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cache = __wb0; funcs = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
                     let mut cache: FCore::Cache = cache.clone();
@@ -1337,11 +1337,11 @@ fn getOperatorFuncsOrEmpty(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
                         _ => bail!("pattern mismatch"),
                     } };
                     funcs = __pa1.clone();
-                    Ok((cache.clone(), funcs.clone()))
+                    Ok(((cache.clone(), funcs.clone()), cache.clone(), funcs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cache = __wb0; funcs = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((cache, funcs))

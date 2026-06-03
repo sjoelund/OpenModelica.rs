@@ -856,16 +856,16 @@ fn containWholeDim2(mut inRef: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: ssl }, _) => {
                     let mut wholedim: bool = wholedim.clone();
                     wholedim = containWholeDim2(ssl.clone(), inType.clone())?;
-                    Ok(wholedim.clone())
+                    Ok((wholedim.clone(), wholedim.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { wholedim = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(wholedim)

@@ -155,18 +155,18 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, lhprop, rhs, rhprop, _, SCode::Initial::NON_INITIAL { .. }) => {
                     let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     let true = (ComponentReference::isRecord(cr.clone())) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
-                    Ok(outStatement.clone())
+                    Ok((outStatement.clone(), outStatement.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outStatement = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lprop, rhs, _, _, SCode::Initial::NON_INITIAL { .. }) => {
@@ -192,28 +192,28 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lhprop, rhs, rhprop, _, SCode::Initial::INITIAL { .. }) => {
                     let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
-                    Ok(outStatement.clone())
+                    Ok((outStatement.clone(), outStatement.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outStatement = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lhprop, rhs, rhprop, Deref @ DAE::Attributes { .. }, _) => {
                     let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_VAR { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
-                    Ok(outStatement.clone())
+                    Ok((outStatement.clone(), outStatement.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outStatement = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lprop, rhs, rprop, _, _) => {

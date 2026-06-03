@@ -729,7 +729,7 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut nameStr: ArcStr = arcstr::literal!("");
@@ -747,12 +747,12 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
                     nameStr = (wrapInMember((nameStr.clone()).clone())?).clone();
                     nameStr = (addMissingForQuotedNames((nameStr.clone()).clone())?).clone();
                     res = stringAppendList(list![(nameStr.clone()).clone(), (literal!("[\\[FormalT]]")).clone()]);
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut nameStr: ArcStr = arcstr::literal!("");
@@ -778,11 +778,11 @@ fn printComponentRefMmaStr(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE:
                     nameStr = (wrapInMember((nameStr.clone()).clone())?).clone();
                     nameStr = (addMissingForQuotedNames((nameStr.clone()).clone())?).clone();
                     res = stringAppendList(list![(nameStr.clone()).clone(), (literal!("[\\[FormalT]]")).clone()]);
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -821,13 +821,13 @@ fn addMissingForQuotedNames(mut name: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ('mc: {
         let __mc_input = name.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut res: ArcStr = res.clone();
             let false = (-1 == System::stringFind((name.clone()).clone(), (literal!("'")).clone())?) else { bail!("pattern mismatch") };
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Missing[\"QuotedName\",\"")); __mm_s.push_str(&*System::stringReplace((name.clone()).clone(), (literal!("\\")).clone(), (literal!("\\\\")).clone())?); __mm_s.push_str(&*literal!("\"]")); ArcStr::from(__mm_s) }).clone();
-            Ok(res.clone())
-        })() { break 'mc __v; }
+            Ok((res.clone(), res.clone()))
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(name.clone())
@@ -1044,17 +1044,17 @@ fn printMmaOutputStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = param.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 v @ BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT { .. }, varName: name @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut r#str: ArcStr = r#str.clone();
                     let true = (BackendVariable::isVarOnTopLevelAndOutput(v.clone())) else { bail!("pattern mismatch") };
                     r#str = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1072,17 +1072,17 @@ fn printMmaInputStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = param.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 v @ BackendDAE::Var { varDirection: DAE::VarDirection::INPUT { .. }, varName: name @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut r#str: ArcStr = r#str.clone();
                     let true = (BackendVariable::isVarOnTopLevelAndInput(v.clone())) else { bail!("pattern mismatch") };
                     r#str = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1115,7 +1115,7 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = param.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { bindExp: Some(exp), varKind: BackendDAE::VarKind::PARAM { .. }, varName: name, .. } => {
                     let mut expStr: ArcStr = arcstr::literal!("");
@@ -1124,12 +1124,12 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
                     expStr = (printExpMmaStr(exp.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     paramStr = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     r#str = stringAppendList(list![(paramStr.clone()).clone(), (literal!("->")).clone(), (expStr.clone()).clone()]);
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { r#str = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { values: val, bindExp: None, varKind: BackendDAE::VarKind::PARAM { .. }, varName: name, .. } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1144,12 +1144,12 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
                     expStr = (printExpMmaStr(exp.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     paramStr = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     r#str = stringAppendList(list![(paramStr.clone()).clone(), (literal!("->")).clone(), (expStr.clone()).clone()]);
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { r#str = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { values: val, bindExp: None, varKind: BackendDAE::VarKind::PARAM { .. }, varName: name, .. } => {
                     let mut expStr: ArcStr = arcstr::literal!("");
@@ -1162,11 +1162,11 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
                     expStr = (printExpMmaStr(Arc::new(DAE::Exp::ICONST { integer: 0 }), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     paramStr = (printComponentRefMmaStr(name.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()))?).clone();
                     r#str = stringAppendList(list![(paramStr.clone()).clone(), (literal!("->")).clone(), (expStr.clone()).clone()]);
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, varName: name, .. } => {

@@ -2034,7 +2034,7 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
     let mut cls: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let () = 'mc: {
         let __mc_input = element.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { .. } => {
                     let mut cls: Arc<InstNode::InstNode> = cls.clone();
@@ -2045,11 +2045,11 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
                     context = InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone());
                     (cls, _) = Lookup::lookupName(path.clone(), scope.clone(), context.clone(), false)?;
                     json = JSON::addPair((literal!("$type")).clone(), dumpJSONNodePath(cls.clone(), false)?, json.clone())?;
-                    Ok(())
+                    Ok(((), json.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { json = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

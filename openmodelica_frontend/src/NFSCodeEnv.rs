@@ -962,7 +962,7 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = 'mc: {
         let __mc_input = inName.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut cls_env: Arc<Frame> = Arc::new(<Frame as ::std::default::Default>::default());
             let mut item: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
@@ -974,8 +974,8 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
             } };
             cls_env = __pa0.clone();
             outEnv = enterFrame(cls_env.clone(), inEnv.clone());
-            Ok(outEnv.clone())
-        })() { break 'mc __v; }
+            Ok((outEnv.clone(), outEnv.clone()))
+        })() { outEnv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to enterScope: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in env: ")); __mm_s.push_str(&*printEnvStr(inEnv.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());

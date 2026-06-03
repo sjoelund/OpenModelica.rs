@@ -549,7 +549,7 @@ fn getPackageContentNames(mut cl: Arc<Absyn::Class>, mut filename: ArcStr, mut m
     let mut po: Arc<metamodelica::List<PackageOrder>> = metamodelica::nil();
     po = 'mc: {
         let __mc_input = cl.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Class { info, body: Deref @ Absyn::ClassDef::PARTS { classParts: cp, .. }, .. } => {
                     let mut contents: ArcStr = arcstr::literal!("");
@@ -610,11 +610,11 @@ fn getPackageContentNames(mut cl: Arc<Absyn::Class>, mut filename: ArcStr, mut m
                             po = listAppend(List::map(cp.clone(), (std::sync::Arc::new(fnptr!(makeClassPart, Arc<Absyn::ClassPart>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>) -> Result<PackageOrder> + 'static>))?, List::map(mofiles.clone(), (std::sync::Arc::new(fnptr!(makeClassLoad, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<PackageOrder> + 'static>))?);
                         }
                     }
-                    Ok(po.clone())
+                    Ok((po.clone(), po.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { po = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Class { info, .. } => {

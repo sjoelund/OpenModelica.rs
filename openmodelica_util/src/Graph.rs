@@ -794,7 +794,7 @@ pub fn allReachableNodesInt(mut intmpstorage: (Arc<metamodelica::List<i32>>, Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: node, tail: M }, L) => {
                     let mut edges: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -807,12 +807,12 @@ pub fn allReachableNodesInt(mut intmpstorage: (Arc<metamodelica::List<i32>>, Arc
                     edges = List::filter1OnTrue(edges.clone(), std::sync::Arc::new(fnptr!(List::notMember, _, _)), L.clone())?;
                     M = List::union(M.clone(), edges.clone());
                     reachableNodes = allReachableNodesInt((M.clone(), L.clone()), inGraph.clone(), inMaxGraphNode.clone(), inMaxNodexIndex.clone())?;
-                    Ok(reachableNodes.clone())
+                    Ok((reachableNodes.clone(), reachableNodes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { reachableNodes = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: node, tail: M }, L) => {
                     let mut L = (*L).clone();
@@ -820,11 +820,11 @@ pub fn allReachableNodesInt(mut intmpstorage: (Arc<metamodelica::List<i32>>, Arc
                     L = List::union(L.clone(), list![node.clone()]);
                     let true = (intGe(node.clone(), inMaxGraphNode.clone())) else { bail!("pattern mismatch") };
                     reachableNodes = allReachableNodesInt((M.clone(), L.clone()), inGraph.clone(), inMaxGraphNode.clone(), inMaxNodexIndex.clone())?;
-                    Ok(reachableNodes.clone())
+                    Ok((reachableNodes.clone(), reachableNodes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { reachableNodes = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -381,7 +381,7 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
         let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         'mc: {
         let __mc_input = isyst.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::EqSystem { orderedEqs, .. } => {
                     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
@@ -403,11 +403,11 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
                         v = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::OPT_INPUT_DER)?;
                         outShared = BackendVariable::addGlobalKnownVarDAE(v.clone(), outShared.clone())?;
                     }
-                    Ok((isyst.clone(), true))
+                    Ok(((isyst.clone(), true), outShared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outShared = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -768,7 +768,7 @@ fn omcTearing2(mut unsolvables: Arc<metamodelica::List<i32>>, mut tSel_always: A
     let mut oMark: i32 = 0;
     (outTVars, oMark) = 'mc: {
         let __mc_input = (unsolvables.clone(), tSel_always.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
                     let mut tvar: i32 = 0;
@@ -793,12 +793,12 @@ fn omcTearing2(mut unsolvables: Arc<metamodelica::List<i32>>, mut tSel_always: A
                     tearingBFS(vareqns.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     unassigned = Matching::getUnassigned(size.clone(), ass1.clone(), metamodelica::nil());
                     (outTVars, oMark) = omcTearing3(unassigned.clone(), metamodelica::nil(), tSel_always.clone(), tSel_prefer.clone(), tSel_avoid.clone(), tSel_never.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), vars.clone(), ishared.clone(), ass1.clone(), ass2.clone(), columark.clone(), mark.clone() + 1, metamodelica::cons(tvar.clone(), inTVars.clone()))?;
-                    Ok((outTVars.clone(), oMark.clone()))
+                    Ok(((outTVars.clone(), oMark.clone()), oMark.clone(), outTVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oMark = __wb0; outTVars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: tvar, tail: rest }, Deref @ metamodelica::List::Nil) => {
                     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -822,12 +822,12 @@ fn omcTearing2(mut unsolvables: Arc<metamodelica::List<i32>>, mut tSel_always: A
                     tearingBFS(vareqns.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     unassigned = Matching::getUnassigned(size.clone(), ass1.clone(), metamodelica::nil());
                     (outTVars, oMark) = omcTearing3(unassigned.clone(), rest.clone(), tSel_always.clone(), tSel_prefer.clone(), tSel_avoid.clone(), tSel_never.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), vars.clone(), ishared.clone(), ass1.clone(), ass2.clone(), columark.clone(), mark.clone() + 1, metamodelica::cons(tvar.clone(), inTVars.clone()))?;
-                    Ok((outTVars.clone(), oMark.clone()))
+                    Ok(((outTVars.clone(), oMark.clone()), oMark.clone(), outTVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oMark = __wb0; outTVars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
                     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -850,11 +850,11 @@ fn omcTearing2(mut unsolvables: Arc<metamodelica::List<i32>>, mut tSel_always: A
                     tearingBFS(vareqns.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     unassigned = Matching::getUnassigned(size.clone(), ass1.clone(), metamodelica::nil());
                     (outTVars, oMark) = omcTearing3(unassigned.clone(), unsolv.clone(), metamodelica::nil(), tSel_prefer.clone(), tSel_avoid.clone(), tSel_never.clone(), m.clone(), mt.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), size.clone(), vars.clone(), ishared.clone(), ass1.clone(), ass2.clone(), columark.clone(), mark.clone() + 1, listAppend(tSel_always.clone(), inTVars.clone()))?;
-                    Ok((outTVars.clone(), oMark.clone()))
+                    Ok(((outTVars.clone(), oMark.clone()), oMark.clone(), outTVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oMark = __wb0; outTVars = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

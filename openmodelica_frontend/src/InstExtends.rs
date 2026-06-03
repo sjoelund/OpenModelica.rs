@@ -127,7 +127,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::EXTENDS { .. } => {
                     let mut cn: ArcStr = arcstr::literal!("");
@@ -246,11 +246,11 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                         outInitialAlgs = List::unionAppendListOnTrue(ialg1.clone().reverse(), outInitialAlgs.clone(), std::sync::Arc::new(fnptr!(valueEq, _, _)))?;
                     }
                     outCache = cacheArr.clone().borrow()[(1-1) as usize].clone();
-                    Ok(())
+                    Ok(((), outCache.clone(), outComments.clone(), outElements.clone(), outIH.clone(), outInitialAlgs.clone(), outInitialEqs.clone(), outMod.clone(), outNormalAlgs.clone(), outNormalEqs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; outComments = __wb1; outElements = __wb2; outIH = __wb3; outInitialAlgs = __wb4; outInitialEqs = __wb5; outMod = __wb6; outNormalAlgs = __wb7; outNormalEqs = __wb8; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::EXTENDS { .. } => {
@@ -260,40 +260,40 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { .. } => {
                     let mut outElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>, bool)>> = outElements.clone();
                     if SCodeUtil::isConstant(SCodeUtil::attrVariability(var_field!((*el).attributes, SCode::Element::COMPONENT).clone())?) || !(inPartialInst.clone()) {
                         outElements = metamodelica::cons((el.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), false), outElements.clone());
                     }
-                    Ok(())
+                    Ok(((), outElements.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outElements = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { .. } => {
                     let mut outComments: Arc<metamodelica::List<Arc<SCode::Comment>>> = outComments.clone();
                     let mut outElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>, bool)>> = outElements.clone();
                     outElements = metamodelica::cons((el.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), false), outElements.clone());
                     outComments = list![var_field!((*el).cmt, SCode::Element::CLASS).clone()];
-                    Ok(())
+                    Ok(((), outComments.clone(), outElements.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outComments = __wb0; outElements = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::IMPORT { .. } => {
                     let mut outElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>, bool)>> = outElements.clone();
                     outElements = metamodelica::cons((el.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), false), outElements.clone());
-                    Ok(())
+                    Ok(((), outElements.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outElements = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -703,7 +703,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: dmod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, .. }, info, .. }, r#impl, _, false) => {
                     let mut elt: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -725,12 +725,12 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     (cache, daeDMOD) = Mod::elabMod(cache.clone(), env.clone(), ih.clone(), pre.clone(), dmod.clone(), r#impl.clone(), Mod::ModScope::DERIVED { path: tp.clone() }, info.clone())?;
                     r#mod = Mod::merge(r#mod.clone(), daeDMOD.clone(), (literal!("")).clone(), true)?;
                     (cache, env, ih, elt, eq, ieq, alg, ialg, r#mod, outComments) = instDerivedClassesWork(cache.clone(), cenv.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), r#impl.clone(), info.clone(), numIter.clone() >= Global::recursionDepthLimit.clone(), numIter.clone() + 1)?;
-                    Ok((cache.clone(), env.clone(), ih.clone(), elt.clone(), eq.clone(), ieq.clone(), alg.clone(), ialg.clone(), r#mod.clone(), metamodelica::cons(var_field!((*inClass).cmt, SCode::Element::CLASS).clone(), outComments.clone())))
+                    Ok(((cache.clone(), env.clone(), ih.clone(), elt.clone(), eq.clone(), ieq.clone(), alg.clone(), ialg.clone(), r#mod.clone(), metamodelica::cons(var_field!((*inClass).cmt, SCode::Element::CLASS).clone(), outComments.clone())), outComments.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outComments = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst }, prefixes, name: n, .. }, r#impl, _, false) => {
                     let mut elt: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -746,11 +746,11 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut outComments: Arc<metamodelica::List<Arc<SCode::Comment>>> = outComments.clone();
                     c = SCodeInstUtil::expandEnumeration((n.clone()).clone(), enumLst.clone(), prefixes.clone(), cmt.clone(), info.clone())?;
                     (cache, env, ih, elt, eq, ieq, alg, ialg, r#mod, outComments) = instDerivedClassesWork(cache.clone(), env.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), r#impl.clone(), info.clone(), numIter.clone() >= Global::recursionDepthLimit.clone(), numIter.clone() + 1)?;
-                    Ok((cache.clone(), env.clone(), ih.clone(), elt.clone(), eq.clone(), ieq.clone(), alg.clone(), ialg.clone(), r#mod.clone(), outComments.clone()))
+                    Ok(((cache.clone(), env.clone(), ih.clone(), elt.clone(), eq.clone(), ieq.clone(), alg.clone(), ialg.clone(), r#mod.clone(), outComments.clone()), outComments.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComments = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _, _, _, _, true) => {
@@ -858,18 +858,18 @@ fn updateComponentsAndClassdefs2(mut inComponent: (Arc<SCode::Element>, Arc<DAE:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { .. } => {
                     let mut cmod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut outComponent: (Arc<SCode::Element>, Arc<DAE::Mod>, bool) = outComponent.clone();
                     cmod = Mod::lookupCompModification(inMod.clone(), (var_field!((*el).name, SCode::Element::CLASS).clone()).clone())?;
                     outComponent = if (cmod.clone() == Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)) {inComponent.clone()} else {(el.clone(), cmod.clone(), b.clone())};
-                    Ok((outComponent.clone(), inMod.clone()))
+                    Ok(((outComponent.clone(), inMod.clone()), outComponent.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outComponent = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1748,7 +1748,7 @@ fn fixModifications(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: F
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::MOD { .. } => {
                     let mut subModLst: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
@@ -1762,12 +1762,12 @@ fn fixModifications(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: F
                     if !((match (&(exp.clone()), &(var_field!((*outMod).binding, SCode::Mod::MOD).clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false })) {
                         assign_variant_field!(outMod => SCode::Mod::MOD; binding = exp.clone());
                     }
-                    Ok(outMod.clone())
+                    Ok((outMod.clone(), outMod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outMod = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { .. }, .. } => {
                     let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -1776,12 +1776,12 @@ fn fixModifications(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: F
                     if !(referenceEq(&*(e.clone()),&*(var_field!((*outMod).element, SCode::Mod::REDECL).clone()))) {
                         assign_variant_field!(outMod => SCode::Mod::REDECL; element = e.clone());
                     }
-                    Ok(outMod.clone())
+                    Ok((outMod.clone(), outMod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outMod = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::REDECL { element: e @ Deref @ SCode::Element::CLASS { classDef: cdef, .. }, .. } => {
                     let mut e = (*e).clone();
@@ -1792,11 +1792,11 @@ fn fixModifications(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: F
                         assign_variant_field!(e => SCode::Element::CLASS; classDef = cdef.clone());
                         assign_variant_field!(outMod => SCode::Mod::REDECL; element = e.clone());
                     }
-                    Ok(outMod.clone())
+                    Ok((outMod.clone(), outMod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outMod = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

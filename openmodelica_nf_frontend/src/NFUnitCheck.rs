@@ -699,7 +699,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
                     if !((Unit::isMaster(unit.clone()))) { bail!("guard") }
@@ -717,11 +717,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     } };
                     icu2 = __pa1.clone();
                     inconsistentUnits = List::append_reverse(icu1.clone(), icu2.clone());
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, List::append_reverse(icu1.clone(), icu2.clone())))
+                    Ok(((Unit::Unit::MASTER { varList: metamodelica::nil() }, List::append_reverse(icu1.clone(), icu2.clone())), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::BINARY { exp1, operator: Deref @ Operator::OPERATOR { op: Operator::Op::DIV, .. }, exp2 } => {
@@ -885,7 +885,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::IF { .. } => {
                     let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
@@ -903,12 +903,12 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                         inconsistentUnits = metamodelica::cons(list![(var_field!((*eq).trueBranch, Expression::NFExpression::IF).clone(), unit1.clone()), (var_field!((*eq).falseBranch, Expression::NFExpression::IF).clone(), unit2.clone())], inconsistentUnits.clone());
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
-                    Ok((op_unit.clone(), inconsistentUnits.clone()))
+                    Ok(((op_unit.clone(), inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::RELATION { .. } => {
                     let mut unit1: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
@@ -926,11 +926,11 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                         inconsistentUnits = metamodelica::cons(list![(var_field!((*eq).exp1, Expression::NFExpression::RELATION).clone(), unit1.clone()), (var_field!((*eq).exp2, Expression::NFExpression::RELATION).clone(), unit2.clone())], inconsistentUnits.clone());
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
-                    Ok((op_unit.clone(), inconsistentUnits.clone()))
+                    Ok(((op_unit.clone(), inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Expression::UNARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::UMINUS, .. }, .. } => {
@@ -990,18 +990,18 @@ fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, m
     call_args = Call::arguments(call.clone())?;
     (unit, inconsistentUnits) = 'mc: {
         let __mc_input = fn_path.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::IDENT { name: Deref @ "pre" } => {
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
                     let mut op_unit: Unit::Unit = op_unit.clone();
                     (op_unit, inconsistentUnits) = insertUnitInEquation(listHead(call_args.clone())?, unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()))
+                    Ok(((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::IDENT { name: Deref @ "der" } => {
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
@@ -1020,12 +1020,12 @@ fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, m
                     } else {
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
-                    Ok((op_unit.clone(), inconsistentUnits.clone()))
+                    Ok(((op_unit.clone(), inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" } => {
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
@@ -1045,23 +1045,23 @@ fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, m
                     } else {
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
-                    Ok((op_unit.clone(), inconsistentUnits.clone()))
+                    Ok(((op_unit.clone(), inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::IDENT { .. } => {
                     if !((Function::isBuiltin(Call::typedFunction(call.clone())?))) { bail!("guard") }
                     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = inconsistentUnits.clone();
                     inconsistentUnits = foldCallArg(call_args.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()))
+                    Ok(((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut fn_name: ArcStr = fn_name.clone();
@@ -1071,11 +1071,11 @@ fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, m
                     fn_name = (AbsynUtil::pathString(AbsynUtil::makeNotFullyQualified(fn_path.clone()), (literal!(".")).clone(), true, false)?).clone();
                     (var_names, _, unit_names, _) = getCallUnits((fn_name.clone()).clone(), call.clone(), fnCache.clone())?;
                     inconsistentUnits = foldCallArg1(call_args.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), unit.clone(), unit_names.clone(), var_names.clone(), (fn_name.clone()).clone())?;
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()))
+                    Ok(((Unit::Unit::MASTER { varList: metamodelica::nil() }, inconsistentUnits.clone()), inconsistentUnits.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { inconsistentUnits = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

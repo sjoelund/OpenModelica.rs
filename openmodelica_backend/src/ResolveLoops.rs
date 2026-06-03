@@ -213,7 +213,7 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
     let mut deadEndEqsMark: metamodelica::Array<i32> = Default::default();
     (deadEndVarsMark, deadEndEqsMark) = 'mc: {
         let __mc_input = mTIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut numVars: i32 = 0;
             let mut numEqs: i32 = 0;
@@ -258,8 +258,8 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
                 }
                 idx = idx.clone() + 1;
             }
-            Ok((deadEndVarsMark.clone(), deadEndEqsMark.clone()))
-        })() { break 'mc __v; }
+            Ok(((deadEndVarsMark.clone(), deadEndEqsMark.clone()), deadEndEqsMark.clone(), deadEndVarsMark.clone()))
+        })() { deadEndEqsMark = __wb0; deadEndVarsMark = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Error::addInternalError((literal!("function resolveLoops_cutNodes failed")).clone(), metamodelica::sourceInfo!())?;

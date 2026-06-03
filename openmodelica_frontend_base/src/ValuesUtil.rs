@@ -237,18 +237,18 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
     let mut outv: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outv = 'mc: {
         let __mc_input = (val1.clone(), val2.clone(), op.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::MULOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
@@ -283,18 +283,18 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::DIVOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
@@ -344,18 +344,18 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
@@ -368,7 +368,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut iv2: i32 = 0;
@@ -377,11 +377,11 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                     iv2 = ((rv2.clone()).0 as i32);
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
@@ -404,18 +404,18 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::ADDOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
@@ -450,18 +450,18 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::SUBOP)?;
                     outv = expValue(e.clone())?;
-                    Ok(outv.clone())
+                    Ok((outv.clone(), outv.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {

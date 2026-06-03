@@ -562,7 +562,7 @@ fn simOptionsAsString(mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> 
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
         let __mc_input = vals.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
                     let mut simOptsValues: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -570,12 +570,12 @@ fn simOptionsAsString(mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> 
                     simOptsValues = List::map(lst.clone(), (std::sync::Arc::new(ValuesDump::valString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
                     simOptsValues = List::map2(simOptsValues.clone(), (std::sync::Arc::new(System::stringReplace) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\"")).clone(), (literal!("'")).clone())?;
                     r#str = (Util::buildMapStr(simulationOptionsNames.clone(), simOptsValues.clone(), (literal!(" = ")).clone(), (literal!(", ")).clone())?).clone();
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { r#str = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: lst } => {
                     let mut simOptsValues: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -583,11 +583,11 @@ fn simOptionsAsString(mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> 
                     simOptsValues = List::map(lst.clone(), (std::sync::Arc::new(ValuesDump::valString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
                     simOptsValues = List::map2(simOptsValues.clone(), (std::sync::Arc::new(System::stringReplace) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\"")).clone(), (literal!("'")).clone())?;
                     r#str = stringDelimitList(simOptsValues.clone(), (literal!(", ")).clone());
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(r#str)
@@ -1420,7 +1420,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "rewriteBlockCall", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path } }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -1438,11 +1438,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     pnew = ProgramUtil::updateProgram(pnew.clone(), p.clone(), false)?;
                     SymbolTable::setAbsyn(pnew.clone())?;
                     outCache = FCore::emptyCache();
-                    Ok(Arc::new(Values::Value::BOOL { boolean: true }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "rewriteBlockCall", _) => {
@@ -1451,7 +1451,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "jacobian", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path } }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut res: ArcStr = arcstr::literal!("");
@@ -1488,12 +1488,12 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     eqnarr = BackendEquation::getEqnsFromEqSystem(syst.clone());
                     (jac, _) = SymbolicJacobian::calculateJacobian(vars.clone(), eqnarr.clone(), m.clone(), false, shared.clone())?;
                     res = (BackendDump::dumpJacobianStr(jac.clone())?).clone();
-                    Ok(Arc::new(Values::Value::STRING { string: (res.clone()).clone() }))
+                    Ok((Arc::new(Values::Value::STRING { string: (res.clone()).clone() }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateModel", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } }) => {
                     let mut b: bool = false;
@@ -1501,11 +1501,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, simSettings) = calculateSimulationSettings(outCache.clone(), vals.clone())?;
                     (b, outCache, _, _, _) = translateModel(outCache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, true, Some(simSettings.clone()))?;
-                    Ok(Arc::new(Values::Value::BOOL { boolean: b.clone() }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: b.clone() }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateModel", _) => {
@@ -1514,17 +1514,17 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "modelEquationsUC", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: outputFile }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: dumpExtractionSteps }, tail: Deref @ metamodelica::List::Nil } } }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, ret_val) = Uncertainties::modelEquationsUC(outCache.clone(), inEnv.clone(), className.clone(), (outputFile.clone()).clone(), dumpExtractionSteps.clone())?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "modelEquationsUC", _) => {
@@ -1533,7 +1533,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateModelFMU", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: cvars, .. }, tail: _ } } } } }) => {
                     let mut b: bool = false;
@@ -1546,11 +1546,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
         }
         __acc.reverse()
     }), None)?;
-                    Ok(Arc::new(Values::Value::BOOL { boolean: b.clone() }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: b.clone() }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateModelFMU", _) => {
@@ -1559,7 +1559,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "buildModelFMU", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: cvars, .. }, tail: _ } } } } }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -1572,11 +1572,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
         }
         __acc.reverse()
     }), None)?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "buildModelFMU", _) => {
@@ -1605,7 +1605,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateModelXML", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -1613,23 +1613,23 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut outCache: FCore::Cache = outCache.clone();
                     filenameprefix = (Util::stringReplaceChar((filenameprefix.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
                     (outCache, ret_val) = translateModelXML(outCache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, None)?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "exportDAEtoMatlab", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, ret_val, _) = getAdjacencyMatrix(outCache.clone(), inEnv.clone(), className.clone(), msg.clone(), (filenameprefix.clone()).clone())?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "checkModel", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -1637,22 +1637,22 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     FlagsUtil::setConfigBool(Flags::CHECK_MODEL.clone(), true)?;
                     (outCache, ret_val) = checkModel(outCache.clone(), inEnv.clone(), className.clone(), msg.clone())?;
                     FlagsUtil::setConfigBool(Flags::CHECK_MODEL.clone(), false)?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "checkAllModelsRecursive", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: showProtected }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, ret_val) = checkAllModelsRecursive(outCache.clone(), inEnv.clone(), className.clone(), showProtected.clone(), msg.clone())?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "translateGraphics", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Nil }) => {
@@ -1762,7 +1762,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "buildModel", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1804,11 +1804,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         initfilename = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_init_xml")); ArcStr::from(__mm_s) }).clone();
                     }
                     executable = (if (!(Testsuite::isRunning()?)) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*compileDir.clone()); __mm_s.push_str(&*executable.clone()); ArcStr::from(__mm_s) }} else {executable.clone()}).clone();
-                    Ok(ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?)
+                    Ok((ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?, outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "buildModel", _) => {
@@ -1817,7 +1817,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "buildLabel", vals) => {
                     let mut executable: ArcStr = arcstr::literal!("");
@@ -1829,12 +1829,12 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     List::map_0(ClockIndexes::buildModelClocks.clone(), (std::sync::Arc::new(System::realtimeClear) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<()> + 'static>))?;
                     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                     (b, outCache, _, executable, _, _, initfilename, _, _, vals, _) = buildModel(outCache.clone(), inEnv.clone(), vals.clone(), msg.clone())?;
-                    Ok(ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?)
+                    Ok((ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?, outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "reduceTerms", vals) => {
                     let mut executable: ArcStr = arcstr::literal!("");
@@ -1853,12 +1853,12 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     (vals.clone()).get(13)?;
                     vals = listDelete(vals.clone(), 13)?;
                     (b, outCache, _, executable, _, _, initfilename, _, _, _, _) = buildModel(outCache.clone(), inEnv.clone(), vals.clone(), msg.clone())?;
-                    Ok(ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?)
+                    Ok((ValuesMake::makeArray(if (b.clone()) {list![Arc::new(Values::Value::STRING { string: (executable.clone()).clone() }), Arc::new(Values::Value::STRING { string: (initfilename.clone()).clone() })]} else {list![Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), Arc::new(Values::Value::STRING { string: (literal!("")).clone() })]})?, outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "simulate", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
                     let mut simflags: ArcStr = arcstr::literal!("");
@@ -1939,11 +1939,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     }
                     timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                     (outCache, simValue) = createSimulationResultFromcallModelExecutable(b.clone(), resI.clone(), timeTotal.clone(), timeSimulation.clone(), resultValues.clone(), outCache.clone(), className.clone(), vals.clone(), (result_file.clone()).clone(), (logFile.clone()).clone())?;
-                    Ok(simValue.clone())
+                    Ok((simValue.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "simulate", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
@@ -2060,7 +2060,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "linearize", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
                     let mut simflags: ArcStr = arcstr::literal!("");
@@ -2118,11 +2118,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                         simValue = createSimulationResult((literal!("")).clone(), (simOptionsAsString(vals.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to run the linearize command: ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
                     }
-                    Ok(simValue.clone())
+                    Ok((simValue.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "linearize", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
@@ -2135,7 +2135,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "optimize", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
                     let mut simflags: ArcStr = arcstr::literal!("");
@@ -2184,11 +2184,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     }
                     timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                     (outCache, simValue) = createSimulationResultFromcallModelExecutable(b.clone(), resI.clone(), timeTotal.clone(), timeSimulation.clone(), resultValues.clone(), outCache.clone(), className.clone(), vals.clone(), (result_file.clone()).clone(), (logFile.clone()).clone())?;
-                    Ok(simValue.clone())
+                    Ok((simValue.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "optimize", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
@@ -2201,18 +2201,18 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "instantiateModel", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, ret_val) = instantiateModel(outCache.clone(), inEnv.clone(), className.clone())?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "moo", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
                     let mut simflags: ArcStr = arcstr::literal!("");
@@ -2262,11 +2262,11 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     }
                     timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                     (outCache, simValue) = createSimulationResultFromcallModelExecutable(b.clone(), resI.clone(), timeTotal.clone(), timeSimulation.clone(), resultValues.clone(), outCache.clone(), className.clone(), vals.clone(), (result_file.clone()).clone(), (logFile.clone()).clone())?;
-                    Ok(simValue.clone())
+                    Ok((simValue.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "moo", vals @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: _ }) => {
@@ -2437,17 +2437,17 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut ret_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, ret_val) = cevalInteractiveFunctions4(inCache.clone(), inEnv.clone(), (inFunctionName.clone()).clone(), inVals.clone(), msg.clone())?;
-                    Ok(ret_val.clone())
+                    Ok((ret_val.clone(), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCache, outValue))
@@ -3602,7 +3602,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plotAll", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: externalWindow }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filename }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: title }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: gridStr }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logX }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logY }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: xLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: curveWidth }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: curveStyle }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: legendPosition }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: footer }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: autoScale }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: forceOMPlot }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yAxis }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabelRight }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1R }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2R }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } } } } } }) => {
                     let mut s1: ArcStr = arcstr::literal!("");
@@ -3648,11 +3648,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         autoScaleStr = (boolString(autoScale.clone())).clone();
                         System::plotCallBack(externalWindow.clone(), (filename.clone()).clone(), (title.clone()).clone(), (gridStr.clone()).clone(), (literal!("plotall")).clone(), (logXStr.clone()).clone(), (logYStr.clone()).clone(), (xLabel.clone()).clone(), (yLabel.clone()).clone(), (x1Str.clone()).clone(), (x2Str.clone()).clone(), (y1Str.clone()).clone(), (y2Str.clone()).clone(), (curveWidthStr.clone()).clone(), (curveStyleStr.clone()).clone(), (legendPosition.clone()).clone(), (footer.clone()).clone(), (autoScaleStr.clone()).clone(), (literal!("")).clone());
                     }
-                    Ok(Arc::new(Values::Value::BOOL { boolean: true }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plotAll", _) => {
@@ -3661,7 +3661,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plot", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: cvars, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: externalWindow }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filename }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: title }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: gridStr }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logX }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logY }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: xLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: curveWidth }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: curveStyle }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: legendPosition }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: footer }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: autoScale }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: forceOMPlot }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yAxis }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabelRight }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1R }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2R }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } } } } } } }) => {
                     let mut s1: ArcStr = arcstr::literal!("");
@@ -3712,11 +3712,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         r#str = stringDelimitList(vars_1.clone(), (literal!(" ")).clone());
                         System::plotCallBack(externalWindow.clone(), (filename.clone()).clone(), (title.clone()).clone(), (gridStr.clone()).clone(), (literal!("plot")).clone(), (logXStr.clone()).clone(), (logYStr.clone()).clone(), (xLabel.clone()).clone(), (yLabel.clone()).clone(), (x1Str.clone()).clone(), (x2Str.clone()).clone(), (y1Str.clone()).clone(), (y2Str.clone()).clone(), (curveWidthStr.clone()).clone(), (curveStyleStr.clone()).clone(), (legendPosition.clone()).clone(), (footer.clone()).clone(), (autoScaleStr.clone()).clone(), (r#str.clone()).clone());
                     }
-                    Ok(Arc::new(Values::Value::BOOL { boolean: true }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plot", _) => {
@@ -3725,7 +3725,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "val", Deref @ metamodelica::List::Cons { head: cvar, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: timeStamp }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: Deref @ "<default>" }, tail: Deref @ metamodelica::List::Nil } } }) => {
                     let mut filename: ArcStr = arcstr::literal!("");
@@ -3740,11 +3740,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     filename = __pa1.clone();
                     varNameStr = (ValuesUtil::printCodeVariableName(cvar.clone())?).clone();
                     val = SimulationResults::val((filename.clone()).clone(), (varNameStr.clone()).clone(), timeStamp.clone())?;
-                    Ok(Arc::new(Values::Value::REAL { real: val.clone() }))
+                    Ok((Arc::new(Values::Value::REAL { real: val.clone() }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "val", Deref @ metamodelica::List::Cons { head: cvar, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: timeStamp }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filename }, tail: Deref @ metamodelica::List::Nil } } }) => {
@@ -4009,7 +4009,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "getInstantiatedParametersAndValues", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -4019,11 +4019,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     (outCache, _, odae, _) = runFrontEnd(outCache.clone(), inEnv.clone(), classpath.clone(), true, false, false)?;
                     strings = Interactive::getInstantiatedParametersAndValues(odae.clone())?;
                     vals = List::map(strings.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
-                    Ok(ValuesMake::makeArray(vals.clone())?)
+                    Ok((ValuesMake::makeArray(vals.clone())?, outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "getInstantiatedParametersAndValues", _) => {
@@ -4590,7 +4590,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plotParametric", Deref @ metamodelica::List::Cons { head: cvar, tail: Deref @ metamodelica::List::Cons { head: cvar2, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: externalWindow }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filename }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: title }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: gridStr }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logX }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: logY }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: xLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabel }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: x2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2 }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: curveWidth }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: curveStyle }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: legendPosition }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: footer }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: autoScale }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: forceOMPlot }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yAxis }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: yLabelRight }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y1R }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: y2R }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } } } } } } } } } } } } } } } } } } } } }) => {
                     let mut s1: ArcStr = arcstr::literal!("");
@@ -4639,11 +4639,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         autoScaleStr = (boolString(autoScale.clone())).clone();
                         System::plotCallBack(externalWindow.clone(), (filename.clone()).clone(), (title.clone()).clone(), (gridStr.clone()).clone(), (literal!("plotparametric")).clone(), (logXStr.clone()).clone(), (logYStr.clone()).clone(), (xLabel.clone()).clone(), (yLabel.clone()).clone(), (x1Str.clone()).clone(), (x2Str.clone()).clone(), (y1Str.clone()).clone(), (y2Str.clone()).clone(), (curveWidthStr.clone()).clone(), (curveStyleStr.clone()).clone(), (legendPosition.clone()).clone(), (footer.clone()).clone(), (autoScaleStr.clone()).clone(), (r#str.clone()).clone());
                     }
-                    Ok(Arc::new(Values::Value::BOOL { boolean: true }))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "plotParametric", _) => {
@@ -4652,17 +4652,17 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "dumpXMLDAE", vals) => {
                     let mut xml_filename: ArcStr = arcstr::literal!("");
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, xml_filename) = dumpXMLDAE(outCache.clone(), inEnv.clone(), vals.clone(), msg.clone())?;
-                    Ok(ValuesMake::makeTuple(list![Arc::new(Values::Value::BOOL { boolean: true }), Arc::new(Values::Value::STRING { string: (xml_filename.clone()).clone() })]))
+                    Ok((ValuesMake::makeTuple(list![Arc::new(Values::Value::BOOL { boolean: true }), Arc::new(Values::Value::STRING { string: (xml_filename.clone()).clone() })]), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "dumpXMLDAE", _) => {
@@ -5543,7 +5543,7 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     }
     (cache, env, dae) = 'mc: {
         let __mc_input = (graph_inst.clone(), nf_inst.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             let (false, true) = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut dae: DAE::DAElist = dae.clone();
@@ -5557,16 +5557,16 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             cache = FCore::emptyCache();
             FCore::setCachedFunctionTree(cache.clone(), funcs.clone());
             env = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
-            Ok((cache.clone(), env.clone(), dae.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone(), flatString.clone()))
+        })() { cache = __wb0; dae = __wb1; env = __wb2; flatString = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (true, false) = __mc_input.clone() else { bail!("nomatch") };
             let mut dae: DAE::DAElist = dae.clone();
             System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
             dae = FInst::instPath(className.clone(), SymbolTable::getSCode()?)?;
-            Ok((cache.clone(), env.clone(), dae.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), env.clone(), dae.clone()), dae.clone()))
+        })() { dae = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             let (false, false) = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut dae: DAE::DAElist = dae.clone();
@@ -5577,8 +5577,8 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             (cache, env, _, dae) = Inst::instantiateClass(cache.clone(), InnerOuter::emptyInstHierarchy().clone(), scodeP.clone(), className.clone(), true, relaxedFrontEnd.clone(), true)?;
             dae = DAEUtil::mergeAlgorithmSections(dae.clone())?;
             DAEUtil::getFunctionList(FCore::getFunctionTree(cache.clone()), true)?;
-            Ok((cache.clone(), env.clone(), dae.clone()))
-        })() { break 'mc __v; }
+            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone()))
+        })() { cache = __wb0; dae = __wb1; env = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _) = __mc_input.clone() else { bail!("nomatch") };
             if !((Error::getNumErrorMessages() == numError.clone())) { bail!("guard") }
@@ -7619,7 +7619,7 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
     let mut outLibsAndLibDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outCache, compileDir, outString1, outString2, outputFormat_str, outInitFileName, outSimFlags, resultValues, outArgs, outLibsAndLibDirs) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inValues.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, vals) => {
                     let mut libsAndLibDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -7702,11 +7702,11 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                         Debug::trace((literal!("buildModel: Compiling done.\n")).clone())?;
                     }
                     resultValues = metamodelica::cons((literal!("timeCompile"), Arc::new(Values::Value::REAL { real: timeCompile.clone() })), resultValues.clone());
-                    Ok((cache.clone(), compileDir.clone(), filenameprefix.clone(), method_str.clone(), outputFormat_str.clone(), init_filename.clone(), simflags.clone(), resultValues.clone(), values.clone(), libsAndLibDirs.clone()))
+                    Ok(((cache.clone(), compileDir.clone(), filenameprefix.clone(), method_str.clone(), outputFormat_str.clone(), init_filename.clone(), simflags.clone(), resultValues.clone(), values.clone(), libsAndLibDirs.clone()), compileDir.clone(), outputFormat_str.clone(), resultValues.clone(), success.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { compileDir = __wb0; outputFormat_str = __wb1; resultValues = __wb2; success = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -7792,7 +7792,7 @@ pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className:
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outValue = 'mc: {
         let __mc_input = ();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut odae: Option<DAE::DAElist> = None;
             let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
@@ -7830,8 +7830,8 @@ pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className:
             }
             classNameStr = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
             retStr = stringAppendList(list![(literal!("Check of ")).clone(), (classNameStr.clone()).clone(), (literal!(" completed successfully.\nClass ")).clone(), (classNameStr.clone()).clone(), (literal!(" has ")).clone(), ArcStr::from(::std::format!("{}", eqnSize.clone())), (literal!(" equation(s) and ")).clone(), ArcStr::from(::std::format!("{}", varSize.clone())), (literal!(" variable(s).\n")).clone(), ArcStr::from(::std::format!("{}", simpleEqnSize.clone())), (literal!(" of these are trivial equation(s).")).clone()]);
-            Ok(Arc::new(Values::Value::STRING { string: (retStr.clone()).clone() }))
-        })() { break 'mc __v; }
+            Ok((Arc::new(Values::Value::STRING { string: (retStr.clone()).clone() }), cache.clone()))
+        })() { cache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let false = (Interactive::existClass(className.clone(), SymbolTable::getAbsyn())) else { bail!("pattern mismatch") };
@@ -7882,7 +7882,7 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
     let mut xml_filename: ArcStr = arcstr::literal!("");
     (outCache, xml_filename) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), vals.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classname } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: Deref @ "flat" }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addOriginalAdjacencyMatrix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addSolvingInfo }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addMathMLCode }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: dumpResiduals }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: rewriteRulesFile }, tail: Deref @ metamodelica::List::Nil } } } } } } } }) => {
                     let mut cname_str: ArcStr = arcstr::literal!("");
@@ -7921,12 +7921,12 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = (if (Testsuite::isRunning()?) {literal!("")} else {compileDir.clone()}).clone();
                     FlagsUtil::setConfigString(Flags::REWRITE_RULES_FILE.clone(), (literal!("")).clone())?;
                     RewriteRules::clearRules();
-                    Ok((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])))
+                    Ok(((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])), xml_filename.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { xml_filename = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classname } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: Deref @ "optimiser" }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addOriginalAdjacencyMatrix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addSolvingInfo }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addMathMLCode }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: dumpResiduals }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: rewriteRulesFile }, tail: Deref @ metamodelica::List::Nil } } } } } } } }) => {
                     let mut cname_str: ArcStr = arcstr::literal!("");
@@ -7966,12 +7966,12 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = (if (Testsuite::isRunning()?) {literal!("")} else {compileDir.clone()}).clone();
                     FlagsUtil::setConfigString(Flags::REWRITE_RULES_FILE.clone(), (literal!("")).clone())?;
                     RewriteRules::clearRules();
-                    Ok((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])))
+                    Ok(((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])), xml_filename.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { xml_filename = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classname } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: Deref @ "backEnd" }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addOriginalAdjacencyMatrix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addSolvingInfo }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addMathMLCode }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: dumpResiduals }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: rewriteRulesFile }, tail: Deref @ metamodelica::List::Nil } } } } } } } }) => {
                     let mut cname_str: ArcStr = arcstr::literal!("");
@@ -8009,12 +8009,12 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = (if (Testsuite::isRunning()?) {literal!("")} else {compileDir.clone()}).clone();
                     FlagsUtil::setConfigString(Flags::REWRITE_RULES_FILE.clone(), (literal!("")).clone())?;
                     RewriteRules::clearRules();
-                    Ok((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])))
+                    Ok(((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])), xml_filename.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { xml_filename = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classname } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: Deref @ "stateSpace" }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addOriginalAdjacencyMatrix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addSolvingInfo }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: addMathMLCode }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: dumpResiduals }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: filenameprefix }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: rewriteRulesFile }, tail: Deref @ metamodelica::List::Nil } } } } } } } }) => {
                     let mut cname_str: ArcStr = arcstr::literal!("");
@@ -8052,11 +8052,11 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = (if (Testsuite::isRunning()?) {literal!("")} else {compileDir.clone()}).clone();
                     FlagsUtil::setConfigString(Flags::REWRITE_RULES_FILE.clone(), (literal!("")).clone())?;
                     RewriteRules::clearRules();
-                    Ok((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])))
+                    Ok(((cache.clone(), stringAppendList(list![(compileDir.clone()).clone(), (xml_filename.clone()).clone()])), xml_filename.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { xml_filename = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -8085,17 +8085,17 @@ fn applyRewriteRulesOnBackend(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = outBackendDAE.clone();
                     let false = (RewriteRules::noRewriteRulesBackEnd()?) else { bail!("pattern mismatch") };
                     outBackendDAE = BackendDAEOptimize::applyRewriteRulesBackend(inBackendDAE.clone())?;
-                    Ok(outBackendDAE.clone())
+                    Ok((outBackendDAE.clone(), outBackendDAE.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBackendDAE = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outBackendDAE)
@@ -8207,21 +8207,21 @@ pub fn failOrSuccess(mut inStr: ArcStr) -> Result<(ArcStr, bool)> {
     let mut failed: bool = false;
     outStr = ('mc: {
         let __mc_input = inStr.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut res: i32 = 0;
             let mut failed: bool = failed.clone();
             res = System::stringFind((inStr.clone()).clone(), (literal!("successfully")).clone())?;
             let true = (res.clone() >= 0) else { bail!("pattern mismatch") };
             failed = false;
-            Ok(literal!("OK"))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((literal!("OK"), failed.clone()))
+        })() { failed = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut failed: bool = failed.clone();
             failed = true;
-            Ok(literal!("FAILED!"))
-        })() { break 'mc __v; }
+            Ok((literal!("FAILED!"), failed.clone()))
+        })() { failed = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok((outStr, failed))
@@ -8251,7 +8251,7 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
                     let mut c: Arc<Absyn::Class> = c.clone();
@@ -8295,12 +8295,12 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#")); __mm_s.push_str(&*if (f.clone()) {literal!("[-]")} else {literal!("[+]")}); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*if (reportTimes.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*realString(elapsedTime.clone())); __mm_s.push_str(&*literal!(", ")); ArcStr::from(__mm_s) }} else {literal!("")}); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     println!("{}", (literal!("-------------------------------------------------------------------------\n")).clone());
                     failed = checkAll(inCache.clone(), inEnv.clone(), rest.clone(), inMsg.clone(), reportTimes.clone(), failed.clone())?;
-                    Ok(())
+                    Ok(((), failed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { failed = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
                     let mut c: Arc<Absyn::Class> = c.clone();
@@ -8308,11 +8308,11 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                     c = ProgramUtil::getPathedClassInProgram(className.clone(), p.clone(), false, false)?;
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Checking skipped: ")); __mm_s.push_str(&*Dump::unparseClassAttributesStr(c.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
                     failed = checkAll(inCache.clone(), inEnv.clone(), rest.clone(), inMsg.clone(), reportTimes.clone(), failed.clone())?;
-                    Ok(())
+                    Ok(((), failed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { failed = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(failed)
@@ -9665,16 +9665,16 @@ fn getDymolaStateAnnotationModStr(mut r#mod: Option<Arc<Absyn::Modification>>) -
     let mut stateStr: ArcStr = arcstr::literal!("");
     stateStr = ('mc: {
         let __mc_input = r#mod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: e, .. }, .. }) => {
                     let mut stateStr: ArcStr = stateStr.clone();
                     stateStr = (Dump::printExpStr(e.clone())?).clone();
-                    Ok(stateStr.clone())
+                    Ok((stateStr.clone(), stateStr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { stateStr = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -10562,7 +10562,7 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
     }
     r#str = ('mc: {
         let __mc_input = ();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut flags: Flags::Flag = flags.clone();
@@ -10595,8 +10595,8 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
                     return Err(__try0_err);
                 }
             }
-            Ok(r#str.clone())
-        })() { break 'mc __v; }
+            Ok((r#str.clone(), cache.clone()))
+        })() { cache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let false = (Interactive::existClass(path.clone(), SymbolTable::getAbsyn())) else { bail!("pattern mismatch") };

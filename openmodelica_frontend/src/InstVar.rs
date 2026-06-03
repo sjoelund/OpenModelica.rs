@@ -529,7 +529,7 @@ fn liftUserTypeMod(mut inMod: Arc<DAE::Mod>, mut inDims: Arc<metamodelica::List<
     }
     outMod = 'mc: {
         let __mc_input = outMod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Mod::MOD { .. } => {
                     let mut outMod: Arc<DAE::Mod> = outMod.clone();
@@ -546,11 +546,11 @@ fn liftUserTypeMod(mut inMod: Arc<DAE::Mod>, mut inDims: Arc<metamodelica::List<
     })
                         );
                     }
-                    Ok(outMod.clone())
+                    Ok((outMod.clone(), outMod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outMod = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

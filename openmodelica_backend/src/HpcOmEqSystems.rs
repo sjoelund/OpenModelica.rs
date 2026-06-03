@@ -1307,7 +1307,7 @@ fn varInFrontList(mut varIn: BackendDAE::Var, mut lstLstIn: Arc<metamodelica::Li
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -1315,11 +1315,11 @@ fn varInFrontList(mut varIn: BackendDAE::Var, mut lstLstIn: Arc<metamodelica::Li
                     varLst = listHead(lstLstIn.clone())?;
                     varLst = metamodelica::cons(varIn.clone(), varLst.clone());
                     lstLstOut = List::replaceAt(varLst.clone(), 1, lstLstIn.clone())?;
-                    Ok(lstLstOut.clone())
+                    Ok((lstLstOut.clone(), lstLstOut.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { lstLstOut = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(lstLstOut)
@@ -1337,7 +1337,7 @@ fn eqInFrontList(mut eqIn: Arc<BackendDAE::Equation>, mut lstLstIn: Arc<metamode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -1345,11 +1345,11 @@ fn eqInFrontList(mut eqIn: Arc<BackendDAE::Equation>, mut lstLstIn: Arc<metamode
                     eqLst = listHead(lstLstIn.clone())?;
                     eqLst = metamodelica::cons(eqIn.clone(), eqLst.clone());
                     lstLstOut = List::replaceAt(eqLst.clone(), 1, lstLstIn.clone())?;
-                    Ok(lstLstOut.clone())
+                    Ok((lstLstOut.clone(), lstLstOut.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { lstLstOut = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(lstLstOut)

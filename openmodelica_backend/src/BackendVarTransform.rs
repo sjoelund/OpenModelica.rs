@@ -1592,7 +1592,7 @@ pub fn replaceEquationsArr(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<
     let mut replacementPerformed: bool = false;
     (outEqns, replacementPerformed) = 'mc: {
         let __mc_input = inFuncTypeExpExpToBooleanOption.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut outEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = outEqns.clone();
@@ -1600,8 +1600,8 @@ pub fn replaceEquationsArr(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<
             let false = (isReplacementEmpty(repl.clone())?) else { bail!("pattern mismatch") };
             (_, _, eqns, replacementPerformed) = BackendEquation::traverseEquationArray(inEqns.clone(), (std::sync::Arc::new(replaceEquationTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, (VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)) -> Result<(Arc<BackendDAE::Equation>, (VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool))> + 'static>), (repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), metamodelica::nil(), false))?;
             outEqns = if (replacementPerformed.clone()) {BackendEquation::listEquation(eqns.clone())?} else {inEqns.clone()};
-            Ok((outEqns.clone(), replacementPerformed.clone()))
-        })() { break 'mc __v; }
+            Ok(((outEqns.clone(), replacementPerformed.clone()), outEqns.clone(), replacementPerformed.clone()))
+        })() { outEqns = __wb0; replacementPerformed = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((inEqns.clone(), false))

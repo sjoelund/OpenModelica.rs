@@ -1139,16 +1139,16 @@ pub mod Function {
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut matching: bool = matching.clone();
                     matching = false;
-                    Ok(args.clone())
+                    Ok((args.clone(), matching.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { matching = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
         }

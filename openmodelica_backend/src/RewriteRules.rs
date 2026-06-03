@@ -126,7 +126,7 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Rule::FRONTEND_RULE { from, to }, tail: _ } => {
                     let mut binds: Binds = metamodelica::nil();
@@ -140,22 +140,22 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
                     outExp = rewriteExpFrontEnd(to.clone(), binds.clone())?;
                     b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd Exp:     ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd From:    ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd To:      ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd Rewrite: ")); __mm_s.push_str(&*Dump::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok((outExp.clone(), b.clone()))
+                    Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outExp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut b: bool = false;
                     let mut outExp: Arc<Absyn::Exp> = outExp.clone();
                     (outExp, b) = matchAndRewriteExpFrontEnd(inExp.clone(), rest.clone())?;
-                    Ok((outExp.clone(), b.clone()))
+                    Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outExp, changed))
@@ -204,17 +204,17 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
     let mut outBinds: Binds = metamodelica::nil();
     outBinds = 'mc: {
         let __mc_input = (inExp.clone(), inUnifyWith.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ Absyn::Exp::CREF { componentRef: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (isPlaceHolderFrontEnd(inUnifyWith.clone())?) else { bail!("pattern mismatch") };
                     outBinds = metamodelica::cons(Bind::FRONTEND_BIND { slot: inUnifyWith.clone(), value: inExp.clone() }, inAcc.clone());
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::INTEGER { value: _ }, _) => {
@@ -260,140 +260,140 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::BINARY { exp1: e1a, op: op1a, exp2: e2a }, Deref @ Absyn::Exp::BINARY { exp1: e1b, op: op1b, exp2: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::opEqual(op1a.clone(), op1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::UNARY { op: op1a, exp: e1a }, Deref @ Absyn::Exp::UNARY { op: op1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::opEqual(op1a.clone(), op1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::LBINARY { exp1: e1a, op: op1a, exp2: e2a }, Deref @ Absyn::Exp::LBINARY { exp1: e1b, op: op1b, exp2: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::opEqual(op1a.clone(), op1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::LUNARY { op: op1a, exp: e1a }, Deref @ Absyn::Exp::LUNARY { op: op1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::opEqual(op1a.clone(), op1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::RELATION { exp1: e1a, op: op1a, exp2: e2a }, Deref @ Absyn::Exp::RELATION { exp1: e1b, op: op1b, exp2: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::opEqual(op1a.clone(), op1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::IFEXP { ifExp: cond1a, trueBranch: e1a, elseBranch: e2a, elseIfBranch: _ }, Deref @ Absyn::Exp::IFEXP { ifExp: cond1b, trueBranch: e1b, elseBranch: e2b, elseIfBranch: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesFrontEnd(cond1a.clone(), cond1b.clone(), inAcc.clone())?;
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), outBinds.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::CALL { function_: cr1a, functionArgs: fargs1a, .. }, Deref @ Absyn::Exp::CALL { function_: cr1b, functionArgs: fargs1b, .. }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesFargsFrontEnd(fargs1a.clone(), fargs1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr1a, functionArgs: fargs1a }, Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr1b, functionArgs: fargs1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesFargsFrontEnd(fargs1a.clone(), fargs1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::ARRAY { arrayExp: exps1a }, Deref @ Absyn::Exp::ARRAY { arrayExp: exps1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::MATRIX { matrix: expsLst1a }, Deref @ Absyn::Exp::MATRIX { matrix: expsLst1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstLstFrontEnd(expsLst1a.clone(), expsLst1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::RANGE { start: e1a, step: oe1a, stop: e2a }, Deref @ Absyn::Exp::RANGE { start: e1b, step: oe1b, stop: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesExpOptFrontEnd(oe1a.clone(), oe1b.clone(), outBinds.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::TUPLE { expressions: exps1a }, Deref @ Absyn::Exp::TUPLE { expressions: exps1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::END { .. }, Deref @ Absyn::Exp::END { .. }) => {
@@ -410,28 +410,28 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::AS { id: id1a, exp: e1a }, Deref @ Absyn::Exp::AS { id: id1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (stringEq((id1a.clone()).clone(), (id1b.clone()).clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::CONS { head: e1a, rest: e2a }, Deref @ Absyn::Exp::CONS { head: e1b, rest: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesFrontEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::MATCHEXP { .. }, Deref @ Absyn::Exp::MATCHEXP { .. }) => {
@@ -440,16 +440,16 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::LIST { exps: exps1a }, Deref @ Absyn::Exp::LIST { exps: exps1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstFrontEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outBinds)
@@ -611,7 +611,7 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Rule::BACKEND_RULE { from: afrom, to: ato }, tail: _ } => {
                     let mut from: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -629,22 +629,22 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
                     outExp = rewriteExpBackEnd(to.clone(), binds.clone())?;
                     b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd Exp:     ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd From:    ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd To:      ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd Rewrite: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
-                    Ok((outExp.clone(), b.clone()))
+                    Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outExp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut b: bool = false;
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     (outExp, b) = matchAndRewriteExpBackEnd(inExp.clone(), rest.clone())?;
-                    Ok((outExp.clone(), b.clone()))
+                    Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outExp, changed))
@@ -695,17 +695,17 @@ pub fn matchesBackEnd(mut inExp: Arc<DAE::Exp>, mut inUnifyWith: Arc<DAE::Exp>, 
     let mut outBinds: Binds = metamodelica::nil();
     outBinds = 'mc: {
         let __mc_input = (inExp.clone(), inUnifyWith.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (isPlaceHolderBackEnd(inUnifyWith.clone())?) else { bail!("pattern mismatch") };
                     outBinds = metamodelica::cons(Bind::BACKEND_BIND { slot: inUnifyWith.clone(), value: inExp.clone() }, inAcc.clone());
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ICONST { integer: _ }, _) => {
@@ -751,151 +751,151 @@ pub fn matchesBackEnd(mut inExp: Arc<DAE::Exp>, mut inUnifyWith: Arc<DAE::Exp>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::BINARY { exp1: e1a, operator: op1a, exp2: e2a }, Deref @ DAE::Exp::BINARY { exp1: e1b, operator: op1b, exp2: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (operatorMatches(op1a.clone(), op1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::UNARY { operator: op1a, exp: e1a }, Deref @ DAE::Exp::UNARY { operator: op1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (operatorMatches(op1a.clone(), op1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LBINARY { exp1: e1a, operator: op1a, exp2: e2a }, Deref @ DAE::Exp::LBINARY { exp1: e1b, operator: op1b, exp2: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (operatorMatches(op1a.clone(), op1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LUNARY { operator: op1a, exp: e1a }, Deref @ DAE::Exp::LUNARY { operator: op1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (operatorMatches(op1a.clone(), op1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::RELATION { exp1: e1a, operator: op1a, exp2: e2a, index: _, optionExpisASUB: _ }, Deref @ DAE::Exp::RELATION { exp1: e1b, operator: op1b, exp2: e2b, index: _, optionExpisASUB: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (operatorMatches(op1a.clone(), op1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::IFEXP { expCond: cond1a, expThen: e1a, expElse: e2a }, Deref @ DAE::Exp::IFEXP { expCond: cond1b, expThen: e1b, expElse: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesBackEnd(cond1a.clone(), cond1b.clone(), inAcc.clone())?;
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), outBinds.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path: p1a, expLst: exps1a, attr: _ }, Deref @ DAE::Exp::CALL { path: p1b, expLst: exps1b, attr: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::pathEqual(p1a.clone(), p1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::PARTEVALFUNCTION { path: p1a, expList: exps1a, ty: _, origType: _ }, Deref @ DAE::Exp::PARTEVALFUNCTION { path: p1b, expList: exps1b, ty: _, origType: _ }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     let true = (AbsynUtil::pathEqual(p1a.clone(), p1b.clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ARRAY { array: exps1a, .. }, Deref @ DAE::Exp::ARRAY { array: exps1b, .. }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::MATRIX { matrix: expsLst1a, .. }, Deref @ DAE::Exp::MATRIX { matrix: expsLst1b, .. }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstLstBackEnd(expsLst1a.clone(), expsLst1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::RANGE { ty: _, start: e1a, step: oe1a, stop: e2a }, Deref @ DAE::Exp::RANGE { ty: _, start: e1b, step: oe1b, stop: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesExpOptBackEnd(oe1a.clone(), oe1b.clone(), outBinds.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::TUPLE { PR: exps1a }, Deref @ DAE::Exp::TUPLE { PR: exps1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outBinds = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CONS { car: e1a, cdr: e2a }, Deref @ DAE::Exp::CONS { car: e1b, cdr: e2b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesBackEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     outBinds = matchesBackEnd(e2a.clone(), e2b.clone(), outBinds.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::MATCHEXPRESSION { .. }, Deref @ DAE::Exp::MATCHEXPRESSION { .. }) => {
@@ -904,16 +904,16 @@ pub fn matchesBackEnd(mut inExp: Arc<DAE::Exp>, mut inUnifyWith: Arc<DAE::Exp>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::LIST { valList: exps1a }, Deref @ DAE::Exp::LIST { valList: exps1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
                     outBinds = matchesExpLstBackEnd(exps1a.clone(), exps1b.clone(), inAcc.clone())?;
-                    Ok(outBinds.clone())
+                    Ok((outBinds.clone(), outBinds.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outBinds = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outBinds)

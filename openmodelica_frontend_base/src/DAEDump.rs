@@ -100,18 +100,18 @@ pub fn functionNameStr(mut inElement: DAE::Function) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ('mc: {
         let __mc_input = inElement.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let DAE::Function::FUNCTION { path: ref fpath, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut res: ArcStr = res.clone();
             res = AbsynUtil::pathStringNoQual(fpath.clone(), (literal!(".")).clone(), true, false)?;
-            Ok(res.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((res.clone(), res.clone()))
+        })() { res = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let DAE::Function::RECORD_CONSTRUCTOR { path: ref fpath, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut res: ArcStr = res.clone();
             res = AbsynUtil::pathStringNoQual(fpath.clone(), (literal!(".")).clone(), true, false)?;
-            Ok(res.clone())
-        })() { break 'mc __v; }
+            Ok((res.clone(), res.clone()))
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!(""))
@@ -131,12 +131,12 @@ fn funcGreaterThan(mut func1: DAE::Function, mut func2: DAE::Function) -> Result
     let mut res: bool = false;
     res = 'mc: {
         let __mc_input = func2.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut res: bool = res.clone();
             res = stringCompare((functionNameStr(func1.clone())?).clone(), (functionNameStr(func2.clone())?).clone()) > 0;
-            Ok(res.clone())
-        })() { break 'mc __v; }
+            Ok((res.clone(), res.clone()))
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(true)

@@ -1750,7 +1750,7 @@ pub fn instTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut modifier: Arc<Modifi
     let mut outAttributes: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
     node = 'mc: {
         let __mc_input = typeSpec.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::TypeSpec::TPATH { .. } => {
                     let mut node: Arc<InstNode::InstNode> = node.clone();
@@ -1761,22 +1761,22 @@ pub fn instTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut modifier: Arc<Modifi
                     }
                     node = expand(node.clone(), context.clone())?;
                     (node, outAttributes) = instClass(node.clone(), modifier.clone(), attributes.clone(), useBinding.clone(), instLevel.clone(), parent.clone(), context.clone())?;
-                    Ok(node.clone())
+                    Ok((node.clone(), node.clone(), outAttributes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { node = __wb0; outAttributes = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::TypeSpec::TPATH { .. } => {
                     if !((InstContext::inInstanceAPI(context.clone()))) { bail!("guard") }
                     let mut outAttributes: Arc<Attributes::NFAttributes> = outAttributes.clone();
                     outAttributes = attributes.clone();
-                    Ok(Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))
+                    Ok((Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), outAttributes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outAttributes = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::TypeSpec::TCOMPLEX { .. } => {

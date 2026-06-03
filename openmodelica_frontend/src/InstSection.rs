@@ -181,7 +181,7 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     let mut outGraph: ConnectionGraph::ConnectionGraph = inGraph.clone();
     (outDae, outState) = 'mc: {
         let __mc_input = inEquation.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_CONNECT { info, crefRight: rhs_acr, crefLeft: lhs_acr, .. } => {
                     let mut outCache: FCore::Cache = outCache.clone();
@@ -197,12 +197,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     }
                     (outCache, outEnv, outIH, outSets, outDae, outGraph) = instConnect(outCache.clone(), outEnv.clone(), outIH.clone(), outSets.clone(), inPrefix.clone(), lhs_acr.clone(), rhs_acr.clone(), inImpl.clone(), inGraph.clone(), info.clone())?;
                     outState = instEquationCommonCiTrans(inState.clone(), inInitial.clone())?;
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outSets.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; outEnv = __wb2; outGraph = __wb3; outIH = __wb4; outSets = __wb5; outState = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_EQUALS { comment, info, expRight: rhs_aexp, expLeft: lhs_aexp } => {
                     let mut lhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -225,12 +225,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     source = ElementSource::addCommentToSource(source.clone(), Some(comment.clone()));
                     outDae = instEqEquation(lhs_exp.clone(), lhs_prop.clone(), rhs_exp.clone(), rhs_prop.clone(), source.clone(), inInitial.clone(), inImpl.clone(), Absyn::dummyInfo.clone())?;
                     outState = instEquationCommonCiTrans(inState.clone(), inInitial.clone())?;
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; outState = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_IF { info, elseBranch: else_branch, thenBranch: branches, .. } => {
                     let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
@@ -299,12 +299,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                             }
                         }
                     }
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outSets.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; outEnv = __wb2; outGraph = __wb3; outIH = __wb4; outSets = __wb5; outState = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_WHEN { info, .. } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -333,12 +333,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     }
                     outState = instEquationCommonCiTrans(inState.clone(), inInitial.clone())?;
                     outDae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::WHEN_EQUATION { condition: cond_exp.clone(), equations: el.clone(), elsewhen_: else_when.clone(), source: source.clone() })] };
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; outEnv = __wb2; outGraph = __wb3; outIH = __wb4; outState = __wb5; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_FOR { info, .. } => {
                     let mut range_aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -399,12 +399,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     }
                     (outCache, outDae, outSets, outGraph) = unroll(outCache.clone(), env.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), (var_field!((*inEquation).index, SCode::Equation::EQ_FOR).clone()).clone(), ty.clone(), val.clone(), var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), inInitial.clone(), inImpl.clone(), inGraph.clone())?;
                     outState = instEquationCommonCiTrans(inState.clone(), inInitial.clone())?;
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outGraph.clone(), outSets.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; outGraph = __wb2; outSets = __wb3; outState = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_ASSERT { info, .. } => {
                     let mut cond_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -422,12 +422,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     } else {
                         outDae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::ASSERT { condition: cond_exp.clone(), message: msg_exp.clone(), level: level_exp.clone(), source: source.clone() })] };
                     }
-                    Ok((outDae.clone(), inState.clone()))
+                    Ok(((outDae.clone(), inState.clone()), outCache.clone(), outDae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_TERMINATE { info, .. } => {
                     let mut msg_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -441,12 +441,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     } else {
                         outDae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::TERMINATE { message: msg_exp.clone(), source: source.clone() })] };
                     }
-                    Ok((outDae.clone(), inState.clone()))
+                    Ok(((outDae.clone(), inState.clone()), outCache.clone(), outDae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_REINIT { info, cref: Deref @ Absyn::Exp::CREF { componentRef: acr }, .. } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -487,12 +487,12 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         __acc.reverse()
     });
                     outDae = DAE::DAElist { elementLst: el.clone() };
-                    Ok((outDae.clone(), inState.clone()))
+                    Ok(((outDae.clone(), inState.clone()), outCache.clone(), outDae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outCache = __wb0; outDae = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_NORETCALL { info, .. } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -513,11 +513,11 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                         outDae = instEquationNoRetCallVectorization(exp.clone(), inInitial.clone(), source.clone())?;
                         outState = inState.clone();
                     }
-                    Ok((outDae.clone(), outState.clone()))
+                    Ok(((outDae.clone(), outState.clone()), outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outSets.clone(), outState.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outCache = __wb0; outDae = __wb1; outEnv = __wb2; outGraph = __wb3; outIH = __wb4; outSets = __wb5; outState = __wb6; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1689,7 +1689,7 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: t }, _, _) => {
                     let mut lhs_dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
@@ -1711,12 +1711,12 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                     lhs_idxs = expandArrayDimension(lhs_dim.clone(), lhs.clone())?;
                     rhs_idxs = expandArrayDimension(rhs_dim.clone(), rhs.clone())?;
                     dae = instArrayElEq(lhs.clone(), rhs.clone(), t.clone(), inConst.clone(), lhs_idxs.clone(), rhs_idxs.clone(), inSource.clone(), initial_.clone())?;
-                    Ok(dae.clone())
+                    Ok((dae.clone(), dae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { dae = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty: t }, _, _) => {
                     let mut lhs_dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
@@ -1739,11 +1739,11 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                     lhs_idxs = expandArrayDimension(lhs_dim.clone(), lhs.clone())?;
                     rhs_idxs = expandArrayDimension(rhs_dim.clone(), rhs.clone())?;
                     dae = instArrayElEq(lhs.clone(), rhs.clone(), t.clone(), inConst.clone(), lhs_idxs.clone(), rhs_idxs.clone(), inSource.clone(), initial_.clone())?;
-                    Ok(dae.clone())
+                    Ok((dae.clone(), dae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { dae = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, .. }, source, _) => {
@@ -1764,7 +1764,7 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty: t }, _, _) => {
                     let mut lhs_dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
@@ -1788,11 +1788,11 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                     lhs_idxs = expandArrayDimension(lhs_dim.clone(), lhs.clone())?;
                     rhs_idxs = expandArrayDimension(rhs_dim.clone(), rhs.clone())?;
                     dae = instArrayElEq(lhs.clone(), rhs.clone(), t.clone(), inConst.clone(), lhs_idxs.clone(), rhs_idxs.clone(), inSource.clone(), initial_.clone())?;
-                    Ok(dae.clone())
+                    Ok((dae.clone(), dae.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { dae = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, .. }, source, SCode::Initial::INITIAL { .. }) => {
@@ -1983,26 +1983,26 @@ fn instComplexEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: A
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     dae = 'mc: {
         let __mc_input = initial_.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut dae: DAE::DAElist = dae.clone();
             let true = (Types::isRecord(tp.clone())) else { bail!("pattern mismatch") };
             dae = makeComplexDaeEquation(lhs.clone(), rhs.clone(), source.clone(), initial_.clone())?;
-            Ok(dae.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((dae.clone(), dae.clone()))
+        })() { dae = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut dae: DAE::DAElist = dae.clone();
             let true = (Types::isExternalObject(tp.clone())) else { bail!("pattern mismatch") };
             dae = makeDaeEquation(lhs.clone(), rhs.clone(), source.clone(), initial_.clone())?;
-            Ok(dae.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((dae.clone(), dae.clone()))
+        })() { dae = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut dae: DAE::DAElist = dae.clone();
             dae = makeComplexDaeEquation(lhs.clone(), rhs.clone(), source.clone(), initial_.clone())?;
-            Ok(dae.clone())
-        })() { break 'mc __v; }
+            Ok((dae.clone(), dae.clone()))
+        })() { dae = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut s: ArcStr = arcstr::literal!("");
@@ -4579,7 +4579,7 @@ fn instAssignment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: Ar
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     (outCache, stmts) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inPre.clone(), alg.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, pre, Deref @ SCode::Statement::ALG_ASSIGN { info, value, assignComponent: var, .. }) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4588,11 +4588,11 @@ fn instAssignment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ih: Ar
                     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = stmts.clone();
                     (cache, e_1, eprop) = Static::elabExp(cache.clone(), env.clone(), value.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     (cache, stmts) = instAssignment2(cache.clone(), env.clone(), ih.clone(), pre.clone(), var.clone(), value.clone(), e_1.clone(), eprop.clone(), info.clone(), ElementSource::addAnnotation(source.clone(), var_field!((*alg).comment, SCode::Statement::ALG_ASSIGN).clone()), initial_.clone(), r#impl.clone(), unrollForLoops.clone(), numError.clone())?;
-                    Ok((cache.clone(), stmts.clone()))
+                    Ok(((cache.clone(), stmts.clone()), stmts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { stmts = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, pre, Deref @ SCode::Statement::ALG_ASSIGN { info, value, .. }) => {
@@ -4868,7 +4868,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::TUPLE { expressions: expl }, e_1, eprop) => {
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -4896,11 +4896,11 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     eprops = Types::propTuplePropList(eprop.clone())?;
                     source = ElementSource::addElementSourceFileInfo(inSource.clone(), info.clone());
                     stmts = Algorithm::makeAssignmentsList(expl_2.clone(), cprops.clone(), expl_1.clone(), eprops.clone(), DAE::dummyAttrVar().clone(), initial_.clone(), source.clone())?;
-                    Ok((cache.clone(), stmts.clone()))
+                    Ok(((cache.clone(), stmts.clone()), stmts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { stmts = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, e @ Deref @ Absyn::Exp::TUPLE { expressions: expl }, _, _) => {

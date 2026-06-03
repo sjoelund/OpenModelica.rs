@@ -292,6 +292,20 @@ struct GenCtx {
     /// `S::Try` lowering). Outputs *with* a default modification are pre-
     /// initialised and need no such fallback.
     fn_outputs_no_default: Vec<String>,
+    /// Function-output formals that the *current* matchcontinue arm assigns as a
+    /// side effect and that are threaded out of the arm's IIFE closure (see the
+    /// `MatchKind::MatchContinue` arm emitter). A `return` lowered inside such an
+    /// arm returns from the closure, not the function, so it must append these
+    /// outputs to its `Ok((...))` tuple to match the arm's normal-exit shape.
+    /// Empty outside a matchcontinue arm (and for arms that thread nothing).
+    /// Saved/restored at each arm boundary so nested matchcontinues don't leak.
+    mc_arm_writeback: Vec<String>,
+    /// Whether the enclosing matchcontinue's result is unit (`() := matchcontinue`).
+    /// A `return` inside such an arm puts `()` in the closure tuple's result
+    /// slot (the match value is unused); otherwise it uses the function outputs
+    /// (`tail`), which coincide with the match's assigned target. Paired with
+    /// `mc_arm_writeback`; only meaningful when that is in effect.
+    mc_arm_result_unit: bool,
     /// Variables currently known to hold a specific uniontype variant. Mirrors
     /// `LocalEnv::variants` but is accessible from `emit_exp` / `emit_var`,
     /// which don't receive the per-statement `LocalEnv`. Populated around the
@@ -521,6 +535,8 @@ impl GenCtx {
             fn_initialized_vars: HashSet::new(),
             fn_outputs: Vec::new(),
             fn_outputs_no_default: Vec::new(),
+            mc_arm_writeback: Vec::new(),
+            mc_arm_result_unit: false,
             variants: HashMap::new(),
             variant_shapes: HashMap::new(),
             fallible_functions,
@@ -12602,6 +12618,36 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // arms. Override any inherited QMode::TryBlock for the arm's
                 // guard, body and result emission; restore afterwards.
                 let saved_qmode_mc_arm = std::mem::replace(&mut ctx.qmode, QMode::Function);
+                // Function outputs this arm assigns as a *side effect* (rather
+                // than producing through the `then` result). Each arm is an IIFE
+                // closure whose shadow logic rebinds every assigned outer
+                // variable to an arm-local (`let mut x = x.clone();`); those
+                // shadows never escape the closure. Thread the assigned outputs
+                // out through the closure's return value —
+                // `Ok((then_result, out1, out2, …))` — and write them back to
+                // the outer formals at the break site. Without this,
+                // side-effecting functions like `BackendDAECreate.lowerVar`
+                // (`() := matchcontinue …`, mutating only its `outVars` /
+                // `outGlobalKnownVars` formals) return their inputs unchanged.
+                //
+                // Restrict to function outputs that are known-initialised here,
+                // so both the shadow `= x.clone()` read and the unchanged-arm
+                // `x.clone()` return read valid memory. Computed per-arm — each
+                // arm is its own closure, so tuple shapes need not agree across
+                // arms — and sorted for stable output.
+                let arm_writeback: Vec<String> = {
+                    let mut assigned: HashSet<String> = HashSet::new();
+                    stmts_assigned_var_names(&case.stmts, &mut assigned);
+                    let mut v: Vec<String> = assigned.into_iter()
+                        .filter(|n| ctx.fn_outputs.contains(n) && ctx.fn_initialized_vars.contains(n))
+                        .collect();
+                    v.sort();
+                    v
+                };
+                let saved_mc_arm_writeback =
+                    std::mem::replace(&mut ctx.mc_arm_writeback, arm_writeback.clone());
+                let saved_mc_arm_result_unit = std::mem::replace(
+                    &mut ctx.mc_arm_result_unit, matches!(case.result.ty(), Ty::Unit));
                 let guard_check = {
                     let mut parts: Vec<String> = pat_extra_guards.clone();
                     if let Some(g) = case.guard.as_ref() {
@@ -12847,7 +12893,33 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 }
                 let result = emit_exp(&case.result, is_const, ctx, top_level);
                 ctx.qmode = saved_qmode_mc_arm;
-                s.push_str("        if let Ok(__v) = (|| -> Result<_> {\n");
+                // Thread side-effected function outputs out of the arm closure.
+                // The closure returns `(then_result, out1, out2, …)`; the break
+                // site destructures it, writes each output back to the outer
+                // formal, and yields `then_result` as the `'mc:` block value.
+                // `<out>.clone()` reads the arm-local shadow when the arm
+                // assigned `<out>`, or the (unchanged) captured outer formal
+                // otherwise — both correct. With no outputs to thread the arm
+                // returns the bare result, preserving the original shape.
+                let result = if arm_writeback.is_empty() {
+                    result
+                } else {
+                    let returns = arm_writeback.iter()
+                        .map(|n| format!("{}.clone()", escape_ident(n)))
+                        .collect::<Vec<_>>().join(", ");
+                    format!("({result}, {returns})")
+                };
+                let (ok_pat, writeback_assigns) = if arm_writeback.is_empty() {
+                    ("__v".to_owned(), String::new())
+                } else {
+                    let pat = format!("(__v, {})",
+                        (0..arm_writeback.len()).map(|i| format!("__wb{i}")).collect::<Vec<_>>().join(", "));
+                    let assigns = arm_writeback.iter().enumerate()
+                        .map(|(i, n)| format!("{} = __wb{i}; ", escape_ident(n)))
+                        .collect::<String>();
+                    (pat, assigns)
+                };
+                s.push_str(&format!("        if let Ok({ok_pat}) = (|| -> Result<_> {{\n"));
                 // Whole-input Var binding under an Arc-wrapped scrutinee: bind
                 // directly to the Arc instead of going through `.as_ref()`.
                 // The default path (`.as_ref()` + match ergonomics) is needed
@@ -12895,11 +12967,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     s.push_str(&body);
                     s.push_str(&format!("            Ok({result})\n"));
                 }
-                s.push_str("        })() { break 'mc __v; }\n");
+                s.push_str(&format!("        }})() {{ {writeback_assigns}break 'mc __v; }}\n"));
                 ctx.variants = saved_variants;
                 ctx.variant_shapes = saved_shapes;
                 ctx.fn_env_vars = saved_fn_env_vars_mc;
                 ctx.fn_initialized_vars = saved_fn_initialized_vars_mc;
+                ctx.mc_arm_writeback = saved_mc_arm_writeback;
+                ctx.mc_arm_result_unit = saved_mc_arm_result_unit;
             }
             s.push_str("        bail!(\"matchcontinue: no arm matched\")\n");
             s.push_str("    }");
@@ -17426,6 +17500,27 @@ fn emit_stmt<'a>(
                     let parts: Vec<String> = env.outputs.iter().map(|n| format!("{}.clone()", escape_ident(n))).collect();
                     format!("({})", parts.join(", "))
                 }
+            };
+            // Inside a matchcontinue arm the `return` exits the arm's IIFE
+            // closure, not the function — and that closure returns
+            // `(then_result, threaded_outputs…)`. To match the arm's normal-exit
+            // tuple shape, append the same threaded outputs here. `tail` (the
+            // function outputs) supplies the `then_result` slot: a MetaModelica
+            // `return` yields the current output values, and the matchcontinue's
+            // result is assigned to those same outputs at the break site, so the
+            // two coincide. Outside a matchcontinue arm `mc_arm_writeback` is
+            // empty and the bare `tail` is used.
+            let tail = if ctx.mc_arm_writeback.is_empty() {
+                tail
+            } else {
+                // The closure tuple's result slot must have the match's result
+                // type: `()` for a `() := matchcontinue`, else the function
+                // outputs (which the break site assigns to the match target).
+                let result_slot = if ctx.mc_arm_result_unit { "()".to_owned() } else { tail };
+                let returns = ctx.mc_arm_writeback.iter()
+                    .map(|n| format!("{}.clone()", escape_ident(n)))
+                    .collect::<Vec<_>>().join(", ");
+                format!("({result_slot}, {returns})")
             };
             if ctx.current_fn_fallible {
                 writeln!(out, "{indent}return Ok({tail});").unwrap();

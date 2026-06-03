@@ -79,7 +79,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
     let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
     simCode = 'mc: {
         let __mc_input = inBackendDAE.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::BackendDAE { .. } => {
                     let mut lastEqMappingIdx: i32 = 0;
@@ -119,12 +119,12 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     HpcOmTaskGraph::dumpAsGraphMLSccLevel(taskGraphOde.clone(), taskGraphDataOde.clone(), (fileName.clone()).clone(), (literal!("")).clone(), metamodelica::nil(), metamodelica::nil(), daeSccSimEqMapping.clone(), schedulerInfo.clone(), HpcOmTaskGraph::GraphDumpOptions { visualizeCriticalPath: false, visualizeTaskStartAndFinishTime: false, visualizeTaskCalcTime: true, visualizeCommTime: true })?;
                     partData = HpcOmTaskGraph::multirate_partitioning(taskGraphOde.clone(), taskGraphDataOde.clone(), inBackendDAE.clone(), simCode.clone(), sccSimEqMapping.clone())?;
                     simCode.partitionData = partData.clone();
-                    Ok(simCode.clone())
+                    Ok((simCode.clone(), simCode.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { simCode = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::BackendDAE { eqs, .. } => {
                     let mut lastEqMappingIdx: i32 = 0;
@@ -271,11 +271,11 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     simCode.hpcomData = HpcOmSimCode::HpcOmData { schedules: Some((scheduleOde.clone(), scheduleDae.clone(), scheduleZeroFunc.clone())), hpcOmMemory: optTmpMemoryMap.clone() };
                     ExecStat::execStat((literal!("hpcom other")).clone())?;
                     println!("{}", (literal!("HpcOm is still under construction.\n")).clone());
-                    Ok(simCode.clone())
+                    Ok((simCode.clone(), simCode.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { simCode = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

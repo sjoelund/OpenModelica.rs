@@ -3623,7 +3623,7 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: node, tail: rest } => {
                     let mut ass: i32 = 0;
@@ -3686,11 +3686,11 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     thread = metamodelica::cons(task.clone(), threadIn.clone());
                     taskDuplAss = {let _arr = taskDuplAssIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = node.clone(); _arr};
                     (taskAss, procAss, taskGraph, taskDuplAss, thread, idcs, simCode, duplSccSimEqMap, duplComps) = TDS_duplicateTasks1(rest.clone(), allCluster.clone(), replIn.clone(), taskAss.clone(), procAss.clone(), thread.clone(), idcsIn.clone(), taskGraphOrig.clone(), taskGraphTOrig.clone(), taskGraph.clone(), taskDuplAss.clone(), iTaskGraphMeta.clone(), simCode.clone(), sccSimEqMappingIn.clone(), duplSccSimEqMapIn.clone(), duplCompsIn.clone())?;
-                    Ok((taskAss.clone(), procAss.clone(), taskGraph.clone(), taskDuplAss.clone(), thread.clone(), idcs.clone(), simCode.clone(), duplSccSimEqMap.clone(), duplComps.clone()))
+                    Ok(((taskAss.clone(), procAss.clone(), taskGraph.clone(), taskDuplAss.clone(), thread.clone(), idcs.clone(), simCode.clone(), duplSccSimEqMap.clone(), duplComps.clone()), taskGraphOut.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { taskGraphOut = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((taskAssOut, procAssOut, taskGraphOut, taskDuplAssOut, threadOut, idcsOut, simCodeOut, duplSccSimEqMapOut, duplCompsOut))
@@ -4482,7 +4482,7 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
     let mut fpredOut: metamodelica::Array<i32> = Default::default();
     fpredOut = 'mc: {
         let __mc_input = fpredIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut fpredPos: i32 = 0;
             let mut fpred: i32 = 0;
@@ -4501,17 +4501,17 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
             fpredPos = List::position(maxCost.clone(), costs.clone())?;
             fpred = (parents.clone()).get(fpredPos.clone())?;
             fpredOut = {let _arr = fpredIn.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = fpred.clone(); _arr};
-            Ok(fpredOut.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((fpredOut.clone(), fpredOut.clone()))
+        })() { fpredOut = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut parents: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut fpredOut: metamodelica::Array<i32> = fpredOut.clone();
             parents = graphT.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
             let true = (parents.clone().is_empty()) else { bail!("pattern mismatch") };
             fpredOut = {let _arr = fpredIn.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = 0; _arr};
-            Ok(fpredOut.clone())
-        })() { break 'mc __v; }
+            Ok((fpredOut.clone(), fpredOut.clone()))
+        })() { fpredOut = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(fpredOut)
@@ -4524,7 +4524,7 @@ pub fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::
     let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     oSchedule = 'mc: {
         let __mc_input = iTaskGraphMeta.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let HpcOmTaskGraph::TaskGraphMeta { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut nTasks: i32 = 0;
             let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4555,8 +4555,8 @@ pub fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::
                 order = order.clone().reverse();
             }
             (oSchedule, _) = createScheduleFromAssignments(taskMap.clone(), partitions.clone(), Some(order.clone()), iTaskGraph.clone(), graphT.clone(), iTaskGraphMeta.clone(), iSccSimEqMapping.clone(), metamodelica::nil(), order.clone(), iSimVarMapping.clone(), schedule.clone())?;
-            Ok(oSchedule.clone())
-        })() { break 'mc __v; }
+            Ok((oSchedule.clone(), oSchedule.clone()))
+        })() { oSchedule = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (intEq((iTaskGraph.clone().borrow().len() as i32), 0)) else { bail!("pattern mismatch") };
@@ -5337,7 +5337,7 @@ fn computeGraphValuesBottomUp2(mut node: i32, mut graph: metamodelica::Array<Arc
     let mut children: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (asapOut, estOut, ectOut, children) = 'mc: {
         let __mc_input = ectIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut maxASAP: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut maxEct: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -5367,8 +5367,8 @@ fn computeGraphValuesBottomUp2(mut node: i32, mut graph: metamodelica::Array<Arc
             est = {let _arr = estIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = maxEct.clone(); _arr};
             ect = {let _arr = ectIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = (maxEct.clone()) + (exeCost.clone()); _arr};
             children = graph.clone().borrow()[(node.clone()-1) as usize].clone();
-            Ok((asap.clone(), est.clone(), ect.clone(), children.clone()))
-        })() { break 'mc __v; }
+            Ok(((asap.clone(), est.clone(), ect.clone(), children.clone()), children.clone()))
+        })() { children = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut parents: Arc<metamodelica::List<i32>> = metamodelica::nil();

@@ -939,7 +939,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil, Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(_), orderedVars: v, .. }) => {
                     let mut ilst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -966,11 +966,11 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     (syst, oshared, outAss1, outAss2, outStateOrd, outOrgEqnsLst, omapEqnIncRow, omapIncRowEqn) = handleundifferntiableMSS(intLe((ilst.clone().len() as i32), (unassignedEqns.clone().len() as i32)), ilst.clone(), inEqns.clone(), unassignedStates.clone(), unassignedEqns.clone(), inSystem.clone(), inShared.clone(), inAss1.clone(), inAss2.clone(), inStateOrd.clone(), inOrgEqnsLst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone())?;
-                    Ok((syst.clone(), oshared.clone(), outAss1.clone(), outAss2.clone(), outStateOrd.clone(), outOrgEqnsLst.clone(), omapEqnIncRow.clone(), omapIncRowEqn.clone()))
+                    Ok(((syst.clone(), oshared.clone(), outAss1.clone(), outAss2.clone(), outStateOrd.clone(), outOrgEqnsLst.clone(), omapEqnIncRow.clone(), omapIncRowEqn.clone()), omapEqnIncRow.clone(), omapIncRowEqn.clone(), oshared.clone(), outAss1.clone(), outAss2.clone(), outOrgEqnsLst.clone(), outStateOrd.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { omapEqnIncRow = __wb0; omapIncRowEqn = __wb1; oshared = __wb2; outAss1 = __wb3; outAss2 = __wb4; outOrgEqnsLst = __wb5; outStateOrd = __wb6; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ BackendDAE::EqSystem { mT: Some(_), m: Some(_), orderedVars: v, .. }) => {
@@ -2808,7 +2808,7 @@ fn varStateSelectHeuristicPrio4(mut inVar: BackendDAE::Var, mut vars: BackendDAE
     let mut prio: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     prio = 'mc: {
         let __mc_input = inVar.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { derName: Some(cr), .. }, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -2817,11 +2817,11 @@ fn varStateSelectHeuristicPrio4(mut inVar: BackendDAE::Var, mut vars: BackendDAE
                     (v, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
                     b = BackendVariable::isDummyStateVar(v.clone());
                     prio = if (b.clone()) {metamodelica::OrderedFloat(0.0_f64)} else {metamodelica::OrderedFloat(0.55_f64)};
-                    Ok(prio.clone())
+                    Ok((prio.clone(), prio.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { prio = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

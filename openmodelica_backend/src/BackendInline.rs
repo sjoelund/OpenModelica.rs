@@ -480,16 +480,16 @@ fn inlineVariables(mut inVariables: BackendDAE::Variables, mut inElementList: (O
     let mut inlined: bool = false;
     (outVariables, inlined) = 'mc: {
         let __mc_input = (inVariables.clone(), inElementList.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Variables { crefIndices: crefind, varArr: BackendDAE::VariableArray { numberOfElements: i3, varOptArr: vararr }, bucketSize: i1, numberOfVars: i2 }, fns) => {
                     let mut inlined: bool = inlined.clone();
                     inlined = inlineVarOptArray(vararr.clone(), fns.clone())?;
-                    Ok((BackendDAE::Variables { crefIndices: crefind.clone(), varArr: BackendDAE::VariableArray { numberOfElements: i3.clone(), varOptArr: vararr.clone() }, bucketSize: i1.clone(), numberOfVars: i2.clone() }, inlined.clone()))
+                    Ok(((BackendDAE::Variables { crefIndices: crefind.clone(), varArr: BackendDAE::VariableArray { numberOfElements: i3.clone(), varOptArr: vararr.clone() }, bucketSize: i1.clone(), numberOfVars: i2.clone() }, inlined.clone()), inlined.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { inlined = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -733,7 +733,7 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     (outEquation, outEqs, inlined) = 'mc: {
         let __mc_input = inEquation.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr } => {
                     let mut b1: bool = false;
@@ -747,12 +747,12 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
                     (e2, source, outEqs, b2, shared) = inlineCallsAppend(e2.clone(), fns.clone(), source.clone(), outEqs.clone(), shared.clone())?;
                     b3 = b1.clone() || b2.clone();
-                    Ok((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()))
+                    Ok(((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()), outEqs.clone(), shared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr, source, right: e2, left: e1, .. } => {
                     let mut b1: bool = false;
@@ -769,12 +769,12 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     if b2.clone() && Expression::isScalar(e1.clone())? && Expression::isTuple(e2.clone()) {
                         e2 = Arc::new(DAE::Exp::TSUB { exp: e2.clone(), ix: 1, ty: Expression::r#typeof(e1.clone())? });
                     }
-                    Ok((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()))
+                    Ok(((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()), outEqs.clone(), shared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ARRAY_EQUATION { attr, source, right: e2, left: e1, .. } => {
                     let mut b1: bool = false;
@@ -788,12 +788,12 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
                     (e2, source, outEqs, b2, shared) = inlineCallsAppend(e2.clone(), fns.clone(), source.clone(), outEqs.clone(), shared.clone())?;
                     b3 = b1.clone() || b2.clone();
-                    Ok((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()))
+                    Ok(((BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?, outEqs.clone(), b3.clone()), outEqs.clone(), shared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e2, source, attr } => {
                     let mut b2: bool = false;
@@ -802,12 +802,12 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     (e2, source, outEqs, b2, shared) = inlineCallsAppend(e2.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
-                    Ok((Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: e2.clone(), source: source.clone(), attr: attr.clone() }), outEqs.clone(), b2.clone()))
+                    Ok(((Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: e2.clone(), source: source.clone(), attr: attr.clone() }), outEqs.clone(), b2.clone()), outEqs.clone(), shared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source, attr } => {
                     let mut b1: bool = false;
@@ -816,11 +816,11 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
-                    Ok((Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1.clone(), source: source.clone(), attr: attr.clone() }), outEqs.clone(), b1.clone()))
+                    Ok(((Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1.clone(), source: source.clone(), attr: attr.clone() }), outEqs.clone(), b1.clone()), outEqs.clone(), shared.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 eqn @ Deref @ BackendDAE::Equation::ALGORITHM { size, alg: Deref @ DAE::Algorithm { statementLst: stmts }, source, expand: crefExpand, attr } => {
@@ -896,7 +896,7 @@ fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathF
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
     (outExp, outSource, outEqs, inlined) = 'mc: {
         let __mc_input = inExp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e => {
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -914,11 +914,11 @@ fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathF
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ninExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone());
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\noutExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); ArcStr::from(__mm_s) }).clone());
                     }
-                    Ok((e2.clone(), source.clone(), outEqs.clone(), b.clone()))
+                    Ok(((e2.clone(), source.clone(), outEqs.clone(), b.clone()), outEqs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outEqs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

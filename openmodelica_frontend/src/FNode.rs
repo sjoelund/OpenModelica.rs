@@ -659,12 +659,12 @@ pub fn toStr(mut inNode: Node) -> Result<ArcStr> {
     let mut outStr: ArcStr = arcstr::literal!("");
     outStr = ('mc: {
         let __mc_input = inNode.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let FCore::Node { name: _, id: mut i, parents: ref p, children: _, data: mut d } = __mc_input.clone() else { bail!("nomatch") };
             let mut outStr: ArcStr = outStr.clone();
             outStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[i:")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*literal!("[p:")); __mm_s.push_str(&*stringDelimitList(List::map(List::map(List::map(p.clone(), (std::sync::Arc::new(fromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<FCore::Node> + 'static>))?, (std::sync::Arc::new(id) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Node) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*literal!("[n:")); __mm_s.push_str(&*name(inNode.clone())?); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*literal!("[d:")); __mm_s.push_str(&*dataStr(d.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-            Ok(outStr.clone())
-        })() { break 'mc __v; }
+            Ok((outStr.clone(), outStr.clone()))
+        })() { outStr = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(literal!("Unhandled node!"))
@@ -678,17 +678,17 @@ pub fn toPathStr(mut inNode: Node) -> Result<ArcStr> {
     let mut outStr: ArcStr = arcstr::literal!("");
     outStr = ('mc: {
         let __mc_input = inNode.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: Deref @ metamodelica::List::Nil, children: _, data: _ } => {
                     let mut outStr: ArcStr = outStr.clone();
                     outStr = (name(inNode.clone())?).clone();
-                    Ok(outStr.clone())
+                    Ok((outStr.clone(), outStr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outStr = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: p, children: _, data: _ } => {
                     let mut nr: Ref = Default::default();
@@ -698,12 +698,12 @@ pub fn toPathStr(mut inNode: Node) -> Result<ArcStr> {
                     let true = (hasParents(fromRef(nr.clone())?)?) else { bail!("pattern mismatch") };
                     s = (toPathStr(fromRef(nr.clone())?)?).clone();
                     outStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name(inNode.clone())?); ArcStr::from(__mm_s) }).clone();
-                    Ok(outStr.clone())
+                    Ok((outStr.clone(), outStr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outStr = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Node { name: _, id: _, parents: p, children: _, data: _ } => {
                     let mut nr: Ref = Default::default();
@@ -711,11 +711,11 @@ pub fn toPathStr(mut inNode: Node) -> Result<ArcStr> {
                     nr = contextual(p.clone())?;
                     let false = (hasParents(fromRef(nr.clone())?)?) else { bail!("pattern mismatch") };
                     outStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name(inNode.clone())?); ArcStr::from(__mm_s) }).clone();
-                    Ok(outStr.clone())
+                    Ok((outStr.clone(), outStr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outStr = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(outStr)
@@ -1661,13 +1661,13 @@ pub fn isRefRefUnresolved(mut inRef: Ref) -> Result<bool> {
     let mut b: bool = false;
     b = 'mc: {
         let __mc_input = inRef.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut b: bool = b.clone();
             refRef(inRef.clone())?;
             b = refRefTargetScope(inRef.clone())?.is_empty();
-            Ok(b.clone())
-        })() { break 'mc __v; }
+            Ok((b.clone(), b.clone()))
+        })() { b = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(true)

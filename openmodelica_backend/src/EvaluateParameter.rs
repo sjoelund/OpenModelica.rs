@@ -396,7 +396,7 @@ fn evaluateSelectedParameters1(mut iUsed: Arc<metamodelica::List<i32>>, mut glob
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: i, tail: rest } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -412,12 +412,12 @@ fn evaluateSelectedParameters1(mut iUsed: Arc<metamodelica::List<i32>>, mut glob
                     (v, globalKnownVars, cache, mark, repl) = evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone())?;
                     (globalKnownVars, cache, repl, replEvaluate) = evaluateParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), cache.clone(), graph.clone(), repl.clone(), replEvaluate.clone())?;
                     (globalKnownVars, cache, mark, repl, replEvaluate) = evaluateSelectedParameters1(rest.clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone())?;
-                    Ok((globalKnownVars.clone(), cache.clone(), mark.clone(), repl.clone(), replEvaluate.clone()))
+                    Ok(((globalKnownVars.clone(), cache.clone(), mark.clone(), repl.clone(), replEvaluate.clone()), cache.clone(), globalKnownVars.clone(), mark.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cache = __wb0; globalKnownVars = __wb1; mark = __wb2; repl = __wb3; replEvaluate = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut cache: FCore::Cache = cache.clone();
@@ -426,11 +426,11 @@ fn evaluateSelectedParameters1(mut iUsed: Arc<metamodelica::List<i32>>, mut glob
                     let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
                     let mut replEvaluate: BackendVarTransform::VariableReplacements = replEvaluate.clone();
                     (globalKnownVars, cache, mark, repl, replEvaluate) = evaluateSelectedParameters1(rest.clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone())?;
-                    Ok((globalKnownVars.clone(), cache.clone(), mark.clone(), repl.clone(), replEvaluate.clone()))
+                    Ok(((globalKnownVars.clone(), cache.clone(), mark.clone(), repl.clone(), replEvaluate.clone()), cache.clone(), globalKnownVars.clone(), mark.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cache = __wb0; globalKnownVars = __wb1; mark = __wb2; repl = __wb3; replEvaluate = __wb4; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((globalKnownVars, cache, mark, repl, replEvaluate))
@@ -443,7 +443,7 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
     let mut cache: FCore::Cache = cache;
     let () = 'mc: {
         let __mc_input = var.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { bindExp: Some(e), varKind: BackendDAE::VarKind::CONST { .. }, varName: cr, .. } => {
                     let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
@@ -451,12 +451,12 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
                     let true = (Expression::isConst(e.clone())?) else { bail!("pattern mismatch") };
                     repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), e.clone(), None)?;
                     replEvaluate = BackendVarTransform::addReplacement(replEvaluate.clone(), cr.clone(), e.clone(), None)?;
-                    Ok(())
+                    Ok(((), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { repl = __wb0; replEvaluate = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { bindExp: Some(e), varKind: BackendDAE::VarKind::CONST { .. }, varName: cr, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -473,12 +473,12 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
                     repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), e1.clone(), None)?;
                     replEvaluate = BackendVarTransform::addReplacement(replEvaluate.clone(), cr.clone(), e1.clone(), None)?;
-                    Ok(())
+                    Ok(((), cache.clone(), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cache = __wb0; globalKnownVars = __wb1; repl = __wb2; replEvaluate = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { bindExp: Some(e), varKind: BackendDAE::VarKind::PARAM { .. }, varName: cr, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -492,12 +492,12 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
                         repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), e.clone(), None)?;
                         replEvaluate = BackendVarTransform::addReplacement(replEvaluate.clone(), cr.clone(), e.clone(), None)?;
                     }
-                    Ok(())
+                    Ok(((), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { globalKnownVars = __wb0; repl = __wb1; replEvaluate = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { bindExp: Some(e), varKind: BackendDAE::VarKind::PARAM { .. }, varName: cr, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -515,12 +515,12 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
                     repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), e1.clone(), None)?;
                     replEvaluate = BackendVarTransform::addReplacement(replEvaluate.clone(), cr.clone(), e1.clone(), None)?;
-                    Ok(())
+                    Ok(((), cache.clone(), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cache = __wb0; globalKnownVars = __wb1; repl = __wb2; replEvaluate = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { values: attr, varKind: BackendDAE::VarKind::PARAM { .. }, varName: cr, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -542,11 +542,11 @@ fn evaluateSelectedParameter(mut var: BackendDAE::Var, mut index: i32, mut globa
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
                     repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), e1.clone(), None)?;
                     replEvaluate = BackendVarTransform::addReplacement(replEvaluate.clone(), cr.clone(), e1.clone(), None)?;
-                    Ok(())
+                    Ok(((), cache.clone(), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cache = __wb0; globalKnownVars = __wb1; repl = __wb2; replEvaluate = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -780,7 +780,7 @@ fn evaluateParameterBindings(mut var: BackendDAE::Var, mut index: i32, mut globa
     let mut replEvaluate: BackendVarTransform::VariableReplacements = replEvaluate;
     let () = 'mc: {
         let __mc_input = var.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 v @ BackendDAE::Var { hideResult: hideResultOpt, bindExp: Some(e), varKind: BackendDAE::VarKind::PARAM { .. }, varName: cr, .. } => {
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -841,12 +841,12 @@ fn evaluateParameterBindings(mut var: BackendDAE::Var, mut index: i32, mut globa
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
-                    Ok(())
+                    Ok(((), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { globalKnownVars = __wb0; repl = __wb1; replEvaluate = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 v @ BackendDAE::Var { hideResult: hideResultOpt, values: attr, varKind: BackendDAE::VarKind::PARAM { .. }, varName: cr, .. } => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -903,12 +903,12 @@ fn evaluateParameterBindings(mut var: BackendDAE::Var, mut index: i32, mut globa
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
-                    Ok(())
+                    Ok(((), globalKnownVars.clone(), repl.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { globalKnownVars = __wb0; repl = __wb1; replEvaluate = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 v @ BackendDAE::Var { hideResult: hideResultOpt, bindExp: Some(e), .. } => {
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -960,12 +960,12 @@ fn evaluateParameterBindings(mut var: BackendDAE::Var, mut index: i32, mut globa
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
-                    Ok(())
+                    Ok(((), globalKnownVars.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { globalKnownVars = __wb0; replEvaluate = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { hideResult: hideResultOpt, values: attr, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -994,11 +994,11 @@ fn evaluateParameterBindings(mut var: BackendDAE::Var, mut index: i32, mut globa
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                     globalKnownVars = BackendVariable::setVarAt(globalKnownVars.clone(), index.clone(), v.clone())?;
-                    Ok(())
+                    Ok(((), globalKnownVars.clone(), replEvaluate.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { globalKnownVars = __wb0; replEvaluate = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

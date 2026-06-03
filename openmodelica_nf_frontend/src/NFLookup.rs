@@ -301,7 +301,7 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     (foundCref, foundScope, state) = 'mc: {
         let __mc_input = cref.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
                     let mut foundScope: Arc<InstNode::InstNode> = foundScope.clone();
@@ -309,12 +309,12 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
                     let mut state: Arc<LookupState::LookupState> = state.clone();
                     (node, foundScope) = lookupLocalSimpleCref((var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), scope.clone())?;
                     state = LookupState::nodeState(node.clone())?;
-                    Ok((ComponentRef::fromAbsyn(node.clone(), var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), Arc::new(crate::NFComponentRef::EMPTY)), foundScope.clone(), state.clone()))
+                    Ok(((ComponentRef::fromAbsyn(node.clone(), var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), Arc::new(crate::NFComponentRef::EMPTY)), foundScope.clone(), state.clone()), foundScope.clone(), state.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { foundScope = __wb0; state = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
                     let mut foundCref: Arc<ComponentRef::NFComponentRef> = foundCref.clone();
@@ -325,11 +325,11 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
                     state = LookupState::nodeState(node.clone())?;
                     foundCref = ComponentRef::fromAbsyn(node.clone(), var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), Arc::new(crate::NFComponentRef::EMPTY));
                     (foundCref, foundScope, state) = lookupCrefInNode(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), node.clone(), foundCref.clone(), foundScope.clone(), state.clone(), context.clone())?;
-                    Ok((foundCref.clone(), foundScope.clone(), state.clone()))
+                    Ok(((foundCref.clone(), foundScope.clone(), state.clone()), foundCref.clone(), foundScope.clone(), state.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { foundCref = __wb0; foundScope = __wb1; state = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

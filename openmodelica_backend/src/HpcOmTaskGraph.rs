@@ -875,7 +875,7 @@ pub fn getVarString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
     let mut varString: ArcStr = arcstr::literal!("");
     varString = ('mc: {
         let __mc_input = inVar.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut varDescLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut varString: ArcStr = varString.clone();
@@ -884,9 +884,9 @@ pub fn getVarString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
             varDescLst = stringListStringChar((varString.clone()).clone());
             varDescLst = shortenVarString(varDescLst.clone())?;
             varString = (stringCharListString(varDescLst.clone())).clone();
-            Ok(varString.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((varString.clone(), varString.clone()))
+        })() { varString = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut varDescLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut varString: ArcStr = varString.clone();
@@ -896,8 +896,8 @@ pub fn getVarString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {
             varDescLst = shortenVarString(varDescLst.clone())?;
             varString = (stringCharListString(varDescLst.clone())).clone();
             varString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" der(")); __mm_s.push_str(&*varString.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-            Ok(varString.clone())
-        })() { break 'mc __v; }
+            Ok((varString.clone(), varString.clone()))
+        })() { varString = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(varString)
@@ -3556,7 +3556,7 @@ fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta
     let mut changed: bool = false;
     (oTaskGraph, oTaskGraphMeta, changed) = 'mc: {
         let __mc_input = doNotMergeIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut numProc: i32 = 0;
@@ -3579,11 +3579,11 @@ fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta
                     exeCosts = exeCosts.clone().reverse();
                     distributeToClusters(singleNodes.clone(), exeCosts.clone(), numProc.clone())?;
                     changed = intGt((singleNodes.clone().len() as i32), numProc.clone());
-                    Ok((iTaskGraph.clone(), iTaskGraphMeta.clone(), changed.clone()))
+                    Ok(((iTaskGraph.clone(), iTaskGraphMeta.clone(), changed.clone()), changed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { changed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -81,7 +81,7 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
     let mut file: File::File = File::File(File::noReference())?;
     (success, fileName) = 'mc: {
         let __mc_input = code.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let SimCode::SimCode { modelInfo: mut mi @ SimCode::ModelInfo { .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut eqsName: ArcStr = arcstr::literal!("");
             let mut eqsLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
@@ -111,8 +111,8 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
             File::write(file.clone(), (literal!("\n],\n\"functions\":[")).clone());
             serializeList(file.clone(), mi.functions.clone(), (std::sync::Arc::new(serializeFunction) as std::sync::Arc<dyn ::std::ops::Fn(File::File, Arc<SimCodeFunction::Function::Function>) -> Result<()> + 'static>), false, (literal!(",")).clone())?;
             File::write(file.clone(), (literal!("\n]\n}")).clone());
-            Ok((true, fileName.clone()))
-        })() { break 'mc __v; }
+            Ok(((true, fileName.clone()), fileName.clone()))
+        })() { fileName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Error::addInternalError((literal!("SerializeModelInfo.serialize failed")).clone(), metamodelica::sourceInfo!())?;

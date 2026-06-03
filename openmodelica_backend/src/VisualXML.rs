@@ -177,7 +177,7 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = vis.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Visualization::SHAPE { shapeType: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, .. } => {
                     let mut vis: Visualization = vis.clone();
@@ -185,12 +185,12 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
                     if let Visualization::SHAPE { shapeType, .. } = &mut vis {
                         *shapeType = __owned_variant_shapeType_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Visualization::SHAPE { shapeType: Deref @ DAE::Exp::SCONST { string: s }, .. } => {
                     let mut vis: Visualization = vis.clone();
@@ -198,11 +198,11 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
                     if let Visualization::SHAPE { shapeType, .. } = &mut vis {
                         *shapeType = __owned_variant_shapeType_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -545,7 +545,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
     let mut vis: Visualization = vis;
     let () = 'mc: {
         let __mc_input = (cref.clone(), vis.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "shapeType", .. }, Visualization::SHAPE { .. }) => {
                     let mut bind: Option<Arc<DAE::Exp>> = None;
@@ -558,11 +558,11 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                             *shapeType = __owned_variant_shapeType_0;
                         } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
                     }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos1 } }, tail: Deref @ metamodelica::List::Nil } }, ident: Deref @ "T", .. }, ident: Deref @ "R", .. }, Visualization::SHAPE { .. }) => {
@@ -621,7 +621,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "length", .. }, Visualization::SHAPE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -629,12 +629,12 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     if let Visualization::SHAPE { length, .. } = &mut vis {
                         *length = __owned_variant_length_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "width", .. }, Visualization::SHAPE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -642,12 +642,12 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     if let Visualization::SHAPE { width, .. } = &mut vis {
                         *width = __owned_variant_width_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "height", .. }, Visualization::SHAPE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -655,12 +655,12 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     if let Visualization::SHAPE { height, .. } = &mut vis {
                         *height = __owned_variant_height_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "extra", .. }, Visualization::SHAPE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -668,11 +668,11 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     if let Visualization::SHAPE { extra, .. } = &mut vis {
                         *extra = __owned_variant_extra_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "color", .. }, Visualization::SHAPE { .. }) => {
@@ -684,7 +684,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "specularCoefficient", .. }, Visualization::SHAPE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -692,11 +692,11 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     if let Visualization::SHAPE { specularCoeff, .. } = &mut vis {
                         *specularCoeff = __owned_variant_specularCoeff_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SHAPE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -761,7 +761,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "specularCoefficient", .. }, Visualization::VECTOR { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -769,12 +769,12 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     if let Visualization::VECTOR { specularCoeff, .. } = &mut vis {
                         *specularCoeff = __owned_variant_specularCoeff_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::VECTOR"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "quantity", .. }, Visualization::VECTOR { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -782,12 +782,12 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     if let Visualization::VECTOR { quantity, .. } = &mut vis {
                         *quantity = __owned_variant_quantity_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::VECTOR"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "headAtOrigin", .. }, Visualization::VECTOR { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -795,12 +795,12 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     if let Visualization::VECTOR { headAtOrigin, .. } = &mut vis {
                         *headAtOrigin = __owned_variant_headAtOrigin_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::VECTOR"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "twoHeadedArrow", .. }, Visualization::VECTOR { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -808,11 +808,11 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     if let Visualization::VECTOR { twoHeadedArrow, .. } = &mut vis {
                         *twoHeadedArrow = __owned_variant_twoHeadedArrow_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::VECTOR"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -855,7 +855,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "nu", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -863,12 +863,12 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { nu, .. } = &mut vis {
                         *nu = __owned_variant_nu_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "nv", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -876,12 +876,12 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { nv, .. } = &mut vis {
                         *nv = __owned_variant_nv_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "wireframe", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -889,12 +889,12 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { wireframe, .. } = &mut vis {
                         *wireframe = __owned_variant_wireframe_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "multiColored", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -902,11 +902,11 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { multiColored, .. } = &mut vis {
                         *multiColored = __owned_variant_multiColored_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "color", .. }, Visualization::SURFACE { .. }) => {
@@ -918,7 +918,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "specularCoefficient", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -926,12 +926,12 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { specularCoeff, .. } = &mut vis {
                         *specularCoeff = __owned_variant_specularCoeff_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vis = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "transparency", .. }, Visualization::SURFACE { .. }) => {
                     let mut vis: Visualization = vis.clone();
@@ -939,11 +939,11 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     if let Visualization::SURFACE { transparency, .. } = &mut vis {
                         *transparency = __owned_variant_transparency_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than Visualization::SURFACE"); }
-                    Ok(())
+                    Ok(((), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vis = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

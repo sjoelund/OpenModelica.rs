@@ -2363,31 +2363,31 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
     (eq_idx, res_idx) = idx_tpl.clone();
     (equations_, idx_tpl, tempvars) = 'mc: {
         let __mc_input = (inExp.clone(), inExp1.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CAST { ty: _, exp: e1 }, _) => {
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut idx_tpl: (i32, i32) = idx_tpl.clone();
                     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars.clone();
                     (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(e1.clone(), inExp1.clone(), source.clone(), eqAttr.clone(), idx_tpl.clone(), tempvars.clone())?;
-                    Ok((equations_.clone(), idx_tpl.clone(), tempvars.clone()))
+                    Ok(((equations_.clone(), idx_tpl.clone(), tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { equations_ = __wb0; idx_tpl = __wb1; tempvars = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CAST { ty: _, exp: e2 }) => {
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut idx_tpl: (i32, i32) = idx_tpl.clone();
                     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars.clone();
                     (equations_, idx_tpl, tempvars) = createNonlinearResidualEquationsComplex(inExp.clone(), e2.clone(), source.clone(), eqAttr.clone(), idx_tpl.clone(), tempvars.clone())?;
-                    Ok((equations_.clone(), idx_tpl.clone(), tempvars.clone()))
+                    Ok(((equations_.clone(), idx_tpl.clone(), tempvars.clone()), equations_.clone(), idx_tpl.clone(), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { equations_ = __wb0; idx_tpl = __wb1; tempvars = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, _) => {
                     let mut crtmp: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2426,12 +2426,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     etmp = Expression::crefExp(crtmp.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: etmp.clone(), exp: e2_1.clone(), source: source.clone() });
                     eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx.clone(), statements: list![stms.clone()], eqAttr: eqAttr.clone() }), eqSystlst.clone());
-                    Ok((eqSystlst.clone(), (eq_idx.clone() + 1, res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone() + 1, res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CREF { componentRef: cr, .. }) => {
                     let mut crtmp: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2470,12 +2470,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     etmp = Expression::crefExp(crtmp.clone())?;
                     stms = Arc::new(DAE::Statement::STMT_ASSIGN { type_: tp.clone(), exp1: etmp.clone(), exp: e1_1.clone(), source: source.clone() });
                     eqSystlst = metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: eq_idx.clone(), statements: list![stms.clone()], eqAttr: eqAttr.clone() }), eqSystlst.clone());
-                    Ok((eqSystlst.clone(), (eq_idx.clone() + 1, res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone() + 1, res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: tp @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: rpath }, varLst, .. }, .. }, expLst: e2lst, path }, _) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2508,12 +2508,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     res_idx = __pa2.clone();
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), eqSystlst.clone());
                     tempvars = createTempVars(varLst.clone(), cr.clone(), tempvars.clone())?;
-                    Ok((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::RECORD { ty: tp @ Deref @ DAE::Type::T_COMPLEX { varLst, .. }, exps: e2lst, path, .. }, _) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2545,12 +2545,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     res_idx = __pa2.clone();
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), eqSystlst.clone());
                     tempvars = createTempVars(varLst.clone(), cr.clone(), tempvars.clone())?;
-                    Ok((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: tp @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: rpath }, varLst, .. }, .. }, expLst: e2lst, path }) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2581,12 +2581,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     res_idx = __pa2.clone();
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), eqSystlst.clone());
                     tempvars = createTempVars(varLst.clone(), cr.clone(), tempvars.clone())?;
-                    Ok((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::RECORD { ty: tp @ Deref @ DAE::Type::T_COMPLEX { varLst, .. }, exps: e2lst, path, .. }) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2616,12 +2616,12 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     res_idx = __pa2.clone();
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), eqSystlst.clone());
                     tempvars = createTempVars(varLst.clone(), cr.clone(), tempvars.clone())?;
-                    Ok((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { tempvars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::TUPLE { PR: expl }, Deref @ DAE::Exp::CALL { path, .. }) => {
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2663,11 +2663,11 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     res_idx = __pa2.clone();
                     eqSystlst = metamodelica::cons(simeqn_complex.clone(), eqSystlst.clone());
                     tempvars = createTempVarsforCrefs(crexplst.clone().reverse(), tempvars.clone())?;
-                    Ok((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()))
+                    Ok(((eqSystlst.clone(), (eq_idx.clone(), res_idx.clone()), tempvars.clone()), tempvars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tempvars = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3277,7 +3277,7 @@ fn createOdeSystem(mut genDiscrete: bool, mut skipDiscInAlgorithm: bool, mut isy
     let mut oBackendMapping: SimCode::BackendMapping = SimCode::BackendMapping::NO_MAPPING;
     (equations_, noDiscequations_, ouniqueEqIndex, otempvars, oeqSccMapping, oBackendMapping) = 'mc: {
         let __mc_input = (isyst.clone(), ishared.clone(), inComp.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, Deref @ BackendDAE::Shared { info: ei, functionTree: funcs, globalKnownVars, .. }, comp @ Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { mixedSystem, jacType: jac_tp, jac: jacobian, eqns: eqIdcs, .. }) => {
                     let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -3308,12 +3308,12 @@ fn createOdeSystem(mut genDiscrete: bool, mut skipDiscInAlgorithm: bool, mut isy
                     uniqueEqIndexMapping = uniqueEqIndex.clone() - 1;
                     tmpEqSccMapping = appendSccIdxRange(uniqueEqIndexMapping.clone(), uniqueEqIndex.clone() - 1, isccIndex.clone(), ieqSccMapping.clone());
                     tmpBackendMapping = setEqMapping(List::intRange2(uniqueEqIndexMapping.clone(), uniqueEqIndex.clone() - 1), eqIdcs.clone(), iBackendMapping.clone())?;
-                    Ok((equations_.clone(), equations_.clone(), uniqueEqIndex.clone(), tempvars.clone(), tmpEqSccMapping.clone(), tmpBackendMapping.clone()))
+                    Ok(((equations_.clone(), equations_.clone(), uniqueEqIndex.clone(), tempvars.clone(), tmpEqSccMapping.clone(), tmpBackendMapping.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { equations_ = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, _, Deref @ BackendDAE::StrongComponent::TORNSYSTEM { mixedSystem, linear: b, casualTearingSet, strictTearingSet }) => {
                     let mut uniqueEqIndex: i32 = 0;
@@ -3327,11 +3327,11 @@ fn createOdeSystem(mut genDiscrete: bool, mut skipDiscInAlgorithm: bool, mut isy
                     (equations_, uniqueEqIndex, tempvars) = createTornSystem(b.clone(), skipDiscInAlgorithm.clone(), genDiscrete.clone(), strictTearingSet.clone(), casualTearingSet.clone(), isyst.clone(), ishared.clone(), iuniqueEqIndex.clone(), mixedSystem.clone(), itempvars.clone())?;
                     tmpEqSccMapping = appendSccIdx(uniqueEqIndex.clone() - 1, isccIndex.clone(), ieqSccMapping.clone());
                     tmpBackendMapping = iBackendMapping.clone();
-                    Ok((equations_.clone(), equations_.clone(), uniqueEqIndex.clone(), tempvars.clone(), tmpEqSccMapping.clone(), tmpBackendMapping.clone()))
+                    Ok(((equations_.clone(), equations_.clone(), uniqueEqIndex.clone(), tempvars.clone(), tmpEqSccMapping.clone(), tmpBackendMapping.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3354,7 +3354,7 @@ fn createOdeSystem2(mut mixedEvent: bool, mut inVars: BackendDAE::Variables, mut
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     (equations_, ouniqueEqIndex, otempvars) = 'mc: {
         let __mc_input = (inJacobian.clone(), inJacobianType.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, BackendDAE::JacobianType::JAC_CONSTANT { .. }) => {
                     let mut uniqueEqIndex: i32 = 0;
@@ -3388,11 +3388,11 @@ fn createOdeSystem2(mut mixedEvent: bool, mut inVars: BackendDAE::Variables, mut
                     checkLinearSystem(linInfo.clone(), names.clone(), jacVals.clone(), rhsVals.clone())?;
                     sources = List::map1(sources.clone(), (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), Arc::new(DAE::SymbolicOperation::LINEAR_SOLVED { vars: names.clone(), jac: jacVals.clone(), rhs: rhsVals.clone(), result: solvedVals.clone() }))?;
                     (equations_, uniqueEqIndex) = List::thread3MapFold(simVars.clone(), solvedVals.clone(), sources.clone(), (std::sync::Arc::new(generateSolvedEquation) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, metamodelica::Real, Arc<DAE::ElementSource>, i32) -> Result<(Arc<SimCode::SimEqSystem>, i32)> + 'static>), iuniqueEqIndex.clone())?;
-                    Ok((equations_.clone(), uniqueEqIndex.clone(), itempvars.clone()))
+                    Ok(((equations_.clone(), uniqueEqIndex.clone(), itempvars.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, BackendDAE::JacobianType::JAC_LINEAR { .. }) => {
@@ -5572,7 +5572,7 @@ pub fn extractDelayedExpressions(mut dlow: Arc<BackendDAE::BackendDAE>) -> Resul
     let mut maxDelayedExpIndex: i32 = 0;
     (delayedExps, maxDelayedExpIndex) = 'mc: {
         let __mc_input = dlow.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -5581,11 +5581,11 @@ pub fn extractDelayedExpressions(mut dlow: Arc<BackendDAE::BackendDAE>) -> Resul
                     (_, exps) = BackendDAEUtil::traverseBackendDAEExps(dlow.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(collectDelayExpressions, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> + 'static>), metamodelica::nil()))?;
                     delayedExps = List::map(exps.clone(), (std::sync::Arc::new(extractIdAndExpFromDelayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<(i32, (Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::Exp>))> + 'static>))?;
                     maxDelayedExpIndex = List::applyAndFold(delayedExps.clone(), (std::sync::Arc::new(fnptr!(intMax, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), std::sync::Arc::new(fnptr!(Util::tuple21, _)), -1)?;
-                    Ok((delayedExps.clone(), maxDelayedExpIndex.clone() + 1))
+                    Ok(((delayedExps.clone(), maxDelayedExpIndex.clone() + 1), delayedExps.clone(), maxDelayedExpIndex.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { delayedExps = __wb0; maxDelayedExpIndex = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -5995,7 +5995,7 @@ fn createSingleIfEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inVars: 
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     (equations_, ouniqueEqIndex, otempvars) = 'mc: {
         let __mc_input = (inEquation.clone(), shared.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::IF_EQUATION { attr: eqAttr, source: source_, eqnsfalse: elseqns, eqnstrue: eqnsLst, conditions }, Deref @ BackendDAE::Shared { info: ei, .. }) => {
                     let mut uniqueEqIndex: i32 = 0;
@@ -6004,11 +6004,11 @@ fn createSingleIfEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inVars: 
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     (ifbranches, uniqueEqIndex, tempvars) = createEquationsIfBranch(conditions.clone(), eqnsLst.clone(), inVars.clone(), shared.clone(), genDiscrete.clone(), iuniqueEqIndex.clone(), itempvars.clone())?;
                     (equations_, uniqueEqIndex, tempvars) = createEquationsfromList(elseqns.clone(), inVars.clone(), uniqueEqIndex.clone(), tempvars.clone(), ei.clone(), genDiscrete.clone(), false, false, false)?;
-                    Ok((list![Arc::new(SimCode::SimEqSystem::SES_IFEQUATION { index: uniqueEqIndex.clone(), ifbranches: ifbranches.clone(), elsebranch: equations_.clone(), source: source_.clone(), eqAttr: eqAttr.clone() })], uniqueEqIndex.clone() + 1, tempvars.clone()))
+                    Ok(((list![Arc::new(SimCode::SimEqSystem::SES_IFEQUATION { index: uniqueEqIndex.clone(), ifbranches: ifbranches.clone(), elsebranch: equations_.clone(), source: source_.clone(), eqAttr: eqAttr.clone() })], uniqueEqIndex.clone() + 1, tempvars.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -6100,7 +6100,7 @@ pub fn createEquationsfromList(mut inEquations: Arc<metamodelica::List<Arc<Backe
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut vars1: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
@@ -6125,11 +6125,11 @@ pub fn createEquationsfromList(mut inEquations: Arc<metamodelica::List<Arc<Backe
                     syst = __pa1.clone();
                     shared = __pa2.clone();
                     (equations_, _, uniqueEqIndex, tempvars) = createEquations(includeWhen.clone(), skipDiscInZc.clone(), genDiscrete.clone(), skipDiscInAlgorithm.clone(), syst.clone(), shared.clone(), comps.clone(), iuniqueEqIndex.clone(), itempvars.clone())?;
-                    Ok((equations_.clone(), uniqueEqIndex.clone(), tempvars.clone()))
+                    Ok(((equations_.clone(), uniqueEqIndex.clone(), tempvars.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -6150,7 +6150,7 @@ fn createSingleComplexEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inV
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     (equations_, ouniqueEqIndex, otempvars) = 'mc: {
         let __mc_input = inEquation.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: eqAttr, source, right: e2, left: e1, .. } => {
                     let mut uniqueEqIndex: i32 = 0;
@@ -6163,11 +6163,11 @@ fn createSingleComplexEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inV
                     e1 = Expression::replaceDerOpInExp(e1.clone())?;
                     e2 = Expression::replaceDerOpInExp(e2.clone())?;
                     (equations_, uniqueEqIndex, tempvars) = createSingleComplexEqnCode2(crefs.clone(), e1.clone(), e2.clone(), iuniqueEqIndex.clone(), itempvars.clone(), source.clone(), eqAttr.clone(), iextra.clone(), genDiscrete.clone(), inVars.clone())?;
-                    Ok((equations_.clone(), uniqueEqIndex.clone(), tempvars.clone()))
+                    Ok(((equations_.clone(), uniqueEqIndex.clone(), tempvars.clone()), equations_.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: eqAttr, source, right: e2, left: e1, .. } => {
@@ -6266,30 +6266,30 @@ fn createSingleComplexEqnCode2(mut crefs: Arc<metamodelica::List<Arc<DAE::Compon
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     (equations_, ouniqueEqIndex, otempvars) = 'mc: {
         let __mc_input = (inExp3.clone(), inExp4.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CAST { exp: e1, .. }, _) => {
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = otempvars.clone();
                     let mut ouniqueEqIndex: i32 = ouniqueEqIndex.clone();
                     (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), e1.clone(), inExp4.clone(), iuniqueEqIndex.clone(), itempvars.clone(), source.clone(), eqKind.clone(), iextra.clone(), genDiscrete.clone(), inVars.clone())?;
-                    Ok((equations_.clone(), ouniqueEqIndex.clone(), otempvars.clone()))
+                    Ok(((equations_.clone(), ouniqueEqIndex.clone(), otempvars.clone()), equations_.clone(), otempvars.clone(), ouniqueEqIndex.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { equations_ = __wb0; otempvars = __wb1; ouniqueEqIndex = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ DAE::Exp::CAST { exp: e1, .. }) => {
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = otempvars.clone();
                     let mut ouniqueEqIndex: i32 = ouniqueEqIndex.clone();
                     (equations_, ouniqueEqIndex, otempvars) = createSingleComplexEqnCode2(crefs.clone(), inExp3.clone(), e1.clone(), iuniqueEqIndex.clone(), itempvars.clone(), source.clone(), eqKind.clone(), iextra.clone(), genDiscrete.clone(), inVars.clone())?;
-                    Ok((equations_.clone(), ouniqueEqIndex.clone(), otempvars.clone()))
+                    Ok(((equations_.clone(), ouniqueEqIndex.clone(), otempvars.clone()), equations_.clone(), otempvars.clone(), ouniqueEqIndex.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { equations_ = __wb0; otempvars = __wb1; ouniqueEqIndex = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1 @ Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, e2) => {
@@ -6869,7 +6869,7 @@ fn createSingleAlgorithmCode(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Eq
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { attr: eqAttr, expand: crefExpand, source, alg: alg @ Deref @ DAE::Algorithm { statementLst: algStatements }, .. }, tail: _ }, _) => {
                     let mut solvedVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -6920,11 +6920,11 @@ fn createSingleAlgorithmCode(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Eq
                         result = list![Arc::new(SimCode::SimEqSystem::SES_INVERSE_ALGORITHM { index: iuniqueEqIndex.clone(), statements: algStatements.clone(), knownOutputCrefs: knownOutputCrefs.clone(), insideNonLinearSystem: false, eqAttr: eqAttr.clone() })];
                         ouniqueEqIndex = iuniqueEqIndex.clone() + 1;
                     }
-                    Ok((result.clone(), ouniqueEqIndex.clone()))
+                    Ok(((result.clone(), ouniqueEqIndex.clone()), ouniqueEqIndex.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ouniqueEqIndex = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { expand: crefExpand, source, alg, .. }, tail: _ }, _) => {
@@ -10360,18 +10360,18 @@ fn extractVarUnit(mut var_attr: Option<Arc<DAE::VariableAttributes>>) -> Result<
     let mut displayUnitStr: ArcStr = arcstr::literal!("");
     (unitStr, displayUnitStr) = 'mc: {
         let __mc_input = var_attr.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { displayUnit: duexp, unit: uexp, .. }) => {
                     let mut displayUnitStr: ArcStr = displayUnitStr.clone();
                     let mut unitStr: ArcStr = unitStr.clone();
                     unitStr = (extractVarUnitStr(uexp.clone())?).clone();
                     displayUnitStr = (extractVarUnitStr(duexp.clone())?).clone();
-                    Ok((unitStr.clone(), displayUnitStr.clone()))
+                    Ok(((unitStr.clone(), displayUnitStr.clone()), displayUnitStr.clone(), unitStr.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { displayUnitStr = __wb0; unitStr = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -11209,17 +11209,17 @@ fn locateDerAndSerachOtherSide2(mut inDer: Arc<DAE::Exp>, mut inEqns: Arc<metamo
     let mut firstOrderDers: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (oi, firstOrderDers) = 'mc: {
         let __mc_input = inDer.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut firstOrderDers: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = firstOrderDers.clone();
                     let mut oi: i32 = oi.clone();
                     (oi, firstOrderDers) = locateDerAndSerachOtherSide22(inDer.clone(), inEqns.clone())?;
-                    Ok((oi.clone(), firstOrderDers.clone()))
+                    Ok(((oi.clone(), firstOrderDers.clone()), firstOrderDers.clone(), oi.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { firstOrderDers = __wb0; oi = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -11282,7 +11282,7 @@ fn locateDerAndSerachOtherSide22(mut inDer: Arc<DAE::Exp>, mut inEqns: Arc<metam
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, tail: rest } => {
                     let mut firstOrderDers: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = firstOrderDers.clone();
@@ -11291,11 +11291,11 @@ fn locateDerAndSerachOtherSide22(mut inDer: Arc<DAE::Exp>, mut inEqns: Arc<metam
                         BackendDump::debugExpStrExpStrExpStr(inDer.clone(), (literal!(" NOT contained in ")).clone(), e1.clone(), (literal!(" = ")).clone(), e2.clone(), (literal!("\n")).clone())?;
                     }
                     (oi, firstOrderDers) = locateDerAndSerachOtherSide22(inDer.clone(), rest.clone())?;
-                    Ok((oi.clone(), firstOrderDers.clone()))
+                    Ok(((oi.clone(), firstOrderDers.clone()), firstOrderDers.clone(), oi.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { firstOrderDers = __wb0; oi = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((oi, firstOrderDers))
@@ -12660,7 +12660,7 @@ fn setUpBackendMapping(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<SimCode::
     let mut mapping: SimCode::BackendMapping = SimCode::BackendMapping::NO_MAPPING;
     mapping = 'mc: {
         let __mc_input = dae.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut sizeE: i32 = 0;
@@ -12696,11 +12696,11 @@ fn setUpBackendMapping(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<SimCode::
                     tree = List::fold4(List::intRange(sizeE.clone()), (std::sync::Arc::new(setUpEqTree) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), m.clone(), mt.clone(), eqMatch.clone(), varMatch.clone(), tree.clone())?;
                     tree = Array::map(tree.clone(), std::sync::Arc::new(fnptr!(List::unique, _)))?;
                     mapping = SimCode::BackendMapping::BACKENDMAPPING { m: m.clone(), mT: mt.clone(), eqMapping: eqMap.clone(), varMapping: varMap.clone(), eqMatch: eqMatch.clone(), varMatch: varMatch.clone(), eqTree: tree.clone(), simVarMapping: simVarMapping.clone() };
-                    Ok(mapping.clone())
+                    Ok((mapping.clone(), mapping.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { mapping = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -15532,7 +15532,7 @@ pub fn generateRunnerBatScript(mut code: SimCode::SimCode) -> Result<ArcStr> {
     let mut file: File::File = File::File(File::noReference())?;
     fileName = ('mc: {
         let __mc_input = code.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let SimCode::SimCode { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut locations: ArcStr = arcstr::literal!("");
@@ -15545,8 +15545,8 @@ pub fn generateRunnerBatScript(mut code: SimCode::SimCode) -> Result<ArcStr> {
             locations = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*locations.clone()); __mm_s.push_str(&*literal!(";")); __mm_s.push_str(&*Settings::getInstallationDirectoryPath()?); __mm_s.push_str(&*literal!("/bin/")); ArcStr::from(__mm_s) }).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("@echo off\n")); __mm_s.push_str(&*literal!("SET PATH=")); __mm_s.push_str(&*locations.clone()); __mm_s.push_str(&*literal!(";%PATH%;\n")); __mm_s.push_str(&*literal!("SET ERRORLEVEL=\n")); __mm_s.push_str(&*literal!("CALL \"%CD%/")); __mm_s.push_str(&*code.fileNamePrefix.clone()); __mm_s.push_str(&*literal!(".exe\" %*\n")); __mm_s.push_str(&*literal!("SET RESULT=%ERRORLEVEL%\n")); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("EXIT /b %RESULT%\n")); ArcStr::from(__mm_s) }).clone();
             File::write(file.clone(), (r#str.clone()).clone());
-            Ok(fileName.clone())
-        })() { break 'mc __v; }
+            Ok((fileName.clone(), fileName.clone()))
+        })() { fileName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Error::addInternalError((literal!("SimCodeMain.generateRunnerBatScript failed")).clone(), metamodelica::sourceInfo!())?;

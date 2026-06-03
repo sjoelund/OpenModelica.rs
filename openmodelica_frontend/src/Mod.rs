@@ -1927,13 +1927,13 @@ fn eqModEqual(mut eqMod1: Option<DAE::EqMod>, mut eqMod2: Option<DAE::EqMod>) ->
             let (None, None) = __mc_input.clone() else { bail!("nomatch") };
             Ok(true)
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (Some(DAE::EqMod::TYPED { modifierAsValue: mut v1, modifierAsExp: ref exp1, .. }), Some(DAE::EqMod::TYPED { modifierAsValue: mut v2, modifierAsExp: ref exp2, .. })) = __mc_input.clone() else { bail!("nomatch") };
             let mut equal: bool = equal.clone();
             equal = ExpressionBasics::expEqual(exp1.clone(), exp2.clone())?;
             let true = (valEqual(v1.clone(), v2.clone(), equal.clone())?) else { bail!("pattern mismatch") };
-            Ok(true)
-        })() { break 'mc __v; }
+            Ok((true, equal.clone()))
+        })() { equal = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (Some(DAE::EqMod::TYPED { modifierAsAbsynExp: ref aexp1, .. }), Some(DAE::EqMod::UNTYPED { exp: ref aexp2 })) = __mc_input.clone() else { bail!("nomatch") };
             let true = (AbsynUtil::expEqual(aexp1.clone(), aexp2.clone())?) else { bail!("pattern mismatch") };

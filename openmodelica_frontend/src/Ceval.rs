@@ -1433,7 +1433,7 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             if !((!(Flags::getConfigBool(Flags::CEVAL_EQUATION.clone())?))) { bail!("guard") }
             Ok((cache.clone(), exp.clone(), DAE::Properties::PROP { type_: tp.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let DAE::Properties::PROP { type_: ref tp, constFlag: DAE::Const::C_CONST { .. } } = __mc_input.clone() else { bail!("nomatch") };
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache: FCore::Cache = cache.clone();
@@ -1441,9 +1441,9 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             (cache, v) = ceval(cache.clone(), inEnv.clone(), exp.clone(), r#impl.clone(), Absyn::Msg::MSG { info: inInfo.clone() }, 0)?;
             exp = ValuesUtil::valueExp(v.clone(), Some(exp.clone()))?;
             exp = ValuesUtil::fixZeroSizeArray(exp.clone(), tp.clone())?;
-            Ok((cache.clone(), exp.clone(), prop.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), exp.clone(), prop.clone()), cache.clone(), exp.clone()))
+        })() { cache = __wb0; exp = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let DAE::Properties::PROP_TUPLE { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache: FCore::Cache = cache.clone();
@@ -1451,8 +1451,8 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             let DAE::C_CONST { .. } = (Types::propAllConst(prop.clone())?) else { bail!("pattern mismatch") };
             (cache, v) = ceval(cache.clone(), inEnv.clone(), exp.clone(), false, Absyn::Msg::MSG { info: inInfo.clone() }, 0)?;
             exp = ValuesUtil::valueExp(v.clone(), Some(exp.clone()))?;
-            Ok((cache.clone(), exp.clone(), prop.clone()))
-        })() { break 'mc __v; }
+            Ok(((cache.clone(), exp.clone(), prop.clone()), cache.clone(), exp.clone()))
+        })() { cache = __wb0; exp = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::Properties::PROP_TUPLE { .. } = __mc_input.clone() else { bail!("nomatch") };
             if !((!(Flags::getConfigBool(Flags::CEVAL_EQUATION.clone())?))) { bail!("guard") }
@@ -1460,7 +1460,7 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             println!("{}", (literal!(" tuple non constant evaluation not implemented yet\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             if !((Expression::isConst(exp.clone())? && !(Config::acceptMetaModelicaGrammar()?))) { bail!("guard") }
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -1468,14 +1468,14 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             (_, v) = ceval(cache.clone(), inEnv.clone(), exp.clone(), r#impl.clone(), Absyn::Msg::MSG { info: inInfo.clone() }, 0)?;
             exp = ValuesUtil::valueExp(v.clone(), Some(exp.clone()))?;
             exp = ValuesUtil::fixZeroSizeArray(exp.clone(), Types::getPropType(prop.clone())?)?;
-            Ok((cache.clone(), exp.clone(), prop.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), exp.clone(), prop.clone()), exp.clone()))
+        })() { exp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut exp: Arc<DAE::Exp> = exp.clone();
             (exp, _) = ExpressionSimplify::simplify1(exp.clone())?;
-            Ok((cache.clone(), exp.clone(), prop.clone()))
-        })() { break 'mc __v; }
+            Ok(((cache.clone(), exp.clone(), prop.clone()), exp.clone()))
+        })() { exp = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((cache, exp, prop))
@@ -5187,16 +5187,16 @@ fn isRecursiveBinding(mut cr: Arc<DAE::ComponentRef>, mut exp: Arc<DAE::Exp>) ->
     let mut res: bool = false;
     res = 'mc: {
         let __mc_input = exp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut res: bool = res.clone();
                     res = List::any(Expression::extractCrefsFromExp(exp.clone())?, (std::sync::Arc::new({ let __pe_b1 = cr.clone(); move |__pe_a0| ComponentReferenceBasics::crefEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-                    Ok(res.clone())
+                    Ok((res.clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

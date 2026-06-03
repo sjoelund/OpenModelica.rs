@@ -103,20 +103,20 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
         let __mc_input = inCache.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut graph: FCore::Graph = graph.clone();
             graph = FCore::getCachedInitialGraph(cache.clone())?;
             graph = FGraph::clone(graph.clone())?;
-            Ok((cache.clone(), graph.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), graph.clone()), graph.clone()))
+        })() { graph = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut graph: FCore::Graph = graph.clone();
             graph = getSetInitialGraph(None)?;
-            Ok((cache.clone(), graph.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((cache.clone(), graph.clone()), graph.clone()))
+        })() { graph = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut graph: FCore::Graph = graph.clone();
@@ -130,8 +130,8 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
             cache = FCore::setCachedInitialGraph(cache.clone(), graph.clone());
             getSetInitialGraph(Some(graph.clone()))?;
             graph = FGraph::clone(graph.clone())?;
-            Ok((cache.clone(), graph.clone()))
-        })() { break 'mc __v; }
+            Ok(((cache.clone(), graph.clone()), graph.clone()))
+        })() { graph = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCache, graph))

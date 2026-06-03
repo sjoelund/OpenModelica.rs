@@ -287,7 +287,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::ARRAY { arrayExp: exps @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, _) => {
                     let mut lhs: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -295,11 +295,11 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     lhs = List::fold(exps.clone().reverse(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeCons, Arc<Absyn::Exp>, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>), Arc::new(Absyn::Exp::ARRAY { arrayExp: metamodelica::nil() }))?;
                     (cache, pattern) = elabPattern(cache.clone(), env.clone(), lhs.clone(), ty.clone(), info.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "NONE", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Nil, argNames: Deref @ metamodelica::List::Nil }, .. }, _) => {
@@ -309,17 +309,17 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "SOME", subscripts: Deref @ metamodelica::List::Nil }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, argNames: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::Type::T_METAOPTION { ty: ty2 }) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPattern(cache.clone(), env.clone(), exp.clone(), ty2.clone(), info.clone())?;
-                    Ok((cache.clone(), Arc::new(DAE::Pattern::PAT_SOME { pat: pattern.clone() })))
+                    Ok(((cache.clone(), Arc::new(DAE::Pattern::PAT_SOME { pat: pattern.clone() })), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CONS { head, rest: tail }, tyTail @ Deref @ DAE::Type::T_METALIST { ty: tyHead }) => {
@@ -335,17 +335,17 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::TUPLE { expressions: Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil } }, _) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPattern2(cache.clone(), env.clone(), exp.clone(), ty.clone(), info.clone(), numError.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::TUPLE { expressions: exps }, Deref @ DAE::Type::T_METATUPLE { types: tys }) => {
@@ -370,39 +370,39 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, lhs @ Deref @ Absyn::Exp::CALL { function_: fcr, functionArgs: fargs, .. }, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: utPath }, .. }) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPatternCall(cache.clone(), env.clone(), AbsynUtil::crefToPath(fcr.clone())?, fargs.clone(), utPath.clone(), info.clone(), lhs.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { pattern = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, lhs @ Deref @ Absyn::Exp::CALL { function_: fcr, functionArgs: fargs, .. }, Deref @ DAE::Type::T_METAUNIONTYPE { path: utPath, .. }) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPatternCall(cache.clone(), env.clone(), AbsynUtil::crefToPath(fcr.clone())?, fargs.clone(), utPath.clone(), info.clone(), lhs.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { pattern = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, lhs @ Deref @ Absyn::Exp::CALL { function_: fcr, functionArgs: fargs, .. }, Deref @ DAE::Type::T_METARECORD { utPath, .. }) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPatternCall(cache.clone(), env.clone(), AbsynUtil::crefToPath(fcr.clone())?, fargs.clone(), utPath.clone(), info.clone(), lhs.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CREF { .. }, ty1) => {
@@ -438,7 +438,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::AS { id, exp }, ty2) => {
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -459,12 +459,12 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     et = validPatternType(ty2.clone(), ty1.clone(), inLhs.clone(), info.clone())?;
                     (cache, pattern) = elabPattern(cache.clone(), env.clone(), exp.clone(), ty2.clone(), info.clone())?;
                     pattern = if (Types::isFunctionType(ty2.clone())) {Arc::new(DAE::Pattern::PAT_AS_FUNC_PTR { id: (id.clone()).clone(), pat: pattern.clone() })} else {Arc::new(DAE::Pattern::PAT_AS { id: (id.clone()).clone(), ty: et.clone(), attr: attr.clone(), pat: pattern.clone() })};
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { pattern = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: Deref @ metamodelica::List::Nil } }, ty2) => {
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -488,11 +488,11 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     Static::checkAssignmentToInput(inLhs.clone(), attr.clone(), env.clone(), false, info.clone())?;
                     et = validPatternType(ty2.clone(), ty1.clone(), inLhs.clone(), info.clone())?;
                     pattern = if (Types::isFunctionType(ty2.clone())) {Arc::new(DAE::Pattern::PAT_AS_FUNC_PTR { id: (id.clone()).clone(), pat: Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD) })} else {Arc::new(DAE::Pattern::PAT_AS { id: (id.clone()).clone(), ty: et.clone(), attr: attr.clone(), pat: Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD) })};
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::AS { id, exp: _ }, _) => {
@@ -541,17 +541,17 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. }, _) => {
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
                     (cache, pattern) = elabPattern2(cache.clone(), env.clone(), var_field!((*inLhs).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), ty.clone(), info.clone(), numError.clone())?;
-                    Ok((cache.clone(), pattern.clone()))
+                    Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pattern = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, lhs, _) => {
@@ -955,7 +955,7 @@ fn optimizeMatchToSwitch(mut matchTy: Absyn::MatchType, mut cases: Arc<metamodel
             let Absyn::MatchType::MATCHCONTINUE { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok((openmodelica_frontend_types::DAE::MatchType::MATCHCONTINUE, cases.clone()))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut tpl: (i32, Arc<DAE::Type>, i32) = (0, Arc::new(DAE::Type::T_NORETCALL), 0);
             let mut patternMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>> = metamodelica::nil();
@@ -981,8 +981,8 @@ fn optimizeMatchToSwitch(mut matchTy: Absyn::MatchType, mut cases: Arc<metamodel
             Error::assertionOrAddSourceMessage(!(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?), Error::MATCH_TO_SWITCH_OPTIMIZATION.clone(), list![(r#str.clone()).clone()], info.clone())?;
             outType = DAE::MatchType::MATCH { switch: Some(tpl.clone()) };
             outCases = optimizeSwitchedMatchCases(outType.clone(), cases.clone());
-            Ok((outType.clone(), outCases.clone()))
-        })() { break 'mc __v; }
+            Ok(((outType.clone(), outCases.clone()), outCases.clone(), outType.clone()))
+        })() { outCases = __wb0; outType = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((DAE::MatchType::MATCH { switch: None }, cases.clone()))
@@ -1170,7 +1170,7 @@ fn filterUnusedPatterns(mut inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
     let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
     (outInputs, outAliases, outCases) = 'mc: {
         let __mc_input = inCases.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 cases => {
                     let mut patternMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>> = metamodelica::nil();
@@ -1187,11 +1187,11 @@ fn filterUnusedPatterns(mut inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
                     patternMatrix = __pa2.clone();
                     patternMatrix = List::transposeList(patternMatrix.clone())?;
                     cases = setCasePatternsCheckZero(cases.clone(), patternMatrix.clone())?;
-                    Ok((outInputs.clone(), outAliases.clone(), cases.clone()))
+                    Ok(((outInputs.clone(), outAliases.clone(), cases.clone()), outAliases.clone(), outInputs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outAliases = __wb0; outInputs = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1231,7 +1231,7 @@ fn filterUnusedPatterns2(mut inInputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: e, tail: inputs }, Deref @ metamodelica::List::Cons { head: _, tail: aliases }, Deref @ metamodelica::List::Cons { head: pats, tail: patternMatrix }, _) => {
                     let mut outAliases: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = outAliases.clone();
@@ -1247,12 +1247,12 @@ fn filterUnusedPatterns2(mut inInputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
                         Error::addSourceMessage(Error::META_MATCH_UNUSED_INPUT.clone(), list![(ExpressionBasics::printExpStr(e.clone())?).clone()], info.clone())?;
                     }
                     (outChange, outInputs, outAliases, outPatternMatrix) = filterUnusedPatterns2(inputs.clone(), aliases.clone(), patternMatrix.clone(), true, info.clone(), emitNotifications.clone(), inputsAcc.clone(), aliasesAcc.clone(), patternMatrixAcc.clone())?;
-                    Ok((outChange.clone(), outInputs.clone(), outAliases.clone(), outPatternMatrix.clone()))
+                    Ok(((outChange.clone(), outInputs.clone(), outAliases.clone(), outPatternMatrix.clone()), outAliases.clone(), outChange.clone(), outInputs.clone(), outPatternMatrix.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { outAliases = __wb0; outChange = __wb1; outInputs = __wb2; outPatternMatrix = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: e, tail: inputs }, Deref @ metamodelica::List::Cons { head: alias, tail: aliases }, Deref @ metamodelica::List::Cons { head: pats, tail: patternMatrix }, _) => {
                     let mut outAliases: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = outAliases.clone();
@@ -1263,11 +1263,11 @@ fn filterUnusedPatterns2(mut inInputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
                         Error::addSourceMessage(Error::META_PATTERN_AS_ONLY.clone(), list![(ExpressionBasics::printExpStr(e.clone())?).clone(), (ExpressionBasics::printExpStr(e.clone())?).clone()], info.clone())?;
                     }
                     (outChange, outInputs, outAliases, outPatternMatrix) = filterUnusedPatterns2(inputs.clone(), aliases.clone(), patternMatrix.clone(), change.clone(), info.clone(), emitNotifications.clone(), metamodelica::cons(e.clone(), inputsAcc.clone()), metamodelica::cons(alias.clone(), aliasesAcc.clone()), metamodelica::cons(pats.clone(), patternMatrixAcc.clone()))?;
-                    Ok((outChange.clone(), outInputs.clone(), outAliases.clone(), outPatternMatrix.clone()))
+                    Ok(((outChange.clone(), outInputs.clone(), outAliases.clone(), outPatternMatrix.clone()), outAliases.clone(), outChange.clone(), outInputs.clone(), outPatternMatrix.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outAliases = __wb0; outChange = __wb1; outInputs = __wb2; outPatternMatrix = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1339,16 +1339,16 @@ fn removePatternAsBinding(mut inPat: Arc<DAE::Pattern>, mut inTpl: ((metamodelic
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut pat: Arc<DAE::Pattern> = pat.clone();
                     (pat, _) = simplifyPattern(inPat.clone(), 1)?;
-                    Ok(pat.clone())
+                    Ok((pat.clone(), pat.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { pat = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((pat, outTpl))
@@ -1442,7 +1442,7 @@ fn checkDefUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<AvlSetString::Tree>, Ar
     let mut outTpl: (Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>, SourceInfo) = (Arc::new(AvlSetString::Tree::EMPTY), Arc::new(AvlSetString::Tree::EMPTY), <SourceInfo as ::std::default::Default>::default());
     (outExp, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { ty, componentRef: cr }, extra @ (localsTree, useTree, info)) => {
                     let mut name: ArcStr = arcstr::literal!("");
@@ -1454,11 +1454,11 @@ fn checkDefUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<AvlSetString::Tree>, Ar
                     } else {
                         outExp = inExp.clone();
                     }
-                    Ok((outExp.clone(), extra.clone()))
+                    Ok(((outExp.clone(), extra.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::PATTERN { pattern: pat }, extra) => {
@@ -2460,7 +2460,7 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cases, exps, tys) => {
                     let mut cases = (*cases).clone();
@@ -2473,12 +2473,12 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                     ty = Types::getUniontypeIfMetarecordReplaceAllSubtypes(ty.clone())?;
                     (exps, _) = Types::matchTypes(exps.clone(), tys.clone(), ty.clone(), true)?;
                     cases = Types::fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
-                    Ok((cases.clone(), ty.clone()))
+                    Ok(((cases.clone(), ty.clone()), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { ty = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cases, exps, tys) => {
                     let mut cases = (*cases).clone();
@@ -2491,11 +2491,11 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                     ty = Types::getUniontypeIfMetarecordReplaceAllSubtypes(ty.clone())?;
                     (exps, _) = Types::matchTypes(exps.clone(), tys.clone(), ty.clone(), true)?;
                     cases = Types::fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
-                    Ok((cases.clone(), ty.clone()))
+                    Ok(((cases.clone(), ty.clone()), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ty = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2605,7 +2605,7 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ld) => {
                     let mut ld2: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -2630,11 +2630,11 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     names = List::map(ld2.clone(), (std::sync::Arc::new(SCodeUtil::elementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?;
                     declsTree = AvlSetString::addList(AvlSetString::new(), names.clone())?;
                     res = if (b.clone()) {None} else {Some((env2.clone(), dae1.clone(), declsTree.clone()))};
-                    Ok((cache.clone(), res.clone()))
+                    Ok(((cache.clone(), res.clone()), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { res = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, ld) => {

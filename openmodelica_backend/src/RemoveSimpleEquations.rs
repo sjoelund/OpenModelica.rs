@@ -1448,7 +1448,7 @@ fn getVars(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut oIndexs: Arc<metamodelica::List<i32>> = oIndexs.clone();
@@ -1459,12 +1459,12 @@ fn getVars(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut 
                     } };
                     oVars = __pa0.clone();
                     oIndexs = __pa1.clone();
-                    Ok((oVars.clone(), oIndexs.clone(), false, false))
+                    Ok(((oVars.clone(), oIndexs.clone(), false, false), oIndexs.clone(), oVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oIndexs = __wb0; oVars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut oIndexs: Arc<metamodelica::List<i32>> = oIndexs.clone();
@@ -1479,11 +1479,11 @@ fn getVars(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut 
                         oVars = metamodelica::nil();
                         oIndexs = metamodelica::nil();
                     }
-                    Ok((oVars.clone(), oIndexs.clone(), true, false))
+                    Ok(((oVars.clone(), oIndexs.clone(), true, false), oIndexs.clone(), oVars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oIndexs = __wb0; oVars = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((oVars, oIndexs, varskn, time_))
@@ -2477,7 +2477,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i.clone(), exp.clone(), None, false, Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (_, Some((mut i, _)), _, None) = __mc_input.clone() else { bail!("nomatch") };
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2498,9 +2498,9 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, oexp.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
-            Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (_, None, Some(mut i), None) = __mc_input.clone() else { bail!("nomatch") };
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2519,9 +2519,9 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
-            Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (Some((mut i, _)), None, _, None) = __mc_input.clone() else { bail!("nomatch") };
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2540,8 +2540,8 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
-            Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
-        })() { break 'mc __v; }
+            Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((oVars, oEqnslst, oshared, oRepl, warnAliasConflicts))
@@ -2917,7 +2917,7 @@ fn mergeStartFixedAttributes(mut inVar: BackendDAE::Var, mut fixed: bool, mut st
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (true, (_, Deref @ metamodelica::List::Cons { head: (start, cr), tail: values }), Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
                     let mut start1: Option<Arc<DAE::Exp>> = None;
@@ -2928,11 +2928,11 @@ fn mergeStartFixedAttributes(mut inVar: BackendDAE::Var, mut fixed: bool, mut st
                     start1 = optExpReplaceCrefWithBindExp(start.clone(), globalKnownVars.clone())?;
                     (_, start, _) = equalNonFreeStartValues(values.clone(), globalKnownVars.clone(), (start1.clone(), start.clone(), cr.clone()))?;
                     warnAliasConflicts = !(Flags::isSet(Flags::ALIAS_CONFLICTS.clone())?);
-                    Ok(BackendVariable::setVarStartValueOption(v.clone(), start.clone())?)
+                    Ok((BackendVariable::setVarStartValueOption(v.clone(), start.clone())?, warnAliasConflicts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (true, (_, values), Deref @ BackendDAE::Shared { .. }) => {
@@ -2985,7 +2985,7 @@ fn mergeStartFixedAttributes(mut inVar: BackendDAE::Var, mut fixed: bool, mut st
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (false, (_, values), Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
                     let mut zerofreevalues: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>> = metamodelica::nil();
@@ -2993,11 +2993,11 @@ fn mergeStartFixedAttributes(mut inVar: BackendDAE::Var, mut fixed: bool, mut st
                     let mut warnAliasConflicts: bool = warnAliasConflicts.clone();
                     zerofreevalues = List::fold(values.clone(), (std::sync::Arc::new(fnptr!(getZeroFreeValues, (Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>)) as std::sync::Arc<dyn ::std::ops::Fn((Option<Arc<DAE::Exp>>, Arc<DAE::ComponentRef>), Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::ComponentRef>)>>> + 'static>), metamodelica::nil())?;
                     (v, warnAliasConflicts) = selectFreeValue(zerofreevalues.clone(), inVar.clone(), globalKnownVars.clone())?;
-                    Ok(v.clone())
+                    Ok((v.clone(), warnAliasConflicts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outVar, warnAliasConflicts))
@@ -3052,16 +3052,16 @@ fn mergeNominalAttribute(mut nominalList: Arc<metamodelica::List<(Arc<DAE::Exp>,
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut warnAliasConflicts: bool = warnAliasConflicts.clone();
                     warnAliasConflicts = !(Flags::isSet(Flags::ALIAS_CONFLICTS.clone())?);
-                    Ok(selectFreeValue1(nominalList.clone(), metamodelica::nil(), (literal!("Alias set with conflicting nominal values\n")).clone(), (literal!("nominal")).clone(), (std::sync::Arc::new(BackendVariable::setVarNominalValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<DAE::Exp>) -> Result<BackendDAE::Var> + 'static>), inVar.clone(), globalKnownVars.clone())?)
+                    Ok((selectFreeValue1(nominalList.clone(), metamodelica::nil(), (literal!("Alias set with conflicting nominal values\n")).clone(), (literal!("nominal")).clone(), (std::sync::Arc::new(BackendVariable::setVarNominalValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<DAE::Exp>) -> Result<BackendDAE::Var> + 'static>), inVar.clone(), globalKnownVars.clone())?, warnAliasConflicts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outVar, warnAliasConflicts))
@@ -3195,7 +3195,7 @@ fn handleVarSetAttributes(mut inAttributes: VarSetAttributes, mut inVar: Backend
         let mut v: BackendDAE::Var = inVar.clone();
         'mc: {
         let __mc_input = (inAttributes.clone(), inShared.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 ((fixedset, startvalues, nominalset, minmaxset), Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
                     let mut isdiscrete: bool = false;
@@ -3218,11 +3218,11 @@ fn handleVarSetAttributes(mut inAttributes: VarSetAttributes, mut inVar: Backend
                     v = BackendVariable::setVarMinMax(v.clone(), min.clone(), max.clone())?;
                     vars = BackendVariable::addVar(v.clone(), inVars.clone())?;
                     warnAliasConflicts = b1.clone() || b2.clone();
-                    Ok(vars.clone())
+                    Ok((vars.clone(), warnAliasConflicts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { warnAliasConflicts = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -5482,7 +5482,7 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (cr1, _), tail: cr_eq_rest } => {
                     let mut cr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -5544,11 +5544,11 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                         }
                     }
                     (outHTStartExpToInt, outHTNominalExpToInt) = getThisAttributes(cr.clone(), cr_eq_rest.clone(), inAliasVars.clone(), outHTStartExpToInt.clone(), outHTNominalExpToInt.clone())?;
-                    Ok((outHTStartExpToInt.clone(), outHTNominalExpToInt.clone()))
+                    Ok(((outHTStartExpToInt.clone(), outHTNominalExpToInt.clone()), outHTNominalExpToInt.clone(), outHTStartExpToInt.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outHTNominalExpToInt = __wb0; outHTStartExpToInt = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

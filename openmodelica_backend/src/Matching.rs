@@ -5829,18 +5829,18 @@ fn getAssignment(mut clearMatching: bool, mut nVars: i32, mut nEqns: i32, mut iS
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut ass1: metamodelica::Array<i32> = ass1.clone();
                     let mut ass2: metamodelica::Array<i32> = ass2.clone();
                     ass2 = arrayCreate(nEqns.clone(), -1);
                     ass1 = arrayCreate(nVars.clone(), -1);
-                    Ok((ass2.clone(), ass1.clone()))
+                    Ok(((ass2.clone(), ass1.clone()), ass1.clone(), ass2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ass1 = __wb0; ass2 = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((ass1, ass2))

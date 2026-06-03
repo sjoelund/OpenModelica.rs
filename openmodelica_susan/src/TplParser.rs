@@ -1906,7 +1906,7 @@ pub fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
     let mut cachedDefs: Arc<CacheTree::Tree> = cachedDefs;
     (outChars, outLineInfo, outTemplPackage) = 'mc: {
         let __mc_input = (inChars.clone(), inLineInfo.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo) => {
                     let mut pid: Arc<TplAbsyn::PathIdent> = Arc::new(<TplAbsyn::PathIdent as ::std::default::Default>::default());
@@ -1929,11 +1929,11 @@ pub fn templPackage(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     (chars, linfo, annotationFooter) = self::annotationFooter(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo) = endDefPathIdent(chars.clone(), linfo.clone(), pid.clone())?;
-                    Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplPackage { name: pid.clone(), astDefs: astDefs.clone(), templateDefs: templDefs.clone(), annotationFooter: (annotationFooter.clone()).clone() }))
+                    Ok(((chars.clone(), linfo.clone(), TplAbsyn::TemplPackage { name: pid.clone(), astDefs: astDefs.clone(), templateDefs: templDefs.clone(), annotationFooter: (annotationFooter.clone()).clone() }), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cachedDefs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1984,7 +1984,7 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "p", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: chars } } } } } }, linfo, astDefs, templDefs) => {
                     let mut startChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2016,12 +2016,12 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     linfo = mergeErrors(linfo.clone(), linfoTV.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone())?;
-                    Ok((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()))
+                    Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cachedDefs = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "m", tail: Deref @ metamodelica::List::Cons { head: Deref @ "p", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: chars } } } } } }, linfo, astDefs, templDefs) => {
                     let mut startChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2049,12 +2049,12 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     linfo = mergeErrors(linfo.clone(), linfoTV.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone(), cachedDefs.clone())?;
-                    Ok((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()))
+                    Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cachedDefs = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (chars, linfo, astDefs, templDefs) => {
                     let mut name: ArcStr = arcstr::literal!("");
@@ -2067,11 +2067,11 @@ pub fn definitions(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo:
                     (chars, linfo, name, td) = templDef(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, astDefs, templDefs, cachedDefs) = definitions(chars.clone(), linfo.clone(), astDefs.clone(), metamodelica::cons((name.clone(), td.clone()), templDefs.clone()), cachedDefs.clone())?;
-                    Ok((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()))
+                    Ok(((chars.clone(), linfo.clone(), astDefs.clone(), templDefs.clone()), cachedDefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cachedDefs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4048,7 +4048,7 @@ pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
     (outChars, outLineInfo, outExpression, outIndexOffsetOption) = 'mc: {
         let __mc_input = (inChars.clone(), inLineInfo.clone(), inHeadExpression.clone(), inLeftEsc.clone(), inRightEsc.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "|", tail: Deref @ metamodelica::List::Cons { head: Deref @ ">", tail: chars } }, linfo, headExp, lesc, resc) => {
                     let mut idxNmOpt: Option<ArcStr> = None;
@@ -4067,11 +4067,11 @@ pub fn mapTailOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
                     sinfo = tplSourceInfo(startPositionFromExp(headExp.clone())?, chars.clone(), linfo.clone())?;
-                    Ok((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::MAP { argExp: headExp.clone(), ofBinding: mexp.clone(), mapExp: exp.clone(), hasIndexIdentOpt: idxNmOpt.clone() }), sinfo.clone()), outIndexOffsetOption.clone()))
+                    Ok(((chars.clone(), linfo.clone(), (Arc::new(TplAbsyn::ExpressionBase::MAP { argExp: headExp.clone(), ofBinding: mexp.clone(), mapExp: exp.clone(), hasIndexIdentOpt: idxNmOpt.clone() }), sinfo.clone()), outIndexOffsetOption.clone()), outIndexOffsetOption.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outIndexOffsetOption = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4099,7 +4099,7 @@ pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
     let mut outIndexOffsetOption: Arc<metamodelica::List<(ArcStr, Option<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>)>> = metamodelica::nil();
     (outChars, outLineInfo, outIndexNameOpt, outIndexOffsetOption) = 'mc: {
         let __mc_input = (inChars.clone(), inLineInfo.clone(), inLeftEsc.clone(), inRightEsc.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "h", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "d", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "x", tail: chars } } } } } } } }, linfo, lesc, resc) => {
                     let mut id: ArcStr = arcstr::literal!("");
@@ -4111,11 +4111,11 @@ pub fn indexedByOpt(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
                     (chars, linfo, id) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, outIndexOffsetOption) = fromOpt(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    Ok((chars.clone(), linfo.clone(), Some((id.clone()).clone()), outIndexOffsetOption.clone()))
+                    Ok(((chars.clone(), linfo.clone(), Some((id.clone()).clone()), outIndexOffsetOption.clone()), outIndexOffsetOption.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outIndexOffsetOption = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

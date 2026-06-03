@@ -915,16 +915,16 @@ fn traverseExpVisitorWrapper(mut inExp: Arc<DAE::Exp>, mut inRepl: BackendVarTra
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     (exp, repl) = 'mc: {
         let __mc_input = (inExp.clone(), inRepl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, repl) => {
                     let mut exp = (*exp).clone();
                     (exp, _) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), None)?;
-                    Ok((exp.clone(), repl.clone()))
+                    Ok(((exp.clone(), repl.clone()), exp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { exp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1828,7 +1828,7 @@ pub fn partitionIndependentBlocksHelper(mut isyst: Arc<BackendDAE::EqSystem>, mu
     let mut oshared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (systs, oshared) = 'mc: {
         let __mc_input = (isyst.clone(), ishared.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (syst, shared) => {
                     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -1861,11 +1861,11 @@ pub fn partitionIndependentBlocksHelper(mut isyst: Arc<BackendDAE::EqSystem>, mu
                     GCExt::free(eqPartMap.clone());
                     GCExt::free(varPartMap.clone());
                     GCExt::free(rixs.clone());
-                    Ok((systs.clone(), shared.clone()))
+                    Ok(((systs.clone(), shared.clone()), systs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { systs = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2831,7 +2831,7 @@ fn simplifyIfEquationsFinder(mut inElem: Arc<BackendDAE::Equation>, mut inConstA
     let mut b: bool = b;
     (acc, asserts, b) = 'mc: {
         let __mc_input = (inElem.clone(), inConstArg.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::Equation::IF_EQUATION { attr, source, eqnsfalse: eqnslst, eqnstrue: eqnslstlst, conditions: explst }, globalKnownVars) => {
                     let mut asserts1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2841,12 +2841,12 @@ fn simplifyIfEquationsFinder(mut inElem: Arc<BackendDAE::Equation>, mut inConstA
                     explst = ExpressionSimplify::simplifyList(explst.clone())?;
                     (acc, asserts1) = simplifyIfEquation(explst.clone(), eqnslstlst.clone(), eqnslst.clone(), metamodelica::nil(), metamodelica::nil(), source.clone(), globalKnownVars.clone(), acc.clone(), attr.clone())?;
                     asserts1 = listAppend(asserts.clone(), asserts1.clone());
-                    Ok((acc.clone(), asserts1.clone(), true))
+                    Ok(((acc.clone(), asserts1.clone(), true), acc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { acc = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqn, globalKnownVars) => {
                     let mut eqn = (*eqn).clone();
@@ -2854,11 +2854,11 @@ fn simplifyIfEquationsFinder(mut inElem: Arc<BackendDAE::Equation>, mut inConstA
                     let (__pa0, (_, __pa1)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new(simplifyIfExpevaluatedParamter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool))> + 'static>), (globalKnownVars.clone(), b.clone()))?;
                     eqn = __pa0.clone();
                     b = __pa1.clone();
-                    Ok((metamodelica::cons(eqn.clone(), acc.clone()), asserts.clone(), b.clone()))
+                    Ok(((metamodelica::cons(eqn.clone(), acc.clone()), asserts.clone(), b.clone()), b.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { b = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((acc, asserts, b))
@@ -3215,7 +3215,7 @@ fn countEquationsInBranches(mut trueBranches: Arc<metamodelica::List<Arc<metamod
     let mut nrOfEquations: i32 = 0;
     nrOfEquations = 'mc: {
         let __mc_input = falseBranch.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut b: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -3225,11 +3225,11 @@ fn countEquationsInBranches(mut trueBranches: Arc<metamodelica::List<Arc<metamod
                     nrOfEquationsBranches = List::map(trueBranches.clone(), (std::sync::Arc::new(BackendEquation::equationLstSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<i32> + 'static>))?;
                     b = List::map1(nrOfEquationsBranches.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), nrOfEquations.clone())?;
                     let true = (List::reduce(b.clone(), (std::sync::Arc::new(fnptr!(boolAnd, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
-                    Ok(nrOfEquations.clone())
+                    Ok((nrOfEquations.clone(), nrOfEquations.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { nrOfEquations = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
@@ -3239,7 +3239,7 @@ fn countEquationsInBranches(mut trueBranches: Arc<metamodelica::List<Arc<metamod
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -3254,11 +3254,11 @@ fn countEquationsInBranches(mut trueBranches: Arc<metamodelica::List<Arc<metamod
                     r#str = stringDelimitList(strs.clone(), (literal!(",")).clone());
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*intString(nrOfEquations.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::IF_EQUATION_UNBALANCED_2.clone(), list![(r#str.clone()).clone(), (eqstr.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
-                    Ok(bail!("fail"))
+                    Ok((bail!("fail"), nrOfEquations.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { nrOfEquations = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(nrOfEquations)
@@ -3371,7 +3371,7 @@ pub fn makeEquationToResidualExp(mut eq: Arc<BackendDAE::Equation>) -> Result<Ar
     let mut oExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     oExp = 'mc: {
         let __mc_input = eq.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -3379,33 +3379,33 @@ pub fn makeEquationToResidualExp(mut eq: Arc<BackendDAE::Equation>) -> Result<Ar
                     ty = Expression::r#typeof(e1.clone())?;
                     let true = (Types::isIntegerOrRealOrSubTypeOfEither(ty.clone())?) else { bail!("pattern mismatch") };
                     oExp = Expression::expSub(e1.clone(), e2.clone())?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oExp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. } => {
                     let mut oExp: Arc<DAE::Exp> = oExp.clone();
                     oExp = Expression::expSub(e1.clone(), e2.clone())?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oExp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr1, .. } => {
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut oExp: Arc<DAE::Exp> = oExp.clone();
                     e1 = Expression::crefExp(cr1.clone())?;
                     oExp = Expression::expSub(e1.clone(), e2.clone())?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: oExp, .. } => {
@@ -3414,7 +3414,7 @@ pub fn makeEquationToResidualExp(mut eq: Arc<BackendDAE::Equation>) -> Result<Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: Deref @ DAE::Exp::TUPLE { PR: expl }, .. } => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3444,21 +3444,21 @@ pub fn makeEquationToResidualExp(mut eq: Arc<BackendDAE::Equation>) -> Result<Ar
                     } };
                     idx = __pa2.clone();
                     oExp = Expression::expSub(e.clone(), Arc::new(DAE::Exp::TSUB { exp: e2.clone(), ix: idx.clone(), ty: Expression::r#typeof(e.clone())? }))?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { oExp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. } => {
                     let mut oExp: Arc<DAE::Exp> = oExp.clone();
                     oExp = Expression::expSub(e1.clone(), e2.clone())?;
-                    Ok(oExp.clone())
+                    Ok((oExp.clone(), oExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3708,7 +3708,7 @@ fn semiLinearOptimize3(mut exp: Arc<DAE::Exp>, mut isource: Arc<DAE::ElementSour
     let mut oAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, Arc<DAE::ElementSource>)>> = metamodelica::nil();
     (slast, osource, oIndex, oAcc) = 'mc: {
         let __mc_input = iAcc.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut sb: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3725,11 +3725,11 @@ fn semiLinearOptimize3(mut exp: Arc<DAE::Exp>, mut isource: Arc<DAE::ElementSour
                     sb = __pa1.clone();
                     index = __pa2.clone();
                     (sb, source, index, oAcc) = semiLinearOptimize3(sb.clone(), source.clone(), index.clone(), iHt.clone(), IEqnsarray.clone(), metamodelica::cons((exp.clone(), iIndex.clone(), source.clone()), iAcc.clone()))?;
-                    Ok((sb.clone(), source.clone(), index.clone(), oAcc.clone()))
+                    Ok(((sb.clone(), source.clone(), index.clone(), oAcc.clone()), oAcc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { oAcc = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4520,7 +4520,7 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4532,12 +4532,12 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     } };
                     e2 = __pa0.clone();
                     (exp, vars) = Expression::traverseExpBottomUp(e2.clone(), (std::sync::Arc::new({ let __pe_b2 = inShared.clone(); move |__pe_a0, __pe_a1| expandDerExp(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars.clone())?;
-                    Ok((exp.clone(), vars.clone()))
+                    Ok(((exp.clone(), vars.clone()), exp.clone(), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { exp = __wb0; vars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4549,12 +4549,12 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     } };
                     e2 = __pa0.clone();
                     (exp, vars) = Expression::traverseExpBottomUp(e2.clone(), (std::sync::Arc::new({ let __pe_b2 = inShared.clone(); move |__pe_a0, __pe_a1| expandDerExp(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars.clone())?;
-                    Ok((exp.clone(), vars.clone()))
+                    Ok(((exp.clone(), vars.clone()), exp.clone(), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { exp = __wb0; vars = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -4569,12 +4569,12 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                         failed = true;
                         bail!("fail");
                     }
-                    Ok((e1.clone(), vars.clone()))
+                    Ok(((e1.clone(), vars.clone()), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -4582,12 +4582,12 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     let false = (failed.clone()) else { bail!("pattern mismatch") };
                     (varlst, _) = BackendVariable::getVar(cr.clone(), vars.clone())?;
                     vars = updateStatesVars(vars.clone(), varlst.clone(), false)?;
-                    Ok((e1.clone(), vars.clone()))
+                    Ok(((e1.clone(), vars.clone()), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { vars = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4599,11 +4599,11 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     Mutable::update(inShared.clone(), shared.clone());
                     (e2, _) = ExpressionSimplify::simplify(e2.clone())?;
                     (_, vars) = Expression::traverseExpBottomUp(e2.clone(), (std::sync::Arc::new(derCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars.clone())?;
-                    Ok((e2.clone(), vars.clone()))
+                    Ok(((e2.clone(), vars.clone()), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { vars = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -6129,7 +6129,7 @@ fn introDerAlias(mut inExp: Arc<DAE::Exp>, mut itpl: (BackendDAE::Variables, Arc
     let mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<BackendDAE::Shared>, bool, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(<BackendDAE::Shared as ::std::default::Default>::default()), false, false);
     (outExp, tpl) = 'mc: {
         let __mc_input = (inExp.clone(), itpl.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, eqnLst, shared, addVar, _)) => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -6150,11 +6150,11 @@ fn introDerAlias(mut inExp: Arc<DAE::Exp>, mut itpl: (BackendDAE::Variables, Arc
                         vars = BackendVariable::addVar(v1.clone(), vars.clone())?;
                         eqnLst = if (numVars.clone() < BackendVariable::varsSize(vars.clone())) {metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: inExp.clone(), scalar: outExp.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() }), eqnLst.clone())} else {eqnLst.clone()};
                     }
-                    Ok((outExp.clone(), (vars.clone(), eqnLst.clone(), shared.clone(), addVar.clone(), true)))
+                    Ok(((outExp.clone(), (vars.clone(), eqnLst.clone(), shared.clone(), addVar.clone(), true)), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, _) => {
@@ -6241,18 +6241,18 @@ fn replaceDerCall(mut inExp: Arc<DAE::Exp>, mut itpl: bool) -> Result<(Arc<DAE::
     let mut tpl: bool = false;
     (outExp, tpl) = 'mc: {
         let __mc_input = inExp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     cref = ComponentReference::crefPrefixDer(cr.clone());
                     outExp = Arc::new(DAE::Exp::CREF { componentRef: cref.clone(), ty: ty.clone() });
-                    Ok((outExp.clone(), true))
+                    Ok(((outExp.clone(), true), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outExp = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {

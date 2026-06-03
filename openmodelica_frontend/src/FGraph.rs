@@ -1477,18 +1477,18 @@ pub fn createVersionScope(mut inSourceEnv: Graph, mut inSourceName: Name, mut in
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut gclass: Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = outIH.clone();
                     (gclass, c, outIH) = mkVersionNode(inSourceEnv.clone(), (inSourceName.clone()).clone(), inPrefix.clone(), inMod.clone(), inTargetClassEnv.clone(), inTargetClass.clone(), inIH.clone())?;
-                    Ok((gclass.clone(), c.clone(), outIH.clone()))
+                    Ok(((gclass.clone(), c.clone(), outIH.clone()), outIH.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { outIH = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((outVersionedTargetClassEnv, outVersionedTargetClass, outIH))
@@ -1498,18 +1498,18 @@ pub fn isTargetClassBuiltin(mut inGraph: Graph, mut inClass: Arc<SCode::Element>
     let mut yes: bool = false;
     yes = 'mc: {
         let __mc_input = inClass.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut r: Ref = Default::default();
                     let mut yes: bool = yes.clone();
                     r = FNode::child(lastScopeRef(inGraph.clone())?, (SCodeUtil::elementName(inClass.clone())?).clone())?;
                     yes = FNode::isRefBasicType(r.clone())? || FNode::isRefBuiltin(r.clone())?;
-                    Ok(yes.clone())
+                    Ok((yes.clone(), yes.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { yes = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -1582,13 +1582,13 @@ pub fn getInstanceOriginalName(mut inEnv: FCore::Graph, mut inName: ArcStr) -> R
     let mut outName: ArcStr = arcstr::literal!("");
     outName = ('mc: {
         let __mc_input = inName.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut outName: ArcStr = outName.clone();
             let FCore::CL { status: FCore::CLS_INSTANCE { instanceOf: __pa0 }, .. } = (FNode::refData(FNode::child(lastScopeRef(inEnv.clone())?, (inName.clone()).clone())?)?) else { bail!("pattern mismatch") };
             outName = __pa0.clone();
-            Ok(outName.clone())
-        })() { break 'mc __v; }
+            Ok((outName.clone(), outName.clone()))
+        })() { outName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(inName.clone())
