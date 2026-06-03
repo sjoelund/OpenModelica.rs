@@ -67,6 +67,10 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // inline C snippets in the .mo's Include annotation; hand-written in
     // `openmodelica_backend/src/SerializeSparsityPattern.rs`.
     "SerializeSparsityPattern",
+    // All bodies are `external "C"` wrappers over the result-file reader /
+    // comparison runtime (`runtime/SimulationResults*.c`); hand-written in
+    // `openmodelica_script_util/src/SimulationResults.rs`.
+    "SimulationResults",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
