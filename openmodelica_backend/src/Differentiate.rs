@@ -2690,17 +2690,15 @@ fn tryZeroDiff(mut explist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut function
     match '__try0: {
         (explist, functions) = unwrap_break_err!(List::map3Fold(explist.clone(), (std::sync::Arc::new({ let __pe_b5 = maxIter.clone(); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4| differentiateExp(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ComponentRef>, BackendDAE::DifferentiateInputData, BackendDAE::DifferentiationType, Arc<AvlTreePathFunction::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> + 'static>), Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), BackendDAE::emptyInputData().clone(), BackendDAE::DifferentiationType::GENERIC_GRADIENT { daeMode: false }, functions.clone()), '__try0);
         success = true;
-        Ok::<_, anyhow::Error>((explist.clone(), functions.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((explist.clone(), success.clone()))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
+        Ok((__try0_o0, __try0_o1)) => {
             explist = __try0_o0;
-            functions = __try0_o1;
-            success = __try0_o2;
+            success = __try0_o1;
         }
         Err(_) => {
             explist = metamodelica::nil();
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (explist, functions, success)

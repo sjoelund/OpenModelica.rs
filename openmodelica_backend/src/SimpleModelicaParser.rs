@@ -1634,7 +1634,7 @@ fn moveComments(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     (_, c1, c2) = List::intersection1OnTrue(c1.clone(), c2.clone(), (std::sync::Arc::new(foundCommentEqual) as std::sync::Arc<dyn ::std::ops::Fn((Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr), (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)) -> Result<bool> + 'static>))?;
     for mut c in &*c2.clone() {
         let mut c = c.clone();
-        match '__try0: {
+        if '__try0: {
             (tok, path1, str1) = c.clone();
             let ((_, __pa1, __pa2), __pa3) = unwrap_break_err!(List::findAndRemove1(c1.clone(), (std::sync::Arc::new(foundCommentTokenEqual) as std::sync::Arc<dyn ::std::ops::Fn((Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr), (Token, Arc<metamodelica::List<Arc<ParseTree>>>, ArcStr)) -> Result<bool> + 'static>), c.clone()), '__try0);
             path2 = __pa1.clone();
@@ -1651,21 +1651,8 @@ fn moveComments(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             } };
             tempTree = __pa5.clone();
             t2 = tempTree.clone();
-            Ok::<_, anyhow::Error>((c1.clone(), path1.clone(), path2.clone(), str1.clone(), str2.clone(), t2.clone(), tempTree.clone(), tok.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
-                c1 = __try0_o0;
-                path1 = __try0_o1;
-                path2 = __try0_o2;
-                str1 = __try0_o3;
-                str2 = __try0_o4;
-                t2 = __try0_o5;
-                tempTree = __try0_o6;
-                tok = __try0_o7;
-            }
-            Err(__try0_err) => {
-                return Err(__try0_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
     }
     Ok(t2)

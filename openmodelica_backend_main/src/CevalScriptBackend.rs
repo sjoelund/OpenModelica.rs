@@ -5450,7 +5450,7 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     let mut b: bool = false;
     FlagsUtil::setConfigBool(Flags::BUILDING_MODEL.clone(), true)?;
-    match '__try0: {
+    if '__try0: {
         b = unwrap_break_err!(loadProgram(className.clone()), '__try0);
         let true = (b.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         if unwrap_break_err!(Flags::isSet(Flags::GC_PROF.clone()), '__try0) {
@@ -5466,19 +5466,8 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             dae = unwrap_break_err!(DAEUtil::transformationsBeforeBackend(cache.clone(), env.clone(), dae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>)), '__try0);
         }
         odae = Some(dae.clone());
-        Ok::<_, anyhow::Error>((b.clone(), cache.clone(), dae.clone(), env.clone(), flatString.clone(), odae.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
-            b = __try0_o0;
-            cache = __try0_o1;
-            dae = __try0_o2;
-            env = __try0_o3;
-            flatString = __try0_o4;
-            odae = __try0_o5;
-        }
-        Err(__try0_err) => {
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     FlagsUtil::setConfigBool(Flags::BUILDING_MODEL.clone(), false)?;
     Ok((cache, env, odae, flatString))

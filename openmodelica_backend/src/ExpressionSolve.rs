@@ -171,17 +171,13 @@ fn solveSimpleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDAE::
         source = unwrap_break_err!(ElementSource::addSymbolicTransformationSolve(true, source.clone(), cr.clone(), e1.clone(), e2.clone(), e.clone(), metamodelica::nil()), '__try5);
         eqn = unwrap_break_err!(BackendEquation::generateEquation(varexp.clone(), e.clone(), source.clone(), attr.clone()), '__try5);
         solved = true;
-        Ok::<_, anyhow::Error>((e.clone(), eqn.clone(), solved.clone(), source.clone()))
+        Ok::<_, anyhow::Error>((solved.clone(),))
     } {
-        Ok((__try5_o0, __try5_o1, __try5_o2, __try5_o3)) => {
-            e = __try5_o0;
-            eqn = __try5_o1;
-            solved = __try5_o2;
-            source = __try5_o3;
+        Ok((__try5_o0,)) => {
+            solved = __try5_o0;
         }
-        Err(__try5_err) => {
+        Err(_) => {
             solved = false;
-            return Err(__try5_err);
         }
     }
     Ok((eqn, solved))

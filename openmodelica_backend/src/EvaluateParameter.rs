@@ -361,20 +361,18 @@ fn evaluateSelectedParameters0(mut i: i32, mut globalKnownVars: BackendDAE::Vari
         v = unwrap_break_err!(BackendVariable::getVarAt(globalKnownVars.clone(), i.clone()), '__try0);
         (v, globalKnownVars, cache, mark, repl) = unwrap_break_err!(evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone()), '__try0);
         (globalKnownVars, repl, replEvaluate, cache) = unwrap_break_err!(evaluateSelectedParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), repl.clone(), replEvaluate.clone(), cache.clone(), graph.clone()), '__try0);
-        Ok::<_, anyhow::Error>((cache.clone(), globalKnownVars.clone(), mark.clone(), repl.clone(), replEvaluate.clone(), v.clone()))
+        Ok::<_, anyhow::Error>((cache.clone(), globalKnownVars.clone(), repl.clone(), replEvaluate.clone(), v.clone()))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
+        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
             cache = __try0_o0;
             globalKnownVars = __try0_o1;
-            mark = __try0_o2;
-            repl = __try0_o3;
-            replEvaluate = __try0_o4;
-            v = __try0_o5;
+            repl = __try0_o2;
+            replEvaluate = __try0_o3;
+            v = __try0_o4;
         }
-        Err(__try0_err) => {
+        Err(_) => {
             v = BackendVariable::getVarAt(globalKnownVars.clone(), i.clone())?;
             (globalKnownVars, repl, replEvaluate, cache) = evaluateSelectedParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), repl.clone(), replEvaluate.clone(), cache.clone(), graph.clone())?;
-            return Err(__try0_err);
         }
     }
     Ok((globalKnownVars, cache, repl, replEvaluate, mark))

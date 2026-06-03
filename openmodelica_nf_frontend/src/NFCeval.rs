@@ -173,16 +173,10 @@ pub fn tryEvalExpResizable(mut exp: Arc<Expression::NFExpression>, mut target: A
 pub fn tryEvalExp(mut exp: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     ErrorExt::setCheckpoint(literal!("NFCeval.tryEvalExp"));
-    match '__try0: {
+    if '__try0: {
         exp = unwrap_break_err!(evalExp(exp.clone(), target.clone()), '__try0);
-        Ok::<_, anyhow::Error>((exp.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            exp = __try0_o0;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     ErrorExt::rollBack(literal!("NFCeval.tryEvalExp"));
     exp
@@ -310,16 +304,10 @@ pub fn evalExp(mut exp: Arc<Expression::NFExpression>, mut target: Arc<EvalTarge
 pub fn tryEvalExpPartial(mut exp: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     ErrorExt::setCheckpoint(literal!("NFCeval.tryEvalExpPartial"));
-    match '__try0: {
+    if '__try0: {
         (exp, _) = unwrap_break_err!(evalExpPartial(exp.clone(), target.clone(), true), '__try0);
-        Ok::<_, anyhow::Error>((exp.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            exp = __try0_o0;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     ErrorExt::rollBack(literal!("NFCeval.tryEvalExpPartial"));
     exp

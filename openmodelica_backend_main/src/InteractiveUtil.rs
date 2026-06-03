@@ -379,17 +379,13 @@ pub fn setElementModifier(mut inClass: Arc<Absyn::Path>, mut inElementName: Arc<
         (cls, outResult) = unwrap_break_err!(setElementSubmodifierInClass(cls.clone(), inElementName.clone(), inMod.clone()), '__try0);
         within_ = unwrap_break_err!(ProgramUtil::buildWithin(inClass.clone()), '__try0);
         program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cls.clone()], within_: within_.clone() }, program.clone(), false), '__try0);
-        Ok::<_, anyhow::Error>((cls.clone(), outResult.clone(), program.clone(), within_.clone()))
+        Ok::<_, anyhow::Error>((outResult.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            cls = __try0_o0;
-            outResult = __try0_o1;
-            program = __try0_o2;
-            within_ = __try0_o3;
+        Ok((__try0_o0,)) => {
+            outResult = __try0_o0;
         }
         Err(_) => {
             outResult = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, outResult)
@@ -407,18 +403,13 @@ pub fn setExtendsModifier(mut className: Arc<Absyn::Path>, mut extendsName: Arc<
         (cls, result) = unwrap_break_err!(setExtendsSubmodifierInClass(cls.clone(), extendsName.clone(), elementName.clone(), r#mod.clone(), env.clone()), '__try0);
         within_ = unwrap_break_err!(ProgramUtil::buildWithin(className.clone()), '__try0);
         program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cls.clone()], within_: within_.clone() }, program.clone(), false), '__try0);
-        Ok::<_, anyhow::Error>((cls.clone(), env.clone(), program.clone(), result.clone(), within_.clone()))
+        Ok::<_, anyhow::Error>((result.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
-            cls = __try0_o0;
-            env = __try0_o1;
-            program = __try0_o2;
-            result = __try0_o3;
-            within_ = __try0_o4;
+        Ok((__try0_o0,)) => {
+            result = __try0_o0;
         }
         Err(_) => {
             result = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, result)
@@ -443,7 +434,7 @@ fn setSubmodifierInElement(mut element: Arc<Absyn::Element>, mut found: bool, mu
     let mut found: bool = found;
     let mut outContinue: bool = true;
     if AbsynUtil::isElementNamed((AbsynUtil::pathFirstIdent(elementName.clone())?).clone(), element.clone())? {
-        match '__try0: {
+        if '__try0: {
             let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ Absyn::Element::ELEMENT { .. } => {
             assign_variant_field!(element => Absyn::Element::ELEMENT; specification = unwrap_break_err!(setSubmodifierInElementSpec(elementName.clone(), r#mod.clone(), var_field!((*element).specification, Absyn::Element::ELEMENT).clone()), '__try0));
@@ -453,15 +444,8 @@ fn setSubmodifierInElement(mut element: Arc<Absyn::Element>, mut found: bool, mu
     } });
             found = true;
             outContinue = false;
-            Ok::<_, anyhow::Error>((found.clone(), outContinue.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1)) => {
-                found = __try0_o0;
-                outContinue = __try0_o1;
-            }
-            Err(__try0_err) => {
-                return Err(__try0_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
     }
     Ok((element, found, outContinue))
@@ -3639,18 +3623,13 @@ pub fn setElementAnnotation(mut elementPath: Arc<Absyn::Path>, mut annotationMod
         if success.clone() {
             unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), unwrap_break_err!(Util::getOption(elem_opt.clone()), '__try0), elementPath.clone()), '__try0);
         }
-        Ok::<_, anyhow::Error>((ann.clone(), elem_opt.clone(), name.clone(), program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
-            ann = __try0_o0;
-            elem_opt = __try0_o1;
-            name = __try0_o2;
-            program = __try0_o3;
-            success = __try0_o4;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -3668,16 +3647,13 @@ pub fn loadClassContentString(mut content: ArcStr, mut classPath: Arc<Absyn::Pat
         parsed_body = __pa1.clone();
         parsed_body = unwrap_break_err!(offsetAnnotationsInClassDef(parsed_body.clone(), offsetX.clone(), offsetY.clone()), '__try0);
         (program, _, success) = unwrap_break_err!(transformPathedElementInProgram(classPath.clone(), (std::sync::Arc::new({ let __pe_b1 = parsed_body.clone(); move |__pe_a0| mergeClassContents(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
-        Ok::<_, anyhow::Error>((parsed_body.clone(), program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            parsed_body = __try0_o0;
-            program = __try0_o1;
-            success = __try0_o2;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -4735,17 +4711,13 @@ pub fn setElementType(mut elementPath: Arc<Absyn::Path>, mut className: Arc<Absy
         if success.clone() {
             unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), unwrap_break_err!(Util::getOption(elem_opt.clone()), '__try0), elementPath.clone()), '__try0);
         }
-        Ok::<_, anyhow::Error>((elem_opt.clone(), program.clone(), success.clone(), ty.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            elem_opt = __try0_o0;
-            program = __try0_o1;
-            success = __try0_o2;
-            ty = __try0_o3;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -5044,16 +5016,10 @@ pub fn offsetIconTransformationAnnotation(mut ann: Arc<Absyn::Annotation>, mut x
     }
 
     let mut ann: Arc<Absyn::Annotation> = ann;
-    match '__try0: {
+    if '__try0: {
         ann = unwrap_break_err!(AbsynUtil::transformAnnotationArg(ann.clone(), PLACEMENT_ICON_TRANSFORMATION_PATH.clone(), (std::sync::Arc::new({ let __pe_b1 = x.clone(); let __pe_b2 = y.clone(); move |__pe_a0| r#impl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<Arc<Absyn::ElementArg>> + 'static>), false), '__try0);
-        Ok::<_, anyhow::Error>((ann.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            ann = __try0_o0;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     ann
 }

@@ -1091,7 +1091,7 @@ fn subsXInStateHelper(mut exp: Arc<Expression::NFExpression>, mut funcName: ArcS
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut found: bool = found;
     let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
-    match '__try0: {
+    if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(exp.clone()) {
             Deref @ Expression::CALL { call: __pa1 } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -1105,16 +1105,8 @@ fn subsXInStateHelper(mut exp: Arc<Expression::NFExpression>, mut funcName: ArcS
         }
         exp = substExp.clone();
         found = true;
-        Ok::<_, anyhow::Error>((exp.clone(), expCall.clone(), found.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            exp = __try0_o0;
-            expCall = __try0_o1;
-            found = __try0_o2;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     (exp, found)
 }
@@ -1329,7 +1321,7 @@ fn subsActiveStateHelper(mut exp: Arc<Expression::NFExpression>) -> Arc<Expressi
     let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut argCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut newExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    match '__try0: {
+    if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(exp.clone()) {
             Deref @ Expression::CALL { call: __pa1 } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -1345,17 +1337,8 @@ fn subsActiveStateHelper(mut exp: Arc<Expression::NFExpression>) -> Arc<Expressi
         argCref = __pa2.clone();
         newExp = makeCrefExp(unwrap_break_err!(qCref((literal!("active")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), argCref.clone()), '__try0), Arc::new(crate::NFType::BOOLEAN));
         exp = newExp.clone();
-        Ok::<_, anyhow::Error>((argCref.clone(), exp.clone(), expCall.clone(), newExp.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            argCref = __try0_o0;
-            exp = __try0_o1;
-            expCall = __try0_o2;
-            newExp = __try0_o3;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     exp
 }

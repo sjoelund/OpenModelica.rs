@@ -4306,7 +4306,7 @@ pub fn removeLocalKnownVars2(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Ar
             vindex = __pa1.clone();
             potentialLocalKnownVar = BackendVariable::getVarAt(orderedVars.clone(), vindex.clone())?;
             potentialGlobalKnownEquation = BackendEquation::get(orderedEqs.clone(), eindex.clone())?;
-            match '__try3: {
+            if '__try3: {
                 let (__pa4, __pa5) = ::match_deref::match_deref! { match &(potentialGlobalKnownEquation.clone()) {
                     Deref @ BackendDAE::Equation::EQUATION { scalar: __pa4, exp: __pa5, .. } => (__pa4.clone(), __pa5.clone()),
                     _ => break '__try3 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -4319,21 +4319,8 @@ pub fn removeLocalKnownVars2(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Ar
                 localKnownVars = metamodelica::cons(vindex.clone(), localKnownVars.clone());
                 localKnownEqns = metamodelica::cons(eindex.clone(), localKnownEqns.clone());
                 assign_field!(shared.localKnownVars = unwrap_break_err!(BackendVariable::addVar(potentialLocalKnownVar.clone(), shared.localKnownVars.clone()), '__try3));
-                Ok::<_, anyhow::Error>((binding.clone(), crefExp.clone(), lhs.clone(), localKnownEqns.clone(), localKnownVars.clone(), potentialLocalKnownVar.clone(), rhs.clone(), shared.clone()))
-            } {
-                Ok((__try3_o0, __try3_o1, __try3_o2, __try3_o3, __try3_o4, __try3_o5, __try3_o6, __try3_o7)) => {
-                    binding = __try3_o0;
-                    crefExp = __try3_o1;
-                    lhs = __try3_o2;
-                    localKnownEqns = __try3_o3;
-                    localKnownVars = __try3_o4;
-                    potentialLocalKnownVar = __try3_o5;
-                    rhs = __try3_o6;
-                    shared = __try3_o7;
-                }
-                Err(__try3_err) => {
-                    return Err(__try3_err);
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
             }
         }
     }

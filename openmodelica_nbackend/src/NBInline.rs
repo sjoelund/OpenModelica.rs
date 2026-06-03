@@ -204,18 +204,16 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         eqn = if (BEquation::Equation::isDummy(eqn.clone())) {Pointer::access(unwrap_break_err!(listHead(Pointer::access(new_eqns.clone())), '__try0))} else {eqn.clone()};
-        Ok::<_, anyhow::Error>((changed.clone(), eqn.clone()))
+        Ok::<_, anyhow::Error>((changed.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1)) => {
+        Ok((__try0_o0,)) => {
             changed = __try0_o0;
-            eqn = __try0_o1;
         }
-        Err(__try0_err) => {
+        Err(_) => {
             changed = false;
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to inline following equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
             }
-            return Err(__try0_err);
         }
     }
     Ok((eqn, changed))
@@ -280,7 +278,7 @@ fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc
 
 pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut variables: Arc<VariablePointers::VariablePointers>, mut new_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
-    match '__try0: {
+    if '__try0: {
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::RECORD_EQUATION { rhs: Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CREF { .. }, .. } if (!(inlineSimple.clone())) => {
             eqn.clone()
@@ -363,16 +361,10 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Ok::<_, anyhow::Error>((eqn.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            eqn = __try0_o0;
-        }
-        Err(__try0_err) => {
-            if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to inline following equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
-            }
-            return Err(__try0_err);
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        if Flags::isSet(Flags::FAILTRACE.clone())? {
+            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to inline following equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
         }
     }
     Ok(eqn)

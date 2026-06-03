@@ -956,18 +956,12 @@ pub fn prependSubscriptExp(mut exp: Arc<DAE::Exp>, mut subscr: Arc<DAE::Subscrip
 pub fn applyExpSubscripts(mut exp: Arc<DAE::Exp>, mut inSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp> = exp;
     let mut r#str: ArcStr = arcstr::literal!("");
-    match '__try0: {
+    if '__try0: {
         exp = applyExpSubscripts2(exp.clone(), inSubs.clone());
-        Ok::<_, anyhow::Error>((exp.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            exp = __try0_o0;
-        }
-        Err(__try0_err) => {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.applyExpSubscripts failed applying subs: [")); __mm_s.push_str(&*ExpressionDump::printSubscriptLstStr(inSubs.clone())?); __mm_s.push_str(&*literal!("] on expression:")); __mm_s.push_str(&*printExpStr(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.applyExpSubscripts failed applying subs: [")); __mm_s.push_str(&*ExpressionDump::printSubscriptLstStr(inSubs.clone())?); __mm_s.push_str(&*literal!("] on expression:")); __mm_s.push_str(&*printExpStr(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
     }
     Ok(exp)
 }
@@ -979,21 +973,12 @@ pub fn applyExpSubscriptsFoldCheckSimplify(mut exp: Arc<DAE::Exp>, mut inSubs: A
     let mut s: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     for mut sub in &*inSubs.clone() {
         let mut sub = sub.clone();
-        match '__try0: {
+        if '__try0: {
             s = unwrap_break_err!(getSubscriptExp(sub.clone()), '__try0);
             (exp, b) = unwrap_break_err!(ExpressionSimplify::simplify(unwrap_break_err!(makeASUB(exp.clone(), list![s.clone()]), '__try0)), '__try0);
             checkSimplify = b.clone() || checkSimplify.clone();
-            Ok::<_, anyhow::Error>((b.clone(), checkSimplify.clone(), exp.clone(), s.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-                b = __try0_o0;
-                checkSimplify = __try0_o1;
-                exp = __try0_o2;
-                s = __try0_o3;
-            }
-            Err(_) => {
-                panic!("try/else: outputs not set in else branch");
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
     }
     (exp, checkSimplify)
@@ -12832,16 +12817,10 @@ pub fn consToListIgnoreSharedLiteral(mut e: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }) {
-        match '__try0: {
+        if '__try0: {
             e = unwrap_break_err!(consToListIgnoreSharedLiteralWork(e.clone(), metamodelica::nil()), '__try0);
-            Ok::<_, anyhow::Error>((e.clone(),))
-        } {
-            Ok((__try0_o0,)) => {
-                e = __try0_o0;
-            }
-            Err(_) => {
-                panic!("try/else: outputs not set in else branch");
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
     }
     e

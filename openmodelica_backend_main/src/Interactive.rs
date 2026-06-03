@@ -851,17 +851,13 @@ pub fn renameComponent(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::
         program = unwrap_break_err!(renameComponentFromComponentreplacements(program.clone(), comp_reps.clone()), '__try0);
         paths = unwrap_break_err!(extractRenamedClassesAsStringList(comp_reps.clone()), '__try0);
         result = unwrap_break_err!(ValuesMake::makeCodeTypeNameArray(paths.clone()), '__try0);
-        Ok::<_, anyhow::Error>((comp_reps.clone(), paths.clone(), program.clone(), result.clone()))
+        Ok::<_, anyhow::Error>((result.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            comp_reps = __try0_o0;
-            paths = __try0_o1;
-            program = __try0_o2;
-            result = __try0_o3;
+        Ok((__try0_o0,)) => {
+            result = __try0_o0;
         }
         Err(_) => {
             result = ValuesMake::makeBoolean(false);
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, result)
@@ -882,17 +878,13 @@ pub fn renameComponentOnlyInClass(mut classPath: Arc<Absyn::Path>, mut oldName: 
         w = unwrap_break_err!(ProgramUtil::buildWithin(AbsynUtil::makeFullyQualified(classPath.clone())), '__try0);
         program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cl.clone()], within_: w.clone() }, program.clone(), false), '__try0);
         result = unwrap_break_err!(ValuesMake::makeCodeTypeNameArray(list![classPath.clone()]), '__try0);
-        Ok::<_, anyhow::Error>((cl.clone(), program.clone(), result.clone(), w.clone()))
+        Ok::<_, anyhow::Error>((result.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            cl = __try0_o0;
-            program = __try0_o1;
-            result = __try0_o2;
-            w = __try0_o3;
+        Ok((__try0_o0,)) => {
+            result = __try0_o0;
         }
         Err(_) => {
             result = ValuesMake::makeBoolean(false);
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, result)
@@ -3158,21 +3150,13 @@ pub fn setComponentProperties(mut classPath: Arc<Absyn::Path>, mut component: Ar
         props = ComponentProperties { isFinal: is_final.clone(), isFlow: is_flow.clone(), isStream: is_stream.clone(), isProtected: is_protected.clone(), isReplaceable: is_replaceable.clone(), variability: unwrap_break_err!(setElementVariability((variability.clone()).clone()), '__try0), innerOuter: setInnerOuterAttributes(innerPrefix.clone(), outerPrefix.clone()), direction: unwrap_break_err!(setElementCausality((direction.clone()).clone()), '__try0) };
         program = unwrap_break_err!(transformPathedClassInProgram(classPath.clone(), program.clone(), (std::sync::Arc::new({ let __pe_b1 = (component.clone()).clone(); let __pe_b2 = props.clone(); move |__pe_a0| setComponentPropertiesInClass(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         result = ValuesMake::makeBoolean(true);
-        Ok::<_, anyhow::Error>((is_final.clone(), is_flow.clone(), is_protected.clone(), is_replaceable.clone(), is_stream.clone(), program.clone(), props.clone(), result.clone()))
+        Ok::<_, anyhow::Error>((result.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
-            is_final = __try0_o0;
-            is_flow = __try0_o1;
-            is_protected = __try0_o2;
-            is_replaceable = __try0_o3;
-            is_stream = __try0_o4;
-            program = __try0_o5;
-            props = __try0_o6;
-            result = __try0_o7;
+        Ok((__try0_o0,)) => {
+            result = __try0_o0;
         }
         Err(_) => {
             result = ValuesMake::makeBoolean(false);
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, result)
@@ -5955,7 +5939,7 @@ pub fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, m
     let mut attr: Absyn::ElementAttributes = <Absyn::ElementAttributes as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    match '__try0: {
+    if '__try0: {
         w = (::match_deref::match_deref! { match &(classPath.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => openmodelica_ast::Absyn::Within::TOP,
         _ => Absyn::Within::WITHIN { path: unwrap_break_err!(AbsynUtil::stripLast(classPath.clone()), '__try0) },
@@ -5981,25 +5965,9 @@ pub fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, m
         }
         cdef = unwrap_break_err!(InteractiveUtil::addToPublic(cdef.clone(), Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: redecl.clone(), innerOuter: io.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: ty_path.clone(), arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: (componentName.clone()).clone(), arrayDim: metamodelica::nil(), modification: modification.clone() }, condition: None, comment: annotation_.clone() })] }), info: info.clone(), constrainClass: None }) })), '__try0);
         program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cdef.clone()], within_: w.clone() }, program.clone(), false), '__try0);
-        Ok::<_, anyhow::Error>((annotation_.clone(), attr.clone(), cdef.clone(), filename.clone(), info.clone(), io.clone(), modification.clone(), program.clone(), redecl.clone(), ty_path.clone(), w.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10)) => {
-            annotation_ = __try0_o0;
-            attr = __try0_o1;
-            cdef = __try0_o2;
-            filename = __try0_o3;
-            info = __try0_o4;
-            io = __try0_o5;
-            modification = __try0_o6;
-            program = __try0_o7;
-            redecl = __try0_o8;
-            ty_path = __try0_o9;
-            w = __try0_o10;
-        }
-        Err(_) => {
-            success = false;
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        success = false;
     }
     (program, success)
 }
@@ -6131,7 +6099,7 @@ pub fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>
     let mut cond: Option<Arc<Absyn::Exp>> = None;
     let mut ann: Option<Arc<Absyn::Comment>> = None;
     let mut annotation_: Option<Arc<Absyn::Comment>> = None;
-    match '__try0: {
+    if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0)) {
             Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: __pa1, .. }, .. } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -6155,25 +6123,9 @@ pub fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>
         annotation_ = unwrap_break_err!(InteractiveUtil::makeCommentFromArgs(commentExp.clone(), annotationExp.clone(), ann.clone()), '__try0);
         modification = unwrap_break_err!(InteractiveUtil::makeModifierFromArgs(bindingExp.clone(), modifier.clone(), Absyn::dummyInfo.clone(), r#mod.clone()), '__try0);
         program = unwrap_break_err!(deleteOrUpdateComponent((componentName.clone()).clone(), classPath.clone(), program.clone(), Some((typeName.clone(), Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: (componentName.clone()).clone(), arrayDim: arrayDimensions.clone(), modification: modification.clone() }, condition: cond.clone(), comment: annotation_.clone() })))), '__try0);
-        Ok::<_, anyhow::Error>((ann.clone(), annotation_.clone(), arrayDimensions.clone(), cond.clone(), items.clone(), r#mod.clone(), modification.clone(), parts.clone(), program.clone(), protlst.clone(), publst.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10)) => {
-            ann = __try0_o0;
-            annotation_ = __try0_o1;
-            arrayDimensions = __try0_o2;
-            cond = __try0_o3;
-            items = __try0_o4;
-            r#mod = __try0_o5;
-            modification = __try0_o6;
-            parts = __try0_o7;
-            program = __try0_o8;
-            protlst = __try0_o9;
-            publst = __try0_o10;
-        }
-        Err(_) => {
-            success = false;
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        success = false;
     }
     (program, success)
 }
@@ -6181,17 +6133,11 @@ pub fn updateComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>
 pub fn deleteComponent(mut componentName: ArcStr, mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> (Absyn::Program, bool) {
     let mut program: Absyn::Program = program;
     let mut success: bool = true;
-    match '__try0: {
+    if '__try0: {
         program = unwrap_break_err!(deleteOrUpdateComponent((componentName.clone()).clone(), classPath.clone(), program.clone(), None), '__try0);
-        Ok::<_, anyhow::Error>((program.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            program = __try0_o0;
-        }
-        Err(_) => {
-            success = false;
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        success = false;
     }
     (program, success)
 }
@@ -7006,17 +6952,13 @@ pub fn addConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Absyn:
         eq = Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: Arc::new(Absyn::Equation::EQ_CONNECT { connector1: connector1.clone(), connector2: connector2.clone() }), comment: cmt.clone(), info: Absyn::dummyInfo.clone() });
         program = unwrap_break_err!(transformPathedClassInProgram(classPath.clone(), program.clone(), (std::sync::Arc::new({ let __pe_b1 = eq.clone(); move |__pe_a0| InteractiveUtil::addToEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         success = true;
-        Ok::<_, anyhow::Error>((cmt.clone(), eq.clone(), program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            cmt = __try0_o0;
-            eq = __try0_o1;
-            program = __try0_o2;
-            success = __try0_o3;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -7028,15 +6970,13 @@ pub fn deleteConnection(mut classPath: Arc<Absyn::Path>, mut connector1: Arc<Abs
     match '__try0: {
         program = unwrap_break_err!(transformPathedClassInProgram(classPath.clone(), program.clone(), (std::sync::Arc::new({ let __pe_b1 = connector1.clone(); let __pe_b2 = connector2.clone(); move |__pe_a0| deleteConnectionInClass(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         success = true;
-        Ok::<_, anyhow::Error>((program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1)) => {
-            program = __try0_o0;
-            success = __try0_o1;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -7412,17 +7352,13 @@ pub fn setComponentComment(mut classPath: Arc<Absyn::Path>, mut componentName: A
         path = unwrap_break_err!(AbsynUtil::joinPaths(classPath.clone(), componentName.clone()), '__try0);
         comp_name = (unwrap_break_err!(AbsynUtil::pathLastIdent(componentName.clone()), '__try0)).clone();
         (program, _, success) = unwrap_break_err!(InteractiveUtil::transformPathedElementInProgram(path.clone(), (std::sync::Arc::new({ let __pe_b1 = (comp_name.clone()).clone(); let __pe_b2 = (comment.clone()).clone(); move |__pe_a0| setComponentCommentInElement(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
-        Ok::<_, anyhow::Error>((comp_name.clone(), path.clone(), program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            comp_name = __try0_o0;
-            path = __try0_o1;
-            program = __try0_o2;
-            success = __try0_o3;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)
@@ -7460,15 +7396,13 @@ pub fn setConnectionComment(mut classPath: Arc<Absyn::Path>, mut connector1: Arc
     let mut success: bool = false;
     match '__try0: {
         (program, _, success) = unwrap_break_err!(InteractiveUtil::transformPathedElementInProgram(classPath.clone(), (std::sync::Arc::new({ let __pe_b1 = connector1.clone(); let __pe_b2 = connector2.clone(); let __pe_b3 = (comment.clone()).clone(); move |__pe_a0| setConnectionCommentInElement(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
-        Ok::<_, anyhow::Error>((program.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1)) => {
-            program = __try0_o0;
-            success = __try0_o1;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
         Err(_) => {
             success = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (program, success)

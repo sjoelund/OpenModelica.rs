@@ -107,7 +107,7 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
     if !(Flags::getConfigBool(Flags::UNIT_CHECKING.clone())? || Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) {
         return Ok(flatModel.clone());
     }
-    match '__try0: {
+    if '__try0: {
         htCr2U1 = Unit::newCrefUnitTable(Util::nextPrime(((metamodelica::OrderedFloat((10) as f64) + metamodelica::OrderedFloat(1.4_f64) * metamodelica::OrderedFloat(((flatModel.variables.clone().len() as i32)) as f64)).0.floor() as i32)));
         htS2U = unwrap_break_err!(Unit::getKnownUnits(), '__try0);
         htU2S = unwrap_break_err!(Unit::getKnownUnitsInverse(), '__try0);
@@ -124,20 +124,9 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
         }
         unwrap_break_err!(notification(htCr2U1.clone(), htCr2U2.clone(), htU2S.clone()), '__try0);
         flatModel = unwrap_break_err!(updateModel(flatModel.clone(), htCr2U2.clone(), htU2S.clone()), '__try0);
-        Ok::<_, anyhow::Error>((flatModel.clone(), fn_cache.clone(), htCr2U1.clone(), htCr2U2.clone(), htS2U.clone(), htU2S.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
-            flatModel = __try0_o0;
-            fn_cache = __try0_o1;
-            htCr2U1 = __try0_o2;
-            htCr2U2 = __try0_o3;
-            htS2U = __try0_o4;
-            htU2S = __try0_o5;
-        }
-        Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     }
     execStat(literal!("NFUnitCheck.checkUnits"))?;
     Ok(flatModel)

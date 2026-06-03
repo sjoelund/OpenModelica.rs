@@ -1331,20 +1331,13 @@ pub fn addAlgebraicLoopsModelInfoSymJacs(mut symjacs: Arc<metamodelica::List<Arc
             assign_field!(column.columnEqns = eqs.clone());
             assign_field!(symjac.columns = list![column.clone()]);
             outSymJacs = metamodelica::cons(symjac.clone(), outSymJacs.clone());
-            Ok::<_, anyhow::Error>((column.clone(), eqs.clone(), modelInfo.clone(), outSymJacs.clone(), outSymJacsInSymJacs.clone(), symjac.clone(), tmpSymJacs.clone()))
+            Ok::<_, anyhow::Error>((outSymJacs.clone(),))
         } {
-            Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6)) => {
-                column = __try0_o0;
-                eqs = __try0_o1;
-                modelInfo = __try0_o2;
-                outSymJacs = __try0_o3;
-                outSymJacsInSymJacs = __try0_o4;
-                symjac = __try0_o5;
-                tmpSymJacs = __try0_o6;
+            Ok((__try0_o0,)) => {
+                outSymJacs = __try0_o0;
             }
             Err(_) => {
                 outSymJacs = metamodelica::cons(symjac.clone(), outSymJacs.clone());
-                panic!("try/else: outputs not set in else branch");
             }
         }
     }
@@ -5066,17 +5059,15 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
                 resIndex = inResIndex.clone() + 1;
                 simVar.matrixName = Some((inMatrixName.clone()).clone());
                 resVars = metamodelica::cons(simVar.clone(), resVars.clone());
-                Ok::<_, anyhow::Error>((currVar.clone(), derivedCref.clone(), resIndex.clone(), resVars.clone(), simVar.clone(), v1.clone()))
+                Ok::<_, anyhow::Error>((currVar.clone(), derivedCref.clone(), simVar.clone(), v1.clone()))
             } {
-                Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
+                Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
                     currVar = __try0_o0;
                     derivedCref = __try0_o1;
-                    resIndex = __try0_o2;
-                    resVars = __try0_o3;
-                    simVar = __try0_o4;
-                    v1 = __try0_o5;
+                    simVar = __try0_o2;
+                    v1 = __try0_o3;
                 }
-                Err(__try0_err) => {
+                Err(_) => {
                     currVar = (match varkind.clone() {
         BackendDAE::VarKind::STATE { .. } => ComponentReference::crefPrefixDer(currVar.clone()),
         _ => currVar.clone(),
@@ -5089,7 +5080,6 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
                     simVar.matrixName = Some((inMatrixName.clone()).clone());
                     tmpIndex = inTmpIndex.clone() + 1;
                     tmpVars = metamodelica::cons(simVar.clone(), tmpVars.clone());
-                    return Err(__try0_err);
                 }
             }
             createJacSimVarsColumn(restVar.clone(), inCref.clone(), inAllVars.clone(), resIndex.clone(), tmpIndex.clone(), (inMatrixName.clone()).clone(), tmpVars.clone(), resVars.clone())?

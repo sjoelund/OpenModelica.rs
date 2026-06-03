@@ -69,7 +69,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::daeModeInterface;
-    match '__try0: {
+    if '__try0: {
         func = unwrap_break_err!(getModule(), '__try0);
         bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { varData: Deref @ BVariable::VarData::VAR_DATA_SIM { variables, .. }, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, ode, .. } => {
@@ -83,16 +83,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         bdae = unwrap_break_err!(Causalize::main(bdae.clone(), Partition::Kind::DAE.clone()), '__try0);
-        Ok::<_, anyhow::Error>((bdae.clone(), func.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            bdae = __try0_o0;
-            func = __try0_o1;
-        }
-        Err(__try0_err) => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDAEMode.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDAEMode.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
     }
     Ok(bdae)
 }

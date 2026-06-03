@@ -620,19 +620,13 @@ fn addOuterConnectToSets2(mut outerCref: Arc<DAE::ComponentRef>, mut innerCref: 
         sc = sets.setCount.clone();
         sets = unwrap_break_err!(List::threadFold(outer_els.clone(), inner_els.clone(), (std::sync::Arc::new(mergeSets) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, ConnectorElement, Sets) -> Result<Sets> + 'static>), sets.clone()), '__try0);
         added = sc.clone() != sets.setCount.clone();
-        Ok::<_, anyhow::Error>((added.clone(), inner_els.clone(), node.clone(), outer_els.clone(), sc.clone(), sets.clone()))
+        Ok::<_, anyhow::Error>((added.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
+        Ok((__try0_o0,)) => {
             added = __try0_o0;
-            inner_els = __try0_o1;
-            node = __try0_o2;
-            outer_els = __try0_o3;
-            sc = __try0_o4;
-            sets = __try0_o5;
         }
         Err(_) => {
             added = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (sets, added)

@@ -452,7 +452,7 @@ fn loadModel1(mut modelToLoad: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List
     } else {
         thisModelicaPath = (modelicaPath.clone()).clone();
     }
-    match '__try1: {
+    if '__try1: {
         if unwrap_break_err!(checkModelLoaded(modelToLoad.clone(), program.clone(), forceLoad.clone(), None), '__try1) {
             pnew = Absyn::Program { classes: metamodelica::nil(), within_: openmodelica_ast::Absyn::Within::TOP };
             version = (literal!("")).clone();
@@ -482,23 +482,16 @@ fn loadModel1(mut modelToLoad: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List
             modelsToLoad = unwrap_break_err!(Interactive::getUsesAnnotationOrDefault(pnew.clone(), requireExactVersion.clone()), '__try1);
             (program, success) = unwrap_break_err!(loadModel(modelsToLoad.clone(), (modelicaPath.clone()).clone(), program.clone(), false, notifyLoad.clone(), checkUses.clone(), requireExactVersion.clone(), false, (literal!("")).clone()), '__try1);
         }
-        Ok::<_, anyhow::Error>((pnew.clone(), program.clone()))
-    } {
-        Ok((__try1_o0, __try1_o1)) => {
-            pnew = __try1_o0;
-            program = __try1_o1;
-        }
-        Err(__try1_err) => {
-            pathStr = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
-            versions = stringDelimitList(versionsLst.clone(), (literal!(",")).clone());
-            msgTokens = list![(pathStr.clone()).clone(), (versions.clone()).clone(), (thisModelicaPath.clone()).clone()];
-            if forceLoad.clone() {
-                Error::addMessage(Error::LOAD_MODEL_FAILED.clone(), msgTokens.clone())?;
-                success = false;
-            } else {
-                Error::addMessage(Error::NOTIFY_LOAD_MODEL_FAILED.clone(), msgTokens.clone())?;
-            }
-            return Err(__try1_err);
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        pathStr = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
+        versions = stringDelimitList(versionsLst.clone(), (literal!(",")).clone());
+        msgTokens = list![(pathStr.clone()).clone(), (versions.clone()).clone(), (thisModelicaPath.clone()).clone()];
+        if forceLoad.clone() {
+            Error::addMessage(Error::LOAD_MODEL_FAILED.clone(), msgTokens.clone())?;
+            success = false;
+        } else {
+            Error::addMessage(Error::NOTIFY_LOAD_MODEL_FAILED.clone(), msgTokens.clone())?;
         }
     }
     Ok((program, success))

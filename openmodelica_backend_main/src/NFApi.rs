@@ -2166,18 +2166,11 @@ pub fn dumpJSONSCodeClassDef(mut classDef: Arc<SCode::ClassDef>, mut scope: Arc<
     let () = (::match_deref::match_deref! { match &(classDef.clone()) {
         Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: odims, path }, .. } => {
             if qualifyPath.clone() {
-                match '__try0: {
+                if '__try0: {
                     (derivedNode, _) = unwrap_break_err!(Lookup::lookupName(path.clone(), scope.clone(), InstContext::RELAXED.clone(), false), '__try0);
                     json = unwrap_break_err!(JSON::addPair((literal!("baseClass")).clone(), unwrap_break_err!(dumpJSONNodeEnclosingPath(derivedNode.clone()), '__try0), json.clone()), '__try0);
-                    Ok::<_, anyhow::Error>((derivedNode.clone(), json.clone()))
-                } {
-                    Ok((__try0_o0, __try0_o1)) => {
-                        derivedNode = __try0_o0;
-                        json = __try0_o1;
-                    }
-                    Err(__try0_err) => {
-                        return Err(__try0_err);
-                    }
+                    Ok::<(), anyhow::Error>(())
+                }.is_err() {
                 }
             } else {
                 json = JSON::addPair((literal!("baseClass")).clone(), dumpJSONPath(path.clone())?, json.clone())?;

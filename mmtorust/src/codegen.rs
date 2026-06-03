@@ -5312,7 +5312,15 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     // every `Some(modification)` as "has default" — `Option::Some` is common
     // even without an `= expr` initializer (e.g. for `output T x annotation(...);`).
     ctx.fn_outputs_no_default = outputs.iter()
-        .filter(|(_, _, modif, _)| match modif {
+        // An `input output X x` declares `x` as both input and output: the
+        // output is initialised from the input value at entry, so it is never
+        // "unset" — a `try` whose `else` branch doesn't reassign it simply
+        // returns the input value, which is NOT a matchfailure. Excluding such
+        // params here keeps `else_needs_fail` (in the `S::Try` lowering) from
+        // panicking when the body assigns an input-output output and the else
+        // doesn't (e.g. `addAlgebraicLoopsModelInfoSymJacs`'s
+        // `input output ModelInfo modelInfo`).
+        .filter(|(name, _, modif, _)| !input_names.contains(name) && match modif {
             None => true,
             Some(m) => matches!(*m.eqMod, Absyn::EqMod::NOMOD),
         })

@@ -1018,7 +1018,7 @@ pub fn obfuscateAbsynCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<Ins
     let mut inst_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     ErrorExt::setCheckpoint(literal!("NFFlatModel.obfuscateAbsynCref"));
-    match '__try0: {
+    if '__try0: {
         (inst_cref, _, _) = unwrap_break_err!(Lookup::lookupCref(cref.clone(), scope.clone(), InstContext::RELAXED.clone()), '__try0);
         nodes = ({
         let mut __acc: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
@@ -1029,16 +1029,8 @@ pub fn obfuscateAbsynCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<Ins
         __acc.reverse()
     });
         cref = unwrap_break_err!(obfuscateAbsynCref2(cref.clone(), nodes.clone(), obfuscationMap.clone()), '__try0);
-        Ok::<_, anyhow::Error>((cref.clone(), inst_cref.clone(), nodes.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            cref = __try0_o0;
-            inst_cref = __try0_o1;
-            nodes = __try0_o2;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     ErrorExt::rollBack(literal!("NFFlatModel.obfuscateAbsynCref"));
     cref

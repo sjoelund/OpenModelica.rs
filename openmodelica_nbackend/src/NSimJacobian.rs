@@ -325,22 +325,14 @@ pub mod SimJacobian {
                 jac = Arc::new(SimJacobian { isAdjoint: var_field!((*jacobian).isAdjoint, BackendDAE::NBackendDAE::JACOBIAN).clone(), jac_map: Some(jac_map.clone()), generic_loop_calls: generic_loop_calls.clone(), numColors: (coloring.clone().len() as i32), rowColoring: rowColoring.clone(), coloring: coloring.clone(), sparsityT: sparsityT.clone(), sparsity: sparsity.clone(), seedVars: seedVars.clone(), columnVars: tmpVars.clone(), constantEqns: metamodelica::nil(), columnEqns: columnEqns.clone(), numberOfResultVars: (resVars.clone().len() as i32), partitionIndex: 0, jacobianIndex: indices.jacobianIndex.clone(), name: (var_field!((*jacobian).name, BackendDAE::NBackendDAE::JACOBIAN).clone()).clone() });
                 indices.jacobianIndex = indices.jacobianIndex.clone() + 1;
                 simJacobian = Some(jac.clone());
-                Ok::<_, anyhow::Error>((coloring.clone(), indices.clone(), jac.clone(), local_idx_map.clone(), rowColoring.clone(), simJacobian.clone(), sparsity.clone(), sparsityT.clone()))
+                Ok::<_, anyhow::Error>((simJacobian.clone(),))
             } {
-                Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
-                    coloring = __try0_o0;
-                    indices = __try0_o1;
-                    jac = __try0_o2;
-                    local_idx_map = __try0_o3;
-                    rowColoring = __try0_o4;
-                    simJacobian = __try0_o5;
-                    sparsity = __try0_o6;
-                    sparsityT = __try0_o7;
+                Ok((__try0_o0,)) => {
+                    simJacobian = __try0_o0;
                 }
-                Err(__try0_err) => {
+                Err(_) => {
                     simJacobian = None;
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimJacobian.SimJacobian.create")); __mm_s.push_str(&*literal!(" could not generate sparsity pattern of Jacobian ")); __mm_s.push_str(&*Jacobian::jacobianTypeString(var_field!((*jacobian).jacType, BackendDAE::NBackendDAE::JACOBIAN).clone())); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone())?;
-                    return Err(__try0_err);
                 }
             }
             simJacobian.clone()

@@ -392,18 +392,11 @@ pub fn checkEquationsVarsExpTopDown(mut exp: Arc<DAE::Exp>, mut tree: Arc<AvlSet
         },
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             let mut ilst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            match '__try0: {
+            if '__try0: {
                 (_, ilst) = unwrap_break_err!(BackendVariable::getVar(cr.clone(), vars.clone()), '__try0);
                 tree = unwrap_break_err!(AvlSetInt::addList(tree.clone(), ilst.clone()), '__try0);
-                Ok::<_, anyhow::Error>((ilst.clone(), tree.clone()))
-            } {
-                Ok((__try0_o0, __try0_o1)) => {
-                    ilst = __try0_o0;
-                    tree = __try0_o1;
-                }
-                Err(_) => {
-                    panic!("try/else: outputs not set in else branch");
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
             }
             (true, tree.clone())
         },
