@@ -55,6 +55,7 @@ use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
+use openmodelica_frontend::ConnectUtil;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
@@ -1507,7 +1508,7 @@ fn lowerVarkind(mut inVarKind: DAE::VarKind, mut inType: Arc<DAE::Type>, mut inC
         (DAE::VarKind::VARIABLE { .. }, Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. })) if (!(Types::isDiscreteType(inType.clone()))) => BackendDAE::VarKind::STATE { index: 1, derName: None, natural: false },
         (DAE::VarKind::VARIABLE { .. }, Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::PREFER { .. }), .. })) if (!(Types::isDiscreteType(inType.clone()))) => BackendDAE::VarKind::STATE { index: 1, derName: None, natural: false },
         _ => {
-            let false = (DAEUtil::topLevelInput(inComponentRef.clone(), inVarDirection.clone(), inConnectorType.clone(), protection.clone())?) else { bail!("pattern mismatch") };
+            let false = (ConnectUtil::topLevelInput(inComponentRef.clone(), inVarDirection.clone(), inConnectorType.clone(), protection.clone())?) else { bail!("pattern mismatch") };
             (::match_deref::match_deref! { match &((inVarKind.clone(), inType.clone())) {
         (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_BOOL { .. }) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
         (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_INTEGER { .. }) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
@@ -1536,7 +1537,7 @@ fn lowerKnownVarkind(mut varKind: DAE::VarKind, mut componentRef: Arc<DAE::Compo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::VarKind::VARIABLE { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let true = (DAEUtil::topLevelInput(componentRef.clone(), varDirection.clone(), connectorType.clone(), visibility.clone())?) else { bail!("pattern mismatch") };
+            let true = (ConnectUtil::topLevelInput(componentRef.clone(), varDirection.clone(), connectorType.clone(), visibility.clone())?) else { bail!("pattern mismatch") };
             Ok(openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

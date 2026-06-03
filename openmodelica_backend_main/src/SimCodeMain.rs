@@ -82,6 +82,7 @@ use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::HashTableExpToIndex;
+use openmodelica_frontend::StateMachineFlatten;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::FCore;
@@ -1129,7 +1130,7 @@ fn translateModelCallBackendOB(mut kind: TranslateModelKind, mut cache: FCore::C
             let mut fmiDer: Arc<metamodelica::List<(Option<(Arc<BackendDAE::BackendDAE>, ArcStr, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>> = metamodelica::nil();
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
-            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone())?;
+            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>))?;
             ExecStat::execStat((literal!("Transformations before backend")).clone())?;
             if Flags::isSet(Flags::SERIALIZED_SIZE.clone())? {
                 serializeNotify(dae.clone(), (literal!("FrontEnd DAE after transformations")).clone())?;
@@ -1226,7 +1227,7 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
             let mut timeSimCode: metamodelica::Real = timeSimCode.clone();
             let mut timeTemplates: metamodelica::Real = timeTemplates.clone();
             System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
-            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone())?;
+            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>))?;
             ExecStat::execStat((literal!("Transformations before backend")).clone())?;
             if Flags::isSet(Flags::SERIALIZED_SIZE.clone())? {
                 serializeNotify(dae.clone(), (literal!("dae2")).clone())?;

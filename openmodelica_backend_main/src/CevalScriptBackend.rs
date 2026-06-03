@@ -97,6 +97,7 @@ use openmodelica_frontend::NFSCodeEnv;
 use openmodelica_frontend::NFSCodeFlatten;
 use openmodelica_frontend::NFSCodeLookup;
 use openmodelica_frontend::Parser;
+use openmodelica_frontend::StateMachineFlatten;
 use openmodelica_frontend::Types;
 use openmodelica_frontend::UnitAbsyn;
 use openmodelica_frontend::UnitAbsynBuilder;
@@ -5462,7 +5463,7 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
         }
         unwrap_break_err!(ExecStat::execStat((literal!("FrontEnd - DAE generated")).clone()), '__try0);
         if transform.clone() {
-            dae = unwrap_break_err!(DAEUtil::transformationsBeforeBackend(cache.clone(), env.clone(), dae.clone()), '__try0);
+            dae = unwrap_break_err!(DAEUtil::transformationsBeforeBackend(cache.clone(), env.clone(), dae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>)), '__try0);
         }
         odae = Some(dae.clone());
         Ok::<_, anyhow::Error>((b.clone(), cache.clone(), dae.clone(), env.clone(), flatString.clone(), odae.clone()))

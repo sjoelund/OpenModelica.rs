@@ -68,6 +68,7 @@ use openmodelica_frontend::HashSet;
 use openmodelica_frontend::HashTable2;
 use openmodelica_frontend::InnerOuter;
 use openmodelica_frontend::Inst;
+use openmodelica_frontend::StateMachineFlatten;
 use openmodelica_frontend_dump::AbsynToSCode;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::AvlTreePathFunction;
@@ -1951,7 +1952,7 @@ fn flattenModel(mut className: Arc<Absyn::Path>, mut p: Absyn::Program, mut icac
             (cache, graph, _, dae) = Inst::instantiateClass(icache.clone(), InnerOuter::emptyInstHierarchy().clone(), p_1.clone(), className.clone(), true, true, true)?;
             System::realtimeTock(ClockIndexes::RT_CLOCK_UNCERTAINTIES.clone())?;
             System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
-            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), dae.clone())?;
+            dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), dae.clone(), (std::sync::Arc::new(StateMachineFlatten::stateMachineToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, DAE::DAElist) -> Result<DAE::DAElist> + 'static>))?;
             Ok((dae.clone(), cache.clone(), graph.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

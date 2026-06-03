@@ -2516,7 +2516,7 @@ fn removeUnusedExpandableVariablesAndConnections(mut sets: Arc<metamodelica::Lis
     elems = __pa0.clone();
     expandableVars = getExpandableVariablesWithNoBinding(elems.clone());
     dae = DAEUtil::removeVariables(DAE.clone(), expandableVars.clone())?;
-    usedInDAE = DAEUtil::getAllExpandableCrefsFromDAE(dae.clone())?;
+    usedInDAE = getAllExpandableCrefsFromDAE(dae.clone())?;
     setsAsCrefs = getExpandableEquSetsAsCrefs(sets.clone())?;
     setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs.clone())?;
     setsAsCrefs = mergeEquSetsAsCrefs(setsAsCrefs.clone())?;
@@ -2538,5 +2538,55 @@ fn isEquType(mut ty: ConnectorType) -> bool {
         _ => false,
     });
     isEqu
+}
+
+pub fn topLevelInput(mut componentRef: Arc<DAE::ComponentRef>, mut varDirection: DAE::VarDirection, mut connectorType: Arc<DAE::ConnectorType>, mut visibility: DAE::VarVisibility) -> Result<bool> {
+    let mut isTopLevel: bool = false;
+    let mut newInst: bool = Flags::isSet(Flags::SCODE_INST.clone())?;
+    isTopLevel = (::match_deref::match_deref! { match &((varDirection.clone(), componentRef.clone(), visibility.clone(), newInst.clone())) {
+        (_, _, DAE::VarVisibility::PROTECTED { .. }, _) => false,
+        (DAE::VarDirection::INPUT { .. }, _, _, true) => true,
+        (DAE::VarDirection::INPUT { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }, _, _) => true,
+        (DAE::VarDirection::INPUT { .. }, _, _, _) if (faceEqual(componentFaceType(componentRef.clone())?, openmodelica_frontend_types::DAE::Connect::Face::OUTSIDE)) => topLevelConnectorType(connectorType.clone()),
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(isTopLevel)
+}
+
+fn topLevelConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> bool {
+    let mut isTopLevel: bool = false;
+    isTopLevel = (::match_deref::match_deref! { match &(inConnectorType.clone()) {
+        Deref @ DAE::ConnectorType::FLOW { .. } => true,
+        Deref @ DAE::ConnectorType::POTENTIAL { .. } => true,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    isTopLevel
+}
+
+pub fn getAllExpandableCrefsFromDAE(mut inDAE: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
+    let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let DAE::DAE { elementLst: __pa0 } = (inDAE.clone()) else { bail!("pattern mismatch") };
+    elts = __pa0.clone();
+    let (_, (_, __pa1)) = DAEUtil::traverseDAEElementList(elts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(collectAllExpandableCrefsInExp, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil()))?;
+    outCrefs = __pa1.clone();
+    Ok(outCrefs)
+}
+
+fn collectAllExpandableCrefsInExp(mut exp: Arc<DAE::Exp>, mut acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) {
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+    (outExp, outCrefs) = (::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
+            (exp.clone(), List::consOnTrue(isExpandable(cr.clone()), cr.clone(), acc.clone()))
+        },
+        _ => {
+            (exp.clone(), acc.clone())
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    (outExp, outCrefs)
 }
 
