@@ -17,16 +17,29 @@
 //
 // Note on the constructor's `fromID: Option<Integer>` parameter: in the C
 // runtime this is a void* pretending to be `Option<Integer>` — either NULL
-// (meaning "make a new file") or a raw `__OMC_FILE*` to clone-by-refcount.
-// MetaModelica callers only ever produce that pointer via `getReference` /
-// `noReference`, both of which we cannot faithfully implement without C-side
-// pointer punning. We therefore stub `getReference` / `noReference` /
-// `releaseReference` with `todo!()` and treat the constructor's `fromID` as
-// always-NULL (the new-file path), which is what `File()` with the default
-// `fromID = noReference()` always was anyway.
+// (meaning "make a new file") or a raw `__OMC_FILE*` whose reference count
+// the constructor bumps. MetaModelica callers only ever produce that pointer
+// via `getReference` / `noReference` and store it in `Tpl.Text.FILE_TEXT`'s
+// `opaqueFile` field, reconstructing a `File` from it for every token
+// written (`Tpl.tokFileText` etc.).
+//
+// Rust cannot pun a pointer through `Option<i32>`, so the opaque value is a
+// small integer handle into a thread-local registry instead (see
+// [`FILE_REGISTRY`]): `getReference` registers a clone of the `File` handle
+// and returns the id, the constructor with `Some(id)` clones the registered
+// handle back out, and `releaseReference` removes the registry entry (the
+// `Arc` refcount then handles the actual close on last drop, mirroring the
+// C destructor's `fclose` at refcount zero). The registry is thread-local
+// for the same reason the rest of the per-task runtime state is
+// (`ErrorExt.rs`, `BackendDAEEXT.rs`): the compiler runs each task on one
+// thread (`System.launchParallelTasks` is a serial map in this port, and
+// the MM payloads are not `Send`), and a thread-local keeps the per-token
+// reconstruction on the Tpl hot path lock-free.
 
 #![allow(non_snake_case)]
 
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::{Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex};
@@ -97,17 +110,42 @@ impl PartialEq for File {
 }
 impl Eq for File {}
 
+thread_local! {
+    /// Opaque-reference registry backing `getReference` / the `Some(id)`
+    /// constructor path — see the module-level comment. Maps the punned
+    /// `Option<Integer>` handle to a clone of the `File`. Entries are
+    /// created by [`getReference`] and removed by [`releaseReference`];
+    /// a Text dropped without `Tpl.closeFile` leaks its entry, exactly as
+    /// the C version leaks the un-decremented refcount (and never closes
+    /// the file).
+    static FILE_REGISTRY: RefCell<HashMap<i32, File>> = RefCell::new(HashMap::new());
+    /// Next registry handle. Starts at 1 — the C side's NULL/None means
+    /// "no reference", so 0 is never a valid handle.
+    static NEXT_FILE_REF: Cell<i32> = const { Cell::new(1) };
+}
+
 impl File {
-    /// Constructor. `fromID` mirrors the MM signature and, in C, is a void*
-    /// that's either NULL ("new file") or a raw pointer to clone by refcount.
-    /// We only model the NULL path; see the module-level comment for why.
-    pub fn new(_fromID: Option<i32>) -> Result<File> {
-        Ok(File {
-            inner: Arc::new(Mutex::new(FileInner {
-                file: None,
-                name: literal!("[no open file]"),
-            })),
-        })
+    /// Constructor. `fromID` mirrors the MM signature: `None` creates a new
+    /// (unopened) file object; `Some(id)` reconstructs the `File` registered
+    /// under `id` by [`getReference`] (the C runtime bumps the refcount on a
+    /// raw pointer here; cloning the `Arc` handle is the Rust equivalent).
+    pub fn new(fromID: Option<i32>) -> Result<File> {
+        match fromID {
+            None => Ok(File {
+                inner: Arc::new(Mutex::new(FileInner {
+                    file: None,
+                    name: literal!("[no open file]"),
+                })),
+            }),
+            Some(id) => FILE_REGISTRY.with(|r| {
+                r.borrow().get(&id).cloned().ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "File.constructor: opaque file reference {id} is not registered \
+                         (already released, or created on another thread)"
+                    )
+                })
+            }),
+        }
     }
 }
 
@@ -246,38 +284,48 @@ pub fn tell(file: File) -> i32 {
 }
 
 pub fn getFilename(file: Option<i32>) -> Result<ArcStr> {
-    // The MM signature is a lie — `file: Option<Integer>` is really an
-    // opaque `__OMC_FILE*` returned by `getReference`. Honest Rust cannot
-    // reconstruct the original `File` from a bare `Option<i32>`. The only
-    // honest implementations are (a) thread an actual handle through the
-    // API, or (b) FFI to the C runtime. Until one of those is done, fail
-    // loudly rather than silently returning a bogus string.
-    let _ = file;
-    todo!("File.getFilename: opaque-pointer punning via Option<Integer> is not yet bridged in the Rust runtime")
+    // `file` is the opaque registry handle produced by `getReference`.
+    let file = File::new(file)?;
+    let guard = file.inner.lock().unwrap();
+    Ok(guard.name.clone())
 }
 
 pub fn noReference() -> Option<i32> {
-    // In C this returns NULL — a void* that the constructor recognizes as
-    // "make a new file". The Rust constructor's `_fromID` is ignored, so
-    // `None` is a faithful stand-in for the default-value path. The .mo
+    // In C this returns NULL — a void* the constructor recognizes as "make
+    // a new file"; `None` is the registry-handle equivalent. The .mo
     // declares this `external "C"` without an error path, so we return the
     // bare value (not `Result<_>`) to match what the codegen expects.
     None
 }
 
 pub fn getReference(file: File) -> Option<i32> {
-    // Same caveat as `getFilename`: the return value is really a pointer,
-    // not an integer. Anyone who consumes the result expects to round-trip
-    // it back to the constructor, which we cannot do without C runtime help.
-    let _ = file;
-    todo!("File.getReference: opaque-pointer punning via Option<Integer> is not yet bridged in the Rust runtime")
+    // C: bump the refcount and hand out the raw pointer. Rust: register a
+    // clone of the handle (the Arc refcount *is* the loan) under a fresh id
+    // and hand out the id. Balanced by `releaseReference`.
+    let id = NEXT_FILE_REF.with(|n| {
+        let id = n.get();
+        n.set(id + 1);
+        id
+    });
+    FILE_REGISTRY.with(|r| r.borrow_mut().insert(id, file));
+    Some(id)
 }
 
 pub fn releaseReference(file: File) -> Result<()> {
-    // The C runtime decrements a reference count here. In Rust the Arc
-    // refcount tracks lifetime automatically — dropping the `file`
-    // parameter at function exit decrements it for us.
-    let _ = file;
+    // C: decrement the refcount taken by `getReference`. Rust: drop one
+    // registry entry holding this same file object (callers reconstruct the
+    // handle from the opaque id first, so an entry must exist; releasing a
+    // file that was never registered is an accounting bug upstream).
+    let released = FILE_REGISTRY.with(|r| {
+        let mut reg = r.borrow_mut();
+        match reg.iter().find(|(_, f)| Arc::ptr_eq(&f.inner, &file.inner)).map(|(id, _)| *id) {
+            Some(id) => { reg.remove(&id); true }
+            None => false,
+        }
+    });
+    if !released {
+        bail!("File.releaseReference: file is not registered (double release?)");
+    }
     Ok(())
 }
 
