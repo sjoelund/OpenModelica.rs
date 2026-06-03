@@ -8958,7 +8958,7 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
         },
         "print" => {
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("println!(\"{{}}\", {arg})"))
+            Ok(format!("metamodelica::print({arg})"))
         },
         "arrayGet" => {
             // `arr` is `metamodelica::Array<T>` = `Rc<RefCell<Vec<T>>>`.
