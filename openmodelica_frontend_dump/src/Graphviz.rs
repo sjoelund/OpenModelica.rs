@@ -107,9 +107,9 @@ pub static r#box: Attribute = Attribute { name: literal!("shape"), value: litera
 
 pub fn dump(mut node: Arc<Node>) -> Result<()> {
     let mut nm: Label = arcstr::literal!("");
-    println!("{}", (literal!("graph AST {\n")).clone());
+    metamodelica::print((literal!("graph AST {\n")).clone());
     nm = (dumpNode(node.clone())?).clone();
-    println!("{}", (literal!("}\n")).clone());
+    metamodelica::print((literal!("}\n")).clone());
     Ok(())
 }
 
@@ -125,7 +125,7 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             typlbl = (makeLabel(list![(typ.clone()).clone()])?).clone();
             newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (typlbl.clone()).clone() }, attr.clone());
             out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
-            println!("{}", (out.clone()).clone());
+            metamodelica::print((out.clone()).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;
             nm.clone()
         },
@@ -140,7 +140,7 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             lblstr = (makeLabel(lbl_1.clone())?).clone();
             newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (lblstr.clone()).clone() }, attr.clone());
             out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
-            println!("{}", (out.clone()).clone());
+            metamodelica::print((out.clone()).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;
             nm.clone()
         },
@@ -215,8 +215,8 @@ fn nodename(mut r#str: ArcStr) -> ArcStr {
 fn printEdge(mut n1: Ident, mut n2: Ident) -> () {
     let mut r#str: Label = arcstr::literal!("");
     r#str = (makeEdge((n1.clone()).clone(), (n2.clone()).clone())).clone();
-    println!("{}", (r#str.clone()).clone());
-    println!("{}", (literal!(";\n")).clone());
+    metamodelica::print((r#str.clone()).clone());
+    metamodelica::print((literal!(";\n")).clone());
     ()
 }
 

@@ -168,15 +168,17 @@ pub fn fromIdentifier(mut ident_tpl: (Arc<Identifier::Identifier>, i32)) -> Resu
     index = __pa2.clone();
     eqn = Pointer::access(eqn_ptr.clone());
     call = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body @ Deref @ Equation::IF_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+        Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body @ Deref @ Equation::IF_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            body = (*__esc_body).clone();
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            Arc::new(NSimGenericCall::IF_GENERIC_CALL { resizable: resizable.clone(), branches: SimBranch::fromIfBody(var_field!((**body).body, Equation::Equation::IF_EQUATION).clone())?, iters: iters.clone(), index: index.clone() })
+            Arc::new(NSimGenericCall::IF_GENERIC_CALL { resizable: resizable.clone(), branches: SimBranch::fromIfBody(var_field!((*body).body, Equation::Equation::IF_EQUATION).clone())?, iters: iters.clone(), index: index.clone() })
         },
-        Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body @ Deref @ Equation::WHEN_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+        Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: __esc_body @ Deref @ Equation::WHEN_EQUATION { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            body = (*__esc_body).clone();
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();
             iters = SimIterator::fromIterator(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
-            Arc::new(NSimGenericCall::WHEN_GENERIC_CALL { resizable: resizable.clone(), branches: SimBranch::fromWhenBody(var_field!((**body).body, Equation::Equation::WHEN_EQUATION).clone())?, iters: iters.clone(), index: index.clone() })
+            Arc::new(NSimGenericCall::WHEN_GENERIC_CALL { resizable: resizable.clone(), branches: SimBranch::fromWhenBody(var_field!((*body).body, Equation::Equation::WHEN_EQUATION).clone())?, iters: iters.clone(), index: index.clone() })
         },
         Deref @ Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>> = metamodelica::nil();

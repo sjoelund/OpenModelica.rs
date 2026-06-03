@@ -753,7 +753,8 @@ fn selectInitializationVariablesDAE(mut dae: Arc<BackendDAE::BackendDAE>) -> Res
             hs = BaseHashSet::add(BackendVariable::varCref(v.clone())?, hs.clone())?;
             ()
         },
-        BackendDAE::Var { bindExp: Some(bindExp), varKind: BackendDAE::VarKind::EXTOBJ { .. }, .. } if (0 == ({let __elt = secondary.borrow()[(i.clone()-1) as usize].clone(); __elt}) && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
+        BackendDAE::Var { bindExp: Some(__esc_bindExp), varKind: BackendDAE::VarKind::EXTOBJ { .. }, .. } if (0 == ({let __elt = secondary.borrow()[(i.clone()-1) as usize].clone(); __elt}) && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
+            bindExp = (*__esc_bindExp).clone();
             outAllPrimaryParameters = metamodelica::cons(v.clone(), outAllPrimaryParameters.clone());
             v = BackendVariable::setVarFixed(v.clone(), true)?;
             outGlobalKnownVars = BackendVariable::addVar(v.clone(), outGlobalKnownVars.clone())?;
@@ -1339,12 +1340,12 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         stateIndices = BackendVariable::getVarIndexFromVariablesIndexInFirstSet(inEqSystem.orderedVars.clone(), initVars.clone())?;
         nAddEqs = intMax(nVars.clone() - nEqns.clone() + index.clone(), index.clone());
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nAddEqs: ")); __mm_s.push_str(&*intString(nAddEqs.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nAddEqs: ")); __mm_s.push_str(&*intString(nAddEqs.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         m = fixUnderDeterminedSystem(m_.clone(), stateIndices.clone(), nEqns.clone(), nAddEqs.clone())?;
         nAddVars = intMax(nEqns.clone() - nVars.clone() + index.clone(), index.clone());
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nAddVars: ")); __mm_s.push_str(&*intString(nAddVars.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nAddVars: ")); __mm_s.push_str(&*intString(nAddVars.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         m = fixOverDeterminedSystem(m.clone(), inEqSystem.orderedEqs.clone(), nVars.clone(), nAddVars.clone())?;
         (ass1, ass2, perfectMatching, eMarks, vMarks) = Matching::RegularMatching(m.clone(), nVars.clone() + nAddVars.clone(), nEqns.clone() + nAddEqs.clone())?;
@@ -1378,7 +1379,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
             return Ok((outEqSystem.clone(), outShared.clone(), dummy.clone()));
         }
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("index-")); __mm_s.push_str(&*intString(index.clone())); __mm_s.push_str(&*literal!(" ende\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("index-")); __mm_s.push_str(&*intString(index.clone())); __mm_s.push_str(&*literal!(" ende\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     if Flags::isSet(Flags::INITIALIZATION.clone())? {
@@ -1427,22 +1428,22 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         }
         __acc.reverse()
     }), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-        println!("{}", (literal!("\n------------ UNBALANCED INITIAL SYSTEM ------------\n")).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The initial system is over- as well as underdetermined and it could not be resolved after ")); __mm_s.push_str(&*intString(maxMixedDeterminedIndex.clone())); __mm_s.push_str(&*literal!(" iterations.\n\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("==== OVERDETERMINATION BY ")); __mm_s.push_str(&*intString(overDetIndex.clone())); __mm_s.push_str(&*literal!(" EQUATION(S)\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("==== UNDERDETERMINATION OF ")); __mm_s.push_str(&*intString(underDetIndex.clone())); __mm_s.push_str(&*literal!(" VARIABLE(S)\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set eqns (")); __mm_s.push_str(&*intString(scalarEqnSize.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString((singular_eqns_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print((literal!("\n------------ UNBALANCED INITIAL SYSTEM ------------\n")).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The initial system is over- as well as underdetermined and it could not be resolved after ")); __mm_s.push_str(&*intString(maxMixedDeterminedIndex.clone())); __mm_s.push_str(&*literal!(" iterations.\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("==== OVERDETERMINATION BY ")); __mm_s.push_str(&*intString(overDetIndex.clone())); __mm_s.push_str(&*literal!(" EQUATION(S)\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("==== UNDERDETERMINATION OF ")); __mm_s.push_str(&*intString(underDetIndex.clone())); __mm_s.push_str(&*literal!(" VARIABLE(S)\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set eqns (")); __mm_s.push_str(&*intString(scalarEqnSize.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString((singular_eqns_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
         for mut eqn in &*singular_eqns_idx.clone() {
             let mut eqn = eqn.clone();
             eq = BackendEquation::get(syst.orderedEqs.clone(), ({let __elt = mapIncRowEqn.borrow()[(eqn.clone()-1) as usize].clone(); __elt}))?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(eqn.clone())); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(BackendEquation::equationSize(eq.clone())?)); __mm_s.push_str(&*literal!("):\t")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(eqn.clone())); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(BackendEquation::equationSize(eq.clone())?)); __mm_s.push_str(&*literal!("):\t")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set vars (")); __mm_s.push_str(&*intString((singular_vars_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set vars (")); __mm_s.push_str(&*intString((singular_vars_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
         for mut var in &*singular_vars_idx.clone() {
             let mut var = var.clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(var.clone())); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*BackendDump::varString(BackendVariable::getVarAt(syst.orderedVars.clone(), var.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(var.clone())); __mm_s.push_str(&*literal!(":\t")); __mm_s.push_str(&*BackendDump::varString(BackendVariable::getVarAt(syst.orderedVars.clone(), var.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        println!("{}", (literal!("--------------------------------------------------\n")).clone());
+        metamodelica::print((literal!("--------------------------------------------------\n")).clone());
     }
     Error::addMessage(Error::MIXED_DETERMINED.clone(), list![(intString(maxMixedDeterminedIndex.clone())).clone()])?;
     bail!("fail");
@@ -2216,10 +2217,10 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
                 (oEqns, _) = ExpandableArray::add(initEqn.clone(), oEqns.clone())?;
             }
             if Flags::isSet(Flags::BLT_DUMP.clone())? || Flags::isSet(Flags::INITIALIZATION.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("StateSet ")); __mm_s.push_str(&*intString(stateSet.index.clone())); __mm_s.push_str(&*literal!(" is underconstraint for the initial system.\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", (literal!("======================================\n")).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("# States left to fix: ")); __mm_s.push_str(&*intString(toFix.clone())); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("# Unfixed candidates: ")); __mm_s.push_str(&*intString((stateSet.statescandidates.clone().len() as i32) - toFix.clone())); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("StateSet ")); __mm_s.push_str(&*intString(stateSet.index.clone())); __mm_s.push_str(&*literal!(" is underconstraint for the initial system.\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print((literal!("======================================\n")).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("# States left to fix: ")); __mm_s.push_str(&*intString(toFix.clone())); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("# Unfixed candidates: ")); __mm_s.push_str(&*intString((stateSet.statescandidates.clone().len() as i32) - toFix.clone())); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpVarList(statesToFix.clone(), (literal!("Chosen states to fix:")).clone())?;
             }
         }

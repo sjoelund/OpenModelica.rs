@@ -181,12 +181,12 @@ pub fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMod
     nmv_table = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     createGraph(flatModel.variables.clone(), conns.clone(), graph.clone(), v_count.clone(), e_count.clone(), nmv_table.clone())?;
     if Flags::isSet(Flags::DUMP_SET_BASED_GRAPHS.clone())? {
-        println!("{}", (IncidenceList::toString(graph.clone())?).clone());
+        metamodelica::print((IncidenceList::toString(graph.clone())?).clone());
     }
     (vss, emap1, emap2) = createMaps(graph.clone())?;
     res = SBFunctions::connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
     if Flags::isSet(Flags::DUMP_SET_BASED_GRAPHS.clone())? {
-        println!("{}", (IncidenceList::toString(graph.clone())?).clone());
+        metamodelica::print((IncidenceList::toString(graph.clone())?).clone());
     }
     conns = generateEquations(res.clone(), flatModel.clone(), graph.clone(), v_count.clone(), nmv_table.clone())?;
     eql = listAppend(flatModel.equations.clone(), conns.clone());

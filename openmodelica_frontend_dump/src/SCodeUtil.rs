@@ -2493,7 +2493,7 @@ pub fn boolReplaceable(mut inBoolReplaceable: bool, mut inOptConstrainClass: Opt
     outReplaceable = (::match_deref::match_deref! { match &((inBoolReplaceable.clone(), inOptConstrainClass.clone())) {
         (true, _) => Arc::new(SCode::Replaceable::REPLACEABLE { cc: inOptConstrainClass.clone() }),
         (false, Some(_)) => {
-            println!("{}", (literal!("Ignoring constraint class because replaceable prefix is not present!\n")).clone());
+            metamodelica::print((literal!("Ignoring constraint class because replaceable prefix is not present!\n")).clone());
             Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE)
         },
         (false, _) => Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE),

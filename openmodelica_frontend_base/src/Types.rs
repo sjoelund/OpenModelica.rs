@@ -2409,7 +2409,7 @@ pub fn liftTypeWithDims(mut inType: Arc<DAE::Type>, mut inDims: Arc<metamodelica
     }
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
-            println!("{}", (literal!("Can not handle this yet!!")).clone());
+            metamodelica::print((literal!("Can not handle this yet!!")).clone());
             bail!("fail")
         },
         Deref @ DAE::Type::T_ARRAY { ty, dims } => {
@@ -6075,15 +6075,15 @@ pub fn matchTypePolymorphic(mut iexp: Arc<DAE::Exp>, mut iactual: Arc<DAE::Type>
         (exp, actual) = matchType(exp.clone(), actual.clone(), expected.clone(), printFailtrace.clone())?;
     } else {
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("match type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("match type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         (exp, actual) = matchType(exp.clone(), actual.clone(), Arc::new(DAE::Type::T_METABOXED { ty: DAE::T_UNKNOWN_DEFAULT().clone() }), printFailtrace.clone())?;
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matched type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!(" (boxed)\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matched type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!(" (boxed)\n")); ArcStr::from(__mm_s) }).clone());
         }
         polymorphicBindings = subtypePolymorphic(getUniontypeIfMetarecordReplaceAllSubtypes(actual.clone())?, getUniontypeIfMetarecordReplaceAllSubtypes(expected.clone())?, envPath.clone(), polymorphicBindings.clone())?;
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("match type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!(" and bindings ")); __mm_s.push_str(&*polymorphicBindingsStr(polymorphicBindings.clone())?); __mm_s.push_str(&*literal!(" (OK)\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("match type: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(" of ")); __mm_s.push_str(&*TypesDump::unparseType(actual.clone())?); __mm_s.push_str(&*literal!(" with ")); __mm_s.push_str(&*TypesDump::unparseType(expected.clone())?); __mm_s.push_str(&*literal!(" and bindings ")); __mm_s.push_str(&*polymorphicBindingsStr(polymorphicBindings.clone())?); __mm_s.push_str(&*literal!(" (OK)\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     Ok((exp, actual, polymorphicBindings))

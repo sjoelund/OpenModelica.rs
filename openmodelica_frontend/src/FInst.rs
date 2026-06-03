@@ -111,16 +111,16 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
                     (_, g) = FBuiltin::initialGraph(FCore::emptyCache())?;
                     g = FGraphBuild::mkProgramGraph(p.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     g = FExpand::all(g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Total time:     ")); __mm_s.push_str(&*realString(List::fold(lst.clone(), (std::sync::Arc::new(fnptr!(realAdd, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64))?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Total time:     ")); __mm_s.push_str(&*realString(List::fold(lst.clone(), (std::sync::Arc::new(fnptr!(realAdd, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64))?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     FGraphDump::dumpGraph(g.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("F:\\dev\\")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(".graph.graphml")); ArcStr::from(__mm_s) }).clone())?;
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     FGraph::clone(g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph->clone:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph->clone:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(DAE::emptyDae().clone())
                 }
                 _ => bail!("nomatch"),
@@ -129,7 +129,7 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("FInst.inst failed!\n")).clone());
+                    metamodelica::print((literal!("FInst.inst failed!\n")).clone());
                     Ok(DAE::emptyDae().clone())
                 }
                 _ => bail!("nomatch"),
@@ -162,20 +162,20 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     p = doSCodeDep(inProgram.clone(), inPath.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode depend:   ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode depend:   ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     (_, g) = FBuiltin::initialGraph(FCore::emptyCache())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initial graph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initial graph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     g = FGraphBuild::mkProgramGraph(p.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     (g, _) = FExpand::path(g.clone(), inPath.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FExpand.path:   ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Total time:     ")); __mm_s.push_str(&*realString(List::fold(lst.clone(), (std::sync::Arc::new(fnptr!(realAdd, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64))?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FExpand.path:   ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Total time:     ")); __mm_s.push_str(&*realString(List::fold(lst.clone(), (std::sync::Arc::new(fnptr!(realAdd, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64))?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     FGraphDump::dumpGraph(g.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("F:\\dev\\")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(".graph.graphml")); ArcStr::from(__mm_s) }).clone())?;
                     Ok(DAE::emptyDae().clone())
                 }
@@ -185,7 +185,7 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("FInst.inst failed!\n")).clone());
+                    metamodelica::print((literal!("FInst.inst failed!\n")).clone());
                     Ok(DAE::emptyDae().clone())
                 }
                 _ => bail!("nomatch"),

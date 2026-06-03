@@ -1457,7 +1457,7 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
             let DAE::Properties::PROP_TUPLE { .. } = __mc_input.clone() else { bail!("nomatch") };
             if !((!(Flags::getConfigBool(Flags::CEVAL_EQUATION.clone())?))) { bail!("guard") }
             let DAE::C_PARAM { .. } = (Types::propAllConst(prop.clone())?) else { bail!("pattern mismatch") };
-            println!("{}", (literal!(" tuple non constant evaluation not implemented yet\n")).clone());
+            metamodelica::print((literal!(" tuple non constant evaluation not implemented yet\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
@@ -1949,7 +1949,7 @@ fn cevalKnownExternalFuncs2(mut id: ArcStr, mut inValuesValueLst: Arc<metamodeli
             Arc::new(Values::Value::INTEGER { integer: i.clone() })
         },
         (Deref @ "print", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Nil }) => {
-            println!("{}", (r#str.clone()).clone());
+            metamodelica::print((r#str.clone()).clone());
             Arc::new(openmodelica_frontend_types::Values::Value::NORETCALL)
         },
         (Deref @ "OpenModelica_regex", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: re }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: extended }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: insensitive }, tail: Deref @ metamodelica::List::Nil } } } } }) => {
@@ -2669,7 +2669,7 @@ fn cevalBuiltinPrint(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
             } };
             cache = __pa0.clone();
             r#str = __pa1.clone();
-            println!("{}", (r#str.clone()).clone());
+            metamodelica::print((r#str.clone()).clone());
             (cache.clone(), Arc::new(openmodelica_frontend_types::Values::Value::NORETCALL))
         },
         _ => bail!("match: no arm matched"),

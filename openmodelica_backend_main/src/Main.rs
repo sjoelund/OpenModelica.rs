@@ -426,11 +426,11 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                     if Flags::isSet(Flags::DUMP.clone())? {
                         Debug::trace((literal!("\n--------------- Parsed program ---------------\n")).clone())?;
                         Dump::unparseStr(SymbolTable::getAbsyn(), false, Dump::defaultDumpOptions.clone())?;
-                        println!("{}", (Print::getString()?).clone());
+                        metamodelica::print((Print::getString()?).clone());
                     }
                     if Flags::isSet(Flags::DUMP_JL.clone())? {
                         Debug::trace((literal!("\n--------------- Julia representation of the parsed program ---------------\n")).clone())?;
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Tpl::tplString((std::sync::Arc::new(AbsynJLDumpTpl::dump) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Program) -> Result<Tpl::Text> + 'static>), SymbolTable::getAbsyn())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Tpl::tplString((std::sync::Arc::new(AbsynJLDumpTpl::dump) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Absyn::Program) -> Result<Tpl::Text> + 'static>), SymbolTable::getAbsyn())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     if Flags::isSet(Flags::DUMP_GRAPHVIZ.clone())? {
                         DumpGraphviz::dump(SymbolTable::getAbsyn())?;
@@ -479,12 +479,12 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: f, tail: _ } => {
                     if System::regularFileExists((f.clone()).clone()) {
-                        println!("{}", (literal!("Error processing file: ")).clone());
+                        metamodelica::print((literal!("Error processing file: ")).clone());
                     } else {
-                        println!("{}", (System::gettext((literal!("File does not exist: ")).clone())).clone());
+                        metamodelica::print((System::gettext((literal!("File does not exist: ")).clone())).clone());
                     }
-                    println!("{}", (f.clone()).clone());
-                    println!("{}", (literal!("\n")).clone());
+                    metamodelica::print((f.clone()).clone());
+                    metamodelica::print((literal!("\n")).clone());
                     System::fflush();
                     showErrors((Print::getErrorString()?).clone(), (ErrorExt::printMessagesStr(false)).clone());
                     Ok(bail!("fail"))
@@ -638,9 +638,9 @@ pub fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
                 System::setEnv((literal!("PATH")).clone(), (newPath.clone()).clone(), true);
             } else {
                 if !(Flags::isSet(Flags::DISABLE_WINDOWS_PATH_CHECK_WARNING.clone())?) {
-                    println!("{}", (literal!("We could not find some needed MINGW paths in $OPENMODELICAHOME or $OMDEV. Searched for paths:\n")).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*binDir.clone()); __mm_s.push_str(&*if (hasBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*libBinDir.clone()); __mm_s.push_str(&*if (hasLibBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print((literal!("We could not find some needed MINGW paths in $OPENMODELICAHOME or $OMDEV. Searched for paths:\n")).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*binDir.clone()); __mm_s.push_str(&*if (hasBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*libBinDir.clone()); __mm_s.push_str(&*if (hasLibBinDir.clone()) {literal!(" [found] ")} else {literal!(" [not found] ")}); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             ()
@@ -686,7 +686,7 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     match '__try0: {
         args_1 = unwrap_break_err!(init(args.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::GC_PROF.clone()), '__try0) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after initialization:")).clone(), (literal!("\n  ")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after initialization:")).clone(), (literal!("\n  ")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         seconds = unwrap_break_err!(Flags::getConfigInt(Flags::ALARM.clone()), '__try0);
         if seconds.clone() > 0 {
@@ -705,13 +705,13 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
                 unwrap_break_err!(FlagsUtil::new(args.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", (ErrorExt::printMessagesStr(false)).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
+            metamodelica::print((literal!("\n")).clone());
             return Err(__try0_err);
         }
     }
     if Flags::isSet(Flags::GC_PROF.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats at end of program:")).clone(), (literal!("\n  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats at end of program:")).clone(), (literal!("\n  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }
@@ -719,13 +719,13 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
 fn main2(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut interactiveMode: ArcStr = arcstr::literal!("");
     if Config::versionRequest()? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getVersionNr()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getVersionNr()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         return Ok(());
     }
     interactiveMode = (Flags::getConfigString(Flags::INTERACTIVE.clone())?).clone();
     if System::userIsRoot() && (interactiveMode.clone() == literal!("corba") || interactiveMode.clone() == literal!("tcp") || interactiveMode.clone() == literal!("zmq")) {
         Error::addMessage(Error::ROOT_USER_INTERACTIVE.clone(), metamodelica::nil())?;
-        println!("{}", (ErrorExt::printMessagesStr(false)).clone());
+        metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
         bail!("fail");
     }
     if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
@@ -749,28 +749,28 @@ fn main2(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
         Err(__try0_err) => {
             if args.clone().is_empty() && Config::classToInstantiate()? == literal!("") {
                 if !(Config::helpRequest()?) {
-                    println!("{}", (FlagsUtil::printUsage()?).clone());
+                    metamodelica::print((FlagsUtil::printUsage()?).clone());
                     System::fflush();
                 }
                 return Ok(());
             }
             if '__try1: {
                 unwrap_break_err!(Settings::getInstallationDirectoryPath(), '__try1);
-                println!("{}", (literal!("# Error encountered! Exiting...\n")).clone());
+                metamodelica::print((literal!("# Error encountered! Exiting...\n")).clone());
                 System::fflush();
-                println!("{}", (literal!("# Please check the error message and the flags.\n")).clone());
+                metamodelica::print((literal!("# Please check the error message and the flags.\n")).clone());
                 System::fflush();
                 unwrap_break_err!(Print::printBuf((literal!("\n\n----\n\nError buffer:\n\n")).clone()), '__try1);
                 System::fflush();
-                println!("{}", (unwrap_break_err!(Print::getErrorString(), '__try1)).clone());
+                metamodelica::print((unwrap_break_err!(Print::getErrorString(), '__try1)).clone());
                 System::fflush();
-                println!("{}", (ErrorExt::printMessagesStr(false)).clone());
+                metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
                 System::fflush();
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n")).clone());
                 System::fflush();
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
-                println!("{}", (literal!("Error: Failed to retrieve the installation directory path!\n")).clone());
+                metamodelica::print((literal!("Error: Failed to retrieve the installation directory path!\n")).clone());
                 System::fflush();
             }
             return Err(__try0_err);

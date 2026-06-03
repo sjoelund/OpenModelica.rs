@@ -203,9 +203,9 @@ pub fn makeBuiltinLookupTree(mut name: ArcStr, mut components: Arc<metamodelica:
         ltree = LookupTree::add(ltree.clone(), (cls.clone()).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() }), (std::sync::Arc::new(LookupTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
         i = i.clone() + 1;
     }
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Lookup tree for ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", (anyString(ltree.clone())).clone());
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Lookup tree for ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((anyString(ltree.clone())).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

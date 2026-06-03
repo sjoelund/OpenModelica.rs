@@ -371,7 +371,7 @@ fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut al
             vis_name = __try0_o3;
         }
         Err(__try0_err) => {
-            println!("{}", (literal!("fillVisualizationObjects failed! - not yet supported type")).clone());
+            metamodelica::print((literal!("fillVisualizationObjects failed! - not yet supported type")).clone());
             return Err(__try0_err);
         }
     }
@@ -1095,7 +1095,7 @@ fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn:
 }
 
 fn dumpVis(mut visIn: metamodelica::Array<Visualization>, mut iFileName: ArcStr) -> Result<()> {
-    println!("{}", (literal!("")).clone());
+    metamodelica::print((literal!("")).clone());
     Tpl::tplNoret2((std::sync::Arc::new(VisualXMLTpl::dumpVisXML) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, metamodelica::Array<Visualization>, ArcStr) -> Result<Tpl::Text> + 'static>), visIn.clone(), (iFileName.clone()).clone())?;
     Ok(())
 }

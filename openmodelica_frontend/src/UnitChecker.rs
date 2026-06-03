@@ -111,7 +111,7 @@ pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                     Debug::trace((literal!("UnitChecker::check() failed\n")).clone())?;
-                    println!("{}", (literal!("check failed\n")).clone());
+                    metamodelica::print((literal!("check failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1122,12 +1122,12 @@ fn mulSpecUnitWithNorm(mut suin: UnitAbsyn::SpecUnit, mut normunit: UnitAbsyn::U
 pub fn printSpecUnit(mut text: ArcStr, mut su: UnitAbsyn::SpecUnit) -> Result<()> {
     let () = (match (text.clone(), su.clone()) {
         (mut r#str, UnitAbsyn::SpecUnit { typeParameters: ref params, units: _ }) => {
-            println!("{}", (r#str.clone()).clone());
-            println!("{}", (literal!(" \"")).clone());
-            println!("{}", (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: su.clone() })?).clone());
-            println!("{}", (literal!("\" {")).clone());
+            metamodelica::print((r#str.clone()).clone());
+            metamodelica::print((literal!(" \"")).clone());
+            metamodelica::print((UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: su.clone() })?).clone());
+            metamodelica::print((literal!("\" {")).clone());
             printSpecUnitParams(params.clone())?;
-            println!("{}", (literal!("}\n")).clone());
+            metamodelica::print((literal!("}\n")).clone());
             ()
         },
     });
@@ -1140,15 +1140,15 @@ pub fn printSpecUnitParams(mut params: Arc<metamodelica::List<(MMath::Rational, 
             ()
         },
         Deref @ metamodelica::List::Cons { head: (MMath::Rational { nom: i1, denom: i2 }, UnitAbsyn::TypeParameter { name, indx: loc }), tail: rest } => {
-            println!("{}", (literal!("(\"")).clone());
-            println!("{}", (name.clone()).clone());
-            println!("{}", (literal!("\",")).clone());
-            println!("{}", (intString(loc.clone())).clone());
-            println!("{}", (literal!(")^(")).clone());
-            println!("{}", (intString(i1.clone())).clone());
-            println!("{}", (literal!("/")).clone());
-            println!("{}", (intString(i2.clone())).clone());
-            println!("{}", (literal!("),")).clone());
+            metamodelica::print((literal!("(\"")).clone());
+            metamodelica::print((name.clone()).clone());
+            metamodelica::print((literal!("\",")).clone());
+            metamodelica::print((intString(loc.clone())).clone());
+            metamodelica::print((literal!(")^(")).clone());
+            metamodelica::print((intString(i1.clone())).clone());
+            metamodelica::print((literal!("/")).clone());
+            metamodelica::print((intString(i2.clone())).clone());
+            metamodelica::print((literal!("),")).clone());
             printSpecUnitParams(rest.clone())?;
             ()
         },
@@ -1158,26 +1158,26 @@ pub fn printSpecUnitParams(mut params: Arc<metamodelica::List<(MMath::Rational, 
 }
 
 pub fn testUnitOp() -> () {
-    println!("{}", (literal!("test")).clone());
+    metamodelica::print((literal!("test")).clone());
     ()
 }
 
 pub fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
     let () = (match res.clone() {
         UnitAbsyn::UnitCheckResult::CONSISTENT { .. } => {
-            println!("{}", (literal!("\n---\nThe system of units is consistent.\n---\n")).clone());
+            metamodelica::print((literal!("\n---\nThe system of units is consistent.\n---\n")).clone());
             ()
         },
         UnitAbsyn::UnitCheckResult::INCONSISTENT { u1: mut u1, u2: mut u2 } => {
             let mut str1: ArcStr = arcstr::literal!("");
             let mut str2: ArcStr = arcstr::literal!("");
-            println!("{}", (literal!("\n---\nThe system of units is inconsistent. \"")).clone());
+            metamodelica::print((literal!("\n---\nThe system of units is inconsistent. \"")).clone());
             str1 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: u1.clone() })?).clone();
-            println!("{}", (str1.clone()).clone());
-            println!("{}", (literal!("\" != \"")).clone());
+            metamodelica::print((str1.clone()).clone());
+            metamodelica::print((literal!("\" != \"")).clone());
             str2 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: u2.clone() })?).clone();
-            println!("{}", (str2.clone()).clone());
-            println!("{}", (literal!("\"\n---\n")).clone());
+            metamodelica::print((str2.clone()).clone());
+            metamodelica::print((literal!("\"\n---\n")).clone());
             ()
         },
     });

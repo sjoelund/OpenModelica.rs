@@ -3082,7 +3082,8 @@ fn printUnboundError(mut component: Arc<Component::NFComponent>, mut target: Arc
         return Ok(());
     }
     let () = (::match_deref::match_deref! { match &(target.extra.clone()) {
-        Some(extra @ Deref @ EvalTargetData { .. }) => {
+        Some(__esc_extra @ Deref @ EvalTargetData { .. }) => {
+            extra = (*__esc_extra).clone();
             Error::addSourceMessage(Error::STRUCTURAL_PARAMETER_OR_CONSTANT_WITH_NO_BINDING.clone(), list![(Expression::toString(extra.exp.clone())?).clone(), (InstNode::name(extra.component.clone())?).clone()], target.info.clone())?;
             bail!("fail")
         },

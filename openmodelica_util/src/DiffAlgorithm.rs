@@ -382,7 +382,7 @@ fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr
             }
         }
     }
-    println!("{}", (literal!("myersDiff: This cannot happen")).clone());
+    metamodelica::print((literal!("myersDiff: This cannot happen")).clone());
     bail!("fail");
     Ok(out)
 }
@@ -416,7 +416,7 @@ fn myersGreedyPathToDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, m
             d1 = Diff::Add.clone();
             t = ({let __elt = arr2.borrow()[(start2.clone() + y1.clone()-1) as usize].clone(); __elt});
         } else {
-            println!("{}", (literal!("myersGreedyPathToDiff: This cannot happen\n")).clone());
+            metamodelica::print((literal!("myersGreedyPathToDiff: This cannot happen\n")).clone());
             bail!("fail");
         }
         if lst.clone().is_empty() {

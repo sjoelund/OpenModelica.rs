@@ -86,7 +86,7 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
                 Some(_) => (),
                 _ => bail!("pattern mismatch"),
             } };
-            println!("{}", (literal!("Using json-file\n")).clone());
+            metamodelica::print((literal!("Using json-file\n")).clone());
             tmpCalcTimes = readCalcTimesFromJson((fullFileName.clone()).clone())?;
             Ok(tmpCalcTimes.clone())
         })() { break 'mc __v; }
@@ -104,7 +104,7 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("readCalcTimesFromFile: No valid profiling-file found.\n")).clone());
+            metamodelica::print((literal!("readCalcTimesFromFile: No valid profiling-file found.\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -166,7 +166,7 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("expandCalcTimes: Invalid number of list-entries\n")).clone());
+                    metamodelica::print((literal!("expandCalcTimes: Invalid number of list-entries\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

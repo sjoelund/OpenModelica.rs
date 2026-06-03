@@ -2310,7 +2310,7 @@ pub fn makeTmpEqnForExp(mut iExp: Arc<DAE::Exp>, mut name: ArcStr, mut offset: i
         tmpvar = BackendVariable::setVarTS(tmpvar.clone(), Some(openmodelica_backend_types::BackendDAE::TearingSelect::AVOID));
         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: oExp.clone(), scalar: y.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
         if Flags::isSet(Flags::DUMP_SIMPLIFY_LOOPS.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" -- new eqn--\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" -- new eqn--\n")); ArcStr::from(__mm_s) }).clone());
         }
         eqnVars = equationVars(eqn.clone(), ivars.clone())?;
         b = eqnVars.clone().is_empty() && !(Expression::expHasCref(y.clone(), DAE::crefTime().clone())?);

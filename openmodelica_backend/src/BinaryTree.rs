@@ -455,7 +455,7 @@ pub fn bintreeToList(mut inBinTree: Arc<BinTree>) -> Result<(Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("- BackendDAEUtil.bintreeToList failed\n")).clone());
+                    metamodelica::print((literal!("- BackendDAEUtil.bintreeToList failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

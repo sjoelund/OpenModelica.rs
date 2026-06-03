@@ -860,7 +860,7 @@ pub mod DaeModeData {
         for mut var in &*simulationAlgVars.clone().reverse() {
             let mut var = var.clone();
             cref = ComponentRef::append(var.name.clone(), seedCref.clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Searching for: ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Searching for: ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             assign_field!(var.index = SimVar::getIndex(cref.clone(), simcode_map.clone())?);
             daeModeAlgVars = metamodelica::cons(var.clone(), daeModeAlgVars.clone());
         }

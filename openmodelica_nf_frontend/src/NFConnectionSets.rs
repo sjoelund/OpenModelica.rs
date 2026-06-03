@@ -337,19 +337,19 @@ pub mod ConnectionSets {
         let mut entries: Arc<metamodelica::List<(Arc<Connector::NFConnector>, i32)>> = metamodelica::nil();
         let mut e: Entry = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
         let mut i: i32 = 0;
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(sets.nodeCount.clone())); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(sets.nodeCount.clone())); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone());
         nodes = sets.nodes.clone();
         entries = UnorderedMap::toList(sets.elements.clone());
         for mut p in &*entries.clone() {
             let mut p = p.clone();
             (e, i) = p.clone();
-            println!("{}", (literal!("[")).clone());
-            println!("{}", ArcStr::from(::std::format!("{}", i.clone())));
-            println!("{}", (literal!("]")).clone());
-            println!("{}", (EntryString(e.clone())?).clone());
-            println!("{}", (literal!(" -> ")).clone());
-            println!("{}", ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("[")).clone());
+            metamodelica::print(ArcStr::from(::std::format!("{}", i.clone())));
+            metamodelica::print((literal!("]")).clone());
+            metamodelica::print((EntryString(e.clone())?).clone());
+            metamodelica::print((literal!(" -> ")).clone());
+            metamodelica::print(ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
+            metamodelica::print((literal!("\n")).clone());
         }
         Ok(())
     }

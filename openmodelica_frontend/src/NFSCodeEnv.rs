@@ -978,7 +978,7 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
         })() { outEnv = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to enterScope: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in env: ")); __mm_s.push_str(&*printEnvStr(inEnv.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to enterScope: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in env: ")); __mm_s.push_str(&*printEnvStr(inEnv.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2342,7 +2342,7 @@ pub fn getDerivedClassRedeclares(mut inDerivedName: ArcStr, mut inTypeSpec: Arc<
                     rm = __pa0.clone();
                     bc = __pa1.clone();
                     let false = (AbsynUtil::pathSuffixOf(path.clone(), bc.clone())?) else { bail!("pattern mismatch") };
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Derived paths are not the same: ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" != ")); __mm_s.push_str(&*AbsynUtil::pathString(bc.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Derived paths are not the same: ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" != ")); __mm_s.push_str(&*AbsynUtil::pathString(bc.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(rm.clone())
                 }
                 _ => bail!("nomatch"),

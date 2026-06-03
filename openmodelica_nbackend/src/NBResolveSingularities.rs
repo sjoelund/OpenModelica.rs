@@ -175,7 +175,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
             bail!("fail");
         }
         if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Index Reduction")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(candidate_ptrs.clone(), (literal!("State Candidate")).clone(), None, true)?); __mm_s.push_str(&*EquationPointers::toString(constraint_ptrs.clone(), (literal!("Constraint")).clone(), None, true, None)?); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Index Reduction")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(candidate_ptrs.clone(), (literal!("State Candidate")).clone(), None, true)?); __mm_s.push_str(&*EquationPointers::toString(constraint_ptrs.clone(), (literal!("Constraint")).clone(), None, true, None)?); ArcStr::from(__mm_s) }).clone());
         }
         full_local = Adjacency::Matrix::createFull(candidate_ptrs.clone(), constraint_ptrs.clone(), kind.clone())?;
         set_adj = Arc::new(Adjacency::Matrix::Matrix::EMPTY { st: Adjacency::MatrixStrictness::LINEAR.clone() });
@@ -192,7 +192,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
             (current_candidates, rest_candidates) = List::splitOnTrue(rest_candidates.clone(), stageFunc.clone())?;
             if current_candidates.clone().is_empty() {
                 if debug.clone() {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Nothing done for (")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Nothing done for (")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             } else {
                 vo = UnorderedMap::merge(vo.clone(), UnorderedMap::copy(vn.clone()), metamodelica::sourceInfo!())?;
@@ -207,12 +207,12 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
                 (set_adj, full_local) = Adjacency::Matrix::expand(set_adj.clone(), full_local.clone(), vo.clone(), vn.clone(), eo.clone(), en.clone(), candidate_ptrs.clone(), constraint_ptrs.clone(), kind.clone())?;
                 set_matching = Matching::regular(set_matching.clone(), set_adj.clone(), false, true, false)?;
                 if debug.clone() {
-                    println!("{}", (Adjacency::Matrix::toString(set_adj.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())?).clone());
-                    println!("{}", (Matching::toString(set_matching.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())).clone());
+                    metamodelica::print((Adjacency::Matrix::toString(set_adj.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())?).clone());
+                    metamodelica::print((Matching::toString(set_matching.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())).clone());
                 }
                 if Matching::isEmpty(set_matching.clone()) && Matching::isPerfect(set_matching.clone())? {
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Finished with perfect matching in stage ")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Finished with perfect matching in stage ")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     break;
                 }
@@ -224,7 +224,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
         assign_field!(diffArguments.diff_map = Some(BVariable::VarData::getStateOrder(varData.clone())?));
         diffArguments_ptr = Pointer::create(diffArguments.clone());
         if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-            println!("{}", (StringUtil::headline_3((literal!("[dummyselect] 1. Differentiate the constraint equations")).clone())).clone());
+            metamodelica::print((StringUtil::headline_3((literal!("[dummyselect] 1. Differentiate the constraint equations")).clone())).clone());
         }
         for mut constraint in &*EquationPointers::toList(constraint_ptrs.clone())? {
             let mut constraint = constraint.clone();
@@ -232,8 +232,8 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
             diffed_eqn = removeSlicedDerivatives(diffed_eqn.clone(), UnorderedMap::getSafe(Equation::getEqnName(constraint.clone())?, slice_map.clone(), metamodelica::sourceInfo!())?, dummy_slice_set.clone(), BVariable::VarData::getUniqueIndex(varData.clone())?)?;
             new_eqns = metamodelica::cons(diffed_eqn.clone(), new_eqns.clone());
             if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] constraint eqn:\t\t")); __mm_s.push_str(&*Equation::toString(Pointer::access(constraint.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] differentiated eqn:\t")); __mm_s.push_str(&*Equation::toString(Pointer::access(diffed_eqn.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] constraint eqn:\t\t")); __mm_s.push_str(&*Equation::toString(Pointer::access(constraint.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] differentiated eqn:\t")); __mm_s.push_str(&*Equation::toString(Pointer::access(diffed_eqn.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
         diffArguments = Pointer::access(diffArguments_ptr.clone());
@@ -250,22 +250,22 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
             bail!("fail");
         }
         if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-            println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] (")); __mm_s.push_str(&*intString((states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Selected States")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Slice::lstToString(states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] (")); __mm_s.push_str(&*intString((states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Selected States")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Slice::lstToString(states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
         if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
-            println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((diffArguments.new_vars.clone().len() as i32))); __mm_s.push_str(&*literal!(") State Derivatives Created by Differentiation")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(diffArguments.new_vars.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((dummy_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Selected Dummy States")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Slice::lstToString(dummy_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((diffArguments.new_vars.clone().len() as i32))); __mm_s.push_str(&*literal!(") State Derivatives Created by Differentiation")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(diffArguments.new_vars.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((dummy_states.clone().len() as i32))); __mm_s.push_str(&*literal!(") Selected Dummy States")); ArcStr::from(__mm_s) }).clone())).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Slice::lstToString(dummy_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
         if unmatched_eqns.clone().is_empty() {
             if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("\t STATIC STATE SELECTION\n\t(no unmatched equations)")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("\t STATIC STATE SELECTION\n\t(no unmatched equations)")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         } else {
             if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-                println!("{}", (toStringDynamicSelect(dummy_states.clone(), unmatched_eqns.clone())?).clone());
+                metamodelica::print((toStringDynamicSelect(dummy_states.clone(), unmatched_eqns.clone())?).clone());
             }
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResolveSingularities.indexReduction")); __mm_s.push_str(&*literal!(" failed because dynamic state selection is not yet supported.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
@@ -337,7 +337,7 @@ pub fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: 
     let mut en: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     (_, unmatched_vars, _, unmatched_eqns) = Matching::getMatches(matching.clone(), mapping_opt.clone(), variables.clone(), equations.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? {
-        println!("{}", (toStringUnmatched(unmatched_vars.clone(), unmatched_eqns.clone())?).clone());
+        metamodelica::print((toStringUnmatched(unmatched_vars.clone(), unmatched_eqns.clone())?).clone());
     }
     if !(unmatched_vars.clone().is_empty() && unmatched_eqns.clone().is_empty()) {
         changed = true;
@@ -384,7 +384,7 @@ pub fn balanceInitialization(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: 
     }))?;
             (adj, full) = Adjacency::Matrix::expand(adj.clone(), full.clone(), vo.clone(), vn.clone(), eo.clone(), en.clone(), variables.clone(), equations.clone(), kind.clone())?;
             if Flags::isSet(Flags::INITIALIZATION.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Start Equations for balancing the Initialization (")); __mm_s.push_str(&*intString((start_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created Start Equations for balancing the Initialization (")); __mm_s.push_str(&*intString((start_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
         } else {
             error_msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResolveSingularities.balanceInitialization")); __mm_s.push_str(&*literal!(" failed because following non-fixable variables could not be solved:\n")); __mm_s.push_str(&*List::toString(failed_vars.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();

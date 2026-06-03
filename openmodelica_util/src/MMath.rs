@@ -197,12 +197,12 @@ pub fn testRational() -> Result<()> {
             let Rational { nom: 4, denom: 3 } = (multRational(Rational { nom: 2, denom: 3 }, Rational { nom: 4, denom: 2 })?) else { bail!("pattern mismatch") };
             let Rational { nom: 1, denom: 1 } = (multRational(Rational { nom: 1, denom: 1 }, Rational { nom: 1, denom: 1 })?) else { bail!("pattern mismatch") };
             let Rational { nom: 1, denom: 2 } = (divRational(Rational { nom: 1, denom: 3 }, Rational { nom: 2, denom: 3 })?) else { bail!("pattern mismatch") };
-            println!("{}", (literal!("testRational succeeded\n")).clone());
+            metamodelica::print((literal!("testRational succeeded\n")).clone());
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("testRationals failed\n")).clone());
+            metamodelica::print((literal!("testRationals failed\n")).clone());
             Ok(())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

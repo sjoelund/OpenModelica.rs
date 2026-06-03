@@ -112,7 +112,7 @@ pub fn checkUnits(mut inDAE: DAE::DAElist, mut func: Arc<AvlTreePathFunction::Tr
         newdaelist = listAppend(varlist.clone(), eqlist.clone());
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_UNIT.clone()), '__try0) {
             unwrap_break_err!(BaseHashTable::dumpHashTable(HtCr2U2.clone()), '__try0);
-            println!("{}", (literal!("######## UnitCheck COMPLETED ########\n")).clone());
+            metamodelica::print((literal!("######## UnitCheck COMPLETED ########\n")).clone());
         }
         unwrap_break_err!(notification(HtCr2U1.clone(), HtCr2U2.clone(), HtU2S.clone()), '__try0);
         outDAE = unwrap_break_err!(updateDAElist(inDAE.clone(), newdaelist.clone()), '__try0);

@@ -1179,7 +1179,7 @@ fn simpleArrayEquationAcausal(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mu
     (elst2, expandRhs) = List::mapFold(subslst.clone(), (std::sync::Arc::new({ let __pe_b0 = rhs.clone(); move |__pe_a1, __pe_a2| Ok(Expression::applyExpSubscriptsFoldCheckSimplify(__pe_b0.clone(), __pe_a1, __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Subscript>>>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
     if !(hasInlineAfterIndexReduction.clone()) {
         if false && !(expandLhs.clone() && expandRhs.clone()) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("RemoveSimpleEquations.simpleArrayEquationAcausal")); __mm_s.push_str(&*literal!(" not expanding ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(lhs.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("RemoveSimpleEquations.simpleArrayEquationAcausal")); __mm_s.push_str(&*literal!(" not expanding ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(lhs.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         let true = (expandLhs.clone() && expandRhs.clone()) else { bail!("pattern mismatch") };
     }
@@ -2883,7 +2883,7 @@ fn addStartValue(mut fixed: bool, mut fixedset: bool, mut cr: Arc<DAE::Component
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("RemoveSimpleEquations.addStartValue failed!\n")).clone());
+                    metamodelica::print((literal!("RemoveSimpleEquations.addStartValue failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -3120,7 +3120,7 @@ fn mergeMinMax(mut negate: bool, mut ominmax: Arc<metamodelica::List<Option<Arc<
             minMax.clone()
         },
         _ => {
-            println!("{}", (literal!("RemoveSimpleEquations.mergeMinMax failed!\n")).clone());
+            metamodelica::print((literal!("RemoveSimpleEquations.mergeMinMax failed!\n")).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3226,7 +3226,7 @@ fn handleVarSetAttributes(mut inAttributes: VarSetAttributes, mut inVar: Backend
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("RemoveSimpleEquations.handleVarSetAttributes failed!\n")).clone());
+                    metamodelica::print((literal!("RemoveSimpleEquations.handleVarSetAttributes failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4612,11 +4612,11 @@ fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                         tplExp = BaseHashTable::hashTableList(HTCrToExp.clone())?;
                         countAliasEquations = (tplExp.clone().len() as i32);
                         countSimpleEquations = (simpleEqList.clone().len() as i32);
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Unknowns:    ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(orderedVars.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of \"Complex\" Equations:   ")); __mm_s.push_str(&*intString(BackendEquation::equationLstSize(eqList.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Alias Equations:   ")); __mm_s.push_str(&*intString(countAliasEquations.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Simple Equations:   ")); __mm_s.push_str(&*intString(countSimpleEquations.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", (literal!("\nAliases:\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Unknowns:    ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(orderedVars.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of \"Complex\" Equations:   ")); __mm_s.push_str(&*intString(BackendEquation::equationLstSize(eqList.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Alias Equations:   ")); __mm_s.push_str(&*intString(countAliasEquations.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of Simple Equations:   ")); __mm_s.push_str(&*intString(countSimpleEquations.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print((literal!("\nAliases:\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")).clone());
                         BaseHashTable::dumpHashTable(HTCrToExp.clone())?;
                     }
                     assign_field!(
@@ -4793,7 +4793,7 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                     keepEquation = true;
                     if count.clone() == 1 {
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation knw0: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation knw0: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                         let __pa5 = ::match_deref::match_deref! { match &(cr_lst.clone()) {
                             Deref @ metamodelica::List::Cons { head: __pa5, tail: Deref @ metamodelica::List::Nil } => __pa5.clone(),
@@ -4814,13 +4814,13 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                         eqSolved = __pa8.clone();
                         let true = (isSimple(res.clone())?) else { bail!("pattern mismatch") };
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation knw1: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation knw1: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                         HTCrToExp = addToCrToExp(cr.clone(), eqSolved.clone(), HTCrToExp.clone(), HTCrToCrEqLst.clone())?;
                         keepEquation = false;
                     } else if count.clone() == 2 && findAliases.clone() {
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation al0: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation al0: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                         let (__pa9, __pa10) = ::match_deref::match_deref! { match &(cr_lst.clone()) {
                             Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Nil } } => (__pa9.clone(), __pa10.clone()),
@@ -4848,7 +4848,7 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
                         res = __pa13.clone();
                         let true = (isSimple(res.clone())?) else { bail!("pattern mismatch") };
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation al1: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found Equation al1: ")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                         HTCrToCrEqLst = addToCrAndEqLists(cr2.clone(), cr1.clone(), inEq.clone(), HTCrToCrEqLst.clone())?;
                         HTCrToCrEqLst = addToCrAndEqLists(cr1.clone(), cr2.clone(), inEq.clone(), HTCrToCrEqLst.clone())?;
@@ -4904,7 +4904,7 @@ fn findSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: (Backen
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.findSimpleEquations ++++++++++\n")).clone());
+                    metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.findSimpleEquations ++++++++++\n")).clone());
                     Ok((inEq.clone(), inTuple.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -5019,9 +5019,9 @@ fn addToCrAndEqLists(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::Componen
             HTCrToCrEqLst.clone()
         },
         _ => {
-            println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addToCrAndEqLists ++++++++++\n")).clone());
+            metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.addToCrAndEqLists ++++++++++\n")).clone());
             BackendDump::printEquation(eq.clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solve for:")); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(cr1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solve for:")); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(cr1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
     });
@@ -5048,9 +5048,9 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addToCrToExp ++++++++++\n")).clone());
+            metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.addToCrToExp ++++++++++\n")).clone());
             BackendDump::printEquation(eq.clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5073,7 +5073,7 @@ fn solveAllCrefs(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.solveAllCrefs ++++++++++\n")).clone());
+            metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.solveAllCrefs ++++++++++\n")).clone());
             Ok(inHTCrToExp.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5123,7 +5123,7 @@ fn solveAllCrefs1(mut cr: Arc<DAE::ComponentRef>, mut value: Arc<DAE::Exp>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.solveAllCrefs1 ++++++++++\n")).clone());
+                    metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.solveAllCrefs1 ++++++++++\n")).clone());
                     Ok(inHTCrToExp.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5158,7 +5158,7 @@ fn addRestCrefs(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, 
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addRestCrefs ++++++++++\n")).clone());
+            metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.addRestCrefs ++++++++++\n")).clone());
             return Err(__try0_err);
         }
     }
@@ -5195,7 +5195,7 @@ fn addThisCrefs(mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addThisCrefs ++++++++++\n")).clone());
+                    metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.addThisCrefs ++++++++++\n")).clone());
                     Ok(inHTCrToExp.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5428,7 +5428,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
                 j = j.clone() * unwrap_break_err!(ComponentReference::crefDepth(cr1.clone()), '__try0);
                 HTStartExpToInt = unwrap_break_err!(BaseHashTable::add((e.clone(), j.clone()), HTStartExpToInt.clone()), '__try0);
                 if unwrap_break_err!(Flags::isSet(Flags::DEBUG_ALIAS.clone()), '__try0) {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             if BackendVariable::varHasNominalValue(v.clone()) {
@@ -5438,7 +5438,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
                 j = j.clone() * unwrap_break_err!(ComponentReference::crefDepth(cr1.clone()), '__try0);
                 HTNominalExpToInt = unwrap_break_err!(BaseHashTable::add((e.clone(), j.clone()), HTNominalExpToInt.clone()), '__try0);
                 if unwrap_break_err!(Flags::isSet(Flags::DEBUG_ALIAS.clone()), '__try0) {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             (HTStartExpToInt, HTNominalExpToInt) = unwrap_break_err!(getThisAttributes(cr1.clone(), cr_eq_lst.clone(), inAliasVars.clone(), HTStartExpToInt.clone(), HTNominalExpToInt.clone()), '__try0);
@@ -5447,7 +5447,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
                 e = getDominantAttributeValue(tplExpIndList.clone());
                 v = unwrap_break_err!(BackendVariable::setVarStartValue(v.clone(), e.clone()), '__try0);
                 if unwrap_break_err!(Flags::isSet(Flags::DEBUG_ALIAS.clone()), '__try0) {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     unwrap_break_err!(BaseHashTable::dumpHashTable(HTStartExpToInt.clone()), '__try0);
                 }
             }
@@ -5456,7 +5456,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
                 e = getDominantAttributeValue(tplExpIndList.clone());
                 v = unwrap_break_err!(BackendVariable::setVarNominalValue(v.clone(), e.clone()), '__try0);
                 if unwrap_break_err!(Flags::isSet(Flags::DEBUG_ALIAS.clone()), '__try0) {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(cr1.clone()), '__try0)); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     unwrap_break_err!(BaseHashTable::dumpHashTable(HTNominalExpToInt.clone()), '__try0);
                 }
             }
@@ -5464,7 +5464,7 @@ fn setAttributes(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>,
         }
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.setAttributes ++++++++++\n")).clone());
+        metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.setAttributes ++++++++++\n")).clone());
     }
     outVars
 }
@@ -5524,7 +5524,7 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                         }
                         outHTStartExpToInt = BaseHashTable::add((e2.clone(), j.clone()), outHTStartExpToInt.clone())?;
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("START: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                     }
                     if BackendVariable::varHasNominalValue(v.clone()) {
@@ -5540,7 +5540,7 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
                         }
                         outHTNominalExpToInt = BaseHashTable::add((e2.clone(), j.clone()), outHTNominalExpToInt.clone())?;
                         if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NOMINAL: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                     }
                     (outHTStartExpToInt, outHTNominalExpToInt) = getThisAttributes(cr.clone(), cr_eq_rest.clone(), inAliasVars.clone(), outHTStartExpToInt.clone(), outHTNominalExpToInt.clone())?;
@@ -5552,7 +5552,7 @@ fn getThisAttributes(mut cr: Arc<DAE::ComponentRef>, mut cr_eq_lst: Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.getThisAttributes ++++++++++\n")).clone());
+                    metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.getThisAttributes ++++++++++\n")).clone());
                     Ok((outHTStartExpToInt.clone(), outHTNominalExpToInt.clone()))
                 }
                 _ => bail!("nomatch"),

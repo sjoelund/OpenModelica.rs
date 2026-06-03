@@ -117,7 +117,7 @@ fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendUtil.modelicaStringToCStr1")); __mm_s.push_str(&*literal!(" failed for str:")); __mm_s.push_str(&*inString.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendUtil.modelicaStringToCStr1")); __mm_s.push_str(&*literal!(" failed for str:")); __mm_s.push_str(&*inString.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

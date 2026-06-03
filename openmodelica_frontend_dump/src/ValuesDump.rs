@@ -407,7 +407,7 @@ fn valRecordString(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (xs, ids) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ValuesUtil.valRecordString failed:\nids: ")); __mm_s.push_str(&*stringDelimitList(ids.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\nvals: ")); __mm_s.push_str(&*stringDelimitList(List::map(xs.clone(), (std::sync::Arc::new(valString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ValuesUtil.valRecordString failed:\nids: ")); __mm_s.push_str(&*stringDelimitList(ids.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\nvals: ")); __mm_s.push_str(&*stringDelimitList(List::map(xs.clone(), (std::sync::Arc::new(valString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

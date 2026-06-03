@@ -155,7 +155,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     let mut neweqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut shared = (*shared).clone();
                     let mut jac = (*jac).clone();
-                    println!("{}", (literal!("try to relax\n")).clone());
+                    metamodelica::print((literal!("try to relax\n")).clone());
                     Util::profilerinit()?;
                     Util::profilerstart2()?;
                     Util::profilerstart1()?;
@@ -187,7 +187,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     colummarks = arrayCreate(size.clone(), -1);
                     onefreeMatchingBFS(unassigned.clone(), m.clone(), mt.clone(), size.clone(), ass1.clone(), ass2.clone(), colummarks.clone(), 1, metamodelica::nil())?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matching  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matching  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     vorphans = getOrphans(1, size.clone(), ass1.clone(), metamodelica::nil())?;
@@ -210,7 +210,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     (mark, roots, constraints) = prepairOrphansOrder(vorphans.clone(), ass1.clone(), ass22.clone(), mc.clone(), mct.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), vorphansarray1.clone(), vars.clone(), metamodelica::nil(), metamodelica::nil())?;
                     mark = prepairOrphansOrder2(vorphans.clone(), ass1.clone(), ass22.clone(), mc.clone(), mct.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), vorphansarray1.clone())?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Identifikation  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Identifikation  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     vorphansarray1 = arrayCreate(size.clone(), metamodelica::nil());
@@ -222,7 +222,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     mark = getConstraintesOrphansOrderEdvanced(constraints.clone(), ass1.clone(), ass22.clone(), m.clone(), mt.clone(), mc.clone(), mct.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), vorphansarray1.clone())?;
                     (vorphans, mark) = getOrphansOrderEdvanced3(roots.clone(), otherorphans.clone(), constraints.clone(), vorphans.clone(), vorphansarray1.clone(), mark.clone(), rowmarks.clone())?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Reihenfolge  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Reihenfolge  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     List::map2_0(constraints.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), rowmarks.clone(), mark.clone())?;
@@ -232,7 +232,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     List::map2_0(constraintresidual.clone(), (std::sync::Arc::new(doAssign) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>) -> Result<()> + 'static>), ass22.clone(), metamodelica::nil())?;
                     mark = getOrphansPairsConstraints(constraints.clone(), ass1.clone(), ass22.clone(), mc.clone(), mct.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), eqns.clone())?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Paarung  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Paarung  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     vec1 = arrayCreate(esize.clone(), metamodelica::nil());
@@ -242,7 +242,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     mark = getIndexesForEqnsAdvanced(vorphans.clone(), 1, m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), orowmarks.clone(), ocolummarks.clone(), ass1.clone(), ass22.clone(), vec1.clone(), vec2.clone(), arrayCreate(esize.clone(), false), vars.clone(), eqns.clone(), shared.clone(), size.clone())?;
                     (_, _, _, eqns, vars) = Array::fold(vec2.clone(), (std::sync::Arc::new(getEqnsinOrder) as std::sync::Arc<dyn ::std::ops::Fn(i32, (Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, BackendDAE::Variables)) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, BackendDAE::Variables)> + 'static>), (eqns.clone(), vars.clone(), ass22.clone(), BackendEquation::listEquation(metamodelica::nil())?, BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone())))?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Indizierung  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Indizierung  time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
@@ -265,15 +265,15 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     crefexps = metamodelica::arrayFromVec(crefexplst.clone().into_iter().cloned().collect());
                     neweqns = makeGausElimination(1, size.clone(), matrix.clone(), crefexps.clone(), metamodelica::nil())?;
                     Util::profilerstop1()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Gaus Elimination time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Gaus Elimination time: ")); __mm_s.push_str(&*realString(Util::profilertime1())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
                     syst = replaceEquationsAddNew(eindex.clone(), neweqns.clone(), syst.clone())?;
                     Util::profilerstop2()?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Gesamt  time: ")); __mm_s.push_str(&*realString(Util::profilertime2())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Gesamt  time: ")); __mm_s.push_str(&*realString(Util::profilertime2())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Util::profilerreset1();
                     Util::profilerstart1()?;
-                    println!("{}", (literal!("Ok system relaxed\n")).clone());
+                    metamodelica::print((literal!("Ok system relaxed\n")).clone());
                     (syst, shared, _) = relaxSystem1(syst.clone(), shared.clone(), comps.clone())?;
                     Ok((syst.clone(), shared.clone(), true))
                 }
@@ -397,8 +397,8 @@ fn replaceEquationsAddNew(mut inEqnIndxes: Arc<metamodelica::List<i32>>, mut inE
 fn dumpVar(mut id: i32, mut vars: BackendDAE::Variables) -> Result<()> {
     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     v = BackendVariable::getVarAt(vars.clone(), id.clone())?;
-    println!("{}", (ComponentReferenceBasics::printComponentRefStr(BackendVariable::varCref(v.clone())?)?).clone());
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((ComponentReferenceBasics::printComponentRefStr(BackendVariable::varCref(v.clone())?)?).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
@@ -1176,7 +1176,7 @@ fn getLinkPosition1(mut orphans: Arc<metamodelica::List<i32>>, mut m: metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error in getLinkPosition1! Found Orphan with more than one parents ")); __mm_s.push_str(&*stringDelimitList(List::map(orphans.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error in getLinkPosition1! Found Orphan with more than one parents ")); __mm_s.push_str(&*stringDelimitList(List::map(orphans.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1496,7 +1496,7 @@ fn dumpMatrix(mut row: i32, mut size: i32, mut matrix: metamodelica::Array<Arc<m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(row.clone())); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(row.clone())); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone());
             BackendDump::debuglst(({let __elt = matrix.borrow()[(row.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(dumpMatrix1) as std::sync::Arc<dyn ::std::ops::Fn((i32, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>), (literal!(", ")).clone(), (literal!("\n")).clone())?;
             dumpMatrix(row.clone() + 1, size.clone(), matrix.clone())?;
             Ok(())
@@ -1821,7 +1821,7 @@ fn gaussElimination(mut col: i32, mut size: i32, mut matrix: metamodelica::Array
                 None => (),
                 _ => bail!("pattern mismatch"),
             } };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("gaussElimination failt because of non diagonal Entry for col ")); __mm_s.push_str(&*intString(col.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("gaussElimination failt because of non diagonal Entry for col ")); __mm_s.push_str(&*intString(col.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2028,11 +2028,11 @@ fn dumpJacMatrix(mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equa
                     let true = (intGt(col.clone(), size.clone())) else { bail!("pattern mismatch") };
                     v = BackendVariable::getVarAt(vars.clone(), row.clone())?;
                     cr = BackendVariable::varCref(v.clone())?;
-                    println!("{}", (literal!(";... % ")).clone());
-                    println!("{}", (intString(row.clone())).clone());
-                    println!("{}", (literal!(" ")).clone());
-                    println!("{}", (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone());
-                    println!("{}", (literal!("\n")).clone());
+                    metamodelica::print((literal!(";... % ")).clone());
+                    metamodelica::print((intString(row.clone())).clone());
+                    metamodelica::print((literal!(" ")).clone());
+                    metamodelica::print((ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone());
+                    metamodelica::print((literal!("\n")).clone());
                     dumpJacMatrix(jac.clone(), row.clone() + 1, 1, size.clone(), vars.clone())?;
                     Ok(())
                 }
@@ -2042,7 +2042,7 @@ fn dumpJacMatrix(mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equa
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    println!("{}", (literal!("0, ")).clone());
+                    metamodelica::print((literal!("0, ")).clone());
                     dumpJacMatrix(jac.clone(), row.clone(), col.clone() + 1, size.clone(), vars.clone())?;
                     Ok(())
                 }
@@ -2056,8 +2056,8 @@ fn dumpJacMatrix(mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equa
                     let true = (intEq(r.clone(), row.clone())) else { bail!("pattern mismatch") };
                     let true = (intEq(c.clone(), col.clone())) else { bail!("pattern mismatch") };
                     estr = (ExpressionBasics::printExpStr(e.clone())?).clone();
-                    println!("{}", (estr.clone()).clone());
-                    println!("{}", (literal!(", ")).clone());
+                    metamodelica::print((estr.clone()).clone());
+                    metamodelica::print((literal!(", ")).clone());
                     dumpJacMatrix(rest.clone(), row.clone(), col.clone() + 1, size.clone(), vars.clone())?;
                     Ok(())
                 }
@@ -2069,7 +2069,7 @@ fn dumpJacMatrix(mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equa
                 Deref @ metamodelica::List::Cons { head: (r, c, _), tail: _ } => {
                     let true = (intEq(r.clone(), row.clone())) else { bail!("pattern mismatch") };
                     let true = (intLt(col.clone(), c.clone())) else { bail!("pattern mismatch") };
-                    println!("{}", (literal!("0, ")).clone());
+                    metamodelica::print((literal!("0, ")).clone());
                     dumpJacMatrix(jac.clone(), row.clone(), col.clone() + 1, size.clone(), vars.clone())?;
                     Ok(())
                 }
@@ -2080,7 +2080,7 @@ fn dumpJacMatrix(mut jac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equa
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (r, _, _), tail: _ } => {
                     let false = (intEq(r.clone(), row.clone())) else { bail!("pattern mismatch") };
-                    println!("{}", (literal!("0, ")).clone());
+                    metamodelica::print((literal!("0, ")).clone());
                     dumpJacMatrix(jac.clone(), row.clone(), col.clone() + 1, size.clone(), vars.clone())?;
                     Ok(())
                 }
@@ -2371,7 +2371,7 @@ fn getOrphansPairsConstraints(mut inOrphans: Arc<metamodelica::List<i32>>, mut a
                 Deref @ metamodelica::List::Cons { head: o, tail: rest } => {
                     let false = (intEq(({let __elt = colummarks.borrow()[(o.clone()-1) as usize].clone(); __elt}), mark.clone())) else { bail!("pattern mismatch") };
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(o.clone()-1) as usize] = mark.clone(); _arr};
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getOrphansPairsConstraints Process Orphan ")); __mm_s.push_str(&*intString(o.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getOrphansPairsConstraints Process Orphan ")); __mm_s.push_str(&*intString(o.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     getOrphansPairsConstraints1(({let __elt = mt.borrow()[(o.clone()-1) as usize].clone(); __elt}), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), eqns.clone(), o.clone(), metamodelica::nil())?;
                     Ok(getOrphansPairsConstraints(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone() + 1, rowmarks.clone(), colummarks.clone(), eqns.clone())?)
                 }

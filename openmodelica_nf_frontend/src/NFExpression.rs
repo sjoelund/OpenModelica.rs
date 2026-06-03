@@ -2345,7 +2345,10 @@ pub fn toString(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
         Deref @ REAL { .. } => realString(var_field!((*exp).value, NFExpression::REAL).clone()),
         Deref @ STRING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*System::escapedString((var_field!((*exp).value, NFExpression::STRING).clone()).clone(), false)); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) },
         Deref @ BOOLEAN { .. } => boolString(var_field!((*exp).value, NFExpression::BOOLEAN).clone()),
-        Deref @ ENUM_LITERAL { ty: t @ Deref @ Type::ENUMERATION { .. }, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((**t).typePath, Type::NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*exp).name, NFExpression::ENUM_LITERAL).clone()); ArcStr::from(__mm_s) },
+        Deref @ ENUM_LITERAL { ty: __esc_t @ Deref @ Type::ENUMERATION { .. }, .. } => {
+            t = (*__esc_t).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*t).typePath, Type::NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*exp).name, NFExpression::ENUM_LITERAL).clone()); ArcStr::from(__mm_s) }
+        },
         Deref @ CLKCONST { .. } => ClockKind::toString(var_field!((*exp).clk, NFExpression::CLKCONST).clone())?,
         Deref @ CREF { .. } => ComponentRef::toString(var_field!((*exp).cref, NFExpression::CREF).clone())?,
         Deref @ TYPENAME { .. } => Type::typenameString(Type::arrayElementType(var_field!((*exp).ty, NFExpression::TYPENAME).clone()))?,

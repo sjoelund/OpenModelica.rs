@@ -468,8 +468,8 @@ pub fn toString<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut
 pub fn dump<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    println!("{}", (toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())?).clone());
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())?).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

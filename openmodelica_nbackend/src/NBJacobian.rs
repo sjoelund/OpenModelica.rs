@@ -134,7 +134,7 @@ pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> 
         Deref @ Jacobian::MAIN { varData: Deref @ NBVariable::VarData::VAR_DATA_SIM { knowns, .. }, .. } => {
             let mut name: ArcStr = arcstr::literal!("");
             if Flags::isSet(Flags::JAC_DUMP.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("[symjacdump] Creating symbolic Jacobians:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("[symjacdump] Creating symbolic Jacobians:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             name = ((match kind.clone() {
         Partition::Kind::ODE => {
@@ -508,7 +508,7 @@ pub mod SparsityPattern {
     });
         sparsityColoring = SparsityColoring::PartialD2ColoringAlgC(sparsityPattern.clone(), jacType.clone())?;
         if Flags::isSet(Flags::DUMP_SPARSE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(sparsityPattern.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SparsityColoring::toString(sparsityColoring.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(sparsityPattern.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SparsityColoring::toString(sparsityColoring.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok((sparsityPattern, sparsityColoring))
     }
@@ -1060,7 +1060,7 @@ fn partJacobian(mut part: Arc<Partition::Partition::Partition>, mut funcMap: Arc
             assign_field!(part.association = Arc::new(Partition::Association::Association::CONTINUOUS { kind: kind.clone(), jacobian: None, jacobianAdjoint: None, LFG_jacobian: LFG_jacobian.clone(), MRF_jacobian: MRF_jacobian.clone(), R0_jacobian: R0_jacobian.clone() }));
         }
         if Flags::isSet(Flags::JAC_DUMP.clone())? {
-            println!("{}", (Partition::Partition::toString(part.clone(), 2)?).clone());
+            metamodelica::print((Partition::Partition::toString(part.clone(), 2)?).clone());
         }
     }
     Ok(part)
@@ -1128,7 +1128,7 @@ fn compJacobian(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Opt
     }))?, Array::appendList(strict.innerEquations.clone(), residual_comps.clone())?, full.clone(), funcMap.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*if (var_field!((*comp).linear, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone()) {literal!("_LS_JAC_")} else {literal!("_NLS_JAC_")}); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone(), staticAsContinuous.clone())?);
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
             if Flags::isSet(Flags::JAC_DUMP.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (comp.clone(), true)
         },
@@ -1392,8 +1392,8 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
         bail!("fail");
     }
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Seed candidates before pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(seedCandidates.clone(), (literal!("Seed Candidates")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Partial candidates before pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(partialCandidates.clone(), (literal!("Partial Candidates")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Seed candidates before pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(seedCandidates.clone(), (literal!("Seed Candidates")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Partial candidates before pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(partialCandidates.clone(), (literal!("Partial Candidates")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     for mut v in &*NBVariable::VariablePointers::toList(seedCandidates.clone())? {
         let mut v = v.clone();
@@ -1408,9 +1408,9 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
     }
     seed_vars = Pointer::access(seed_vars_ptr.clone());
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("seed vars after seed creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(seed_vars.clone(), false)?, (literal!("Seed Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("res vars after pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(res_vars.clone(), false)?, (literal!("Res Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tmp vars after pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(tmp_vars.clone(), false)?, (literal!("Tmp Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("seed vars after seed creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(seed_vars.clone(), false)?, (literal!("Seed Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("res vars after pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(res_vars.clone(), false)?, (literal!("Res Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tmp vars after pDer creation:\n")); __mm_s.push_str(&*NBVariable::VariablePointers::toString(NBVariable::VariablePointers::fromList(tmp_vars.clone(), false)?, (literal!("Tmp Vars")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     pDer_vars_ptr = Pointer::create(metamodelica::nil());
     for mut v in &*tmp_vars.clone() {
@@ -1428,8 +1428,8 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
         UnorderedMap::tryAdd(NBVariable::getVarName(v.clone()), metamodelica::nil(), adjoint_map.clone())?;
     }
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map before:\n")); __mm_s.push_str(&*adjointMapToString(Some(adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Diff map before:\n")); __mm_s.push_str(&*diffMapToString(diff_map.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map before:\n")); __mm_s.push_str(&*adjointMapToString(Some(adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Diff map before:\n")); __mm_s.push_str(&*diffMapToString(diff_map.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     comps_non_alg = metamodelica::nil();
     for mut c in &*comps.clone() {
@@ -1476,7 +1476,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
                 lambdaPtrs = metamodelica::cons(lhsVarPtr.clone(), lambdaPtrs.clone());
                 lambdaCrefs = metamodelica::cons(newC.clone(), lambdaCrefs.clone());
                 if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[adjoint] created lambda_")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ComponentRef::toString(newC.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[adjoint] created lambda_")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ComponentRef::toString(newC.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             tmp_vars = List::append_reverse(lambdaPtrs.clone(), tmp_vars.clone());
@@ -1505,7 +1505,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
                 iRes = iRes.clone() + 1;
             }
             if Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[adjoint] loop_product_adjoint_map after: \n")); __mm_s.push_str(&*adjointMapToString(Some(loop_product_adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[adjoint] loop_product_adjoint_map after: \n")); __mm_s.push_str(&*adjointMapToString(Some(loop_product_adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             for mut vptr in &*itVarPtrs.clone() {
                 let mut vptr = vptr.clone();
@@ -1551,12 +1551,12 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
     }
     comps = comps_non_alg.clone().reverse();
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after loop adding:\n")); __mm_s.push_str(&*adjointMapToString(Some(adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after loop adding:\n")); __mm_s.push_str(&*adjointMapToString(Some(adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: true, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(openmodelica_nf_frontend::NFType::REAL) }), adjoint_map: Some(adjoint_map.clone()), scalarized: seedCandidates.scalarized.clone(), funcMap: funcMap.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
     (_, diffArguments) = Differentiate::differentiateStrongComponentListAdjoint(comps.clone(), diffArguments.clone(), idx.clone(), (newName.clone()).clone(), literal!("NBJacobian.jacobianSymbolicAdjoint"))?;
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after differentiation:\n")); __mm_s.push_str(&*adjointMapToString(diffArguments.adjoint_map.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after differentiation:\n")); __mm_s.push_str(&*adjointMapToString(diffArguments.adjoint_map.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     adjoint_map = Util::getOption(diffArguments.adjoint_map.clone())?;
     diffed_comps = metamodelica::nil();
@@ -1604,8 +1604,8 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
     varDataJac = Arc::new(VarData::VarData::VAR_DATA_JAC { seedVars: NBVariable::VariablePointers::fromList(seed_vars.clone(), false)?, tmpVars: NBVariable::VariablePointers::fromList(tmp_vars.clone(), false)?, resultVars: NBVariable::VariablePointers::fromList(res_vars.clone(), false)?, dependencies: NBVariable::VariablePointers::fromList(depend_vars.clone(), false)?, diffVars: partialCandidates.clone(), aliasVars: NBVariable::VariablePointers::fromList(alias_vars.clone(), false)?, auxiliaries: NBVariable::VariablePointers::fromList(aux_vars.clone(), false)?, unknowns: NBVariable::VariablePointers::fromList(unknown_vars.clone(), false)?, variables: NBVariable::VariablePointers::fromList(all_vars.clone(), false)? });
     (sparsityPattern, sparsityColoring) = SparsityPattern::create(seedCandidates.clone(), partialCandidates.clone(), strongComponents.clone(), jacType.clone())?;
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
-        println!("{}", (literal!("Adjoint sparsity pattern and coloring:\n")).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*SparsityPattern::toString(sparsityPattern.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SparsityColoring::toString(sparsityColoring.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print((literal!("Adjoint sparsity pattern and coloring:\n")).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SparsityPattern::toString(sparsityPattern.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SparsityColoring::toString(sparsityColoring.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     jacobian = Some(Arc::new(Jacobian::NBackendDAE::JACOBIAN { isAdjoint: true, sparsityColoring: sparsityColoring.clone(), sparsityPattern: sparsityPattern.clone(), comps: metamodelica::arrayFromVec(diffed_comps.clone().into_iter().cloned().collect()), varData: varDataJac.clone(), jacType: jacType.clone(), name: (newName.clone()).clone() }));
     Ok(jacobian)

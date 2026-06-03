@@ -364,7 +364,7 @@ pub fn unelabExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Absyn::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ASUB { exp: _, sub: _ } => {
-                    println!("{}", (literal!("Internal Error, can not unelab ASUB\n")).clone());
+                    metamodelica::print((literal!("Internal Error, can not unelab ASUB\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -418,7 +418,7 @@ pub fn unelabExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Absyn::Exp>> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.unelabExp failed on: ")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.unelabExp failed on: ")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1429,7 +1429,10 @@ pub fn getClockInterval(mut inClk: Arc<DAE::ClockKind>) -> Arc<DAE::Exp> {
     outIntvl = (::match_deref::match_deref! { match &(inClk.clone()) {
         Deref @ DAE::ClockKind::REAL_CLOCK { interval: e } => e.clone(),
         Deref @ DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: e, resolution: e2 } => Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::CAST { ty: DAE::T_REAL_DEFAULT().clone(), exp: e.clone() }), operator: DAE::Operator::DIV { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::CAST { ty: DAE::T_REAL_DEFAULT().clone(), exp: e2.clone() }) }),
-        Deref @ DAE::ClockKind::EVENT_CLOCK { condition: e, startInterval: e2 } => e2.clone(),
+        Deref @ DAE::ClockKind::EVENT_CLOCK { condition: __esc_e, startInterval: e2 } => {
+            e = (*__esc_e).clone();
+            e2.clone()
+        },
         _ => Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4099,7 +4102,7 @@ pub fn generateCrefsExpFromExp(mut inExp: Arc<DAE::Exp>, mut inCrefPrefix: Arc<D
             negate(generateCrefsExpFromExp(e.clone(), inCrefPrefix.clone())?)?
         },
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.generateCrefsExpFromExp: fail for")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.generateCrefsExpFromExp: fail for")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4151,7 +4154,7 @@ pub fn generateCrefsExpLstFromExp(mut inExp: Arc<DAE::Exp>, mut inCrefPrefix: Op
             generateCrefsExpLstFromExp(e.clone(), inCrefPrefix.clone())?
         },
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.generateCrefsExpLstFromExp: fail for ")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.generateCrefsExpLstFromExp: fail for ")); __mm_s.push_str(&*printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4738,7 +4741,7 @@ pub fn makeScalarProduct(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metam
     let mut size1: i32 = metamodelica::arrayLength(v.clone());
     let mut size2: i32 = metamodelica::arrayLength(w.clone());
     if size1.clone() != size2.clone() {
-        println!("{}", (literal!("makeScalarProduct faili.\n")).clone());
+        metamodelica::print((literal!("makeScalarProduct faili.\n")).clone());
         return Ok(s.clone());
     }
     s = makeSum1(({
@@ -4764,7 +4767,7 @@ pub fn subVec(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Ar
     let mut size1: i32 = metamodelica::arrayLength(v.clone());
     let mut size2: i32 = metamodelica::arrayLength(w.clone());
     if size1.clone() != size2.clone() {
-        println!("{}", (literal!("subVec fail.\n")).clone());
+        metamodelica::print((literal!("subVec fail.\n")).clone());
         bail!("fail");
     }
     y = arrayCreate(size1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
@@ -11467,7 +11470,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
             e.clone()
         },
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.fromAbsynExp: Unhandled expression: ")); __mm_s.push_str(&*Dump::printExpStr(inAExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.fromAbsynExp: Unhandled expression: ")); __mm_s.push_str(&*Dump::printExpStr(inAExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -11492,7 +11495,7 @@ pub fn fargsToExps(mut inFargs: Arc<Absyn::FunctionArgs>) -> Result<Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames: _ } => {
-                    println!("{}", (literal!("Expression.fargsToExps: Named arguments are not handled!\n")).clone());
+                    metamodelica::print((literal!("Expression.fargsToExps: Named arguments are not handled!\n")).clone());
                     Ok(metamodelica::nil())
                 }
                 _ => bail!("nomatch"),
@@ -11538,7 +11541,7 @@ fn fromAbsynOperator(mut aop: Absyn::Operator, mut ty: Arc<DAE::Type>) -> Result
         Absyn::Operator::EQUAL { .. } => DAE::Operator::EQUAL { ty: ty.clone() },
         Absyn::Operator::NEQUAL { .. } => DAE::Operator::NEQUAL { ty: ty.clone() },
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.fromAbsynOperator: Unhandled operator: ")); __mm_s.push_str(&*Dump::opSymbol(aop.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.fromAbsynOperator: Unhandled operator: ")); __mm_s.push_str(&*Dump::opSymbol(aop.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
     });

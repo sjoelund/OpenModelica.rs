@@ -63,17 +63,17 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
     let mut maxColor: i32 = 0;
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("analytical Jacobians[SPARSE] -> build sparse graph.\n")).clone());
+            metamodelica::print((literal!("analytical Jacobians[SPARSE] -> build sparse graph.\n")).clone());
         }
         nodesList = List::intRange2(1, sizeVarswithDep.clone());
         sparseGraph = unwrap_break_err!(Graph::buildGraph(nodesList.clone(), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArray.clone()), '__try0);
         sparseGraphT = unwrap_break_err!(Graph::buildGraph(List::intRange2(1, sizeVars.clone()), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArrayT.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("sparse graph: \n")).clone());
+            metamodelica::print((literal!("sparse graph: \n")).clone());
             unwrap_break_err!(Graph::printGraphInt(sparseGraph.clone()), '__try0);
-            println!("{}", (literal!("transposed sparse graph: \n")).clone());
+            metamodelica::print((literal!("transposed sparse graph: \n")).clone());
             unwrap_break_err!(Graph::printGraphInt(sparseGraphT.clone()), '__try0);
-            println!("{}", (literal!("analytical Jacobians[SPARSE] -> builded graph for coloring.\n")).clone());
+            metamodelica::print((literal!("analytical Jacobians[SPARSE] -> builded graph for coloring.\n")).clone());
         }
         forbiddenColor = arrayCreate(sizeVars.clone(), 0);
         colored = arrayCreate(sizeVars.clone(), 0);
@@ -94,7 +94,7 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
         unwrap_break_err!(mapIndexColors(colored.clone(), sizeVars.clone(), coloredArray.clone()), '__try0);
         GCExt::free(colored.clone());
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("Print Coloring Cols: \n")).clone());
+            metamodelica::print((literal!("Print Coloring Cols: \n")).clone());
             unwrap_break_err!(dumpColoring(Arc::new(coloredArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())), '__try0);
         }
         Ok::<_, anyhow::Error>((arraysparseGraph.clone(), colored.clone(), coloredArray.clone(), forbiddenColor.clone(), maxColor.clone(), nodesList.clone(), sparseGraph.clone(), sparseGraphT.clone()))
@@ -146,12 +146,12 @@ fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, m
 }
 
 fn dumpColoring(mut pattern: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString((pattern.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Print sparse pattern: ")); __mm_s.push_str(&*intString((pattern.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     for mut row in &*pattern.clone() {
         let mut row = row.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(row.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(row.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

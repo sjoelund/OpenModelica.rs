@@ -655,7 +655,7 @@ fn findResultGraph(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr)
                         printDaeEdges(connections.clone())?;
                         connections = orderConnectsGuidedByUser(connections.clone(), userBrokenTplLst.clone())?;
                         connections = connections.clone().reverse();
-                        println!("{}", (literal!("\nAfer ordering:\n")).clone());
+                        metamodelica::print((literal!("\nAfer ordering:\n")).clone());
                         (finalRoots, connected, broken) = findResultGraph(ConnectionGraph { updateGraph: false, definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: uniqueRoots.clone(), branches: branches.clone(), connections: connections.clone() }, (modelNameQualified.clone()).clone())?;
                     }
                     Ok((finalRoots.clone(), connected.clone(), broken.clone()))
@@ -1131,11 +1131,11 @@ fn printEdges(mut inEdges: Edges) -> Result<()> {
             ()
         },
         Deref @ metamodelica::List::Cons { head: (c1, c2), tail: tail } => {
-            println!("{}", (literal!("    ")).clone());
-            println!("{}", (ComponentReferenceBasics::printComponentRefStr(c1.clone())?).clone());
-            println!("{}", (literal!(" -- ")).clone());
-            println!("{}", (ComponentReferenceBasics::printComponentRefStr(c2.clone())?).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("    ")).clone());
+            metamodelica::print((ComponentReferenceBasics::printComponentRefStr(c1.clone())?).clone());
+            metamodelica::print((literal!(" -- ")).clone());
+            metamodelica::print((ComponentReferenceBasics::printComponentRefStr(c2.clone())?).clone());
+            metamodelica::print((literal!("\n")).clone());
             printEdges(tail.clone())?;
             ()
         },
@@ -1150,11 +1150,11 @@ fn printDaeEdges(mut inEdges: DaeEdges) -> Result<()> {
             ()
         },
         Deref @ metamodelica::List::Cons { head: (c1, c2, _), tail: tail } => {
-            println!("{}", (literal!("    ")).clone());
-            println!("{}", (ComponentReferenceBasics::printComponentRefStr(c1.clone())?).clone());
-            println!("{}", (literal!(" -- ")).clone());
-            println!("{}", (ComponentReferenceBasics::printComponentRefStr(c2.clone())?).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("    ")).clone());
+            metamodelica::print((ComponentReferenceBasics::printComponentRefStr(c1.clone())?).clone());
+            metamodelica::print((literal!(" -- ")).clone());
+            metamodelica::print((ComponentReferenceBasics::printComponentRefStr(c2.clone())?).clone());
+            metamodelica::print((literal!("\n")).clone());
             printDaeEdges(tail.clone())?;
             ()
         },
@@ -1166,9 +1166,9 @@ fn printDaeEdges(mut inEdges: DaeEdges) -> Result<()> {
 fn printConnectionGraph(mut inGraph: ConnectionGraph) -> Result<()> {
     let () = (match inGraph.clone() {
         ConnectionGraph { branches: mut branches, connections: mut connections, .. } => {
-            println!("{}", (literal!("Connections:\n")).clone());
+            metamodelica::print((literal!("Connections:\n")).clone());
             printDaeEdges(connections.clone())?;
-            println!("{}", (literal!("Branches:\n")).clone());
+            metamodelica::print((literal!("Branches:\n")).clone());
             printEdges(branches.clone())?;
             ()
         },

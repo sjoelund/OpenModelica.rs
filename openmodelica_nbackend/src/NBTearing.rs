@@ -175,7 +175,7 @@ pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> 
     let mut bdae: Arc<Jacobian::NBackendDAE> = bdae;
     let funcs: Arc<metamodelica::List<Module::tearingInterface>> = getModule()?;
     if Flags::isSet(Flags::TEARING_DUMP.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     bdae = (::match_deref::match_deref! { match &((kind.clone(), bdae.clone())) {
         (Partition::Kind::ODE, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, .. }) => {
@@ -388,7 +388,8 @@ fn initialize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<A
     let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     let init: bool = Partition::kindIsInitial(kind.clone());
     (comp, full, index) = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. } => {
+            strict = (*__esc_strict).clone();
             index = index.clone() + 1;
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; idx = index.clone());
             vars_lst = ({
@@ -450,7 +451,7 @@ fn finalize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adj
     }));
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
             if Flags::isSet(Flags::TEARING_DUMP.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing Result ")); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing Result ")); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             comp.clone()
         },
@@ -668,7 +669,10 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
             var_assigned = true;
             ()
         },
-        (Some(solve_cref), false) => (),
+        (Some(__esc_solve_cref), false) => {
+            solve_cref = (*__esc_solve_cref).clone();
+            ()
+        },
         (None, false) => {
             residuals = metamodelica::cons(UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!())?, residuals.clone());
             UnorderedMap::remove(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())?;

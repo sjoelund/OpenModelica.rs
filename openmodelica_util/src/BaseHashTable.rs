@@ -160,8 +160,8 @@ pub fn add<Key: Clone + 'static, Value: Clone + 'static>(mut entry: HashEntry<Ke
 pub fn dumpHashTableStatistics<Key: Clone + 'static, Value: Clone + 'static>(mut hashTable: HashTable<Key, Value>) -> () {
     let () = (match hashTable.clone() {
         (mut hvec, _, _, _) => {
-            println!("{}", (literal!("index list lengths:\n")).clone());
-            println!("{}", stringDelimitList(({
+            metamodelica::print((literal!("index list lengths:\n")).clone());
+            metamodelica::print(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut l in (hvec.clone()).borrow().iter() {
             let __x = intString((l.clone().len() as i32));
@@ -169,8 +169,8 @@ pub fn dumpHashTableStatistics<Key: Clone + 'static, Value: Clone + 'static>(mut
         }
         __acc.reverse()
     }), (literal!(",")).clone()));
-            println!("{}", (literal!("\n")).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("non-zero: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
+            metamodelica::print((literal!("\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("non-zero: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
         let mut __acc: i32 = 0;
         for mut l in (hvec.clone()).borrow().iter() {
             if !(!(l.clone().is_empty())) { continue; }
@@ -179,7 +179,7 @@ pub fn dumpHashTableStatistics<Key: Clone + 'static, Value: Clone + 'static>(mut
         }
         __acc
     })))); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(hvec.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("max element: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("max element: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
         let mut __acc: Option<i32> = None;
         for mut l in (hvec.clone()).borrow().iter() {
             let __x = (l.clone().len() as i32);
@@ -187,7 +187,7 @@ pub fn dumpHashTableStatistics<Key: Clone + 'static, Value: Clone + 'static>(mut
         }
         __acc.unwrap_or((-i32::MAX))
     })))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("total entries: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("total entries: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({
         let mut __acc: i32 = 0;
         for mut l in (hvec.clone()).borrow().iter() {
             let __x = (l.clone().len() as i32);
@@ -266,7 +266,7 @@ pub fn delete<Key: Clone + 'static, Value: Clone + 'static>(mut key: Key, mut ha
     indx = hasKeyIndex(key.clone(), hashTable.clone())?;
     (_, varr, _, _) = hashTable.clone();
     if !(valueArrayKeyIndexExists(varr.clone(), indx.clone())) {
-        println!("{}", (literal!("BaseHashTable.delete failed\n")).clone());
+        metamodelica::print((literal!("BaseHashTable.delete failed\n")).clone());
         bail!("fail");
     }
     valueArrayClear(varr.clone(), indx.clone())?;
@@ -352,15 +352,15 @@ pub fn dumpHashTable<Key: Clone + 'static, Value: Clone + 'static>(mut t: HashTa
     let (_, _, _, (_, _, __pa0, __pa1)) = t.clone();
     printKey = __pa0.clone();
     printValue = __pa1.clone();
-    println!("{}", (literal!("HashTable:\n")).clone());
+    metamodelica::print((literal!("HashTable:\n")).clone());
     for mut entry in &*hashTableList(t.clone())? {
         let mut entry = entry.clone();
         (k, v) = entry.clone();
-        println!("{}", (literal!("{")).clone());
-        println!("{}", (printKey(k.clone())?).clone());
-        println!("{}", (literal!(",{")).clone());
-        println!("{}", (printValue(v.clone())?).clone());
-        println!("{}", (literal!("}}\n")).clone());
+        metamodelica::print((literal!("{")).clone());
+        metamodelica::print((printKey(k.clone())?).clone());
+        metamodelica::print((literal!(",{")).clone());
+        metamodelica::print((printValue(v.clone())?).clone());
+        metamodelica::print((literal!("}}\n")).clone());
     }
     Ok(())
 }
@@ -385,11 +385,11 @@ pub fn debugDump<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable
     szBucket = __pa4.clone();
     printKey = __pa5.clone();
     printValue = __pa6.clone();
-    println!("{}", (literal!("Debug HashTable:\n")).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("szBucket: ")); __mm_s.push_str(&*intString(szBucket.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", (literal!("Debug ValueArray:\n")).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of entires: ")); __mm_s.push_str(&*intString(n.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("size: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((literal!("Debug HashTable:\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("szBucket: ")); __mm_s.push_str(&*intString(szBucket.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((literal!("Debug ValueArray:\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("number of entires: ")); __mm_s.push_str(&*intString(n.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("size: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     i = 0;
     let __range7 = arr.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut entry in __range7 {
@@ -400,22 +400,22 @@ pub fn debugDump<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable
                 _ => bail!("pattern mismatch"),
             } };
             he = __pa8.clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*dumpTuple(he.clone(), printKey.clone(), printValue.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*dumpTuple(he.clone(), printKey.clone(), printValue.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
-    println!("{}", (literal!("Debug HashVector:\n")).clone());
+    metamodelica::print((literal!("Debug HashVector:\n")).clone());
     i = 0;
     let __range9 = hashVector.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut node in __range9 {
         i = i.clone() + 1;
         if !(node.clone().is_empty()) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone());
             for mut n in &*node.clone() {
                 let mut n = n.clone();
                 (k, j) = n.clone();
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" {")); __mm_s.push_str(&*printKey(k.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(j.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" {")); __mm_s.push_str(&*printKey(k.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(j.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone());
             }
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\n")).clone());
         }
     }
     Ok(())
@@ -665,7 +665,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
         let __range7 = vae.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut i in __range7 {
             if isSome(i.clone()) {
-                println!("{}", (literal!("vae not empty\n")).clone());
+                metamodelica::print((literal!("vae not empty\n")).clone());
                 break;
             }
         }
@@ -674,7 +674,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
         for mut i in 1..=metamodelica::arrayLength(hv.clone()) {
             if !(({let __elt = hv.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).is_empty()) {
                 if debug.clone() {
-                    println!("{}", (literal!("hv not empty\n")).clone());
+                    metamodelica::print((literal!("hv not empty\n")).clone());
                 }
                 {let _arr = hv.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             }

@@ -299,7 +299,7 @@ fn getSystemComponents0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iSystMapping: 
             (comps.clone(), tmpSystMapping.clone(), currentIdx.clone() + 1)
         },
         _ => {
-            println!("{}", (literal!("getSystemComponents0 failed\n")).clone());
+            metamodelica::print((literal!("getSystemComponents0 failed\n")).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1159,7 +1159,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getUnsolvedVarsBySCC failed\n")).clone());
+                    metamodelica::print((literal!("getUnsolvedVarsBySCC failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1203,7 +1203,8 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
     let mut derived: i32 = 0;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     oUnsolvedVars = (::match_deref::match_deref! { match &((iVarType.clone(), iVarIdx.clone(), iUnsolvedVars.clone())) {
-        (Deref @ DAE::Type::T_INTEGER { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+        (Deref @ DAE::Type::T_INTEGER { .. }, (varIdx, __esc_derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+            derived = (*__esc_derived).clone();
             let mut intVarIdc = (*intVarIdc).clone();
             intVarIdc = metamodelica::cons(varIdx.clone(), intVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
@@ -1213,24 +1214,35 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             realVarIdc = metamodelica::cons((varIdx.clone(), derived.clone()), realVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
-        (Deref @ DAE::Type::T_BOOL { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+        (Deref @ DAE::Type::T_BOOL { .. }, (varIdx, __esc_derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+            derived = (*__esc_derived).clone();
             let mut boolVarIdc = (*boolVarIdc).clone();
             boolVarIdc = metamodelica::cons(varIdx.clone(), boolVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
-        (Deref @ DAE::Type::T_ARRAY { ty, .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => getUnsolvedVarsBySCC2(ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone()),
-        (Deref @ DAE::Type::T_ENUMERATION { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+        (Deref @ DAE::Type::T_ARRAY { ty, .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
+            derived = (*__esc_derived).clone();
+            intVarIdc = (*__esc_intVarIdc).clone();
+            realVarIdc = (*__esc_realVarIdc).clone();
+            stringVarIdc = (*__esc_stringVarIdc).clone();
+            varIdx = (*__esc_varIdx).clone();
+            boolVarIdc = (*__esc_boolVarIdc).clone();
+            getUnsolvedVarsBySCC2(ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone())
+        },
+        (Deref @ DAE::Type::T_ENUMERATION { .. }, (varIdx, __esc_derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+            derived = (*__esc_derived).clone();
             let mut stringVarIdc = (*stringVarIdc).clone();
             stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
-        (Deref @ DAE::Type::T_STRING { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+        (Deref @ DAE::Type::T_STRING { .. }, (varIdx, __esc_derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
+            derived = (*__esc_derived).clone();
             let mut stringVarIdc = (*stringVarIdc).clone();
             stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getUnsolvedVarsBySCC2: Warning, unknown varType for variable ")); __mm_s.push_str(&*intString(Util::tuple21(iVarIdx.clone()))); __mm_s.push_str(&*literal!(" !\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getUnsolvedVarsBySCC2: Warning, unknown varType for variable ")); __mm_s.push_str(&*intString(Util::tuple21(iVarIdx.clone()))); __mm_s.push_str(&*literal!(" !\n")); ArcStr::from(__mm_s) }).clone());
             iUnsolvedVars.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1379,7 +1391,7 @@ fn getVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iAdjacency
             (eqnVars.clone(), paramVars.clone())
         },
         _ => {
-            println!("{}", (literal!("Error in getVarsBySCC! Unsupported component-type \n")).clone());
+            metamodelica::print((literal!("Error in getVarsBySCC! Unsupported component-type \n")).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1553,7 +1565,7 @@ fn getVarEqCompMapping0(mut component: Arc<BackendDAE::StrongComponent>, mut var
                 _ => {
                     let mut helperStr: ArcStr = arcstr::literal!("");
                     helperStr = (BackendDump::strongComponentString(component.clone())?).clone();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getVarEqCompMapping0 - Unsupported component-type:\n")); __mm_s.push_str(&*helperStr.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getVarEqCompMapping0 - Unsupported component-type:\n")); __mm_s.push_str(&*helperStr.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1634,7 +1646,7 @@ fn othersInTearComp(mut otherEqnVarTpl: (i32, Arc<metamodelica::List<i32>>), mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("check number of vars in relation to number of eqs in otherEqnVarTpl in the torn system\n")).clone());
+                    metamodelica::print((literal!("check number of vars in relation to number of eqs in otherEqnVarTpl in the torn system\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1755,7 +1767,7 @@ fn getAllStateNodes(mut systIn: Arc<BackendDAE::EqSystem>, mut varCompMapping: m
                     orderedVars = __pa0.clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     stateVars = getStates(varLst.clone(), metamodelica::nil(), 1)?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getAllStateNodes failed! StateVars-Count: ")); __mm_s.push_str(&*intString((stateVars.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getAllStateNodes failed! StateVars-Count: ")); __mm_s.push_str(&*intString((stateVars.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1849,7 +1861,7 @@ fn cutTaskGraph(mut graphIn: TaskGraph, mut exceptNodes: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("cutTaskGraph failed\n")).clone());
+                    metamodelica::print((literal!("cutTaskGraph failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1997,7 +2009,7 @@ pub fn getCompInComps(mut compIn: i32, mut compIdx: i32, mut inComps: metamodeli
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getCompInComps failed! CompIn idx: ")); __mm_s.push_str(&*intString(compIn.clone())); __mm_s.push_str(&*literal!(" | Component array-size: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(inComps.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getCompInComps failed! CompIn idx: ")); __mm_s.push_str(&*intString(compIn.clone())); __mm_s.push_str(&*literal!(" | Component array-size: ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(inComps.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2024,7 +2036,7 @@ pub fn getAllSuccessors(mut nodes: Arc<metamodelica::List<i32>>, mut graph: Task
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("getAllSuccessors failed!\n")).clone());
+            metamodelica::print((literal!("getAllSuccessors failed!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2126,7 +2138,7 @@ fn removeContinuousEntries1(mut entryIn: i32, mut deleteEntriesIn: metamodelica:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("removeContinuousEntries1 failed!\n")).clone());
+            metamodelica::print((literal!("removeContinuousEntries1 failed!\n")).clone());
             Ok(entryIn.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2572,10 +2584,10 @@ fn getComponentsOfZeroCrossing(mut iZeroCrossing: BackendDAE::ZeroCrossing, mut 
             let mut occurEquLst = occurEquLst.clone();
             let mut tmpCompIdc: Arc<metamodelica::List<i32>> = tmpCompIdc.clone();
             occurEquLst = List::filter1OnTrue(occurEquLst.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getComponentsOfZeroCrossing: simEqs: ")); __mm_s.push_str(&*stringDelimitList(List::map(occurEquLst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getComponentsOfZeroCrossing: simEqs: ")); __mm_s.push_str(&*stringDelimitList(List::map(occurEquLst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             tmpCompIdc = List::map1(occurEquLst.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), iSimCodeEqCompMapping.clone())?;
             tmpCompIdc = List::filter1OnTrue(tmpCompIdc.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getComponentsOfZeroCrossing: components: ")); __mm_s.push_str(&*stringDelimitList(List::map(tmpCompIdc.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getComponentsOfZeroCrossing: components: ")); __mm_s.push_str(&*stringDelimitList(List::map(tmpCompIdc.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(tmpCompIdc.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -3209,13 +3221,13 @@ fn getNodeMembershipByComponents(mut iNodeComponents: Arc<metamodelica::List<i32
 //-----------------
 pub fn printTaskGraph(mut graphIn: TaskGraph) -> () {
     let mut graphLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    println!("{}", (literal!("\n")).clone());
-    println!("{}", (literal!("--------------------------------\n")).clone());
-    println!("{}", (literal!("TASKGRAPH\n")).clone());
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("TASKGRAPH\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     graphLst = Arc::new(graphIn.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     dumpAdjacencyLst(graphLst.clone(), 1);
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     ()
 }
 
@@ -3225,8 +3237,8 @@ fn dumpAdjacencyLst(mut inIntegerLstLst: Arc<metamodelica::List<Arc<metamodelica
             ()
         },
         Deref @ metamodelica::List::Cons { head: row, tail: rows } => {
-            println!("{}", (intString(rowIndex.clone())).clone());
-            println!("{}", (literal!(":")).clone());
+            metamodelica::print((intString(rowIndex.clone())).clone());
+            metamodelica::print((literal!(":")).clone());
             dumpAdjacencyRow(row.clone());
             dumpAdjacencyLst(rows.clone(), rowIndex.clone() + 1);
             ()
@@ -3239,14 +3251,14 @@ fn dumpAdjacencyLst(mut inIntegerLstLst: Arc<metamodelica::List<Arc<metamodelica
 fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> () {
     let () = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\n")).clone());
             ()
         },
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (intString(x.clone())).clone();
-            println!("{}", (s.clone()).clone());
-            println!("{}", (literal!(" ")).clone());
+            metamodelica::print((s.clone()).clone());
+            metamodelica::print((literal!(" ")).clone());
             dumpAdjacencyRow(xs.clone());
             ()
         },
@@ -3277,31 +3289,31 @@ pub fn printTaskGraphMeta(mut metaDataIn: TaskGraphMeta) -> Result<()> {
     eqCompMapping = __pa7.clone();
     varCompMapping = __pa8.clone();
     inComps = __pa9.clone();
-    println!("{}", (literal!("\n")).clone());
-    println!("{}", (literal!("--------------------------------\n")).clone());
-    println!("{}", (literal!("TASKGRAPH METADATA\n")).clone());
-    println!("{}", (literal!("--------------------------------\n")).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(inComps.clone()))); __mm_s.push_str(&*literal!(" nodes include components:\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((literal!("\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("TASKGRAPH METADATA\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(inComps.clone()))); __mm_s.push_str(&*literal!(" nodes include components:\n")); ArcStr::from(__mm_s) }).clone());
     printInComps(inComps.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(varCompMapping.clone()))); __mm_s.push_str(&*literal!(" vars are solved in the nodes \n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(varCompMapping.clone()))); __mm_s.push_str(&*literal!(" vars are solved in the nodes \n")); ArcStr::from(__mm_s) }).clone());
     printVarCompMapping(varCompMapping.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(eqCompMapping.clone()))); __mm_s.push_str(&*literal!(" equations are computed in the nodes \n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(eqCompMapping.clone()))); __mm_s.push_str(&*literal!(" equations are computed in the nodes \n")); ArcStr::from(__mm_s) }).clone());
     printEqCompMapping(eqCompMapping.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(compParamMapping.clone()))); __mm_s.push_str(&*literal!(" parameters are part of the components \n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(metamodelica::arrayLength(compParamMapping.clone()))); __mm_s.push_str(&*literal!(" parameters are part of the components \n")); ArcStr::from(__mm_s) }).clone());
     printCompParamMapping(compParamMapping.clone())?;
-    println!("{}", (literal!("the names of the components \n")).clone());
+    metamodelica::print((literal!("the names of the components \n")).clone());
     printComponentNames(compNames.clone())?;
-    println!("{}", (literal!("the description of the node\n")).clone());
+    metamodelica::print((literal!("the description of the node\n")).clone());
     printCompDescs(compDescs.clone())?;
-    println!("{}", (literal!("the execution costs of the nodes\n")).clone());
+    metamodelica::print((literal!("the execution costs of the nodes\n")).clone());
     printExeCosts(exeCosts.clone())?;
-    println!("{}", (literal!("the communication costs of the nodes\n")).clone());
+    metamodelica::print((literal!("the communication costs of the nodes\n")).clone());
     printCommCosts(commCosts.clone())?;
-    println!("{}", (literal!("the nodeMark of the nodes\n")).clone());
+    metamodelica::print((literal!("the nodeMark of the nodes\n")).clone());
     printNodeMarks(nodeMark.clone())?;
-    println!("{}", (literal!("the component informations are\n")).clone());
+    metamodelica::print((literal!("the component informations are\n")).clone());
     printComponentInformations(compInformations.clone())?;
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
@@ -3310,9 +3322,9 @@ fn printInComps(mut iInComps: metamodelica::Array<Arc<metamodelica::List<i32>>>)
     let mut compRow: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut nodeIdx in 1..=metamodelica::arrayLength(iInComps.clone()) {
         compRow = ({let __elt = iInComps.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("node ")); __mm_s.push_str(&*intString(nodeIdx.clone())); __mm_s.push_str(&*literal!(" solves components: ")); __mm_s.push_str(&*stringDelimitList(List::map(compRow.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("node ")); __mm_s.push_str(&*intString(nodeIdx.clone())); __mm_s.push_str(&*literal!(" solves components: ")); __mm_s.push_str(&*stringDelimitList(List::map(compRow.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3323,9 +3335,9 @@ fn printVarCompMapping(mut iVarCompMapping: metamodelica::Array<(i32, i32, i32)>
     let mut varOffset: i32 = 0;
     for mut varIdx in 1..=metamodelica::arrayLength(iVarCompMapping.clone()) {
         (comp, eqSysIdx, varOffset) = ({let __elt = iVarCompMapping.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("variable ")); __mm_s.push_str(&*intString(varIdx.clone() - varOffset.clone())); __mm_s.push_str(&*literal!(" (offset: ")); __mm_s.push_str(&*intString(varOffset.clone())); __mm_s.push_str(&*literal!(") of equation system ")); __mm_s.push_str(&*intString(eqSysIdx.clone())); __mm_s.push_str(&*literal!(" is solved in component: ")); __mm_s.push_str(&*intString(comp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("variable ")); __mm_s.push_str(&*intString(varIdx.clone() - varOffset.clone())); __mm_s.push_str(&*literal!(" (offset: ")); __mm_s.push_str(&*intString(varOffset.clone())); __mm_s.push_str(&*literal!(") of equation system ")); __mm_s.push_str(&*intString(eqSysIdx.clone())); __mm_s.push_str(&*literal!(" is solved in component: ")); __mm_s.push_str(&*intString(comp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3336,9 +3348,9 @@ fn printEqCompMapping(mut iEqCompMapping: metamodelica::Array<(i32, i32, i32)>) 
     let mut eqOffset: i32 = 0;
     for mut eqIdx in 1..=metamodelica::arrayLength(iEqCompMapping.clone()) {
         (comp, eqSysIdx, eqOffset) = ({let __elt = iEqCompMapping.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("equation ")); __mm_s.push_str(&*intString(eqIdx.clone())); __mm_s.push_str(&*literal!(" (offset: ")); __mm_s.push_str(&*intString(eqOffset.clone())); __mm_s.push_str(&*literal!(") of equation system ")); __mm_s.push_str(&*intString(eqSysIdx.clone())); __mm_s.push_str(&*literal!(" is computed in component: ")); __mm_s.push_str(&*intString(comp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("equation ")); __mm_s.push_str(&*intString(eqIdx.clone())); __mm_s.push_str(&*literal!(" (offset: ")); __mm_s.push_str(&*intString(eqOffset.clone())); __mm_s.push_str(&*literal!(") of equation system ")); __mm_s.push_str(&*intString(eqSysIdx.clone())); __mm_s.push_str(&*literal!(" is computed in component: ")); __mm_s.push_str(&*intString(comp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3347,9 +3359,9 @@ fn printCompParamMapping(mut iCompParamMapping: metamodelica::Array<Arc<metamode
     let mut params: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut compIdx in 1..=metamodelica::arrayLength(iCompParamMapping.clone()) {
         params = ({let __elt = iCompParamMapping.clone().borrow()[(compIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" needs the parameters: ")); __mm_s.push_str(&*stringDelimitList(List::map(params.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" needs the parameters: ")); __mm_s.push_str(&*stringDelimitList(List::map(params.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3358,9 +3370,9 @@ fn printComponentNames(mut iCompNames: metamodelica::Array<ArcStr>) -> Result<()
     let mut compName: ArcStr = arcstr::literal!("");
     for mut compIdx in 1..=metamodelica::arrayLength(iCompNames.clone()) {
         compName = (({let __elt = iCompNames.clone().borrow()[(compIdx.clone()-1) as usize].clone(); __elt})).clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" is named ")); __mm_s.push_str(&*compName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" is named ")); __mm_s.push_str(&*compName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3369,9 +3381,9 @@ fn printCompDescs(mut iCompDescs: metamodelica::Array<ArcStr>) -> Result<()> {
     let mut compDesc: ArcStr = arcstr::literal!("");
     for mut compIdx in 1..=metamodelica::arrayLength(iCompDescs.clone()) {
         compDesc = (({let __elt = iCompDescs.clone().borrow()[(compIdx.clone()-1) as usize].clone(); __elt})).clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" is described with: ")); __mm_s.push_str(&*compDesc.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" is described with: ")); __mm_s.push_str(&*compDesc.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3381,9 +3393,9 @@ fn printExeCosts(mut iExeCosts: metamodelica::Array<(i32, metamodelica::Real)>) 
     let mut execTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     for mut compIdx in 1..=metamodelica::arrayLength(iExeCosts.clone()) {
         (opCount, execTime) = ({let __elt = iExeCosts.clone().borrow()[(compIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has execution cost of: (")); __mm_s.push_str(&*intString(opCount.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*realString(execTime.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has execution cost of: (")); __mm_s.push_str(&*intString(opCount.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*realString(execTime.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3392,9 +3404,9 @@ fn printCommCosts(mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<Com
     let mut nodeComms: Communications = metamodelica::nil();
     for mut nodeIdx in 1..=metamodelica::arrayLength(iCommCosts.clone()) {
         nodeComms = ({let __elt = iCommCosts.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("edges from node ")); __mm_s.push_str(&*intString(nodeIdx.clone())); __mm_s.push_str(&*literal!(": with the communication costs ")); __mm_s.push_str(&*stringDelimitList(List::map(nodeComms.clone(), (std::sync::Arc::new(printCommCost) as std::sync::Arc<dyn ::std::ops::Fn(Communication) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("edges from node ")); __mm_s.push_str(&*intString(nodeIdx.clone())); __mm_s.push_str(&*literal!(": with the communication costs ")); __mm_s.push_str(&*stringDelimitList(List::map(nodeComms.clone(), (std::sync::Arc::new(printCommCost) as std::sync::Arc<dyn ::std::ops::Fn(Communication) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3428,9 +3440,9 @@ fn printNodeMarks(mut iNodeMarks: metamodelica::Array<i32>) -> Result<()> {
     let mut mark: i32 = 0;
     for mut compIdx in 1..=metamodelica::arrayLength(iNodeMarks.clone()) {
         mark = ({let __elt = iNodeMarks.clone().borrow()[(compIdx.clone()-1) as usize].clone(); __elt});
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has the nodeMark : ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has the nodeMark : ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3444,12 +3456,12 @@ fn printComponentInformations(mut iComponentInformations: metamodelica::Array<Co
         isRemovedComponent = __pa0.clone();
         isPartOfZeroFuncSystem = __pa1.clone();
         isPartOfODESystem = __pa2.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has component information:\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is part of ODE-System:   ")); __mm_s.push_str(&*boolString(isPartOfODESystem.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is part of Event-System: ")); __mm_s.push_str(&*boolString(isPartOfZeroFuncSystem.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is removed component:    ")); __mm_s.push_str(&*boolString(isRemovedComponent.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!(" has component information:\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is part of ODE-System:   ")); __mm_s.push_str(&*boolString(isPartOfODESystem.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is part of Event-System: ")); __mm_s.push_str(&*boolString(isPartOfZeroFuncSystem.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("   Is removed component:    ")); __mm_s.push_str(&*boolString(isRemovedComponent.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    println!("{}", (literal!("--------------------------------\n")).clone());
+    metamodelica::print((literal!("--------------------------------\n")).clone());
     Ok(())
 }
 
@@ -3516,10 +3528,10 @@ fn printCriticalPathInfo(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("--------------------------------\n")).clone());
-                    println!("{}", (literal!(" CRITICAL PATH INFO\n")).clone());
-                    println!("{}", (literal!("--------------------------------\n")).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("found ")); __mm_s.push_str(&*intString((criticalPathsIn.clone().len() as i32))); __mm_s.push_str(&*literal!(" critical paths with costs of ")); __mm_s.push_str(&*realString(cpCosts.clone())); __mm_s.push_str(&*literal!(" sec\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print((literal!("--------------------------------\n")).clone());
+                    metamodelica::print((literal!(" CRITICAL PATH INFO\n")).clone());
+                    metamodelica::print((literal!("--------------------------------\n")).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("found ")); __mm_s.push_str(&*intString((criticalPathsIn.clone().len() as i32))); __mm_s.push_str(&*literal!(" critical paths with costs of ")); __mm_s.push_str(&*realString(cpCosts.clone())); __mm_s.push_str(&*literal!(" sec\n")); ArcStr::from(__mm_s) }).clone());
                     printCriticalPathInfo1(criticalPathsIn.clone(), 1)?;
                     Ok(())
                 }
@@ -3532,7 +3544,7 @@ fn printCriticalPathInfo(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamod
 }
 
 fn printCriticalPathInfo1(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut cpIdx: i32) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(cpIdx.clone())); __mm_s.push_str(&*literal!(". path: ")); __mm_s.push_str(&*intLstString((criticalPathsIn.clone()).get(cpIdx.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(cpIdx.clone())); __mm_s.push_str(&*literal!(". path: ")); __mm_s.push_str(&*intLstString((criticalPathsIn.clone()).get(cpIdx.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -3700,7 +3712,7 @@ fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodel
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("distributeToClusters failed!\n")).clone());
+                    metamodelica::print((literal!("distributeToClusters failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4361,7 +4373,7 @@ fn updateCompNamesForMerging(mut compIdx: i32, mut inComps: metamodelica::Array<
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("updateCompNamesForMerging failed!\n")).clone());
+            metamodelica::print((literal!("updateCompNamesForMerging failed!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -4596,7 +4608,7 @@ fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("findOneChildParents failed\n")).clone());
+                    metamodelica::print((literal!("findOneChildParents failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4711,7 +4723,7 @@ pub fn createCosts(mut iDae: Arc<BackendDAE::BackendDAE>, mut iBenchFilePrefix: 
                 _ => {
                     let mut tmpTaskGraphMeta: TaskGraphMeta = tmpTaskGraphMeta.clone();
                     tmpTaskGraphMeta = estimateCosts(iDae.clone(), iTaskGraphMeta.clone())?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Warning: The costs have been estimated. Maybe ")); __mm_s.push_str(&*iBenchFilePrefix.clone()); __mm_s.push_str(&*literal!("-file is missing.\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Warning: The costs have been estimated. Maybe ")); __mm_s.push_str(&*iBenchFilePrefix.clone()); __mm_s.push_str(&*literal!("-file is missing.\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(tmpTaskGraphMeta.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4852,7 +4864,7 @@ pub fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<(i32, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("calculate costs failed!\n")).clone());
+                    metamodelica::print((literal!("calculate costs failed!\n")).clone());
                     Ok((-1, metamodelica::OrderedFloat(-1.0_f64)))
                 }
                 _ => bail!("nomatch"),
@@ -4907,7 +4919,7 @@ fn checkForExecutionCosts(mut dataIn: TaskGraphMeta) -> Result<bool> {
     inComps = __pa1.clone();
     isFine = checkForExecutionCosts1(exeCosts.clone(), inComps.clone(), 1)?;
     if !(isFine.clone()) {
-        println!("{}", (literal!("There are execution costs with value 0.0!\n")).clone());
+        metamodelica::print((literal!("There are execution costs with value 0.0!\n")).clone());
     }
     Ok(isFine)
 }
@@ -5030,7 +5042,7 @@ fn convertSimEqToSccCosts1(mut iReqTimeOpSimCode: (i32, metamodelica::Real), mut
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("convertSimEqToSccCosts1 failed!\n")).clone());
+            metamodelica::print((literal!("convertSimEqToSccCosts1 failed!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5100,7 +5112,11 @@ fn createCosts1(mut iTuple: (i32, i32, metamodelica::Real), mut iReqTime: metamo
     let mut calcTimeCount: i32 = 0;
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     oReqTime = (match (iTuple.clone(), iReqTime.clone()) {
-        ((0, mut calcTimeCount, mut calcTime), _) => iReqTime.clone(),
+        ((0, mut __esc_calcTimeCount, mut __esc_calcTime), _) => {
+            calcTimeCount = __esc_calcTimeCount.clone();
+            calcTime = __esc_calcTime.clone();
+            iReqTime.clone()
+        },
         ((mut simEqIdx, mut calcTimeCount, mut calcTime), mut tmpArray) => {
             tmpArray = {let _arr = iReqTime.clone(); _arr.borrow_mut()[(simEqIdx.clone()-1) as usize] = (calcTimeCount.clone(), calcTime.clone()); _arr};
             tmpArray.clone()
@@ -5291,7 +5307,7 @@ fn validateComponents(mut graphComps: Arc<metamodelica::List<(Arc<BackendDAE::St
                     sortedGraphComps = List::sort(graphComps.clone(), (std::sync::Arc::new(compareComponents) as std::sync::Arc<dyn ::std::ops::Fn((Arc<BackendDAE::StrongComponent>, i32), (Arc<BackendDAE::StrongComponent>, i32)) -> Result<bool> + 'static>))?;
                     sortedSystComps = List::sort(systComps.clone(), (std::sync::Arc::new(compareComponents) as std::sync::Arc<dyn ::std::ops::Fn((Arc<BackendDAE::StrongComponent>, i32), (Arc<BackendDAE::StrongComponent>, i32)) -> Result<bool> + 'static>))?;
                     if intNe((sortedSystComps.clone().len() as i32), (sortedGraphComps.clone().len() as i32)) {
-                        println!("{}", (literal!("the graph and the system have a difference number of components.\n")).clone());
+                        metamodelica::print((literal!("the graph and the system have a difference number of components.\n")).clone());
                     }
                     isEqual = true;
                     while isEqual.clone() && !(sortedGraphComps.clone().is_empty()) {
@@ -5313,7 +5329,7 @@ fn validateComponents(mut graphComps: Arc<metamodelica::List<(Arc<BackendDAE::St
                             isEqual = true;
                         } else {
                             isEqual = false;
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("comp ")); __mm_s.push_str(&*intString(i1.clone())); __mm_s.push_str(&*BackendDump::printComponent(comp1.clone(), None)?); __mm_s.push_str(&*literal!(" is not equal to ")); __mm_s.push_str(&*literal!("comp")); __mm_s.push_str(&*intString(i2.clone())); __mm_s.push_str(&*BackendDump::printComponent(comp2.clone(), None)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("comp ")); __mm_s.push_str(&*intString(i1.clone())); __mm_s.push_str(&*BackendDump::printComponent(comp1.clone(), None)?); __mm_s.push_str(&*literal!(" is not equal to ")); __mm_s.push_str(&*literal!("comp")); __mm_s.push_str(&*intString(i2.clone())); __mm_s.push_str(&*BackendDump::printComponent(comp2.clone(), None)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                     }
                     Ok(true)
@@ -5324,7 +5340,7 @@ fn validateComponents(mut graphComps: Arc<metamodelica::List<(Arc<BackendDAE::St
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("Different components in graph and system\n")).clone());
+                    metamodelica::print((literal!("Different components in graph and system\n")).clone());
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -5372,7 +5388,7 @@ fn checkForDuplicates0(mut currentComp_idx: (Arc<BackendDAE::StrongComponent>, i
             ::match_deref::match_deref! { match &__mc_input {
                 ((currentComp, idxCurrent), (_, Some(lastComp_idx @ (lastComp, idxLast)))) => {
                     let true = (componentsEqual(currentComp_idx.clone(), lastComp_idx.clone())?) else { bail!("pattern mismatch") };
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Component duplicate detected: current: ")); __mm_s.push_str(&*BackendDump::printComponent(currentComp.clone(), None)?); __mm_s.push_str(&*literal!(" (eqSystem ")); __mm_s.push_str(&*intString(idxCurrent.clone())); __mm_s.push_str(&*literal!(") last ")); __mm_s.push_str(&*BackendDump::printComponent(lastComp.clone(), None)?); __mm_s.push_str(&*literal!(" (eqSystem ")); __mm_s.push_str(&*intString(idxLast.clone())); __mm_s.push_str(&*literal!(").\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Component duplicate detected: current: ")); __mm_s.push_str(&*BackendDump::printComponent(currentComp.clone(), None)?); __mm_s.push_str(&*literal!(" (eqSystem ")); __mm_s.push_str(&*intString(idxCurrent.clone())); __mm_s.push_str(&*literal!(") last ")); __mm_s.push_str(&*BackendDump::printComponent(lastComp.clone(), None)?); __mm_s.push_str(&*literal!(" (eqSystem ")); __mm_s.push_str(&*intString(idxLast.clone())); __mm_s.push_str(&*literal!(").\n")); ArcStr::from(__mm_s) }).clone());
                     Ok((false, Some(currentComp_idx.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -5567,7 +5583,7 @@ pub fn getCriticalPaths(mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta) 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("getCriticalPaths failed!\n")).clone());
+            metamodelica::print((literal!("getCriticalPaths failed!\n")).clone());
             Ok(((list![metamodelica::nil()], metamodelica::OrderedFloat(0.0_f64)), (list![metamodelica::nil()], metamodelica::OrderedFloat(0.0_f64))))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5658,7 +5674,7 @@ fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskG
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("HpcOmTaskGraph.getCriticalPath_1 failed\n")).clone());
+            metamodelica::print((literal!("HpcOmTaskGraph.getCriticalPath_1 failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5808,7 +5824,7 @@ fn getCostsForNode(mut parentNode: i32, mut childNode: i32, mut inComps: metamod
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("getCostsForNode failed! \n")).clone());
+            metamodelica::print((literal!("getCostsForNode failed! \n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -5889,7 +5905,7 @@ fn getParallelSetForComp(mut compIn: i32, mut setIdx: i32, mut parallelSets: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getParallelSetForComp failed!\n")).clone());
+                    metamodelica::print((literal!("getParallelSetForComp failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6038,7 +6054,7 @@ fn getCommunicationByChildIdx(mut iComms: Communications, mut iChildIdx: i32) ->
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getCommunicationByChildIdx failed! - the child idx ")); __mm_s.push_str(&*intString(iChildIdx.clone())); __mm_s.push_str(&*literal!(" can not be found in the list of edges\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getCommunicationByChildIdx failed! - the child idx ")); __mm_s.push_str(&*intString(iChildIdx.clone())); __mm_s.push_str(&*literal!(" can not be found in the list of edges\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6494,7 +6510,7 @@ fn getNodeForCref1(mut eqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSyste
                     let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     (varLst, lst) = BackendVariable::getVar(cref.clone(), vars.clone())?;
                     if intNe((lst.clone().len() as i32), 1) {
-                        println!("{}", (literal!("Check if there is a assert or something that is dependent of arrayEquations")).clone());
+                        metamodelica::print((literal!("Check if there is a assert or something that is dependent of arrayEquations")).clone());
                     }
                     if BackendVariable::isStateVar(listHead(varLst.clone())?) {
                         (esIdx, vIdx, b) = (-1, -1, false);
@@ -6552,7 +6568,7 @@ fn getNodeForVarIdx(mut varIdx: i32, mut eqSysIdx: i32, mut varCompMapping: meta
             node = -1;
             return Ok(node.clone());
         } else {
-            println!("{}", (literal!("HpcOmTaskGraph.getNodeForVarIdx failed\n")).clone());
+            metamodelica::print((literal!("HpcOmTaskGraph.getNodeForVarIdx failed\n")).clone());
         }
         n = n.clone() + 1;
         if n.clone() > arrayLengthVarCompMapping.clone() {
@@ -6577,15 +6593,15 @@ pub fn multirate_partitioning(mut odeGraph: TaskGraph, mut odeGraphData: TaskGra
     let mut activatorsForPartitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut stateToActivators: Arc<metamodelica::List<i32>> = metamodelica::nil();
     tasksPerLevel = getLevelNodes(odeGraph.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tasksPerLevel ")); __mm_s.push_str(&*stringDelimitList(List::map(tasksPerLevel.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tasksPerLevel ")); __mm_s.push_str(&*stringDelimitList(List::map(tasksPerLevel.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     stateTasks = getLeafNodes(odeGraph.clone())?;
     stateTasks = multirate_orderStateTasksInSimVarStateOrder(stateTasks.clone(), odeGraphData.clone(), backendDAE.clone(), simCode.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stateTasks ")); __mm_s.push_str(&*intLstString(stateTasks.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stateTasks ")); __mm_s.push_str(&*intLstString(stateTasks.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     odeGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(odeGraph.clone(), metamodelica::arrayLength(odeGraph.clone()))?;
     stateTaskAssign = multirate_assignTasksToStates(tasksPerLevel.clone(), stateTasks.clone(), odeGraphT.clone())?;
     dumpStateAssign(stateTaskAssign.clone())?;
     partitions = multirate_getPartitions(stateTaskAssign.clone(), stateTasks.clone(), odeGraphT.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("PARTITIONS :\n")); __mm_s.push_str(&*stringDelimitList(List::map(partitions.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("PARTITIONS :\n")); __mm_s.push_str(&*stringDelimitList(List::map(partitions.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     activatorsForPartitions = List::mapMap(partitions.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new({ let __pe_b1 = stateTaskAssign.clone(); move |__pe_a0| Array::getIndexFirst(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<_> + 'static>))?;
     partitions = List::map1(partitions.clone(), (std::sync::Arc::new(getSimEqsIdxLstForSCCIdxLst) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sccSimEqMapping.clone())?;
     numPartitions = (partitions.clone().len() as i32);
@@ -6790,7 +6806,7 @@ fn appendToElementUnique<T: Clone + 'static + PartialEq>(mut inIndex: i32, mut i
 }
 
 fn dumpStateAssign(mut stateAssign: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stateAssign ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(stateAssign.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("stateAssign ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(stateAssign.clone(), (std::sync::Arc::new(intLstString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -6807,17 +6823,17 @@ fn dumpPartitionData(mut partData: SimCode::PartitionData) -> Result<()> {
     activatorsForPartitions = __pa1.clone();
     partitions = __pa2.clone();
     numPartitions = __pa3.clone();
-    println!("{}", (literal!("Multirate Partition Data\n")).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(numPartitions.clone())); __mm_s.push_str(&*literal!(" partitions:\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((literal!("Multirate Partition Data\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(numPartitions.clone())); __mm_s.push_str(&*literal!(" partitions:\n")); ArcStr::from(__mm_s) }).clone());
     act = 1;
     for mut state in &*stateToActivators.clone() {
         let mut state = state.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activator ")); __mm_s.push_str(&*intString(act.clone())); __mm_s.push_str(&*literal!(" is state ")); __mm_s.push_str(&*intString(state.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activator ")); __mm_s.push_str(&*intString(act.clone())); __mm_s.push_str(&*literal!(" is state ")); __mm_s.push_str(&*intString(state.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         act = act.clone() + 1;
     }
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     for mut part in 1..=numPartitions.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activators: ")); __mm_s.push_str(&*intLstString((activatorsForPartitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tderStateTasks: ")); __mm_s.push_str(&*intLstString(List::map1((activatorsForPartitions.clone()).get(part.clone())?, std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), stateToActivators.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tnodes: \t")); __mm_s.push_str(&*intLstString((partitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activators: ")); __mm_s.push_str(&*intLstString((activatorsForPartitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tderStateTasks: ")); __mm_s.push_str(&*intLstString(List::map1((activatorsForPartitions.clone()).get(part.clone())?, std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), stateToActivators.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tnodes: \t")); __mm_s.push_str(&*intLstString((partitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }
@@ -6911,7 +6927,7 @@ fn removeDummyStateFromMapping1(mut iTuple: (i32, i32), mut iNewList: Arc<metamo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("removeDummyStateFromMapping1 failed\n")).clone());
+            metamodelica::print((literal!("removeDummyStateFromMapping1 failed\n")).clone());
             Ok(iNewList.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -7004,7 +7020,7 @@ fn getSimCodeEqByIndexAndMapping1(mut iSimEqSystem: Option<Arc<SimCode::SimEqSys
     oSimEqSystem = (::match_deref::match_deref! { match &(iSimEqSystem.clone()) {
         Some(tmpSys) => tmpSys.clone(),
         _ => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSimCodeEqByIndexAndMapping1 failed. Looking for Index ")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSimCodeEqByIndexAndMapping1 failed. Looking for Index ")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7045,7 +7061,7 @@ pub fn getSimCodeEqByIndex(mut iEqs: Arc<metamodelica::List<Arc<SimCode::SimEqSy
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSimCodeEqByIndex failed. Looking for Index ")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSimCodeEqByIndex failed. Looking for Index ")); __mm_s.push_str(&*intString(iIdx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -7115,7 +7131,7 @@ fn dumpSimEqSCCMapping(mut iSccMapping: metamodelica::Array<i32>) -> Result<()> 
     let mut text: ArcStr = arcstr::literal!("");
     text = (literal!("SimEqToSCCMapping")).clone();
     (_, text) = Array::fold(iSccMapping.clone(), (std::sync::Arc::new(fnptr!(dumpSimEqSCCMapping1, i32, (i32, ArcStr))) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, ArcStr)) -> Result<(i32, ArcStr)> + 'static>), (1, text.clone()))?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*text.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*text.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -7135,7 +7151,7 @@ fn dumpSccSimEqMapping(mut iSccMapping: metamodelica::Array<Arc<metamodelica::Li
     let mut text: ArcStr = arcstr::literal!("");
     text = (literal!("SccToSimEqMapping")).clone();
     (_, text) = Array::fold(iSccMapping.clone(), (std::sync::Arc::new(dumpSccSimEqMapping1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, ArcStr)) -> Result<(i32, ArcStr)> + 'static>), (1, text.clone()))?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*text.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*text.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

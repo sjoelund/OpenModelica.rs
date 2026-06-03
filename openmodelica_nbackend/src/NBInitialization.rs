@@ -168,8 +168,8 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         (bdae, clocks) = unwrap_break_err!(BackendDAE::applyModules(bdae.clone(), modules.clone(), eq_filter_opt.clone(), ClockIndexes::RT_CLOCK_NEW_BACKEND_INITIALIZATION.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_BACKEND_CLOCKS.clone()), '__try0) {
             if !(clocks.clone().is_empty()) {
-                println!("{}", (StringUtil::headline_4((literal!("Initialization Backend Clocks:")).clone())).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
+                metamodelica::print((StringUtil::headline_4((literal!("Initialization Backend Clocks:")).clone())).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut clck in (clocks.clone()).into_iter().cloned() {
             let __x = unwrap_break_err!(Module::moduleClockString(clck.clone()), '__try0);
@@ -211,7 +211,7 @@ pub fn createStartEquations(mut states: Arc<VariablePointers::VariablePointers>,
     equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone())?;
     initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(start_eqs.clone().is_empty()) {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Start Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Start Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((variables, initialVars, equations, initialEqs))
 }
@@ -294,7 +294,7 @@ pub fn createWhenReplacementEquations(mut cref_map: Arc<UnorderedMap::UnorderedM
     equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone())?;
     initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(start_eqs.clone().is_empty()) {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created When Replacement Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created When Replacement Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((equations, initialEqs))
 }
@@ -378,7 +378,7 @@ pub fn createParameterEquations(mut parameters: Arc<VariablePointers::VariablePo
     initialEqs = BEquation::EquationPointers::addList(parameter_eqs.clone(), initialEqs.clone())?;
     initialVars = BVariable::VariablePointers::addList(initial_param_vars.clone(), initialVars.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(parameter_eqs.clone().is_empty()) || Flags::isSet(Flags::DUMP_BINDINGS.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(parameter_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Parameter Binding Equations (")); __mm_s.push_str(&*intString((parameter_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(parameter_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Parameter Binding Equations (")); __mm_s.push_str(&*intString((parameter_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((equations, initialEqs, initialVars))
 }

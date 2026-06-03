@@ -578,7 +578,10 @@ pub mod VariableAttributes {
         Deref @ Type::STRING => createString(attrs.clone(), is_final.clone())?,
         Deref @ Type::ENUMERATION { .. } => createEnum(attrs.clone(), is_final.clone())?,
         Deref @ Type::CLOCK => createClock(is_final.clone()),
-        Deref @ Type::COMPLEX { complexTy: complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => createRecord(attrs.clone(), var_field!((**complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children.clone(), is_final.clone())?,
+        Deref @ Type::COMPLEX { complexTy: __esc_complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => {
+            complexTy = (*__esc_complexTy).clone();
+            createRecord(attrs.clone(), var_field!((*complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children.clone(), is_final.clone())?
+        },
         _ => createReal(attrs.clone(), is_final.clone(), comment.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1417,7 +1420,8 @@ pub mod VariableAttributes {
         for mut var in &*children.clone() {
             let mut var = var.clone();
             let () = (match UnorderedMap::get((ComponentRef::firstName(var.name.clone(), false)?).clone(), indexMap.clone())? {
-        Some(mut index) => {
+        Some(mut __esc_index) => {
+            index = __esc_index.clone();
             {
                 let __cell0 = create(var.typeAttributes.clone(), var.ty.clone(), var.attributes.clone(), var.children.clone(), var.comment.clone())?;
                 childrenAttr.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
@@ -1456,8 +1460,14 @@ pub mod VariableAttributes {
         name = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, .. }, .. } => InstNode::name(node.clone())?,
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => getStateSelectName(var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?,
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: _ }, .. } } if (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)? == literal!("fill")) => getStateSelectName(arg.clone())?,
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
+            call = (*__esc_call).clone();
+            getStateSelectName(var_field!((*call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?
+        },
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: _ }, .. } } if (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)? == literal!("fill")) => {
+            call = (*__esc_call).clone();
+            getStateSelectName(arg.clone())?
+        },
         Deref @ Expression::ARRAY { .. } => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Arc::new(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1688,8 +1698,9 @@ pub mod Annotations {
             assign_field!(annotations.resizable = true);
         }
         let () = (::match_deref::match_deref! { match &(comment.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: r#mod @ Deref @ SCode::Mod::MOD { .. } }), .. } => {
-            for mut submod in &*var_field!((**r#mod).subModLst, SCode::Mod::MOD).clone() {
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod @ Deref @ SCode::Mod::MOD { .. } }), .. } => {
+            r#mod = (*__esc_mod).clone();
+            for mut submod in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
                 let mut submod = submod.clone();
                 let () = (::match_deref::match_deref! { match &(submod.clone()) {
         Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: true }), .. }, ident: Deref @ "HideResult" } => {
@@ -1704,31 +1715,38 @@ pub mod Annotations {
             assign_field!(annotations.optimizable = b.clone());
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isMayer" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isMayer" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::MAYER.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isLagrange" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isLagrange" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::LAGRANGE.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isConstraint" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isConstraint" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::PATH_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isInitialConstraint" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isInitialConstraint" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::INITIAL_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isFinalConstraint" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isFinalConstraint" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::FINAL_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isInitialTime" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isInitialTime" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::INITIAL_TIME.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "isFinalTime" } => {
+        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isFinalTime" } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::FINAL_TIME.clone()));
             ()
         },

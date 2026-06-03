@@ -121,7 +121,7 @@ pub fn loadFlags(mut initialize: bool) -> Result<Flags::Flag> {
                 flags = Flags::Flag::FLAGS { debugFlags: createDebugFlags(), configFlags: createConfigFlags() };
                 saveFlags(flags.clone());
             } else {
-                println!("{}", (literal!("Flag loading failed!\n")).clone());
+                metamodelica::print((literal!("Flag loading failed!\n")).clone());
                 flags = crate::Flags::Flag::NO_FLAGS;
             }
         }
@@ -403,7 +403,7 @@ fn evaluateConfigFlag(mut inFlag: Flags::ConfigFlag, mut inValue: ArcStr, mut in
             let mut values: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             values = splitCSV((System::tolower((inValue.clone()).clone())).clone());
             System::gettextInit((if (Flags::getConfigString(Flags::RUNNING_TESTSUITE.clone())? == literal!("")) {Flags::getConfigString(Flags::LOCALE_FLAG.clone())?} else {literal!("C")}).clone());
-            println!("{}", (printHelp(values.clone())?).clone());
+            metamodelica::print((printHelp(values.clone())?).clone());
             setConfigString(Flags::HELP.clone(), (literal!("omc")).clone())?;
             ()
         },
@@ -740,13 +740,13 @@ fn handleDeprecatedFlags() -> Result<()> {
         disableDebug(Flags::INTERACTIVE_TCP.clone())?;
         setConfigString(Flags::INTERACTIVE.clone(), (literal!("tcp")).clone())?;
         Error::addMessage(Error::DEPRECATED_FLAG.clone(), list![(literal!("-d=interactive")).clone(), (literal!("--interactive=tcp")).clone()])?;
-        println!("{}", (literal!("The flag -d=interactive is depreciated. Please use --interactive=tcp instead.\n")).clone());
+        metamodelica::print((literal!("The flag -d=interactive is depreciated. Please use --interactive=tcp instead.\n")).clone());
     }
     if Flags::isSet(Flags::INTERACTIVE_CORBA.clone())? {
         disableDebug(Flags::INTERACTIVE_CORBA.clone())?;
         setConfigString(Flags::INTERACTIVE.clone(), (literal!("corba")).clone())?;
         Error::addMessage(Error::DEPRECATED_FLAG.clone(), list![(literal!("-d=interactiveCorba")).clone(), (literal!("--interactive=corba")).clone()])?;
-        println!("{}", (literal!("The flag -d=interactiveCorba is depreciated. Please use --interactive=corba instead.\n")).clone());
+        metamodelica::print((literal!("The flag -d=interactiveCorba is depreciated. Please use --interactive=corba instead.\n")).clone());
     }
     if Flags::getConfigString(Flags::TEARING_METHOD.clone())? == literal!("noTearing") {
         setConfigString(Flags::TEARING_METHOD.clone(), (literal!("minimalTearing")).clone())?;

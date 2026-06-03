@@ -108,7 +108,7 @@ pub fn synchronousFeatures(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         systs = listAppend(contSysts.clone(), clockedSysts.clone());
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systs.clone(), shared: shared.clone() });
         if Flags::isSet(Flags::DUMP_SYNCHRONOUS.clone())? {
-            println!("{}", (literal!("synchronous features post-phase: synchronousFeatures\n\n")).clone());
+            metamodelica::print((literal!("synchronous features post-phase: synchronousFeatures\n\n")).clone());
             BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone())?;
             BackendDump::dumpBasePartitions(shared.partitionsInfo.basePartitions.clone(), (literal!("Base clocks")).clone())?;
             BackendDump::dumpSubPartitions(shared.partitionsInfo.subPartitions.clone(), (literal!("Sub clocks")).clone())?;
@@ -163,7 +163,7 @@ fn clockPartitioning1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
     outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systs.clone(), shared: shared.clone() });
     if !(clockedSysts.clone().is_empty()) {
         if Flags::isSet(Flags::DUMP_SYNCHRONOUS.clone())? {
-            println!("{}", (literal!("synchronous features pre-phase: synchronousFeatures\n\n")).clone());
+            metamodelica::print((literal!("synchronous features pre-phase: synchronousFeatures\n\n")).clone());
             BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone())?;
             BackendDump::dumpBasePartitions(shared.partitionsInfo.basePartitions.clone(), (literal!("Base clocks")).clone())?;
             BackendDump::dumpSubPartitions(shared.partitionsInfo.subPartitions.clone(), (literal!("Sub clocks")).clone())?;
@@ -2532,7 +2532,7 @@ pub fn partitionIndependentBlocks0(mut m: metamodelica::Array<Arc<metamodelica::
 fn partitionIndependentBlocks(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>) -> Result<i32> {
     let mut on: i32 = 0;
     for mut eq in (1..=metamodelica::arrayLength(m.clone())).rev() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("check eq ")); __mm_s.push_str(&*intString(eq.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("check eq ")); __mm_s.push_str(&*intString(eq.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         if !(intEq(({let __elt = eqPartMap.clone().borrow()[(eq.clone()-1) as usize].clone(); __elt}), -2)) {
             on = if (partitionIndependentBlocks2(eq.clone(), on.clone() + 1, m.clone(), mT.clone(), eqPartMap.clone(), varPartMap.clone())?) {on.clone() + 1} else {on.clone()};
         }

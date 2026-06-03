@@ -184,7 +184,7 @@ fn solveSimpleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDAE::
 }
 
 fn printTryToSolve(mut instanceName: ArcStr, mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*instanceName.clone()); __mm_s.push_str(&*literal!(" tries to solve: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\nwith respect to: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*instanceName.clone()); __mm_s.push_str(&*literal!(" tries to solve: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\nwith respect to: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -1662,11 +1662,11 @@ fn expHasCref(mut inExp1: Arc<DAE::Exp>, mut inExp3: Arc<DAE::Exp>) -> Result<bo
         },
         _ => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                println!("{}", (literal!("\n-ExpressionSolve.solve failed:")).clone());
-                println!("{}", (literal!(" with respect to: ")).clone());
-                println!("{}", (ExpressionBasics::printExpStr(inExp3.clone())?).clone());
-                println!("{}", (literal!(" not support!")).clone());
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n-ExpressionSolve.solve failed:")).clone());
+                metamodelica::print((literal!(" with respect to: ")).clone());
+                metamodelica::print((ExpressionBasics::printExpStr(inExp3.clone())?).clone());
+                metamodelica::print((literal!(" not support!")).clone());
+                metamodelica::print((literal!("\n")).clone());
             }
             bail!("fail")
         },

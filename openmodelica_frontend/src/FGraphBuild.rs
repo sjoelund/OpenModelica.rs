@@ -259,7 +259,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: F
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (name, _, g) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraphBuild.mkModNode failed with: ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" mod: ")); __mm_s.push_str(&*SCodeDump::printModStr(inMod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraphBuild.mkModNode failed with: ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" mod: ")); __mm_s.push_str(&*SCodeDump::printModStr(inMod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -696,7 +696,7 @@ pub fn mkTypeNode(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inPa
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut pr: Ref = Default::default();
             pr = FGraph::top(inGraph.clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraphBuild.mkTypeNode: Error making type node: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in parent: ")); __mm_s.push_str(&*FNode::name(FNode::fromRef(pr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraphBuild.mkTypeNode: Error making type node: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in parent: ")); __mm_s.push_str(&*FNode::name(FNode::fromRef(pr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(inGraph.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

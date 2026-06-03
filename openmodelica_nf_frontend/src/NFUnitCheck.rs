@@ -119,8 +119,8 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
         htCr2U2 = UnorderedMap::copy(htCr2U1.clone());
         htCr2U2 = unwrap_break_err!(checkModelConsistency(flatModel.variables.clone(), flatModel.equations.clone(), flatModel.initialEquations.clone(), htCr2U2.clone(), htS2U.clone(), htU2S.clone(), fn_cache.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DUMP_UNIT.clone()), '__try0) {
-            println!("{}", (unwrap_break_err!(UnorderedMap::toString(htCr2U2.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Unit::unit2string) as std::sync::Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone()), '__try0)).clone());
-            println!("{}", (literal!("\n######## UnitCheck COMPLETED ########\n")).clone());
+            metamodelica::print((unwrap_break_err!(UnorderedMap::toString(htCr2U2.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Unit::unit2string) as std::sync::Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone()), '__try0)).clone());
+            metamodelica::print((literal!("\n######## UnitCheck COMPLETED ########\n")).clone());
         }
         unwrap_break_err!(notification(htCr2U1.clone(), htCr2U2.clone(), htU2S.clone()), '__try0);
         flatModel = unwrap_break_err!(updateModel(flatModel.clone(), htCr2U2.clone(), htU2S.clone()), '__try0);
@@ -326,8 +326,8 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
             let mut temp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             temp = Arc::new(Expression::NFExpression::BINARY { exp1: var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), operator: Operator::makeSub(Arc::new(crate::NFType::REAL)), exp2: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone() });
             if dumpEqInitStruct.clone() {
-                println!("{}", (Expression::toString(temp.clone())?).clone());
-                println!("{}", (literal!("--------------------\n")).clone());
+                metamodelica::print((Expression::toString(temp.clone())?).clone());
+                metamodelica::print((literal!("--------------------\n")).clone());
             }
             (_, inconsistentUnits) = insertUnitInEquation(temp.clone(), Unit::Unit::MASTER { varList: metamodelica::nil() }, htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
             inconsistentUnits.clone()

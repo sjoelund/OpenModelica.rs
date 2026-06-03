@@ -2086,8 +2086,8 @@ pub fn assignVector(mut inNewValue: Arc<Values::Value>, mut inOldValue: Arc<Valu
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ metamodelica::List::Cons { head: sub, tail: _ }) => {
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    println!("{}", (literal!("- CevalFunction.assignVector failed on: ")).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printSubscriptStr(sub.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print((literal!("- CevalFunction.assignVector failed on: ")).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printSubscriptStr(sub.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

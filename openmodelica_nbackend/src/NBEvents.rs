@@ -223,8 +223,8 @@ pub mod EventInfo {
         }
         eventInfo = Arc::new(EventInfo { numberMathEvents: 0, state_map: bucket.state_map.clone(), time_map: bucket.time_map.clone(), time_set: bucket.time_set.clone() });
         if Flags::isSet(Flags::DUMP_EVENTS.clone())? {
-            println!("{}", (toString(eventInfo.clone())?).clone());
-            println!("{}", (List::toString(auxiliary_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("  ")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4((literal!("Event Equations")).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?).clone());
+            metamodelica::print((toString(eventInfo.clone())?).clone());
+            metamodelica::print((List::toString(auxiliary_eqns.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("  ")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4((literal!("Event Equations")).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?).clone());
         }
         Ok((eventInfo, auxiliary_vars, auxiliary_eqns))
     }

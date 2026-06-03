@@ -538,7 +538,7 @@ fn updateCrefTypesWithConnectorPrefix(mut cr1: Arc<DAE::ComponentRef>, mut cr2: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ***** FAILURE with ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr1.clone())?); __mm_s.push_str(&*literal!(" _and_ ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ***** FAILURE with ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr1.clone())?); __mm_s.push_str(&*literal!(" _and_ ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -888,7 +888,7 @@ fn checkExtendsForTypeRestiction(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
                         _ => bail!("pattern mismatch"),
                     } };
                     r2 = __pa0.clone();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error!: ")); __mm_s.push_str(&*SCodeDump::restrString(r1.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())?); __mm_s.push_str(&*literal!(" cannot be extended by ")); __mm_s.push_str(&*SCodeDump::restrString(r2.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" due to derived/base class restrictions.\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error!: ")); __mm_s.push_str(&*SCodeDump::restrString(r1.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*FGraph::printGraphPathStr(inEnv.clone())?); __mm_s.push_str(&*literal!(" cannot be extended by ")); __mm_s.push_str(&*SCodeDump::restrString(r2.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" due to derived/base class restrictions.\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1172,7 +1172,7 @@ fn extractConstantPlusDeps2(mut inComps: Arc<metamodelica::List<Arc<SCode::Eleme
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!(" failure in get_Constant_PlusDeps \n")).clone());
+                    metamodelica::print((literal!(" failure in get_Constant_PlusDeps \n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1269,10 +1269,10 @@ pub fn printExtcomps(mut inElements: Arc<metamodelica::List<(Arc<SCode::Element>
         Deref @ metamodelica::List::Cons { head: (el, r#mod), tail: els } => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?).clone();
-            println!("{}", (s.clone()).clone());
-            println!("{}", (literal!(", ")).clone());
-            println!("{}", (Mod::printModStr(r#mod.clone())?).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((s.clone()).clone());
+            metamodelica::print((literal!(", ")).clone());
+            metamodelica::print((Mod::printModStr(r#mod.clone())?).clone());
+            metamodelica::print((literal!("\n")).clone());
             printExtcomps(els.clone())?;
             ()
         },
@@ -1470,9 +1470,9 @@ fn printGraph(mut env: FCore::Graph, mut g: Arc<metamodelica::List<((Arc<SCode::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Graph for env: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Graph::printGraph(g.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Element order:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cycles:\n")); __mm_s.push_str(&*Graph::printGraph(cycles.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Graph for env: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Graph::printGraph(g.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Element order:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(order.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cycles:\n")); __mm_s.push_str(&*Graph::printGraph(cycles.clone(), (std::sync::Arc::new(elementName) as std::sync::Arc<dyn ::std::ops::Fn((Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<ArcStr> + 'static>))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -1578,7 +1578,7 @@ pub fn getCrefFromMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::Li
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstUtil.getCrefFromMod")); __mm_s.push_str(&*literal!(": could not retrieve crefs from SCode.Mod: ")); __mm_s.push_str(&*SCodeDump::printModStr(inMod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstUtil.getCrefFromMod")); __mm_s.push_str(&*literal!(": could not retrieve crefs from SCode.Mod: ")); __mm_s.push_str(&*SCodeDump::printModStr(inMod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2573,7 +2573,7 @@ fn addRecordConstructorsToTheCache(mut inCache: FCore::Cache, mut inEnv: FCore::
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ih: InstanceHierarchy = metamodelica::nil();
-                    println!("{}", (literal!("Depreciated record constructor used: Inst.addRecordConstructorsToTheCache")).clone());
+                    metamodelica::print((literal!("Depreciated record constructor used: Inst.addRecordConstructorsToTheCache")).clone());
                     let true = (AbsynUtil::isInputOrOutput(inDirection.clone())?) else { bail!("pattern mismatch") };
                     let false = (stringEq((AbsynUtil::pathLastIdent(path.clone())?).clone(), (name.clone()).clone())) else { bail!("pattern mismatch") };
                     (cache, env, ih) = InstFunction::implicitFunctionInstantiation(inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())?;
@@ -3478,7 +3478,7 @@ fn addEnumerationLiteralToEnv(mut inEnum: Arc<SCode::Element>, mut inEnv: FCore:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("InstUtil.addEnumerationLiteralToEnv: Unknown enumeration type!\n")).clone());
+                    metamodelica::print((literal!("InstUtil.addEnumerationLiteralToEnv: Unknown enumeration type!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4359,7 +4359,7 @@ fn setFunctionInputIndex(mut inElemDecl: Arc<metamodelica::List<Arc<SCode::Eleme
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" failure in setFunctionInputIndex, didn't find any index for: ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" failure in setFunctionInputIndex, didn't find any index for: ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5486,7 +5486,7 @@ pub fn mktypeWithArrays(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::Sta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("InstUtil.mktypeWithArrays failed\n")).clone());
+                    metamodelica::print((literal!("InstUtil.mktypeWithArrays failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6197,7 +6197,7 @@ fn traverseModAddFinal3(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!(" we failed with traverseModAddFinal3\n")).clone());
+                    metamodelica::print((literal!(" we failed with traverseModAddFinal3\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6614,7 +6614,7 @@ pub fn propagateAbSCDirection2(mut v1: Absyn::Direction, mut optDerAttr: Option<
             v1.clone()
         },
         _ => {
-            println!("{}", (literal!(" failure in propagateAbSCDirection2, Absyn.DIRECTION mismatch")).clone());
+            metamodelica::print((literal!(" failure in propagateAbSCDirection2, Absyn.DIRECTION mismatch")).clone());
             Error::addSourceMessage(Error::COMPONENT_INPUT_OUTPUT_MISMATCH.clone(), list![(literal!("")).clone(), (literal!("")).clone()], inInfo.clone())?;
             bail!("fail")
         },
@@ -8335,7 +8335,7 @@ pub fn discretizePDE(mut inEQ: Arc<SCode::Equation>, mut inDomFieldLst: DomainFi
             list![newEQFun(N.clone(), lhs_exp.clone(), rhs_exp.clone(), domainCr1.clone(), N.clone(), true, fieldLst.clone(), comment.clone(), info.clone())?]
         },
         Deref @ SCode::Equation::EQ_PDE { .. } => {
-            println!("{}", (literal!("Unhandled type of EQ_PDE in discretizePDE\n")).clone());
+            metamodelica::print((literal!("Unhandled type of EQ_PDE in discretizePDE\n")).clone());
             bail!("fail");
             metamodelica::nil()
         },

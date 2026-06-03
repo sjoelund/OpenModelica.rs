@@ -492,7 +492,8 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
     for mut branch in &*branches.clone() {
         let mut branch = branch.clone();
         accum = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ Equation::Branch::BRANCH { condition: cond, conditionVar: var, body } => {
+        Deref @ Equation::Branch::BRANCH { condition: cond, conditionVar: __esc_var, body } => {
+            var = (*__esc_var).clone();
             let mut cond = (*cond).clone();
             cond = SimplifyExp::simplify(cond.clone(), false)?;
             if Expression::isTrue(cond.clone()) {

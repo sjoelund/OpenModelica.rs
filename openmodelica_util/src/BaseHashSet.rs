@@ -132,15 +132,15 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
         (mut key, (_, _, mut bsize, _, (mut hashFunc, _, mut keystrFunc))) => {
             let mut hval: i32 = 0;
             let mut s: ArcStr = arcstr::literal!("");
-            println!("{}", (literal!("- BaseHashSet.add failed: ")).clone());
-            println!("{}", (literal!("bsize: ")).clone());
-            println!("{}", (intString(bsize.clone())).clone());
-            println!("{}", (literal!(" key: ")).clone());
+            metamodelica::print((literal!("- BaseHashSet.add failed: ")).clone());
+            metamodelica::print((literal!("bsize: ")).clone());
+            metamodelica::print((intString(bsize.clone())).clone());
+            metamodelica::print((literal!(" key: ")).clone());
             s = (keystrFunc(key.clone())?).clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" Hash: ")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" Hash: ")); ArcStr::from(__mm_s) }).clone());
             hval = intMod(hashFunc(key.clone())?, bsize.clone());
-            println!("{}", (intString(hval.clone())).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((intString(hval.clone())).clone());
+            metamodelica::print((literal!("\n")).clone());
             bail!("fail")
         },
     });
@@ -283,7 +283,7 @@ pub fn printHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<(
     let mut printKey: FuncKeyString<Key>;
     let (_, _, _, _, (_, _, __pa0)) = hashSet.clone();
     printKey = __pa0.clone();
-    println!("{}", stringDelimitList(({
+    metamodelica::print(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (hashSetList(hashSet.clone())?).into_iter().cloned() {
             let __x = printKey(e.clone())?;
@@ -295,9 +295,9 @@ pub fn printHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<(
 }
 
 pub fn dumpHashSet<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<()> {
-    println!("{}", (literal!("HashSet:\n")).clone());
+    metamodelica::print((literal!("HashSet:\n")).clone());
     printHashSet(hashSet.clone())?;
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

@@ -203,7 +203,7 @@ pub mod PseudoBucket {
             }
         }
         if Flags::isSet(Flags::DUMP_SORTING.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(buckets.clone(), (std::sync::Arc::new(Adjacency::Mode::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Value::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Value::Value>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(buckets.clone(), (std::sync::Arc::new(Adjacency::Mode::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Value::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Value::Value>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(buckets)
     }
@@ -283,7 +283,7 @@ pub fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<Matchin
             let mut super_nodes: metamodelica::Array<Arc<SuperNode::SuperNode>> = Default::default();
             let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> as ::std::default::Default>::default();
             if unwrap_break_err!(Flags::isSet(Flags::DUMP_SORTING.clone()), '__try0) {
-                println!("{}", (StringUtil::headline_1((literal!("Sorting")).clone())).clone());
+                metamodelica::print((StringUtil::headline_1((literal!("Sorting")).clone())).clone());
             }
             buckets = unwrap_break_err!(PseudoBucket::create(matching.eqn_to_var.clone(), eqns.clone(), var_field!((*adj).mapping, Adjacency::Matrix::Matrix::FINAL).clone(), var_field!((*adj).modes, Adjacency::Matrix::Matrix::FINAL).clone()), '__try0);
             comps_indices = unwrap_break_err!(tarjanScalar(var_field!((*adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), matching.clone()), '__try0);

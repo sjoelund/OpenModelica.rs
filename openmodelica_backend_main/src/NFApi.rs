@@ -1540,7 +1540,8 @@ pub fn dumpJSONReplaceable(mut repl: Arc<SCode::Replaceable>, mut scope: Arc<Ins
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     json = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(cc) } => {
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
+            cc = (*__esc_cc).clone();
             json = JSON::makeNull();
             json = JSON::addPair((literal!("constrainedby")).clone(), dumpJSONPath(cc.constrainingClass.clone())?, json.clone())?;
             json = dumpJSONSCodeMod(cc.modifier.clone(), scope.clone(), json.clone())?;
@@ -1934,7 +1935,8 @@ pub fn dumpJSONStateCall(mut callEq: Arc<Equation::NFEquation>, mut scope: Arc<I
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut j: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let () = (::match_deref::match_deref! { match &(callEq.clone()) {
-        Deref @ Equation::NORETCALL { source: src, exp: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: args, .. } }, .. } => {
+        Deref @ Equation::NORETCALL { source: src, exp: Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { arguments: args, .. } }, .. } => {
+            call = (*__esc_call).clone();
             j = JSON::emptyArray((args.clone().len() as i32));
             for mut arg in &*args.clone() {
                 let mut arg = arg.clone();

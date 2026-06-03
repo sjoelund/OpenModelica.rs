@@ -108,13 +108,13 @@ pub fn pantelidesIndexReduction(mut inEqns: Arc<metamodelica::List<Arc<metamodel
     if inEqns.clone().is_empty() {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("- IndexReduction.pantelidesIndexReduction called with empty list of equations!")).clone()])?;
         if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
-            println!("{}", (literal!("Index reduction done.\n")).clone());
+            metamodelica::print((literal!("Index reduction done.\n")).clone());
         }
         bail!("fail");
     }
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::OPT_DAE_DUMP.clone()), '__try0) {
-            println!("{}", (literal!("\n\nIndex reduction:\n")).clone());
+            metamodelica::print((literal!("\n\nIndex reduction:\n")).clone());
         }
         ErrorExt::setCheckpoint((literal!("Pantelides")).clone());
         (eqns_1, unassignedStates, unassignedEqns, _) = unwrap_break_err!(minimalStructurallySingularSystem(inEqns.clone(), inSystem.clone(), inShared.clone(), inAssignments1.clone(), inAssignments2.clone(), inArg.clone()), '__try0);
@@ -131,7 +131,7 @@ pub fn pantelidesIndexReduction(mut inEqns: Arc<metamodelica::List<Arc<metamodel
         ErrorExt::delCheckpoint((literal!("Pantelides")).clone());
         if unwrap_break_err!(Flags::isSet(Flags::OPT_DAE_DUMP.clone()), '__try0) {
             unwrap_break_err!(BackendDump::dumpEqSystemShort(osyst.clone(), (literal!("pantelidesIndexReduction")).clone()), '__try0);
-            println!("{}", (literal!("Index reduction done.\n")).clone());
+            metamodelica::print((literal!("Index reduction done.\n")).clone());
         }
         Ok::<_, anyhow::Error>((changedEqns.clone(), continueEqn.clone(), eqns_1.clone(), markarr.clone(), newsize.clone(), oass1.clone(), oass2.clone(), oshared.clone(), osyst.clone(), outArg.clone(), size.clone(), unassignedEqns.clone(), unassignedStates.clone()))
     } {
@@ -154,7 +154,7 @@ pub fn pantelidesIndexReduction(mut inEqns: Arc<metamodelica::List<Arc<metamodel
             ErrorExt::delCheckpoint((literal!("Pantelides")).clone());
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("- IndexReduction.pantelidesIndexReduction failed!")).clone()])?;
             if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
-                println!("{}", (literal!("Index reduction done.\n")).clone());
+                metamodelica::print((literal!("Index reduction done.\n")).clone());
             }
             return Err(__try0_err);
         }
@@ -248,9 +248,9 @@ fn pantelidesIndexReductionMSS(mut unassignedStates: Arc<metamodelica::List<i32>
                     MSSSeqs1 = List::uniqueIntN(MSSSeqs1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
                     MSSSeqs1 = List::select1(MSSSeqs1.clone(), (std::sync::Arc::new(fnptr!(intLe, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), noofeqns.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("##############--MSSS--##############\n")); __mm_s.push_str(&*literal!("Indices of constraint equations: ")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("##############--MSSS--##############\n")); __mm_s.push_str(&*literal!("Indices of constraint equations: ")); ArcStr::from(__mm_s) }).clone());
                         BackendDump::debuglst(MSSSeqs1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
-                        println!("{}", (literal!("\n")).clone());
+                        metamodelica::print((literal!("\n")).clone());
                     }
                     (eqnstpl, shared) = differentiateEqnsLst(MSSSeqs1.clone(), vars.clone(), eqnsarray.clone(), inShared.clone())?;
                     (syst, shared, ass1, ass2, orgEqnsLst1, mapEqnIncRow, mapIncRowEqn, notDiffableMSS) = differentiateEqns(eqnstpl.clone(), MSSSeqs1.clone(), unassignedStates.clone(), unassignedEqns.clone(), inSystem.clone(), shared.clone(), inAssignments1.clone(), inAssignments2.clone(), orgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), iNotDiffableMSS.clone())?;
@@ -352,12 +352,12 @@ fn singularSystemError(mut b: bool, mut unassignedStates: Arc<metamodelica::List
             let mut eqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (literal!("Reduce Index failed! Found empty set of continuous equations.\nmarked equations:\n")).clone());
+                metamodelica::print((literal!("Reduce Index failed! Found empty set of continuous equations.\nmarked equations:\n")).clone());
             }
             eqns1 = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
             eqns1 = List::uniqueIntN(eqns1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
+                metamodelica::print((BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
             }
             syst = BackendDAEUtil::setEqSystMatching(inSystem.clone(), Arc::new(BackendDAE::Matching::MATCHING { ass1: inAssignments1.clone(), ass2: inAssignments2.clone(), comps: metamodelica::nil() }))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
@@ -371,14 +371,14 @@ fn singularSystemError(mut b: bool, mut unassignedStates: Arc<metamodelica::List
             let mut eqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (literal!("Reduce Index failed! System is structurally singular and cannot be handled because the number of unassigned continuous equations is larger than the number of states.\nmarked equations:\n")).clone());
+                metamodelica::print((literal!("Reduce Index failed! System is structurally singular and cannot be handled because the number of unassigned continuous equations is larger than the number of states.\nmarked equations:\n")).clone());
                 BackendDump::debuglst(eqns.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
             }
             eqns1 = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
             eqns1 = List::uniqueIntN(eqns1.clone(), metamodelica::arrayLength(mapIncRowEqn.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
-                println!("{}", (literal!("\n\nunassigned states:\n")).clone());
+                metamodelica::print((BackendDump::dumpMarkedEqns(inSystem.clone(), eqns1.clone())?).clone());
+                metamodelica::print((literal!("\n\nunassigned states:\n")).clone());
             }
             varlst = List::map1r(unassignedStates.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(inSystem.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
@@ -530,9 +530,9 @@ fn differentiateEqns(mut inEqnsTpl: Arc<metamodelica::List<(i32, Option<Arc<Back
         eqnslst1 = List::uniqueIntN(listAppend(MSSSeqs.clone(), eqnslst1.clone()), numEqs1.clone())?;
         eqnslst = listAppend(eqnslst1.clone(), eqnslst.clone());
         if Flags::isSet(Flags::BLT_DUMP.clone())? {
-            println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
+            metamodelica::print((literal!("Update Adjacency Matrix: ")).clone());
             BackendDump::debuglst(eqnslst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\n")).clone());
         }
         funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
         (syst, omapEqnIncRow, omapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
@@ -803,10 +803,10 @@ fn handleundifferntiableMSSLst(mut iNotDiffableMSS: Arc<metamodelica::List<(Arc<
             let mut mapEqnIncRow = (*mapEqnIncRow).clone();
             let mut mapIncRowEqn = (*mapIncRowEqn).clone();
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (literal!("not differentiable minimal singular subset:\n")).clone());
-                println!("{}", (literal!("unassignedEqns:\n")).clone());
+                metamodelica::print((literal!("not differentiable minimal singular subset:\n")).clone());
+                metamodelica::print((literal!("unassignedEqns:\n")).clone());
                 BackendDump::debuglst(unassignedEqns.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(", ")).clone(), (literal!("\n")).clone())?;
-                println!("{}", (literal!("unassignedStates:\n")).clone());
+                metamodelica::print((literal!("unassignedStates:\n")).clone());
                 BackendDump::debuglst(unassignedStates.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(", ")).clone(), (literal!("\n")).clone())?;
             }
             ilst = List::fold1(unassignedStates.clone(), (std::sync::Arc::new(statesWithUnusedDerivative) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), mt.clone(), metamodelica::nil())?;
@@ -814,7 +814,7 @@ fn handleundifferntiableMSSLst(mut iNotDiffableMSS: Arc<metamodelica::List<(Arc<
             let (_, (__pa0, _)) = BackendDAEUtil::traverseBackendDAEExpsEqns(BackendEquation::getInitialEqnsFromShared(inShared.clone()), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(searchDerivativesExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<i32>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<i32>>, BackendDAE::Variables))> + 'static>), (ilst.clone(), v.clone())))?;
             ilst = __pa0.clone();
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (literal!("states without used derivative:\n")).clone());
+                metamodelica::print((literal!("states without used derivative:\n")).clone());
                 BackendDump::debuglst(ilst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(", ")).clone(), (literal!("\n")).clone())?;
             }
             (syst, shared, ass1, ass2, so, orgEqnsLst, mapEqnIncRow, mapIncRowEqn) = handleundifferntiableMSS(intLe((ilst.clone().len() as i32), (unassignedEqns.clone().len() as i32)), ilst.clone(), eqns.clone(), unassignedStates.clone(), unassignedEqns.clone(), inSystem.clone(), inShared.clone(), inAss1.clone(), inAss2.clone(), so.clone(), orgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone())?;
@@ -863,8 +863,8 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     ass2 = List::fold1r(eqnslst1.clone(), Arc::new(arrayUpdate.clone()), -1, inAss2.clone())?;
                     ass1 = List::fold1r(ilst.clone(), Arc::new(arrayUpdate.clone()), -1, inAss1.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Replaced final Parameter in Eqns\n")).clone());
-                        println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
+                        metamodelica::print((literal!("Replaced final Parameter in Eqns\n")).clone());
+                        metamodelica::print((literal!("Update Adjacency Matrix: ")).clone());
                         BackendDump::debuglst(eqnslst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
@@ -885,7 +885,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     let mut syst = (*syst).clone();
                     varlst = List::map1r(statesWithUnusedDer.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), v.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Change varKind to algebraic for\n")).clone());
+                        metamodelica::print((literal!("Change varKind to algebraic for\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     varlst = BackendVariable::setVarsKind(varlst.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
@@ -893,7 +893,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     eqnslst1 = collectVarEqns(statesWithUnusedDer.clone(), mt.clone(), metamodelica::arrayLength(mt.clone()), metamodelica::arrayLength(m.clone()))?;
                     eqnslst1 = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapIncRowEqn.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
+                        metamodelica::print((literal!("Update Adjacency Matrix: ")).clone());
                         BackendDump::debuglst(eqnslst1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
@@ -916,20 +916,20 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     var = BackendVariable::getVarAt(v.clone(), i.clone())?;
                     varlst = list![var.clone()];
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Change varKind to algebraic for\n")).clone());
+                        metamodelica::print((literal!("Change varKind to algebraic for\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     varlst = BackendVariable::setVarsKind(varlst.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     assign_field!(syst.orderedVars = BackendVariable::addVars(varlst.clone(), v.clone())?);
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         varlst = List::map1r(ilst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), v.clone())?;
-                        println!("{}", (literal!("Other Candidates are\n")).clone());
+                        metamodelica::print((literal!("Other Candidates are\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     eqnslst1 = collectVarEqns(list![i.clone()], mt.clone(), metamodelica::arrayLength(mt.clone()), metamodelica::arrayLength(m.clone()))?;
                     eqnslst1 = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapIncRowEqn.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
+                        metamodelica::print((literal!("Update Adjacency Matrix: ")).clone());
                         BackendDump::debuglst(eqnslst1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
@@ -962,7 +962,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         _ => bail!("pattern mismatch"),
                     } };
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("All unassignedStates without Derivative: ")); __mm_s.push_str(&*stringDelimitList(List::map(ilst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("All unassignedStates without Derivative: ")); __mm_s.push_str(&*stringDelimitList(List::map(ilst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     (syst, oshared, outAss1, outAss2, outStateOrd, outOrgEqnsLst, omapEqnIncRow, omapIncRowEqn) = handleundifferntiableMSS(intLe((ilst.clone().len() as i32), (unassignedEqns.clone().len() as i32)), ilst.clone(), inEqns.clone(), unassignedStates.clone(), unassignedEqns.clone(), inSystem.clone(), inShared.clone(), inAss1.clone(), inAss2.clone(), inStateOrd.clone(), inOrgEqnsLst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone())?;
@@ -977,7 +977,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     varlst = List::map1r(unassignedStates.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), v.clone())?;
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("unassignedStates\n")).clone());
+                        metamodelica::print((literal!("unassignedStates\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
                     Ok(bail!("fail"))
@@ -1230,7 +1230,7 @@ fn dynamicStateSelectionWork(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
             funcs = __pa2.clone();
             orgEqnsLst = unwrap_break_err!(inlineOrgEqns(orgEqnsLst.clone(), (Some(funcs.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE])), '__try0);
             if unwrap_break_err!(Flags::isSet(Flags::BLT_DUMP.clone()), '__try0) {
-                println!("{}", (literal!("########################### STATE SELECTION ###########################\n")).clone());
+                metamodelica::print((literal!("########################### STATE SELECTION ###########################\n")).clone());
             }
             numFreeStates = unwrap_break_err!(BackendVariable::traverseBackendDAEVars(vars.clone(), (std::sync::Arc::new(fnptr!(countStateCandidates, BackendDAE::Var, i32)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32) -> Result<(BackendDAE::Var, i32)> + 'static>), 0), '__try0);
             numOrgEqs = unwrap_break_err!(countOrgEqns(orgEqnsLst.clone(), 0), '__try0);
@@ -1890,7 +1890,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             mT1 = AdjacencyMatrix::transposeAdjacencyMatrix(m1.clone(), nfreeStates.clone())?;
             hovvars = sortStateCandidatesVars(hovvars.clone(), BackendVariable::daeVars(inSystem.clone()), Some(mT1.clone()))?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########## Try static state selection ##########\n")); __mm_s.push_str(&*literal!("Try to select dummy vars with natural matching (newer)\n")); __mm_s.push_str(&*literal!("Select ")); __mm_s.push_str(&*intString((eqnslst.clone().len() as i32))); __mm_s.push_str(&*literal!(" dummy states from ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(hovvars.clone()))); __mm_s.push_str(&*literal!(" candidates.\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########## Try static state selection ##########\n")); __mm_s.push_str(&*literal!("Try to select dummy vars with natural matching (newer)\n")); __mm_s.push_str(&*literal!("Select ")); __mm_s.push_str(&*intString((eqnslst.clone().len() as i32))); __mm_s.push_str(&*literal!(" dummy states from ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(hovvars.clone()))); __mm_s.push_str(&*literal!(" candidates.\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpVariables(hovvars.clone(), (literal!("Highest order derivatives (state candidates):")).clone())?;
                 BackendDump::dumpEquationList(eqnslst.clone(), (literal!("Constraint equations:")).clone())?;
             }
@@ -1934,7 +1934,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             (me, meT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), inShared.clone(), false)?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 BackendDump::dumpAdjacencyMatrixEnhanced(me.clone())?;
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n")).clone());
                 BackendDump::dumpAdjacencyMatrixTEnhanced(meT.clone())?;
             }
             m = adjacencyMatrixfromEnhancedStrict(me.clone(), vars.clone())?;
@@ -1948,9 +1948,9 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             BackendDAEEXT::getAssignment(vec1.clone(), vec2.clone())?;
             (dstates, states, vec1, vec2) = forceStateSelectNever(vec1.clone(), vec2.clone(), vars.clone(), eqns.clone(), me.clone(), inShared.clone(), so.clone())?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n")).clone());
                 BackendDump::dumpMatchingVars(vec1.clone())?;
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n")).clone());
                 BackendDump::dumpMatchingEqns(vec2.clone())?;
             }
             (dstates, _) = checkAssignment(1, nv.clone(), vec1.clone(), vars.clone())?;
@@ -1961,13 +1961,13 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             Matching::getAssigned(ne.clone(), vec2.clone(), metamodelica::nil());
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 if unassigned.clone().is_empty() {
-                    println!("{}", (literal!("Perfect Matching, no dynamic index reduction needed! There are no unassigned equations.\n\n")).clone());
+                    metamodelica::print((literal!("Perfect Matching, no dynamic index reduction needed! There are no unassigned equations.\n\n")).clone());
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         BackendDump::dumpVarList(dummyVars.clone(), (literal!("Selected dummy states:")).clone())?;
                         BackendDump::dumpVarList(stateVars.clone(), (literal!("Selected continuous states:")).clone())?;
                     }
                 } else {
-                    println!("{}", (literal!("No perfect matching possible, dynamic index reduction needed.\n")).clone());
+                    metamodelica::print((literal!("No perfect matching possible, dynamic index reduction needed.\n")).clone());
                     unassigned = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut unassigned_eq in (unassigned.clone()).into_iter().cloned() {
@@ -1978,7 +1978,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
     });
                     BackendDump::dumpEquationList(BackendEquation::getEquationArraySubsetLst(eqns.clone(), unassigned.clone())?, (literal!("Unassigned equations:")).clone())?;
                     BackendDump::dumpVarList(dummyVars.clone(), (literal!("Statically selected dummy states:")).clone())?;
-                    println!("{}", (literal!("\n")).clone());
+                    metamodelica::print((literal!("\n")).clone());
                 }
             }
             syst = BackendDAEUtil::setEqSystMatching(syst.clone(), Arc::new(BackendDAE::Matching::MATCHING { ass1: vec1.clone(), ass2: vec2.clone(), comps: metamodelica::nil() }))?;
@@ -1996,7 +1996,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             let mut msg: ArcStr = arcstr::literal!("");
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 hovvars = BackendVariable::listVar1(statecandidates.clone())?;
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########## Try static state selection ##########\n")); __mm_s.push_str(&*literal!("Try to select dummy vars with natural matching (newer)\n")); __mm_s.push_str(&*literal!("Select ")); __mm_s.push_str(&*intString((eqnslst.clone().len() as i32))); __mm_s.push_str(&*literal!(" dummy states from ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(hovvars.clone()))); __mm_s.push_str(&*literal!(" andidates.\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########## Try static state selection ##########\n")); __mm_s.push_str(&*literal!("Try to select dummy vars with natural matching (newer)\n")); __mm_s.push_str(&*literal!("Select ")); __mm_s.push_str(&*intString((eqnslst.clone().len() as i32))); __mm_s.push_str(&*literal!(" dummy states from ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(hovvars.clone()))); __mm_s.push_str(&*literal!(" andidates.\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpVariables(hovvars.clone(), (literal!("Highest order derivatives (state candidates):")).clone())?;
                 BackendDump::dumpEquationList(eqnslst.clone(), (literal!("Constraint equations:")).clone())?;
             }
@@ -2125,7 +2125,7 @@ fn forceStateSelectNever(mut vec_old1: metamodelica::Array<i32>, mut vec_old2: m
             }
         }
         if Flags::isSet(Flags::BLT_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n###################################\n")); __mm_s.push_str(&*literal!("INCLUDES FORCED STATESELECT.NEVER()\n")); __mm_s.push_str(&*literal!("###################################\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n###################################\n")); __mm_s.push_str(&*literal!("INCLUDES FORCED STATESELECT.NEVER()\n")); __mm_s.push_str(&*literal!("###################################\n")); ArcStr::from(__mm_s) }).clone());
         }
         (dummyStates, states) = checkAssignment(1, nv.clone(), vec1.clone(), vars.clone())?;
     }
@@ -2186,9 +2186,9 @@ fn dumpBlock(mut comp: Arc<metamodelica::List<i32>>, mut iMapIncRowEqn: metamode
     ilst1 = List::map1(ilst1.clone(), (std::sync::Arc::new(fnptr!(intSub, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), nvars.clone())?;
     ilst1 = List::map1r(ilst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), invindexmap.clone())?;
     ilst1 = listAppend(ilst.clone(), ilst1.clone());
-    println!("{}", (literal!("##########################\n")).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::dumpMarkedVars(syst.clone(), ilst1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", (BackendDump::dumpMarkedEqns(syst.clone(), eqns.clone())?).clone());
+    metamodelica::print((literal!("##########################\n")).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::dumpMarkedVars(syst.clone(), ilst1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print((BackendDump::dumpMarkedEqns(syst.clone(), eqns.clone())?).clone());
     Ok(())
 }
 
@@ -2777,11 +2777,11 @@ fn varStateSelectHeuristicPrio(mut v: BackendDAE::Var, mut vars: BackendDAE::Var
 
 fn printVarListtateSelectHeuristicPrio(mut Prio1: metamodelica::Real, mut Prio2: metamodelica::Real, mut Prio3: metamodelica::Real, mut Prio4: metamodelica::Real, mut Prio5: metamodelica::Real) -> Result<()> {
     if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 1 : ")); __mm_s.push_str(&*realString(Prio1.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 2 : ")); __mm_s.push_str(&*realString(Prio2.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 3 : ")); __mm_s.push_str(&*realString(Prio3.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 4 : ")); __mm_s.push_str(&*realString(Prio4.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 5 : ")); __mm_s.push_str(&*realString(Prio5.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 1 : ")); __mm_s.push_str(&*realString(Prio1.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 2 : ")); __mm_s.push_str(&*realString(Prio2.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 3 : ")); __mm_s.push_str(&*realString(Prio3.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 4 : ")); __mm_s.push_str(&*realString(Prio4.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Prio 5 : ")); __mm_s.push_str(&*realString(Prio5.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }
@@ -2877,9 +2877,9 @@ fn selectDummyDerivatives2new(mut dstates: Arc<metamodelica::List<(Arc<DAE::Comp
                 _ => {
                     if !((intEq((dstates.clone().len() as i32), eqnsSize.clone()))) { bail!("guard") }
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Select as States(1):\n")).clone());
+                        metamodelica::print((literal!("Select as States(1):\n")).clone());
                         BackendDump::debuglst(states.clone(), (std::sync::Arc::new(dumpStates) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!("\n")).clone())?;
-                        println!("{}", (literal!("Select as dummyStates(1):\n")).clone());
+                        metamodelica::print((literal!("Select as dummyStates(1):\n")).clone());
                         BackendDump::debuglst(dstates.clone(), (std::sync::Arc::new(dumpStates) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!("\n")).clone())?;
                     }
                     Ok((metamodelica::nil(), iStateSets.clone()))
@@ -2907,7 +2907,7 @@ fn selectDummyDerivatives2new(mut dstates: Arc<metamodelica::List<(Arc<DAE::Comp
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         BackendDump::debugStrIntStrIntStr((literal!("Select ")).clone(), rang.clone(), (literal!(" from ")).clone(), size.clone(), (literal!(" States\n")).clone())?;
                         BackendDump::debuglst(states.clone(), (std::sync::Arc::new(dumpStates) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!("\n")).clone())?;
-                        println!("{}", (literal!("Select as dummyStates(2):\n")).clone());
+                        metamodelica::print((literal!("Select as dummyStates(2):\n")).clone());
                         BackendDump::debuglst(dstates.clone(), (std::sync::Arc::new(dumpStates) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!("\n")).clone())?;
                     }
                     statecandidates = List::map1r(List::map(states.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?, (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
@@ -2937,7 +2937,7 @@ fn selectDummyDerivatives2new(mut dstates: Arc<metamodelica::List<(Arc<DAE::Comp
                     }
                     let true = (intEq(rang.clone(), 0)) else { bail!("pattern mismatch") };
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
-                        println!("{}", (literal!("Select as dummyStates(3):\n")).clone());
+                        metamodelica::print((literal!("Select as dummyStates(3):\n")).clone());
                         BackendDump::debuglst(states.clone(), (std::sync::Arc::new(dumpStates) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, i32)) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!("\n")).clone())?;
                     }
                     varlst = List::map1r(List::map(states.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?, (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
@@ -3773,7 +3773,7 @@ fn increaseDifferentiation(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>
             (vars.clone(), ilst.clone())
         },
         _ => {
-            println!("{}", (literal!("IndexReduction.increaseDifferentiation failt because of wrong input:\n")).clone());
+            metamodelica::print((literal!("IndexReduction.increaseDifferentiation failt because of wrong input:\n")).clone());
             BackendDump::printVar(listHead(inVarLst.clone())?)?;
             bail!("fail")
         },
@@ -3787,7 +3787,7 @@ fn debugdifferentiateEqns(mut inTpl: (Arc<BackendDAE::Equation>, Arc<BackendDAE:
     let mut b: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut idx: i32 = 0;
     (a, b, idx) = inTpl.clone();
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("------------------")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!("------------------\n")); __mm_s.push_str(&*literal!("Constraint equation to be differentiated:\n")); __mm_s.push_str(&*BackendDump::equationString(a.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("Differentiated equation:\n")); __mm_s.push_str(&*BackendDump::equationString(b.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("------------------")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!("------------------\n")); __mm_s.push_str(&*literal!("Constraint equation to be differentiated:\n")); __mm_s.push_str(&*BackendDump::equationString(a.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("Differentiated equation:\n")); __mm_s.push_str(&*BackendDump::equationString(b.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

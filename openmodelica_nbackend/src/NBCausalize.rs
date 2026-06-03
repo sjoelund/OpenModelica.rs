@@ -114,7 +114,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) 
             let mut varData = (*varData).clone();
             let mut partitions = (*partitions).clone();
             if Flags::isSet(Flags::INITIALIZATION.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Balance Initialization")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Balance Initialization")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (partitions, varData, eqData) = applyModule(partitions.clone(), kind.clone(), varData.clone(), eqData.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), func.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = partitions.clone());

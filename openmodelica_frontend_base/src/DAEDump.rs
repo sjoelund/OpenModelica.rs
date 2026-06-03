@@ -3921,11 +3921,11 @@ pub fn dumpCallAttr(mut ca: Arc<DAE::CallAttributes>) -> Result<()> {
     bi = __pa4.clone();
     tpl = __pa5.clone();
     ty = __pa6.clone();
-    println!("{}", (literal!("Call attributes: \n----------------------\n")).clone());
+    metamodelica::print((literal!("Call attributes: \n----------------------\n")).clone());
     (s1, s2) = printTypeStr(ty.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE-type: ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE-type attributes :")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tuple_: ")); __mm_s.push_str(&*boolString(tpl.clone())); __mm_s.push_str(&*literal!(" builtin: ")); __mm_s.push_str(&*boolString(bi.clone())); __mm_s.push_str(&*literal!(" impure: ")); __mm_s.push_str(&*boolString(impure_.clone())); __mm_s.push_str(&*literal!(" isFunctionPointerCall: ")); __mm_s.push_str(&*boolString(isFunc.clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE-type: ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE-type attributes :")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tuple_: ")); __mm_s.push_str(&*boolString(tpl.clone())); __mm_s.push_str(&*literal!(" builtin: ")); __mm_s.push_str(&*boolString(bi.clone())); __mm_s.push_str(&*literal!(" impure: ")); __mm_s.push_str(&*boolString(impure_.clone())); __mm_s.push_str(&*literal!(" isFunctionPointerCall: ")); __mm_s.push_str(&*boolString(isFunc.clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -4062,10 +4062,10 @@ pub fn ppStatementStream(mut alg: Arc<DAE::Statement>, mut inStream: IOStream::I
 }
 
 pub fn dumpFunctionTree(mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut inHeading: ArcStr) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*inHeading.clone()); __mm_s.push_str(&*literal!("\n========================================\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*inHeading.clone()); __mm_s.push_str(&*literal!("\n========================================\n")); ArcStr::from(__mm_s) }).clone());
     for mut fnc in &*sortFunctions(DAEUtil::getFunctionList(inFunctionTree.clone(), false)?)? {
         let mut fnc = fnc.clone();
-        println!("{}", (dumpFunctionStr(fnc.clone())?).clone());
+        metamodelica::print((dumpFunctionStr(fnc.clone())?).clone());
     }
     Ok(())
 }

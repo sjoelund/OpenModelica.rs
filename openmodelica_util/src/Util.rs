@@ -416,7 +416,7 @@ fn stringDelimitListAndSeparate2(mut inStringLst1: Arc<metamodelica::List<ArcStr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("- stringDelimitListAndSeparate2 failed\n")).clone());
+                    metamodelica::print((literal!("- stringDelimitListAndSeparate2 failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1252,18 +1252,18 @@ pub fn profilerresults() -> Result<()> {
     tg = System::realtimeTock(ClockIndexes::RT_PROFILER0.clone())?;
     t1 = profilertime1();
     t2 = profilertime2();
-    println!("{}", (literal!("Time all: ")).clone());
-    println!("{}", (realString(tg.clone())).clone());
-    println!("{}", (literal!("\n")).clone());
-    println!("{}", (literal!("Time t1: ")).clone());
-    println!("{}", (realString(t1.clone())).clone());
-    println!("{}", (literal!("\n")).clone());
-    println!("{}", (literal!("Time t2: ")).clone());
-    println!("{}", (realString(t2.clone())).clone());
-    println!("{}", (literal!("\n")).clone());
-    println!("{}", (literal!("Time all-t1-t2: ")).clone());
-    println!("{}", (realString(((tg.clone()) - (t1.clone())) - (t2.clone()))).clone());
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("Time all: ")).clone());
+    metamodelica::print((realString(tg.clone())).clone());
+    metamodelica::print((literal!("\n")).clone());
+    metamodelica::print((literal!("Time t1: ")).clone());
+    metamodelica::print((realString(t1.clone())).clone());
+    metamodelica::print((literal!("\n")).clone());
+    metamodelica::print((literal!("Time t2: ")).clone());
+    metamodelica::print((realString(t2.clone())).clone());
+    metamodelica::print((literal!("\n")).clone());
+    metamodelica::print((literal!("Time all-t1-t2: ")).clone());
+    metamodelica::print((realString(((tg.clone()) - (t1.clone())) - (t2.clone()))).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

@@ -106,32 +106,32 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
     let mut isInitial: bool = false;
     isInitial = BackendDAEUtil::isInitializationDAE(DAE.shared.clone());
     if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBEGINNING of preOptModule 'evaluateParameters'\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBEGINNING of preOptModule 'evaluateParameters'\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         BackendDump::dumpBackendDAE(DAE.clone(), (literal!("DAE before evaluating parameters")).clone())?;
     }
     if !(Flags::isSet(Flags::EVAL_PARAM.clone())?) {
         selectParameterfunc = (match (Flags::getConfigBool(Flags::EVALUATE_FINAL_PARAMS.clone())?, Flags::getConfigBool(Flags::EVALUATE_PROTECTED_PARAMS.clone())?) {
         (false, false) => {
             if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-                println!("{}", (literal!("\nStructural parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
+                metamodelica::print((literal!("\nStructural parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
             }
             (std::sync::Arc::new(fnptr!(BackendVariable::hasVarEvaluateAnnotationTrue, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)
         },
         (true, false) => {
             if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-                println!("{}", (literal!("\nStructural parameters, final parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
+                metamodelica::print((literal!("\nStructural parameters, final parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
             }
             (std::sync::Arc::new(fnptr!(BackendVariable::hasVarEvaluateAnnotationTrueOrFinal, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)
         },
         (false, true) => {
             if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-                println!("{}", (literal!("\nStructural parameters, protected parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
+                metamodelica::print((literal!("\nStructural parameters, protected parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
             }
             (std::sync::Arc::new(fnptr!(BackendVariable::hasVarEvaluateAnnotationTrueOrProtected, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)
         },
         (true, true) => {
             if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-                println!("{}", (literal!("\nStructural parameters, final parameters, protected parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
+                metamodelica::print((literal!("\nStructural parameters, final parameters, protected parameters and parameters with annotation(Evaluate=true) will be evaluated.\n")).clone());
             }
             (std::sync::Arc::new(fnptr!(BackendVariable::hasVarEvaluateAnnotationTrueOrFinalOrProtected, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)
         },
@@ -156,10 +156,10 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
         (_, _, _, selectedParameters, m, mt, _, _) = BackendVariable::traverseBackendDAEVars(globalKnownVars.clone(), (std::sync::Arc::new(getParameterAdjacencyMatrix) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendDAE::Variables, i32, Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<AvlSetCR::Tree>, bool)) -> Result<(BackendDAE::Var, (BackendDAE::Variables, i32, Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<AvlSetCR::Tree>, bool))> + 'static>), (globalKnownVars.clone(), 1, selectParameterfunc.clone(), metamodelica::nil(), m.clone(), mt.clone(), ht.clone(), isInitial.clone()))?;
         nselect = (selectedParameters.clone().len() as i32);
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nSTART evaluating parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters selected for evaluation: ")); __mm_s.push_str(&*intString(nselect.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selected parameters for evaluation:\n")); __mm_s.push_str(&*stringDelimitList(List::map(selectedParameters.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nSTART evaluating parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters selected for evaluation: ")); __mm_s.push_str(&*intString(nselect.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selected parameters for evaluation:\n")); __mm_s.push_str(&*stringDelimitList(List::map(selectedParameters.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             BackendDump::dumpAdjacencyMatrix(m.clone())?;
             BackendDump::dumpAdjacencyMatrixT(mt.clone())?;
         }
@@ -170,33 +170,33 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
         oRepl = BackendVarTransform::emptyReplacementsSized(nselect.clone());
         (globalKnownVars, cache, repl, oRepl, mark) = evaluateSelectedParameters(selectedParameters.clone(), globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), markarr.clone(), isInitial.clone(), repl.clone(), oRepl.clone(), 1)?;
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter evaluating the selected parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (literal!("\nAll replacements:")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter evaluating the selected parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((literal!("\nAll replacements:")).clone());
             BackendVarTransform::dumpReplacements(repl.clone())?;
-            println!("{}", (literal!("\nReplacements that will be replaced in the DAE:")).clone());
+            metamodelica::print((literal!("\nReplacements that will be replaced in the DAE:")).clone());
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         comps = Sorting::TarjanTransposed(mt.clone(), ass2.clone())?;
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter sorting parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nOrder:\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter sorting parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nOrder:\n")); ArcStr::from(__mm_s) }).clone());
             for mut comp in &*comps.clone() {
                 let mut comp = comp.clone();
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(comp.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(comp.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
         (globalKnownVars, repl, oRepl, cache, mark) = traverseParameterSorted(comps.clone(), globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), repl.clone(), oRepl.clone(), isInitial.clone())?;
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter replacing the evaluated parameters in parameter bindings:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (literal!("\nAll replacements:")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter replacing the evaluated parameters in parameter bindings:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((literal!("\nAll replacements:")).clone());
             BackendVarTransform::dumpReplacements(repl.clone())?;
-            println!("{}", (literal!("\nReplacements that will be replaced in the DAE:")).clone());
+            metamodelica::print((literal!("\nReplacements that will be replaced in the DAE:")).clone());
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         let (__pa8, (__pa9, __pa10, __pa11, __pa12, __pa13, __pa14, __pa15, _, __pa16, __pa17)) = List::mapFold(systs.clone(), (std::sync::Arc::new(replaceEvaluatedParametersSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements)) -> Result<(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements))> + 'static>), (globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), oRepl.clone()))?;
         systs = __pa8.clone();
@@ -211,14 +211,14 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
         oRepl = __pa17.clone();
         (aliasVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(replaceEvaluatedParameterTraverser) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements)) -> Result<(BackendDAE::Var, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements))> + 'static>), (globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), oRepl.clone()))?;
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter replacing the evaluated parameters in variable bindings and start attributes:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (literal!("\nAll replacements:")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter replacing the evaluated parameters in variable bindings and start attributes:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((literal!("\nAll replacements:")).clone());
             BackendVarTransform::dumpReplacements(repl.clone())?;
-            println!("{}", (literal!("\nReplacements that will be replaced in the DAE:")).clone());
+            metamodelica::print((literal!("\nReplacements that will be replaced in the DAE:")).clone());
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
         if Flags::getConfigBool(Flags::REPLACE_EVALUATED_PARAMS.clone())? {
             assign_field!(shared.externalObjects = BackendVariable::listVar1(List::map1(BackendVariable::varList(shared.externalObjects.clone())?, (std::sync::Arc::new(BackendVarTransform::replaceBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<BackendDAE::Var> + 'static>), oRepl.clone())?)?);
@@ -239,7 +239,7 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
                 }
             } else {
                 if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-                    println!("{}", (literal!("\nThere is no evaluated parameter.\n")).clone());
+                    metamodelica::print((literal!("\nThere is no evaluated parameter.\n")).clone());
                 }
             }
         } else {
@@ -249,11 +249,11 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
         }
     } else {
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nThere is nothing to do. All parameters are already evaluated.\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nThere is nothing to do. All parameters are already evaluated.\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of preOptModule 'evaluateParameters'\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nEND of preOptModule 'evaluateParameters'\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(DAE)
 }

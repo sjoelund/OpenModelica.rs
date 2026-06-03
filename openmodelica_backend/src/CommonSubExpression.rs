@@ -164,19 +164,19 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
         globalKnownVarHT = BackendVariable::traverseBackendDAEVars(globalKnownVars.clone(), (std::sync::Arc::new(VarToGlobalKnownVarHT) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(BackendDAE::Var, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), globalKnownVarHT.clone())?;
     }
     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Start optimization module wrapFunctionCalls for ")); __mm_s.push_str(&*daeTypeStr.clone()); __mm_s.push_str(&*literal!(" DAE\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n\n")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Phase 0: Set up data structure\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Start optimization module wrapFunctionCalls for ")); __mm_s.push_str(&*daeTypeStr.clone()); __mm_s.push_str(&*literal!(" DAE\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Phase 0: Set up data structure\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars before WFC")).clone())?;
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("globalKnownVarHT before algorithm\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("globalKnownVarHT before algorithm\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BaseHashSet::dumpHashSet(globalKnownVarHT.clone())?;
     }
     for mut syst in &*inDAE.eqs.clone() {
         let mut syst = syst.clone();
         if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nHandle system (belongs to ")); __mm_s.push_str(&*daeTypeStr.clone()); __mm_s.push_str(&*literal!(" DAE):\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nHandle system (belongs to ")); __mm_s.push_str(&*daeTypeStr.clone()); __mm_s.push_str(&*literal!(" DAE):\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             BackendDump::dumpVariables(syst.orderedVars.clone(), (literal!("Variables")).clone())?;
             BackendDump::dumpEquationArray(syst.orderedEqs.clone(), (literal!("Equations")).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPhase 1: Analysis\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPhase 1: Analysis\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         HT = BaseHashTable::clear(HT.clone())?;
         exarray = ExpandableArray::clear(exarray.clone());
@@ -185,26 +185,26 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
         orderedVars = syst.orderedVars.clone();
         (HT, exarray, cseIndex, index, _) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new(wrapFunctionCalls_analysis) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<ExpandableArray::ExpandableArray<CSE_Equation>>, i32, i32, Arc<AvlTreePathFunction::Tree>)) -> Result<(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<ExpandableArray::ExpandableArray<CSE_Equation>>, i32, i32, Arc<AvlTreePathFunction::Tree>))> + 'static>), (HT.clone(), exarray.clone(), cseIndex.clone(), index.clone(), functionTree.clone()))?;
         if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hastable after analysis\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hastable after analysis\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             BaseHashTable::dumpHashTable(HT.clone())?;
-            println!("{}", (ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after analysis")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
+            metamodelica::print((ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after analysis")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
         }
         if index.clone() > 0 {
             exarray = determineDependencies(exarray.clone(), HT.clone())?;
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase 2: Dependencies\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hashtable after dependencies\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase 2: Dependencies\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hashtable after dependencies\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 BaseHashTable::dumpHashTable(HT.clone())?;
-                println!("{}", (ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after dependencies")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase3: Substitution\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print((ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after dependencies")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase3: Substitution\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             orderedEqs_new = BackendEquation::emptyEqnsSized(ExpandableArray::getNumberOfElements(orderedEqs.clone()) + ExpandableArray::getNumberOfElements(exarray.clone()));
             (HT, exarray, orderedEqs_new) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new(wrapFunctionCalls_substitution) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<ExpandableArray::ExpandableArray<CSE_Equation>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)) -> Result<(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<ExpandableArray::ExpandableArray<CSE_Equation>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>))> + 'static>), (HT.clone(), exarray.clone(), orderedEqs_new.clone()))?;
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hashtable after substitution\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Hashtable after substitution\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 BaseHashTable::dumpHashTable(HT.clone())?;
-                println!("{}", (ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after substitution")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase 4: Create CSE-Equations\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print((ExpandableArray::toString(exarray.clone(), (literal!("\nExpandable Array after substitution")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nPhase 4: Create CSE-Equations\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             (orderedEqs_new, orderedVars, globalKnownVars, _) = createCseEquations(exarray.clone(), orderedEqs_new.clone(), orderedVars.clone(), globalKnownVars.clone(), globalKnownVarHT.clone())?;
             assign_field!(
@@ -220,19 +220,19 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
                 syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
             );
             if Flags::isSet(Flags::DUMP_CSE.clone())? || Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nFinal Results\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nFinal Results\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpVariables(syst.orderedVars.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########### Updated Variable List (")); __mm_s.push_str(&*BackendDump::printBackendDAEType2String(shared.backendDAEType.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
                 BackendDump::dumpEquationArray(syst.orderedEqs.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########### Updated Equation List (")); __mm_s.push_str(&*BackendDump::printBackendDAEType2String(shared.backendDAEType.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
                 BackendDump::dumpVariables(globalKnownVars.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("########### Updated globalKnownVars (")); __mm_s.push_str(&*BackendDump::printBackendDAEType2String(shared.backendDAEType.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
-                println!("{}", (ExpandableArray::toString(exarray.clone(), (literal!("\n########### CSE Replacements")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
+                metamodelica::print((ExpandableArray::toString(exarray.clone(), (literal!("\n########### CSE Replacements")).clone(), (std::sync::Arc::new(printCSEEquation) as std::sync::Arc<dyn ::std::ops::Fn(CSE_Equation) -> Result<ArcStr> + 'static>), true)?).clone());
             }
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); ArcStr::from(__mm_s) }).clone());
                 BackendDump::dumpEqSystem(syst.clone(), (literal!("Final EqSystem")).clone())?;
             }
         } else {
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nNo function calls found. Exiting the algorithm...\n\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nNo function calls found. Exiting the algorithm...\n\n\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
         eqSystems = metamodelica::cons(syst.clone(), eqSystems.clone());
@@ -475,9 +475,9 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
     let mut eqRedundant: bool = false;
     let mut add: bool = false;
     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("globalKnownVars:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("globalKnownVars:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BaseHashSet::dumpHashSet(globalKnownVarHT.clone())?;
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTraverse expandable array\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTraverse expandable array\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     for mut i in (1..=ExpandableArray::getNumberOfElements(exarray.clone())).rev() {
         add = true;
@@ -485,16 +485,16 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
         call = __pa0.clone();
         cse = __pa1.clone();
         if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n--> cse-equation: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(cse.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(call.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n--> cse-equation: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(cse.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(call.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         eq = BackendEquation::generateEquation(cse.clone(), call.clone(), DAE::emptyElementSource().clone(), BackendDAE::EQ_ATTR_DEFAULT_UNKNOWN.clone())?;
         (globalKnownVarHT, globalKnownVars, orderedVars, eqRedundant, isGlobalKnown) = isEquationRedundant_flatten(eq.clone(), globalKnownVarHT.clone(), globalKnownVars.clone(), orderedVars.clone())?;
         if debug.clone() {
-            println!("{}", (literal!("\ndebug 1 - eq redundant?\n")).clone());
+            metamodelica::print((literal!("\ndebug 1 - eq redundant?\n")).clone());
         }
         if !(eqRedundant.clone()) {
             if debug.clone() {
-                println!("{}", (literal!("\ndebug 2 - no, not redundant. let's loop\n")).clone());
+                metamodelica::print((literal!("\ndebug 2 - no, not redundant. let's loop\n")).clone());
             }
             varList = createVarsForExp(cse.clone(), metamodelica::nil())?;
             if varList.clone().is_empty() {
@@ -503,39 +503,39 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
                 for mut var in &*varList.clone() {
                     let mut var = var.clone();
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ndebug 3 - handle var: ")); __mm_s.push_str(&*BackendDump::varString(var.clone())?); __mm_s.push_str(&*literal!(" Is it a globalKnownVar?\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ndebug 3 - handle var: ")); __mm_s.push_str(&*BackendDump::varString(var.clone())?); __mm_s.push_str(&*literal!(" Is it a globalKnownVar?\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     cr = BackendVariable::varCref(var.clone())?;
                     if !(isGlobalKnown.clone()) {
                         if debug.clone() {
-                            println!("{}", (literal!("\ndebug 4 - The variable is not a globalKnownVar. Should an equation be added?\n")).clone());
+                            metamodelica::print((literal!("\ndebug 4 - The variable is not a globalKnownVar. Should an equation be added?\n")).clone());
                         }
                         if add.clone() {
                             if debug.clone() {
-                                println!("{}", (literal!("\ndebug 5 - yes, definitely!\n")).clone());
+                                metamodelica::print((literal!("\ndebug 5 - yes, definitely!\n")).clone());
                             }
                             orderedEqs = BackendEquation::add(eq.clone(), orderedEqs.clone())?;
                             add = false;
                         }
                         if debug.clone() {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ndebug 6 - Is this cref a CSE cref?: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ndebug 6 - Is this cref a CSE cref?: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         }
                         if isCSECref(cr.clone()) {
                             if debug.clone() {
-                                println!("{}", (literal!("\ndebug 7 - yes it is a CSE cref. Add to orderedVars!\n")).clone());
+                                metamodelica::print((literal!("\ndebug 7 - yes it is a CSE cref. Add to orderedVars!\n")).clone());
                             }
                             orderedVars = BackendVariable::addVar(var.clone(), orderedVars.clone())?;
                         }
                         if debug.clone() {
-                            println!("{}", (literal!("\ndebug 8\n")).clone());
+                            metamodelica::print((literal!("\ndebug 8\n")).clone());
                         }
                     } else {
                         if debug.clone() {
-                            println!("{}", (literal!("\ndebug 9 - The variable is a globalKnownVar.\n")).clone());
+                            metamodelica::print((literal!("\ndebug 9 - The variable is a globalKnownVar.\n")).clone());
                         }
                         if !(isCSECref(cr.clone())) {
                             if debug.clone() {
-                                println!("{}", (literal!("\ndebug 10 - The globalKnownVar is no CSE cref, so copy attributes and delete it from orderedVars if it is in that list.\n")).clone());
+                                metamodelica::print((literal!("\ndebug 10 - The globalKnownVar is no CSE cref, so copy attributes and delete it from orderedVars if it is in that list.\n")).clone());
                             }
                             (delVars, orderedVars) = BackendVariable::deleteVarIfExistsAndReturn(cr.clone(), orderedVars.clone());
                             if delVars.clone().is_empty() {
@@ -548,12 +548,12 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
                         var = BackendVariable::setVarFinal(var.clone(), true)?;
                         if intGt((varList.clone().len() as i32), 1) || Expression::isTuple(cse.clone()) {
                             if debug.clone() {
-                                println!("{}", (literal!("\ndebug 11 - It is a tuple! Add it to tplExp\n")).clone());
+                                metamodelica::print((literal!("\ndebug 11 - It is a tuple! Add it to tplExp\n")).clone());
                             }
                             var.tplExp = Some(cse.clone());
                         }
                         if debug.clone() {
-                            println!("{}", (literal!("\ndebug 12 - Add the variable to globalKnownVars\n")).clone());
+                            metamodelica::print((literal!("\ndebug 12 - Add the variable to globalKnownVars\n")).clone());
                         }
                         globalKnownVars = BackendVariable::addVar(var.clone(), globalKnownVars.clone())?;
                     }
@@ -562,7 +562,7 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
         }
     }
     if debug.clone() {
-        println!("{}", (literal!("\ndebug 13\n")).clone());
+        metamodelica::print((literal!("\ndebug 13\n")).clone());
     }
     Ok((orderedEqs, orderedVars, globalKnownVars, globalKnownVarHT))
 }
@@ -845,7 +845,8 @@ fn wrapFunctionCalls_analysis3(mut inExp: Arc<DAE::Exp>, mut inTuple: ((metamode
         _ if (isSkipCase(inExp.clone(), functionTree.clone())?) => {
             false
         },
-        tsub @ Deref @ DAE::Exp::TSUB { ty, ix, exp: call @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_TUPLE { types, .. }, .. }, .. } } => {
+        __esc_tsub @ Deref @ DAE::Exp::TSUB { ty, ix, exp: call @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_TUPLE { types, .. }, .. }, .. } } => {
+            tsub = (*__esc_tsub).clone();
             let mut cse_var: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cse_var2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -931,7 +932,7 @@ fn isEquationRedundant(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
             ExpressionBasics::expEqual(exp1.clone(), exp2.clone())?
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::TUPLE { PR: rhs }, exp: Deref @ DAE::Exp::TUPLE { PR: lhs }, .. } if ((lhs.clone().len() as i32) == (rhs.clone().len() as i32)) => {
-            println!("{}", (literal!("This should never appear\n")).clone());
+            metamodelica::print((literal!("This should never appear\n")).clone());
             isEquationRedundant2(lhs.clone(), rhs.clone())?
         },
         Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: Deref @ DAE::Exp::TUPLE { PR: rhs }, left: Deref @ DAE::Exp::TUPLE { PR: lhs }, .. } if ((lhs.clone().len() as i32) == (rhs.clone().len() as i32)) => {
@@ -1176,7 +1177,7 @@ fn mergeCSETuples(mut inCref1: Arc<DAE::Exp>, mut inCref2: Arc<DAE::Exp>) -> Res
         expLst1 = mergeCSETuples2(expLst1.clone(), expLst2.clone())?;
         outCref = Arc::new(DAE::Exp::TUPLE { PR: expLst1.clone() });
     } else if !(Expression::isTuple(inCref1.clone())) && Expression::isTuple(inCref2.clone()) {
-        println!("{}", (literal!("mergeCSETuples: This should never appear! (1)\n")).clone());
+        metamodelica::print((literal!("mergeCSETuples: This should never appear! (1)\n")).clone());
         let __pa2 = ::match_deref::match_deref! { match &(inCref2.clone()) {
             Deref @ DAE::Exp::TUPLE { PR: __pa2 } => __pa2.clone(),
             _ => bail!("pattern mismatch"),
@@ -1193,7 +1194,7 @@ fn mergeCSETuples(mut inCref1: Arc<DAE::Exp>, mut inCref2: Arc<DAE::Exp>) -> Res
         }
         outCref = Arc::new(DAE::Exp::TUPLE { PR: expLst2.clone() });
     } else if Expression::isTuple(inCref1.clone()) && !(Expression::isTuple(inCref2.clone())) {
-        println!("{}", (literal!("mergeCSETuples: This should never appear! (2)\n")).clone());
+        metamodelica::print((literal!("mergeCSETuples: This should never appear! (2)\n")).clone());
         let __pa5 = ::match_deref::match_deref! { match &(inCref1.clone()) {
             Deref @ DAE::Exp::TUPLE { PR: __pa5 } => __pa5.clone(),
             _ => bail!("pattern mismatch"),
@@ -1628,7 +1629,7 @@ fn createVarsForExp_onlyCSECrefs(mut inExp: Arc<DAE::Exp>, mut inAccumVarLst: Ar
             outVarLst.clone()
         },
         Deref @ DAE::Exp::RECORD { exps: expLst, .. } => {
-            println!("{}", (literal!("This should never appear\n")).clone());
+            metamodelica::print((literal!("This should never appear\n")).clone());
             outVarLst = List::fold(expLst.clone(), (std::sync::Arc::new(createVarsForExp_onlyCSECrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>), inAccumVarLst.clone())?;
             outVarLst.clone()
         },
@@ -1758,11 +1759,11 @@ fn CSE1(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::S
                     HT2 = HashTableExpToIndex::emptyHashTableSized(49999);
                     HT3 = HashTableExpToIndex::emptyHashTableSized(49999);
                     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                        println!("{}", (literal!("collect statistics\n========================================\n")).clone());
+                        metamodelica::print((literal!("collect statistics\n========================================\n")).clone());
                     }
                     (HT, HT2, index) = BackendEquation::traverseEquationArray(orderedEqs.clone(), (std::sync::Arc::new(createStatistics) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)) -> Result<(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32))> + 'static>), (HT.clone(), HT2.clone(), index.clone()))?;
                     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                        println!("{}", (literal!("\nstart substitution\n========================================\n")).clone());
+                        metamodelica::print((literal!("\nstart substitution\n========================================\n")).clone());
                     }
                     let (__pa0, (__pa1, __pa2, _, __pa3, __pa4)) = BackendEquation::traverseEquationArray_WithUpdate(orderedEqs.clone(), (std::sync::Arc::new(substituteCSE) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<BackendDAE::Equation>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), (HT.clone(), HT2.clone(), HT3.clone(), metamodelica::nil(), metamodelica::nil()))?;
                     orderedEqs = __pa0.clone();
@@ -1771,7 +1772,7 @@ fn CSE1(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::S
                     eqList = __pa3.clone();
                     varList = __pa4.clone();
                     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                        println!("{}", (literal!("\n")).clone());
+                        metamodelica::print((literal!("\n")).clone());
                     }
                     assign_field!(
                         syst.orderedEqs = BackendEquation::addList(eqList.clone(), orderedEqs.clone())?,
@@ -1817,7 +1818,7 @@ fn substituteCSE(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: ((metamodelic
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut tpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (HashTableExpToExp::FuncHashCref, HashTableExpToExp::FuncCrefEqual, HashTableExpToExp::FuncCrefStr, HashTableExpToExp::FuncExpStr)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>);
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverse ")); __mm_s.push_str(&*BackendDump::equationString(inEq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverse ")); __mm_s.push_str(&*BackendDump::equationString(inEq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             let (__pa0, (__pa1, _)) = BackendEquation::traverseExpsOfEquation(inEq.clone(), (std::sync::Arc::new(substituteCSE1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>), Arc<DAE::ElementSource>)) -> Result<(Arc<DAE::Exp>, (((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>), Arc<DAE::ElementSource>))> + 'static>), (inTuple.clone(), BackendEquation::equationSource(inEq.clone())?))?;
             eq = __pa0.clone();
@@ -1855,7 +1856,7 @@ fn substituteCSE_main(mut inExp: Arc<DAE::Exp>, mut inTuple: (((metamodelica::Ar
                     counter = BaseHashTable::get(value.clone(), HT2.clone())?;
                     let true = (intGt(counter.clone(), 1)) else { bail!("pattern mismatch") };
                     if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  - substitute cse binary: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" (counter: ")); __mm_s.push_str(&*intString(counter.clone())); __mm_s.push_str(&*literal!(", id: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(value.clone())?); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  - substitute cse binary: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" (counter: ")); __mm_s.push_str(&*intString(counter.clone())); __mm_s.push_str(&*literal!(", id: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(value.clone())?); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     if !(BaseHashTable::hasKey(value.clone(), HT3.clone())?) {
                         HT3 = BaseHashTable::add((value.clone(), 1), HT3.clone())?;
@@ -1898,7 +1899,7 @@ fn createStatistics(mut inEq: Arc<BackendDAE::Equation>, mut inTuple: ((metamode
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut tpl: ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (HashTableExpToExp::FuncHashCref, HashTableExpToExp::FuncCrefEqual, HashTableExpToExp::FuncCrefStr, HashTableExpToExp::FuncExpStr)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), i32);
             if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverse ")); __mm_s.push_str(&*BackendDump::equationString(inEq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverse ")); __mm_s.push_str(&*BackendDump::equationString(inEq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eq, tpl) = BackendEquation::traverseExpsOfEquation(inEq.clone(), (std::sync::Arc::new(createStatistics1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)) -> Result<(Arc<DAE::Exp>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32))> + 'static>), inTuple.clone())?;
             (eq.clone(), tpl.clone())
@@ -1948,7 +1949,7 @@ fn createStatistics_main(mut inExp: Arc<DAE::Exp>, mut inTuple: ((metamodelica::
                             }
                         }
                         if Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
-                            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  - cse binary expression: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" (counter: ")); __mm_s.push_str(&*intString(counter.clone())); __mm_s.push_str(&*literal!(", id: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(value.clone())?); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
+                            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  - cse binary expression: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" (counter: ")); __mm_s.push_str(&*intString(counter.clone())); __mm_s.push_str(&*literal!(", id: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(value.clone())?); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
                         }
                     }
                     Ok((inExp.clone(), true, (HT.clone(), HT2.clone(), i.clone())))

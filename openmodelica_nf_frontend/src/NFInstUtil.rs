@@ -88,15 +88,15 @@ pub fn dumpFlatModelDebug(mut stage: ArcStr, mut flatModel: Arc<FlatModel::NFFla
     }
     if Flags::isConfigFlagSet(Flags::DUMP_FLAT_MODEL.clone(), (stage.clone()).clone())? || Flags::getConfigStringList(Flags::DUMP_FLAT_MODEL.clone())?.is_empty() {
         flat_model = combineSubscripts(flatModel.clone())?;
-        println!("{}", (literal!("########################################\n")).clone());
-        println!("{}", (stage.clone()).clone());
-        println!("{}", (literal!("\n########################################\n\n")).clone());
+        metamodelica::print((literal!("########################################\n")).clone());
+        metamodelica::print((stage.clone()).clone());
+        metamodelica::print((literal!("\n########################################\n\n")).clone());
         if Flags::getConfigBool(Flags::BASE_MODELICA.clone())? {
             FlatModel::printFlatString(flat_model.clone(), functions.clone(), false)?;
         } else {
             FlatModel::printString(flat_model.clone(), functions.clone(), false)?;
         }
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(())
 }

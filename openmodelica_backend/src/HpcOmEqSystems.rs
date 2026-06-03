@@ -156,7 +156,7 @@ fn reduceLinearTornSystem(mut systIn: Arc<BackendDAE::EqSystem>, mut sharedIn: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("reduceLinearTornSystem failed!")).clone());
+            metamodelica::print((literal!("reduceLinearTornSystem failed!")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -830,7 +830,7 @@ fn getOtherComps1(mut innerEquation: BackendDAE::InnerEquation, mut tplIn: (meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getOtherComps failed\n")).clone());
+                    metamodelica::print((literal!("getOtherComps failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -872,7 +872,7 @@ fn updateIndicesInComp(mut compIn: Arc<BackendDAE::StrongComponent>, mut varOffs
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("updateVarEqIndices failed\n")).clone());
+                    metamodelica::print((literal!("updateVarEqIndices failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -930,7 +930,7 @@ fn buildNewResidualEquation(mut resIdx: i32, mut aCoeffLst: Arc<metamodelica::Li
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("buildNewResidualEquation failed")).clone());
+                    metamodelica::print((literal!("buildNewResidualEquation failed")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -998,7 +998,7 @@ fn buildNewResidualEquation2(mut idx: i32, mut coeffs: Arc<metamodelica::List<Ba
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("buildNewResidualEquation2 failed!\n")).clone());
+                    metamodelica::print((literal!("buildNewResidualEquation2 failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1072,7 +1072,7 @@ fn buildSingleEquationSystem(mut eqSizeOrig: i32, mut inEqs: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("buildSingleEquationSystem failed\n")).clone());
+                    metamodelica::print((literal!("buildSingleEquationSystem failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1111,7 +1111,7 @@ fn getTornSystemCoefficients(mut iValueRange: Arc<metamodelica::List<i32>>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getTornSystemCoefficients failed!\n")).clone());
+                    metamodelica::print((literal!("getTornSystemCoefficients failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1219,7 +1219,7 @@ fn getTornSystemCoefficients1(mut resIdxLst: Arc<metamodelica::List<i32>>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getTornSystemCoefficients1 failed\n")).clone());
+                    metamodelica::print((literal!("getTornSystemCoefficients1 failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1267,7 +1267,7 @@ fn getResidualExpressions1(mut i: i32, mut resExpsIn: Arc<metamodelica::List<Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("getResidualExpressions failed \n")).clone());
+            metamodelica::print((literal!("getResidualExpressions failed \n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -1287,7 +1287,7 @@ fn getResidualExpressionForEquation(mut eq: Arc<BackendDAE::Equation>) -> Result
             rhs.clone()
         },
         _ => {
-            println!("{}", (literal!("getResidualExpressionForEquation failed\n")).clone());
+            metamodelica::print((literal!("getResidualExpressionForEquation failed\n")).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1433,7 +1433,7 @@ fn getAlgebraicEquationsForEI(mut iIn: Arc<metamodelica::List<i32>>, mut size: i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("getAlgebraicEquationsForEI failed\n")).clone());
+                    metamodelica::print((literal!("getAlgebraicEquationsForEI failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1550,7 +1550,7 @@ fn getEqSystem3(mut cref: Arc<DAE::ComponentRef>, mut foldIn: (Arc<metamodelica:
     (coeffs, allTerms) = List::extract1OnTrue(allTerms.clone(), (std::sync::Arc::new(Expression::expHasCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), cref.clone())?;
     coeff = List::fold(coeffs.clone(), (std::sync::Arc::new(Expression::expAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((0) as f64) }))?;
     if containsFunctioncallOfCref(coeff.clone(), cref.clone())? {
-        println!("{}", (literal!("This system of equations cannot be decomposed because its actually not linear (the coeffs are function calls of x).\n")).clone());
+        metamodelica::print((literal!("This system of equations cannot be decomposed because its actually not linear (the coeffs are function calls of x).\n")).clone());
         bail!("fail");
     }
     (coeff, _) = Expression::replaceExp(coeff.clone(), Expression::crefExp(cref.clone())?, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }))?;
@@ -1618,7 +1618,7 @@ fn getSummands(mut eq: Arc<BackendDAE::Equation>) -> Result<Arc<metamodelica::Li
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSummands failed! for")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getSummands failed! for")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(metamodelica::nil())
                 }
                 _ => bail!("nomatch"),
@@ -1669,10 +1669,10 @@ fn ChiosCondensation2(mut systemIn: EqSys, mut iterIdx: i32, mut addEqsIn: Arc<m
             matrixB = arrayCreate(dim.clone() - 1, metamodelica::nil());
             vecAi = arrayCreate(dim.clone() - 1, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
             (matrixB, vecAi, addEqs, addVars) = List::fold(List::intRange2(2, dim.clone()), (std::sync::Arc::new({ let __pe_b1 = systemIn.clone(); let __pe_b2 = iterIdx.clone(); move |__pe_a0, __pe_a3| getNewChioRow(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>, metamodelica::Array<Arc<DAE::Exp>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>, metamodelica::Array<Arc<DAE::Exp>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)> + 'static>), (matrixB.clone(), vecAi.clone(), addEqsIn.clone(), addVarsIn.clone()))?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matrixB")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matrixB")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             dumpMatrix(matrixB.clone())?;
-            println!("{}", (literal!("vecAi\n")).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
+            metamodelica::print((literal!("vecAi\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (vecAi.clone()).borrow().iter() {
             let __x = ExpressionDump::dumpExpStr(e.clone(), 0)?;
@@ -1686,10 +1686,10 @@ fn ChiosCondensation2(mut systemIn: EqSys, mut iterIdx: i32, mut addEqsIn: Arc<m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let EqSys { vectorB: mut vecAi, matrixA: mut matrixA, dim: mut dim, .. } = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("end matrixB")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("end matrixB")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             dumpMatrix(matrixA.clone())?;
-            println!("{}", (literal!("end vecAi\n")).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
+            metamodelica::print((literal!("end vecAi\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (vecAi.clone()).borrow().iter() {
             let __x = ExpressionDump::dumpExpStr(e.clone(), 0)?;
@@ -2049,7 +2049,7 @@ fn determinant(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::E
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("computation fo determinant failed!\n")).clone());
+            metamodelica::print((literal!("computation fo determinant failed!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2117,7 +2117,7 @@ fn dumpEqSys(mut matrix: EqSys) -> Result<()> {
     vectorB = __pa1.clone();
     matrixA = __pa2.clone();
     dim = __pa3.clone();
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix(")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix(")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
     sLst = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for ((Arow, x), b) in (matrixA.clone()).borrow().iter().cloned().zip((vectorX.clone()).borrow().iter().cloned()).zip((vectorB.clone()).borrow().iter().cloned()) {
@@ -2126,7 +2126,7 @@ fn dumpEqSys(mut matrix: EqSys) -> Result<()> {
         }
         __acc.reverse()
     });
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(sLst.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(sLst.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -2147,7 +2147,7 @@ fn dumpMatrix(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Ex
     let mut s: ArcStr = arcstr::literal!("");
     sLst = List::mapArray(matrix.clone(), (std::sync::Arc::new(ExpressionDump::printExpListStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<ArcStr> + 'static>))?;
     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{ ")); __mm_s.push_str(&*stringDelimitList(sLst.clone(), (literal!("  \n  ")).clone())); __mm_s.push_str(&*literal!("} \n")); ArcStr::from(__mm_s) }).clone();
-    println!("{}", (s.clone()).clone());
+    metamodelica::print((s.clone()).clone());
     Ok(())
 }
 
@@ -2155,7 +2155,7 @@ fn dumpVarArrLst(mut inArrLst: metamodelica::Array<Arc<metamodelica::List<Backen
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut inLstLst: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>> = metamodelica::nil();
     inLstLst = Arc::new(inArrLst.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-variables\n---------\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-variables\n---------\n")); ArcStr::from(__mm_s) }).clone());
     r#str = (List::fold1(List::intRange(metamodelica::arrayLength(inArrLst.clone())), (std::sync::Arc::new(dumpVarArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
     Ok(())
 }
@@ -2175,7 +2175,7 @@ fn dumpEqArrLst(mut inArrLst: metamodelica::Array<Arc<metamodelica::List<Arc<Bac
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut inLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
     inLstLst = Arc::new(inArrLst.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-equations\n---------\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("---------\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!("-equations\n---------\n")); ArcStr::from(__mm_s) }).clone());
     r#str = (List::fold1(List::intRange(metamodelica::arrayLength(inArrLst.clone())), (std::sync::Arc::new(dumpEqArrLst1) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, ArcStr) -> Result<ArcStr> + 'static>), inLstLst.clone(), (heading.clone()).clone())?).clone();
     Ok(())
 }
@@ -2275,7 +2275,7 @@ fn pts_traverseEqSystems(mut eqSysIn: Arc<metamodelica::List<Arc<BackendDAE::EqS
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("pts_traverseEqSystems failed\n")).clone());
+                    metamodelica::print((literal!("pts_traverseEqSystems failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2384,7 +2384,7 @@ fn pts_transformScheduleToTask(mut otherEqSys: Arc<HpcOmSimCode::Schedule>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { .. } => {
-                    println!("{}", (literal!("levelScheduling is not supported for heterogenious scheduling\n")).clone());
+                    metamodelica::print((literal!("levelScheduling is not supported for heterogenious scheduling\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2405,7 +2405,7 @@ fn pts_transformScheduleToTask(mut otherEqSys: Arc<HpcOmSimCode::Schedule>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("pts_transformScheduleToTask failed\n")).clone());
+                    metamodelica::print((literal!("pts_transformScheduleToTask failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

@@ -432,7 +432,7 @@ pub fn checkIdentNotEqTypeName(mut inIdent: ArcStr, mut inTypeName: Arc<Absyn::T
 pub fn checkComponentsEqual(mut inComponent1: Arc<NFInstTypes::Component>, mut inComponent2: Arc<NFInstTypes::Component>) -> () {
     let () = (::match_deref::match_deref! { match &(inComponent2.clone()) {
         _ => {
-            println!("{}", (literal!("Found duplicate component\n")).clone());
+            metamodelica::print((literal!("Found duplicate component\n")).clone());
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

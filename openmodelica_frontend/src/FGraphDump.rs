@@ -111,9 +111,9 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
             g = __pa1.clone();
             nr = FGraph::top(inGraph.clone())?;
             (gi, g) = addNodes((gi.clone(), g.clone()), list![nr.clone()])?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Dumping graph file: ")); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!(" ....\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Dumping graph file: ")); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!(" ....\n")); ArcStr::from(__mm_s) }).clone());
             GraphML::dumpGraph(gi.clone(), (fileName.clone()).clone())?;
-            println!("{}", (literal!("Dumped\n")).clone());
+            metamodelica::print((literal!("Dumped\n")).clone());
             Ok(())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

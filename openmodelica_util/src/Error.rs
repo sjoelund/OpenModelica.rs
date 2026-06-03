@@ -1651,7 +1651,7 @@ pub fn addInternalError(mut message: ArcStr, mut info: SourceInfo) -> Result<()>
 
 pub fn terminateError(mut message: ArcStr, mut info: SourceInfo) -> Result<()> {
     ErrorExt::addSourceMessage(0, crate::ErrorTypes::MessageType::TRANSLATION, crate::ErrorTypes::Severity::INTERNAL, info.lineNumberStart.clone(), info.columnNumberStart.clone(), info.lineNumberEnd.clone(), info.columnNumberEnd.clone(), info.isReadOnly.clone(), info.fileName.clone(), (literal!("%s")).clone(), list![(message.clone()).clone()]);
-    println!("{}", (ErrorExt::printMessagesStr(false)).clone());
+    metamodelica::print((ErrorExt::printMessagesStr(false)).clone());
     System::exit(-1)?;
     Ok(())
 }

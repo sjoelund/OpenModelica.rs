@@ -116,7 +116,7 @@ fn addOptimizationVarsEqns(mut vars: BackendDAE::Variables, mut eqns: Arc<Expand
     globalKnownVars = shared.globalKnownVars.clone();
     eqnsLst = metamodelica::nil();
     if !(inOptimicaFlag.clone() || inDynOptimization.clone()) {
-        println!("{}", (literal!("Something going wrong for postOptModul=createDynamicOptimization. Check your flags. You need -g=DynOpt or -g=Optimica!\n")).clone());
+        metamodelica::print((literal!("Something going wrong for postOptModul=createDynamicOptimization. Check your flags. You need -g=DynOpt or -g=Optimica!\n")).clone());
         bail!("fail");
     }
     FlagsUtil::setConfigEnum(Flags::GRAMMAR.clone(), Flags::OPTIMICA.clone())?;
@@ -131,7 +131,7 @@ fn addOptimizationVarsEqns(mut vars: BackendDAE::Variables, mut eqns: Arc<Expand
     FlagsUtil::setConfigBool(Flags::GENERATE_SYMBOLIC_LINEARIZATION.clone(), true)?;
     assign_field!(shared.classAttrs = list![Arc::new(DAE::ClassAttributes { objetiveE: mayer.clone(), objectiveIntegrandE: lagrange.clone(), startTimeE: startTimeE.clone(), finalTimeE: finalTimeE.clone() })]);
     if debug.clone() {
-        println!("{}", (literal!("\neqs")).clone());
+        metamodelica::print((literal!("\neqs")).clone());
         BackendDump::printEquationList(eqnsLst.clone())?;
     }
     eqns = BackendEquation::addList(eqnsLst.clone(), eqns.clone())?;

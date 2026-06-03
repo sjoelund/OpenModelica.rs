@@ -865,13 +865,13 @@ pub fn makeStartLineInfo(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inFil
 pub fn printAndFailIfError(mut inLineInfo: LineInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inLineInfo.clone()) {
         LineInfo { parseInfo: ParseInfo { errors: Deref @ metamodelica::List::Nil, .. }, .. } => {
-            println!("{}", (literal!("\nSusan parsing successful.\n")).clone());
+            metamodelica::print((literal!("\nSusan parsing successful.\n")).clone());
             ()
         },
         LineInfo { parseInfo: ParseInfo { errors: errLst @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }, .. } => {
-            println!("{}", (literal!("\nSusan parse error(s):\n")).clone());
-            println!("{}", stringDelimitList(errLst.clone().reverse(), (literal!("\n")).clone()));
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\nSusan parse error(s):\n")).clone());
+            metamodelica::print(stringDelimitList(errLst.clone().reverse(), (literal!("\n")).clone()));
+            metamodelica::print((literal!("\n")).clone());
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),

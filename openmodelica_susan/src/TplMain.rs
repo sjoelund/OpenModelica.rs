@@ -69,7 +69,7 @@ pub fn main(mut inFile: ArcStr) -> Result<()> {
             translateFile((file.clone()).clone())?;
             strErrBuf = (Print::getErrorString()?).clone();
             strErrBuf = (if (strErrBuf.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Error Buffer ###\n")); __mm_s.push_str(&*strErrBuf.clone()); __mm_s.push_str(&*literal!("\n### End of Error Buffer ###\n")); ArcStr::from(__mm_s) }}).clone();
-            println!("{}", (strErrBuf.clone()).clone());
+            metamodelica::print((strErrBuf.clone()).clone());
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -89,7 +89,7 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
             let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
             let mut nErrors: i32 = 0;
             let mut wasError: bool = false;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nProcessing file '")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("'\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nProcessing file '")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("'\n")); ArcStr::from(__mm_s) }).clone());
             nErrors = Error::getNumErrorMessages();
             destFile = (System::stringReplace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("*")); ArcStr::from(__mm_s) }).clone(), (literal!(".tpl*")).clone(), (literal!(".mo")).clone())?).clone();
             let false = (stringEq((file.clone()).clone(), (destFile.clone()).clone())) else { bail!("pattern mismatch") };
@@ -100,17 +100,17 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
             res = (Tpl::textString(txt.clone())?).clone();
             wasError = nErrors.clone() < Error::getNumErrorMessages();
             destFile = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*destFile.clone()); __mm_s.push_str(&*if (wasError.clone()) {literal!(".err.mo")} else {literal!("")}); ArcStr::from(__mm_s) }).clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nWriting result to file '")); __mm_s.push_str(&*destFile.clone()); __mm_s.push_str(&*literal!("'\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nWriting result to file '")); __mm_s.push_str(&*destFile.clone()); __mm_s.push_str(&*literal!("'\n")); ArcStr::from(__mm_s) }).clone());
             System::writeFile((destFile.clone()).clone(), (res.clone()).clone())?;
             let false = (wasError.clone()) else { bail!("pattern mismatch") };
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut file = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n### translation of file '")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("' failed!  ###\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (literal!("### Error Buffer ###\n")).clone());
-            println!("{}", (Print::getErrorString()?).clone());
-            println!("{}", (literal!("\n### End of Error Buffer ###\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n### translation of file '")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!("' failed!  ###\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((literal!("### Error Buffer ###\n")).clone());
+            metamodelica::print((Print::getErrorString()?).clone());
+            metamodelica::print((literal!("\n### End of Error Buffer ###\n")).clone());
             Print::clearErrorBuf();
             Ok(bail!("fail"))
         })() { break 'mc __v; }
@@ -129,13 +129,13 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
             let mut strRes: ArcStr = arcstr::literal!("");
             let mut strErrBuf: ArcStr = arcstr::literal!("");
             let true = (stringEq((strRet.clone()).clone(), (strShouldBe.clone()).clone())) else { bail!("pattern mismatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n**************************************************\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n**************************************************\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
             strRes = (if (printResult.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  returned <<\n")); __mm_s.push_str(&*strRet.clone()); __mm_s.push_str(&*literal!(">>\n")); ArcStr::from(__mm_s) }} else {literal!("\n result not shown \n")}).clone();
-            println!("{}", (strRes.clone()).clone());
+            metamodelica::print((strRes.clone()).clone());
             strErrBuf = (Print::getErrorString()?).clone();
             strErrBuf = (if (strErrBuf.clone() == literal!("")) {literal!("")} else {if (printErrBuf.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Error Buffer ###\n")); __mm_s.push_str(&*strErrBuf.clone()); __mm_s.push_str(&*literal!("\n### End of Error Buffer ###\n")); ArcStr::from(__mm_s) }} else {literal!("### Error Buffer is NOT empty - not shown ###\n")}}).clone();
-            println!("{}", (strErrBuf.clone()).clone());
-            println!("{}", (literal!("*** OK ***\n")).clone());
+            metamodelica::print((strErrBuf.clone()).clone());
+            metamodelica::print((literal!("*** OK ***\n")).clone());
             Print::clearErrorBuf();
             Ok(notPassedCnt.clone())
         })() { break 'mc __v; }
@@ -144,13 +144,13 @@ pub fn testStringEquality(mut inStringReturned: ArcStr, mut inStringShouldBe: Ar
             let mut strRes: ArcStr = arcstr::literal!("");
             let mut strErrBuf: ArcStr = arcstr::literal!("");
             let false = (stringEq((strRet.clone()).clone(), (strShouldBe.clone()).clone())) else { bail!("pattern mismatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n##################################################\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n##################################################\n")); __mm_s.push_str(&*strLabel.clone()); ArcStr::from(__mm_s) }).clone());
             strRes = (if (printResult.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  returned <<\n")); __mm_s.push_str(&*strRet.clone()); __mm_s.push_str(&*literal!(">>\nshould be <<\n")); __mm_s.push_str(&*strShouldBe.clone()); __mm_s.push_str(&*literal!(">>\n")); ArcStr::from(__mm_s) }} else {literal!("\n result not shown \n")}).clone();
-            println!("{}", (strRes.clone()).clone());
+            metamodelica::print((strRes.clone()).clone());
             strErrBuf = (Print::getErrorString()?).clone();
             strErrBuf = (if (strErrBuf.clone() == literal!("")) {literal!("")} else {if (printErrBuf.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Error Buffer ###\n")); __mm_s.push_str(&*strErrBuf.clone()); __mm_s.push_str(&*literal!("\n### End of Error Buffer ###\n")); ArcStr::from(__mm_s) }} else {literal!("### Error Buffer is NOT empty - not shown ###\n")}}).clone();
-            println!("{}", (strErrBuf.clone()).clone());
-            println!("{}", (literal!("### NOT Passed ###\n")).clone());
+            metamodelica::print((strErrBuf.clone()).clone());
+            metamodelica::print((literal!("### NOT Passed ###\n")).clone());
             Print::clearErrorBuf();
             Ok(notPassedCnt.clone() + 1)
         })() { break 'mc __v; }
@@ -222,7 +222,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     let mut notPassedCnt: i32 = 0;
                     notPassedCnt = 0;
                     Print::clearErrorBuf();
-                    println!("{}", (literal!("\n A Test:\n")).clone());
+                    metamodelica::print((literal!("\n A Test:\n")).clone());
                     tstart = clock();
                     txt = Tpl::writeStr(emptyTxt.clone(), (literal!("Ahoj Susan")).clone())?;
                     txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
@@ -560,9 +560,9 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     notPassedCnt = testTranslateTplFile((literal!("TplCodegen")).clone(), false, false, notPassedCnt.clone())?;
                     notPassedCnt = testTranslateTplFile((literal!("paper")).clone(), false, false, notPassedCnt.clone())?;
                     notPassedCnt = testTranslateTplFile((literal!("test")).clone(), false, true, notPassedCnt.clone())?;
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("All tests took ")); __mm_s.push_str(&*realString(clock() - tstart.clone())); __mm_s.push_str(&*literal!(" seconds.\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("All tests took ")); __mm_s.push_str(&*realString(clock() - tstart.clone())); __mm_s.push_str(&*literal!(" seconds.\n")); ArcStr::from(__mm_s) }).clone());
                     r#str = (if (notPassedCnt.clone() == 0) {literal!("\n ***** All a) tests OK *****\n\n")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n #### ")); __mm_s.push_str(&*intString(notPassedCnt.clone())); __mm_s.push_str(&*literal!(" test")); __mm_s.push_str(&*if (notPassedCnt.clone() > 1) {literal!("s")} else {literal!("")}); __mm_s.push_str(&*literal!(" DID NOT passed ####\n\n")); ArcStr::from(__mm_s) }}).clone();
-                    println!("{}", (r#str.clone()).clone());
+                    metamodelica::print((r#str.clone()).clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -571,10 +571,10 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 r#str => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n######## tplMainTest '")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("' (fatally) failed!  ########\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", (literal!("### Error Buffer ###\n")).clone());
-                    println!("{}", (Print::getErrorString()?).clone());
-                    println!("{}", (literal!("\n### End of Error Buffer ###\n")).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n######## tplMainTest '")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("' (fatally) failed!  ########\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print((literal!("### Error Buffer ###\n")).clone());
+                    metamodelica::print((Print::getErrorString()?).clone());
+                    metamodelica::print((literal!("\n### End of Error Buffer ###\n")).clone());
                     Print::clearErrorBuf();
                     Ok(())
                 }

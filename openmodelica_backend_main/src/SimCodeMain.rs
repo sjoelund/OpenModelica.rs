@@ -274,7 +274,7 @@ fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: A
                     let true = (Flags::isSet(Flags::HPCOM.clone())?) else { bail!("pattern mismatch") };
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     let true = (numProc.clone() == 0) else { bail!("pattern mismatch") };
-                    println!("{}", (literal!("hpcom computes the ideal number of processors. If you want to set the number manually, use the flag +n=_\n")).clone());
+                    metamodelica::print((literal!("hpcom computes the ideal number of processors. If you want to set the number manually, use the flag +n=_\n")).clone());
                     Ok(HpcOmSimCodeMain::createSimCode(inBackendDAE.clone(), inInitDAE.clone(), inInitDAE_lambda0.clone(), inRemovedInitialEquationLst.clone(), inClassName.clone(), (filenamePrefix.clone()).clone(), (inString11.clone()).clone(), functions.clone(), externalFunctionIncludes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), program.clone(), simSettingsOpt.clone(), recordDecls.clone(), literals.clone(), args.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -321,7 +321,7 @@ fn generateModelCodeNewBackend(mut bdae: Arc<NBackendDAE::NBackendDAE>, mut clas
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     (simCode, oldFunctionTree) = NSimCode::SimCode::create(bdae.clone(), className.clone(), (fileNamePrefix.clone()).clone(), simSettingsOpt.clone(), SymbolTable::getAbsyn())?;
     if Flags::isSet(Flags::DUMP_SIMCODE.clone())? {
-        println!("{}", (NSimCode::SimCode::toString(simCode.clone(), (literal!("")).clone())?).clone());
+        metamodelica::print((NSimCode::SimCode::toString(simCode.clone(), (literal!("")).clone())?).clone());
     }
     (fileDir, libs) = NSimCode::SimCode::getDirectoryAndLibs(simCode.clone())?;
     oldSimCode = NSimCode::SimCode::convert(simCode.clone())?;
@@ -1037,7 +1037,7 @@ pub fn translateModel(mut kind: TranslateModelKind, mut cache: FCore::Cache, mut
     } else if stringEmpty((flatString.clone()).clone()) && !(runSilent.clone()) {
         Error::addInternalError((literal!("Flat model string generated but is empty.")).clone(), metamodelica::sourceInfo!())?;
     } else {
-        println!("{}", (flatString.clone()).clone());
+        metamodelica::print((flatString.clone()).clone());
     }
     success = true;
     Ok((success, cache, outLibs, outFileDir, resultValues))
@@ -1273,7 +1273,7 @@ fn translateModelCallBackendNB(mut inFlatModel: Arc<FlatModel::NFFlatModel>, mut
     System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
     bdae = NBackendDAE::lower(inFlatModel.clone(), funcMap.clone())?;
     if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
-        println!("{}", (NBackendDAE::toString(bdae.clone(), (literal!("(After Lowering)")).clone())?).clone());
+        metamodelica::print((NBackendDAE::toString(bdae.clone(), (literal!("(After Lowering)")).clone())?).clone());
     }
     bdae = NBackendDAE::main(bdae.clone())?;
     timeBackend = System::realtimeTock(ClockIndexes::RT_CLOCK_BACKEND.clone())?;

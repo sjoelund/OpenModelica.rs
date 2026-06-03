@@ -164,11 +164,11 @@ pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodel
         }
     }
     if Flags::isSet(Flags::EVAL_FUNC_DUMP.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" => ")); ArcStr::from(__mm_s) }).clone());
-        println!("{}", (Expression::toString(result.clone())?).clone());
-        println!("{}", (literal!("\nArguments:\n")).clone());
-        println!("{}", (UnorderedMap::toString(arg_map.clone(), (std::sync::Arc::new(InstNode::name) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?).clone());
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" => ")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print((Expression::toString(result.clone())?).clone());
+        metamodelica::print((literal!("\nArguments:\n")).clone());
+        metamodelica::print((UnorderedMap::toString(arg_map.clone(), (std::sync::Arc::new(InstNode::name) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?).clone());
+        metamodelica::print((literal!("\n")).clone());
     }
     Pointer::update(call_counter.clone(), call_count.clone() - 1);
     Ok(result)

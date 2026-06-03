@@ -165,7 +165,7 @@ pub fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData:
         BackendDAE::lowerRecordChildren(var.clone(), BVariable::VarData::getVariables(varData.clone())?)?;
     }
     if Flags::isSet(Flags::DUMP_CSE.clone())? {
-        println!("{}", (aliasListToString(UnorderedMap::toList(aux_map.clone()), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Sliced State")).clone())?).clone());
+        metamodelica::print((aliasListToString(UnorderedMap::toList(aux_map.clone()), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Sliced State")).clone())?).clone());
     }
     Ok((varData, eqData))
 }
@@ -356,10 +356,10 @@ fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDa
             UnorderedMap::remove(Util::tuple21(tpl.clone()), map.clone())?;
         }
         debug_lst_ini = UnorderedMap::toList(map.clone());
-        println!("{}", (aliasListToString(debug_lst_sim.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Simulation Function")).clone())?).clone());
-        println!("{}", (aliasListToString(debug_lst_ini.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Initial Function")).clone())?).clone());
-        println!("{}", (aliasListToString(UnorderedMap::toList(clock_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Clocked Function")).clone())?).clone());
-        println!("{}", (aliasListToString(UnorderedMap::toList(infer_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Inferred Clocked Function")).clone())?).clone());
+        metamodelica::print((aliasListToString(debug_lst_sim.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Simulation Function")).clone())?).clone());
+        metamodelica::print((aliasListToString(debug_lst_ini.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Call_Aux::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Initial Function")).clone())?).clone());
+        metamodelica::print((aliasListToString(UnorderedMap::toList(clock_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Clocked Function")).clone())?).clone());
+        metamodelica::print((aliasListToString(UnorderedMap::toList(infer_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Inferred Clocked Function")).clone())?).clone());
     }
     Ok((varData, eqData))
 }
@@ -637,7 +637,10 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
     } });
         ty = Expression::typeOf(exp.clone());
         exp = (::match_deref::match_deref! { match &((aux_opt.clone(), ty.clone())) {
-        (Some(aux), _) => aux.replacer.clone(),
+        (Some(__esc_aux), _) => {
+            aux = (*__esc_aux).clone();
+            aux.replacer.clone()
+        },
         (_, Deref @ Type::TUPLE { .. }) => {
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();

@@ -139,7 +139,7 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
                     binds = __pa0.clone();
                     outExp = rewriteExpFrontEnd(to.clone(), binds.clone())?;
                     b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd Exp:     ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd From:    ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd To:      ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd Rewrite: ")); __mm_s.push_str(&*Dump::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd Exp:     ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd From:    ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd To:      ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd Rewrite: ")); __mm_s.push_str(&*Dump::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -628,7 +628,7 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
                     binds = __pa0.clone();
                     outExp = rewriteExpBackEnd(to.clone(), binds.clone())?;
                     b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd Exp:     ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd From:    ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd To:      ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd Rewrite: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd Exp:     ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd From:    ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd To:      ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd Rewrite: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(((outExp.clone(), b.clone()), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1223,7 +1223,7 @@ pub fn loadRulesFromFile(mut inFile: ArcStr) -> Result<()> {
                     let GlobalScript::ISTMTS { interactiveStmtLst: __pa0, semicolon: _ } = (Parser::parseexp((inFile.clone()).clone())?) else { bail!("pattern mismatch") };
                     stmts = __pa0.clone();
                     rules = stmtsToRules(stmts.clone(), metamodelica::nil())?;
-                    println!("{}", (literal!("-------------\n")).clone());
+                    metamodelica::print((literal!("-------------\n")).clone());
                     { let __v = Some(rules.clone()); crate::Globals::rewriteRulesIndex.with(|__root| *__root.borrow_mut() = __v) };
                     Ok(())
                 }
@@ -1322,7 +1322,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewrite", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
                     let mut acc: Rules = metamodelica::nil();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::FRONTEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())
                 }
@@ -1333,7 +1333,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewriteFrontEnd", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
                     let mut acc: Rules = metamodelica::nil();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::FRONTEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())
                 }
@@ -1344,7 +1344,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "rewriteBackEnd", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: from, tail: Deref @ metamodelica::List::Cons { head: to, tail: Deref @ metamodelica::List::Nil } }, argNames: Deref @ metamodelica::List::Nil }, .. }, .. }, tail: rest } => {
                     let mut acc: Rules = metamodelica::nil();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd rule: ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     acc = stmtsToRules(rest.clone(), metamodelica::cons(Rule::BACKEND_RULE { from: from.clone(), to: to.clone() }, inAcc.clone()))?;
                     Ok(acc.clone())
                 }

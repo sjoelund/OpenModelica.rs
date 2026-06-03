@@ -1044,14 +1044,14 @@ pub fn unparseTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>) -> Result<ArcStr> {
 pub fn printTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<()> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (unparseTypeSpec(typeSpec.clone())?).clone();
-    println!("{}", (r#str.clone()).clone());
+    metamodelica::print((r#str.clone()).clone());
     Ok(())
 }
 
 pub fn stdout() -> Result<()> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (Print::getString()?).clone();
-    println!("{}", (r#str.clone()).clone());
+    metamodelica::print((r#str.clone()).clone());
     Print::clearBuf();
     Ok(())
 }

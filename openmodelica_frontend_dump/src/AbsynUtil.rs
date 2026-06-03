@@ -3460,14 +3460,15 @@ pub fn getFunctionInterface(mut cl: Arc<Absyn::Class>) -> Result<Arc<Absyn::Clas
     let mut def: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let mut elts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(cl.clone()) {
-        Deref @ Absyn::Class { body: def @ Deref @ Absyn::ClassDef::PARTS { .. }, restriction: Absyn::Restriction::R_FUNCTION { .. }, .. } => {
-            let __pa0 = ::match_deref::match_deref! { match &(List::fold(var_field!((**def).classParts, Absyn::ClassDef::PARTS).clone().reverse(), (std::sync::Arc::new(getFunctionInterfaceParts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> + 'static>), metamodelica::nil())?) {
+        Deref @ Absyn::Class { body: __esc_def @ Deref @ Absyn::ClassDef::PARTS { .. }, restriction: Absyn::Restriction::R_FUNCTION { .. }, .. } => {
+            def = (*__esc_def).clone();
+            let __pa0 = ::match_deref::match_deref! { match &(List::fold(var_field!((*def).classParts, Absyn::ClassDef::PARTS).clone().reverse(), (std::sync::Arc::new(getFunctionInterfaceParts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> + 'static>), metamodelica::nil())?) {
                 __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             elts = __pa0.clone();
             assign_field!(
-                cl.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: var_field!((**def).typeVars, Absyn::ClassDef::PARTS).clone(), classAttrs: var_field!((**def).classAttrs, Absyn::ClassDef::PARTS).clone(), classParts: list![Arc::new(Absyn::ClassPart::PUBLIC { contents: elts.clone() })], ann: metamodelica::nil(), comment: None }),
+                cl.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: var_field!((*def).typeVars, Absyn::ClassDef::PARTS).clone(), classAttrs: var_field!((*def).classAttrs, Absyn::ClassDef::PARTS).clone(), classParts: list![Arc::new(Absyn::ClassPart::PUBLIC { contents: elts.clone() })], ann: metamodelica::nil(), comment: None }),
                 cl.commentsBeforeEnd = metamodelica::nil(),
                 cl.commentsAfterEnd = metamodelica::nil()
             );
@@ -5238,9 +5239,9 @@ fn traverseClasses2<Arg: Clone + 'static>(mut inClasses: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: class_, tail: _ }, _, _, _, _) => {
-                    println!("{}", (literal!("-traverse_classes2 failed on class:")).clone());
-                    println!("{}", (className(class_.clone())?).clone());
-                    println!("{}", (literal!("\n")).clone());
+                    metamodelica::print((literal!("-traverse_classes2 failed on class:")).clone());
+                    metamodelica::print((className(class_.clone())?).clone());
+                    metamodelica::print((literal!("\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5999,11 +6000,19 @@ pub fn createChoiceArray(mut inChoices: Arc<Absyn::ElementArg>) -> Result<Arc<Ab
             for mut m in &*choice.clone() {
                 let mut m = m.clone();
                 (choiceArray, acc) = (::match_deref::match_deref! { match &(m.clone()) {
-        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fp2, eachPrefix: ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Cons { head: el, tail: Deref @ metamodelica::List::Nil }, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), comment: cmt2, info: info2 } => {
+        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: __esc_fp2, eachPrefix: __esc_ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Cons { head: el, tail: Deref @ metamodelica::List::Nil }, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), comment: __esc_cmt2, info: __esc_info2 } => {
+            cmt2 = (*__esc_cmt2).clone();
+            ep2 = (*__esc_ep2).clone();
+            info2 = (*__esc_info2).clone();
+            fp2 = (*__esc_fp2).clone();
             s = (Dump::unparseElementArgStr(el.clone())?).clone();
             (metamodelica::cons((s.clone()).clone(), choiceArray.clone()), acc.clone())
         },
-        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fp2, eachPrefix: ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: e, .. } }), comment: cmt2, info: info2 } => {
+        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: __esc_fp2, eachPrefix: __esc_ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: e, .. } }), comment: __esc_cmt2, info: __esc_info2 } => {
+            info2 = (*__esc_info2).clone();
+            cmt2 = (*__esc_cmt2).clone();
+            fp2 = (*__esc_fp2).clone();
+            ep2 = (*__esc_ep2).clone();
             s = (Dump::printExpStr(e.clone())?).clone();
             (metamodelica::cons((s.clone()).clone(), choiceArray.clone()), acc.clone())
         },

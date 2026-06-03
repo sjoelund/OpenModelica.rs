@@ -478,7 +478,7 @@ fn emptyReplacementsArray2(mut n: i32) -> Result<Arc<metamodelica::List<Variable
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (n.clone() < 0) else { bail!("pattern mismatch") };
-            println!("{}", (literal!("Internal error, emptyReplacementsArray2 called with negative n!")).clone());
+            metamodelica::print((literal!("Internal error, emptyReplacementsArray2 called with negative n!")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
@@ -843,14 +843,14 @@ pub fn dumpReplacements(mut inVariableReplacements: VariableReplacements) -> Res
             let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
             tplLst = BaseHashTable::hashTableList(ht.clone())?;
             r#str = stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
-            println!("{}", (literal!("Replacements: (")).clone());
+            metamodelica::print((literal!("Replacements: (")).clone());
             len = (tplLst.clone().len() as i32);
             len_str = (intString(len.clone())).clone();
-            println!("{}", (len_str.clone()).clone());
-            println!("{}", (literal!(")\n")).clone());
-            println!("{}", (literal!("=============\n")).clone());
-            println!("{}", (r#str.clone()).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((len_str.clone()).clone());
+            metamodelica::print((literal!(")\n")).clone());
+            metamodelica::print((literal!("=============\n")).clone());
+            metamodelica::print((r#str.clone()).clone());
+            metamodelica::print((literal!("\n")).clone());
             ()
         },
     });
@@ -968,7 +968,7 @@ pub fn addReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::Compon
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-add_replacement failed\n")).clone());
+                    metamodelica::print((literal!("-add_replacement failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

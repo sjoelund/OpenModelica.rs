@@ -383,9 +383,24 @@ fn elabExp_Binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ Absyn::Exp::BINARY { exp2: e2, op, exp1: e1 } => (),
-        Deref @ Absyn::Exp::LBINARY { exp2: e2, op, exp1: e1 } => (),
-        Deref @ Absyn::Exp::RELATION { exp2: e2, op, exp1: e1 } => (),
+        Deref @ Absyn::Exp::BINARY { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
+            op = (*__esc_op).clone();
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            ()
+        },
+        Deref @ Absyn::Exp::LBINARY { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
+            op = (*__esc_op).clone();
+            e2 = (*__esc_e2).clone();
+            e1 = (*__esc_e1).clone();
+            ()
+        },
+        Deref @ Absyn::Exp::RELATION { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
+            e1 = (*__esc_e1).clone();
+            op = (*__esc_op).clone();
+            e2 = (*__esc_e2).clone();
+            ()
+        },
         _ => bail!("match: no arm matched"),
     } });
     (outCache, exp1, prop1) = elabExpInExpression(inCache.clone(), inEnv.clone(), e1.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
@@ -8577,7 +8592,7 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
         res_ty = __pa4.clone();
         params = __pa5.clone();
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes, try: ")); __mm_s.push_str(&*TypesDump::unparseType(func_ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes, try: ")); __mm_s.push_str(&*TypesDump::unparseType(func_ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if '__try6: {
             slots = unwrap_break_err!(makeEmptySlots(params.clone()), '__try6);
@@ -8625,7 +8640,7 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
             outFunctionType = unwrap_break_err!(createActualFunctype(outFunctionType.clone(), outSlots.clone(), inCheckTypes.clone()), '__try6);
             success = true;
             if debug.clone() {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes success for ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(func_ty.clone()), '__try6)); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outFunctionType.clone()), '__try6)); __mm_s.push_str(&*literal!("=>")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outResultType.clone()), '__try6)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes success for ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(func_ty.clone()), '__try6)); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outFunctionType.clone()), '__try6)); __mm_s.push_str(&*literal!("=>")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outResultType.clone()), '__try6)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -9279,8 +9294,14 @@ fn splitProps(mut inProperties: Arc<metamodelica::List<DAE::Properties>>) -> Res
     for mut prop in &*inProperties.clone().reverse() {
         let mut prop = prop.clone();
         tc = (match prop.clone() {
-        DAE::Properties::PROP { constFlag: mut c, type_: ref ty } => Arc::new(DAE::TupleConst::SINGLE_CONST { r#const: c.clone() }),
-        DAE::Properties::PROP_TUPLE { tupleConst: ref tc, type_: ref ty } => tc.clone(),
+        DAE::Properties::PROP { constFlag: mut c, type_: ref __esc_ty } => {
+            ty = __esc_ty.clone();
+            Arc::new(DAE::TupleConst::SINGLE_CONST { r#const: c.clone() })
+        },
+        DAE::Properties::PROP_TUPLE { tupleConst: ref tc, type_: ref __esc_ty } => {
+            ty = __esc_ty.clone();
+            tc.clone()
+        },
     });
         outTypes = metamodelica::cons(ty.clone(), outTypes.clone());
         outConsts = metamodelica::cons(tc.clone(), outConsts.clone());
@@ -11200,7 +11221,7 @@ fn removeDoubleEmptyArrays(mut inArr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 exp1 => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Static.removeDoubleEmptyArrays failure for: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Static.removeDoubleEmptyArrays failure for: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp1.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

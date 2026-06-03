@@ -232,11 +232,13 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
     let mut varIdx: i32 = 0;
     let mut tmpCurrentVarIndices: metamodelica::Array<i32> = Default::default();
     oVarIndex = (match (iVar.clone(), iCurrentVarIndices.clone()) {
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, name: mut name, .. }, mut tmpCurrentVarIndices) => {
+        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, name: mut __esc_name, .. }, mut tmpCurrentVarIndices) => {
+            name = __esc_name.clone();
             (varIdx, tmpCurrentVarIndices) = getVarToArrayIndexByType(iVar.clone(), iVarType.clone(), tmpCurrentVarIndices.clone())?;
             varIdx.clone()
         },
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NEGATEDALIAS { varName: mut varName }, name: mut name, .. }, _) => {
+        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NEGATEDALIAS { varName: mut varName }, name: mut __esc_name, .. }, _) => {
+            name = __esc_name.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
                 let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -252,7 +254,8 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
             }
             varIdx.clone()
         },
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::ALIAS { varName: mut varName }, name: mut name, .. }, _) => {
+        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::ALIAS { varName: mut varName }, name: mut __esc_name, .. }, _) => {
+            name = __esc_name.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
                 let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),

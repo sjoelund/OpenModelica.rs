@@ -2095,7 +2095,7 @@ pub mod Equation {
         let mut eq: Arc<Equation> = eq;
         let mut old_eq: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
         if Flags::isSet(Flags::DUMP_SIMPLIFY.clone())? && !(stringEqual((indent.clone()).clone(), (literal!("")).clone())) {
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\n")).clone());
         }
         eq = map(eq.clone(), simplifyExp.clone(), None, (std::sync::Arc::new(fnptr!(apply, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         old_eq = eq.clone();
@@ -2208,9 +2208,9 @@ pub mod Equation {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if Flags::isSet(Flags::DUMP_SIMPLIFY.clone())? && !(isEqual(old_eq.clone(), eq.clone())?) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("### dumpSimplify | ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" ###\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("[BEFORE]\n")); __mm_s.push_str(&*toString(old_eq.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("[AFTER ]\n")); __mm_s.push_str(&*toString(eq.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("### dumpSimplify | ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" ###\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("[BEFORE]\n")); __mm_s.push_str(&*toString(old_eq.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("[AFTER ]\n")); __mm_s.push_str(&*toString(eq.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(eq)
     }
@@ -2941,7 +2941,7 @@ pub mod Equation {
         let mut rest2_right: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
         let mut shift: ArcStr = StringUtil::repeat((literal!("  ")).clone(), nesting_level.clone());
         if Flags::isSet(Flags::DUMP_SLICE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] ### Entwining following equations:\n")); __mm_s.push_str(&*List::toString(eqn_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] ### Entwining following equations:\n")); __mm_s.push_str(&*List::toString(eqn_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
         }
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eqn_lst.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -3002,7 +3002,7 @@ pub mod Equation {
         }
         entwined = metamodelica::cons(eqn1.clone(), entwined.clone()).reverse();
         if Flags::isSet(Flags::DUMP_SLICE.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] +++ Result of entwining:\n")); __mm_s.push_str(&*List::toString(entwined.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(nesting_level.clone())); __mm_s.push_str(&*literal!("] +++ Result of entwining:\n")); __mm_s.push_str(&*List::toString(entwined.clone(), (std::sync::Arc::new({ let __pe_b1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*shift.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
         }
         Ok(entwined)
     }
@@ -4789,7 +4789,7 @@ pub mod EquationPointers {
                 new_eq = func(eq.clone())?;
                 if !(referenceEq(&*(eq.clone()),&*(new_eq.clone()))) {
                     if debug.clone() && (UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eq_ptr.clone())?)?).clone(), debug_eqns.clone())? || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(Pointer::create(new_eq.clone()))?)?).clone(), debug_eqns.clone())?) && !(Equation::equalName(Pointer::create(eq.clone()), Pointer::create(new_eq.clone()))?) {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations] The equation:\n")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nGets replaced by:\n")); __mm_s.push_str(&*Equation::toString(new_eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations] The equation:\n")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nGets replaced by:\n")); __mm_s.push_str(&*Equation::toString(new_eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Pointer::update(eq_ptr.clone(), new_eq.clone());
                 }

@@ -309,7 +309,7 @@ fn registerDefineunits2(mut elts: Arc<metamodelica::List<Arc<Absyn::Element>>>) 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("registerDefineunits failed\n")).clone());
+                    metamodelica::print((literal!("registerDefineunits failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -383,9 +383,9 @@ pub fn update(mut unit: UnitAbsyn::Unit, mut index: i32, mut st: UnitAbsyn::Stor
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("storing unit at index ")).clone());
-            println!("{}", (intString(index.clone())).clone());
-            println!("{}", (literal!(" failed\n")).clone());
+            metamodelica::print((literal!("storing unit at index ")).clone());
+            metamodelica::print((intString(index.clone())).clone());
+            metamodelica::print((literal!(" failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -409,9 +409,9 @@ pub fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit>
         })() { unit = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!(" finding store at index ")).clone());
-            println!("{}", (intString(index.clone())).clone());
-            println!("{}", (literal!(" failed\n")).clone());
+            metamodelica::print((literal!(" finding store at index ")).clone());
+            metamodelica::print((intString(index.clone())).clone());
+            metamodelica::print((literal!(" failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -463,7 +463,7 @@ pub fn emptyStore() -> UnitAbsyn::Store {
 }
 
 pub fn printTerms(mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>) -> Result<()> {
-    println!("{}", (printTermsStr(terms.clone())?).clone());
+    metamodelica::print((printTermsStr(terms.clone())?).clone());
     Ok(())
 }
 
@@ -519,9 +519,9 @@ pub fn printTermStr(mut term: Arc<UnitAbsyn::UnitTerm>) -> Result<ArcStr> {
 pub fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
     let () = (match st.clone() {
         UnitAbsyn::InstStore::INSTSTORE { store: mut s, ht: mut h, checkResult: _ } => {
-            println!("{}", (literal!("instStore, s:")).clone());
+            metamodelica::print((literal!("instStore, s:")).clone());
             printStore(s.clone())?;
-            println!("{}", (literal!("\nht:")).clone());
+            metamodelica::print((literal!("\nht:")).clone());
             BaseHashTable::dumpHashTable(h.clone())?;
             ()
         },
@@ -550,10 +550,10 @@ fn printStore2(mut lst: Arc<metamodelica::List<Option<UnitAbsyn::Unit>>>, mut in
             ()
         },
         Deref @ metamodelica::List::Cons { head: Some(unit), tail: rest } => {
-            println!("{}", (intString(indx.clone())).clone());
-            println!("{}", (literal!("->")).clone());
+            metamodelica::print((intString(indx.clone())).clone());
+            metamodelica::print((literal!("->")).clone());
             printUnit(unit.clone())?;
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((literal!("\n")).clone());
             printStore2(rest.clone(), indx.clone() + 1)?;
             ()
         },
@@ -571,10 +571,10 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: Deref @ metamodelica::List::Nil, units: baseunits } } => {
-                    println!("{}", (printBaseUnitsStr(baseunits.clone())?).clone());
-                    println!("{}", (literal!(" [")).clone());
-                    println!("{}", (unit2str(unit.clone())?).clone());
-                    println!("{}", (literal!("]")).clone());
+                    metamodelica::print((printBaseUnitsStr(baseunits.clone())?).clone());
+                    metamodelica::print((literal!(" [")).clone());
+                    metamodelica::print((unit2str(unit.clone())?).clone());
+                    metamodelica::print((literal!("]")).clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -583,11 +583,11 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 UnitAbsyn::Unit::SPECIFIED { specified: UnitAbsyn::SpecUnit { typeParameters: typeparams, units: baseunits } } => {
-                    println!("{}", stringDelimitList(List::map(typeparams.clone(), (std::sync::Arc::new(printTypeParameterStr) as std::sync::Arc<dyn ::std::ops::Fn((MMath::Rational, UnitAbsyn::TypeParameter)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone()));
-                    println!("{}", (printBaseUnitsStr(baseunits.clone())?).clone());
-                    println!("{}", (literal!(" [")).clone());
-                    println!("{}", (unit2str(unit.clone())?).clone());
-                    println!("{}", (literal!("]")).clone());
+                    metamodelica::print(stringDelimitList(List::map(typeparams.clone(), (std::sync::Arc::new(printTypeParameterStr) as std::sync::Arc<dyn ::std::ops::Fn((MMath::Rational, UnitAbsyn::TypeParameter)) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone()));
+                    metamodelica::print((printBaseUnitsStr(baseunits.clone())?).clone());
+                    metamodelica::print((literal!(" [")).clone());
+                    metamodelica::print((unit2str(unit.clone())?).clone());
+                    metamodelica::print((literal!("]")).clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -596,7 +596,7 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 UnitAbsyn::Unit::UNSPECIFIED { .. } => {
-                    println!("{}", (literal!("Unspecified")).clone());
+                    metamodelica::print((literal!("Unspecified")).clone());
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -750,7 +750,7 @@ pub fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut comp
         })() { terms = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("instBuildUnitTerms failed!!\n")).clone());
+            metamodelica::print((literal!("instBuildUnitTerms failed!!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -867,7 +867,7 @@ fn addUnspecifiedStores(mut n: i32, mut istore: UnitAbsyn::Store) -> Result<Unit
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _) = __mc_input.clone() else { bail!("nomatch") };
             let true = (n.clone() < 0) else { bail!("pattern mismatch") };
-            println!("{}", (literal!("addUnspecifiedStores n < 0!\n")).clone());
+            metamodelica::print((literal!("addUnspecifiedStores n < 0!\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -995,7 +995,7 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("createTypeParameterLocations4 failed\n")).clone());
+                    metamodelica::print((literal!("createTypeParameterLocations4 failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1333,7 +1333,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
                     let mut uts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("vector =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("vector =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     (uts, terms, store) = buildTermExpList(env.clone(), expl.clone(), ht.clone(), store.clone())?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(buildArrayElementTerms(uts.clone(), expl.clone())?) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1355,7 +1355,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut store = (*store).clone();
                     let mut ut: Arc<UnitAbsyn::UnitTerm> = ut.clone();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix =")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     expl = List::flatten(mexpl.clone())?;
                     (uts, terms, store) = buildTermExpList(env.clone(), expl.clone(), ht.clone(), store.clone())?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(buildArrayElementTerms(uts.clone(), expl.clone())?) {
@@ -1373,7 +1373,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { .. }, _, _, _) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildTermDAE.CALL failed exp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildTermDAE.CALL failed exp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1487,7 +1487,7 @@ fn buildResultTerms(mut ifunctp: Arc<DAE::Type>, mut funcInstId: i32, mut funcCa
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("buildResultTerms failed\n")).clone());
+                    metamodelica::print((literal!("buildResultTerms failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1557,7 +1557,7 @@ fn buildTermExpList(mut env: FCore::Graph, mut iexpl: Arc<metamodelica::List<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: e, tail: _ }, _) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildTermExpList failed for exp")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildTermExpList failed for exp")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1587,7 +1587,7 @@ fn buildFuncTypeStores(mut funcType: Arc<DAE::Type>, mut funcInstId: i32, mut is
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (tp, _) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildFuncTypeStores failed, tp")); __mm_s.push_str(&*TypesDump::unparseType(tp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildFuncTypeStores failed, tp")); __mm_s.push_str(&*TypesDump::unparseType(tp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1667,7 +1667,7 @@ fn getUnitStr(mut itp: Arc<DAE::Type>) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 tp => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getUnitStr for type ")); __mm_s.push_str(&*TypesDump::unparseType(tp.clone())?); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getUnitStr for type ")); __mm_s.push_str(&*TypesDump::unparseType(tp.clone())?); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1705,7 +1705,7 @@ fn buildFormal2ActualParamTerms(mut iformalParamIndxs: Arc<metamodelica::List<i3
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("buildFormal2ActualParamTerms failed\n")).clone());
+                    metamodelica::print((literal!("buildFormal2ActualParamTerms failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

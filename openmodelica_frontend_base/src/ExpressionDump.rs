@@ -2070,8 +2070,8 @@ fn genStringNTime(mut inString: ArcStr, mut inInteger: i32) -> Result<ArcStr> {
 pub fn dumpExp(mut exp: Arc<DAE::Exp>) -> Result<()> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (dumpExpStr(exp.clone(), 0)?).clone();
-    println!("{}", (r#str.clone()).clone());
-    println!("{}", (literal!("--------------------\n")).clone());
+    metamodelica::print((r#str.clone()).clone());
+    metamodelica::print((literal!("--------------------\n")).clone());
     Ok(())
 }
 
@@ -2194,9 +2194,9 @@ pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
 pub fn dumpExpWithTitle(mut title: ArcStr, mut exp: Arc<DAE::Exp>) -> Result<()> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (dumpExpStr(exp.clone(), 0)?).clone();
-    println!("{}", (title.clone()).clone());
-    println!("{}", (r#str.clone()).clone());
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((title.clone()).clone());
+    metamodelica::print((r#str.clone()).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

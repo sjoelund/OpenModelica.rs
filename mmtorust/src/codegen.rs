@@ -283,6 +283,21 @@ struct GenCtx {
     /// which is what keeps recursive HOFs like `List.sort` working (each
     /// recursive call gets a clone of the same `Arc`, staying at one type level).
     fn_input_names: HashSet<String>,
+    /// Names of every variable declared at function scope (inputs, outputs and
+    /// `protected` locals) captured at function entry. In MetaModelica a
+    /// match-case pattern variable *is* the enclosing-scope variable of the
+    /// same name, so a pattern that binds one of these — but whose arm body
+    /// never reads it — must write the matched value back so code *after* the
+    /// match sees it (the `() := match e case C(field = x) then ();` idiom).
+    /// See the escaping-binding writeback in [`emit_match`].
+    fn_scope_vars: HashSet<String>,
+    /// Names currently bound *by reference* (`&Arc<T>`) by an enclosing
+    /// `match` arm. A nested match that would otherwise write an owned value
+    /// back to such a name (the escaping-local writeback in [`emit_match`])
+    /// must skip it — the assignment would not type-check against the
+    /// reference, and the name is a re-bound scrutinee rather than a plain
+    /// owned `protected` local.
+    match_refbound: HashSet<String>,
     /// Names of function-scope locals (and inputs) whose Rust declaration is
     /// emitted with an initialiser. Used by matchcontinue arm codegen to
     /// decide whether the per-arm shadow `let mut x: T = x.clone();` is safe
@@ -545,6 +560,8 @@ impl GenCtx {
             uninit_arrays: HashSet::new(),
             fn_env_vars: HashMap::new(),
             fn_input_names: HashSet::new(),
+            fn_scope_vars: HashSet::new(),
+            match_refbound: HashSet::new(),
             fn_initialized_vars: HashSet::new(),
             fn_outputs: Vec::new(),
             fn_outputs_no_default: Vec::new(),
@@ -5324,6 +5341,9 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     // re-assignments to outputs/protected components and so `return;` inside
     // a match arm can expand to the same Ok(...) tuple as the function tail.
     ctx.fn_env_vars = env.vars.clone();
+    // Snapshot the function-scope variable names (inputs/outputs/protected)
+    // for the escaping-pattern-binding writeback in `emit_match`.
+    ctx.fn_scope_vars = env.vars.keys().cloned().collect();
     ctx.fn_input_names = fn_inputs_eff.iter().map(|inp| inp.name.clone()).collect();
     // Inputs are always initialised at the outer scope. Locals are added as
     // we emit their declarations below.
@@ -5559,6 +5579,7 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         // array would lose the `.borrow()` prefix whenever a nested helper
         // omitted the same local.
         let saved_fn_env_vars = ctx.fn_env_vars.clone();
+        let saved_fn_scope_vars = ctx.fn_scope_vars.clone();
         let saved_fn_input_names = ctx.fn_input_names.clone();
         let saved_fn_initialized_vars = ctx.fn_initialized_vars.clone();
         let saved_fn_outputs = ctx.fn_outputs.clone();
@@ -5607,6 +5628,7 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
             }
         }
         ctx.fn_env_vars = saved_fn_env_vars;
+        ctx.fn_scope_vars = saved_fn_scope_vars;
         ctx.fn_input_names = saved_fn_input_names;
         ctx.fn_initialized_vars = saved_fn_initialized_vars;
         ctx.fn_outputs = saved_fn_outputs;
@@ -12149,13 +12171,55 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // binding that shadows the output and never escapes, so we
                 // rename the Rust binding to a fresh temp and write the output
                 // back at the arm-body start. See [`pat_bind_rename`].
-                let escaping_outputs: Vec<String> = if ctx.fn_outputs.is_empty() {
-                    Vec::new()
-                } else {
+                let escaping_outputs: Vec<String> = {
                     let binds: HashSet<String> = typedexp::pat_bindings(&case.pattern)
                         .iter().map(|(n, _)| n.clone()).collect();
-                    ctx.fn_outputs.iter().filter(|o| binds.contains(*o)).cloned().collect()
+                    let mut v: Vec<String> = ctx.fn_outputs.iter()
+                        .filter(|o| binds.contains(*o)).cloned().collect();
+                    // Beyond outputs, a pattern that binds a function-scope
+                    // *local* (a `protected` component) but whose arm never
+                    // reads that binding is destructuring purely for code that
+                    // runs *after* the match — the `() := match e case
+                    // C(field = x) then ();` idiom. Rust scopes the pattern
+                    // binding to the arm, so without writeback the outer `x`
+                    // keeps its pre-match (default) value. A binding the arm
+                    // *does* use is consumed in-arm and needs no writeback, so
+                    // restrict to unused bindings to leave the common path
+                    // untouched.
+                    for n in &binds {
+                        if ctx.fn_scope_vars.contains(n)
+                            && !ctx.fn_outputs.contains(n)
+                            && !hoisted_names.contains(n)
+                            // Skip a name currently shadowed by an enclosing
+                            // match's by-reference binding (`&Arc<T>`): the
+                            // owned-value writeback would not type-check against
+                            // the reference, and such a name is a re-bound
+                            // scrutinee, not a plain `protected` local.
+                            && !matches!(ctx.variant_shapes.get(n), Some(VarShape::RefArc))
+                            && !ctx.match_refbound.contains(n)
+                            && !case_uses_local_name(case, n)
+                            && !v.contains(n)
+                        {
+                            v.push(n.clone());
+                        }
+                    }
+                    v
                 };
+                // Record this arm's by-reference (`&Arc<T>`) pattern bindings as
+                // ref-bound for the duration of the arm's result/body emission,
+                // so a nested match that re-binds one of these names skips its
+                // owned-value escaping-local writeback (which would not
+                // type-check against the reference). Restored at the arm's end.
+                let saved_match_refbound = ctx.match_refbound.clone();
+                {
+                    let mut arm_deref_names: Vec<String> = Vec::new();
+                    if use_match_deref {
+                        pat_collect_all_bindings(&case.pattern, &mut arm_deref_names);
+                    } else {
+                        pat_deref_bindings(&case.pattern, &input_ty, ctx, top_level, &mut arm_deref_names);
+                    }
+                    ctx.match_refbound.extend(arm_deref_names);
+                }
                 // Prefix the *raw* name before escaping so a keyword output
                 // (`str` → `r#str`) doesn't yield the invalid token
                 // `__esc_r#str`; `__esc_<name>` is never itself a keyword.
@@ -12529,6 +12593,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 ctx.variants = saved_variants;
                 ctx.variant_shapes = saved_shapes;
                 ctx.uninit_arrays = saved_uninit_arrays_match;
+                ctx.match_refbound = saved_match_refbound;
                 arm_str
             }).collect();
             // Inside a `#[tailcall::tailcall]` body the macro rewrites the

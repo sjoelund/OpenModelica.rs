@@ -1648,7 +1648,7 @@ pub fn setStatus(mut inEnv: Graph, mut inName: Name, mut inStatus: FCore::Data) 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut g = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.setStatus failed on: ")); __mm_s.push_str(&*getGraphNameStr(g.clone())?); __mm_s.push_str(&*literal!(" element: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FGraph.setStatus failed on: ")); __mm_s.push_str(&*getGraphNameStr(g.clone())?); __mm_s.push_str(&*literal!(" element: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(g.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

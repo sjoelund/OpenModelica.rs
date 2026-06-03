@@ -132,7 +132,7 @@ pub fn makeFigaro(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, m
     let mut fol: Arc<metamodelica::List<FigaroObject>> = metamodelica::nil();
     fcl = listAppend(fcElementList((literal!("Figaro_Object")).clone(), (literal!("")).clone(), inModel.clone(), None, inProgram.clone(), env.clone())?, fcElementList((literal!("Figaro_Object_connector")).clone(), (literal!("")).clone(), inModel.clone(), None, inProgram.clone(), env.clone())?);
     printFigaroClassList(fcl.clone())?;
-    println!("{}", (literal!("\n\n")).clone());
+    metamodelica::print((literal!("\n\n")).clone());
     fol = foElement(fcl.clone(), inModel.clone())?;
     printFigaroObjectList(fol.clone())?;
     outCode = (figaroObjectListToString(fol.clone())?).clone();
@@ -1299,7 +1299,7 @@ fn printFigaroClassList(mut inFigaroClassList: Arc<metamodelica::List<FigaroClas
 fn printFigaroClass(mut inFigaroClass: FigaroClass) -> Result<()> {
     let () = (match inFigaroClass.clone() {
         FigaroClass { typeName: mut tn, className: mut cn } => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*cn.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*cn.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             ()
         },
     });
@@ -1320,7 +1320,7 @@ fn printFigaroObjectList(mut inFigaroObjectList: Arc<metamodelica::List<FigaroOb
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
-                    println!("{}", (figaroObjectToString(first.clone())?).clone());
+                    metamodelica::print((figaroObjectToString(first.clone())?).clone());
                     printFigaroObjectList(rest.clone())?;
                     Ok(())
                 }
@@ -1356,7 +1356,7 @@ fn printTokenList(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<()>
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
                     printToken(first.clone())?;
-                    println!("{}", (literal!("\n")).clone());
+                    metamodelica::print((literal!("\n")).clone());
                     printTokenList(rest.clone())?;
                     Ok(())
                 }
@@ -1380,15 +1380,15 @@ fn printTokenList(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<()>
 fn printToken(mut inToken: Token) -> Result<()> {
     let () = (match inToken.clone() {
         Token::OPENTAG { tagName: mut s } => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OPEN: ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OPEN: ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
             ()
         },
         Token::CLOSETAG { tagName: mut s } => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CLOSE: ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CLOSE: ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
             ()
         },
         Token::TEXT { text: mut s } => {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone());
             ()
         },
     });

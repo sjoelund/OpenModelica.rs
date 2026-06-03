@@ -289,7 +289,7 @@ pub fn addEquationBoundString(mut bindExp: Arc<DAE::Exp>, mut attr: Option<Arc<D
             Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: e1.clone(), min: min.clone(), max: max.clone(), start: e2.clone(), fixed: e3.clone(), equationBound: Some(bindExp.clone()), isProtected: ip.clone(), finalPrefix: r#fn.clone(), startOrigin: so.clone() }))
         },
         _ => {
-            println!("{}", (literal!("-failure in DAEUtil.addEquationBoundString\n")).clone());
+            metamodelica::print((literal!("-failure in DAEUtil.addEquationBoundString\n")).clone());
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -694,8 +694,8 @@ pub fn unNameInnerouterUniqueCref(mut cr: Arc<DAE::ComponentRef>, mut removalStr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 child => {
-                    println!("{}", (literal!(" failure unNameInnerouterUniqueCref: ")).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(child.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print((literal!(" failure unNameInnerouterUniqueCref: ")).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(child.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1338,7 +1338,7 @@ pub fn boolVarVisibility(mut vp: DAE::VarVisibility) -> Result<bool> {
         DAE::VarVisibility::PUBLIC { .. } => false,
         DAE::VarVisibility::PROTECTED { .. } => true,
         _ => {
-            println!("{}", (literal!("- DAEUtil.boolVarVisibility failed\n")).clone());
+            metamodelica::print((literal!("- DAEUtil.boolVarVisibility failed\n")).clone());
             bail!("fail")
         },
     });
@@ -2037,7 +2037,7 @@ pub fn getBindings(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>)
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!(" error in getBindings \n")).clone());
+                    metamodelica::print((literal!(" error in getBindings \n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2427,13 +2427,13 @@ fn toModelicaFormElts(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ALGORITHM { source, algorithm_: alg }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-            println!("{}", (literal!("to_modelica_form_elts(ALGORITHM) not impl. yet\n")).clone());
+            metamodelica::print((literal!("to_modelica_form_elts(ALGORITHM) not impl. yet\n")).clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
             metamodelica::cons(Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALALGORITHM { source, algorithm_: alg }, tail: elts } => {
             let mut elts_1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-            println!("{}", (literal!("to_modelica_form_elts(INITIALALGORITHM) not impl. yet\n")).clone());
+            metamodelica::print((literal!("to_modelica_form_elts(INITIALALGORITHM) not impl. yet\n")).clone());
             elts_1 = toModelicaFormElts(elts.clone())?;
             metamodelica::cons(Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: alg.clone(), source: source.clone() }), elts_1.clone())
         },
@@ -5494,7 +5494,7 @@ fn showCacheFuncs(mut tree: Arc<AvlTreePathFunction::Tree>) -> Result<()> {
         _ => {
             let mut msg: ArcStr = arcstr::literal!("");
             msg = stringDelimitList(getFunctionsInfo(tree.clone())?, (literal!("\n  ")).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cache has: \n  ")); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Cache has: \n  ")); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6265,11 +6265,13 @@ pub fn mergeAlgorithmSections(mut inDae: DAE::DAElist) -> Result<DAE::DAElist> {
             newEls = metamodelica::cons(Arc::new(DAE::Element::COMP { ident: (ident.clone()).clone(), dAElist: dAElist.clone(), source: src.clone(), comment: comment.clone() }), newEls.clone());
             ()
         },
-        Deref @ DAE::Element::ALGORITHM { source, algorithm_: Deref @ DAE::Algorithm { statementLst: s } } => {
+        Deref @ DAE::Element::ALGORITHM { source: __esc_source, algorithm_: Deref @ DAE::Algorithm { statementLst: s } } => {
+            source = (*__esc_source).clone();
             stmts = List::append_reverse(s.clone(), stmts.clone());
             ()
         },
-        Deref @ DAE::Element::INITIALALGORITHM { source, algorithm_: Deref @ DAE::Algorithm { statementLst: s } } => {
+        Deref @ DAE::Element::INITIALALGORITHM { source: __esc_source, algorithm_: Deref @ DAE::Algorithm { statementLst: s } } => {
+            source = (*__esc_source).clone();
             istmts = List::append_reverse(s.clone(), istmts.clone());
             ()
         },

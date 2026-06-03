@@ -461,13 +461,15 @@ fn checkOverloadedBinaryArrayMul(mut exp1: Arc<Expression::NFExpression>, mut ty
             (outExp, _) = checkOverloadedBinaryArrayScalar(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
             (true, outExp.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Nil }) => {
+            dim11 = (*__esc_dim11).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             outExp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() });
             valid = false;
             (valid.clone(), outExp.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
+            dim11 = (*__esc_dim11).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             outExp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() });
             valid = false;
@@ -1387,12 +1389,14 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
         opt = setOption(opt.clone(), IGNORE_DIMENSIONS.clone());
     }
     let () = (::match_deref::match_deref! { match &((cls1.clone(), actualType.clone(), cls2.clone(), expectedType.clone())) {
-        (_, Deref @ Type::COMPLEX { complexTy: cty1 @ Deref @ ComplexType::CONNECTOR { .. }, .. }, _, Deref @ Type::COMPLEX { complexTy: cty2 @ Deref @ ComplexType::CONNECTOR { .. }, .. }) => {
-            matchKind = matchComponentList(var_field!((**cty1).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+        (_, Deref @ Type::COMPLEX { complexTy: __esc_cty1 @ Deref @ ComplexType::CONNECTOR { .. }, .. }, _, Deref @ Type::COMPLEX { complexTy: __esc_cty2 @ Deref @ ComplexType::CONNECTOR { .. }, .. }) => {
+            cty1 = (*__esc_cty1).clone();
+            cty2 = (*__esc_cty2).clone();
+            matchKind = matchComponentList(var_field!((*cty1).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
             if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {
-                matchKind = matchComponentList(var_field!((**cty1).flows, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).flows, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+                matchKind = matchComponentList(var_field!((*cty1).flows, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).flows, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
                 if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {
-                    matchKind = matchComponentList(var_field!((**cty1).streams, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).streams, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+                    matchKind = matchComponentList(var_field!((*cty1).streams, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).streams, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
                 }
             }
             if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {

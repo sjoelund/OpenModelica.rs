@@ -609,9 +609,9 @@ fn inlineCallsBDAE(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut in
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::DUMPBACKENDINLINE.clone()), '__try0) {
             if unwrap_break_err!(Flags::getConfigEnum(Flags::INLINE_METHOD.clone()), '__try0) == 1 {
-                println!("{}", (literal!("\n############ BackendInline Method: replace ############")).clone());
+                metamodelica::print((literal!("\n############ BackendInline Method: replace ############")).clone());
             } else if unwrap_break_err!(Flags::getConfigEnum(Flags::INLINE_METHOD.clone()), '__try0) == 2 {
-                println!("{}", (literal!("\n############ BackendInline Method: append ############")).clone());
+                metamodelica::print((literal!("\n############ BackendInline Method: append ############")).clone());
             }
         }
         shared = inBackendDAE.shared.clone();
@@ -719,7 +719,7 @@ pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut
     outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (outEquationOption, outEqs, inlined, shared) = inlineEqAppend(inEquationOption.clone(), inElementList.clone(), outEqs.clone(), shared.clone())?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? && inlined.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation before inline: ")); __mm_s.push_str(&*BackendDump::equationString(inEquationOption.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation before inline: ")); __mm_s.push_str(&*BackendDump::equationString(inEquationOption.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BackendDump::dumpEqSystem(outEqs.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tmp DAE after Inline Eqn: ")); __mm_s.push_str(&*BackendDump::equationString(outEquationOption.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
     }
     Ok((outEquationOption, outEqs, inlined, shared))
@@ -910,8 +910,8 @@ fn inlineCallsAppend(mut inExp: Arc<DAE::Exp>, mut fns: (Option<Arc<AvlTreePathF
                     source = inSource.clone();
                     e2 = e1.clone();
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ninExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\noutExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ninExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\noutExp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(((e2.clone(), source.clone(), outEqs.clone(), b.clone()), outEqs.clone()))
                 }
@@ -965,8 +965,8 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
                     (r#fn, comment) = Inline::getFunctionBody(p.clone(), fns.clone())?;
                     funcname = (BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone(), false)?).clone();
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Inline Function ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!(" type: ")); __mm_s.push_str(&*DAEDump::dumpInlineTypeStr(inlineType.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("in : ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Inline Function ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!(" type: ")); __mm_s.push_str(&*DAEDump::dumpInlineTypeStr(inlineType.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("in : ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     (outputCrefs, newEqSys) = createEqnSysfromFunction(r#fn.clone(), args.clone(), (funcname.clone()).clone())?;
                     newExp = Expression::makeTuple(({
@@ -978,7 +978,7 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
         __acc.reverse()
     }))?;
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("out: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(newExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("out: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(newExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     if !(Inline::hasGenerateEventsAnnotation(comment.clone())?) {
                         BackendDAEUtil::traverseBackendDAEExpsEqSystemWithUpdate(newEqSys.clone(), (std::sync::Arc::new(addNoEvent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
@@ -997,9 +997,9 @@ fn inlineCallsWork(mut inExp: Arc<DAE::Exp>, mut inTuple: ((Option<Arc<AvlTreePa
                     (newExp, _) = Inline::inlineCall(inExp.clone(), metamodelica::nil(), fns.clone())?;
                     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
                         funcname = (BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone(), false)?).clone();
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBackendInline fallback replace implementation: ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!(" type: ")); __mm_s.push_str(&*DAEDump::dumpInlineTypeStr(inlineType.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("in : ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("out: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(newExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBackendInline fallback replace implementation: ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!(" type: ")); __mm_s.push_str(&*DAEDump::dumpInlineTypeStr(inlineType.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("in : ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("out: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(newExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok((newExp.clone(), (fns.clone(), eqSys.clone(), b.clone(), insideIfExp.clone())))
                 }
@@ -1095,7 +1095,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut eqlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ncreate EqnSys from function: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ncreate EqnSys from function: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
     }
     outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     repl = BackendVarTransform::emptyReplacements();
@@ -1160,27 +1160,27 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     if BackendDAEUtil::systemSize(outEqs.clone())? != BackendVariable::daenumVariables(outEqs.clone()) {
         if Flags::isSet(Flags::FAILTRACE.clone())? {
             Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("newBackendInline.createEqnSysfromFunction failed for function ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!("with different sizes\n")); ArcStr::from(__mm_s) }).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(outEqs.clone())?)); __mm_s.push_str(&*literal!(" <> ")); __mm_s.push_str(&*intString(BackendVariable::daenumVariables(outEqs.clone()))); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(outEqs.clone())?)); __mm_s.push_str(&*literal!(" <> ")); __mm_s.push_str(&*intString(BackendVariable::daenumVariables(outEqs.clone()))); ArcStr::from(__mm_s) }).clone());
         }
         bail!("fail");
     }
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\noriginal function body of: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\noriginal function body of: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
         BackendDump::printEqSystem(outEqs.clone())?;
-        println!("{}", (literal!("\nDump replacements: ")).clone());
+        metamodelica::print((literal!("\nDump replacements: ")).clone());
         BackendVarTransform::dumpReplacements(repl.clone())?;
     }
     assign_field!(outEqs.orderedEqs = BackendEquation::listEquation((InlineArrayEquations::getScalarArrayEqns(BackendEquation::equationList(outEqs.orderedEqs.clone())?)?).0)?);
     outEqs = BackendVarTransform::performReplacementsEqSystem(outEqs.clone(), repl.clone())?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n replaced protected and output for: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n replaced protected and output for: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
         BackendDump::printEqSystem(outEqs.clone())?;
     }
     argmap = List::zip(fnInputs.clone().reverse(), args.clone());
     (argmap, checkcr) = Inline::extendCrefRecords(argmap.clone(), HashTableCG::emptyHashTable())?;
     BackendDAEUtil::traverseBackendDAEExpsEqSystemWithUpdate(outEqs.clone(), (std::sync::Arc::new(replaceArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), bool))> + 'static>), (argmap.clone(), checkcr.clone(), true))?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nreplaced input arguments for: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nreplaced input arguments for: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
         BackendDump::printEqSystem(outEqs.clone())?;
     }
     Ok((oOutput, outEqs))

@@ -350,8 +350,8 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             }
             UnorderedMap::add(exp.clone(), res_exp.clone(), prev_replacements.clone())?;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*literal!("NBReplacements.applyFuncExp")); __mm_s.push_str(&*literal!("] Inlining: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*Expression::toString(body_exp.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*literal!("NBReplacements.applyFuncExp")); __mm_s.push_str(&*literal!("] Inlining: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*Expression::toString(body_exp.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             res_exp.clone()
         },
@@ -393,11 +393,12 @@ pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expressio
         },
         Deref @ Expression::RECORD { .. } => var_field!((*arg).elements, Expression::NFExpression::RECORD).clone(),
         Deref @ Expression::TUPLE { .. } => var_field!((*arg).elements, Expression::NFExpression::TUPLE).clone(),
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } => {
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { r#fn, .. } } => {
+            call = (*__esc_call).clone();
             if Function::isDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else if Function::isNonDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else {
                 children_args = Expression::getRecordElements(arg.clone())?;
             }

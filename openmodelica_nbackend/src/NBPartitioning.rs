@@ -1093,8 +1093,8 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
         UnorderedMap::remove(unused_infer.clone(), info.baseToSub.clone())?;
     }
     if Flags::isSet(Flags::DUMP_SYNCHRONOUS.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("[dumpSynchronous] Partitioning result:")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*List::toString(partitions.clone(), (std::sync::Arc::new({ let __pe_b1 = 2; move |__pe_a0| Partition::Partition::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Partition::Partition::Partition>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
-        println!("{}", (ClockedInfo::toString(info.clone())?).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("[dumpSynchronous] Partitioning result:")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*List::toString(partitions.clone(), (std::sync::Arc::new({ let __pe_b1 = 2; move |__pe_a0| Partition::Partition::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Partition::Partition::Partition>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print((ClockedInfo::toString(info.clone())?).clone());
     }
     Ok(partitions)
 }

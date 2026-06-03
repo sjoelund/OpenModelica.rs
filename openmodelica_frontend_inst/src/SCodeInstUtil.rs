@@ -143,7 +143,7 @@ fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, m
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. }, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring class-extends redeclare-as-element: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring class-extends redeclare-as-element: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
             newSubMods.clone()
         },
@@ -159,7 +159,7 @@ fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, m
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring redeclare-as-element redeclaration: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring redeclare-as-element redeclaration: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
             newSubMods.clone()
         },

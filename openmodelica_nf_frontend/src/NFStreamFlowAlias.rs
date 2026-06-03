@@ -303,7 +303,10 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
     let mut alias2: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     aliases = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::nodeVariability(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), negative: false, variable: None }), aliases.clone()),
-        Deref @ Expression::UNARY { exp: e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((**e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone()),
+        Deref @ Expression::UNARY { exp: __esc_e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((*e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => {
+            e = (*__esc_e).clone();
+            metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone())
+        },
         Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, .. } if (Expression::isZero(otherExp.clone())?) => {
             aliases1 = getAliasVarsFromExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
             aliases2 = getAliasVarsFromExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
@@ -831,19 +834,19 @@ pub fn printSets(mut sets: Sets) -> Result<()> {
     let mut entries: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, i32)>> = metamodelica::nil();
     let mut e: Entry = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     let mut i: i32 = 0;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(sets.nodeCount.clone())); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(sets.nodeCount.clone())); __mm_s.push_str(&*literal!(" sets:\n")); ArcStr::from(__mm_s) }).clone());
     nodes = sets.nodes.clone();
     entries = UnorderedMap::toList(sets.elements.clone());
     for mut p in &*entries.clone() {
         let mut p = p.clone();
         (e, i) = p.clone();
-        println!("{}", (literal!("[")).clone());
-        println!("{}", ArcStr::from(::std::format!("{}", i.clone())));
-        println!("{}", (literal!("]")).clone());
-        println!("{}", (EntryString(e.clone())?).clone());
-        println!("{}", (literal!(" -> ")).clone());
-        println!("{}", ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("[")).clone());
+        metamodelica::print(ArcStr::from(::std::format!("{}", i.clone())));
+        metamodelica::print((literal!("]")).clone());
+        metamodelica::print((EntryString(e.clone())?).clone());
+        metamodelica::print((literal!(" -> ")).clone());
+        metamodelica::print(ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(())
 }

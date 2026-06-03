@@ -316,7 +316,7 @@ pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("DAEQuery.adjacencyMatrix failed\n")).clone());
+                    metamodelica::print((literal!("DAEQuery.adjacencyMatrix failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -354,7 +354,7 @@ fn adjacencyMatrix2(mut inVariables: BackendDAE::Variables, mut inEquationLst: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
-                    println!("{}", (literal!("adjacency_matrix2 failed\n")).clone());
+                    metamodelica::print((literal!("adjacency_matrix2 failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -485,7 +485,7 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
-                    println!("{}", (literal!("- DAEQuery.adjacencyRow failed\n")).clone());
+                    metamodelica::print((literal!("- DAEQuery.adjacencyRow failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -926,7 +926,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::TUPLE { .. }, _) => {
-                    println!("{}", (literal!("- DAEQuery.adjacency_row_exp TUPLE not impl. yet.")).clone());
+                    metamodelica::print((literal!("- DAEQuery.adjacency_row_exp TUPLE not impl. yet.")).clone());
                     Ok(metamodelica::nil())
                 }
                 _ => bail!("nomatch"),

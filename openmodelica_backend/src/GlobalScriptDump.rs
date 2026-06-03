@@ -91,12 +91,12 @@ pub fn printAST(mut pr: Absyn::Program) -> Result<()> {
         let mut class_ = class_.clone();
         s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*classString(class_.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
-    println!("{}", (s.clone()).clone());
+    metamodelica::print((s.clone()).clone());
     Ok(())
 }
 
 pub fn printGlobalScript(mut st: Arc<SymbolTable::SymbolTable>) -> Result<()> {
-    println!("{}", (literal!("AST\n")).clone());
+    metamodelica::print((literal!("AST\n")).clone());
     printAST(st.ast.clone())?;
     Ok(())
 }

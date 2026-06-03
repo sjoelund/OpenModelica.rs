@@ -257,7 +257,7 @@ pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAEl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("- InnerOuter.handleInnerOuterEquations failed!\n")).clone());
+                    metamodelica::print((literal!("- InnerOuter.handleInnerOuterEquations failed!\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1172,9 +1172,9 @@ fn keyEqual(mut key1: Key, mut key2: Key) -> Result<bool> {
 }
 
 fn dumpInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<()> {
-    println!("{}", (literal!("InstHierarchyHashTable:\n")).clone());
-    println!("{}", stringDelimitList(List::map(hashTableList(t.clone())?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("InstHierarchyHashTable:\n")).clone());
+    metamodelica::print(stringDelimitList(List::map(hashTableList(t.clone())?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
@@ -1295,7 +1295,7 @@ fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("- InnerOuter.add failed\n")).clone());
+                    metamodelica::print((literal!("- InnerOuter.add failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1497,7 +1497,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("-InstHierarchyHashTable.valueArrayAdd failed\n")).clone());
+            metamodelica::print((literal!("-InstHierarchyHashTable.valueArrayAdd failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -1517,7 +1517,7 @@ fn valueArraySetnth(mut valueArray: ValueArray, mut pos: i32, mut entry: (Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("-InstHierarchyHashTable.valueArraySetnth failed\n")).clone());
+            metamodelica::print((literal!("-InstHierarchyHashTable.valueArraySetnth failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -1537,7 +1537,7 @@ fn valueArrayClearnth(mut valueArray: ValueArray, mut pos: i32) -> Result<ValueA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("-InstHierarchyHashTable.valueArrayClearnth failed\n")).clone());
+            metamodelica::print((literal!("-InstHierarchyHashTable.valueArrayClearnth failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

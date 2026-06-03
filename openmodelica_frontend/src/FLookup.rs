@@ -177,7 +177,7 @@ pub fn id(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inOptions: O
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _, Some(_)) = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.id failed for: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.id failed for: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -223,7 +223,7 @@ pub fn search(mut inGraph: Graph, mut inRefs: Refs, mut inName: Name, mut inOpti
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Some(_)) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.search failed for: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(listHead(inRefs.clone())?)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.search failed for: ")); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(listHead(inRefs.clone())?)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -295,7 +295,7 @@ pub fn name(mut inGraph: Graph, mut inRef: Ref, mut inPath: Arc<Absyn::Path>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Some(_)) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.name failed for: ")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.name failed for: ")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -528,7 +528,7 @@ pub fn cr(mut inGraph: Graph, mut inRef: Ref, mut inCref: Arc<Absyn::ComponentRe
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Some(_)) => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.cr failed for: ")); __mm_s.push_str(&*AbsynUtil::crefString(inCref.clone())?); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FLookup.cr failed for: ")); __mm_s.push_str(&*AbsynUtil::crefString(inCref.clone())?); __mm_s.push_str(&*literal!(" in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(inRef.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

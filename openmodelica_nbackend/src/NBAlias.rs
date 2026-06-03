@@ -434,14 +434,14 @@ fn filterExceptions(mut exp: Arc<Expression::NFExpression>, mut acc: Arc<Unorder
 }
 
 fn dumpReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>) -> Result<()> {
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Replacements::simpleToString(replacements.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Replacements::simpleToString(replacements.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     if !(auxEquations.clone().is_empty()) {
-        println!("{}", (StringUtil::headline_4((literal!("[dumprepl] Found But Illegal Alias Replacements (added as equations):")).clone())).clone());
+        metamodelica::print((StringUtil::headline_4((literal!("[dumprepl] Found But Illegal Alias Replacements (added as equations):")).clone())).clone());
         for mut eqPtr in &*auxEquations.clone() {
             let mut eqPtr = eqPtr.clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*BEquation::Equation::toString(Pointer::access(eqPtr.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*BEquation::Equation::toString(Pointer::access(eqPtr.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(())
 }
@@ -494,13 +494,13 @@ fn aliasCausalize(mut variables: Arc<VariablePointers::VariablePointers>, mut eq
     (newEquations, map) = BEquation::EquationPointers::foldRemovePtr(equations.clone(), (std::sync::Arc::new(findSimpleEquation) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>, bool)> + 'static>), map.clone())?;
     sets = getSimpleSets(map.clone(), size.clone())?;
     if Flags::isSet(Flags::DUMP_REPL.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumprepl] ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(" Alias Sets:")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumprepl] ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(" Alias Sets:")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         if sets.clone().is_empty() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<No ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(" Alias Sets>\n\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<No ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(" Alias Sets>\n\n")); ArcStr::from(__mm_s) }).clone());
         } else {
             for mut set in &*sets.clone() {
                 let mut set = set.clone();
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Alias Set ")); __mm_s.push_str(&*intString(setIdx.clone())); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*AliasSet::toString(set.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Alias Set ")); __mm_s.push_str(&*intString(setIdx.clone())); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*AliasSet::toString(set.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 setIdx = setIdx.clone() + 1;
             }
         }
@@ -846,12 +846,12 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             eqs = BEquation::EquationPointers::fromList(set.simple_equations.clone())?;
             (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes before replacements):")).clone())); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes before replacements):")).clone())); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             Replacements::simple(comps.clone(), replacements.clone())?;
             var_lst = BVariable::VariablePointers::toList(vars.clone())?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Attribute collector (before replacements): ")).clone())); __mm_s.push_str(&*AttributeCollector::toString(collector.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Attribute collector (before replacements): ")).clone())); __mm_s.push_str(&*AttributeCollector::toString(collector.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             for mut var in &*var_lst.clone() {
                 let mut var = var.clone();
@@ -861,14 +861,14 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
                 collector = AttributeCollector::fixValues(collector.clone(), BVariable::getVarName(var.clone()), solved_eq.clone())?;
             }
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Attribute collector (after replacements): ")).clone())); __mm_s.push_str(&*AttributeCollector::toString(collector.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_4((literal!("Attribute collector (after replacements): ")).clone())); __mm_s.push_str(&*AttributeCollector::toString(collector.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             diffTearingSelect(collector.tearingSelect_map.clone(), set.clone())?;
             stateSelectAlways(collector.stateSelect_map.clone(), set.clone())?;
             checkNominalThreshold(collector.nominal_map.clone(), set.clone())?;
             setNewAttributes(var_to_keep.clone(), collector.clone(), set.clone())?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes after replacements):")).clone())); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes after replacements):")).clone())); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             replacements.clone()
         },
@@ -1269,7 +1269,7 @@ fn mean(mut lst: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Resu
         __acc
     });
     mean_val = cur_sum.clone() / metamodelica::OrderedFloat(((lst.clone().len() as i32)) as f64);
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mean = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", mean_val.clone()))); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mean = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", mean_val.clone()))); ArcStr::from(__mm_s) }).clone());
     Ok(mean_val)
 }
 

@@ -1310,7 +1310,7 @@ pub fn printNumStructuralParameters(mut cache: Cache) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     crs = __pa0.clone();
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("printNumStructuralParameters: ")); __mm_s.push_str(&*intString((crs.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("printNumStructuralParameters: ")); __mm_s.push_str(&*intString((crs.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

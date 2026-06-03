@@ -242,7 +242,7 @@ pub fn addReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::Compon
                 (_, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
                     s = (ComponentReferenceBasics::printComponentRefStr(inSrc.clone())?).clone();
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-BackendVarTransform.addReplacement failed for ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-BackendVarTransform.addReplacement failed for ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -292,7 +292,7 @@ fn addReplacementNoTransitive(mut repl: VariableReplacements, mut inSrc: Arc<DAE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-add_replacement failed for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inSrc.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inDst.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-add_replacement failed for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inSrc.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inDst.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1199,7 +1199,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVariableReplacements: Variable
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CODE { ty: tp, code: a }, _, _) => {
-                    println!("{}", (literal!("replace_exp on CODE not impl.\n")).clone());
+                    metamodelica::print((literal!("replace_exp on CODE not impl.\n")).clone());
                     Ok((Arc::new(DAE::Exp::CODE { code: a.clone(), ty: tp.clone() }), false))
                 }
                 _ => bail!("nomatch"),
@@ -3016,23 +3016,23 @@ pub fn dumpReplacements(mut repl: VariableReplacements) -> Result<()> {
     let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
     (srcs, dsts) = getAllReplacements(repl.clone())?;
     tplLst = List::zip(srcs.clone(), dsts.clone());
-    println!("{}", (literal!("\nReplacements: (")).clone());
-    println!("{}", ArcStr::from(::std::format!("{}", (tplLst.clone().len() as i32))));
-    println!("{}", (literal!(")\n")).clone());
-    println!("{}", (literal!("========================================\n")).clone());
-    println!("{}", stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\nReplacements: (")).clone());
+    metamodelica::print(ArcStr::from(::std::format!("{}", (tplLst.clone().len() as i32))));
+    metamodelica::print((literal!(")\n")).clone());
+    metamodelica::print((literal!("========================================\n")).clone());
+    metamodelica::print(stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
 pub fn dumpExtendReplacements(mut repl: VariableReplacements) -> Result<()> {
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     crefs = UnorderedSet::toList(repl.extendhashTable.clone());
-    println!("{}", (literal!("\nExtendReplacements: (")).clone());
-    println!("{}", ArcStr::from(::std::format!("{}", (crefs.clone().len() as i32))));
-    println!("{}", (literal!(")\n")).clone());
-    println!("{}", (literal!("========================================\n")).clone());
-    println!("{}", stringDelimitList(({
+    metamodelica::print((literal!("\nExtendReplacements: (")).clone());
+    metamodelica::print(ArcStr::from(::std::format!("{}", (crefs.clone().len() as i32))));
+    metamodelica::print((literal!(")\n")).clone());
+    metamodelica::print((literal!("========================================\n")).clone());
+    metamodelica::print(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut c in (crefs.clone()).into_iter().cloned() {
             let __x = ComponentReferenceBasics::printComponentRefStr(c.clone())?;
@@ -3040,7 +3040,7 @@ pub fn dumpExtendReplacements(mut repl: VariableReplacements) -> Result<()> {
         }
         __acc.reverse()
     }), (literal!("\n")).clone()));
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 
@@ -3051,12 +3051,12 @@ pub fn dumpDerConstReplacements(mut repl: VariableReplacements) -> Result<()> {
     if isSome(repl.derConst.clone()) {
         (srcs, dsts) = getCrefExpTableEntries(Util::getOption(repl.derConst.clone())?)?;
         tplLst = List::zip(srcs.clone(), dsts.clone());
-        println!("{}", (literal!("\nDerConstReplacements: (")).clone());
-        println!("{}", ArcStr::from(::std::format!("{}", (tplLst.clone().len() as i32))));
-        println!("{}", (literal!(")\n")).clone());
-        println!("{}", (literal!("========================================\n")).clone());
-        println!("{}", stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("\nDerConstReplacements: (")).clone());
+        metamodelica::print(ArcStr::from(::std::format!("{}", (tplLst.clone().len() as i32))));
+        metamodelica::print((literal!(")\n")).clone());
+        metamodelica::print((literal!("========================================\n")).clone());
+        metamodelica::print(stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(())
 }

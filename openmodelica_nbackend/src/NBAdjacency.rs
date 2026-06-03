@@ -572,12 +572,12 @@ pub mod Matrix {
             adj = Arc::new(Matrix::EMPTY { st: MatrixStrictness::FULL.clone() });
         }
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Creating Adjacency Matrices")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BEquation::EquationPointers::toString(eqns.clone(), (literal!("")).clone(), None, true, None)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*solvabilityString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*dependencyString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Creating Adjacency Matrices")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BEquation::EquationPointers::toString(eqns.clone(), (literal!("")).clone(), None, true, None)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("")).clone(), None, true)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*solvabilityString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dependencyString(adj.clone(), (literal!("Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(adj)
     }
@@ -696,7 +696,7 @@ pub mod Matrix {
     pub fn upgrade(mut adj: Arc<Matrix>, mut full: Arc<Matrix>, mut vars_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut eqns_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut eqns: Arc<EquationPointers::EquationPointers>, mut st: MatrixStrictness, mut iter: Arc<Iterator::Iterator>) -> Result<Arc<Matrix>> {
         let mut adj: Arc<Matrix> = adj;
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Upgrading from [")); __mm_s.push_str(&*strictnessString(getStrictness(adj.clone())?)); __mm_s.push_str(&*literal!("] to [")); __mm_s.push_str(&*strictnessString(st.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Upgrading from [")); __mm_s.push_str(&*strictnessString(getStrictness(adj.clone())?)); __mm_s.push_str(&*literal!("] to [")); __mm_s.push_str(&*strictnessString(st.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         adj = (::match_deref::match_deref! { match &(full.clone()) {
         Deref @ EMPTY { .. } => {
@@ -757,7 +757,7 @@ pub mod Matrix {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(adj)
     }
@@ -802,7 +802,7 @@ pub mod Matrix {
         }
         __acc
     }) + size_eo.clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expanding from size [vars: ")); __mm_s.push_str(&*intString(size_vo.clone())); __mm_s.push_str(&*literal!("| eqns: ")); __mm_s.push_str(&*intString(size_eo.clone())); __mm_s.push_str(&*literal!("] to [vars: ")); __mm_s.push_str(&*intString(size_vn.clone())); __mm_s.push_str(&*literal!("| eqns: ")); __mm_s.push_str(&*intString(size_en.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expanding from size [vars: ")); __mm_s.push_str(&*intString(size_vo.clone())); __mm_s.push_str(&*literal!("| eqns: ")); __mm_s.push_str(&*intString(size_eo.clone())); __mm_s.push_str(&*literal!("] to [vars: ")); __mm_s.push_str(&*intString(size_vn.clone())); __mm_s.push_str(&*literal!("| eqns: ")); __mm_s.push_str(&*intString(size_en.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         full = (::match_deref::match_deref! { match &(full.clone()) {
         Deref @ FULL { .. } if (BEquation::EquationPointers::size(eqns.clone()) > metamodelica::arrayLength(var_field!((*full).equation_names, Matrix::FULL).clone())) => expandFull(full.clone(), vo.clone(), vn.clone(), eo.clone(), en.clone(), vars.clone(), eqns.clone(), kind.clone())?,
@@ -882,7 +882,7 @@ pub mod Matrix {
     } })
     });
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Expanded ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Expanded ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok((adj, full))
     }
@@ -951,7 +951,7 @@ pub mod Matrix {
     } })
     });
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Expanded Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Expanded Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(full)
     }
@@ -1023,7 +1023,7 @@ pub mod Matrix {
     } })
     });
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Refined Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Refined Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(full)
     }
@@ -1107,8 +1107,8 @@ pub mod Matrix {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if Flags::isSet(Flags::BLT_MATRIX_DUMP.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Compressed Final")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Compressed Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(adj.clone(), (literal!("Compressed Final")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(full.clone(), (literal!("Compressed Full")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok((adj, full))
     }

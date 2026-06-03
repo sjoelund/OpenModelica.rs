@@ -341,7 +341,7 @@ fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 element => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unhandled element redeclare (we keep it as it is!): ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(element.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unhandled element redeclare (we keep it as it is!): ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(element.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok((element.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
                 }
                 _ => bail!("nomatch"),
@@ -668,10 +668,10 @@ pub fn elabUntypedMod(mut inMod: Arc<SCode::Mod>, mut inModScope: ModScope) -> R
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    println!("{}", (literal!("- elab_untyped_mod ")).clone());
+                    metamodelica::print((literal!("- elab_untyped_mod ")).clone());
                     s = (SCodeDump::printModStr(inMod.clone(), SCodeDump::defaultOptions.clone())?).clone();
-                    println!("{}", (s.clone()).clone());
-                    println!("{}", (literal!(" failed\n")).clone());
+                    metamodelica::print((s.clone()).clone());
+                    metamodelica::print((literal!(" failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2006,7 +2006,7 @@ pub fn printModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!(" failure in printModStr \n")).clone());
+                    metamodelica::print((literal!(" failure in printModStr \n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2063,7 +2063,7 @@ pub fn prettyPrintMod(mut m: Arc<DAE::Mod>, mut depth: i32) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!(" failed prettyPrintMod\n")).clone());
+                    metamodelica::print((literal!(" failed prettyPrintMod\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2672,7 +2672,7 @@ pub fn addEachIfNeeded(mut inMod: Arc<DAE::Mod>, mut inDimensions: Arc<metamodel
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachIfNeeded failed on: ")); __mm_s.push_str(&*printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachIfNeeded failed on: ")); __mm_s.push_str(&*printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2714,7 +2714,7 @@ pub fn addEachOneLevel(mut inMod: Arc<DAE::Mod>) -> Result<Arc<DAE::Mod>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachOneLevel failed on: ")); __mm_s.push_str(&*printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Mod.addEachOneLevel failed on: ")); __mm_s.push_str(&*printModStr(inMod.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

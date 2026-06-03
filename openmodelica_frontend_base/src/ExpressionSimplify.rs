@@ -201,7 +201,7 @@ pub fn simplify1time(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     t1 = clock();
     (outE, _) = simplify1(e.clone())?;
     t2 = clock();
-    println!("{}", (if (t2.clone() - t1.clone() > metamodelica::OrderedFloat(0.01_f64)) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("simplify1 took ")); __mm_s.push_str(&*realString(t2.clone() - t1.clone())); __mm_s.push_str(&*literal!(" seconds for exp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" \nsimplified to :")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outE.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }} else {literal!("")}).clone());
+    metamodelica::print((if (t2.clone() - t1.clone() > metamodelica::OrderedFloat(0.01_f64)) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("simplify1 took ")); __mm_s.push_str(&*realString(t2.clone() - t1.clone())); __mm_s.push_str(&*literal!(" seconds for exp: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" \nsimplified to :")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outE.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }} else {literal!("")}).clone());
     Ok(outE)
 }
 
@@ -1111,7 +1111,7 @@ fn simplifyMetaModelicaCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             Arc::new(DAE::Exp::META_OPTION { exp: Some(e.clone()) })
         },
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sourceInfo" }, .. } => {
-            println!("{}", (literal!("sourceInfo() - simplify?\n")).clone());
+            metamodelica::print((literal!("sourceInfo() - simplify?\n")).clone());
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),

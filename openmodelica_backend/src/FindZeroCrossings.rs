@@ -571,8 +571,8 @@ fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
             eqs_lst1 = eqs_lst1.clone().reverse();
             eqns1 = BackendEquation::listEquation(eqs_lst1.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 number of relations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(sampleLst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 number of relations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("findZeroCrossings1 sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(sampleLst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             if '__try7: {
                 let (__pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(matching.clone()) {
@@ -1029,7 +1029,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             zc = createZeroCrossing(inExp.clone(), list![eq_count.clone()], iters.clone());
             mergeZeroCrossings(zc.clone(), samples.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(samples.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index: ")); __mm_s.push_str(&*intString(ZeroCrossings::length(samples.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (inExp.clone(), true, inTpl.clone())
         },
@@ -1043,7 +1043,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut numMathFunctions = (*numMathFunctions).clone();
             let mut tp1 = (*tp1).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC searching in: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC searching in: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             iters = Some(({
         let mut __acc: Arc<metamodelica::List<BackendDAE::SimIterator>> = metamodelica::nil();
@@ -1103,7 +1103,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             itmp = __pa12.clone();
             zeroCrossings = __pa13.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("delay")).clone() }), expLst: list![index.clone(), e.clone(), delay.clone(), delayMax.clone()], attr: attr.clone() }), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1165,19 +1165,19 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             itmp = __pa25.clone();
             zeroCrossings = __pa26.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("spatialDistribution")).clone() }), expLst: list![index.clone(), in0.clone(), in1.clone(), x.clone(), dir.clone(), initPnts.clone(), initVals.clone()], attr: attr.clone() }), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
         (Deref @ DAE::Exp::LUNARY { exp: e1, .. }, ((_, relations, _, _), (_, vars, globalKnownVars), _), _) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (inExp.clone(), true, inTpl.clone())
         },
         (Deref @ DAE::Exp::LBINARY { exp2: e2, exp1: e1, .. }, ((_, relations, _, _), (_, vars, globalKnownVars), _), _) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())? || BackendDAEUtil::hasExpContinuousParts(e2.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete LBINARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete LBINARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (inExp.clone(), true, inTpl.clone())
         },
@@ -1189,7 +1189,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut empty: bool = false;
             let mut e1 = (*e1).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             let (__pa0, ref __pa2 @ (_, (ref __pa1, _, _), _)) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(collectZC) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ((BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables), Option<Arc<metamodelica::List<BackendDAE::SimIterator>>>)) -> Result<(Arc<DAE::Exp>, bool, ((BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables), Option<Arc<metamodelica::List<BackendDAE::SimIterator>>>))> + 'static>), inTpl.clone())?;
             e1 = __pa0.clone();
@@ -1219,7 +1219,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut tp1 = (*tp1).clone();
             let mut iters = (*iters).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LBINARY: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", DoubleEnded::length(relations.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LBINARY: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", DoubleEnded::length(relations.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::debugExpStr(inExp.clone(), (literal!("\n")).clone())?;
             }
             oldNumRelations = DoubleEnded::length(relations.clone());
@@ -1257,7 +1257,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
         },
         (Deref @ DAE::Exp::RELATION { exp2: e2, exp1: e1, .. }, ((_, relations, _, _), (_, vars, globalKnownVars), _), _) if (!(BackendDAEUtil::hasExpContinuousParts(e1.clone(), vars.clone(), globalKnownVars.clone())? || BackendDAEUtil::hasExpContinuousParts(e2.clone(), vars.clone(), globalKnownVars.clone())?)) => {
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete RELATION: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("discrete RELATION: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (inExp.clone(), true, inTpl.clone())
         },
@@ -1269,7 +1269,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut relations = (*relations).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC (2): ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numRelations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC (2): ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numRelations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: None });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
@@ -1282,7 +1282,7 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             itmp = __pa0.clone();
             zeroCrossings = __pa1.clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1293,13 +1293,13 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("integer")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1310,13 +1310,13 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("floor")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1327,13 +1327,13 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("ceil")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1344,13 +1344,13 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1361,14 +1361,14 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("mod")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             numMathFunctions = numMathFunctions.clone() + 1;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1380,14 +1380,14 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![eq_count.clone()], iters.clone());
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             e_2 = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: eres.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e2.clone() }) });
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (e_2.clone(), true, ((zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone(), iters.clone()))
         },
@@ -1417,7 +1417,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             zc = createZeroCrossing(inExp.clone(), eqs.clone(), None);
             ZeroCrossings::add(samples.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index algotihm: ")); __mm_s.push_str(&*intString(alg_indx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sample index algotihm: ")); __mm_s.push_str(&*intString(alg_indx.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (inExp.clone(), true, inTpl.clone())
         },
@@ -1435,7 +1435,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut iterator = (*iterator).clone();
             let mut relations = (*relations).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY with Iterator: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY with Iterator: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             let (__pa0, ref __pa5 @ (ref __pa1, ref __pa2, _, (_, ref __pa3, _, _), (ref __pa4, _, _))) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), inTpl.clone())?;
             e1 = __pa0.clone();
@@ -1449,7 +1449,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             zc_lst = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
             ZeroCrossings::add_list(zeroCrossings.clone(), zc_lst.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", (literal!("collectZCAlgsFor LUNARY with Iterator result zc: ")).clone());
+                metamodelica::print((literal!("collectZCAlgsFor LUNARY with Iterator result zc: ")).clone());
                 BackendDump::debugExpStr(e_1.clone(), (literal!("\n")).clone())?;
             }
             (e_1.clone(), false, tpl.clone())
@@ -1461,7 +1461,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut tpl: ForArgType = (Arc::new(<DAE::Exp as ::std::default::Default>::default()), metamodelica::nil(), Arc::new(<DAE::Exp as ::std::default::Default>::default()), (<BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default(), <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default(), 0), (0, <BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default()));
             let mut e1 = (*e1).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LUNARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             let (__pa0, ref __pa2 @ (_, _, _, _, (ref __pa1, _, _))) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(collectZCAlgsFor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables))) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Exp>, (BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet, i32), (i32, BackendDAE::Variables, BackendDAE::Variables)))> + 'static>), inTpl.clone())?;
             e1 = __pa0.clone();
@@ -1471,7 +1471,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", (literal!("collectZCAlgsFor LUNARY result zc: ")).clone());
+                metamodelica::print((literal!("collectZCAlgsFor LUNARY result zc: ")).clone());
                 BackendDump::debugExpStr(e_1.clone(), (literal!("\n")).clone())?;
             }
             (e_1.clone(), false, tpl.clone())
@@ -1496,7 +1496,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut numMathFunctions = (*numMathFunctions).clone();
             let mut tp1 = (*tp1).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LBINARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("continues LBINARY: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 BackendDump::debugExpStr(inExp.clone(), (literal!("\n")).clone())?;
             }
             oldNumRelations = DoubleEnded::length(relations.clone());
@@ -1554,7 +1554,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut istart: i32 = 0;
             let mut istep: i32 = 0;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of relations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of relations: ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             stepvalue = Util::getOptionOrDefault(stepvalueopt.clone(), Arc::new(DAE::Exp::ICONST { integer: 1 }));
             istart = BackendDAEUtil::expInt(startvalue.clone(), globalKnownVars.clone())?;
@@ -1562,20 +1562,20 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             eres = Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: DoubleEnded::length(relations.clone()), optionExpisASUB: Some((iterator.clone(), istart.clone(), istep.clone())) });
             (explst, itmp) = replaceIteratorWithStaticValues(inExp.clone(), iterator.clone(), inExpLst.clone(), DoubleEnded::length(relations.clone()))?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (1): ")); __mm_s.push_str(&*intString((explst.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (1): ")); __mm_s.push_str(&*intString((explst.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             zcLstNew = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
             DoubleEnded::push_list_back(relations.clone(), zcLstNew.clone());
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (2): ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (2): ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             itmp = (zcLstNew.clone().len() as i32);
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" itmp: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" itmp: ")); __mm_s.push_str(&*intString(itmp.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             ZeroCrossings::add_list(zeroCrossings.clone(), zcLstNew.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1587,7 +1587,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             DoubleEnded::push_back(relations.clone(), zc.clone());
             ZeroCrossings::add(zeroCrossings.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZCAlgsFor result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!(" index:")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), inExpLst.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1598,13 +1598,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("integer")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1615,13 +1615,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("floor")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1632,13 +1632,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("ceil")).clone() }), expLst: list![e1.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1649,13 +1649,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1666,13 +1666,13 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("mod")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (eres.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1684,14 +1684,14 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut numMathFunctions = (*numMathFunctions).clone();
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("start collectZC: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" numMathFunctions: ")); __mm_s.push_str(&*intString(numMathFunctions.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             e_1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("div")).clone() }), expLst: list![e1.clone(), e2.clone(), Arc::new(DAE::Exp::ICONST { integer: numMathFunctions.clone() })], attr: attr.clone() });
             zc = createZeroCrossing(e_1.clone(), list![alg_indx.clone()], None);
             (eres, zeroCrossings, numMathFunctions) = zcIndex(e_1.clone(), zeroCrossings.clone(), numMathFunctions.clone(), zc.clone())?;
             e_2 = Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: eres.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: e2.clone() }) });
             if Flags::isSet(Flags::RELIDX.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("collectZC result zc: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(eres.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (e_2.clone(), true, (iterator.clone(), le.clone(), range.clone(), (zeroCrossings.clone(), relations.clone(), samples.clone(), numMathFunctions.clone()), tp1.clone()))
         },
@@ -1934,8 +1934,8 @@ fn traverseStmtsExps(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, 
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            println!("{}", (DAEDump::ppStatementStr(x.clone())?).clone());
-            println!("{}", (literal!("Warning, not allowed to set the componentRef to a expression in FindZeroCrossings.traverseStmtsExps for ZeroCrosssing\n")).clone());
+            metamodelica::print((DAEDump::ppStatementStr(x.clone())?).clone());
+            metamodelica::print((literal!("Warning, not allowed to set the componentRef to a expression in FindZeroCrossings.traverseStmtsExps for ZeroCrosssing\n")).clone());
             (Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: tp.clone(), lhs: e_2.clone(), exp: e_1.clone(), source: source.clone() }), extraArg.clone())
         },
         Deref @ DAE::Statement::STMT_IF { source, else_: algElse, statementLst: stmts, exp: e } => {

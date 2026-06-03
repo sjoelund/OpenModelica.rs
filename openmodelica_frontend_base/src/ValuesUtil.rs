@@ -167,7 +167,7 @@ pub fn valueExpType(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("valueExpType on ")); __mm_s.push_str(&*ValuesDump::valString(inValue.clone())?); __mm_s.push_str(&*literal!(" not implemented yet\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("valueExpType on ")); __mm_s.push_str(&*ValuesDump::valString(inValue.clone())?); __mm_s.push_str(&*literal!(" not implemented yet\n")); ArcStr::from(__mm_s) }).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

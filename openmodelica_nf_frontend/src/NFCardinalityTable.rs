@@ -104,7 +104,7 @@ pub fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Ta
 pub fn print(mut table: Table) -> () {
     for mut e in &*UnorderedMap::toList(table.clone()) {
         let mut e = e.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(e.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", Util::tuple22(e.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(e.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", Util::tuple22(e.clone())))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     ()
 }

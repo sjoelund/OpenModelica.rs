@@ -145,14 +145,14 @@ fn showDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClass
             comp = Arc::new(DAE::Element::COMP { ident: (sstr.clone()).clone(), dAElist: els.clone(), source: DAE::emptyElementSource().clone(), comment: None });
             dae = DAE::DAElist { elementLst: list![comp.clone()] };
             r#str = (if (System::getPartialInstantiation()) {literal!(" partial")} else {literal!(" full")}).clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: parent: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inParentEnv.clone())?); __mm_s.push_str(&*literal!(" class: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inClassEnv.clone())?); __mm_s.push_str(&*literal!(" state: ")); __mm_s.push_str(&*sstr.clone()); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*DAEDump::dumpStr(dae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: parent: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inParentEnv.clone())?); __mm_s.push_str(&*literal!(" class: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inClassEnv.clone())?); __mm_s.push_str(&*literal!(" state: ")); __mm_s.push_str(&*sstr.clone()); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*DAEDump::dumpStr(dae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (if (System::getPartialInstantiation()) {literal!(" partial")} else {literal!(" full")}).clone();
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: ")); __mm_s.push_str(&*ClassInfUtil::printStateStr(inState.clone())); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" - could not print\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: ")); __mm_s.push_str(&*ClassInfUtil::printStateStr(inState.clone())); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" - could not print\n")); ArcStr::from(__mm_s) }).clone());
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

@@ -2396,7 +2396,7 @@ fn errorTypeToValue(mut ty: ErrorTypes::MessageType) -> Result<Arc<Values::Value
         ErrorTypes::MessageType::SIMULATION { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("runtime")).clone(), 5),
         ErrorTypes::MessageType::SCRIPTING { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("scripting")).clone(), 6),
         _ => {
-            println!("{}", (literal!("errorTypeToValue failed\n")).clone());
+            metamodelica::print((literal!("errorTypeToValue failed\n")).clone());
             bail!("fail")
         },
     });
@@ -2411,7 +2411,7 @@ fn errorLevelToValue(mut severity: ErrorTypes::Severity) -> Result<Arc<Values::V
         ErrorTypes::Severity::WARNING { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("warning")).clone(), 3),
         ErrorTypes::Severity::NOTIFICATION { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("notification")).clone(), 4),
         _ => {
-            println!("{}", (literal!("errorLevelToValue failed\n")).clone());
+            metamodelica::print((literal!("errorLevelToValue failed\n")).clone());
             bail!("fail")
         },
     });
@@ -2942,7 +2942,7 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: [SOME SYMTAB] not in in CF list: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: [SOME SYMTAB] not in in CF list: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     p = SymbolTable::getAbsyn();
                     (cache, funcstr, fileName) = cevalGenerateFunction(cache.clone(), env.clone(), p.clone(), funcpath.clone())?;
@@ -2960,10 +2960,10 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                     info = __pa1.clone();
                     w = ProgramUtil::buildWithin(funcpath.clone())?;
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: Updating build time for function path: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" within: ")); __mm_s.push_str(&*Dump::unparseWithin(w.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: Updating build time for function path: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" within: ")); __mm_s.push_str(&*Dump::unparseWithin(w.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: [SOME SYMTAB] not in in CF list [finished]: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: [SOME SYMTAB] not in in CF list [finished]: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok((cache.clone(), newval.clone()))
                 }
@@ -2974,7 +2974,7 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ DAE::Exp::CALL { path: funcpath, .. }, _, _) => {
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: FAILED to constant evaluate function: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: FAILED to constant evaluate function: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     let false = (Flags::isSet(Flags::GEN.clone())?) else { bail!("pattern mismatch") };
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -3145,7 +3145,7 @@ fn verifyInterfaceType(mut elt: Arc<SCode::Element>, mut expected: Arc<metamodel
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*SCodeDump::unparseElementStr(elt.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SCodeDump::unparseElementStr(elt.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     Error::addSourceMessage(Error::MISSING_INTERFACE_TYPE.clone(), metamodelica::nil(), SCodeUtil::elementInfo(elt.clone()))?;
                     Ok(bail!("fail"))
                 }
@@ -3413,7 +3413,7 @@ fn printInterfaceString(mut elt: Arc<SCode::Element>) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     r#str = __pa0.clone();
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*boolString(containsPublicInterface(elt.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*boolString(containsPublicInterface(elt.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

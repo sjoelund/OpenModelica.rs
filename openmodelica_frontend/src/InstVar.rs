@@ -1487,9 +1487,10 @@ fn instArrayDimInteger(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
     let mut inst_dims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>> = metamodelica::nil();
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     (cls, r#mod, attr, inst_dims) = (::match_deref::match_deref! { match &(inElement.clone()) {
-        (c @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: smod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cls_path, arrayDim: Some(_) }, .. }, .. }, attr) => {
+        (__esc_c @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: smod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cls_path, arrayDim: Some(_) }, .. }, .. }, attr) => {
+            c = (*__esc_c).clone();
             let mut smod = (*smod).clone();
-            (_, cls, _) = Lookup::lookupClass(outCache.clone(), outEnv.clone(), cls_path.clone(), Some(var_field!((**c).info, SCode::Element::CLASS).clone()))?;
+            (_, cls, _) = Lookup::lookupClass(outCache.clone(), outEnv.clone(), cls_path.clone(), Some(var_field!((*c).info, SCode::Element::CLASS).clone()))?;
             smod = InstUtil::chainRedeclares(inMod.clone(), smod.clone())?;
             (_, r#mod) = Mod::elabMod(outCache.clone(), outEnv.clone(), outIH.clone(), inPrefix.clone(), smod.clone(), inImpl.clone(), Mod::ModScope::DERIVED { path: cls_path.clone() }, inInfo.clone())?;
             r#mod = Mod::merge(inMod.clone(), r#mod.clone(), (literal!("")).clone(), true)?;

@@ -637,7 +637,7 @@ pub fn test1() -> Result<()> {
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
     res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -678,7 +678,7 @@ pub fn test2() -> Result<()> {
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
     res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 
@@ -719,7 +719,7 @@ pub fn test3() -> Result<()> {
         emap2 = SBPWLinearMap::combine(pw.clone(), emap2.clone())?;
     }
     res = connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*SBPWLinearMap::toString(res.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())
 }
 

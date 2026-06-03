@@ -192,8 +192,8 @@ pub fn evaluateToStdOut(mut statements: GlobalScript::Statements, mut verbose: b
         showStatement(stmt.clone(), semicolon.clone(), true)?;
         res = (evaluate2(stmt.clone())?).clone();
         if getEcho() && (verbose.clone() || !(semicolon.clone())) {
-            println!("{}", (res.clone()).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((res.clone()).clone());
+            metamodelica::print((literal!("\n")).clone());
         }
         showStatement(stmt.clone(), semicolon.clone(), false)?;
     }
@@ -214,7 +214,7 @@ pub fn evaluateFork(mut inTpl: (ArcStr, Arc<SymbolTable::SymbolTable>)) -> Resul
                     { let __v = None; openmodelica_util::Globals::instOnlyForcedFunctions.with(|__root| *__root.borrow_mut() = __v) };
                     statements = Parser::parseexp((mosfile.clone()).clone())?;
                     evaluateToStdOut(statements.clone(), true)?;
-                    println!("{}", (Error::printMessagesStr(false)).clone());
+                    metamodelica::print((Error::printMessagesStr(false)).clone());
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -223,7 +223,7 @@ pub fn evaluateFork(mut inTpl: (ArcStr, Arc<SymbolTable::SymbolTable>)) -> Resul
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (Error::printMessagesStr(false)).clone());
+                    metamodelica::print((Error::printMessagesStr(false)).clone());
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -244,7 +244,7 @@ fn showStatement(mut s: GlobalScript::Statement, mut semicolon: bool, mut start:
         let __mc_input = (start.clone(), testsuite.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (true, true) = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluating: ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluating: ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             System::fflush();
             Ok(())
         })() { break 'mc __v; }
@@ -255,13 +255,13 @@ fn showStatement(mut s: GlobalScript::Statement, mut semicolon: bool, mut start:
         if let Ok(__v) = (|| -> Result<_> {
             let (true, false) = __mc_input.clone() else { bail!("nomatch") };
             System::realtimeTick(ClockIndexes::RT_CLOCK_SHOW_STATEMENT.clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluating:   > ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluating:   > ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             System::fflush();
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (false, false) = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluated:    < ")); __mm_s.push_str(&*realString(System::realtimeTock(ClockIndexes::RT_CLOCK_SHOW_STATEMENT.clone())?)); __mm_s.push_str(&*literal!(" / ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Evaluated:    < ")); __mm_s.push_str(&*realString(System::realtimeTock(ClockIndexes::RT_CLOCK_SHOW_STATEMENT.clone())?)); __mm_s.push_str(&*literal!(" / ")); __mm_s.push_str(&*printIstmtStr(GlobalScript::Statements { interactiveStmtLst: list![s.clone()], semicolon: semicolon.clone() })?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             System::fflush();
             Ok(())
         })() { break 'mc __v; }
@@ -1205,7 +1205,7 @@ fn renameComponentInComponentitems(mut inAbsynComponentItemLst1: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-Interactive.renameComponentInComponentitems failed\n")).clone());
+                    metamodelica::print((literal!("-Interactive.renameComponentInComponentitems failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1284,7 +1284,7 @@ fn renameComponentInExpEquationitemList(mut inTplAbsynExpAbsynEquationItemLstLst
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp_equationitem_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp_equationitem_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1382,7 +1382,7 @@ fn renameComponentInEquation(mut inEquation1: Arc<Absyn::Equation>, mut inCompon
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Equation::EQ_NORETCALL { functionArgs: function_args, functionName: cref }, _, _) => {
-                    println!("{}", (literal!("-rename_component_in_equation EQ_NORETCALL not implemented yet\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_equation EQ_NORETCALL not implemented yet\n")).clone());
                     Ok(Arc::new(Absyn::Equation::EQ_NORETCALL { functionName: cref.clone(), functionArgs: function_args.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1391,7 +1391,7 @@ fn renameComponentInEquation(mut inEquation1: Arc<Absyn::Equation>, mut inCompon
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_equation failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_equation failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1429,7 +1429,7 @@ fn renameComponentInExpList(mut inAbsynExpLst1: Arc<metamodelica::List<Arc<Absyn
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1467,7 +1467,7 @@ fn renameComponentInExpListList(mut inAbsynExpLstLst1: Arc<metamodelica::List<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp_list_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp_list_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1507,7 +1507,7 @@ fn renameComponentInExpTupleList(mut inTplAbsynExpAbsynExpLst1: Arc<metamodelica
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp_tuple_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp_tuple_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1545,7 +1545,7 @@ fn renameComponentInElementArgList(mut inAbsynElementArgLst1: Arc<metamodelica::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_element_arg_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_element_arg_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1852,7 +1852,7 @@ fn renameComponentInExp(mut inExp1: Arc<Absyn::Exp>, mut oldPrefix: Arc<Absyn::C
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1973,7 +1973,7 @@ fn renameComponentInExpAlgoritmsList(mut inTplAbsynExpAbsynAlgorithmItemLstLst1:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_exp_algoritms_list failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_exp_algoritms_list failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2015,7 +2015,7 @@ fn renameComponentInFunctionArgs(mut inFunctionArgs1: Arc<Absyn::FunctionArgs>, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_function_args failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_function_args failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2076,7 +2076,7 @@ fn renameComponentInNamedArgs(mut inAbsynNamedArgLst1: Arc<metamodelica::List<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-rename_component_in_namedArgs failed\n")).clone());
+                    metamodelica::print((literal!("-rename_component_in_namedArgs failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2089,7 +2089,7 @@ fn renameComponentInNamedArgs(mut inAbsynNamedArgLst1: Arc<metamodelica::List<Ar
 
 fn renameComponentInExternalDecl(mut external_: Arc<Absyn::ExternalDecl>, mut old_comp: Arc<Absyn::ComponentRef>, mut new_comp: Arc<Absyn::ComponentRef>) -> Arc<Absyn::ExternalDecl> {
     let mut external_1: Arc<Absyn::ExternalDecl> = Arc::new(<Absyn::ExternalDecl as ::std::default::Default>::default());
-    println!("{}", (literal!("-rename_component_in_external_decl not implemented yet\n")).clone());
+    metamodelica::print((literal!("-rename_component_in_external_decl not implemented yet\n")).clone());
     external_1 = external_.clone();
     external_1
 }
@@ -2171,7 +2171,7 @@ fn getComponentreplacementsrules(mut inComponents: InteractiveTypes::Components,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("-get_componentreplacementsrules failed\n")).clone());
+            metamodelica::print((literal!("-get_componentreplacementsrules failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2211,7 +2211,7 @@ fn getNewComponentreplacementsrulesForEachRule(mut inComponents: InteractiveType
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            println!("{}", (literal!("-get_new_componentreplacementsrules_for_each_rule failed\n")).clone());
+            metamodelica::print((literal!("-get_new_componentreplacementsrules_for_each_rule failed\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2279,7 +2279,7 @@ fn makeComponentsReplacementRulesFromComponents(mut inComponents1: InteractiveTy
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-make_componentsReplacementRules_from_components failed\n")).clone());
+                    metamodelica::print((literal!("-make_componentsReplacementRules_from_components failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2328,7 +2328,7 @@ fn firstComponentReplacement(mut inComponentReplacementRules: InteractiveTypes::
     let mut outComponentReplacement: InteractiveTypes::ComponentReplacement = <InteractiveTypes::ComponentReplacement as ::std::default::Default>::default();
     outComponentReplacement = (::match_deref::match_deref! { match &(inComponentReplacementRules.clone()) {
         InteractiveTypes::ComponentReplacementRules { componentReplacementLst: Deref @ metamodelica::List::Nil, .. } => {
-            println!("{}", (literal!("-first_componentReplacement failed: no componentReplacementReplacementRules\n")).clone());
+            metamodelica::print((literal!("-first_componentReplacement failed: no componentReplacementReplacementRules\n")).clone());
             bail!("fail")
         },
         InteractiveTypes::ComponentReplacementRules { componentReplacementLst: Deref @ metamodelica::List::Cons { head: comp, tail: _ }, .. } => {
@@ -2425,7 +2425,7 @@ fn getComponentsWithType(mut inComponents: InteractiveTypes::Components, mut inP
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-get_components_with_type failed\n")).clone());
+                    metamodelica::print((literal!("-get_components_with_type failed\n")).clone());
                     Ok(InteractiveTypes::Components { componentLst: metamodelica::nil(), the: 0 })
                 }
                 _ => bail!("nomatch"),
@@ -2533,7 +2533,7 @@ fn extractComponentsFromClass(mut inClass: Arc<Absyn::Class>, mut inPath: Arc<Ab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-extract_components_from_class failed\n")).clone());
+                    metamodelica::print((literal!("-extract_components_from_class failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2772,7 +2772,7 @@ fn extractComponentsFromComponentitems(mut inPath1: Arc<Absyn::Path>, mut inPath
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("-extract_components_from_componentitems failed\n")).clone());
+                    metamodelica::print((literal!("-extract_components_from_componentitems failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2880,7 +2880,7 @@ fn firstComponent(mut inComponents: InteractiveTypes::Components) -> Result<Inte
     let mut outComponent: InteractiveTypes::Component = <InteractiveTypes::Component as ::std::default::Default>::default();
     outComponent = (::match_deref::match_deref! { match &(inComponents.clone()) {
         InteractiveTypes::Components { componentLst: Deref @ metamodelica::List::Nil, .. } => {
-            println!("{}", (literal!("-first_component failed: no components\n")).clone());
+            metamodelica::print((literal!("-first_component failed: no components\n")).clone());
             bail!("fail")
         },
         InteractiveTypes::Components { componentLst: Deref @ metamodelica::List::Cons { head: comp, tail: _ }, .. } => {
@@ -9564,7 +9564,7 @@ fn transformFlatClass(mut inTuple: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("Interactive.transformFlatClass failed\n")).clone());
+                    metamodelica::print((literal!("Interactive.transformFlatClass failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -9634,7 +9634,7 @@ fn transformFlatClassDef(mut cdef: Arc<Absyn::ClassDef>) -> Result<Arc<Absyn::Cl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("Interactive.transformFlatClassDef failed\n")).clone());
+                    metamodelica::print((literal!("Interactive.transformFlatClassDef failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -9720,7 +9720,7 @@ pub fn transformFlatPart(mut part: Arc<Absyn::ClassPart>) -> Result<Arc<Absyn::C
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    println!("{}", (literal!("Interactive.transformFlatPart failed\n")).clone());
+                    metamodelica::print((literal!("Interactive.transformFlatPart failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

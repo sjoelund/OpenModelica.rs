@@ -368,7 +368,10 @@ pub fn isSizeOf(mut dim: Arc<NFDimension>, mut node: Arc<InstNode::InstNode>, mu
     let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut index_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     res = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ EXP { exp: Deref @ Expression::SIZE { dimIndex: Some(index_exp), exp: cref_exp @ Deref @ Expression::CREF { .. } }, .. } => InstNode::refEqual(ComponentRef::node(var_field!((**cref_exp).cref, Expression::NFExpression::CREF).clone())?, node.clone()) && Expression::isEqual(index_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: index.clone() }))?,
+        Deref @ EXP { exp: Deref @ Expression::SIZE { dimIndex: Some(index_exp), exp: __esc_cref_exp @ Deref @ Expression::CREF { .. } }, .. } => {
+            cref_exp = (*__esc_cref_exp).clone();
+            InstNode::refEqual(ComponentRef::node(var_field!((*cref_exp).cref, Expression::NFExpression::CREF).clone())?, node.clone()) && Expression::isEqual(index_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: index.clone() }))?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -181,7 +181,7 @@ pub fn checkBackendDAEWithErrorMsg(mut inBackendDAE: Arc<BackendDAE::BackendDAE>
                     nEqns = BackendEquation::equationArraySize(orderedEqs.clone())?;
                     samesize = nVars.clone() == nEqns.clone();
                     if Flags::isSet(Flags::CHECK_BACKEND_DAE.clone())? {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("No. of Equations: ")); __mm_s.push_str(&*intString(nVars.clone())); __mm_s.push_str(&*literal!(" No. of BackendDAE.Variables: ")); __mm_s.push_str(&*intString(nEqns.clone())); __mm_s.push_str(&*literal!(" Samesize: ")); __mm_s.push_str(&*boolString(samesize.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("No. of Equations: ")); __mm_s.push_str(&*intString(nVars.clone())); __mm_s.push_str(&*literal!(" No. of BackendDAE.Variables: ")); __mm_s.push_str(&*intString(nEqns.clone())); __mm_s.push_str(&*literal!(" Samesize: ")); __mm_s.push_str(&*boolString(samesize.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     (expCrefs, wrongEqns) = checkBackendDAE(inBackendDAE.clone())?;
                     printcheckBackendDAEWithErrorMsg(expCrefs.clone(), wrongEqns.clone())?;
@@ -1558,10 +1558,10 @@ pub fn eqnsForVarWithStates(mut inAdjacencyMatrixT: metamodelica::Array<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             let (_, mut indx) = __mc_input.clone() else { bail!("nomatch") };
             let mut s: ArcStr = arcstr::literal!("");
-            println!("{}", (literal!("- BackendDAEUtil.eqnsForVarWithStates failed, indx= ")).clone());
+            metamodelica::print((literal!("- BackendDAEUtil.eqnsForVarWithStates failed, indx= ")).clone());
             s = (intString(indx.clone())).clone();
-            println!("{}", (s.clone()).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print((s.clone()).clone());
+            metamodelica::print((literal!("\n")).clone());
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -1629,8 +1629,8 @@ pub fn setEvaluationStage(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
             traverseArgs = unwrap_break_err!(traverseEqSystemStrongComponents(eqSystem.clone(), (std::sync::Arc::new(collectEqnsIndexByKind) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), traverseArgs.clone()), '__try0);
             (indicesDynamic, indicesDiscrete, indicesAlgebraic) = traverseArgs.clone();
             if debug.clone() {
-                println!("{}", (literal!("Dynamic equation indicies:\n")).clone());
-                println!("{}", stringDelimitList(({
+                metamodelica::print((literal!("Dynamic equation indicies:\n")).clone());
+                metamodelica::print(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut i in (indicesDynamic.clone()).into_iter().cloned() {
             let __x = intString(i.clone());
@@ -1638,7 +1638,7 @@ pub fn setEvaluationStage(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
         }
         __acc.reverse()
     }), (literal!(", ")).clone()));
-                println!("{}", (literal!("\n")).clone());
+                metamodelica::print((literal!("\n")).clone());
             }
             markedEqns = arrayCreate(BackendEquation::getNumberOfEquations(eqns.clone()), 0);
             markedEqns = unwrap_break_err!(markStateEquationsWork(indicesDynamic.clone(), adjMatrix.clone(), assigndVar.clone(), markedEqns.clone()), '__try0);
@@ -1875,7 +1875,8 @@ pub fn reduceEqSystem(mut iSyst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Back
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oSyst = (::match_deref::match_deref! { match &(iSyst.clone()) {
-        syst @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2, ass1, .. }, orderedVars: vars, orderedEqs: ordererdEqs, .. } => {
+        syst @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2: __esc_ass2, ass1, .. }, orderedVars: vars, orderedEqs: ordererdEqs, .. } => {
+            ass2 = (*__esc_ass2).clone();
             let mut syst = (*syst).clone();
             if Flags::getConfigEnum(Flags::SYM_SOLVER.clone())? > 0 {
                 (_, statevarindx_lst) = BackendVariable::getAllVarIndicesFromVariables(vars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isAlgState, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
@@ -4620,7 +4621,7 @@ fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _) => {
-                    println!("{}", (literal!("- BackendDAE.removeValuefromMatrix failed\n")).clone());
+                    metamodelica::print((literal!("- BackendDAE.removeValuefromMatrix failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4677,7 +4678,7 @@ fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _) => {
-                    println!("{}", (literal!("- BackendDAE.addValuetoMatrix failed\n")).clone());
+                    metamodelica::print((literal!("- BackendDAE.addValuetoMatrix failed\n")).clone());
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6178,13 +6179,13 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
         if '__try0: {
             (solvedExp, _, eqnForNewVars, newVarsCrefs) = unwrap_break_err!(ExpressionSolve::solve2(e.clone(), Expression::makeConstZero(tp.clone()), unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0), functions.clone(), Some(1), true, false), '__try0);
             if debug.clone() {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solve expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("for variable: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0)), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solve expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("for variable: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0)), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 unwrap_break_err!(ComponentReference::printComponentRefList(newVarsCrefs.clone()), '__try0);
                 unwrap_break_err!(BackendDump::dumpEquationList(eqnForNewVars.clone(), (literal!("eqnForNewVars")).clone()), '__try0);
                 unwrap_break_err!(ExpressionDump::dumpExp(solvedExp.clone()), '__try0);
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("listLength(eqnForNewVars): ")); __mm_s.push_str(&*intString((eqnForNewVars.clone().len() as i32))); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("listLength(eqnForNewVars): ")); __mm_s.push_str(&*intString((eqnForNewVars.clone().len() as i32))); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
             if trytosolve1.clone() {
                 let (_, (__pa1, _)) = unwrap_break_err!(Expression::traverseExpTopDown(solvedExp.clone(), (std::sync::Arc::new(getConstraints) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables))> + 'static>), (metamodelica::nil(), vars.clone())), '__try0);
@@ -6221,9 +6222,9 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
                     outCons = metamodelica::cons(Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: con.clone(), localCon: localCon.clone() }), outCons.clone());
                 }
                 if debug.clone() {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Constraints before substitution: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionDump::constraintDTlistToString(constraints.clone(), (literal!("\n")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Substituted expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Constraints:")); __mm_s.push_str(&*unwrap_break_err!(ExpressionDump::constraintDTlistToString(outCons.clone(), (literal!("\n")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Constraints before substitution: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionDump::constraintDTlistToString(constraints.clone(), (literal!("\n")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Substituted expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Constraints:")); __mm_s.push_str(&*unwrap_break_err!(ExpressionDump::constraintDTlistToString(outCons.clone(), (literal!("\n")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             solved = true;
@@ -6254,13 +6255,13 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
     let true = (solved.clone() || derived.clone()) else { bail!("pattern mismatch") };
     if debug.clone() {
         if solved.clone() {
-            println!("{}", (literal!("[SOLVED] ")).clone());
+            metamodelica::print((literal!("[SOLVED] ")).clone());
         } else if derived.clone() {
-            println!("{}", (literal!("[DERIVED] ")).clone());
+            metamodelica::print((literal!("[DERIVED] ")).clone());
         } else {
-            println!("{}", (literal!("[?BROKEN?] ")).clone());
+            metamodelica::print((literal!("[?BROKEN?] ")).clone());
         }
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tryToSolveOrDerive ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(f.clone())?); __mm_s.push_str(&*literal!(" == ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("tryToSolveOrDerive ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" -> ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(f.clone())?); __mm_s.push_str(&*literal!(" == ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok((f, solved, derived, outCons))
 }
@@ -8549,12 +8550,12 @@ pub fn getSolvedSystem(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePrefi
         BackendDump::dumpEqnsSolved(outSimDAE.clone(), (literal!("indxdae: eqns in order")).clone())?;
     }
     if Flags::isSet(Flags::DUMP_LOOPS.clone())? || Flags::isSet(Flags::DUMP_LOOPS_VERBOSE.clone())? {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Simulation): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Simulation): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BackendDump::dumpLoops(outSimDAE.clone())?;
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         BackendDump::dumpLoops(outInitDAE.clone())?;
         if isSome(outInitDAE_lambda0_option.clone()) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization Lambda=0 (Homotopy)): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization Lambda=0 (Homotopy)): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             BackendDump::dumpLoops(Util::getOption(outInitDAE_lambda0_option.clone())?)?;
         }
     }
@@ -8611,7 +8612,7 @@ pub fn preOptimizeDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inPreOptModule
         }
     }
     if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
-        println!("{}", (literal!("pre-optimization done.\n")).clone());
+        metamodelica::print((literal!("pre-optimization done.\n")).clone());
     }
     Ok(outDAE)
 }
@@ -8851,7 +8852,7 @@ pub fn postOptimizeDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inPostOptModu
         }
     }
     if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
-        println!("{}", (literal!("post-optimization done.\n")).clone());
+        metamodelica::print((literal!("post-optimization done.\n")).clone());
     }
     Ok(outDAE)
 }
@@ -8974,11 +8975,11 @@ pub fn analyticalToStructuralSingularity(mut comp: Arc<metamodelica::List<i32>>,
                 linJac = unwrap_break_err!(SymbolicJacobian::LinearJacobian::generate(loopEqs.clone(), loopVars.clone(), ass1.clone()), '__try2);
                 if !(SymbolicJacobian::LinearJacobian::emptyOrSingle(linJac.clone())) {
                     if unwrap_break_err!(Flags::isSet(Flags::DUMP_ASSC.clone()), '__try2) {
-                        println!("{}", (unwrap_break_err!(SymbolicJacobian::LinearJacobian::toString(linJac.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Original (initial: ")); __mm_s.push_str(&*boolString(init.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try2)).clone());
+                        metamodelica::print((unwrap_break_err!(SymbolicJacobian::LinearJacobian::toString(linJac.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Original (initial: ")); __mm_s.push_str(&*boolString(init.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try2)).clone());
                     }
                     linJac = SymbolicJacobian::LinearJacobian::solve(linJac.clone());
                     if unwrap_break_err!(Flags::isSet(Flags::DUMP_ASSC.clone()), '__try2) {
-                        println!("{}", (unwrap_break_err!(SymbolicJacobian::LinearJacobian::toString(linJac.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved (initial: ")); __mm_s.push_str(&*boolString(init.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try2)).clone());
+                        metamodelica::print((unwrap_break_err!(SymbolicJacobian::LinearJacobian::toString(linJac.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved (initial: ")); __mm_s.push_str(&*boolString(init.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try2)).clone());
                     }
                     changed = changed.clone() || SymbolicJacobian::LinearJacobian::anyChanges(linJac.clone());
                     (ass1, ass2, syst) = unwrap_break_err!(SymbolicJacobian::LinearJacobian::resolveASSC(linJac.clone(), ass1.clone(), ass2.clone(), syst.clone(), init.clone()), '__try2);
@@ -10562,7 +10563,7 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
         }
     }
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Got adjacency matrix ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", varSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(m.clone())))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", eqnSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(mT.clone())))); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Got adjacency matrix ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", varSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(m.clone())))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", eqnSize.clone()))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(mT.clone())))); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
     }
     count = 0;
     while cont.clone() && count.clone() < 1000 {
@@ -10605,8 +10606,8 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
             }
         }
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of equations solved: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", numSolved.clone() - errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of errors: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of equations solved: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", numSolved.clone() - errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of errors: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         for mut i in 1..=metamodelica::arrayLength(mT.clone()) {
             if 0 != ({let __elt = solvedVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
@@ -10659,8 +10660,8 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
             }
         }
         if debug.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of equations solved: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", numSolved.clone() - errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of errors: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of equations solved: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", numSolved.clone() - errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of errors: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", errors.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     let true = (0 == errors.clone()) else { bail!("pattern mismatch") };
@@ -10671,7 +10672,7 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
         for mut i in 1..=metamodelica::arrayLength(mT.clone()) {
             var = BackendVariable::getVarAt(varsArray.clone(), i.clone())?;
             if 0 == ({let __elt = solvedVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining unsolved variable:")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var.varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining unsolved variable:")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var.varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
         for mut i in 1..=metamodelica::arrayLength(m.clone()) {
@@ -10680,7 +10681,7 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
             count = (({let __elt = solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
             if eqnSize.clone() != count.clone() {
                 vars = ({let __elt = m.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining vars: ")); __mm_s.push_str(&*stringDelimitList(({
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining vars: ")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut j in (vars.clone()).into_iter().cloned() {
             let __x = ArcStr::from(::std::format!("{}", j.clone()));
@@ -10697,9 +10698,9 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
         }
         __acc.reverse()
     }), (literal!(", ")).clone());
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining equation (already solved ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*BackendDump::equationString(_equation.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining equation (already solved ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*BackendDump::equationString(_equation.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 } else {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining equation: ")); __mm_s.push_str(&*BackendDump::equationString(_equation.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Remaining equation: ")); __mm_s.push_str(&*BackendDump::equationString(_equation.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
         }

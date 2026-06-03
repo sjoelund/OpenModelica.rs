@@ -54,7 +54,7 @@ pub fn rewriteBlockCall(mut inPg: Absyn::Program, mut inDefs: Absyn::Program) ->
             let mut res: ArcStr = arcstr::literal!("");
             pg2 = parseProgram(inPg.clone(), inDefs.clone())?;
             res = (Dump::unparseStr(pg2.clone(), false, Dump::defaultDumpOptions.clone())?).clone();
-            println!("{}", (res.clone()).clone());
+            metamodelica::print((res.clone()).clone());
             pg2.clone()
         },
     });

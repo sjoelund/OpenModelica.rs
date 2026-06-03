@@ -139,7 +139,7 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
                 unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.ext_one: baseclass: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.ext_one: baseclass: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -200,7 +200,7 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Grap
                 unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try2);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.derived_one: baseclass: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.derived_one: baseclass: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -259,7 +259,7 @@ pub fn ty_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
                 unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.ty_one: component type path: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.ty_one: component type path: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -320,7 +320,7 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
                 unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try2);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.cc_one: constrained class: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.cc_one: constrained class: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -393,8 +393,8 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph
                 unwrap_break_err!(FLookup::ext(g.clone(), p.clone(), (id.clone()).clone(), FLookup::ignoreParentsAndImports.clone(), FLookup::dummyLookupOption.clone()), '__try3);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.clsext_one: class extends: ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" scope: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" not found in extends of: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(p.clone())?)?); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*stringDelimitList(List::map(List::map(FNode::extendsRefs(p.clone())?, (std::sync::Arc::new(FNode::fromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<FCore::Node> + 'static>))?, (std::sync::Arc::new(FNode::toPathStr) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Node) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.clsext_one: class extends: ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" scope: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" not found in extends of: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(p.clone())?)?); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*stringDelimitList(List::map(List::map(FNode::extendsRefs(p.clone())?, (std::sync::Arc::new(FNode::fromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<FCore::Node> + 'static>))?, (std::sync::Arc::new(FNode::toPathStr) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Node) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -449,7 +449,7 @@ pub fn cr_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
                 unwrap_break_err!(FLookup::cr(g.clone(), r.clone(), cr.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.cr_one: component reference: ")); __mm_s.push_str(&*AbsynUtil::crefString(cr.clone())?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.cr_one: component reference: ")); __mm_s.push_str(&*AbsynUtil::crefString(cr.clone())?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -502,7 +502,7 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
                 unwrap_break_err!(FLookup::cr(g.clone(), unwrap_break_err!(FNode::getModifierTarget(r.clone()), '__try0), cr.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try0);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.mod_one: modifier: ")); __mm_s.push_str(&*AbsynUtil::crefString(cr.clone())?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.mod_one: modifier: ")); __mm_s.push_str(&*AbsynUtil::crefString(cr.clone())?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -570,8 +570,8 @@ pub fn elred_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph>
                 unwrap_break_err!(FLookup::ext(g.clone(), p.clone(), (id.clone()).clone(), FLookup::ignoreParentsAndImports.clone(), FLookup::dummyLookupOption.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.elred_one: redeclare as element: ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" scope: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" not found in extends of: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(p.clone())?)?); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*stringDelimitList(List::map(List::map(FNode::extendsRefs(p.clone())?, (std::sync::Arc::new(FNode::fromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<FCore::Node> + 'static>))?, (std::sync::Arc::new(FNode::toPathStr) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Node) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.elred_one: redeclare as element: ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" scope: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" not found in extends of: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(p.clone())?)?); __mm_s.push_str(&*literal!(":\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*stringDelimitList(List::map(List::map(FNode::extendsRefs(p.clone())?, (std::sync::Arc::new(FNode::fromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<FCore::Node> + 'static>))?, (std::sync::Arc::new(FNode::toPathStr) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Node) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), metamodelica::nil(), r.clone(), g.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }

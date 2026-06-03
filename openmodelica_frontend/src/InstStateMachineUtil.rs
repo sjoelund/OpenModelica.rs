@@ -197,51 +197,51 @@ pub fn createSMNodeToFlatSMGroupTable(mut inDae: DAE::DAElist) -> Result<SMNodeT
     if nStates.clone() > 0 {
         smNodeToFlatSMGroup = HashTableCG::emptyHashTable();
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** InstStateMachineUtil.createSMNodeToFlatSMGroupTable: START ***** \n")).clone());
+            metamodelica::print((literal!("***** InstStateMachineUtil.createSMNodeToFlatSMGroupTable: START ***** \n")).clone());
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** State machine node table: ***** \n")).clone());
+            metamodelica::print((literal!("***** State machine node table: ***** \n")).clone());
         }
         if DEBUG_SMDUMP.clone() {
             BaseHashTable::dumpHashTable(smNodeTable.clone())?;
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** Adjacency Matrix: ***** \n")).clone());
+            metamodelica::print((literal!("***** Adjacency Matrix: ***** \n")).clone());
         }
         iTable = createAdjacencyTable(smNodeTable.clone(), nStates.clone())?;
         if DEBUG_SMDUMP.clone() {
             printAdjacencyTable(iTable.clone(), nStates.clone())?;
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** Transitive Closure: ***** \n")).clone());
+            metamodelica::print((literal!("***** Transitive Closure: ***** \n")).clone());
         }
         transClosure = transitiveClosure(iTable.clone(), nStates.clone())?;
         if DEBUG_SMDUMP.clone() {
             printAdjacencyTable(transClosure.clone(), nStates.clone())?;
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** Initial States: ***** \n")).clone());
+            metamodelica::print((literal!("***** Initial States: ***** \n")).clone());
         }
         initialStates = extractInitialStates(smNodeTable.clone())?;
         if DEBUG_SMDUMP.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(initialStates.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(initialStates.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** Flat State Machine Groups: ***** \n")).clone());
+            metamodelica::print((literal!("***** Flat State Machine Groups: ***** \n")).clone());
         }
         flatSMGroup = extractFlatSMGroup(initialStates.clone(), transClosure.clone(), nStates.clone())?;
         if DEBUG_SMDUMP.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(flatSMGroup.clone(), (std::sync::Arc::new(dumpFlatSMGroupStr) as std::sync::Arc<dyn ::std::ops::Fn(FlatSMGroup) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(flatSMGroup.clone(), (std::sync::Arc::new(dumpFlatSMGroupStr) as std::sync::Arc<dyn ::std::ops::Fn(FlatSMGroup) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** SM Node cref to SM Group cref mapping: ***** \n")).clone());
+            metamodelica::print((literal!("***** SM Node cref to SM Group cref mapping: ***** \n")).clone());
         }
         smNodeToFlatSMGroup = List::fold(flatSMGroup.clone(), (std::sync::Arc::new(relateNodesToGroup) as std::sync::Arc<dyn ::std::ops::Fn(FlatSMGroup, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), smNodeToFlatSMGroup.clone())?;
         if DEBUG_SMDUMP.clone() {
             BaseHashTable::dumpHashTable(smNodeToFlatSMGroup.clone())?;
         }
         if DEBUG_SMDUMP.clone() {
-            println!("{}", (literal!("***** InstStateMachineUtil.createSMNodeToFlatSMGroupTable: END ***** \n")).clone());
+            metamodelica::print((literal!("***** InstStateMachineUtil.createSMNodeToFlatSMGroupTable: END ***** \n")).clone());
         }
     } else {
         smNodeToFlatSMGroup = HashTableCG::emptyHashTableSized(1);
@@ -838,7 +838,7 @@ fn printAdjacencyTable(mut iTable: AdjacencyTable, mut nStates: i32) -> Result<(
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
         (cref, i) = entry.clone();
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cref.clone())?); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cref.clone())?); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     pads = (literal!(" ")).clone();
     padn = 8;
@@ -846,14 +846,14 @@ fn printAdjacencyTable(mut iTable: AdjacencyTable, mut nStates: i32) -> Result<(
     for mut i in 1..=n.clone() {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Util::stringPadLeft(({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(",")); ArcStr::from(__mm_s) }).clone(), padn.clone(), (pads.clone()).clone())); ArcStr::from(__mm_s) }).clone();
     }
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     for mut i in 1..=n.clone() {
         r#str = (Util::stringPadRight((intString(i.clone())).clone(), padn.clone(), (pads.clone()).clone())).clone();
         for mut j in 1..=n.clone() {
             b = ({let __elt = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(j.clone()-1) as usize].clone(); __elt});
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Util::stringPadLeft(({ let mut __mm_s = String::new(); __mm_s.push_str(&*boolString(b.clone())); __mm_s.push_str(&*literal!(",")); ArcStr::from(__mm_s) }).clone(), padn.clone(), (pads.clone()).clone())); ArcStr::from(__mm_s) }).clone();
         }
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }

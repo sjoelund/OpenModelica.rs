@@ -1418,14 +1418,14 @@ fn dumpRules(mut rules: Arc<ConversionRules::ConversionRules>, mut indent: ArcSt
     }
     for mut i in 1..=metamodelica::arrayLength(keys.clone()) {
         if i.clone() == metamodelica::arrayLength(keys.clone()) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("└─")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("└─")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
+            metamodelica::print((literal!("\n")).clone());
             dumpRules(({let __elt = values.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?;
         } else {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("├─")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
-            println!("{}", (literal!("\n")).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("├─")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print((({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
+            metamodelica::print((literal!("\n")).clone());
             dumpRules(({let __elt = values.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("│ ")); ArcStr::from(__mm_s) }).clone())?;
         }
     }
@@ -1433,39 +1433,39 @@ fn dumpRules(mut rules: Arc<ConversionRules::ConversionRules>, mut indent: ArcSt
 }
 
 fn dumpRule(mut rule: ConversionRule, mut indent: ArcStr) -> Result<()> {
-    println!("{}", (indent.clone()).clone());
+    metamodelica::print((indent.clone()).clone());
     let () = (match rule.clone() {
         ConversionRule::CLASS { .. } => {
-            println!("{}", (literal!("convertClass: ")).clone());
-            println!("{}", (AbsynUtil::pathString(var_field!(rule.newPath, ConversionRule::CLASS).clone(), (literal!(".")).clone(), true, false)?).clone());
+            metamodelica::print((literal!("convertClass: ")).clone());
+            metamodelica::print((AbsynUtil::pathString(var_field!(rule.newPath, ConversionRule::CLASS).clone(), (literal!(".")).clone(), true, false)?).clone());
             ()
         },
         ConversionRule::CLASS_IF => {
-            println!("{}", (literal!("convertClassIf: ")).clone());
+            metamodelica::print((literal!("convertClassIf: ")).clone());
             ()
         },
         ConversionRule::ELEMENT { .. } => {
-            println!("{}", (literal!("convertElement: ")).clone());
-            println!("{}", (var_field!(rule.oldName, ConversionRule::ELEMENT).clone()).clone());
-            println!("{}", (literal!(" => ")).clone());
-            println!("{}", (var_field!(rule.newName, ConversionRule::ELEMENT).clone()).clone());
+            metamodelica::print((literal!("convertElement: ")).clone());
+            metamodelica::print((var_field!(rule.oldName, ConversionRule::ELEMENT).clone()).clone());
+            metamodelica::print((literal!(" => ")).clone());
+            metamodelica::print((var_field!(rule.newName, ConversionRule::ELEMENT).clone()).clone());
             ()
         },
         ConversionRule::MODIFIERS { .. } => {
-            println!("{}", (literal!("convertModifiers: ")).clone());
-            println!("{}", (List::toString(var_field!(rule.oldMods, ConversionRule::MODIFIERS).clone(), (std::sync::Arc::new(Dump::unparseElementArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?).clone());
-            println!("{}", (literal!(" => ")).clone());
-            println!("{}", (List::toString(var_field!(rule.newMods, ConversionRule::MODIFIERS).clone(), (std::sync::Arc::new(Dump::unparseElementArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?).clone());
+            metamodelica::print((literal!("convertModifiers: ")).clone());
+            metamodelica::print((List::toString(var_field!(rule.oldMods, ConversionRule::MODIFIERS).clone(), (std::sync::Arc::new(Dump::unparseElementArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?).clone());
+            metamodelica::print((literal!(" => ")).clone());
+            metamodelica::print((List::toString(var_field!(rule.newMods, ConversionRule::MODIFIERS).clone(), (std::sync::Arc::new(Dump::unparseElementArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?).clone());
             ()
         },
         ConversionRule::MESSAGE { .. } => {
-            println!("{}", (literal!("convertMessage: \"")).clone());
-            println!("{}", (var_field!(rule.message, ConversionRule::MESSAGE).clone()).clone());
-            println!("{}", (literal!("\"")).clone());
+            metamodelica::print((literal!("convertMessage: \"")).clone());
+            metamodelica::print((var_field!(rule.message, ConversionRule::MESSAGE).clone()).clone());
+            metamodelica::print((literal!("\"")).clone());
             ()
         },
     });
-    println!("{}", (literal!("\n")).clone());
+    metamodelica::print((literal!("\n")).clone());
     Ok(())
 }
 

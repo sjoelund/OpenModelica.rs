@@ -125,18 +125,18 @@ pub fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varDat
             EquationPointers::map(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); let __pe_b2 = min_parameters.clone(); let __pe_b3 = optimal_values.clone(); let __pe_b4 = c2pi.clone(); let __pe_b5 = c2pe.clone(); move |__pe_a0| findOptimalResizableValues(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             UnorderedSet::apply(parameters.clone(), (std::sync::Arc::new({ let __pe_b1 = min_parameters.clone(); let __pe_b2 = optimal_values.clone(); move |__pe_a0| setInitialValues(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>))?;
             if debug.clone() {
-                println!("{}", (optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[debug] Initial Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
-                println!("{}", (StringUtil::headline_2((literal!("[debug] Final Inequality Constraints:")).clone())).clone());
+                metamodelica::print((optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[debug] Initial Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Inequality Constraints:")).clone())).clone());
                 if UnorderedMap::isEmpty(c2pi.clone()) {
-                    println!("{}", (literal!("  <No Constraints>\n\n")).clone());
+                    metamodelica::print((literal!("  <No Constraints>\n\n")).clone());
                 } else {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(c2pi.clone()), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  0 >= ")).clone(), (literal!("\n  0 >= ")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(c2pi.clone()), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  0 >= ")).clone(), (literal!("\n  0 >= ")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
-                println!("{}", (StringUtil::headline_2((literal!("[debug] Final Equality Constraints:")).clone())).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[debug] Final Equality Constraints:")).clone())).clone());
                 if UnorderedMap::isEmpty(c2pe.clone()) {
-                    println!("{}", (literal!("  <No Constraints>\n\n")).clone());
+                    metamodelica::print((literal!("  <No Constraints>\n\n")).clone());
                 } else {
-                    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(c2pe.clone()), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  0 = ")).clone(), (literal!("\n  0 = ")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(c2pe.clone()), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  0 = ")).clone(), (literal!("\n  0 = ")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             }
             p2ci = invertConstraintParameterMap(c2pi.clone(), parameters.clone())?;
@@ -152,13 +152,13 @@ pub fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varDat
             equations = EquationPointers::mapExp(equations.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static> = func.clone(); move |__pe_a0| Expression::applyToType(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             EquationPointers::mapRes(equations.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static> = func.clone(); move |__pe_a0| BVariable::applyToType(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
             if Flags::isSet(Flags::DUMP_RESIZABLE.clone())? || debug.clone() {
-                println!("{}", (optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[dumpResizable] Evaluated Optimal Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
+                metamodelica::print((optimalValuesToString(optimal_values.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("[dumpResizable] Evaluated Optimal Resizable Parameter Values:")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?).clone());
             }
             varData.clone()
         },
         _ => {
             if Flags::isSet(Flags::DUMP_RESIZABLE.clone())? || debug.clone() {
-                println!("{}", (StringUtil::headline_2((literal!("[dumpResizable] No resizable parameters were detected in the model.")).clone())).clone());
+                metamodelica::print((StringUtil::headline_2((literal!("[dumpResizable] No resizable parameters were detected in the model.")).clone())).clone());
             }
             varData.clone()
         },
@@ -329,7 +329,7 @@ fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: 
     let mut rhs_dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let mut r#const: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] checking equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] checking equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     let () = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ Equation::FOR_EQUATION { .. } => {
@@ -380,7 +380,7 @@ fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: 
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     if debug.clone() {
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(eqn)
 }
@@ -557,7 +557,7 @@ fn getRangeConstraint(mut start: Arc<Expression::NFExpression>, mut step_opt: Op
     distance_const = SimplifyExp::simplify(distance_const.clone(), false)?;
     UnorderedMap::add(distance_const.clone(), UnorderedSet::toList(parameters.clone()), c2pi.clone())?;
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] adding ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 >= ")); __mm_s.push_str(&*Expression::toString(distance_const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] adding ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 >= ")); __mm_s.push_str(&*Expression::toString(distance_const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }
@@ -713,9 +713,9 @@ fn addConstraint(mut old_const: Arc<Expression::NFExpression>, mut replacements:
     }
     if debug.clone() {
         if redundant.clone() {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] not adding redundant ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(old_const.clone())?); __mm_s.push_str(&*literal!(" simplified to: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(r#const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] not adding redundant ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(old_const.clone())?); __mm_s.push_str(&*literal!(" simplified to: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(r#const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         } else {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] adding ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(old_const.clone())?); __mm_s.push_str(&*literal!(" simplified to: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(r#const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debug] adding ")); __mm_s.push_str(&*const_kind.clone()); __mm_s.push_str(&*literal!(" constraint: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(old_const.clone())?); __mm_s.push_str(&*literal!(" simplified to: 0 ")); __mm_s.push_str(&*eq_kind.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Expression::toString(r#const.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     Ok(())
@@ -766,10 +766,11 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
     if !(UnorderedMap::contains(cref.clone(), optimal_values.clone())?) {
         var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
         value = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
+        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: __esc_attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
+            attributes = (*__esc_attributes).clone();
             if UnorderedSet::contains(cref.clone(), min_parameters.clone())? {
-                if isSome(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                if isSome(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -777,8 +778,8 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
                 } else {
                     value = Arc::new(Expression::NFExpression::INTEGER { value: 0 });
                 }
-            } else if isSome(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                let __pa1 = ::match_deref::match_deref! { match &(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+            } else if isSome(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                let __pa1 = ::match_deref::match_deref! { match &(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -818,12 +819,12 @@ fn invertConstraintParameterMap(mut c2p: Arc<UnorderedMap::UnorderedMap<Arc<Expr
 fn computeOptimalValues(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut c2pi: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut p2ci: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>>>, mut c2pe: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut p2ce: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>>>) -> Result<()> {
     let mut failed_parameters: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     if debug.clone() {
-        println!("{}", (literal!("FIXING CONSTRAINTS\n\n")).clone());
+        metamodelica::print((literal!("FIXING CONSTRAINTS\n\n")).clone());
     }
     fixConstraints(optimal_values.clone(), c2pi.clone(), p2ci.clone(), failed_parameters.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intLe(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
     fixConstraints(optimal_values.clone(), c2pe.clone(), p2ce.clone(), failed_parameters.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intEq(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
     if debug.clone() {
-        println!("{}", (literal!("\n")).clone());
+        metamodelica::print((literal!("\n")).clone());
     }
     Ok(())
 }
@@ -846,13 +847,13 @@ fn fixConstraints(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<Compone
         let () = (match checkConstraint(constraint.clone(), optimal_values.clone())? {
         Some(mut value) if (func(value.clone())?) => {
             if debug.clone() {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is not violated ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is not violated ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             ()
         },
         Some(mut value) => {
             if debug.clone() {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is violated by ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is violated by ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             eqn = Equation::makeAssignmentEqn(constraint.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(EquationKind::DISCRETE.clone(), false, None, None))?;
             for mut cref in &*crefs.clone() {
