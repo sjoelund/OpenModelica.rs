@@ -967,6 +967,7 @@ dependencies = [
  "arcstr",
  "const-str",
  "encoding_rs",
+ "libc",
  "loop_unwrap",
  "match_deref",
  "metamodelica",

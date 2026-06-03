@@ -27,6 +27,7 @@ tailcall = "2.3.0"
 match_deref = "0.1.2"
 ordered-float = "5.3.0"
 num-traits = "0.2.19"
+libc = "0.2"
 mmtorust = {path = "mmtorust"}
 metamodelica = {path = "metamodelica"}
 openmodelica_ast = {path = "openmodelica_ast"}

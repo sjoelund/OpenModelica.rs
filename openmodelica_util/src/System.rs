@@ -170,18 +170,106 @@ pub fn stringFindString(r#str: ArcStr, searchStr: ArcStr) -> ArcStr {
     }
 }
 
+/// POSIX `regex(3)` wrapper, a faithful port of `OpenModelica_regexImpl`
+/// (SimulationRuntime/c/util/utility.c): it FFIs straight to the same
+/// `regcomp`/`regexec` the C runtime uses, so BRE/ERE syntax and POSIX
+/// leftmost-longest matching behave identically (rather than reimplementing a
+/// regex engine).
+///
+/// Returns `(nmatch, matches)` where `matches` always has `maxMatches` elements:
+/// the captured substrings (full match at index 0, then each participating
+/// group, packed — non-participating groups are skipped) followed by empty
+/// strings. `maxMatches == 0` means "match test only" (`REG_NOSUB`): the list
+/// is empty and `nmatch` is 1 on match, 0 otherwise. On a compile error
+/// `nmatch` is 0 and (for `maxMatches > 0`) the error message is the first
+/// element.
 pub fn regex(
-    _str: ArcStr,
-    _re: ArcStr,
-    _maxMatches: i32,
-    _extended: bool,
-    _ignoreCase: bool,
+    str: ArcStr,
+    re: ArcStr,
+    maxMatches: i32,
+    extended: bool,
+    ignoreCase: bool,
 ) -> (i32, Arc<List<ArcStr>>) {
-    // POSIX `regex(3)` wrapper, used heavily by the front-end for pattern
-    // diagnostics. Needs a real regex backend (the C side uses POSIX
-    // `regcomp`/`regexec`); not wired up yet because the regex crate isn't
-    // a workspace dependency.
-    todo!("System.regex: POSIX regex matching not yet ported (needs regex backend)")
+    use std::ffi::CString;
+
+    fn list_forward(items: Vec<ArcStr>) -> Arc<List<ArcStr>> {
+        let mut res = metamodelica::nil();
+        for it in items.into_iter().rev() {
+            res = metamodelica::cons(it, res);
+        }
+        res
+    }
+
+    let maxn = maxMatches.max(0) as usize;
+    let flags = (if extended { libc::REG_EXTENDED } else { 0 })
+        | (if ignoreCase { libc::REG_ICASE } else { 0 })
+        | (if maxn != 0 { 0 } else { libc::REG_NOSUB });
+
+    // POSIX strings are NUL-terminated; a NUL in the pattern/subject can't be
+    // represented. OMC's patterns and subjects never contain NUL, so treat that
+    // as a non-match (mirrors the C, which would simply see a truncated string).
+    let (c_re, c_str) = match (CString::new(re.as_bytes()), CString::new(str.as_bytes())) {
+        (Ok(a), Ok(b)) => (a, b),
+        _ => {
+            let items = vec![literal!(""); maxn];
+            return (0, list_forward(items));
+        }
+    };
+
+    unsafe {
+        let mut preg: libc::regex_t = std::mem::zeroed();
+        let rc = libc::regcomp(&mut preg, c_re.as_ptr(), flags);
+        if rc != 0 {
+            // Compile failure. With no capture slots there is nothing to report;
+            // otherwise the first slot carries the error message (regerror), the
+            // rest are empty — exactly as OpenModelica_regexImpl does.
+            if maxn == 0 {
+                return (0, metamodelica::nil());
+            }
+            let mut buf = vec![0 as libc::c_char; 2048];
+            libc::regerror(rc, &preg, buf.as_mut_ptr(), buf.len());
+            let msg = std::ffi::CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned();
+            let mut items: Vec<ArcStr> = Vec::with_capacity(maxn);
+            items.push(ArcStr::from(format!("Failed to compile regular expression: {re} with error: {msg}")));
+            for _ in 1..maxn {
+                items.push(literal!(""));
+            }
+            // regcomp leaves nothing to free on failure, but freeing a
+            // zero-initialised regex_t is safe and matches the C path.
+            libc::regfree(&mut preg);
+            return (0, list_forward(items));
+        }
+
+        let mut pmatch: Vec<libc::regmatch_t> = vec![std::mem::zeroed(); maxn.max(1)];
+        let res = libc::regexec(&preg, c_str.as_ptr(), maxn, pmatch.as_mut_ptr(), 0);
+        libc::regfree(&mut preg);
+
+        let bytes = str.as_bytes();
+        let mut nmatch = 0i32;
+        let matches = if maxn == 0 {
+            if res == 0 {
+                nmatch = 1;
+            }
+            metamodelica::nil()
+        } else {
+            let mut items: Vec<ArcStr> = Vec::with_capacity(maxn);
+            for m in pmatch.iter().take(maxn) {
+                // Pack only participating groups (rm_so != -1), like the C.
+                if res == 0 && (m.rm_so as i64) != -1 {
+                    let so = m.rm_so as usize;
+                    let eo = m.rm_eo as usize;
+                    let sub = std::str::from_utf8(&bytes[so..eo]).unwrap_or("");
+                    items.push(ArcStr::from(sub));
+                    nmatch += 1;
+                }
+            }
+            while items.len() < maxn {
+                items.push(literal!(""));
+            }
+            list_forward(items)
+        };
+        (nmatch, matches)
+    }
 }
 
 pub fn strncmp(inString1: ArcStr, inString2: ArcStr, len: i32) -> i32 {

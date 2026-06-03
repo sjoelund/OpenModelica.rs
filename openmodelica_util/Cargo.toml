@@ -13,3 +13,4 @@ tailcall.workspace=true
 openmodelica_util_datatypes_basic.workspace=true
 arcstr.workspace=true
 match_deref.workspace=true
+libc.workspace=true
