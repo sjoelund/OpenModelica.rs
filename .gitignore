@@ -1,3 +1,5 @@
 target
 compilerSources.txt
 mslSources.txt
+a.mo
+build/
