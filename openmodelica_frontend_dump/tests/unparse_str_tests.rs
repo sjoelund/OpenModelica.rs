@@ -47,7 +47,7 @@ fn init_flags() {
 
 /// Parse `src` with the MetaModelica grammar and return the Absyn::Program.
 fn parse_prog(src: &str) -> openmodelica_ast::Absyn::Program {
-    parse(src, "test.mo", Grammar::MetaModelica)
+    parse(src, "test.mo", "test.mo", Grammar::MetaModelica)
         .unwrap_or_else(|e| panic!("parse failed: {}", e))
 }
 

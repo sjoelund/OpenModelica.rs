@@ -61,9 +61,12 @@ fn select_grammar(acceptedGram: i32, languageStandardInt: i32) -> Grammar {
 
 /// Wrap [`parser::parse`]'s `Box<dyn Error>` into an `anyhow::Error` so
 /// the MetaModelica-facing signatures (which return `anyhow::Result`)
-/// can use `?` directly.
-fn run_parse(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::Program> {
-    parser::parse(src, filename, grammar).map_err(|e| anyhow!(e.to_string()))
+/// can use `?` directly. `filename` is the real path stored into SOURCEINFO;
+/// `info_filename` (the possibly testsuite-friendly name) is only used to
+/// display syntax errors — same split as the C parser's `filename_C` vs
+/// `filename_C_testsuiteFriendly` (Parser/parse.c).
+fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Absyn::Program> {
+    parser::parse(src, filename, info_filename, grammar).map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn parse(
@@ -89,7 +92,7 @@ pub fn parse(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parse: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    run_parse(&src, infoFilename.as_str(), grammar)
+    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar)
 }
 
 pub fn parsestring(
@@ -101,7 +104,9 @@ pub fn parsestring(
     _runningTestsuite: bool,
 ) -> Result<Absyn::Program> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    run_parse(r#str.as_str(), infoFilename.as_str(), grammar)
+    // String input has no on-disk path; the interactive name serves as both
+    // the SOURCEINFO and the error-display name (like the C `parseString`).
+    run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar)
 }
 
 // ---------------------------------------------------------------------
@@ -121,7 +126,7 @@ pub fn parseexp(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_statements(&src, infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
+    parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn parsestringexp(
@@ -132,7 +137,7 @@ pub fn parsestringexp(
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_statements(r#str.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
+    parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
 }
 
 pub fn stringPath(

@@ -29,7 +29,16 @@ use std::cell::RefCell;
 use arcstr::{ArcStr, literal};
 
 thread_local! {
+    /// File name stored into every SOURCEINFO the parser constructs. This is
+    /// the *real* path of the file being parsed — like `members.filename_C`
+    /// in the C parser (Parser/parse.c), NOT the testsuite-friendly name.
     static CURRENT_FILE: RefCell<ArcStr> = const { RefCell::new(literal!("")) };
+    /// File name used when *displaying* syntax errors — the C parser's
+    /// `filename_C_testsuiteFriendly` (`infoFilename` in ParserExt.mo). In
+    /// testsuite mode this is the testsuite-relative name, so parse-error
+    /// output is stable, while SOURCEINFO keeps the real path (which e.g.
+    /// `SymbolTable.updateUriMapping` needs to resolve modelica:// URIs).
+    static CURRENT_ERROR_FILE: RefCell<ArcStr> = const { RefCell::new(literal!("")) };
     /// Comments collected by the lexer alongside the token stream.
     ///
     /// Stored as a thread-local because the parser is built on winnow
@@ -161,7 +170,7 @@ impl ParserError {
     }
 
     pub fn display(&self) -> String {
-        let mut out = format!("error: parsing failed at {} {}:{}\n", CURRENT_FILE.take(), self.line, self.col);
+        let mut out = format!("error: parsing failed at {} {}:{}\n", CURRENT_ERROR_FILE.take(), self.line, self.col);
         let mut labels: Vec<String> = Vec::new();
         let mut expected: Vec<String> = Vec::new();
         for ctx in self.inner.context() {
@@ -213,10 +222,12 @@ impl std::error::Error for ParserError {}
 fn run_entry<T>(
     src: &str,
     filename: &str,
+    info_filename: &str,
     grammar: Grammar,
     mut entry: fn(&mut &[LexToken]) -> ModalResult<T>,
 ) -> Result<T, Box<dyn std::error::Error>> {
     CURRENT_FILE.with(|f| *f.borrow_mut() = ArcStr::from(filename));
+    CURRENT_ERROR_FILE.with(|f| *f.borrow_mut() = ArcStr::from(info_filename));
     let (tokens, comments) = lexer::lex_with_comments(src, grammar)?;
     COMMENT_STREAM.with(|s| *s.borrow_mut() = CommentStream::new(comments));
     let result = entry
@@ -228,8 +239,8 @@ fn run_entry<T>(
 }
 
 /// Lex then parse `src`.  Returns the AST or the first error encountered.
-pub fn parse(src: &str, filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, stored_definition)
+pub fn parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
+    run_entry(src, filename, info_filename, grammar, stored_definition)
 }
 
 /// Parse a `.mos` script / sequence of interactive statements (ANTLR3 rule
@@ -238,33 +249,34 @@ pub fn parse(src: &str, filename: &str, grammar: Grammar) -> Result<Program, Box
 pub fn parse_statements(
     src: &str,
     filename: &str,
+    info_filename: &str,
     grammar: Grammar,
 ) -> Result<crate::GlobalScript::Statements, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, interactive_stmt)
+    run_entry(src, filename, info_filename, grammar, interactive_stmt)
 }
 
 /// Parse a dotted name path such as `Modelica.Blocks.Sources` (ANTLR3 rule
 /// `name_path_end`; entry point for `ParserExt.stringPath`).
 pub fn parse_path(src: &str, filename: &str, grammar: Grammar) -> Result<Path, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, name_path)
+    run_entry(src, filename, filename, grammar, name_path)
 }
 
 /// Parse a component reference such as `a.b[1].c` (ANTLR3 rule
 /// `component_reference_end`; entry point for `ParserExt.stringCref`).
 pub fn parse_cref(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ComponentRef, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, component_reference)
+    run_entry(src, filename, filename, grammar, component_reference)
 }
 
 /// Parse a single element modification such as `x(start = 1.0)` (ANTLR3 rule
 /// `element_modification_or_replaceable`; entry point for `ParserExt.stringMod`).
 pub fn parse_modification(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ElementArg, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, element_modification_or_replaceable)
+    run_entry(src, filename, filename, grammar, element_modification_or_replaceable)
 }
 
 /// Parse a single equation such as `x = y + 1` (ANTLR3 rule `equation`;
 /// entry point for `ParserExt.stringEq`).
 pub fn parse_equation(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::EquationItem, Box<dyn std::error::Error>> {
-    run_entry(src, filename, grammar, equation_item)
+    run_entry(src, filename, filename, grammar, equation_item)
 }
 
 // ---------------------------------------------------------------------------
@@ -3260,7 +3272,7 @@ mod tests {
                     /* ... */\n\
                     Real x(start=0);\n\
                     end SimpleSystem;";
-        match parse(code, "", Grammar::MetaModelica).unwrap() {
+        match parse(code, "", "", Grammar::MetaModelica).unwrap() {
             Program { classes, .. } => {
                 assert!(!classes.is_empty());
                 if let List::Cons { head, .. } = &*classes {
@@ -3274,13 +3286,13 @@ mod tests {
     #[test]
     fn parse_first_token() {
         let code = "package SimpleSystem \"Returns the index...\"\nend SimpleSystem;";
-        parse(code, "", Grammar::MetaModelica).expect("expected parse success");
+        parse(code, "", "", Grammar::MetaModelica).expect("expected parse success");
     }
 
     #[test]
     fn parse_absyn() {
         let code = std::fs::read_to_string("tests/data/Absyn.mo").expect("Absyn.mo not found");
-        if let Err(e) = parse(&code, "Absyn.mo", Grammar::MetaModelica) {
+        if let Err(e) = parse(&code, "Absyn.mo", "Absyn.mo", Grammar::MetaModelica) {
             panic!("expected Absyn.mo to parse: {e}");
         }
     }
@@ -3302,7 +3314,7 @@ algorithm\n\
 end A;\n\
 // after A\n\
 ";
-        let prog = parse(code, "t.mo", Grammar::MetaModelica).expect("parse");
+        let prog = parse(code, "t.mo", "t.mo", Grammar::MetaModelica).expect("parse");
         let Program { classes, .. } = prog;
         let first = match &*classes { List::Cons { head, .. } => head.clone(), _ => panic!("no classes") };
         let Class { commentsBeforeClass, commentsAfterEnd, body, .. } = &*first;
@@ -3348,7 +3360,7 @@ algorithm\n\
   x := /* before */ 1 /* after */;\n\
 end P;\n\
 ";
-        let prog = parse(code, "t.mo", Grammar::MetaModelica).expect("parse");
+        let prog = parse(code, "t.mo", "t.mo", Grammar::MetaModelica).expect("parse");
         let Program { classes, .. } = prog;
         let first = match &*classes { List::Cons { head, .. } => head.clone(), _ => panic!("no classes") };
         let Class { body, .. } = &*first;
@@ -3387,7 +3399,7 @@ equation\n\
   x = 1;\n\
 end P;\n\
 ";
-        let prog = parse(code, "t.mo", Grammar::MetaModelica).expect("parse");
+        let prog = parse(code, "t.mo", "t.mo", Grammar::MetaModelica).expect("parse");
         let Program { classes, .. } = prog;
         let first = match &*classes { List::Cons { head, .. } => head.clone(), _ => panic!("no classes") };
         let Class { body, .. } = &*first;
@@ -3410,7 +3422,7 @@ end P;\n\
     #[test]
     fn parse_codegen_c() {
         let code = std::fs::read_to_string("tests/data/CodegenC.mo").expect("CodegenC.mo not found");
-        if let Err(e) = parse(&code, "CodegenC.mo", Grammar::MetaModelica) {
+        if let Err(e) = parse(&code, "CodegenC.mo", "CodegenC.mo", Grammar::MetaModelica) {
             panic!("expected CodegenC.mo to parse: {e}");
         }
     }
@@ -3424,7 +3436,7 @@ end P;\n\
         // The shape of a typical .mos script: expression statements separated
         // by semicolons, several on one line, with a trailing semicolon.
         let code = "loadFile(\"a.mo\");getErrorString();\nsimulate(M);getErrorString();\n";
-        let stmts = parse_statements(code, "t.mos", Grammar::Modelica3).expect("parse");
+        let stmts = parse_statements(code, "t.mos", "t.mos", Grammar::Modelica3).expect("parse");
         assert!(stmts.semicolon, "script ends with ';' — results must not print");
         let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
         assert_eq!(items.len(), 4);
@@ -3439,7 +3451,7 @@ end P;\n\
 
     #[test]
     fn interactive_stmt_no_trailing_semicolon() {
-        let stmts = parse_statements("1 + 2", "t.mos", Grammar::Modelica3).expect("parse");
+        let stmts = parse_statements("1 + 2", "t.mos", "t.mos", Grammar::Modelica3).expect("parse");
         assert!(!stmts.semicolon, "no trailing ';' — result prints");
         assert_eq!((&*stmts.interactiveStmtLst).into_iter().count(), 1);
     }
@@ -3451,7 +3463,7 @@ end P;\n\
         for f in ["ModelicaBuiltin.mo", "MetaModelicaBuiltin.mo", "NFModelicaBuiltin.mo"] {
             let path = format!("/projects/OpenModelica/build/lib/omc/{f}");
             let Ok(src) = std::fs::read_to_string(&path) else { continue };
-            if let Err(e) = parse(&src, f, Grammar::MetaModelica) {
+            if let Err(e) = parse(&src, f, f, Grammar::MetaModelica) {
                 panic!("{f} failed to parse under MetaModelica grammar: {e}");
             }
         }
@@ -3462,7 +3474,7 @@ end P;\n\
         // .mos scripts must also parse under -g=MetaModelica (used by the
         // metamodelica testsuite); statements must not silently vanish.
         let code = "loadFile(\"a.mo\");\ngetErrorString();\n";
-        let stmts = parse_statements(code, "t.mos", Grammar::MetaModelica).expect("parse");
+        let stmts = parse_statements(code, "t.mos", "t.mos", Grammar::MetaModelica).expect("parse");
         assert!(stmts.semicolon);
         assert_eq!((&*stmts.interactiveStmtLst).into_iter().count(), 2);
     }
@@ -3471,7 +3483,7 @@ end P;\n\
     fn interactive_stmt_assignment() {
         // `x := f(1)` must fail the expression predicate (next token is `:=`)
         // and land in the assignment clause as IALG.
-        let stmts = parse_statements("x := f(1);", "t.mos", Grammar::Modelica3).expect("parse");
+        let stmts = parse_statements("x := f(1);", "t.mos", "t.mos", Grammar::Modelica3).expect("parse");
         let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
         assert_eq!(items.len(), 1);
         let crate::GlobalScript::Statement::IALG { algItem } = items[0] else {
@@ -3485,7 +3497,7 @@ end P;\n\
 
     #[test]
     fn interactive_stmt_for_loop() {
-        let stmts = parse_statements("for i in 1:10 loop x := i; end for;", "t.mos", Grammar::Modelica3)
+        let stmts = parse_statements("for i in 1:10 loop x := i; end for;", "t.mos", "t.mos", Grammar::Modelica3)
             .expect("parse");
         let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
         assert_eq!(items.len(), 1);
@@ -3500,14 +3512,14 @@ end P;\n\
 
     #[test]
     fn interactive_stmt_rejects_trailing_junk() {
-        assert!(parse_statements("foo() end", "t.mos", Grammar::Modelica3).is_err());
+        assert!(parse_statements("foo() end", "t.mos", "t.mos", Grammar::Modelica3).is_err());
     }
 
     #[test]
     fn interactive_stmt_empty_input_is_empty_list() {
         // More lenient than ANTLR (which requires at least one statement):
         // a script of only comments yields an empty statement list.
-        let stmts = parse_statements("// nothing here\n", "t.mos", Grammar::Modelica3).expect("parse");
+        let stmts = parse_statements("// nothing here\n", "t.mos", "t.mos", Grammar::Modelica3).expect("parse");
         assert!(matches!(&*stmts.interactiveStmtLst, List::Nil));
         assert!(!stmts.semicolon);
     }
