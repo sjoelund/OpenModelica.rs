@@ -650,6 +650,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             true
         },
         Deref @ SimCode::SimEqSystem::SES_WHEN { .. } => {
+            let mut whenOp: BackendDAE::WhenOperator = <BackendDAE::WhenOperator as ::std::default::Default>::default();
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             File::write(file.clone(), (literal!("\n{\"eqIndex\":")).clone());
             File::writeInt(file.clone(), var_field!((*eq).index, SimCode::SimEqSystem::SES_WHEN).clone(), (literal!("%d")).clone());

@@ -475,12 +475,11 @@ pub fn partialInstClass2(mut definition: Arc<SCode::Element>, mut scope: Arc<Ins
     prefs = instClassPrefixes(definition.clone())?;
     cls = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => Class::fromSCode(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), false, scope.clone(), prefs.clone())?,
-        Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: __esc_ce_cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
-            ce_cdef = (*__esc_ce_cdef).clone();
+        Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: ce_cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
             if !(SCodeUtil::isElementRedeclare(definition.clone())?) {
                 Error::addSourceMessage(Error::CLASS_EXTENDS_MISSING_REDECLARE.clone(), list![(SCodeUtil::elementName(definition.clone())?).clone()], SCodeUtil::elementInfo(definition.clone()))?;
             }
-            Class::fromSCode(var_field!((*ce_cdef).elementLst, SCode::ClassDef::PARTS).clone(), true, scope.clone(), prefs.clone())?
+            Class::fromSCode(var_field!((**ce_cdef).elementLst, SCode::ClassDef::PARTS).clone(), true, scope.clone(), prefs.clone())?
         },
         Deref @ SCode::ClassDef::ENUMERATION { .. } => {
             ty = makeEnumerationType(var_field!((*cdef).enumLst, SCode::ClassDef::ENUMERATION).clone(), scope.clone())?;
@@ -497,10 +496,7 @@ pub fn instClassPrefixes(mut cls: Arc<SCode::Element>) -> Result<Arc<Class::Pref
     let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     prefixes = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, .. }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, .. } => Class::DEFAULT_PREFIXES.clone(),
-        Deref @ SCode::Element::CLASS { prefixes: __esc_prefs, .. } => {
-            prefs = (*__esc_prefs).clone();
-            Arc::new(Class::Prefixes::Prefixes { encapsulatedPrefix: var_field!((*cls).encapsulatedPrefix, SCode::Element::CLASS).clone(), partialPrefix: var_field!((*cls).partialPrefix, SCode::Element::CLASS).clone(), finalPrefix: prefs.finalPrefix.clone(), innerOuter: prefs.innerOuter.clone(), replaceablePrefix: prefs.replaceablePrefix.clone() })
-        },
+        Deref @ SCode::Element::CLASS { prefixes: prefs, .. } => Arc::new(Class::Prefixes::Prefixes { encapsulatedPrefix: var_field!((*cls).encapsulatedPrefix, SCode::Element::CLASS).clone(), partialPrefix: var_field!((*cls).partialPrefix, SCode::Element::CLASS).clone(), finalPrefix: prefs.finalPrefix.clone(), innerOuter: prefs.innerOuter.clone(), replaceablePrefix: prefs.replaceablePrefix.clone() }),
         _ => bail!("match: no arm matched"),
     } });
     Ok(prefixes)
@@ -3165,9 +3161,8 @@ pub fn updateImplicitVariability(mut node: Arc<InstNode::InstNode>, mut parentEv
     let mut cls: Arc<Class::NFClass> = InstNode::getClass(node.clone())?;
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            cls_tree = (*__esc_cls_tree).clone();
-            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_CLASS { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 updateImplicitVariabilityComp(c.clone(), parentEval.clone(), context.clone())?;
             }
@@ -3182,9 +3177,8 @@ pub fn updateImplicitVariability(mut node: Arc<InstNode::InstNode>, mut parentEv
             updateImplicitVariability(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), parentEval.clone(), context.clone())?;
             ()
         },
-        Deref @ Class::INSTANCED_BUILTIN { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            cls_tree = (*__esc_cls_tree).clone();
-            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_BUILTIN { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 updateImplicitVariabilityComp(c.clone(), parentEval.clone(), context.clone())?;
             }

@@ -3460,15 +3460,14 @@ pub fn getFunctionInterface(mut cl: Arc<Absyn::Class>) -> Result<Arc<Absyn::Clas
     let mut def: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let mut elts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(cl.clone()) {
-        Deref @ Absyn::Class { body: __esc_def @ Deref @ Absyn::ClassDef::PARTS { .. }, restriction: Absyn::Restriction::R_FUNCTION { .. }, .. } => {
-            def = (*__esc_def).clone();
-            let __pa0 = ::match_deref::match_deref! { match &(List::fold(var_field!((*def).classParts, Absyn::ClassDef::PARTS).clone().reverse(), (std::sync::Arc::new(getFunctionInterfaceParts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> + 'static>), metamodelica::nil())?) {
+        Deref @ Absyn::Class { body: def @ Deref @ Absyn::ClassDef::PARTS { .. }, restriction: Absyn::Restriction::R_FUNCTION { .. }, .. } => {
+            let __pa0 = ::match_deref::match_deref! { match &(List::fold(var_field!((**def).classParts, Absyn::ClassDef::PARTS).clone().reverse(), (std::sync::Arc::new(getFunctionInterfaceParts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> + 'static>), metamodelica::nil())?) {
                 __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             elts = __pa0.clone();
             assign_field!(
-                cl.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: var_field!((*def).typeVars, Absyn::ClassDef::PARTS).clone(), classAttrs: var_field!((*def).classAttrs, Absyn::ClassDef::PARTS).clone(), classParts: list![Arc::new(Absyn::ClassPart::PUBLIC { contents: elts.clone() })], ann: metamodelica::nil(), comment: None }),
+                cl.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: var_field!((**def).typeVars, Absyn::ClassDef::PARTS).clone(), classAttrs: var_field!((**def).classAttrs, Absyn::ClassDef::PARTS).clone(), classParts: list![Arc::new(Absyn::ClassPart::PUBLIC { contents: elts.clone() })], ann: metamodelica::nil(), comment: None }),
                 cl.commentsBeforeEnd = metamodelica::nil(),
                 cl.commentsAfterEnd = metamodelica::nil()
             );

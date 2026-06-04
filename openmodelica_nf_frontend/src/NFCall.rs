@@ -2203,6 +2203,7 @@ pub fn toArrayConstructor(mut iCall: Arc<NFCall>, mut index_ptr: Pointer::Pointe
             let mut iter_range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut step: Option<Arc<Expression::NFExpression>> = None;
             let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            let mut body_call: Arc<NFCall> = Arc::new(<NFCall as ::std::default::Default>::default());
             let mut index: i32 = 0;
             (::match_deref::match_deref! { match &(AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*iCall).r#fn, NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?) {
         Deref @ "fill" => {

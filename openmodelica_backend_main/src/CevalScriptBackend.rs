@@ -6713,14 +6713,8 @@ fn mergeClassPartWithList(mut inClassPart: Arc<Absyn::ClassPart>, mut inClassPar
     let mut part: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outClassParts = (::match_deref::match_deref! { match &((inClassPart.clone(), inClassParts.clone())) {
-        (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ metamodelica::List::Cons { head: __esc_part @ Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: rest }) => {
-            part = (*__esc_part).clone();
-            metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((*part).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), rest.clone())
-        },
-        (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ metamodelica::List::Cons { head: __esc_part @ Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: rest }) => {
-            part = (*__esc_part).clone();
-            metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((*part).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), rest.clone())
-        },
+        (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: rest }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), rest.clone()),
+        (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: rest }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), rest.clone()),
         _ => metamodelica::cons(inClassPart.clone(), inClassParts.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -9758,8 +9752,7 @@ fn getClassElementComment(mut element: Arc<Absyn::Element>) -> ArcStr {
     let mut commentStr: ArcStr = arcstr::literal!("");
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     commentStr = ((::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __esc_cls, .. }, .. } => {
-            cls = (*__esc_cls).clone();
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: cls, .. }, .. } => {
             commentStr = (InteractiveUtil::getConstrainingClassComment(var_field!((*element).constrainClass, Absyn::Element::ELEMENT).clone())).clone();
             if stringEmpty((commentStr.clone()).clone()) {
                 commentStr = (getClassDefComment(cls.body.clone())).clone();
@@ -10360,8 +10353,7 @@ fn getAnnotationNamedModifiers(mut classPath: Arc<Absyn::Path>, mut annotationNa
         let mut m: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
         let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         names = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Some(__esc_m) => {
-            m = (*__esc_m).clone();
+        Some(m) => {
             paths = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         for mut a in (m.elementArgLst.clone()).into_iter().cloned() {

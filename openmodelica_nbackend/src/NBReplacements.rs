@@ -393,12 +393,11 @@ pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expressio
         },
         Deref @ Expression::RECORD { .. } => var_field!((*arg).elements, Expression::NFExpression::RECORD).clone(),
         Deref @ Expression::TUPLE { .. } => var_field!((*arg).elements, Expression::NFExpression::TUPLE).clone(),
-        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { r#fn, .. } } => {
-            call = (*__esc_call).clone();
+        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } => {
             if Function::isDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else if Function::isNonDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else {
                 children_args = Expression::getRecordElements(arg.clone())?;
             }

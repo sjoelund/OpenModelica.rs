@@ -1540,8 +1540,7 @@ pub fn dumpJSONReplaceable(mut repl: Arc<SCode::Replaceable>, mut scope: Arc<Ins
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     json = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
-            cc = (*__esc_cc).clone();
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(cc) } => {
             json = JSON::makeNull();
             json = JSON::addPair((literal!("constrainedby")).clone(), dumpJSONPath(cc.constrainingClass.clone())?, json.clone())?;
             json = dumpJSONSCodeMod(cc.modifier.clone(), scope.clone(), json.clone())?;

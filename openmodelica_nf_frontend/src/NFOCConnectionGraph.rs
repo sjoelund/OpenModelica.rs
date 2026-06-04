@@ -510,9 +510,7 @@ fn addRootsAndBranches(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqu
     for mut eq in &*equations.clone() {
         let mut eq = eq.clone();
         outEquations = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { arguments: args, .. } }, .. } => {
-            call = (*__esc_call).clone();
-            (match identifyConnectionsOperator(Function::name(var_field!((*call).r#fn, Call::NFCall::TYPED_CALL).clone())) {
+        Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: args, .. } }, .. } => (match identifyConnectionsOperator(Function::name(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())) {
         ConnectionsOperator::ROOT => {
             let __pa0 = ::match_deref::match_deref! { match &(args.clone()) {
                 Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: __pa0, .. }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
@@ -567,8 +565,7 @@ fn addRootsAndBranches(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqu
             outEquations.clone()
         },
         _ => metamodelica::cons(eq.clone(), outEquations.clone()),
-    })
-        },
+    }),
         _ => metamodelica::cons(eq.clone(), outEquations.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -395,7 +395,7 @@ pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::L
         l = 0;
         for mut e in &*exps.clone() {
             let mut e = e.clone();
-            unsafe { metamodelica::Dangerous::arrayInitSlot(expArr.clone(), k.clone() + intMod(l.clone(), thisDim.clone()) + lastDim.clone() * l.clone() / thisDim.clone(), e.clone()) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(expArr.clone(), k.clone() + intMod(l.clone(), thisDim.clone()) + lastDim.clone() * intDiv(l.clone(), thisDim.clone()), e.clone()) };
             l = l.clone() + 1;
         }
         k = k.clone() + thisDim.clone();

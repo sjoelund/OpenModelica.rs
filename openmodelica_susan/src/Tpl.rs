@@ -600,6 +600,7 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
         },
         Text::FILE_TEXT { .. } => {
             let mut emptok: Arc<StringToken> = Arc::new(StringToken::ST_NEW_LINE);
+            let mut iopts: Arc<IterOptions>;
             let mut i0: Mutable::Mutable<i32>;
             let mut tell: Mutable::Mutable<i32>;
             let mut tellpos: i32 = 0;

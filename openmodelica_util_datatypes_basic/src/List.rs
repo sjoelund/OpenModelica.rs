@@ -1044,7 +1044,7 @@ pub fn partition<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut
         outPartitions = list![inList.clone()];
         return Ok(outPartitions.clone());
     }
-    for mut i in 1..=length.clone() / inPartitionLength.clone() {
+    for mut i in 1..=intDiv(length.clone(), inPartitionLength.clone()) {
         (part, lst) = split(lst.clone(), inPartitionLength.clone())?;
         outPartitions = metamodelica::cons(part.clone(), outPartitions.clone());
     }

@@ -2118,7 +2118,7 @@ fn evalBuiltinInteger(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expr
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     result = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::INTEGER { .. } => arg.clone(),
-        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::INTEGER { value: ((var_field!((*arg).value, Expression::NFExpression::REAL).clone()).0 as i32) }),
+        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::INTEGER { value: (((var_field!((*arg).value, Expression::NFExpression::REAL).clone()).floor()).0 as i32) }),
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinInteger"), list![arg.clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
@@ -2454,7 +2454,7 @@ fn evalBuiltinRem(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>
                 }
                 bail!("fail");
             }
-            Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*x).value, Expression::NFExpression::INTEGER).clone() - var_field!((*x).value, Expression::NFExpression::INTEGER).clone() / var_field!((*y).value, Expression::NFExpression::INTEGER).clone() * var_field!((*y).value, Expression::NFExpression::INTEGER).clone() })
+            Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*x).value, Expression::NFExpression::INTEGER).clone() - intDiv(var_field!((*x).value, Expression::NFExpression::INTEGER).clone(), var_field!((*y).value, Expression::NFExpression::INTEGER).clone()) * var_field!((*y).value, Expression::NFExpression::INTEGER).clone() })
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => {
             if var_field!((*y).value, Expression::NFExpression::REAL).clone() == metamodelica::OrderedFloat(0.0_f64) {
@@ -2463,7 +2463,7 @@ fn evalBuiltinRem(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>
                 }
                 bail!("fail");
             }
-            Arc::new(Expression::NFExpression::REAL { value: var_field!((*x).value, Expression::NFExpression::REAL).clone() - var_field!((*x).value, Expression::NFExpression::REAL).clone() / var_field!((*y).value, Expression::NFExpression::REAL).clone() * var_field!((*y).value, Expression::NFExpression::REAL).clone() })
+            Arc::new(Expression::NFExpression::REAL { value: var_field!((*x).value, Expression::NFExpression::REAL).clone() - realDiv(var_field!((*x).value, Expression::NFExpression::REAL).clone(), var_field!((*y).value, Expression::NFExpression::REAL).clone()) * var_field!((*y).value, Expression::NFExpression::REAL).clone() })
         },
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinRem"), args.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
@@ -3082,8 +3082,7 @@ fn printUnboundError(mut component: Arc<Component::NFComponent>, mut target: Arc
         return Ok(());
     }
     let () = (::match_deref::match_deref! { match &(target.extra.clone()) {
-        Some(__esc_extra @ Deref @ EvalTargetData { .. }) => {
-            extra = (*__esc_extra).clone();
+        Some(extra @ Deref @ EvalTargetData { .. }) => {
             Error::addSourceMessage(Error::STRUCTURAL_PARAMETER_OR_CONSTANT_WITH_NO_BINDING.clone(), list![(Expression::toString(extra.exp.clone())?).clone(), (InstNode::name(extra.component.clone())?).clone()], target.info.clone())?;
             bail!("fail")
         },

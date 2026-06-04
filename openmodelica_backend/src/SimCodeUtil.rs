@@ -9254,26 +9254,11 @@ fn dumpWhenOps(mut whenStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>
     for mut whenOps in &*whenStmtLst.clone() {
         let mut whenOps = whenOps.clone();
         res = ((match whenOps.clone() {
-        mut __esc_e @ BackendDAE::WhenOperator::ASSIGN { .. } => {
-            e = __esc_e.clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.left, BackendDAE::WhenOperator::ASSIGN).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.right, BackendDAE::WhenOperator::ASSIGN).clone())?); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.right, BackendDAE::WhenOperator::ASSIGN).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }
-        },
-        mut __esc_e @ BackendDAE::WhenOperator::REINIT { .. } => {
-            e = __esc_e.clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("reinit(")); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(var_field!(e.stateVar, BackendDAE::WhenOperator::REINIT).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.value, BackendDAE::WhenOperator::REINIT).clone())?); __mm_s.push_str(&*literal!(") [")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.value, BackendDAE::WhenOperator::REINIT).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }
-        },
-        mut __esc_e @ BackendDAE::WhenOperator::ASSERT { .. } => {
-            e = __esc_e.clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("assert(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.condition, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.message, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.level, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
-        },
-        mut __esc_e @ BackendDAE::WhenOperator::TERMINATE { .. } => {
-            e = __esc_e.clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("terminate(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.message, BackendDAE::WhenOperator::TERMINATE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
-        },
-        mut __esc_e @ BackendDAE::WhenOperator::NORETCALL { .. } => {
-            e = __esc_e.clone();
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.exp, BackendDAE::WhenOperator::NORETCALL).clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.exp, BackendDAE::WhenOperator::NORETCALL).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }
-        },
+        mut e @ BackendDAE::WhenOperator::ASSIGN { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.left, BackendDAE::WhenOperator::ASSIGN).clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.right, BackendDAE::WhenOperator::ASSIGN).clone())?); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.right, BackendDAE::WhenOperator::ASSIGN).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) },
+        mut e @ BackendDAE::WhenOperator::REINIT { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("reinit(")); __mm_s.push_str(&*ComponentReference::debugPrintComponentRefTypeStr(var_field!(e.stateVar, BackendDAE::WhenOperator::REINIT).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.value, BackendDAE::WhenOperator::REINIT).clone())?); __mm_s.push_str(&*literal!(") [")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.value, BackendDAE::WhenOperator::REINIT).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) },
+        mut e @ BackendDAE::WhenOperator::ASSERT { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("assert(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.condition, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.message, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.level, BackendDAE::WhenOperator::ASSERT).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        mut e @ BackendDAE::WhenOperator::TERMINATE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("terminate(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.message, BackendDAE::WhenOperator::TERMINATE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        mut e @ BackendDAE::WhenOperator::NORETCALL { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*ExpressionBasics::printExpStr(var_field!(e.exp, BackendDAE::WhenOperator::NORETCALL).clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*DAEDump::daeTypeStr(Expression::r#typeof(var_field!(e.exp, BackendDAE::WhenOperator::NORETCALL).clone())?)?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) },
     })).clone();
     }
     Ok(res)

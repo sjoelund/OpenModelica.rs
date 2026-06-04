@@ -1859,10 +1859,7 @@ fn vectorizeEquation(mut eqn: Arc<Equation::NFEquation>, mut dimensions: Arc<met
             rhs = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: var_field!((*rhs).cref, Expression::NFExpression::CREF).clone() });
             metamodelica::cons(Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() }), equations.clone())
         },
-        Deref @ Equation::NORETCALL { exp: __esc_lhs @ Deref @ Expression::CALL { .. }, .. } if (Call::isConnectionsOperator(var_field!((*lhs).call, Expression::NFExpression::CALL).clone())?) => {
-            lhs = (*__esc_lhs).clone();
-            metamodelica::cons(eq.clone(), equations.clone())
-        },
+        Deref @ Equation::NORETCALL { exp: lhs @ Deref @ Expression::CALL { .. }, .. } if (Call::isConnectionsOperator(var_field!((**lhs).call, Expression::NFExpression::CALL).clone())?) => metamodelica::cons(eq.clone(), equations.clone()),
         _ => {
             eq = vectorizeEquationGeneric(eq.clone(), dimensions.clone(), prefix.clone())?;
             splitForLoop(eq.clone(), EMPTY_PREFIX().clone(), equations.clone(), settings.clone())?
@@ -3303,9 +3300,8 @@ pub fn collectClassFunctions(mut clsNode: Arc<InstNode::InstNode>, mut funcs: Fu
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     cls = InstNode::getClass(clsNode.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { sections, elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            cls_tree = (*__esc_cls_tree).clone();
-            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_CLASS { sections, elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 comp = InstNode::component(c.clone())?;
                 funcs = collectTypeFuncs(Component::getType(comp.clone())?, funcs.clone())?;

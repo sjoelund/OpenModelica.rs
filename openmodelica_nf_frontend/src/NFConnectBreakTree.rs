@@ -804,9 +804,8 @@ pub fn appendBreaksInNode(mut node: Arc<InstNode::InstNode>, mut tree: Arc<Tree>
     let mut break_mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut entry: Mutable::Mutable<Entry>;
     let () = (::match_deref::match_deref! { match &(InstNode::extendsDefinition(node.clone())?) {
-        Some(Deref @ SCode::Element::EXTENDS { modifications: __esc_mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => {
-            r#mod = (*__esc_mod).clone();
-            for mut sm in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
+        Some(Deref @ SCode::Element::EXTENDS { modifications: r#mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => {
+            for mut sm in &*var_field!((**r#mod).subModLst, SCode::Mod::MOD).clone() {
                 let mut sm = sm.clone();
                 let () = (::match_deref::match_deref! { match &(sm.clone()) {
         Deref @ SCode::SubMod { r#mod: break_mod @ Deref @ SCode::Mod::BREAK_CONNECT { .. }, .. } => {

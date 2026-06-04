@@ -634,10 +634,9 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut iter_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     evalExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
-            call = (*__esc_call).clone();
-            ty = Expression::typeOf(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone());
-            for mut iter in &*var_field!((*call).iters, Call::NFCall::TYPED_REDUCTION).clone() {
+        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
+            ty = Expression::typeOf(var_field!((**call).exp, Call::NFCall::TYPED_REDUCTION).clone());
+            for mut iter in &*var_field!((**call).iters, Call::NFCall::TYPED_REDUCTION).clone() {
                 let mut iter = iter.clone();
                 (iter_node, iter_exp) = iter.clone();
                 if Component::variability(InstNode::component(iter_node.clone())?)? > Variability::PARAMETER.clone() {
@@ -649,8 +648,8 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
                 iters = metamodelica::cons((iter_node.clone(), iter_exp.clone()), iters.clone());
             }
             iters = metamodelica::Dangerous::listReverseInPlace(iters.clone());
-            (arg, _) = ExpandExp::expandArrayConstructor(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone(), ty.clone(), iters.clone())?;
-            Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(var_field!((*call).r#fn, Call::NFCall::TYPED_REDUCTION).clone(), list![arg.clone()], var_field!((*call).var, Call::NFCall::TYPED_REDUCTION).clone(), Purity::PURE.clone(), var_field!((*call).ty, Call::NFCall::TYPED_REDUCTION).clone()) })
+            (arg, _) = ExpandExp::expandArrayConstructor(var_field!((**call).exp, Call::NFCall::TYPED_REDUCTION).clone(), ty.clone(), iters.clone())?;
+            Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(var_field!((**call).r#fn, Call::NFCall::TYPED_REDUCTION).clone(), list![arg.clone()], var_field!((**call).var, Call::NFCall::TYPED_REDUCTION).clone(), Purity::PURE.clone(), var_field!((**call).ty, Call::NFCall::TYPED_REDUCTION).clone()) })
         },
         _ => bail!("match: no arm matched"),
     } });

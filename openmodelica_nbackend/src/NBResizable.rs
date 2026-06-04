@@ -764,11 +764,10 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
     if !(UnorderedMap::contains(cref.clone(), optimal_values.clone())?) {
         var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
         value = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: __esc_attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
-            attributes = (*__esc_attributes).clone();
+        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
             if UnorderedSet::contains(cref.clone(), min_parameters.clone())? {
-                if isSome(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                if isSome(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -776,8 +775,8 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
                 } else {
                     value = Arc::new(Expression::NFExpression::INTEGER { value: 0 });
                 }
-            } else if isSome(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                let __pa1 = ::match_deref::match_deref! { match &(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+            } else if isSome(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                let __pa1 = ::match_deref::match_deref! { match &(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
                 } };

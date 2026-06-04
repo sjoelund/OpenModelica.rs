@@ -637,10 +637,7 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
     } });
         ty = Expression::typeOf(exp.clone());
         exp = (::match_deref::match_deref! { match &((aux_opt.clone(), ty.clone())) {
-        (Some(__esc_aux), _) => {
-            aux = (*__esc_aux).clone();
-            aux.replacer.clone()
-        },
+        (Some(aux), _) => aux.replacer.clone(),
         (_, Deref @ Type::TUPLE { .. }) => {
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();

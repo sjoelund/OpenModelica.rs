@@ -303,10 +303,7 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
     let mut alias2: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     aliases = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::nodeVariability(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), negative: false, variable: None }), aliases.clone()),
-        Deref @ Expression::UNARY { exp: __esc_e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((*e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => {
-            e = (*__esc_e).clone();
-            metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone())
-        },
+        Deref @ Expression::UNARY { exp: e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((**e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone()),
         Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, .. } if (Expression::isZero(otherExp.clone())?) => {
             aliases1 = getAliasVarsFromExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
             aliases2 = getAliasVarsFromExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;

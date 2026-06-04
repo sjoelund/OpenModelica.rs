@@ -388,8 +388,7 @@ fn initialize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<A
     let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     let init: bool = Partition::kindIsInitial(kind.clone());
     (comp, full, index) = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. } => {
-            strict = (*__esc_strict).clone();
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
             index = index.clone() + 1;
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; idx = index.clone());
             vars_lst = ({

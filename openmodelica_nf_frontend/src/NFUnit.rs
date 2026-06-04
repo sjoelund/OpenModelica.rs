@@ -371,8 +371,7 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
         return Ok(outString.clone());
     }
     outString = ((match inUnit.clone() {
-        mut __esc_unit @ Unit::UNIT { .. } => {
-            unit = __esc_unit.clone();
+        mut unit @ Unit::UNIT { .. } => {
             s = (if (var_field!(unit.factor, Unit::UNIT).clone() == metamodelica::OrderedFloat(1.0_f64)) {literal!("")} else {prefix2String(var_field!(unit.factor, Unit::UNIT).clone())}).clone();
             b = false;
             sExponent = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.mol, Unit::UNIT).clone())}).clone();

@@ -4451,6 +4451,14 @@ fn exp_reads_name(exp: &typedexp::TypedExp, name: &str) -> bool {
             // Bare reference, or a base reference of a segmented path
             // (`outResult.something`). Either way it's a read of `name`.
             if n == name { return true; }
+            // A qualified reference (`fn.node`) is stored with the whole dotted
+            // path in `name` *and* each part as a segment; the first segment is
+            // the root variable, so reading `fn.node` reads `fn`. Without this
+            // check the read is missed and a pattern binding used only as
+            // `local.field` in a guard is wrongly treated as unused (which then
+            // routes it through the escaping-output writeback, so the guard
+            // reads the not-yet-written outer local instead of the binding).
+            if segments.first().is_some_and(|seg| seg.name == name) { return true; }
             segments.iter().any(|seg| seg.subscripts.iter().any(|s| exp_reads_name(s, name)))
         }
         E::BinOp { lhs, rhs, .. } => exp_reads_name(lhs, name) || exp_reads_name(rhs, name),
@@ -9289,10 +9297,21 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // intMod and realMod are both infallible: no ctx.q() needed
             Ok(format!("{f}({arg1}, {arg2})"))
         },
-        "div" => {
-            let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            let arg2 = args.get(1).map(|a| emit_builtin_call_arg(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("{arg1} / {arg2}"))
+        "div" if args.len()==2 => {
+            let a1 = args.first().unwrap();
+            let a2 = args.get(1).unwrap();
+            // Route through the resolved underlying builtin (intDiv/realDiv) and
+            // emit it in *function-call* form, exactly like `mod` above. The
+            // previous inline `{arg1} / {arg2}` dropped grouping: as a
+            // subexpression `lastDim * div(l, thisDim)` lowered to
+            // `lastDim * l / thisDim` = `(lastDim*l)/thisDim`, not
+            // `lastDim*(l/thisDim)`, and complex operands (`div(a-b, c)`) were
+            // mis-grouped too. The call form is self-parenthesizing.
+            let f = if a1.ty() == Ty::I32 && a2.ty() == Ty::I32 {"intDiv"} else {"realDiv"};
+            let arg1 = emit_builtin_call_arg(f, 0, a1, is_const, ctx, top_level);
+            let arg2 = emit_builtin_call_arg(f, 1, a2, is_const, ctx, top_level);
+            // intDiv and realDiv are both infallible: no ctx.q() needed
+            Ok(format!("{f}({arg1}, {arg2})"))
         },
         "abs" => {
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();

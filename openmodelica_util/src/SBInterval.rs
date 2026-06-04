@@ -78,7 +78,7 @@ fn euclid(mut a: i32, mut b: i32) -> (i32, i32, i32, i32) {
     let mut s2: i32 = 0;
     let mut tmp: i32 = 0;
     while r2.clone() != 0 {
-        q = r1.clone() / r2.clone();
+        q = intDiv(r1.clone(), r2.clone());
         tmp = r2.clone();
         r2 = r1.clone() - q.clone() * r2.clone();
         r1 = tmp.clone();
@@ -165,7 +165,7 @@ pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc
         if 0 != intMod(int1.lo.clone() - int2.lo.clone(), gcd_.clone()) {
             int = newEmpty();
         } else {
-            x = int1.lo.clone() / gcd_.clone() * vb.clone() + int2.lo.clone() / gcd_.clone() * ua.clone() + intMod(int1.lo.clone(), gcd_.clone());
+            x = intDiv(int1.lo.clone(), gcd_.clone()) * vb.clone() + intDiv(int2.lo.clone(), gcd_.clone()) * ua.clone() + intMod(int1.lo.clone(), gcd_.clone());
             new_lo = intMax(int1.lo.clone(), int2.lo.clone());
             new_hi = intMin(int1.hi.clone(), int2.hi.clone());
             new_lo = new_lo.clone() + intMod(x.clone() - new_lo.clone(), new_step.clone());
@@ -195,8 +195,8 @@ pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Resul
         if i2.hi.clone() < int1.hi.clone() {
             UnorderedSet::add(new(i2.hi.clone() + int1.step.clone(), int1.step.clone(), int1.hi.clone()), ints.clone())?;
         }
-        count_r = i2.step.clone() / int1.step.clone() - 1;
-        count_s = if (i2.hi.clone() < System::intMaxLit()) {i2.hi.clone() - i2.lo.clone() / i2.step.clone()} else {System::intMaxLit()};
+        count_r = intDiv(i2.step.clone(), int1.step.clone()) - 1;
+        count_s = if (i2.hi.clone() < System::intMaxLit()) {intDiv(i2.hi.clone() - i2.lo.clone(), i2.step.clone())} else {System::intMaxLit()};
         if count_r.clone() < count_s.clone() {
             if count_s.clone() < System::intMaxLit() {
                 for mut i in (1..=count_r.clone()).rev() {

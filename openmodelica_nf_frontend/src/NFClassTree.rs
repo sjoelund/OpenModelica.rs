@@ -2008,18 +2008,15 @@ pub mod ClassTree {
         let mut opt_def: Option<Arc<SCode::Element>> = None;
         opt_def = InstNode::extendsDefinition(extendsNode.clone())?;
         breaks = (::match_deref::match_deref! { match &(opt_def.clone()) {
-        Some(Deref @ SCode::Element::EXTENDS { modifications: __esc_mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => {
-            r#mod = (*__esc_mod).clone();
-            ({
+        Some(Deref @ SCode::Element::EXTENDS { modifications: r#mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-        for mut sm in (var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone()).into_iter().cloned() {
+        for mut sm in (var_field!((**r#mod).subModLst, SCode::Mod::MOD).clone()).into_iter().cloned() {
             if !(SCodeUtil::isBreakComponentSubMod(sm.clone())) { continue; }
             let __x = sm.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })
-        },
+    }),
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

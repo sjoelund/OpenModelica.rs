@@ -330,11 +330,10 @@ fn splitImpl(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFTy
     let mut ct: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     conns = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::COMPLEX { complexTy: __esc_ct @ Deref @ ComplexType::CONNECTOR { .. }, .. } => {
-            ct = (*__esc_ct).clone();
-            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((*ct).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
-            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((*ct).flows, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
-            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((*ct).streams, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
+        Deref @ Type::COMPLEX { complexTy: ct @ Deref @ ComplexType::CONNECTOR { .. }, .. } => {
+            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((**ct).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
+            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((**ct).flows, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
+            conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((**ct).streams, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
             conns.clone()
         },
         Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => metamodelica::cons(Arc::new(NFConnector { name: name.clone(), ty: Type::liftArrayLeftList(ty.clone(), dims.clone()), face: face.clone(), cty: cty.clone(), source: source.clone() }), conns.clone()),

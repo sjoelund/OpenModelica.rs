@@ -2051,9 +2051,8 @@ fn getElementInfo(mut element: Arc<Absyn::Element>, mut isPublic: bool, mut quot
     let mut dims: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     let mut dims_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     infos = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: comps, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: __esc_opt_adim, path: ty }, attributes: __esc_attr }, .. } => {
+        Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: comps, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: __esc_opt_adim, path: ty }, attributes: attr }, .. } => {
             opt_adim = (*__esc_opt_adim).clone();
-            attr = (*__esc_attr).clone();
             let mut ty = (*ty).clone();
             common_info = metamodelica::nil();
             ty = qualifyPath(env.clone(), ty.clone(), false)?;
@@ -2092,9 +2091,8 @@ fn getElementInfo(mut element: Arc<Absyn::Element>, mut isPublic: bool, mut quot
             }
             infos.clone()
         },
-        Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __esc_cls @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: opt_cmt, attributes: __esc_attr, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: ty, arrayDim: opt_adim }, .. }, restriction, name, .. }, .. }, .. } if (!(onlyComponents.clone())) => {
+        Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __esc_cls @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: opt_cmt, attributes: attr, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: ty, arrayDim: opt_adim }, .. }, restriction, name, .. }, .. }, .. } if (!(onlyComponents.clone())) => {
             cls = (*__esc_cls).clone();
-            attr = (*__esc_attr).clone();
             let mut ty = (*ty).clone();
             ty = qualifyPath(env.clone(), ty.clone(), false)?;
             cmt = (getConstrainingClassComment(opt_cc.clone())).clone();
@@ -3708,9 +3706,8 @@ fn mergeClassParts(mut newParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>,
         Deref @ Absyn::ClassPart::PUBLIC { .. } => {
             (op, index) = Vector::findLast(parts.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isElementSection, Arc<Absyn::ClassPart>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>) -> Result<bool> + 'static>))?;
             let () = (::match_deref::match_deref! { match &(op.clone()) {
-        Some(__esc_p @ Deref @ Absyn::ClassPart::PUBLIC { .. }) => {
-            p = (*__esc_p).clone();
-            assign_variant_field!(part => Absyn::ClassPart::PUBLIC; contents = listAppend(var_field!((*p).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*part).contents, Absyn::ClassPart::PUBLIC).clone()));
+        Some(p @ Deref @ Absyn::ClassPart::PUBLIC { .. }) => {
+            assign_variant_field!(part => Absyn::ClassPart::PUBLIC; contents = listAppend(var_field!((**p).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*part).contents, Absyn::ClassPart::PUBLIC).clone()));
             Vector::updateNoBounds(parts.clone(), index.clone(), part.clone());
             ()
         },
@@ -3725,9 +3722,8 @@ fn mergeClassParts(mut newParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>,
         Deref @ Absyn::ClassPart::PROTECTED { .. } => {
             (op, index) = Vector::findLast(parts.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isElementSection, Arc<Absyn::ClassPart>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>) -> Result<bool> + 'static>))?;
             let () = (::match_deref::match_deref! { match &(op.clone()) {
-        Some(__esc_p @ Deref @ Absyn::ClassPart::PROTECTED { .. }) => {
-            p = (*__esc_p).clone();
-            assign_variant_field!(part => Absyn::ClassPart::PROTECTED; contents = listAppend(var_field!((*p).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*part).contents, Absyn::ClassPart::PROTECTED).clone()));
+        Some(p @ Deref @ Absyn::ClassPart::PROTECTED { .. }) => {
+            assign_variant_field!(part => Absyn::ClassPart::PROTECTED; contents = listAppend(var_field!((**p).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*part).contents, Absyn::ClassPart::PROTECTED).clone()));
             Vector::updateNoBounds(parts.clone(), index.clone(), part.clone());
             ()
         },
@@ -3742,9 +3738,8 @@ fn mergeClassParts(mut newParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>,
         Deref @ Absyn::ClassPart::EQUATIONS { .. } => {
             (op, index) = Vector::findLast(parts.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isEquationSection, Arc<Absyn::ClassPart>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>) -> Result<bool> + 'static>))?;
             let () = (::match_deref::match_deref! { match &(op.clone()) {
-        Some(__esc_p @ Deref @ Absyn::ClassPart::EQUATIONS { .. }) => {
-            p = (*__esc_p).clone();
-            assign_variant_field!(part => Absyn::ClassPart::EQUATIONS; contents = listAppend(var_field!((*p).contents, Absyn::ClassPart::EQUATIONS).clone(), var_field!((*part).contents, Absyn::ClassPart::EQUATIONS).clone()));
+        Some(p @ Deref @ Absyn::ClassPart::EQUATIONS { .. }) => {
+            assign_variant_field!(part => Absyn::ClassPart::EQUATIONS; contents = listAppend(var_field!((**p).contents, Absyn::ClassPart::EQUATIONS).clone(), var_field!((*part).contents, Absyn::ClassPart::EQUATIONS).clone()));
             Vector::updateNoBounds(parts.clone(), index.clone(), part.clone());
             ()
         },
@@ -3762,9 +3757,8 @@ fn mergeClassParts(mut newParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>,
         Deref @ Absyn::ClassPart::INITIALEQUATIONS { .. } => {
             (op, index) = Vector::findLast(parts.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isEquationSection, Arc<Absyn::ClassPart>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ClassPart>) -> Result<bool> + 'static>))?;
             let () = (::match_deref::match_deref! { match &(op.clone()) {
-        Some(__esc_p @ Deref @ Absyn::ClassPart::INITIALEQUATIONS { .. }) => {
-            p = (*__esc_p).clone();
-            assign_variant_field!(part => Absyn::ClassPart::INITIALEQUATIONS; contents = listAppend(var_field!((*p).contents, Absyn::ClassPart::INITIALEQUATIONS).clone(), var_field!((*part).contents, Absyn::ClassPart::INITIALEQUATIONS).clone()));
+        Some(p @ Deref @ Absyn::ClassPart::INITIALEQUATIONS { .. }) => {
+            assign_variant_field!(part => Absyn::ClassPart::INITIALEQUATIONS; contents = listAppend(var_field!((**p).contents, Absyn::ClassPart::INITIALEQUATIONS).clone(), var_field!((*part).contents, Absyn::ClassPart::INITIALEQUATIONS).clone()));
             Vector::updateNoBounds(parts.clone(), index.clone(), part.clone());
             ()
         },
