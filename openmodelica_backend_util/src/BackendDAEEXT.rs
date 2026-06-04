@@ -646,21 +646,34 @@ mod matchmaker {
                         ptr += 1;
                     }
 
-                    let sptr = row_ptrs[r_id as usize];
-                    let eptr = row_ptrs[r_id as usize + 1];
-                    let mut count = row_degrees[r_id as usize];
-                    let mut ptr = sptr;
-                    while ptr < eptr && count > 0 {
-                        let c_id2 = row_ids[ptr as usize];
-                        if r#match[c_id2 as usize] == -1 {
-                            count -= 1;
-                            col_degrees[c_id2 as usize] -= 1;
-                            if col_degrees[c_id2 as usize] == 1 {
-                                col_stack[no_of_d1_cols as usize] = c_id2;
-                                no_of_d1_cols += 1;
+                    // `col_degrees` is maintained approximately (the d1
+                    // passes and these loops decrement it lazily), so the
+                    // scan above can end without making a match even though
+                    // c_degree != 0; `r_id` then stays -1. The C original
+                    // (matching_cheap.c) reads whatever its `r_id` variable
+                    // held from an earlier iteration at this point — junk
+                    // but in-bounds degree bookkeeping on an arbitrary row
+                    // (uninitialised on the first iteration). That is not
+                    // reproducible behaviour and only affects the cheap
+                    // heuristic's work order, so skip the row-side
+                    // bookkeeping instead of indexing with -1.
+                    if r_id != -1 {
+                        let sptr = row_ptrs[r_id as usize];
+                        let eptr = row_ptrs[r_id as usize + 1];
+                        let mut count = row_degrees[r_id as usize];
+                        let mut ptr = sptr;
+                        while ptr < eptr && count > 0 {
+                            let c_id2 = row_ids[ptr as usize];
+                            if r#match[c_id2 as usize] == -1 {
+                                count -= 1;
+                                col_degrees[c_id2 as usize] -= 1;
+                                if col_degrees[c_id2 as usize] == 1 {
+                                    col_stack[no_of_d1_cols as usize] = c_id2;
+                                    no_of_d1_cols += 1;
+                                }
                             }
+                            ptr += 1;
                         }
-                        ptr += 1;
                     }
                 }
 
@@ -819,21 +832,34 @@ mod matchmaker {
                         ptr += 1;
                     }
 
-                    let sptr = row_ptrs[r_id as usize];
-                    let eptr = row_ptrs[r_id as usize + 1];
-                    let mut count = row_degrees[r_id as usize];
-                    let mut ptr = sptr;
-                    while ptr < eptr && count > 0 {
-                        let c_id2 = row_ids[ptr as usize];
-                        if r#match[c_id2 as usize] == -1 {
-                            count -= 1;
-                            col_degrees[c_id2 as usize] -= 1;
-                            if col_degrees[c_id2 as usize] == 1 {
-                                col_stack[no_of_d1_cols as usize] = c_id2;
-                                no_of_d1_cols += 1;
+                    // `col_degrees` is maintained approximately (the d1
+                    // passes and these loops decrement it lazily), so the
+                    // scan above can end without making a match even though
+                    // c_degree != 0; `r_id` then stays -1. The C original
+                    // (matching_cheap.c) reads whatever its `r_id` variable
+                    // held from an earlier iteration at this point — junk
+                    // but in-bounds degree bookkeeping on an arbitrary row
+                    // (uninitialised on the first iteration). That is not
+                    // reproducible behaviour and only affects the cheap
+                    // heuristic's work order, so skip the row-side
+                    // bookkeeping instead of indexing with -1.
+                    if r_id != -1 {
+                        let sptr = row_ptrs[r_id as usize];
+                        let eptr = row_ptrs[r_id as usize + 1];
+                        let mut count = row_degrees[r_id as usize];
+                        let mut ptr = sptr;
+                        while ptr < eptr && count > 0 {
+                            let c_id2 = row_ids[ptr as usize];
+                            if r#match[c_id2 as usize] == -1 {
+                                count -= 1;
+                                col_degrees[c_id2 as usize] -= 1;
+                                if col_degrees[c_id2 as usize] == 1 {
+                                    col_stack[no_of_d1_cols as usize] = c_id2;
+                                    no_of_d1_cols += 1;
+                                }
                             }
+                            ptr += 1;
                         }
-                        ptr += 1;
                     }
                 }
 
