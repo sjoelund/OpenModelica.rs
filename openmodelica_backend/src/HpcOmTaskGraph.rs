@@ -1222,11 +1222,11 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
         },
         (Deref @ DAE::Type::T_ARRAY { ty, .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
-            stringVarIdc = (*__esc_stringVarIdc).clone();
+            derived = (*__esc_derived).clone();
+            intVarIdc = (*__esc_intVarIdc).clone();
             realVarIdc = (*__esc_realVarIdc).clone();
             boolVarIdc = (*__esc_boolVarIdc).clone();
-            intVarIdc = (*__esc_intVarIdc).clone();
-            derived = (*__esc_derived).clone();
+            stringVarIdc = (*__esc_stringVarIdc).clone();
             getUnsolvedVarsBySCC2(ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone())
         },
         (Deref @ DAE::Type::T_ENUMERATION { .. }, (varIdx, __esc_derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
@@ -5113,8 +5113,8 @@ fn createCosts1(mut iTuple: (i32, i32, metamodelica::Real), mut iReqTime: metamo
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     oReqTime = (match (iTuple.clone(), iReqTime.clone()) {
         ((0, mut __esc_calcTimeCount, mut __esc_calcTime), _) => {
-            calcTime = __esc_calcTime.clone();
             calcTimeCount = __esc_calcTimeCount.clone();
+            calcTime = __esc_calcTime.clone();
             iReqTime.clone()
         },
         ((mut simEqIdx, mut calcTimeCount, mut calcTime), mut tmpArray) => {

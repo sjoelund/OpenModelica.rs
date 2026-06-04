@@ -78,6 +78,10 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // hand-written (using the `zip` crate) in
     // `openmodelica_script_util/src/Unzip.rs`.
     "Unzip",
+    // All bodies are `external "C"` into `runtime/IOStreamExt_omc.cpp`
+    // (mostly NYI there too); hand-written in
+    // `openmodelica_util/src/IOStreamExt.rs`.
+    "IOStreamExt",
     // Upstream Autoconf.mo is produced by configure-time substitution
     // (Autoconf.mo.in / Autoconf.mo.omdev.mingw); the Rust port detects the
     // platform with compile-time `cfg!` instead. Hand-written in
@@ -8409,10 +8413,37 @@ fn emit_reduction<'a>(
                     )
                 }
                 None => {
-                    // Unknown reduction operator with no resolvable default: emit a
-                    // todo! so the generated code's compile failure points us at the
-                    // specific reduction that still needs lowering.
-                    return format!("todo!(\"reduction {func}: cannot resolve default value\")");
+                    // No default value on the accumulator parameter. The
+                    // bootstrap compiler seeds the accumulator with the first
+                    // element and fails on an empty collection (the generated
+                    // C carries a `<func> lacks default-value` comment and a
+                    // have-first-value flag; see e.g. Static.elabMatrixCatTwo's
+                    // `elabMatrixCatTwo2(e for e in ...)` loop). Mirror that
+                    // with an Option accumulator.
+                    let fname = if func.contains('.') {
+                        ctx.shorten(func)
+                    } else {
+                        func.to_owned()
+                    };
+                    let fname = escape_ident(&fname);
+                    let acc_ty = ty_or_underscore(ty, ctx);
+                    let call_expr = format!("{fname}(__x, __cur)");
+                    // Only propagate with `?` when the fold function is
+                    // actually fallible (returns `Result<T>`).
+                    let call_expr = match resolve_call_qname(func, ctx, top_level) {
+                        Some(q) if ctx.is_known_infallible_user_fn(&q, top_level) => call_expr,
+                        _ => ctx.q(&call_expr),
+                    };
+                    let update = format!(
+                        "__acc = Some(match __acc {{ None => __x, Some(__cur) => {call_expr} }});",
+                    );
+                    (
+                        format!("let mut __acc: Option<{acc_ty}> = None;"),
+                        update,
+                        ctx.q(&format!(
+                            "__acc.ok_or_else(|| anyhow::anyhow!(\"empty {func} reduction\"))"
+                        )),
+                    )
                 }
             }
         }
@@ -12179,8 +12210,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // rename the Rust binding to a fresh temp and write the output
                 // back at the arm-body start. See [`pat_bind_rename`].
                 let escaping_outputs: Vec<String> = {
-                    let binds: HashSet<String> = typedexp::pat_bindings(&case.pattern)
+                    // Keep the pattern's binding order: iterating a HashSet
+                    // here made the emitted writeback lines change order from
+                    // one mmtorust run to the next, churning the generated
+                    // files for no reason.
+                    let binds_in_order: Vec<String> = typedexp::pat_bindings(&case.pattern)
                         .iter().map(|(n, _)| n.clone()).collect();
+                    let binds: HashSet<String> = binds_in_order.iter().cloned().collect();
                     let mut v: Vec<String> = ctx.fn_outputs.iter()
                         .filter(|o| binds.contains(*o)).cloned().collect();
                     // Beyond outputs, a pattern that binds a function-scope
@@ -12193,7 +12229,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     // *does* use is consumed in-arm and needs no writeback, so
                     // restrict to unused bindings to leave the common path
                     // untouched.
-                    for n in &binds {
+                    for n in &binds_in_order {
                         if ctx.fn_scope_vars.contains(n)
                             && !ctx.fn_outputs.contains(n)
                             && !hoisted_names.contains(n)
@@ -16088,6 +16124,83 @@ impl<'s> FieldAssignPlan<'s> {
     }
 }
 
+/// Collect every variable name that a statement list may *reassign as a
+/// whole* (plain `x := ...`, including names bound inside tuple/cons LHS
+/// patterns). Field- and index-assignments mutate in place and keep the
+/// value's variant, so they are not collected. Used to invalidate
+/// `env.variants` narrowings across control-flow constructs.
+fn collect_reassigned_vars(stmts: &[typedexp::TypedStmt], out: &mut HashSet<String>) {
+    use typedexp::TypedStmt as S;
+    for stmt in stmts {
+        match stmt {
+            S::Assign { lhs, .. } => collect_pat_assigned_vars(lhs, out),
+            S::If { then_, elseif, else_, .. } => {
+                collect_reassigned_vars(then_, out);
+                for (_, b) in elseif {
+                    collect_reassigned_vars(b, out);
+                }
+                collect_reassigned_vars(else_, out);
+            }
+            S::For { var, body, .. } => {
+                out.insert(var.clone());
+                collect_reassigned_vars(body, out);
+            }
+            S::While { body, .. } => collect_reassigned_vars(body, out),
+            S::Try { body, else_body } => {
+                collect_reassigned_vars(body, out);
+                collect_reassigned_vars(else_body, out);
+            }
+            S::Failure { body } => collect_reassigned_vars(body, out),
+            S::NoRetCall { .. } | S::Return | S::Break | S::Continue | S::Todo(_) => {}
+        }
+    }
+}
+
+/// Names (re)bound when `pat` is used as an assignment LHS.
+fn collect_pat_assigned_vars(pat: &TypedPat, out: &mut HashSet<String>) {
+    match pat {
+        TypedPat::Var(n) => {
+            out.insert(n.clone());
+        }
+        TypedPat::As { var, pat } => {
+            out.insert(var.clone());
+            collect_pat_assigned_vars(pat, out);
+        }
+        TypedPat::Tuple(ps) => {
+            for p in ps {
+                collect_pat_assigned_vars(p, out);
+            }
+        }
+        TypedPat::Cons { head, tail } => {
+            collect_pat_assigned_vars(head, out);
+            collect_pat_assigned_vars(tail, out);
+        }
+        TypedPat::Some_(p) => collect_pat_assigned_vars(p, out),
+        TypedPat::Constructor { fields, named_fields, .. } => {
+            for p in fields {
+                collect_pat_assigned_vars(p, out);
+            }
+            for (_, p) in named_fields {
+                collect_pat_assigned_vars(p, out);
+            }
+        }
+        // Field/index assignment mutates in place; the base variable still
+        // holds the same variant. Literals/wildcards bind nothing.
+        _ => {}
+    }
+}
+
+/// A loop body executes repeatedly: a variant narrowing that held on loop
+/// entry no longer holds at the top of the second iteration if the body
+/// reassigns the variable as a whole. Drop those narrowings before the body
+/// is emitted (and leave them dropped afterwards — by the same argument
+/// they are unreliable once the loop may have run).
+fn invalidate_loop_reassigned_variants(body: &[typedexp::TypedStmt], env: &mut LocalEnv) {
+    let mut reassigned = HashSet::new();
+    collect_reassigned_vars(body, &mut reassigned);
+    env.variants.retain(|k, _| !reassigned.contains(k));
+}
+
 /// Inspect a statement, using only `env`/`top_level` (no `ctx` mutation), to
 /// decide whether it lowers to a record-update macro. Returns a plan for the
 /// caller to render later when emission is committed.
@@ -17316,20 +17429,44 @@ fn emit_stmt<'a>(
         }
         S::If { cond, then_, elseif, else_ } => {
             let c = emit_exp(cond, false, ctx, top_level);
+            // `env.variants` narrowings are control-flow sensitive: each
+            // branch starts from the narrowings valid at the `if` itself
+            // (a reassignment inside one branch must not erase a narrowing
+            // for its *sibling* branch — e.g. NFExpressionIterator.next
+            // reassigns `iterator` in the then-branch while the else-branch
+            // does `iterator.index := ...`). After the `if`, only
+            // narrowings that survived every path — including the implicit
+            // empty `else` when none is written — remain valid.
+            let entry_variants = env.variants.clone();
+            let mut branch_variants: Vec<HashMap<String, (String, String)>> = Vec::new();
             writeln!(out, "{indent}if {c} {{").unwrap();
             emit_stmts(out, &format!("{indent}    "), then_, fail_mode.clone(), ctx, env, top_level, fresh);
+            branch_variants.push(std::mem::replace(&mut env.variants, entry_variants.clone()));
             for (ec, eb) in elseif {
                 let cs = emit_exp(ec, false, ctx, top_level);
                 writeln!(out, "{indent}}} else if {cs} {{").unwrap();
                 emit_stmts(out, &format!("{indent}    "), eb, fail_mode.clone(), ctx, env, top_level, fresh);
+                branch_variants.push(std::mem::replace(&mut env.variants, entry_variants.clone()));
             }
             if !else_.is_empty() {
                 writeln!(out, "{indent}}} else {{").unwrap();
                 emit_stmts(out, &format!("{indent}    "), else_, fail_mode, ctx, env, top_level, fresh);
+                branch_variants.push(std::mem::replace(&mut env.variants, entry_variants.clone()));
+            } else {
+                // No else: the fall-through path keeps the entry narrowings.
+                branch_variants.push(entry_variants.clone());
             }
             writeln!(out, "{indent}}}").unwrap();
+            env.variants = entry_variants;
+            env.variants.retain(|k, v| branch_variants.iter().all(|b| b.get(k) == Some(v)));
         }
         S::For { var, range, body } => {
+            // See `invalidate_loop_reassigned_variants`: narrowings for
+            // variables the body reassigns do not hold from the second
+            // iteration on. The loop variable is freshly bound each
+            // iteration, so any outer narrowing for its name is shadowed.
+            invalidate_loop_reassigned_variants(body, env);
+            env.variants.remove(var);
             // Enumeration iteration is lowered separately (Rust enums aren't
             // `Step`-iterable); see `try_emit_enum_for`. Falls through to the
             // generic list/array/integer-range path below for everything else.
@@ -17425,6 +17562,10 @@ fn emit_stmt<'a>(
             writeln!(out, "{indent}}}").unwrap();
         }
         S::While { cond, body } => {
+            // See `invalidate_loop_reassigned_variants`: narrowings for
+            // variables the body reassigns do not hold from the second
+            // iteration on.
+            invalidate_loop_reassigned_variants(body, env);
             // Label the loop when a `break`/`continue` is nested inside a
             // `try`/`failure` labeled block in its body (see
             // `loop_body_needs_label` and the `for` arm above for the E0695

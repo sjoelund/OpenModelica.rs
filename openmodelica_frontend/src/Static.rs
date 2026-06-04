@@ -390,14 +390,14 @@ fn elabExp_Binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
             ()
         },
         Deref @ Absyn::Exp::LBINARY { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
+            e2 = (*__esc_e2).clone();
             op = (*__esc_op).clone();
             e1 = (*__esc_e1).clone();
-            e2 = (*__esc_e2).clone();
             ()
         },
         Deref @ Absyn::Exp::RELATION { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
-            op = (*__esc_op).clone();
             e2 = (*__esc_e2).clone();
+            op = (*__esc_op).clone();
             e1 = (*__esc_e1).clone();
             ()
         },
@@ -3221,7 +3221,14 @@ fn elabMatrixCatTwo(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Resul
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     match '__try0: {
-        outExp = todo!("reduction elabMatrixCatTwo2: cannot resolve default value");
+        outExp = ({
+        let mut __acc: Option<_> = None;
+        for mut e in (inExpl.clone().reverse()).into_iter().cloned() {
+            let __x = e.clone();
+            __acc = Some(match __acc { None => __x, Some(__cur) => unwrap_break_err!(elabMatrixCatTwo2(__x, __cur), '__try0) });
+        }
+        unwrap_break_err!(__acc.ok_or_else(|| anyhow::anyhow!("empty elabMatrixCatTwo2 reduction")), '__try0)
+    });
         Ok::<_, anyhow::Error>((outExp.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -5849,7 +5856,14 @@ fn elabBuiltinCat(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosA
         }
         __acc.reverse()
     });
-    dim = todo!("reduction Expression.dimensionsAdd: cannot resolve default value");
+    dim = ({
+        let mut __acc: Option<Arc<DAE::Dimension>> = None;
+        for mut d in (dims.clone()).into_iter().cloned() {
+            let __x = d.clone();
+            __acc = Some(match __acc { None => __x, Some(__cur) => Expression::dimensionsAdd(__x, __cur) });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty Expression.dimensionsAdd reduction"))?
+    });
     result_ty = Types::setDimensionNth(result_ty.clone(), dim.clone(), dim_int.clone())?;
     arr_c = elabArrayConst(arr_props.clone())?;
     c = Types::constAnd(dim_c.clone(), arr_c.clone());
@@ -12150,7 +12164,14 @@ fn makeIfExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCondition
         }.is_err() {
         }
     }
-    exp_c = todo!("reduction Types.constAnd: cannot resolve default value");
+    exp_c = ({
+        let mut __acc: Option<DAE::Const> = None;
+        for mut c in (list![cond_c.clone(), false_c.clone(), true_c.clone()]).into_iter().cloned() {
+            let __x = c.clone();
+            __acc = Some(match __acc { None => __x, Some(__cur) => Types::constAnd(__x, __cur) });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty Types.constAnd reduction"))?
+    });
     outExp = Arc::new(DAE::Exp::IFEXP { expCond: cond_exp.clone(), expThen: true_exp.clone(), expElse: false_exp.clone() });
     outProperties = DAE::Properties::PROP { type_: exp_ty.clone(), constFlag: exp_c.clone() };
     Ok((outCache, outExp, outProperties))

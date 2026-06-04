@@ -1714,7 +1714,14 @@ fn sumMap(mut elements: Arc<metamodelica::List<ConnectorElement>>, mut func: Arc
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement, metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>;
 
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    exp = todo!("reduction Expression.expAdd: cannot resolve default value");
+    exp = ({
+        let mut __acc: Option<Arc<DAE::Exp>> = None;
+        for mut e in (elements.clone().reverse()).into_iter().cloned() {
+            let __x = func(e.clone(), flowThreshold.clone())?;
+            __acc = Some(match __acc { None => __x, Some(__cur) => Expression::expAdd(__x, __cur)? });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty Expression.expAdd reduction"))?
+    });
     Ok(exp)
 }
 

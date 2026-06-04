@@ -2052,8 +2052,8 @@ fn getElementInfo(mut element: Arc<Absyn::Element>, mut isPublic: bool, mut quot
     let mut dims_val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     infos = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: comps, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: __esc_opt_adim, path: ty }, attributes: __esc_attr }, .. } => {
-            attr = (*__esc_attr).clone();
             opt_adim = (*__esc_opt_adim).clone();
+            attr = (*__esc_attr).clone();
             let mut ty = (*ty).clone();
             common_info = metamodelica::nil();
             ty = qualifyPath(env.clone(), ty.clone(), false)?;
@@ -2093,8 +2093,8 @@ fn getElementInfo(mut element: Arc<Absyn::Element>, mut isPublic: bool, mut quot
             infos.clone()
         },
         Deref @ Absyn::Element::ELEMENT { constrainClass: opt_cc, specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __esc_cls @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: opt_cmt, attributes: __esc_attr, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: ty, arrayDim: opt_adim }, .. }, restriction, name, .. }, .. }, .. } if (!(onlyComponents.clone())) => {
-            attr = (*__esc_attr).clone();
             cls = (*__esc_cls).clone();
+            attr = (*__esc_attr).clone();
             let mut ty = (*ty).clone();
             ty = qualifyPath(env.clone(), ty.clone(), false)?;
             cmt = (getConstrainingClassComment(opt_cc.clone())).clone();

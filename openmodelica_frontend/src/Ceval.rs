@@ -4112,7 +4112,14 @@ fn cevalBuiltinMaxArr(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Val
         _ => bail!("pattern mismatch"),
     } };
     vals = __pa0.clone();
-    outValue = todo!("reduction cevalBuiltinMax2: cannot resolve default value");
+    outValue = ({
+        let mut __acc: Option<_> = None;
+        for mut v in (vals.clone()).into_iter().cloned() {
+            let __x = v.clone();
+            __acc = Some(match __acc { None => __x, Some(__cur) => cevalBuiltinMax2(__x, __cur)? });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty cevalBuiltinMax2 reduction"))?
+    });
     Ok(outValue)
 }
 
@@ -4180,7 +4187,14 @@ fn cevalBuiltinMinArr(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Val
         _ => bail!("pattern mismatch"),
     } };
     vals = __pa0.clone();
-    outValue = todo!("reduction cevalBuiltinMin2: cannot resolve default value");
+    outValue = ({
+        let mut __acc: Option<_> = None;
+        for mut v in (vals.clone()).into_iter().cloned() {
+            let __x = v.clone();
+            __acc = Some(match __acc { None => __x, Some(__cur) => cevalBuiltinMin2(__x, __cur)? });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty cevalBuiltinMin2 reduction"))?
+    });
     Ok(outValue)
 }
 

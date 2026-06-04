@@ -179,7 +179,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
                     iterator = Arc::new(NFExpressionIterator::ARRAY_ITERATOR { arr: listHead(arrs.clone())?, index: 1, arrays: listRest(arrs.clone())? });
                 }
             } else {
-                todo!("unhandled field-assign shape: iterator.index");
+                assign_variant_field!(iterator => NFExpressionIterator::ARRAY_ITERATOR; index = var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() + 1);
             }
             (iterator.clone(), next.clone())
         },
