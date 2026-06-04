@@ -445,25 +445,23 @@ pub fn getLDFlags() -> ArcStr {
 
 // ───────────────────────────────── dynamic library loading ────────────────────
 
-// The dlopen pipeline (compile generated C against the MetaModelica
-// runtime, load it, marshal Values through DynLoad.executeFunction) is
-// out of scope for the Rust port for now — the port evaluates functions
-// with its own interpreter instead. These fail like any other
-// MetaModelica failure (instead of panicking) so the calling script can
-// continue; -d=gen tests are expected failures.
+// The `-d=gen` pipeline compiles a MetaModelica function to C, builds it into a
+// shared object linking the C MetaModelica runtime, loads it and marshals the
+// argument/result `Values`. The loader state lives in `crate::dynload`; the
+// `Values` marshalling (`DynLoad.executeFunction`) lives in
+// `openmodelica_script_util` since it needs the frontend `Values` type.
 
-pub fn loadLibrary(inLib: ArcStr, _relativePath: bool, _printDebug: bool) -> Result<i32> {
-    eprintln!("System.loadLibrary: dlopen pipeline not supported by the Rust port ({inLib})");
-    bail!("System.loadLibrary: not supported ({inLib})")
+pub fn loadLibrary(inLib: ArcStr, relativePath: bool, printDebug: bool) -> Result<i32> {
+    crate::dynload::load_library(&inLib, relativePath, printDebug)
 }
-pub fn lookupFunction(_inLibHandle: i32, inFunc: ArcStr) -> Result<i32> {
-    bail!("System.lookupFunction: not supported ({inFunc})")
+pub fn lookupFunction(inLibHandle: i32, inFunc: ArcStr) -> Result<i32> {
+    crate::dynload::lookup_function(inLibHandle, &inFunc)
 }
-pub fn freeFunction(_inFuncHandle: i32, _inPrintDebug: bool) -> Result<()> {
-    bail!("System.freeFunction: not supported")
+pub fn freeFunction(inFuncHandle: i32, inPrintDebug: bool) -> Result<()> {
+    crate::dynload::free_function(inFuncHandle, inPrintDebug)
 }
-pub fn freeLibrary(_inLibHandle: i32, _inPrintDebug: bool) -> Result<()> {
-    bail!("System.freeLibrary: not supported")
+pub fn freeLibrary(inLibHandle: i32, inPrintDebug: bool) -> Result<()> {
+    crate::dynload::free_library(inLibHandle, inPrintDebug)
 }
 
 // ───────────────────────────────── file I/O ──────────────────────────────────

@@ -741,6 +741,10 @@ pub fn external_c_impl_path(c_name: &str) -> Option<&'static str> {
     match c_name {
         "System_stringFind" => Some("metamodelica::ext::System_stringFind"),
         "System_stringFindString" => Some("metamodelica::ext::System_stringFindString"),
+        // `-d=gen` dynamic-load pipeline: marshal the argument/result `Values`
+        // through the dynamically loaded `in_*` entry point. Only called from
+        // `DynLoad.executeFunction` (same crate), hence the `crate::` path.
+        "DynLoad_executeFunction" => Some("crate::DynLoadExt::executeFunction"),
         _ => None,
     }
 }

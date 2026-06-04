@@ -7,3 +7,4 @@ pub mod PackageManagement;
 pub mod SimulationResults;
 pub mod UnitParserExt;
 pub mod Unzip;
+pub mod DynLoadExt;

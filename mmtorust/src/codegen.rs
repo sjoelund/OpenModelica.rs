@@ -1564,6 +1564,15 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
     if std::path::Path::new(&parser_path).exists() {
         writeln!(out, "pub mod parser;").unwrap();
     }
+    // Hand-written helpers for the `-d=gen` dynamic-load pipeline, neither of
+    // which has a MetaModelica source: the dlopen loader (`openmodelica_util`)
+    // and the `Values` marshalling (`openmodelica_script_util`). Declared when
+    // their file is present in this crate's source directory.
+    for (file, module) in [("dynload.rs", "dynload"), ("DynLoadExt.rs", "DynLoadExt")] {
+        if std::path::Path::new(&format!("{this_dir}/{file}")).exists() {
+            writeln!(out, "pub mod {module};").unwrap();
+        }
+    }
     out
 }
 
