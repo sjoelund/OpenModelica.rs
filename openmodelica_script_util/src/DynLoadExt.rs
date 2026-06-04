@@ -29,6 +29,18 @@ use metamodelica::List;
 use openmodelica_frontend_types::Values;
 use openmodelica_util::dynload;
 
+// MMC object headers (`MMC_STRUCTHDR(slots, ctor) = (slots << 10) | (ctor << 2)`)
+// for the `RML_STYLE_TAGPTR` representation the runtime is built with: a value
+// is an immediate integer when bit 0 is clear (`i << 1`), otherwise a pointer
+// tagged `+3`. A struct has `hdr & 3 == 0`; a boxed string has `hdr & 7 == 5`;
+// anything else boxed is a real.
+const MMC_NILHDR: usize = 0; // STRUCTHDR(0, 0): {}
+const MMC_CONSHDR: usize = (2 << 10) | (1 << 2); // STRUCTHDR(2, 1): cons
+const MMC_NONEHDR: usize = 1 << 2; // STRUCTHDR(0, 1): NONE()
+const MMC_SOMEHDR: usize = (1 << 10) | (1 << 2); // STRUCTHDR(1, 1): SOME(x)
+const MMC_REALHDR: usize = (1 << 10) | 9; // boxed double
+const MMC_SIZE_INT: usize = 8;
+
 // `enum type_desc_e` tags from `openmodelica.h`.
 const TD_NONE: i32 = 0;
 const TD_REAL: i32 = 1;
@@ -100,9 +112,81 @@ fn desc_to_value(d: &TypeDesc) -> Result<Arc<Values::Value>> {
             }
             Ok(Arc::new(Values::Value::TUPLE { valueLst: Arc::new(List::from_iter(vals)) }))
         }
-        TD_STRING => bail!("DynLoad.executeFunction: string results not yet supported"),
-        TD_MMC => bail!("DynLoad.executeFunction: MetaModelica results not yet supported"),
+        // `modelica_string` is itself a boxed MMC string metatype.
+        TD_STRING => decode_metatype(d.d0 as usize),
+        TD_MMC => decode_metatype(d.d0 as usize),
         other => bail!("DynLoad.executeFunction: unsupported result type_description tag {other}"),
+    }
+}
+
+/// Read MMC slot `i` (a machine word) of an untagged object at `base`.
+#[inline]
+unsafe fn slot(base: usize, i: usize) -> usize {
+    unsafe { *((base + i * std::mem::size_of::<usize>()) as *const usize) }
+}
+
+/// Decode a boxed MMC value (`modelica_metatype`) into a `Values.Value`. Handles
+/// the representations a `-d=gen` function can hand back across the boundary:
+/// immediate integers, boxed reals/strings, lists (`cons`/`{}`), options
+/// (`SOME`/`NONE`) and MetaModelica tuples. Records/uniontypes are not decoded
+/// yet (they need the generated `record_description` for field names).
+fn decode_metatype(m: usize) -> Result<Arc<Values::Value>> {
+    // Immediate integer: bit 0 clear, value is an arithmetic right shift.
+    if m & 1 == 0 {
+        return Ok(Arc::new(Values::Value::INTEGER { integer: ((m as isize) >> 1) as i32 }));
+    }
+    let base = m - 3; // untag the pointer
+    let hdr = unsafe { *(base as *const usize) };
+    if hdr & 3 != 0 {
+        // Not a struct: either a boxed string (`hdr & 7 == 5`) or a boxed real.
+        if hdr & 7 == 5 {
+            let len = (hdr >> 3) - MMC_SIZE_INT;
+            let data = (base + std::mem::size_of::<usize>()) as *const u8;
+            let bytes = unsafe { std::slice::from_raw_parts(data, len) };
+            return Ok(Arc::new(Values::Value::STRING { string: arcstr::ArcStr::from(String::from_utf8_lossy(bytes)) }));
+        }
+        let val = f64::from_bits(unsafe { slot(base, 1) } as u64);
+        return Ok(Arc::new(Values::Value::REAL { real: metamodelica::Real::from(val) }));
+    }
+    // Struct: distinguish by constructor / slot count.
+    let ctor = (hdr >> 2) & 0xff;
+    let slots = hdr >> 10;
+    match (ctor, slots) {
+        _ if hdr == MMC_NILHDR => Ok(Arc::new(Values::Value::LIST { valueLst: metamodelica::nil() })),
+        _ if hdr == MMC_CONSHDR => {
+            // Walk the cons spine, decoding each element.
+            let mut items: Vec<Arc<Values::Value>> = Vec::new();
+            let mut cur = m;
+            loop {
+                let b = cur - 3;
+                let h = unsafe { *(b as *const usize) };
+                if h == MMC_NILHDR {
+                    break;
+                }
+                if h != MMC_CONSHDR {
+                    bail!("DynLoad.executeFunction: malformed list");
+                }
+                items.push(decode_metatype(unsafe { slot(b, 1) })?);
+                cur = unsafe { slot(b, 2) };
+            }
+            Ok(Arc::new(Values::Value::LIST { valueLst: Arc::new(List::from_iter(items)) }))
+        }
+        _ if hdr == MMC_NONEHDR => Ok(Arc::new(Values::Value::OPTION { some: None })),
+        _ if hdr == MMC_SOMEHDR => {
+            Ok(Arc::new(Values::Value::OPTION { some: Some(decode_metatype(unsafe { slot(base, 1) })?) }))
+        }
+        // Constructor 0 with at least one field is a MetaModelica tuple.
+        (0, n) if n >= 1 => {
+            let mut items: Vec<Arc<Values::Value>> = Vec::with_capacity(n);
+            for i in 1..=n {
+                items.push(decode_metatype(unsafe { slot(base, i) })?);
+            }
+            Ok(Arc::new(Values::Value::META_TUPLE { valueLst: Arc::new(List::from_iter(items)) }))
+        }
+        (c, _) if c >= 3 => {
+            bail!("DynLoad.executeFunction: record/uniontype results not yet supported")
+        }
+        _ => bail!("DynLoad.executeFunction: unsupported MMC header {hdr:#x}"),
     }
 }
 
