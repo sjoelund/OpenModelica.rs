@@ -58,25 +58,69 @@ struct QueuedMessage {
 }
 
 impl QueuedMessage {
+    /// Mirrors `get_message_alloc` in `errorext.cpp`: the message handed
+    /// back to MetaModelica carries the token-substituted text (the C++
+    /// `veryshort_msg`), not the raw `%s`/`%1` template.
     fn as_total(&self) -> TotalMessage {
-        TotalMessage { msg: self.msg.clone(), info: self.info.clone() }
+        let mut msg = self.msg.clone();
+        msg.message =
+            Trans::notrans { r#str: ArcStr::from(self.substituted_body()) };
+        TotalMessage { msg, info: self.info.clone() }
     }
 
-    /// Mirrors `ErrorMessage::getFullMessage()` on the C++ side: the
-    /// rendered text without trailing newline. Used by `pop_message`'s
-    /// duplicate-suppression and by `printMessagesStr`.
+    /// Mirrors `ErrorMessage::getShortMessage()` (`veryshort_msg`): the
+    /// token-substituted message body without any position prefix.
+    fn substituted_body(&self) -> String {
+        substitute_tokens(&content_text(&self.msg.message), &self.tokens)
+    }
+
+    /// Mirrors `ErrorMessage::getMessage_()`: the token-substituted text
+    /// with the `[file:line:col-line:col:writable] Severity: ` prefix, or
+    /// just `Severity: ` when there is no source location, with trailing
+    /// whitespace trimmed. This is what `printMessagesStr` and friends
+    /// render.
+    fn rendered(&self, warnings_as_errors: bool) -> String {
+        let body = self.substituted_body();
+        let severity = if warnings_as_errors && matches!(self.msg.severity, Severity::WARNING) {
+            severity_label(&Severity::ERROR)
+        } else {
+            severity_label(&self.msg.severity)
+        };
+        let info = &self.info;
+        let mut out = if info.fileName.is_empty()
+            && info.lineNumberStart == 0
+            && info.columnNumberStart == 0
+            && info.lineNumberEnd == 0
+            && info.columnNumberEnd == 0
+        {
+            format!("{severity}: {body}")
+        } else {
+            format!(
+                "[{}:{}:{}-{}:{}:{}] {}: {}",
+                info.fileName,
+                info.lineNumberStart,
+                info.columnNumberStart,
+                info.lineNumberEnd,
+                info.columnNumberEnd,
+                if info.isReadOnly { "readonly" } else { "writable" },
+                severity,
+                body,
+            )
+        };
+        out.truncate(out.trim_end_matches([' ', '\n', '\r', '\t']).len());
+        out
+    }
+
+    /// Mirrors `ErrorMessage::getFullMessage()`: a `{"msg", "TYPE",
+    /// "Severity", "id"}` tuple string. Used for `pop_message`'s
+    /// consecutive-duplicate suppression and the `showErrorMessages` echo.
     fn full_message(&self) -> String {
-        let body = substitute_tokens(&content_text(&self.msg.message), &self.tokens);
         format!(
-            "[{}:{}.{}-{}.{} {}] {}: {}",
-            self.info.fileName,
-            self.info.lineNumberStart,
-            self.info.columnNumberStart,
-            self.info.lineNumberEnd,
-            self.info.columnNumberEnd,
-            if self.info.isReadOnly { "readonly" } else { "writable" },
+            "{{\"{}\", \"{}\", \"{}\", \"{}\"}}",
+            self.rendered(false),
+            message_type_label(&self.msg.ty),
             severity_label(&self.msg.severity),
-            body,
+            self.msg.id,
         )
     }
 }
@@ -88,27 +132,56 @@ fn content_text(c: &TranslatableContent) -> ArcStr {
     }
 }
 
-/// Substitute `%s` placeholders with the supplied tokens, in order. Extra
-/// tokens are ignored; missing tokens leave the placeholder verbatim.
-/// This matches `ErrorMessage::TokenList`-style substitution closely
-/// enough for the diagnostic output the bootstrap actually inspects.
+/// Substitute placeholders with the supplied tokens, mirroring
+/// `ErrorMessage::getMessage_()`: `%s` consumes tokens sequentially while
+/// `%1`–`%9` index into the token list (1-based). Both styles may be mixed
+/// in one template. On a missing token the C++ side prints an internal
+/// error to stderr and renders the message as the empty string — we
+/// preserve that so test output matches.
 fn substitute_tokens(template: &str, tokens: &Arc<List<ArcStr>>) -> String {
+    let toks: Vec<&ArcStr> = {
+        let mut v = Vec::new();
+        let mut cur = tokens;
+        while let List::Cons { head, tail } = &**cur {
+            v.push(head);
+            cur = tail;
+        }
+        v
+    };
     let mut out = String::with_capacity(template.len());
     let mut chars = template.chars().peekable();
-    let mut cur = tokens.clone();
+    let mut next_seq = 0usize;
     while let Some(c) = chars.next() {
         if c == '%' {
-            if let Some(&n) = chars.peek() {
-                if n == 's' {
+            match chars.peek() {
+                Some('s') => {
                     chars.next();
-                    if let List::Cons { head, tail } = &*cur {
-                        out.push_str(head);
-                        cur = tail.clone();
-                    } else {
-                        out.push_str("%s");
-                    }
+                    let Some(tok) = toks.get(next_seq) else {
+                        eprintln!("Internal error: no tokens left to replace %s with.");
+                        eprintln!("Given message was: {template}");
+                        return String::new();
+                    };
+                    next_seq += 1;
+                    out.push_str(tok);
                     continue;
                 }
+                Some(&d) if d.is_ascii_digit() => {
+                    chars.next();
+                    // `%0` underflows to an invalid index, matching C++.
+                    let Some(tok) = (d as usize)
+                        .checked_sub('0' as usize + 1)
+                        .and_then(|i| toks.get(i))
+                    else {
+                        eprintln!(
+                            "Internal error: Invalid positional index %{d} in error message."
+                        );
+                        eprintln!("Given message was: {template}");
+                        return String::new();
+                    };
+                    out.push_str(tok);
+                    continue;
+                }
+                _ => {}
             }
         }
         out.push(c);
@@ -122,6 +195,20 @@ fn severity_label(s: &Severity) -> &'static str {
         Severity::ERROR => "Error",
         Severity::WARNING => "Warning",
         Severity::NOTIFICATION => "Notification",
+    }
+}
+
+/// Mirrors `ErrorType_toStr` in `errorext.cpp`. Note that the
+/// MetaModelica constructor `SIMULATION` corresponds to the C enum value
+/// `ErrorType_runtime`, which prints as `RUNTIME`.
+fn message_type_label(t: &MessageType) -> &'static str {
+    match t {
+        MessageType::SYNTAX => "SYNTAX",
+        MessageType::GRAMMAR => "GRAMMAR",
+        MessageType::TRANSLATION => "TRANSLATION",
+        MessageType::SYMBOLIC => "SYMBOLIC",
+        MessageType::SIMULATION => "RUNTIME",
+        MessageType::SCRIPTING => "SCRIPTING",
     }
 }
 
@@ -150,6 +237,36 @@ fn bump_counters(state: &mut State, severity: &Severity, delta: i32) {
         Severity::WARNING => state.num_warnings += delta,
         Severity::NOTIFICATION => {}
     }
+}
+
+/// Mirrors `pop_message` in `errorext.cpp`: remove the newest queued
+/// message *and any consecutive duplicates of it* (same
+/// [`QueuedMessage::full_message`]), updating the severity counters.
+/// During a rollback the duplicate scan stops at the topmost checkpoint
+/// so messages belonging to the parent transaction survive.
+///
+/// Returns the popped message (the C++ version's callers read `back()`
+/// before calling it instead).
+fn pop_message(state: &mut State, rollback: bool) -> Option<QueuedMessage> {
+    let msg = state.queue.pop()?;
+    bump_counters(state, &msg.msg.severity, -1);
+    let key = msg.full_message();
+    loop {
+        if rollback {
+            let boundary = state.check_points.last().map(|(p, _)| *p).unwrap_or(0);
+            if state.queue.len() <= boundary {
+                break;
+            }
+        }
+        match state.queue.last() {
+            Some(next) if next.full_message() == key => {
+                let dup = state.queue.pop().unwrap();
+                bump_counters(state, &dup.msg.severity, -1);
+            }
+            _ => break,
+        }
+    }
+    Some(msg)
 }
 
 // ---------------------------------------------------------------------------
@@ -203,9 +320,12 @@ pub fn addSourceMessage(
 }
 
 pub fn clearMessages() {
+    // The C++ `ErrorImpl__clearMessages` drains the queue but leaves the
+    // checkpoint stack alone, so a caller holding an open checkpoint can
+    // still delCheckpoint/rollBack it afterwards. Stored positions may now
+    // exceed the queue length; every consumer clamps with `.min(len)`.
     with_state(|s| {
         s.queue.clear();
-        s.check_points.clear();
         s.num_errors = 0;
         s.num_warnings = 0;
     });
@@ -249,29 +369,39 @@ pub fn freeMessages(_handles: Arc<List<i32>>) {
     // Intentionally empty — see doc comment.
 }
 
-/// Return the messages added since the most recent checkpoint, in queue
-/// order. Used by callers that want to inspect a transactional batch
-/// before deciding whether to `rollBack` or `delCheckpoint`.
+/// Drain and return the messages added since the most recent checkpoint,
+/// oldest first. Like `ErrorImpl__getCheckpointMessages` this *consumes*
+/// the messages (popping consecutive duplicates as it goes); callers that
+/// want to keep them re-add via `Error.addTotalMessages`.
 pub fn getCheckpointMessages() -> Arc<List<TotalMessage>> {
     with_state(|s| {
-        let start = s.check_points.last().map(|(p, _)| *p).unwrap_or(0);
-        list_from_slice(&s.queue[start..])
+        let mut out = nil::<TotalMessage>();
+        let Some(&(boundary, _)) = s.check_points.last() else {
+            return out;
+        };
+        while s.queue.len() > boundary {
+            // Render before popping — `pop_message` may also remove
+            // consecutive duplicates that we only want to emit once.
+            let total = s.queue.last().unwrap().as_total();
+            out = cons(total, out);
+            pop_message(s, false);
+        }
+        out
     })
 }
 
+/// Drain and return all queued messages, oldest first (the newest message
+/// is consed last in `ErrorImpl__getMessages`, ending up at the tail).
 pub fn getMessages() -> Arc<List<TotalMessage>> {
-    with_state(|s| list_from_slice(&s.queue))
-}
-
-fn list_from_slice(slice: &[QueuedMessage]) -> Arc<List<TotalMessage>> {
-    // MetaModelica lists are head-first: the most recently added message
-    // becomes the head of the returned list. Mirrors the C++ iteration
-    // order in `Error_getMessages`.
-    let mut out = nil::<TotalMessage>();
-    for m in slice.iter() {
-        out = cons(m.as_total(), out);
-    }
-    out
+    with_state(|s| {
+        let mut out = nil::<TotalMessage>();
+        while !s.queue.is_empty() {
+            let total = s.queue.last().unwrap().as_total();
+            out = cons(total, out);
+            pop_message(s, false);
+        }
+        out
+    })
 }
 
 pub fn getNumCheckpoints() -> i32 {
@@ -325,7 +455,8 @@ pub fn popCheckPoint(id: ArcStr) -> Arc<List<i32>> {
                 s.check_points.last().map(|(_, cid)| cid.as_str()),
             );
         }
-        let detached: Vec<QueuedMessage> = s.queue.drain(start..).collect();
+        let detached: Vec<QueuedMessage> =
+            s.queue.drain(start.min(s.queue.len())..).collect();
         for d in &detached {
             bump_counters(s, &d.msg.severity, -1);
         }
@@ -339,46 +470,60 @@ pub fn popCheckPoint(id: ArcStr) -> Arc<List<i32>> {
     })
 }
 
+/// Drain and render the messages added since the most recent checkpoint,
+/// oldest first, one per line. Returns "" (without draining anything)
+/// when no checkpoint is set — mirrors
+/// `ErrorImpl__printCheckpointMessagesStr`.
 pub fn printCheckpointMessagesStr(warningsAsErrors: bool) -> ArcStr {
     with_state(|s| {
-        let start = s.check_points.last().map(|(p, _)| *p).unwrap_or(0);
-        render_messages(&s.queue[start..], warningsAsErrors)
+        let Some(&(boundary, _)) = s.check_points.last() else {
+            return ArcStr::from("");
+        };
+        let mut out = String::new();
+        while s.queue.len() > boundary {
+            let line = s.queue.last().unwrap().rendered(warningsAsErrors);
+            out.insert(0, '\n');
+            out.insert_str(0, &line);
+            pop_message(s, false);
+        }
+        ArcStr::from(out)
     })
 }
 
+/// Drain the whole queue, rendering only ERROR/INTERNAL messages (oldest
+/// first); warnings and notifications are discarded. Unlike the other
+/// drains this does *not* suppress consecutive duplicates — the C++
+/// `ErrorImpl__printErrorsNoWarning` pops each entry individually. (The
+/// C++ version also forgets to decrement `numWarningMessages` for the
+/// discarded warnings; we keep the counters consistent instead.)
 pub fn printErrorsNoWarning() -> ArcStr {
     with_state(|s| {
         let mut out = String::new();
-        for m in &s.queue {
+        while let Some(m) = s.queue.pop() {
+            bump_counters(s, &m.msg.severity, -1);
             if matches!(m.msg.severity, Severity::ERROR | Severity::INTERNAL) {
-                out.push_str(&m.full_message());
-                out.push('\n');
+                out.insert(0, '\n');
+                out.insert_str(0, &m.rendered(false));
             }
         }
         ArcStr::from(out)
     })
 }
 
+/// Drain the whole queue and render it oldest first, one message per
+/// line, suppressing consecutive duplicates — mirrors
+/// `ErrorImpl__printMessagesStr`.
 pub fn printMessagesStr(warningsAsErrors: bool) -> ArcStr {
-    with_state(|s| render_messages(&s.queue, warningsAsErrors))
-}
-
-fn render_messages(slice: &[QueuedMessage], warnings_as_errors: bool) -> ArcStr {
-    let mut out = String::new();
-    for m in slice {
-        let promoted = warnings_as_errors && matches!(m.msg.severity, Severity::WARNING);
-        if promoted {
-            // Show the original severity replaced with Error so callers
-            // see the promotion in the rendered output.
-            let mut m2 = m.clone();
-            m2.msg.severity = Severity::ERROR;
-            out.push_str(&m2.full_message());
-        } else {
-            out.push_str(&m.full_message());
+    with_state(|s| {
+        let mut out = String::new();
+        while !s.queue.is_empty() {
+            let line = s.queue.last().unwrap().rendered(warningsAsErrors);
+            out.insert(0, '\n');
+            out.insert_str(0, &line);
+            pop_message(s, false);
         }
-        out.push('\n');
-    }
-    ArcStr::from(out)
+        ArcStr::from(out)
+    })
 }
 
 /// Push previously [`popCheckPoint`]-detached handles back onto the queue.
@@ -410,7 +555,7 @@ pub fn registerModelicaFormatError() {
 pub fn rollBack(_id: ArcStr) {
     with_state(|s| {
         if let Some((start, _)) = s.check_points.pop() {
-            let drained = s.queue.split_off(start);
+            let drained = s.queue.split_off(start.min(s.queue.len()));
             for d in &drained {
                 bump_counters(s, &d.msg.severity, -1);
             }
@@ -419,16 +564,16 @@ pub fn rollBack(_id: ArcStr) {
 }
 
 pub fn rollbackNumCheckpoints(n: i32) {
-    for _ in 0..n.max(0) {
-        with_state(|s| {
+    with_state(|s| {
+        for _ in 0..n.max(0) {
             if let Some((start, _)) = s.check_points.pop() {
-                let drained = s.queue.split_off(start);
+                let drained = s.queue.split_off(start.min(s.queue.len()));
                 for d in &drained {
                     bump_counters(s, &d.msg.severity, -1);
                 }
             }
-        });
-    }
+        }
+    });
 }
 
 pub fn setCheckpoint(id: ArcStr) {
