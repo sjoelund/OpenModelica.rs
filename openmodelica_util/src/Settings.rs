@@ -164,17 +164,43 @@ pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
     // `SettingsImpl__getInstallationDirectoryPath` + the `Settings_omc.cpp`
     // wrapper, which throws (here: returns `Err`) when no path can be found.
     //
-    // Resolution order:
+    // The C compiler (non-bootstrapping build) IGNORES `$OPENMODELICAHOME`
+    // on Linux/macOS: it dladdr's `libOpenModelicaCompiler.so`, which was
+    // loaded through the executable's RPATH as
+    // `<bindir>/../lib/<triple>/omc/libOpenModelicaCompiler.so`, and
+    // `stripbinpath` strips that back to `<bindir>/..` — note the literal
+    // `bin/..` suffix, which is visible in error messages the testsuite
+    // compares (e.g. `bin/../lib/<triple>/omc/Foo.so` candidate paths).
+    //
+    // Resolution order here:
     //   1. the cached value (set previously or by `setInstallationDirectoryPath`);
-    //   2. `$OPENMODELICAHOME`, covering installed/configured environments —
-    //      this is also what the C bootstrapping build reads;
-    //   3. the directory derived from the running executable's own path via
-    //      `strip_bin_path`, the portable analogue of the C runtime's
-    //      `dladdr`-based lookup.
+    //   2. `<bindir>/..` when the running executable lives in a `bin`/`lib`
+    //      directory (the installed layout the C dladdr lookup assumes);
+    //   3. `$OPENMODELICAHOME` — the dev-workflow fallback for running the
+    //      port straight out of `target/debug` (also what the C
+    //      OMC_BOOTSTRAPPING build reads);
+    //   4. the `strip_bin_path` prefix of the executable as a last resort.
     {
         let state = STATE.lock().unwrap();
         if let Some(p) = &state.installation_path {
             return Ok(p.clone());
+        }
+    }
+
+    let exe = std::env::current_exe()
+        .map_err(|e| anyhow::anyhow!("failed to determine executable path: {e}"))
+        .map(|p| convert_to_forward_slashes(&p.to_string_lossy()));
+
+    if let Ok(exe) = &exe {
+        if let Some((dir, _)) = exe.rsplit_once('/') {
+            let parent_component = dir.rsplit('/').next().unwrap_or("");
+            if parent_component == "bin" || parent_component == "lib" {
+                let path = ArcStr::from(format!("{dir}/.."));
+                let mut state = STATE.lock().unwrap();
+                set_env_var("OPENMODELICAHOME", &path);
+                state.installation_path = Some(path.clone());
+                return Ok(path);
+            }
         }
     }
 
@@ -187,10 +213,7 @@ pub fn getInstallationDirectoryPath() -> Result<ArcStr> {
         }
     }
 
-    let exe = std::env::current_exe()
-        .map_err(|e| anyhow::anyhow!("failed to determine executable path: {e}"))?;
-    let exe = convert_to_forward_slashes(&exe.to_string_lossy());
-    let path = strip_bin_path(&exe)?;
+    let path = strip_bin_path(&exe?)?;
 
     let mut state = STATE.lock().unwrap();
     set_env_var("OPENMODELICAHOME", &path);
