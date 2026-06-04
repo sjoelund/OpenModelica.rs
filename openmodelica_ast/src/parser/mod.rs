@@ -516,7 +516,10 @@ fn default_element_attrs() -> ElementAttributes {
         flowPrefix: false, streamPrefix: false,
         parallelism: Parallelism::NON_PARALLEL {},
         variability: Variability::VAR {},
-        direction: Direction::INPUT {},
+        // No direction prefix means bidirectional (same default as type_prefix);
+        // INPUT here used to leak into `replaceable type T subtypeof Any`, turning
+        // every component of type T into a function input.
+        direction: Direction::BIDIR {},
         isField: IsField::NONFIELD {},
         arrayDim: Arc::new(List::Nil),
     }
