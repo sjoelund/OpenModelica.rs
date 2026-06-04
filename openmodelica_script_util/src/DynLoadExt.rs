@@ -87,8 +87,28 @@ fn value_to_desc(v: &Values::Value) -> Result<TypeDesc> {
         Values::Value::INTEGER { integer } => Ok(TypeDesc::scalar(TD_INT, *integer as i64 as u64)),
         Values::Value::REAL { real } => Ok(TypeDesc::scalar(TD_REAL, real.into_inner().to_bits())),
         Values::Value::BOOL { boolean } => Ok(TypeDesc::scalar(TD_BOOL, *boolean as u64)),
+        Values::Value::STRING { string } => Ok(TypeDesc::scalar(TD_STRING, make_c_string(string)? as u64)),
         other => bail!("DynLoad.executeFunction: marshalling argument {other:?} not yet supported"),
     }
+}
+
+/// Allocate a boxed MMC string (`modelica_metatype`) holding `s` and return the
+/// tagged metatype pointer. `mmc_mk_scon_len_ret_ptr` returns the string's data
+/// region; the object header is 8 bytes before it and the tagged pointer adds 3.
+fn make_c_string(s: &str) -> Result<usize> {
+    let mk = dynload::runtime_symbol("mmc_mk_scon_len_ret_ptr")
+        .ok_or_else(|| anyhow::anyhow!("runtime symbol `mmc_mk_scon_len_ret_ptr` not found"))?;
+    let mk: extern "C" fn(usize) -> *mut u8 = unsafe { std::mem::transmute(mk) };
+    let bytes = s.as_bytes();
+    let data = mk(bytes.len());
+    if data.is_null() {
+        bail!("DynLoad.executeFunction: string allocation failed");
+    }
+    unsafe {
+        std::ptr::copy_nonoverlapping(bytes.as_ptr(), data, bytes.len());
+        *data.add(bytes.len()) = 0; // NUL terminator
+    }
+    Ok(data as usize - 5)
 }
 
 /// Read a `type_description` produced by `in_*` back into a `Value`. Multiple
@@ -198,8 +218,29 @@ pub fn executeFunction(handle: i32, values: Arc<List<Arc<Values::Value>>>, _debu
     let addr = dynload::function_addr(handle)?;
     let thread_data = dynload::thread_data()? as *mut c_void;
 
+    // Argument and result metatypes (boxed strings, lists, …) are only reachable
+    // from the C `type_description` buffers and the GC has no roots into them, so
+    // a collection triggered while the function runs could free them underneath
+    // us. Pause the collector across marshalling, the call, and decoding; the
+    // `-d=gen` functions evaluated this way are small. No-op for purely scalar
+    // calls.
+    let gc_disable = dynload::runtime_symbol("GC_disable");
+    let gc_enable = dynload::runtime_symbol("GC_enable");
+    if let Some(d) = gc_disable {
+        let d: extern "C" fn() = unsafe { std::mem::transmute(d) };
+        d();
+    }
+    let result = executeFunctionGuarded(addr, thread_data, &values);
+    if let Some(e) = gc_enable {
+        let e: extern "C" fn() = unsafe { std::mem::transmute(e) };
+        e();
+    }
+    result
+}
+
+fn executeFunctionGuarded(addr: usize, thread_data: *mut c_void, values: &Arc<List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
     let mut args: Vec<TypeDesc> = Vec::new();
-    for v in &*values {
+    for v in &**values {
         args.push(value_to_desc(v)?);
     }
 
