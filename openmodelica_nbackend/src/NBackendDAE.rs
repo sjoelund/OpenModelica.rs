@@ -927,24 +927,22 @@ pub fn lowerRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
         Deref @ Variable::VARIABLE { backendinfo: binfo @ Deref @ BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ VariableKind::RECORD { .. }, .. }, .. } => {
             let mut binfo = (*binfo).clone();
             let mut varKind = (*varKind).clone();
-            assign_variant_field!(varKind => VariableKind::VariableKind::RECORD;
-                children = ({
+            assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut child in (var.children.clone()).into_iter().cloned() {
             let __x = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(child.name.clone()), Some(metamodelica::sourceInfo!("NBackEnd/Classes/NBackendDAE.mo")))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
-                children = ({
+    }));
+            assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut child in (var_field!((*varKind).children, VariableKind::VariableKind::RECORD).clone()).into_iter().cloned() {
             let __x = BVariable::setParent(child.clone(), var_ptr.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })
-            );
+    }));
             assign_field!(binfo.varKind = varKind.clone());
             assign_field!(var.backendinfo = binfo.clone());
             var.clone()

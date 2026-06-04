@@ -811,8 +811,9 @@ pub mod Partition {
             assign_field!(
                 par.adjacencyMatrix = None,
                 par.matching = None,
-                par.strongComponents = None,
-                par.association = (::match_deref::match_deref! { match &(par.association.clone()) {
+                par.strongComponents = None
+            );
+            assign_field!(par.association = (::match_deref::match_deref! { match &(par.association.clone()) {
         association @ Deref @ Association::CONTINUOUS { .. } => {
             let mut association = (*association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; jacobian = None);
@@ -822,8 +823,7 @@ pub mod Partition {
             par.association.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
-            );
+    } }));
         }
         Ok(par)
     }

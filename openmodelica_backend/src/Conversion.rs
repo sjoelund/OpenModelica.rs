@@ -1502,17 +1502,17 @@ fn convertClassDef(mut cdef: Arc<Absyn::ClassDef>, mut rules: Arc<ConversionRule
             (ty, local_rules, mod_rules) = convertTypeSpec(var_field!((*cdef).typeSpec, Absyn::ClassDef::DERIVED).clone(), rules.clone(), env.clone(), info.clone())?;
             assign_variant_field!(cdef => Absyn::ClassDef::DERIVED;
                 typeSpec = ty.clone(),
-                arguments = convertModification2(mod_rules.clone(), var_field!((*cdef).arguments, Absyn::ClassDef::DERIVED).clone())?,
-                arguments = convertElementArgs(var_field!((*cdef).arguments, Absyn::ClassDef::DERIVED).clone(), local_rules.clone(), rules.clone(), env.clone())?
+                arguments = convertModification2(mod_rules.clone(), var_field!((*cdef).arguments, Absyn::ClassDef::DERIVED).clone())?
             );
+            assign_variant_field!(cdef => Absyn::ClassDef::DERIVED; arguments = convertElementArgs(var_field!((*cdef).arguments, Absyn::ClassDef::DERIVED).clone(), local_rules.clone(), rules.clone(), env.clone())?);
             ()
         },
         Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. } => {
             let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
             let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
             (local_rules, mod_rules) = lookupClassExtendsRules((var_field!((*cdef).baseClassName, Absyn::ClassDef::CLASS_EXTENDS).clone()).clone(), extendsRules.clone())?;
+            assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; modifications = convertModification2(mod_rules.clone(), var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone())?);
             assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS;
-                modifications = convertModification2(mod_rules.clone(), var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone())?,
                 modifications = convertElementArgs(var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone(), local_rules.clone(), rules.clone(), env.clone())?,
                 parts = convertClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), local_rules.clone(), rules.clone(), env.clone(), info.clone())?
             );
@@ -1990,9 +1990,9 @@ fn convertElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut rules: Arc<Conversi
             ty_path = convertPath(ty_path.clone(), rules.clone(), env.imports.clone(), info.clone())?;
             assign_variant_field!(spec => Absyn::ElementSpec::EXTENDS;
                 path = stripImportPath(ty_path.clone(), import_path.clone())?,
-                elementArg = convertModification2(mod_rules.clone(), var_field!((*spec).elementArg, Absyn::ElementSpec::EXTENDS).clone())?,
-                elementArg = convertElementArgs(var_field!((*spec).elementArg, Absyn::ElementSpec::EXTENDS).clone(), local_rules.clone(), rules.clone(), env.clone())?
+                elementArg = convertModification2(mod_rules.clone(), var_field!((*spec).elementArg, Absyn::ElementSpec::EXTENDS).clone())?
             );
+            assign_variant_field!(spec => Absyn::ElementSpec::EXTENDS; elementArg = convertElementArgs(var_field!((*spec).elementArg, Absyn::ElementSpec::EXTENDS).clone(), local_rules.clone(), rules.clone(), env.clone())?);
             ()
         },
         Deref @ Absyn::ElementSpec::IMPORT { .. } => {

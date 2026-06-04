@@ -6402,9 +6402,8 @@ fn optMRFAInStmt(mut stmt: Arc<DAE::Statement>, mut tempVars: Arc<metamodelica::
             let mut ew: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             (stmts, tempVars) = optimizeMetaRecordFieldAssigns(var_field!((*stmt).statementLst, DAE::Statement::STMT_WHEN).clone(), tempVars.clone())?;
-            assign_variant_field!(stmt => DAE::Statement::STMT_WHEN;
-                statementLst = stmts.clone(),
-                elseWhen = (::match_deref::match_deref! { match &(var_field!((*stmt).elseWhen, DAE::Statement::STMT_WHEN).clone()) {
+            assign_variant_field!(stmt => DAE::Statement::STMT_WHEN; statementLst = stmts.clone());
+            assign_variant_field!(stmt => DAE::Statement::STMT_WHEN; elseWhen = (::match_deref::match_deref! { match &(var_field!((*stmt).elseWhen, DAE::Statement::STMT_WHEN).clone()) {
         Some(ew) => {
             let mut ew = (*ew).clone();
             (ew, tempVars) = optMRFAInStmt(ew.clone(), tempVars.clone())?;
@@ -6412,8 +6411,7 @@ fn optMRFAInStmt(mut stmt: Arc<DAE::Statement>, mut tempVars: Arc<metamodelica::
         },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
-            );
+    } }));
             (stmt.clone(), tempVars.clone())
         },
         Deref @ DAE::Statement::STMT_FAILURE { .. } => {

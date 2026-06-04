@@ -891,10 +891,8 @@ pub fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterat
             new_eqn.clone()
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } => {
-            assign_variant_field!(eqn => Equation::Equation::IF_EQUATION;
-                body = removeWhenEquationIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter.clone(), cref_map.clone())?,
-                size = BEquation::IfEquationBody::size(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), false)?
-            );
+            assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; body = removeWhenEquationIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter.clone(), cref_map.clone())?);
+            assign_variant_field!(eqn => Equation::Equation::IF_EQUATION; size = BEquation::IfEquationBody::size(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), false)?);
             if (var_field!((*eqn).size, Equation::Equation::IF_EQUATION).clone() > 0) {eqn.clone()} else {Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION)}
         },
         Deref @ BEquation::Equation::ALGORITHM { .. } => {

@@ -5411,10 +5411,8 @@ pub fn mapStatements(mut stmt: Arc<SCode::Statement>, mut func: Arc<dyn ::std::o
             ()
         },
         Deref @ SCode::Statement::ALG_TRY { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_TRY;
-                body = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?,
-                elseBody = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?
-            );
+            assign_variant_field!(stmt => SCode::Statement::ALG_TRY; body = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?);
+            assign_variant_field!(stmt => SCode::Statement::ALG_TRY; elseBody = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?);
             ()
         },
         _ => (),

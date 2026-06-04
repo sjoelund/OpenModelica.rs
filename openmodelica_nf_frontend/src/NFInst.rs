@@ -203,17 +203,15 @@ pub fn instClassInProgram(mut classPath: Arc<Path>, mut program: Arc<metamodelic
     if Flags::isSet(Flags::NF_SCALARIZE.clone())? {
         flatModel = Scalarize::scalarize(flatModel.clone())?;
     } else {
-        assign_field!(
-            flatModel.variables = List::filterOnFalse(flatModel.variables.clone(), (std::sync::Arc::new(Variable::isEmptyArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>))?,
-            flatModel.variables = ({
+        assign_field!(flatModel.variables = List::filterOnFalse(flatModel.variables.clone(), (std::sync::Arc::new(Variable::isEmptyArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>))?);
+        assign_field!(flatModel.variables = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut v in (flatModel.variables.clone()).into_iter().cloned() {
             let __x = Flatten::fillVectorizedVariableBinding(v.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })
-        );
+    }));
     }
     flatModel = InstUtil::replaceEmptyArrays(flatModel.clone())?;
     InstUtil::dumpFlatModelDebug((literal!("scalarize")).clone(), flatModel.clone(), functions.clone())?;

@@ -258,11 +258,9 @@ fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc
     if init.clone() {
         eqData = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ BEquation::EqData::EQ_DATA_SIM { .. } => {
-            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
-                initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?,
-                initials = BEquation::EquationPointers::addList(Pointer::access(new_eqns.clone()), var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?,
-                initials = BEquation::EquationPointers::compress(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?
-            );
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::addList(Pointer::access(new_eqns.clone()), var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?);
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::compress(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?);
             eqData.clone()
         },
         _ => eqData.clone(),

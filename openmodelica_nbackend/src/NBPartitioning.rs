@@ -502,8 +502,8 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     func = getModule()?;
     bdae = (::match_deref::match_deref! { match &((kind.clone(), bdae.clone())) {
         (Partition::Kind::ODE, Deref @ BackendDAE::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { clocked, simulation: equations, .. }, varData: Deref @ BVariable::VarData::VAR_DATA_SIM { clocks, unknowns: variables, .. }, .. }) => {
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; ode = func(kind.clone(), variables.clone(), equations.clone(), clocks.clone(), clocked.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?);
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                ode = func(kind.clone(), variables.clone(), equations.clone(), clocks.clone(), clocked.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?,
                 ode = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
         for mut sys in (var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
@@ -519,9 +519,8 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
             bdae.clone()
         },
         (_, Deref @ BackendDAE::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { clocked, initials: equations, .. }, varData: Deref @ BVariable::VarData::VAR_DATA_SIM { clocks, initials: variables, .. }, .. }) if (Partition::kindIsInitial(kind.clone())) => {
-            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                init = partitioningNone(kind.clone(), variables.clone(), equations.clone(), clocks.clone(), clocked.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?,
-                init = ({
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = partitioningNone(kind.clone(), variables.clone(), equations.clone(), clocks.clone(), clocked.clone(), var_field!((*bdae).clockedInfo, BackendDAE::NBackendDAE::MAIN).clone())?);
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
         for mut sys in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
             if !(!(Partition::Partition::isEmpty(sys.clone())?)) { continue; }
@@ -529,8 +528,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })
-            );
+    }));
             bdae.clone()
         },
         _ => {

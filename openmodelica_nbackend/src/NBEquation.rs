@@ -2209,9 +2209,9 @@ pub mod Equation {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
-                    size = size(Pointer::create(eq.clone()), true)?
+    })
                 );
+                assign_variant_field!(eq => Equation::FOR_EQUATION; size = size(Pointer::create(eq.clone()), true)?);
             }
             Inline::inlineForEquation(eq.clone())?
         },

@@ -1893,10 +1893,8 @@ pub fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_ma
             dummy_func = func.clone();
             assign_variant_field!(node => InstNode::InstNode::CLASS_NODE; cls = Pointer::create(new_cls.clone()));
             der_func_name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::FUNCTION_DERIVATIVE_STR)); __mm_s.push_str(&*intString((func.derivatives.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
-            assign_variant_field!(node => InstNode::InstNode::CLASS_NODE;
-                name = { let mut __mm_s = String::new(); __mm_s.push_str(&*der_func_name.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*node).name, InstNode::InstNode::CLASS_NODE).clone()); ArcStr::from(__mm_s) },
-                definition = SCodeUtil::setElementName(var_field!((*node).definition, InstNode::InstNode::CLASS_NODE).clone(), (var_field!((*node).name, InstNode::InstNode::CLASS_NODE).clone()).clone())
-            );
+            assign_variant_field!(node => InstNode::InstNode::CLASS_NODE; name = { let mut __mm_s = String::new(); __mm_s.push_str(&*der_func_name.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*var_field!((*node).name, InstNode::InstNode::CLASS_NODE).clone()); ArcStr::from(__mm_s) });
+            assign_variant_field!(node => InstNode::InstNode::CLASS_NODE; definition = SCodeUtil::setElementName(var_field!((*node).definition, InstNode::InstNode::CLASS_NODE).clone(), (var_field!((*node).name, InstNode::InstNode::CLASS_NODE).clone()).clone()));
             assign_field!(
                 der_func.path = AbsynUtil::prefixPath((der_func_name.clone()).clone(), der_func.path.clone()),
                 der_func.derivatives = metamodelica::nil(),

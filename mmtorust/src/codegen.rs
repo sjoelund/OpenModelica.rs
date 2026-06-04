@@ -16193,6 +16193,20 @@ fn emit_stmts<'a>(
                 while j < stmts.len() {
                     let Some(next) = plan_field_assign(&stmts[j], env, top_level) else { break };
                     if !next.same_batch_as(&plans[0]) { break; }
+                    // Sequential MM semantics: a later `base.f := rhs` whose
+                    // rhs reads `base` as a whole, or reads a field assigned
+                    // earlier in this run, must observe those updates (e.g.
+                    // NFExpression.mapArrayElements: `exp.elements := map(...);
+                    // exp.literal := Array.all(exp.elements, ...)`). The
+                    // batched macro computes every clause from the pre-update
+                    // record, so such a statement must start a new update.
+                    // Reads of *other* fields of `base` are unaffected by the
+                    // batch and keep it together.
+                    let assigned: Vec<&str> = plans.iter().map(|p| p.field()).collect();
+                    if let typedexp::TypedStmt::Assign { rhs, .. } = next.stmt
+                        && exp_reads_assigned_state(rhs, &plans[0].base_name, &assigned) {
+                            break;
+                    }
                     plans.push(next);
                     j += 1;
                 }
@@ -16206,6 +16220,72 @@ fn emit_stmts<'a>(
             }
         emit_stmt(out, indent, &stmts[i], fail_mode.clone(), ctx, env, top_level, fresh);
         i += 1;
+    }
+}
+
+/// True when `exp` observes state of `base` that an earlier statement in a
+/// record-field-assignment batch may have changed: a read of the whole
+/// record (`base` as a bare value), or a read of `base.<f>` for a field `f`
+/// in `assigned`. Used to keep the batching in `emit_stmts` sound: within a
+/// run of `base.f := ...` statements, such a right-hand side must see the
+/// updates made by the *earlier* statements, which the single-macro lowering
+/// cannot provide (all clauses are computed from the pre-update record).
+/// Reads of base fields that the batch has not (yet) assigned are fine and
+/// keep the batch together.
+///
+/// Conservative: opaque constructs that may contain statements of their own
+/// (`Match`) and `Todo` placeholders count as reading everything; a false
+/// positive only costs one batched macro call, a false negative changes
+/// evaluation semantics.
+fn exp_reads_assigned_state(exp: &TypedExp, base: &str, assigned: &[&str]) -> bool {
+    let rec = |e: &TypedExp| exp_reads_assigned_state(e, base, assigned);
+    match exp {
+        // `Var::name` is the full dotted path (`exp.elements`); the base
+        // variable is its first component (also segments[0] when present).
+        TypedExp::Var { name: n, segments, .. } => {
+            if n == base || (segments.len() == 1 && segments[0].name == base) {
+                return true; // whole-record read
+            }
+            let field = if segments.len() >= 2 && segments[0].name == base {
+                Some(segments[1].name.as_str())
+            } else if let Some(rest) = n.strip_prefix(base)
+                && let Some(rest) = rest.strip_prefix('.')
+            {
+                Some(rest.split('.').next().unwrap_or(rest))
+            } else {
+                None
+            };
+            field.is_some_and(|f| assigned.contains(&f))
+        }
+        TypedExp::Lit(_) => false,
+        TypedExp::BinOp { lhs, rhs, .. } => rec(lhs) || rec(rhs),
+        TypedExp::UnOp { operand, .. } => rec(operand),
+        TypedExp::Call { args, named_args, .. }
+        | TypedExp::Constructor { args, named_args, .. }
+        | TypedExp::PartEval { args, named_args, .. } => {
+            args.iter().any(rec) || named_args.iter().any(|(_, a)| rec(a))
+        }
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            rec(cond)
+                || rec(then_)
+                || rec(else_)
+                || elseif.iter().any(|(c, e)| rec(c) || rec(e))
+        }
+        TypedExp::Cons { head, tail, .. } => rec(head) || rec(tail),
+        TypedExp::Tuple(v) => v.iter().any(rec),
+        TypedExp::Array { elems, .. } => elems.iter().any(rec),
+        TypedExp::Range { start, step, stop, .. } => {
+            rec(start) || rec(stop) || step.as_deref().is_some_and(rec)
+        }
+        TypedExp::Reduction { body, iterators, .. } => {
+            rec(body)
+                || iterators.iter().any(|it| {
+                    rec(&it.range) || it.guard.as_ref().is_some_and(|g| rec(g))
+                })
+        }
+        // Matches carry whole statement lists; treat them (and Todo
+        // placeholders) as potentially reading anything.
+        TypedExp::Match { .. } | TypedExp::Todo(_) => true,
     }
 }
 
@@ -16232,6 +16312,14 @@ impl<'s> FieldAssignPlan<'s> {
     /// macro; struct assignments use a macro only when the base is `Arc<T>`.
     fn is_macro(&self, ctx: &GenCtx) -> bool {
         self.variant.is_some() || constructor_needs_arc(&self.base_ty, ctx)
+    }
+
+    /// The field this plan assigns (`f` in `base.f := ...`).
+    fn field(&self) -> &str {
+        match self.stmt {
+            typedexp::TypedStmt::Assign { lhs: TypedPat::FieldAccess { field, .. }, .. } => field,
+            _ => unreachable!("plan_field_assign only accepts field assignments"),
+        }
     }
 
     /// Two plans batch together iff they target the same base AND lower

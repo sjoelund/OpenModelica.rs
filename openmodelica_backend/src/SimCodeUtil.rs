@@ -4302,7 +4302,9 @@ fn appendOMSIFunction(mut omsiFunction_1: Arc<SimCode::OMSIFunction>, mut omsiFu
         omsiFunction_1.inputVars = listAppend(omsiFunction_1.inputVars.clone(), omsiFunction_2.inputVars.clone()),
         omsiFunction_1.outputVars = listAppend(omsiFunction_1.outputVars.clone(), omsiFunction_2.outputVars.clone()),
         omsiFunction_1.innerVars = listAppend(omsiFunction_1.innerVars.clone(), omsiFunction_2.innerVars.clone()),
-        omsiFunction_1.nAllVars = omsiFunction_1.nAllVars.clone() + omsiFunction_2.nAllVars.clone(),
+        omsiFunction_1.nAllVars = omsiFunction_1.nAllVars.clone() + omsiFunction_2.nAllVars.clone()
+    );
+    assign_field!(
         omsiFunction_1.context = (match omsiFunction_1.context.clone() {
         SimCodeFunction::Context::OMSI_CONTEXT { hashTable: Some(mut hashTable) } => {
             hashTable = List::fold(omsiFunction_2.inputVars.clone(), (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>), hashTable.clone())?;

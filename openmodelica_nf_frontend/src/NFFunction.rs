@@ -569,11 +569,9 @@ pub mod Function {
             (fnNode, cmts) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
             r#fn = new(fnPath.clone(), fnNode.clone(), cmts.clone())?;
             specialBuiltin = isSpecialBuiltin(r#fn.clone())?;
-            assign_field!(
-                r#fn.derivatives = FunctionDerivative::instDerivatives(fnNode.clone(), r#fn.clone())?,
-                r#fn.inverses = FunctionInverse::instInverses(fnNode.clone(), r#fn.clone())?,
-                r#fn.derivedInputs = instPartialDerivedVars(var_field!((*def).classDef, SCode::Element::CLASS).clone(), r#fn.inputs.clone(), r#fn.clone(), context.clone(), info.clone())?
-            );
+            assign_field!(r#fn.derivatives = FunctionDerivative::instDerivatives(fnNode.clone(), r#fn.clone())?);
+            assign_field!(r#fn.inverses = FunctionInverse::instInverses(fnNode.clone(), r#fn.clone())?);
+            assign_field!(r#fn.derivedInputs = instPartialDerivedVars(var_field!((*def).classDef, SCode::Element::CLASS).clone(), r#fn.inputs.clone(), r#fn.clone(), context.clone(), info.clone())?);
             fnNode = InstNode::cacheAddFunc(fnNode.clone(), r#fn.clone(), specialBuiltin.clone())?;
             (fnNode.clone(), specialBuiltin.clone())
         },

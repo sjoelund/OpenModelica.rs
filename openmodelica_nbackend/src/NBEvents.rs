@@ -1083,17 +1083,15 @@ fn collectEvents(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut buc
                 new_stmts = metamodelica::cons(stmt.clone(), new_stmts.clone());
             }
             assign_field!(alg.statements = new_stmts.clone().reverse());
-            assign_variant_field!(eqn => Equation::Equation::ALGORITHM;
-                alg = Algorithm::setInputsOutputs(alg.clone())?,
-                size = ({
+            assign_variant_field!(eqn => Equation::Equation::ALGORITHM; alg = Algorithm::setInputsOutputs(alg.clone())?);
+            assign_variant_field!(eqn => Equation::Equation::ALGORITHM; size = ({
         let mut __acc: i32 = 0;
         for mut out in (var_field!((*eqn).alg, Equation::Equation::ALGORITHM).outputs.clone()).into_iter().cloned() {
             let __x = ComponentRef::size(out.clone(), true, false)?;
             __acc += __x;
         }
         __acc
-    })
-            );
+    }));
             eqn.clone()
         },
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {

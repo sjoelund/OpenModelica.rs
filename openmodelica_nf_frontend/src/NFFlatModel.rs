@@ -294,9 +294,13 @@ pub fn appendFlatStream(mut flatModel: Arc<NFFlatModel>, mut functions: Arc<Flat
     if scalarize.clone() {
         assign_field!(
             flat_model.variables = Scalarize::scalarizeVariables(flat_model.variables.clone(), true)?,
-            flat_model.equations = Equation::splitRecordEquations(flat_model.equations.clone())?,
+            flat_model.equations = Equation::splitRecordEquations(flat_model.equations.clone())?
+        );
+        assign_field!(
             flat_model.equations = Scalarize::scalarizeEquations(flat_model.equations.clone(), true)?,
-            flat_model.initialEquations = Equation::splitRecordEquations(flat_model.initialEquations.clone())?,
+            flat_model.initialEquations = Equation::splitRecordEquations(flat_model.initialEquations.clone())?
+        );
+        assign_field!(
             flat_model.initialEquations = Scalarize::scalarizeEquations(flat_model.initialEquations.clone(), true)?,
             flat_model.algorithms = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
@@ -317,10 +321,8 @@ pub fn appendFlatStream(mut flatModel: Arc<NFFlatModel>, mut functions: Arc<Flat
         );
         flat_model = mapExp(flat_model.clone(), (std::sync::Arc::new(ExpandExp::expandCallArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     } else {
-        assign_field!(
-            flat_model.variables = reconstructRecordInstances(flat_model.variables.clone())?,
-            flat_model.variables = List::filterOnFalse(flat_model.variables.clone(), (std::sync::Arc::new(Variable::isEmptyArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>))?
-        );
+        assign_field!(flat_model.variables = reconstructRecordInstances(flat_model.variables.clone())?);
+        assign_field!(flat_model.variables = List::filterOnFalse(flat_model.variables.clone(), (std::sync::Arc::new(Variable::isEmptyArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>))?);
     }
     if format.moveBindings.clone() {
         flat_model = moveBindings(flat_model.clone())?;
@@ -780,10 +782,8 @@ pub fn addObfuscatedVariable(mut var: Arc<Variable::NFVariable>, mut onlyEncrypt
 
 pub fn obfuscateVariable(mut var: Arc<Variable::NFVariable>, mut obfuscationMap: ObfuscationMap) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
-    assign_field!(
-        var.name = obfuscateCref(var.name.clone(), obfuscationMap.clone())?.0,
-        var.comment = obfuscateComment(var.comment.clone(), ComponentRef::node(var.name.clone())?, obfuscationMap.clone(), !(Variable::isAccessible(var.clone())?))?
-    );
+    assign_field!(var.name = obfuscateCref(var.name.clone(), obfuscationMap.clone())?.0);
+    assign_field!(var.comment = obfuscateComment(var.comment.clone(), ComponentRef::node(var.name.clone())?, obfuscationMap.clone(), !(Variable::isAccessible(var.clone())?))?);
     var = Variable::mapExpShallow(var.clone(), (std::sync::Arc::new({ let __pe_b1 = obfuscationMap.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(var)
 }

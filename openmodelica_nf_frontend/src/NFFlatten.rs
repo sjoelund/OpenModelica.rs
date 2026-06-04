@@ -900,9 +900,9 @@ pub mod Prefix {
         Deref @ INDEXED_PREFIX { .. } => {
             assign_variant_field!(prefix => Prefix::INDEXED_PREFIX;
                 prefix = ComponentRef::prefixCref(node.clone(), ty.clone(), metamodelica::nil(), var_field!((*prefix).prefix, Prefix::INDEXED_PREFIX).clone()),
-                indexedPrefix = ComponentRef::prefixCref(node.clone(), ty.clone(), metamodelica::nil(), var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone()),
-                indexedPrefix = ComponentRef::setSubscripts(makeBindingIterators(var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone(), dims.clone())?, var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone())?
+                indexedPrefix = ComponentRef::prefixCref(node.clone(), ty.clone(), metamodelica::nil(), var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone())
             );
+            assign_variant_field!(prefix => Prefix::INDEXED_PREFIX; indexedPrefix = ComponentRef::setSubscripts(makeBindingIterators(var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone(), dims.clone())?, var_field!((*prefix).indexedPrefix, Prefix::INDEXED_PREFIX).clone())?);
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1820,10 +1820,8 @@ fn fillVectorizedBinding(mut binding: Arc<Binding::NFBinding>, mut varType: Arc<
         }
         __acc.reverse()
     });
-                assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING;
-                    bindingExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::FILL_FUNC().clone(), metamodelica::cons(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(), dim_expl.clone()), var_field!((*binding).variability, Binding::NFBinding::TYPED_BINDING).clone(), Purity::PURE.clone(), varType.clone()) }),
-                    bindingType = Expression::typeOf(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone())
-                );
+                assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING; bindingExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::FILL_FUNC().clone(), metamodelica::cons(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(), dim_expl.clone()), var_field!((*binding).variability, Binding::NFBinding::TYPED_BINDING).clone(), Purity::PURE.clone(), varType.clone()) }));
+                assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING; bindingType = Expression::typeOf(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone()));
             }
             ()
         },
@@ -2113,8 +2111,8 @@ pub fn flattenExp(mut exp: Arc<Expression::NFExpression>, mut prefix: Arc<Prefix
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { .. }, .. } => {
+            assign_variant_field!(exp => Expression::NFExpression::CREF; cref = ComponentRef::mapExpShallow(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = prefix.clone(); let __pe_b2 = info.clone(); move |__pe_a0| flattenExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
             assign_variant_field!(exp => Expression::NFExpression::CREF;
-                cref = ComponentRef::mapExpShallow(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = prefix.clone(); let __pe_b2 = info.clone(); move |__pe_a0| flattenExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
                 cref = flattenCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), prefix.clone(), info.clone())?,
                 ty = flattenType(var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), prefix.clone(), info.clone())?
             );
@@ -2722,9 +2720,9 @@ pub fn flattenStatement(mut stmt: Arc<Statement::NFStatement>, mut prefix: Arc<P
         Deref @ Statement::FOR { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
                 range = Util::applyOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = prefix.clone(); let __pe_b2 = info.clone(); move |__pe_a0| flattenExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
-                body = flattenStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), prefix.clone())?,
-                forType = updateForType(var_field!((*stmt).forType, Statement::NFStatement::FOR).clone(), var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?
+                body = flattenStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), prefix.clone())?
             );
+            assign_variant_field!(stmt => Statement::NFStatement::FOR; forType = updateForType(var_field!((*stmt).forType, Statement::NFStatement::FOR).clone(), var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?);
             stmt.clone()
         },
         Deref @ Statement::IF { .. } => {

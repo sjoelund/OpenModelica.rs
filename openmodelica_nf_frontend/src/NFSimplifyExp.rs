@@ -89,10 +89,8 @@ pub fn simplify(mut exp: Arc<Expression::NFExpression>, mut includeScope: bool) 
     let mut new: Arc<Type::NFType> = Arc::new(Type::ANY);
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            assign_variant_field!(exp => Expression::NFExpression::CREF;
-                cref = ComponentRef::simplifySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), false)?,
-                ty = ComponentRef::getSubscriptedType(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), includeScope.clone())?
-            );
+            assign_variant_field!(exp => Expression::NFExpression::CREF; cref = ComponentRef::simplifySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), false)?);
+            assign_variant_field!(exp => Expression::NFExpression::CREF; ty = ComponentRef::getSubscriptedType(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), includeScope.clone())?);
             exp.clone()
         },
         Deref @ Expression::ARRAY { .. } if (!(var_field!((*exp).literal, Expression::NFExpression::ARRAY).clone())) => {

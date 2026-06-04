@@ -131,10 +131,14 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
                 simulation = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
-                continuous = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,
+                continuous = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?
+            );
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
                 simulation = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
-                discretes = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone())?,
+                discretes = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone())?
+            );
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
                 equations = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
                 simulation = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
                 continuous = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,

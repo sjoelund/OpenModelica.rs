@@ -119,9 +119,13 @@ pub fn scalarize(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatM
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     assign_field!(
         flatModel.variables = scalarizeVariables(flatModel.variables.clone(), false)?,
-        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
+    );
+    assign_field!(
         flatModel.equations = scalarizeEquations(flatModel.equations.clone(), false)?,
-        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
+    );
+    assign_field!(
         flatModel.initialEquations = scalarizeEquations(flatModel.initialEquations.clone(), false)?,
         flatModel.algorithms = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
@@ -337,9 +341,9 @@ pub fn scalarizeComplexVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
                 assign_field!(
                     elem_var.name = ComponentRef::prepend(elem_var.name.clone(), ComponentRef::rename((name.clone()).clone(), elem_var.name.clone())?)?,
                     elem_var.backendinfo = BackendInfo::setAttributes(elem_var.backendinfo.clone(), ({let __elt = var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(); __elt}), var.backendinfo.annotations.clone()),
-                    elem_var.ty = VariableAttributes::elemType(({let __elt = var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(); __elt}))?,
-                    elem_var.name = ComponentRef::setNodeType(elem_var.ty.clone(), elem_var.name.clone())
+                    elem_var.ty = VariableAttributes::elemType(({let __elt = var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(); __elt}))?
                 );
+                assign_field!(elem_var.name = ComponentRef::setNodeType(elem_var.ty.clone(), elem_var.name.clone()));
                 vars = metamodelica::cons(elem_var.clone(), vars.clone());
             }
             vars.clone().reverse()

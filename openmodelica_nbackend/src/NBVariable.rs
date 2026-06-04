@@ -1395,10 +1395,8 @@ pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>
             derivative = (*__esc_derivative).clone();
             let mut der_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             der_var = Pointer::access(derivative.clone());
-            assign_field!(
-                der_var.backendinfo = BackendExtension::BackendInfo::setVarKind(der_var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_DER { dummy_state: varPointer.clone() })),
-                der_var.backendinfo = BackendExtension::BackendInfo::setStateSelect(der_var.backendinfo.clone(), BackendExtension::StateSelect::AVOID.clone(), false)
-            );
+            assign_field!(der_var.backendinfo = BackendExtension::BackendInfo::setVarKind(der_var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_DER { dummy_state: varPointer.clone() })));
+            assign_field!(der_var.backendinfo = BackendExtension::BackendInfo::setStateSelect(der_var.backendinfo.clone(), BackendExtension::StateSelect::AVOID.clone(), false));
             Pointer::update(derivative.clone(), der_var.clone());
             BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_STATE { dummy_der: derivative.clone() }))
         },
@@ -1640,10 +1638,8 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
     cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: iter_subs.clone(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
     var_cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
     var = fromCref(var_cref.clone(), Attributes::IMPL_DISCRETE_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
-    assign_field!(
-        var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)),
-        var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true)
-    );
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)));
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true));
     (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
     Ok((var_ptr, cref))
 }
@@ -1651,10 +1647,8 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
 pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>, mut makeParam: bool) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
     fn updateBackendInfo(mut var: Arc<Variable::NFVariable>, mut makeParam: bool) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
-        assign_field!(
-            var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), BackendExtension::VariableKind::fromType(Variable::typeOf(var.clone()), makeParam.clone())?),
-            var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true)
-        );
+        assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), BackendExtension::VariableKind::fromType(Variable::typeOf(var.clone()), makeParam.clone())?));
+        assign_field!(var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true));
         Ok(var)
     }
 
@@ -2781,9 +2775,9 @@ pub mod VarData {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
                 variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
                 records = VariablePointers::addList(var_lst.clone(), var_field!((*varData).records, VarData::VAR_DATA_SIM).clone())?,
-                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?,
-                records = VariablePointers::mapPtr(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(); move |__pe_a0| BackendDAE::lowerRecordChildren(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?
+                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?
             );
+            assign_variant_field!(varData => VarData::VAR_DATA_SIM; records = VariablePointers::mapPtr(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(); move |__pe_a0| BackendDAE::lowerRecordChildren(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?);
             varData.clone()
         },
         _ => {
