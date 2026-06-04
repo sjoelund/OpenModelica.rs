@@ -426,7 +426,34 @@ fn split_annotations(items: Arc<List<ClassBodyItem>>) -> (Arc<List<ClassBodyItem
 
 fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<ClassPart>>> {
     let mut res: Arc<List<Arc<ClassPart>>> = Arc::new(List::Nil);
+    // Consecutive bare elements (and lexer comments between them) form ONE
+    // implicit `public` part, exactly like the leading `element_list` of the
+    // ANTLR `composition` rule. Emitting one part per element made
+    // `Dump.unparseStr` print a spurious `public` keyword before every
+    // element after the first.
+    let mut pending: Vec<Arc<ElementItem>> = Vec::new();
+    fn flush(pending: &mut Vec<Arc<ElementItem>>, res: &mut Arc<List<Arc<ClassPart>>>) {
+        if pending.is_empty() {
+            return;
+        }
+        let mut contents: Arc<List<Arc<ElementItem>>> = Arc::new(List::Nil);
+        for ei in pending.drain(..).rev() {
+            contents = cons(ei, contents);
+        }
+        *res = cons(Arc::new(ClassPart::PUBLIC { contents }), Arc::clone(res));
+    }
     for item in &*items {
+        match item {
+            ClassBodyItem::Element(elem) => {
+                pending.push(Arc::new(ElementItem::ELEMENTITEM { element: Arc::new(elem.clone()) }));
+                continue;
+            }
+            ClassBodyItem::LexerComment(text) => {
+                pending.push(Arc::new(ElementItem::LEXER_COMMENT { comment: text.clone() }));
+                continue;
+            }
+            _ => flush(&mut pending, &mut res),
+        }
         let converted = match item {
             ClassBodyItem::Section { section, items } => {
                 let content = body_items_to_element_items(Arc::clone(items));
@@ -435,14 +462,7 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
                     SectionKind::Protected => ClassPart::PROTECTED { contents: content },
                 }
             }
-            ClassBodyItem::Element(elem) => {
-                let ei = ElementItem::ELEMENTITEM { element: Arc::new(elem.clone()) };
-                ClassPart::PUBLIC { contents: cons(Arc::new(ei), Arc::new(List::Nil)) }
-            }
-            ClassBodyItem::LexerComment(text) => {
-                let ei = ElementItem::LEXER_COMMENT { comment: text.clone() };
-                ClassPart::PUBLIC { contents: cons(Arc::new(ei), Arc::new(List::Nil)) }
-            }
+            ClassBodyItem::Element(_) | ClassBodyItem::LexerComment(_) => unreachable!("accumulated into the pending public part above"),
             ClassBodyItem::Annotation(_) => unreachable!("annotations should be split out before body_items_to_classparts"),
             ClassBodyItem::Equations(items)        => ClassPart::EQUATIONS        { contents: to_rc_list(items.clone()) },
             ClassBodyItem::InitialEquations(items) => ClassPart::INITIALEQUATIONS { contents: to_rc_list(items.clone()) },
@@ -462,6 +482,7 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
         };
         res = cons(Arc::new(converted), res);
     }
+    flush(&mut pending, &mut res);
     res.reverse()
 }
 
