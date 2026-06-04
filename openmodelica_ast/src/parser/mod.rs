@@ -1184,8 +1184,18 @@ fn type_prefix(input: &mut TokenInput) -> ModalResult<ElementAttributes> {
 }
 
 fn component_clause(input: &mut TokenInput) -> ModalResult<ComponentClause> {
-    let typePrefix = type_prefix(input)?;
-    let typeSpec   = type_specifier(input)?;
+    let mut typePrefix = type_prefix(input)?;
+    let mut typeSpec   = type_specifier(input)?;
+    // Type-bound array dimensions (`Integer[2] x`) live on the attributes,
+    // not the type: the ANTLR parser moves the type_specifier's subscripts
+    // into `Absyn.ATTR.arrayDim` and clears them on the TypeSpec, and
+    // everything downstream reads them from the attributes.
+    let dims = match &mut typeSpec {
+        TypeSpec::TPATH { arrayDim, .. } | TypeSpec::TCOMPLEX { arrayDim, .. } => arrayDim.take(),
+    };
+    if let Some(dims) = dims {
+        typePrefix.arrayDim = dims;
+    }
     let components = cut_err(component_list)
         .context(StrContext::Label("component list"))
         .parse_next(input)?;
