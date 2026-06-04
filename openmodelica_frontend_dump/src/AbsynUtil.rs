@@ -6001,18 +6001,18 @@ pub fn createChoiceArray(mut inChoices: Arc<Absyn::ElementArg>) -> Result<Arc<Ab
                 let mut m = m.clone();
                 (choiceArray, acc) = (::match_deref::match_deref! { match &(m.clone()) {
         Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: __esc_fp2, eachPrefix: __esc_ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Cons { head: el, tail: Deref @ metamodelica::List::Nil }, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), comment: __esc_cmt2, info: __esc_info2 } => {
+            fp2 = (*__esc_fp2).clone();
             cmt2 = (*__esc_cmt2).clone();
             ep2 = (*__esc_ep2).clone();
             info2 = (*__esc_info2).clone();
-            fp2 = (*__esc_fp2).clone();
             s = (Dump::unparseElementArgStr(el.clone())?).clone();
             (metamodelica::cons((s.clone()).clone(), choiceArray.clone()), acc.clone())
         },
         Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: __esc_fp2, eachPrefix: __esc_ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: e, .. } }), comment: __esc_cmt2, info: __esc_info2 } => {
-            info2 = (*__esc_info2).clone();
-            cmt2 = (*__esc_cmt2).clone();
             fp2 = (*__esc_fp2).clone();
             ep2 = (*__esc_ep2).clone();
+            cmt2 = (*__esc_cmt2).clone();
+            info2 = (*__esc_info2).clone();
             s = (Dump::printExpStr(e.clone())?).clone();
             (metamodelica::cons((s.clone()).clone(), choiceArray.clone()), acc.clone())
         },

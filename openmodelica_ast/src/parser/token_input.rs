@@ -101,9 +101,12 @@ where
 #[inline]
 pub fn t_ident(input: &mut &[LexToken]) -> ModalResult<ArcStr> {
     let s: ArcStr = match input.first() {
+        // Mirrors the ANTLR `identifier` rule:
+        // `IDENT | DER | CODE | EQUALITY | INITIAL`.
         Some(LexToken { kind: TK::Der, .. }) => literal!("der"),
         Some(LexToken { kind: TK::Initial, .. }) => literal!("initial"),
         Some(LexToken { kind: TK::Code, .. }) => literal!("$Code"),
+        Some(LexToken { kind: TK::Equality, .. }) => literal!("equality"),
         Some(LexToken { kind: TK::Ident(s), .. })
         => s.clone(),
         _ => return Err(ErrMode::Backtrack(ContextError::default())),

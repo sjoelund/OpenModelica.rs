@@ -1611,8 +1611,8 @@ fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<P
     w = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes: Deref @ metamodelica::List::Cons { head: __esc_w @ Deref @ ParseTree::NODE { label: Deref @ ParseTree::LEAF { token: tok2 }, .. }, tail: __esc_rest }, label: Deref @ ParseTree::LEAF { token: tok } }, tail: __esc_rest2 } if (tokenContent(tok.clone())? == literal!("$program") && tokenContent(tok2.clone())? == literal!("$within")) => {
             w = (*__esc_w).clone();
-            rest = (*__esc_rest).clone();
             rest2 = (*__esc_rest2).clone();
+            rest = (*__esc_rest).clone();
             w.clone()
         },
         _ => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
@@ -2553,8 +2553,8 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
             diffLocal.clone()
         },
         Deref @ metamodelica::List::Cons { head: diff1 @ (DiffAlgorithm::Diff::Equal, __esc_tree1 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, tree), tail: diffLocal @ Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Equal, __esc_tree2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }), tail: _ } } } => {
-            tree2 = (*__esc_tree2).clone();
             tree1 = (*__esc_tree1).clone();
+            tree2 = (*__esc_tree2).clone();
             diff = metamodelica::cons(diff1.clone(), diff.clone());
             metamodelica::cons((Diff::Delete.clone(), tree.clone()), diffLocal.clone())
         },
@@ -2602,9 +2602,9 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
         }
         __acc.unwrap_or(true)
     })) => {
+            tree2 = (*__esc_tree2).clone();
             tree1 = (*__esc_tree1).clone();
             tree4 = (*__esc_tree4).clone();
-            tree2 = (*__esc_tree2).clone();
             tree4First = (*__esc_tree4First).clone();
             metamodelica::cons(diff1.clone(), metamodelica::cons(diff3.clone(), metamodelica::cons(diff2.clone(), metamodelica::cons(diff4.clone(), diffLocal.clone()))))
         },
@@ -2618,8 +2618,8 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
     })) => {
             tree4First = (*__esc_tree4First).clone();
             tree4 = (*__esc_tree4).clone();
-            tree2 = (*__esc_tree2).clone();
             tree1 = (*__esc_tree1).clone();
+            tree2 = (*__esc_tree2).clone();
             metamodelica::cons(diff1.clone(), metamodelica::cons(diff3.clone(), metamodelica::cons(diff2.clone(), metamodelica::cons(diff4.clone(), diffLocal.clone()))))
         },
         Deref @ metamodelica::List::Cons { head: (diffEnum1, tree1), tail: Deref @ metamodelica::List::Cons { head: (diffEnum2, tree2), tail: diffLocal } } if (diffEnum1.clone() == diffEnum2.clone()) => metamodelica::cons((diffEnum1.clone(), listAppend(tree1.clone(), tree2.clone())), diffLocal.clone()),

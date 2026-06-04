@@ -864,10 +864,10 @@ fn createCacheMapOptimizedForTask<T: Clone + 'static>(mut iTask: Arc<HpcOmSimCod
             tmpInfo.clone()
         },
         (Deref @ HpcOmSimCode::Task::DEPTASK { sourceTask: _, .. }, (__esc_cacheMap, __esc_cacheMapMeta @ CacheMapMeta { allSCVarsMapping: __esc_allSCVarsMapping, .. }, __esc_numOfCLs)) => {
-            cacheMap = (*__esc_cacheMap).clone();
             cacheMapMeta = (*__esc_cacheMapMeta).clone();
-            numOfCLs = (*__esc_numOfCLs).clone();
+            cacheMap = (*__esc_cacheMap).clone();
             allSCVarsMapping = (*__esc_allSCVarsMapping).clone();
+            numOfCLs = (*__esc_numOfCLs).clone();
             iInfo.clone()
         },
         _ => {

@@ -574,14 +574,14 @@ pub fn stateOrder(mut eqn: Arc<Equation::Equation>, mut state_order: Arc<Unorder
     let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let () = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::SCALAR_EQUATION { rhs: __esc_rhs @ Deref @ Expression::CREF { .. }, lhs: __esc_lhs @ Deref @ Expression::CREF { .. }, .. } => {
-            rhs = (*__esc_rhs).clone();
             lhs = (*__esc_lhs).clone();
+            rhs = (*__esc_rhs).clone();
             updateStateOrder(var_field!((*lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((*rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
             ()
         },
         Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: __esc_rhs @ Deref @ Expression::CREF { .. }, lhs: __esc_lhs @ Deref @ Expression::CREF { .. }, .. } => {
-            lhs = (*__esc_lhs).clone();
             rhs = (*__esc_rhs).clone();
+            lhs = (*__esc_lhs).clone();
             updateStateOrder(var_field!((*lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((*rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
             ()
         },

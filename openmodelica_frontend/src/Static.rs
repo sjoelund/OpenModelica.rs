@@ -384,21 +384,21 @@ fn elabExp_Binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::BINARY { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
+            e2 = (*__esc_e2).clone();
             op = (*__esc_op).clone();
             e1 = (*__esc_e1).clone();
-            e2 = (*__esc_e2).clone();
             ()
         },
         Deref @ Absyn::Exp::LBINARY { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
             op = (*__esc_op).clone();
-            e2 = (*__esc_e2).clone();
             e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
             ()
         },
         Deref @ Absyn::Exp::RELATION { exp2: __esc_e2, op: __esc_op, exp1: __esc_e1 } => {
-            e1 = (*__esc_e1).clone();
             op = (*__esc_op).clone();
             e2 = (*__esc_e2).clone();
+            e1 = (*__esc_e1).clone();
             ()
         },
         _ => bail!("match: no arm matched"),

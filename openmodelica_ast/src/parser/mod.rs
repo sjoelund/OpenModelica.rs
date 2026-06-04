@@ -342,13 +342,54 @@ struct ComponentClause {
     components: Arc<List<Arc<ComponentItem>>>,
 }
 
-fn source_info(tok1: &Token, tok2: &Token) -> SourceInfo {
-    let (end_line, end_col) = tok2.end_pos();
+/// Build a `SourceInfo` from the rule's first token to the *start* of
+/// `lt1`, the first token that is **not** part of the construct.
+///
+/// This mirrors ANTLR3's `PARSER_INFO($start)` macro in `Modelica.g`,
+/// which computes the end position as `LT(1)->line` /
+/// `LT(1)->charPosition+1` — the start of the first not-yet-consumed
+/// token at the time the rule's action runs. For `;`-terminated
+/// constructs whose `;` belongs to the caller (equations, statements,
+/// elements, class definitions) the end therefore lands *on* the
+/// semicolon, not on the last token of the construct itself.
+fn source_info(tok1: &Token, lt1: &Token) -> SourceInfo {
     SourceInfo {
         fileName: CURRENT_FILE.with(|f| f.borrow().clone()),
         isReadOnly: false,
         lineNumberStart: tok1.line as i32,
         columnNumberStart: tok1.col as i32,
+        lineNumberEnd: lt1.line as i32,
+        columnNumberEnd: lt1.col as i32,
+        lastModification: metamodelica::Real::from(0.0_f64),
+    }
+}
+
+/// `PARSER_INFO($start)` for the common snapshot pattern: `start` is the
+/// token stream as it was when the rule was entered and `input` is the
+/// current stream, so `input.first()` is `LT(1)`. At end of input the end
+/// position falls back to one column past the last consumed token, which
+/// is where ANTLR's synthetic EOF token sits.
+fn parser_info(start: &TokenInput, input: &TokenInput) -> SourceInfo {
+    parser_info_from(&start[0], start, input)
+}
+
+/// Like [`parser_info`] but with an explicit start token, for the ANTLR
+/// actions that anchor the span at a named token rather than at `$start`
+/// (e.g. `PARSER_INFO($eq)` for `EQMOD`, `PARSER_INFO($th)` for a match
+/// case's result expression).
+fn parser_info_from(first: &Token, start: &TokenInput, input: &TokenInput) -> SourceInfo {
+    let (end_line, end_col) = match input.first() {
+        Some(lt1) => (lt1.line, lt1.col),
+        None => {
+            let (l, c) = start[start.len() - 1].end_pos();
+            (l, c + 1)
+        }
+    };
+    SourceInfo {
+        fileName: CURRENT_FILE.with(|f| f.borrow().clone()),
+        isReadOnly: false,
+        lineNumberStart: first.line as i32,
+        columnNumberStart: first.col as i32,
         lineNumberEnd: end_line as i32,
         columnNumberEnd: end_col as i32,
         lastModification: metamodelica::Real::from(0.0_f64),
@@ -586,7 +627,7 @@ fn class_definition(input: &mut TokenInput) -> ModalResult<Class> {
         name: specifier.name(), partialPrefix, finalPrefix, encapsulatedPrefix,
         restriction, body: specifier.body(),
         commentsBeforeClass: Arc::new(List::Nil), commentsBeforeEnd: Arc::new(List::Nil),
-        commentsAfterEnd: Arc::new(List::Nil), info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        commentsAfterEnd: Arc::new(List::Nil), info: parser_info(&start, input),
     })
 }
 
@@ -1154,15 +1195,17 @@ fn component_declaration(input: &mut TokenInput) -> ModalResult<ComponentItem> {
 }
 
 fn modification(input: &mut TokenInput) -> ModalResult<Modification> {
-    let start = *input;
     let cm = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
+    // ANTLR anchors the EQMOD info at the `=`/`:=` token
+    // (`PARSER_INFO($eq)`), not at the start of the whole modification.
+    let eq_start = *input;
     let eq = if opt(alt((t(TK::Assign), t(TK::Equal)))).parse_next(input)?.is_some() {
         let exp = cut_err(modification_expression)
                 .context(StrContext::Label("modification expression"))
                 .parse_next(input)?;
         Absyn::EqMod::EQMOD {
             exp: Arc::new(exp),
-            info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+            info: parser_info(&eq_start, input),
         }
     } else {
         Absyn::EqMod::NOMOD
@@ -1178,21 +1221,68 @@ fn modification_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
 }
 
 fn class_modification(input: &mut TokenInput) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
+    class_modification_impl(input, false)
+}
+
+/// `class_or_inheritance_modification` (Modelica.g): like
+/// [`class_modification`] but the arguments may also be `break ...`
+/// inheritance modifications (`extends A(break x)`). Only extends clauses
+/// accept these (`argument_list[1]` in the ANTLR grammar).
+fn class_or_inheritance_modification(input: &mut TokenInput) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
+    class_modification_impl(input, true)
+}
+
+fn class_modification_impl(input: &mut TokenInput, can_have_break: bool) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
     t(TK::LParen).parse_next(input)?;
-    let arguments = opt(argument_list).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
+    let arguments = opt(|i: &mut TokenInput| argument_list(i, can_have_break))
+        .parse_next(input)?
+        .unwrap_or_else(|| Arc::new(List::Nil));
     cut_err(t(TK::RParen))
         .context(StrContext::Label("')' closing modification list"))
         .parse_next(input)?;
     Ok(arguments)
 }
 
-fn argument_list(input: &mut TokenInput) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
-    let mut res = List::new(Arc::new(argument(input)?));
+fn argument_list(input: &mut TokenInput, can_have_break: bool) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
+    let mut res = List::new(Arc::new(argument_or_break(input, can_have_break)?));
     loop {
         if opt(t(TK::Comma)).parse_next(input)?.is_none() { break; }
-        res = cons(Arc::new(argument(input)?), res);
+        res = cons(Arc::new(argument_or_break(input, can_have_break)?), res);
     }
     Ok(res.reverse())
+}
+
+fn argument_or_break(input: &mut TokenInput, can_have_break: bool) -> ModalResult<ElementArg> {
+    if can_have_break && matches!(peek_kind(input), Some(TK::Break)) {
+        inheritance_modification(input)
+    } else {
+        argument(input)
+    }
+}
+
+/// `inheritance_modification` (Modelica.g): `break connect(a, b)` removes
+/// the inherited connection, `break x` removes the inherited component
+/// `x`. The latter is stored as `connect(break, x)` to reuse the
+/// connect-equation shape, mirroring the ANTLR action.
+fn inheritance_modification(input: &mut TokenInput) -> ModalResult<ElementArg> {
+    let start = *input;
+    t(TK::Break).parse_next(input)?;
+    let cnct = if matches!(peek_kind(input), Some(TK::Connect)) {
+        connect_equation(input)?
+    } else {
+        let name = t_ident(input)?;
+        Equation::EQ_CONNECT {
+            connector1: Arc::new(ComponentRef::CREF_IDENT {
+                name: literal!("break"),
+                subscripts: Arc::new(List::Nil),
+            }),
+            connector2: Arc::new(ComponentRef::CREF_IDENT {
+                name,
+                subscripts: Arc::new(List::Nil),
+            }),
+        }
+    };
+    Ok(ElementArg::INHERITANCEBREAK { cnct: Arc::new(cnct), info: parser_info(&start, input) })
 }
 
 fn argument(input: &mut TokenInput) -> ModalResult<ElementArg> {
@@ -1270,7 +1360,7 @@ fn element_redeclaration(input: &mut TokenInput) -> ModalResult<ElementArg> {
     Ok(ElementArg::REDECLARATION {
         finalPrefix: final_,
         eachPrefix: if each_ { Each::EACH } else { Each::NON_EACH },
-        redeclareKeywords, elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        redeclareKeywords, elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info: parser_info(&start, input),
     })
 }
 
@@ -1287,7 +1377,7 @@ fn element_modification(input: &mut TokenInput) -> ModalResult<ElementArg> {
     let comment      = string_comment(input)?;
     Ok(Absyn::ElementArg::MODIFICATION {
         eachPrefix: Each::NON_EACH {}, finalPrefix: false,
-        modification: modification.map(Arc::new), comment, path: Arc::new(path), info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        modification: modification.map(Arc::new), comment, path: Arc::new(path), info: parser_info(&start, input),
     })
 }
 
@@ -1298,7 +1388,7 @@ fn element_replaceable(input: &mut TokenInput) -> ModalResult<ElementArg> {
     Ok(ElementArg::REDECLARATION {
         finalPrefix: false, eachPrefix: Each::NON_EACH {},
         redeclareKeywords: RedeclareKeywords::REPLACEABLE {},
-        elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info: parser_info(&start, input),
     })
 }
 
@@ -1358,7 +1448,7 @@ fn import_clause(input: &mut TokenInput) -> ModalResult<Import> {
 fn extends_clause(input: &mut TokenInput) -> ModalResult<ExtendsClause> {
     t(TK::Extends).parse_next(input)?;
     let path         = name_path(input)?;
-    let modification = opt(class_modification).parse_next(input)?;
+    let modification = opt(class_or_inheritance_modification).parse_next(input)?;
     let annotation_opt = opt(annotation).parse_next(input)?;
     Ok(ExtendsClause { path, modification, annotation_opt })
 }
@@ -1536,7 +1626,7 @@ fn equation_item(input: &mut TokenInput) -> ModalResult<EquationItem> {
     Ok(EquationItem::EQUATIONITEM {
         equation_: Arc::new(eq),
         comment: comment.map(Arc::new),
-        info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        info: parser_info(&start, input),
     })
 }
 
@@ -1727,7 +1817,7 @@ fn algorithm_item(input: &mut TokenInput) -> ModalResult<AlgorithmItem> {
     Ok(AlgorithmItem::ALGORITHMITEM {
         algorithm_: Arc::new(alg),
         comment: comment.map(Arc::new),
-        info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+        info: parser_info(&start, input),
     })
 }
 
@@ -1923,7 +2013,7 @@ fn top_algorithm(input: &mut TokenInput) -> ModalResult<crate::GlobalScript::Sta
         Ok(e) if input.is_empty() || matches!(peek_kind(input), Some(TK::Semi)) => {
             return Ok(crate::GlobalScript::Statement::IEXP {
                 exp: Arc::new(e),
-                info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+                info: parser_info(&start, input),
             });
         }
         _ => {
@@ -1950,7 +2040,7 @@ fn top_algorithm(input: &mut TokenInput) -> ModalResult<crate::GlobalScript::Sta
         algItem: Arc::new(AlgorithmItem::ALGORITHMITEM {
             algorithm_: Arc::new(alg),
             comment: cmt.map(Arc::new),
-            info: source_info(&start[0], &start[start.len() - input.len() - 1]),
+            info: parser_info(&start, input),
         }),
     })
 }
@@ -2031,14 +2121,16 @@ fn local_clause(input: &mut TokenInput) -> ModalResult<Arc<List<Arc<Absyn::Eleme
 }
 
 fn match_onecase(input: &mut TokenInput) -> ModalResult<Absyn::Case> {
-    let start_token = &input[0];
+    let case_start = *input;
     match next_tok(input)? {
         TK::Case => {}
         _        => return Err(ErrMode::Backtrack(ContextError::default())),
     }
     let start_pattern = *input;
     let pattern = expression(input)?;
-    let end_pattern = &start_pattern[start_pattern.len() - input.len() - 1];
+    // `pattern` (Modelica.g) computes its info right after the expression,
+    // so the end is the start of whatever follows (guard/`then`/...).
+    let patternInfo = parser_info(&start_pattern, input);
     let patternGuard = if opt(alt((t(TK::If),t(TK::Guard)))).parse_next(input)?.is_some() {
         Some(Arc::new(expression(input)?))
     } else {
@@ -2047,15 +2139,19 @@ fn match_onecase(input: &mut TokenInput) -> ModalResult<Absyn::Case> {
     let comment    = None; // string_comment(input)?;
     let localDecls = local_clause(input)?;
     let classPart  = match_case_body(input)?;
+    // `onecase` consumes the trailing `;` before its action runs, so both
+    // the case info (`PARSER_INFO($start)`) and the result info
+    // (`PARSER_INFO($th)`, anchored at the `then` keyword) end at the
+    // token *after* the semicolon.
+    let then_start = *input;
     t(TK::Then).parse_next(input)?;
-    let start_exp = &input[0];
     let result = expression(input)?;
-    let end_exp = &input[0];
     t(TK::Semi).parse_next(input)?;
     Ok(Absyn::Case::CASE {
-        pattern: Arc::new(pattern), patternGuard, patternInfo: source_info(&start_pattern[0], end_pattern),
-        localDecls, classPart: Arc::new(classPart), result: Arc::new(result), resultInfo: source_info(start_exp, end_exp),
-        comment, info: source_info(start_token, end_exp),
+        pattern: Arc::new(pattern), patternGuard, patternInfo,
+        localDecls, classPart: Arc::new(classPart), result: Arc::new(result),
+        resultInfo: parser_info(&then_start, input),
+        comment, info: parser_info(&case_start, input),
     })
 }
 
@@ -2065,33 +2161,35 @@ fn match_cases(input: &mut TokenInput) -> ModalResult<Arc<List<Absyn::Case>>> {
         match peek_kind(input) {
             Some(TK::Case) => { cases = cons(match_onecase(input)?, cases); }
             Some(TK::Else) => {
-                let start_else = &input[0];
+                let else_start = *input;
                 cut_err(t(TK::Else)).context(StrContext::Label("else")).parse_next(input)?;
                 let comment    = None; // string_comment(input)?;
                 let localDecls = local_clause(input)?;
+                // `cases2` (Modelica.g) anchors the result info at the
+                // `then` keyword when one is present and at the `else`
+                // otherwise (`if ($th) $el = $th;`), and both infos end
+                // after the trailing `;` is consumed.
+                let mut result_start = else_start;
                 let classPart  = match peek_kind(input) {
-                    Some(TK::Equation) => {
+                    Some(TK::Equation) | Some(TK::Algorithm) => {
                         let cp = match_case_body(input)?;
-                        t(TK::Then).parse_next(input)?;
-                        cp
-                    },
-                    Some(TK::Algorithm) => {
-                        let cp = match_case_body(input)?;
+                        result_start = *input;
                         t(TK::Then).parse_next(input)?;
                         cp
                     },
                     _ => {
+                        if matches!(peek_kind(input), Some(TK::Then)) {
+                            result_start = *input;
+                        }
                         opt(t(TK::Then)).parse_next(input)?;
                         Absyn::ClassPart::ALGORITHMS { contents: Arc::new(List::Nil) }
                     },
                 };
-                let start_exp = &input[0];
                 let result = expression(input)?;
-                let end_exp = &input[0];
                 opt(t(TK::Semi)).parse_next(input)?;
                 cases = cons(Absyn::Case::ELSE {
                     localDecls, classPart: Arc::new(classPart), result: Arc::new(result),
-                    resultInfo: source_info(start_exp, end_exp), comment, info: source_info(start_else, end_exp),
+                    resultInfo: parser_info(&result_start, input), comment, info: parser_info(&else_start, input),
                 }, cases);
                 break;
             }
@@ -3247,6 +3345,29 @@ end P;\n\
         let stmts = parse_statements("1 + 2", "t.mos", Grammar::Modelica3).expect("parse");
         assert!(!stmts.semicolon, "no trailing ';' — result prints");
         assert_eq!((&*stmts.interactiveStmtLst).into_iter().count(), 1);
+    }
+
+    #[test]
+    fn parse_builtin_files_metamodelica_grammar() {
+        // FBuiltin.getInitialFunctions parses these with -g=MetaModelica at
+        // startup; a parse failure there breaks every MetaModelica session.
+        for f in ["ModelicaBuiltin.mo", "MetaModelicaBuiltin.mo", "NFModelicaBuiltin.mo"] {
+            let path = format!("/projects/OpenModelica/build/lib/omc/{f}");
+            let Ok(src) = std::fs::read_to_string(&path) else { continue };
+            if let Err(e) = parse(&src, f, Grammar::MetaModelica) {
+                panic!("{f} failed to parse under MetaModelica grammar: {e}");
+            }
+        }
+    }
+
+    #[test]
+    fn interactive_stmt_metamodelica_grammar() {
+        // .mos scripts must also parse under -g=MetaModelica (used by the
+        // metamodelica testsuite); statements must not silently vanish.
+        let code = "loadFile(\"a.mo\");\ngetErrorString();\n";
+        let stmts = parse_statements(code, "t.mos", Grammar::MetaModelica).expect("parse");
+        assert!(stmts.semicolon);
+        assert_eq!((&*stmts.interactiveStmtLst).into_iter().count(), 2);
     }
 
     #[test]
