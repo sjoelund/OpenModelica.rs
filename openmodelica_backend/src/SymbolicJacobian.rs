@@ -763,7 +763,7 @@ fn createSysEquations(mut A: metamodelica::Array<metamodelica::Array<metamodelic
     xExps = List::map(xVars.clone(), (std::sync::Arc::new(BackendVariable::varExp2) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::Exp>> + 'static>))?;
     bExps = List::map(bVars.clone(), (std::sync::Arc::new(BackendVariable::varExp2) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::Exp>> + 'static>))?;
     for mut i in 1..=n.clone() {
-        row = ({let __elt = order.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(order.clone(), i.clone())?;
         coeffs = Arc::new(({let __elt = A.borrow()[(row.clone()-1) as usize].clone(); __elt}).borrow().iter().cloned().collect::<metamodelica::List<_>>());
         coeffExps = List::map(coeffs.clone(), (std::sync::Arc::new(fnptr!(Expression::makeRealExp, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<DAE::Exp>> + 'static>))?;
         xProds = List::threadMap1(coeffExps.clone(), xExps.clone(), (std::sync::Arc::new(fnptr!(makeBinaryExp, Arc<DAE::Exp>, Arc<DAE::Exp>, DAE::Operator)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, DAE::Operator) -> Result<Arc<DAE::Exp>> + 'static>), DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() })?;
@@ -831,27 +831,27 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
             {let _arr = permutation.clone(); _arr.borrow_mut()[(indxIn.clone()-1) as usize] = pivotIdx.clone(); _arr};
             (range, _) = List::deleteMemberOnTrue(pivotIdx.clone(), rangeIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             for mut ic in indxIn.clone()..=n.clone() {
-                entry = ({let __elt = ({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}).borrow()[(ic.clone()-1) as usize].clone(); __elt});
+                entry = metamodelica::arrayGet(({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}), ic.clone())?;
                 entry = realDiv(entry.clone(), pivot.clone());
                 {let _arr = ({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(ic.clone()-1) as usize] = entry.clone(); _arr};
             }
             for mut ic in 1..=n.clone() {
                 pos = (pivotIdx.clone() - 1) * n.clone() + ic.clone();
-                b_entry = ({let __elt = b.clone().borrow()[(pos.clone()-1) as usize].clone(); __elt});
+                b_entry = metamodelica::arrayGet(b.clone(), pos.clone())?;
                 b_entry = realDiv(b_entry.clone(), pivot.clone());
                 {let _arr = b.clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = b_entry.clone(); _arr};
             }
             for mut ir in &*range.clone() {
                 let mut ir = ir.clone();
-                first = ({let __elt = ({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}).borrow()[(indxIn.clone()-1) as usize].clone(); __elt});
+                first = metamodelica::arrayGet(({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}), indxIn.clone())?;
                 for mut ic in indxIn.clone()..=n.clone() {
                     pos = (ir.clone() - 1) * n.clone() + ic.clone();
-                    entry = ({let __elt = ({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}).borrow()[(ic.clone()-1) as usize].clone(); __elt});
-                    pivot = ({let __elt = ({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}).borrow()[(ic.clone()-1) as usize].clone(); __elt});
+                    entry = metamodelica::arrayGet(({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}), ic.clone())?;
+                    pivot = metamodelica::arrayGet(({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}), ic.clone())?;
                     entry = (entry.clone()) - ((first.clone()) * (pivot.clone()));
                     {let _arr = ({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(ic.clone()-1) as usize] = entry.clone(); _arr};
-                    b_entry = ({let __elt = b.clone().borrow()[(pos.clone()-1) as usize].clone(); __elt});
-                    pivot = ({let __elt = b.clone().borrow()[((pivotIdx.clone() - 1) * n.clone() + ic.clone()-1) as usize].clone(); __elt});
+                    b_entry = metamodelica::arrayGet(b.clone(), pos.clone())?;
+                    pivot = metamodelica::arrayGet(b.clone(), (pivotIdx.clone() - 1) * n.clone() + ic.clone())?;
                     b_entry = b_entry.clone() - (first.clone()) * (pivot.clone());
                     {let _arr = b.clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = b_entry.clone(); _arr};
                 }
@@ -875,7 +875,7 @@ fn getPivotElement(mut A: metamodelica::Array<metamodelica::Array<metamodelica::
     let mut entry: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     for mut i in &*rangeIn.clone() {
         let mut i = i.clone();
-        entry = ({let __elt = ({let __elt = A.borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(startIdx.clone()-1) as usize].clone(); __elt});
+        entry = metamodelica::arrayGet(({let __elt = A.borrow()[(i.clone()-1) as usize].clone(); __elt}), startIdx.clone())?;
         if realAbs(entry.clone()) > value.clone() {
             value = entry.clone();
             pos = i.clone();
@@ -1135,7 +1135,7 @@ fn evaluateConstantJacobian2(mut jac: (i32, i32, Arc<BackendDAE::Equation>), mut
                 _ => bail!("pattern mismatch"),
             } };
             r = __pa0.clone();
-            {let _arr = ({let __elt = vals.clone().borrow()[(i1.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(i2.clone()-1) as usize] = r.clone(); _arr};
+            {let _arr = metamodelica::arrayGet(vals.clone(), i1.clone())?; _arr.borrow_mut()[(i2.clone()-1) as usize] = r.clone(); _arr};
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1323,7 +1323,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     let __x = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut i in (lst.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = inDepCompRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(inDepCompRefs.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1346,7 +1346,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     let __x = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut i in (lst.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = depCompRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(depCompRefs.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1371,7 +1371,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                         coloring = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = metamodelica::nil();
         for mut i in (1..=sizeN.clone()).into_iter() {
-                    let __x = list![({let __elt = inDepCompRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})];
+                    let __x = list![metamodelica::arrayGet(inDepCompRefs.clone(), i.clone())?];
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1384,7 +1384,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     let __x = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut i in (lst.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = inDepCompRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(inDepCompRefs.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1453,7 +1453,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = List::removeOnTrue(var.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), inputVars.clone())?;
             getSparsePattern2(inputVars.clone(), list![var.clone()], list![eqn.clone()], ineqnSparse.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone())?;
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
@@ -1462,7 +1462,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1479,7 +1479,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrixT.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrixT.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1496,7 +1496,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1513,7 +1513,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1530,7 +1530,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1547,7 +1547,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
-            inputVars = ({let __elt = inMatrix.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
             inputVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut v in (inputVars.clone()).into_iter().cloned() {
@@ -1636,18 +1636,18 @@ fn getSparsePatternHelp(mut inInputVars: Arc<metamodelica::List<i32>>, mut invar
     let mut varSparse: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut var in &*inInputVars.clone() {
         let mut var = var.clone();
-        arrayElement = ({let __elt = inUsed.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+        arrayElement = metamodelica::arrayGet(inUsed.clone(), var.clone())?;
         if intEq(1, arrayElement.clone()) {
-            arrayElement = ({let __elt = inMark.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+            arrayElement = metamodelica::arrayGet(inMark.clone(), var.clone())?;
             if !(intEq(inmarkValue.clone(), arrayElement.clone())) {
                 {let _arr = inMark.clone(); _arr.borrow_mut()[(var.clone()-1) as usize] = inmarkValue.clone(); _arr};
                 outLocalList = metamodelica::cons(var.clone(), outLocalList.clone());
             }
         }
-        varSparse = ({let __elt = invarSparse.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+        varSparse = metamodelica::arrayGet(invarSparse.clone(), var.clone())?;
         for mut v in &*varSparse.clone() {
             let mut v = v.clone();
-            arrayElement = ({let __elt = inMark.clone().borrow()[(v.clone()-1) as usize].clone(); __elt});
+            arrayElement = metamodelica::arrayGet(inMark.clone(), v.clone())?;
             if !(intEq(inmarkValue.clone(), arrayElement.clone())) {
                 {let _arr = inMark.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = inmarkValue.clone(); _arr};
                 outLocalList = metamodelica::cons(v.clone(), outLocalList.clone());
@@ -1665,7 +1665,7 @@ pub fn transposeSparsePattern(mut inSparsePattern: Arc<metamodelica::List<Arc<me
         let mut oneList = oneList.clone();
         for mut oneElem in &*oneList.clone() {
             let mut oneElem = oneElem.clone();
-            tmplist = ({let __elt = outSparsePattern.clone().borrow()[(oneElem.clone()-1) as usize].clone(); __elt});
+            tmplist = metamodelica::arrayGet(outSparsePattern.clone(), oneElem.clone())?;
             metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outSparsePattern.clone(), oneElem.clone(), metamodelica::cons(value.clone(), tmplist.clone()));
         }
         value = value.clone() + 1;
@@ -1685,7 +1685,7 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
         (value, oneList) = oneListTuple.clone();
         for mut oneElem in &*oneList.clone() {
             let mut oneElem = oneElem.clone();
-            tmpTuple = ({let __elt = outSparsePattern.clone().borrow()[(oneElem.clone() + 1-1) as usize].clone(); __elt});
+            tmpTuple = metamodelica::arrayGet(outSparsePattern.clone(), oneElem.clone() + 1)?;
             (_, tmplist) = tmpTuple.clone();
             tmplist = metamodelica::cons(value.clone(), tmplist.clone());
             tmpTuple = (oneElem.clone(), tmplist.clone());
@@ -1693,7 +1693,7 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
         }
     }
     for mut i in 1..=(inSparsePattern.clone().len() as i32) {
-        tmpTuple = ({let __elt = outSparsePattern.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+        tmpTuple = metamodelica::arrayGet(outSparsePattern.clone(), i.clone())?;
         (value, tmplist) = tmpTuple.clone();
         tmplist = List::heapSortIntList(tmplist.clone());
         tmpTuple = (value.clone(), tmplist.clone());

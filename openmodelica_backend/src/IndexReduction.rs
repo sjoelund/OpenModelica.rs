@@ -1333,7 +1333,7 @@ fn countOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<Ba
     let mut e: i32 = 0;
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
+        orgeqns = metamodelica::arrayGet(inOrgEqns.clone(), e.clone())?;
         size = BackendEquation::equationLstSize(orgeqns.clone())?;
         oCount = oCount.clone() + size.clone();
     }
@@ -1348,7 +1348,7 @@ fn inlineOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<B
     outOrgEqns = inOrgEqns.clone();
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
+        orgeqns = metamodelica::arrayGet(inOrgEqns.clone(), e.clone())?;
         (orgeqns, _) = BackendInline::inlineEqs(orgeqns.clone(), inA.clone(), metamodelica::nil(), false)?;
         {let _arr = outOrgEqns.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = orgeqns.clone(); _arr};
     }
@@ -2651,7 +2651,7 @@ fn removeFirstOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<
     outOrgEqns = inOrgEqns.clone();
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = ({let __elt = outOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
+        orgeqns = metamodelica::arrayGet(outOrgEqns.clone(), e.clone())?;
         if !(orgeqns.clone().is_empty()) {
             (outEqnsLst, orgeqns) = (::match_deref::match_deref! { match &(orgeqns.clone()) {
         Deref @ metamodelica::List::Cons { head: eqn, tail: Deref @ metamodelica::List::Nil } => {
@@ -4003,7 +4003,7 @@ fn addOrgEqn(mut e: i32, mut inEqn: Arc<BackendDAE::Equation>, mut inOrgEqns: me
     let mut outOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> = Default::default();
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     outOrgEqns = inOrgEqns.clone();
-    eqs = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
+    eqs = metamodelica::arrayGet(inOrgEqns.clone(), e.clone())?;
     eqs = metamodelica::cons(inEqn.clone(), eqs.clone());
     {let _arr = outOrgEqns.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = eqs.clone(); _arr};
     Ok(outOrgEqns)

@@ -6783,7 +6783,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
 
 fn stateVarIsNotVisited(mut idx: i32, mut varArr: metamodelica::Array<i32>) -> Result<bool> {
     let mut b: bool = false;
-    b = intLt(({let __elt = varArr.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}), 0);
+    b = intLt(metamodelica::arrayGet(varArr.clone(), idx.clone())?, 0);
     Ok(b)
 }
 

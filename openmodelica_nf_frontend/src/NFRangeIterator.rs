@@ -208,7 +208,7 @@ pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>,
             nextExp.clone()
         },
         Deref @ ARRAY_RANGE { .. } => {
-            nextExp = ({let __elt = var_field!((*iterator).values, NFRangeIterator::ARRAY_RANGE).clone().borrow()[(var_field!((*iterator).index, NFRangeIterator::ARRAY_RANGE).clone()-1) as usize].clone(); __elt});
+            nextExp = metamodelica::arrayGet(var_field!((*iterator).values, NFRangeIterator::ARRAY_RANGE).clone(), var_field!((*iterator).index, NFRangeIterator::ARRAY_RANGE).clone())?;
             assign_variant_field!(iterator => NFRangeIterator::ARRAY_RANGE; index = var_field!((*iterator).index, NFRangeIterator::ARRAY_RANGE).clone() + 1);
             nextExp.clone()
         },

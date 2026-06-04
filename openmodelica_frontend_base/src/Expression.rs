@@ -4747,7 +4747,7 @@ pub fn makeScalarProduct(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metam
     s = makeSum1(({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut i in (1..=size1.clone()).into_iter() {
-            let __x = expMul(({let __elt = v.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = w.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
+            let __x = expMul(metamodelica::arrayGet(v.clone(), i.clone())?, metamodelica::arrayGet(w.clone(), i.clone())?)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4772,7 +4772,7 @@ pub fn subVec(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Ar
     }
     y = arrayCreate(size1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
     for mut i in 1..=size1.clone() {
-        {let _arr = y.clone(); let _val = expSub(({let __elt = v.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = w.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        {let _arr = y.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = expSub(metamodelica::arrayGet(v.clone(), i.clone())?, metamodelica::arrayGet(w.clone(), i.clone())?)?; _arr};
     }
     Ok(y)
 }

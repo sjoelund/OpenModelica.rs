@@ -9021,21 +9021,18 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             Ok(format!("metamodelica::print({arg})"))
         },
         "arrayGet" => {
-            // `arr` is `metamodelica::Array<T>` = `Rc<RefCell<Vec<T>>>`.
-            // The `Ref` guard returned by `.borrow()` is a temporary; emitted
-            // inline in a larger expression (e.g. as a call argument) it would
-            // live until the end of the enclosing statement, and a
-            // `borrow_mut()` of the same array inside the callee would panic
-            // with "RefCell already borrowed" (seen in Static.fillDefaultSlot,
-            // which passes `arrayGet(arr, i)` to a function that updates
-            // `arr`). Scope the borrow in a block so the guard drops as soon
-            // as the element has been cloned.
+            // Lower through `metamodelica::arrayGet`, which (a) scopes the
+            // `RefCell` borrow inside the helper so the guard never lives to
+            // the end of the enclosing statement (a `borrow_mut()` of the
+            // same array inside a callee would otherwise panic — seen in
+            // Static.fillDefaultSlot), and (b) bounds-checks: an
+            // out-of-range `arrayGet` is a *catchable failure* in
+            // MetaModelica (NFInstNode.getPackageCache relies on it failing
+            // for short cache arrays), so it must propagate as `Err`, not
+            // panic via direct indexing.
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
-            // Parenthesised so the block is unambiguously an *expression*:
-            // a bare `{..}` followed by a binary operator (`{..} == 0`)
-            // parses as a block statement plus a dangling operator.
-            Ok(format!("({{let __elt = {}.borrow()[({}-1) as usize].clone(); __elt}})", arg1, arg2))
+            Ok(ctx.q(&format!("metamodelica::arrayGet({arg1}, {arg2})")))
         },
         // The `*NoBoundsChecking` builtins are genuinely distinct functions
         // (truly unchecked `get_unchecked` access), not aliases of the

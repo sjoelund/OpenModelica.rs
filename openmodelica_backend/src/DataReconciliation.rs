@@ -2047,7 +2047,7 @@ pub fn setEBLTEquationsWithIndexAndRank(mut unMatchedEqList: Arc<metamodelica::L
         let mut i = i.clone();
         actualIndex = (unMatchedEqsLstCorrectIndex.clone()).get(count.clone())?;
         eBLT_Equation_WithIndex = metamodelica::cons((index.clone(), BackendEquation::get(inEqArray.clone(), actualIndex.clone())?), eBLT_Equation_WithIndex.clone());
-        varsInfoList = ({let __elt = adjacencyMatrix.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+        varsInfoList = metamodelica::arrayGet(adjacencyMatrix.clone(), i.clone())?;
         e_BLTAdjacencyMatrix = metamodelica::cons((index.clone(), varsInfoList.clone()), e_BLTAdjacencyMatrix.clone());
         e_BLTSolvedEqsAndVars = metamodelica::cons((index.clone(), (List::sort(varsInfoList.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?).get(1)?), e_BLTSolvedEqsAndVars.clone());
         e_BLTBlocks = metamodelica::cons(list![index.clone()], e_BLTBlocks.clone());

@@ -4295,13 +4295,13 @@ fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodel
     let HpcOmTaskGraph::TASKGRAPHMETA { compDescs: __pa0, inComps: __pa1, .. } = (metaIn.clone()) else { bail!("pattern mismatch") };
     compDescs = __pa0.clone();
     inComps = __pa1.clone();
-    nodeDesc = (({let __elt = compDescs.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt})).clone();
+    nodeDesc = (metamodelica::arrayGet(compDescs.clone(), nodeIdx.clone())?).clone();
     nodeString = (intString(nodeIdx.clone())).clone();
-    compName = stringDelimitList(List::map(({let __elt = inComps.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    compName = stringDelimitList(List::map(metamodelica::arrayGet(inComps.clone(), nodeIdx.clone())?, (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     nameAttIdx = (atts.clone()).get(1)?;
     nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
     (tmpGraph, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(nodeIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((nodeDesc.clone()).clone()), list![(nameAttIdx.clone(), compName.clone())], graphIdx.clone(), graphInfoIn.clone())?;
-    childNodes = ({let __elt = graphIn.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt});
+    childNodes = metamodelica::arrayGet(graphIn.clone(), nodeIdx.clone())?;
     graphInfoOut = List::fold1(childNodes.clone(), (std::sync::Arc::new(addDirectedEdge) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), nodeIdx.clone(), tmpGraph.clone())?;
     Ok(graphInfoOut)
 }
@@ -4383,7 +4383,7 @@ fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray
 fn addEdgeToGraph(mut eqIdx: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
     let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut varLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    varLst = ({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt});
+    varLst = metamodelica::arrayGet(m.clone(), eqIdx.clone())?;
     graphInfoOut = List::fold1(varLst.clone(), (std::sync::Arc::new(addEdgeToGraph2) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), eqIdx.clone(), graphInfoIn.clone())?;
     Ok(graphInfoOut)
 }
@@ -4527,8 +4527,7 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
             order = order.clone() + 1;
         }
         for mut eqIdx in 1..=metamodelica::arrayLength(m.clone()) {
-            let __range23 = &*({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt});
-            for mut varIdx in __range23 {
+            for mut varIdx in &*metamodelica::arrayGet(m.clone(), eqIdx.clone())? {
                 let mut varIdx = varIdx.clone();
                 if intLe(varIdx.clone(), 0) {
                     lineType = openmodelica_susan::GraphML::LineType::DASHED;
@@ -4615,8 +4614,8 @@ pub fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamod
     let mut i: i32 = 0;
     let mut s1: ArcStr = arcstr::literal!("");
     for mut i in 1..=metamodelica::arrayLength(constraints.clone()) {
-        s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(({let __elt = constraints.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n------------------\n")); ArcStr::from(__mm_s) }).clone();
-        if ({let __elt = constraints.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).is_empty() {
+        s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(metamodelica::arrayGet(constraints.clone(), i.clone())?, (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n------------------\n")); ArcStr::from(__mm_s) }).clone();
+        if metamodelica::arrayGet(constraints.clone(), i.clone())?.is_empty() {
             s1 = (literal!("empty Constraints\n")).clone();
         }
         s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("eq ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();

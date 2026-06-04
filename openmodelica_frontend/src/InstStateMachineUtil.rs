@@ -691,8 +691,8 @@ fn extractFlatSMGroup(mut initialStates: Arc<metamodelica::List<Arc<DAE::Compone
         i = BaseHashTable::get(cref.clone(), cref2index.clone())?;
         members = metamodelica::nil();
         for mut j in 1..=n.clone() {
-            if ({let __elt = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(j.clone()-1) as usize].clone(); __elt}) {
-                members = metamodelica::cons(({let __elt = i2cref.clone().borrow()[(j.clone()-1) as usize].clone(); __elt}), members.clone());
+            if metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), i.clone())?, j.clone())? {
+                members = metamodelica::cons(metamodelica::arrayGet(i2cref.clone(), j.clone())?, members.clone());
             }
         }
         memberSet = HashSet::emptyHashSetSized((members.clone().len() as i32));
@@ -759,10 +759,10 @@ fn transitiveClosure(mut iTable: AdjacencyTable, mut nStates: i32) -> Result<Adj
     assert!(n.clone() == nStates.clone(), "{}", &*(literal!("Value of nStates needs to be equal to number of states within state table argument.")).clone());
     for mut k in 1..=n.clone() {
         for mut i in 1..=n.clone() {
-            if ({let __elt = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(k.clone()-1) as usize].clone(); __elt}) {
+            if metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), i.clone())?, k.clone())? {
                 for mut j in 1..=n.clone() {
-                    if ({let __elt = ({let __elt = adjacency.clone().borrow()[(k.clone()-1) as usize].clone(); __elt}).borrow()[(j.clone()-1) as usize].clone(); __elt}) {
-                        {let _arr = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(j.clone()-1) as usize] = true; _arr};
+                    if metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), k.clone())?, j.clone())? {
+                        {let _arr = metamodelica::arrayGet(adjacency.clone(), i.clone())?; _arr.borrow_mut()[(j.clone()-1) as usize] = true; _arr};
                     }
                 }
             }
@@ -808,7 +808,7 @@ fn createAdjacencyTable(mut smNodes: SMNodeTable, mut nStates: i32) -> Result<Ad
         for mut j in 1..=m.clone() {
             cref = ({let __elt = crefs2.borrow()[(j.clone()-1) as usize].clone(); __elt});
             k = BaseHashTable::get(cref.clone(), cref2index.clone())?;
-            {let _arr = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(k.clone()-1) as usize] = true; _arr};
+            {let _arr = metamodelica::arrayGet(adjacency.clone(), i.clone())?; _arr.borrow_mut()[(k.clone()-1) as usize] = true; _arr};
         }
     }
     iTable = AdjacencyTable { cref2index: cref2index.clone(), adjacency: adjacency.clone() };
@@ -850,7 +850,7 @@ fn printAdjacencyTable(mut iTable: AdjacencyTable, mut nStates: i32) -> Result<(
     for mut i in 1..=n.clone() {
         r#str = (Util::stringPadRight((intString(i.clone())).clone(), padn.clone(), (pads.clone()).clone())).clone();
         for mut j in 1..=n.clone() {
-            b = ({let __elt = ({let __elt = adjacency.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(j.clone()-1) as usize].clone(); __elt});
+            b = metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), i.clone())?, j.clone())?;
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Util::stringPadLeft(({ let mut __mm_s = String::new(); __mm_s.push_str(&*boolString(b.clone())); __mm_s.push_str(&*literal!(",")); ArcStr::from(__mm_s) }).clone(), padn.clone(), (pads.clone()).clone())); ArcStr::from(__mm_s) }).clone();
         }
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());

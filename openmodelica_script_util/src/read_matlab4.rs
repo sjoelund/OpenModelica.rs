@@ -569,6 +569,19 @@ fn find_closest_points(key: f64, vec: &[f64]) -> (i32, f64, i32, f64) {
             min -= 1;
         }
     }
+    // When the key lies outside the sampled range one of the indices walks
+    // off the vector (`min == -1` before the first point, `max == len`
+    // after the last). The C version still computes the weights from the
+    // out-of-bounds neighbour — a garbage read whose result the caller
+    // never uses, because it only reads the in-range index when the other
+    // one is -1. In Rust that read panics, so report the out-of-range side
+    // as -1 with the full weight on the valid index instead.
+    if min < 0 {
+        return (max, 1.0, -1, 0.0);
+    }
+    if max >= vec.len() as i32 {
+        return (min, 1.0, -1, 0.0);
+    }
     let w1 = (key - vec[min as usize]) / (vec[max as usize] - vec[min as usize]);
     (max, w1, min, 1.0 - w1)
 }

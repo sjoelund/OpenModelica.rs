@@ -1271,9 +1271,9 @@ fn addConnectionToGraph(mut connection: (i32, i32), mut graph: SetGraph) -> Resu
     let mut node1: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut node2: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (set1, set2) = connection.clone();
-    node1 = ({let __elt = graph.clone().borrow()[(set1.clone()-1) as usize].clone(); __elt});
+    node1 = metamodelica::arrayGet(graph.clone(), set1.clone())?;
     graph = {let _arr = graph.clone(); _arr.borrow_mut()[(set1.clone()-1) as usize] = metamodelica::cons(set2.clone(), node1.clone()); _arr};
-    node2 = ({let __elt = graph.clone().borrow()[(set2.clone()-1) as usize].clone(); __elt});
+    node2 = metamodelica::arrayGet(graph.clone(), set2.clone())?;
     graph = {let _arr = graph.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = metamodelica::cons(set1.clone(), node2.clone()); _arr};
     Ok(graph)
 }

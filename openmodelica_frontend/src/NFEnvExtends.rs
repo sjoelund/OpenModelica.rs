@@ -919,7 +919,7 @@ fn createExtendsTable(mut inSize: i32) -> ExtendsTableArray {
 fn lookupQualifiedExtends(mut inIndex: i32, mut inExtendsTable: ExtendsTableArray) -> Result<Option<Arc<NFSCodeEnv::Extends>>> {
     let mut outExtends: Option<Arc<NFSCodeEnv::Extends>> = None;
     let mut ext: ExtendsWrapper = ExtendsWrapper::NO_EXTENDS;
-    ext = ({let __elt = inExtendsTable.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt});
+    ext = metamodelica::arrayGet(inExtendsTable.clone(), inIndex.clone())?;
     outExtends = lookupQualifiedExtends2(ext.clone(), inExtendsTable.clone())?;
     Ok(outExtends)
 }

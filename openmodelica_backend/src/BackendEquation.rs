@@ -1378,7 +1378,7 @@ pub fn equationToScalarResidualForm(mut inEquation: Arc<BackendDAE::Equation>, m
             }
             eqns = metamodelica::nil();
             for mut i in 1..=branches.clone() {
-                explst = ({let __elt = expA.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                explst = metamodelica::arrayGet(expA.clone(), i.clone())?;
                 let (__pa4, __pa5) = ::match_deref::match_deref! { match &(explst.clone()) {
                     Deref @ metamodelica::List::Cons { head: __pa4, tail: __pa5 } => (__pa4.clone(), __pa5.clone()),
                     _ => bail!("pattern mismatch"),

@@ -279,7 +279,7 @@ fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut
     let mut oVarIdx: i32 = 0;
     let mut iCurrentVarIndices: metamodelica::Array<i32> = iCurrentVarIndices;
     match '__try0: {
-        oVarIdx = ({let __elt = iCurrentVarIndices.clone().borrow()[(iVarType.clone()-1) as usize].clone(); __elt});
+        oVarIdx = unwrap_break_err!(metamodelica::arrayGet(iCurrentVarIndices.clone(), iVarType.clone()), '__try0);
         {let _arr = iCurrentVarIndices.clone(); _arr.borrow_mut()[(iVarType.clone()-1) as usize] = oVarIdx.clone() + unwrap_break_err!(getNumElems(iVar.clone()), '__try0); _arr};
         Ok::<_, anyhow::Error>((oVarIdx.clone(),))
     } {

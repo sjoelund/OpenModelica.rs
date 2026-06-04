@@ -121,8 +121,8 @@ pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamode
         vlst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (elst.clone()).into_iter().cloned() {
-            if !(({let __elt = ass2.clone().borrow()[(e.clone()-1) as usize].clone(); __elt}) > 0) { continue; }
-            let __x = ({let __elt = ass2.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
+            if !(metamodelica::arrayGet(ass2.clone(), e.clone())? > 0) { continue; }
+            let __x = metamodelica::arrayGet(ass2.clone(), e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

@@ -2536,9 +2536,9 @@ fn evalBuiltinSkew(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Express
     result = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::ARRAY { literal, ty, .. } => {
             let mut ty = (*ty).clone();
-            x1 = ({let __elt = var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt});
-            x2 = ({let __elt = var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone().borrow()[(2-1) as usize].clone(); __elt});
-            x3 = ({let __elt = var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone().borrow()[(3-1) as usize].clone(); __elt});
+            x1 = metamodelica::arrayGet(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), 1)?;
+            x2 = metamodelica::arrayGet(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), 2)?;
+            x3 = metamodelica::arrayGet(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), 3)?;
             zero = Expression::makeZero(Type::arrayElementType(ty.clone()))?;
             y1 = Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(list![zero.clone(), Expression::negate(x3.clone()), x2.clone()].into_iter().cloned().collect()), literal.clone());
             y2 = Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(list![x3.clone(), zero.clone(), Expression::negate(x1.clone())].into_iter().cloned().collect()), literal.clone());
@@ -2671,7 +2671,7 @@ fn evalBuiltinSymmetric(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Ex
         for mut i in 1..=n.clone() {
             arr = metamodelica::arrayCreate(n.clone(), arg.clone());
             for mut j in 1..=n.clone() {
-                unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), j.clone(), if (i.clone() > j.clone()) {({let __elt = ({let __elt = mat.borrow()[(j.clone()-1) as usize].clone(); __elt}).borrow()[(i.clone()-1) as usize].clone(); __elt})} else {({let __elt = ({let __elt = mat.borrow()[(i.clone()-1) as usize].clone(); __elt}).borrow()[(j.clone()-1) as usize].clone(); __elt})}) };
+                unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), j.clone(), if (i.clone() > j.clone()) {metamodelica::arrayGet(({let __elt = mat.borrow()[(j.clone()-1) as usize].clone(); __elt}), i.clone())?} else {metamodelica::arrayGet(({let __elt = mat.borrow()[(i.clone()-1) as usize].clone(); __elt}), j.clone())?}) };
             }
             unsafe { metamodelica::Dangerous::arrayInitSlot(accum.clone(), i.clone(), Expression::makeArray(row_ty.clone(), arr.clone(), true)) };
         }

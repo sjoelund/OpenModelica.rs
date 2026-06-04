@@ -235,7 +235,7 @@ fn updateDebugFlagArray(mut inFlags: metamodelica::Array<bool>, mut inValue: boo
     let mut index: i32 = 0;
     let Flags::DEBUG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
-    outOldValue = ({let __elt = inFlags.clone().borrow()[(index.clone()-1) as usize].clone(); __elt});
+    outOldValue = metamodelica::arrayGet(inFlags.clone(), index.clone())?;
     outFlags = {let _arr = inFlags.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = inValue.clone(); _arr};
     Ok((outFlags, outOldValue))
 }

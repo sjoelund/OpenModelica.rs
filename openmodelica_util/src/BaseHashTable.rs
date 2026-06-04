@@ -546,7 +546,7 @@ fn getValueArray<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray: V
     let mut n: i32 = 0;
     (n, _, arr) = valueArray.clone();
     let true = (pos.clone() <= n.clone()) else { bail!("pattern mismatch") };
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({let __elt = arr.clone().borrow()[(pos.clone()-1) as usize].clone(); __elt})) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(metamodelica::arrayGet(arr.clone(), pos.clone())?) {
         Some((__pa0, __pa1)) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -609,7 +609,7 @@ pub fn clear<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable<Key
     hashFunc = __pa5.clone();
     ft = __pa6.clone();
     for mut i in 1..=vs.clone() {
-        let () = (match ({let __elt = vae.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+        let () = (match metamodelica::arrayGet(vae.clone(), i.clone())? {
         Some((mut key, _)) => {
             hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
             {let _arr = hv.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = metamodelica::nil(); _arr};
@@ -644,7 +644,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
     hashFunc = __pa5.clone();
     ft = __pa6.clone();
     for mut i in 1..=ve.clone() {
-        let () = (match ({let __elt = vae.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+        let () = (match metamodelica::arrayGet(vae.clone(), i.clone())? {
         Some((mut key, _)) => {
             if !(workaroundForBug.clone()) {
                 hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
@@ -672,7 +672,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
     }
     if workaroundForBug.clone() {
         for mut i in 1..=metamodelica::arrayLength(hv.clone()) {
-            if !(({let __elt = hv.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).is_empty()) {
+            if !(metamodelica::arrayGet(hv.clone(), i.clone())?.is_empty()) {
                 if debug.clone() {
                     metamodelica::print((literal!("hv not empty\n")).clone());
                 }

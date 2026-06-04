@@ -121,9 +121,9 @@ pub fn intersection(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>
         outMI = newEmpty();
         return Ok(outMI.clone());
     }
-    ints = metamodelica::arrayCreate(mi1.ndim.clone(), ({let __elt = mi1.intervals.clone().borrow()[(1-1) as usize].clone(); __elt}));
+    ints = metamodelica::arrayCreate(mi1.ndim.clone(), metamodelica::arrayGet(mi1.intervals.clone(), 1)?);
     for mut i in 1..=metamodelica::arrayLength(ints.clone()) {
-        ires = SBInterval::intersection(({let __elt = mi1.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = mi2.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}));
+        ires = SBInterval::intersection(metamodelica::arrayGet(mi1.intervals.clone(), i.clone())?, metamodelica::arrayGet(mi2.intervals.clone(), i.clone())?);
         if SBInterval::isEmpty(ires.clone()) {
             outMI = newEmpty();
             return Ok(outMI.clone());
@@ -175,7 +175,7 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
     diffs = metamodelica::arrayCreate(mi1_size.clone(), dummys.clone());
     for mut i in 1..=mi1_size.clone() {
         {
-            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), ({let __elt = tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
+            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), metamodelica::arrayGet(tmp_mi.intervals.clone(), i.clone())?)?;
             unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), i.clone(), __cell0); }
         }
     }

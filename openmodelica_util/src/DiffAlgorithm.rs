@@ -504,7 +504,7 @@ fn printStartToEnd<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut star
     res = stringAppendList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut index in (startIndex.clone()..=endIndex.clone()).into_iter() {
-            let __x = toString(({let __elt = arr.clone().borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
+            let __x = toString(metamodelica::arrayGet(arr.clone(), index.clone())?)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

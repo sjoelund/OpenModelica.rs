@@ -159,7 +159,7 @@ pub fn select<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inInd
     outArray = metamodelica::arrayCreate((inIndices.clone().len() as i32), ({let __elt = inArray.borrow()[(1-1) as usize].clone(); __elt}));
     for mut e in &*inIndices.clone() {
         let mut e = e.clone();
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), ({let __elt = inArray.clone().borrow()[(e.clone()-1) as usize].clone(); __elt})) };
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), metamodelica::arrayGet(inArray.clone(), e.clone())?) };
         i = i.clone() + 1;
     }
     Ok(outArray)
@@ -261,7 +261,7 @@ pub fn foldIndex<T: Clone + 'static, FoldT: Clone + 'static>(mut inArray: metamo
     let mut outResult: FoldT = inStartValue.clone();
     let mut e: T;
     for mut i in 1..=metamodelica::arrayLength(inArray.clone()) {
-        e = ({let __elt = inArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+        e = metamodelica::arrayGet(inArray.clone(), i.clone())?;
         outResult = inFoldFunc(e.clone(), i.clone(), outResult.clone())?;
     }
     Ok(outResult)
@@ -271,9 +271,9 @@ pub fn reduce<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inRed
     pub type ReduceFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<T> + 'static>;
 
     let mut outResult: T;
-    outResult = ({let __elt = inArray.clone().borrow()[(1-1) as usize].clone(); __elt});
+    outResult = metamodelica::arrayGet(inArray.clone(), 1)?;
     for mut i in 2..=metamodelica::arrayLength(inArray.clone()) {
-        outResult = inReduceFunc(outResult.clone(), ({let __elt = inArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
+        outResult = inReduceFunc(outResult.clone(), metamodelica::arrayGet(inArray.clone(), i.clone())?)?;
     }
     Ok(outResult)
 }
@@ -284,7 +284,7 @@ pub fn updateIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inValue: T, mu
 }
 
 pub fn getIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inArray: metamodelica::Array<T>) -> Result<T> {
-    let mut outElement: T = ({let __elt = inArray.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt});
+    let mut outElement: T = metamodelica::arrayGet(inArray.clone(), inIndex.clone())?;
     Ok(outElement)
 }
 
@@ -451,7 +451,7 @@ pub fn getRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArra
         bail!("fail");
     }
     for mut i in inStart.clone()..=inEnd.clone() {
-        value = ({let __elt = inArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+        value = metamodelica::arrayGet(inArray.clone(), i.clone())?;
         outList = metamodelica::cons(value.clone(), outList.clone());
     }
     Ok(outList)
@@ -494,8 +494,8 @@ pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Resul
     outArray = inArray.clone();
     size = metamodelica::arrayLength(inArray.clone());
     for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
-        elem1 = ({let __elt = inArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
-        elem2 = ({let __elt = inArray.clone().borrow()[(size.clone() - i.clone() + 1-1) as usize].clone(); __elt});
+        elem1 = metamodelica::arrayGet(inArray.clone(), i.clone())?;
+        elem2 = metamodelica::arrayGet(inArray.clone(), size.clone() - i.clone() + 1)?;
         outArray = {let _arr = outArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = elem2.clone(); _arr};
         outArray = {let _arr = outArray.clone(); _arr.borrow_mut()[(size.clone() - i.clone() + 1-1) as usize] = elem1.clone(); _arr};
     }

@@ -821,10 +821,10 @@ pub mod ClassTree {
     pub fn nthComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut component: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         component = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
-        Deref @ EXPANDED_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
-        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone(), index.clone())?,
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone(), index.clone())?,
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index.clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(component)
@@ -1542,7 +1542,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             elems = __pa0.clone();
-            ({let __elt = elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone()-1) as usize].clone(); __elt})
+            metamodelica::arrayGet(elems.clone(), var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone())?
         },
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
             let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
@@ -1550,7 +1550,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             elems = __pa0.clone();
-            ({let __elt = elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(); __elt})
+            metamodelica::arrayGet(elems.clone(), var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone())?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1572,10 +1572,10 @@ pub mod ClassTree {
     fn resolveClass(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
-        Deref @ EXPANDED_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
-        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ PARTIAL_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone(), index.clone())?,
+        Deref @ EXPANDED_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone(), index.clone())?,
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).classes, ClassTree::FLAT_TREE).clone(), index.clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)
@@ -1584,8 +1584,8 @@ pub mod ClassTree {
     fn resolveComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
-        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(metamodelica::arrayGet(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), index.clone())?),
+        Deref @ FLAT_TREE { .. } => metamodelica::arrayGet(var_field!((*tree).components, ClassTree::FLAT_TREE).clone(), index.clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)

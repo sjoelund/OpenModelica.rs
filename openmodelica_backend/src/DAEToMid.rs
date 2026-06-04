@@ -1185,8 +1185,7 @@ fn patternToMidCode(mut matches: Arc<metamodelica::List<(MidCode::Var, Arc<DAE::
     let mut assignBlock: metamodelica::Array<Arc<metamodelica::List<MidCode::Stmt>>> = Default::default();
     assignBlock = arrayCreate(1, metamodelica::nil());
     patternToMidCode2(state.clone(), matches.clone(), labelNoMatch.clone(), assignBlock.clone())?;
-    let __range0 = &*({let __elt = assignBlock.clone().borrow()[(1-1) as usize].clone(); __elt}).reverse();
-    for mut stmt in __range0 {
+    for mut stmt in &*metamodelica::arrayGet(assignBlock.clone(), 1)?.reverse() {
         let mut stmt = stmt.clone();
         stateAddStmt(stmt.clone(), state.clone());
     }
@@ -1213,14 +1212,14 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             ty = RValueType(MidCode::RValue::VARIABLE { src: scrutinee.clone() })?;
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            {let _arr = assignBlock.clone(); let _val = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, ({let __elt = assignBlock.clone().borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(1-1) as usize] = _val; _arr};
+            {let _arr = assignBlock.clone(); _arr.borrow_mut()[(1-1) as usize] = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?); _arr};
             patternToMidCode2(state.clone(), metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch.clone(), assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_AS { pat: pattern, ty: Some(ty), id, .. }), tail: restMatches } => {
             let mut midvar: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            {let _arr = assignBlock.clone(); let _val = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::UNARYOP { op: crate::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, ({let __elt = assignBlock.clone().borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(1-1) as usize] = _val; _arr};
+            {let _arr = assignBlock.clone(); _arr.borrow_mut()[(1-1) as usize] = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::UNARYOP { op: crate::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?); _arr};
             patternToMidCode2(state.clone(), metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch.clone(), assignBlock.clone())?;
             ()
         },

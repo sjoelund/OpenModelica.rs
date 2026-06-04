@@ -2143,7 +2143,7 @@ fn commonSubExpressionFind(mut mIn: metamodelica::Array<Arc<metamodelica::List<i
         varIdcsSet = Arc::new(crate::AvlSetInt::Tree::EMPTY);
         for mut eq in &*eqIdcs.clone() {
             let mut eq = eq.clone();
-            varIdcsSet = unwrap_break_err!(AvlSetInt::addList(varIdcsSet.clone(), ({let __elt = mIn.clone().borrow()[(eq.clone()-1) as usize].clone(); __elt})), '__try0);
+            varIdcsSet = unwrap_break_err!(AvlSetInt::addList(varIdcsSet.clone(), unwrap_break_err!(metamodelica::arrayGet(mIn.clone(), eq.clone()), '__try0)), '__try0);
         }
         varIdcs = AvlSetInt::listKeysReverse(varIdcsSet.clone(), metamodelica::nil());
         varLst = unwrap_break_err!(List::map1(varIdcs.clone(), (std::sync::Arc::new(BackendVariable::getVarAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables) -> Result<BackendDAE::Var> + 'static>), varsIn.clone()), '__try0);
@@ -2206,12 +2206,12 @@ fn shortenPaths(mut allPartitions: Arc<metamodelica::List<Arc<metamodelica::List
                         adjEqs = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut eq in (adjEqs.clone()).into_iter().cloned() {
-            let __x = ({let __elt = eqMap.clone().borrow()[(unwrap_break_err!((partition.clone()).get(eq.clone()), '__try0)-1) as usize].clone(); __elt});
+            let __x = unwrap_break_err!(metamodelica::arrayGet(eqMap.clone(), unwrap_break_err!((partition.clone()).get(eq.clone()), '__try0)), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-                        varIdx = ({let __elt = pathVarIdxMap.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt});
+                        varIdx = unwrap_break_err!(metamodelica::arrayGet(pathVarIdxMap.clone(), idx.clone()), '__try0);
                         cses = metamodelica::cons(CommonSubExp::SHORTCUT_CSE { eqIdcs: adjEqs.clone(), sharedVar: varIdx.clone() }, cses.clone());
                     }
                 }
@@ -2255,8 +2255,8 @@ fn getCSE2(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                     let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    varIdcs1 = ({let __elt = m.clone().borrow()[(eqIdx1.clone()-1) as usize].clone(); __elt});
-                    varIdcs2 = ({let __elt = m.clone().borrow()[(eqIdx2.clone()-1) as usize].clone(); __elt});
+                    varIdcs1 = metamodelica::arrayGet(m.clone(), eqIdx1.clone())?;
+                    varIdcs2 = metamodelica::arrayGet(m.clone(), eqIdx2.clone())?;
                     (sharedVarIdcs, varIdcs1, varIdcs2) = List::intersection1OnTrue(varIdcs1.clone(), varIdcs2.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     let __pa0 = ::match_deref::match_deref! { match &(varIdcs1.clone()) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
@@ -2360,8 +2360,8 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                         } };
                         eqIdx1 = __pa0.clone();
                         eqIdx2 = __pa1.clone();
-                        varIdcs1 = ({let __elt = m.clone().borrow()[(eqIdx1.clone()-1) as usize].clone(); __elt});
-                        varIdcs2 = ({let __elt = m.clone().borrow()[(eqIdx2.clone()-1) as usize].clone(); __elt});
+                        varIdcs1 = metamodelica::arrayGet(m.clone(), eqIdx1.clone())?;
+                        varIdcs2 = metamodelica::arrayGet(m.clone(), eqIdx2.clone())?;
                         (sharedVarIdcs, varIdcs1, varIdcs2) = List::intersection1OnTrue(varIdcs1.clone(), varIdcs2.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                         let __pa3 = ::match_deref::match_deref! { match &(varIdcs1.clone()) {
                             Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } => __pa3.clone(),
@@ -2403,7 +2403,7 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                             sharedVarIdcs = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (sharedVarIdcs.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = varMapArr.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(varMapArr.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2412,7 +2412,7 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                             varIdcs2 = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (varIdcs2.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = varMapArr.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(varMapArr.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2420,7 +2420,7 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                             eqIdcs = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (loop1.clone()).into_iter().cloned() {
-                    let __x = ({let __elt = eqMapArr.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+                    let __x = metamodelica::arrayGet(eqMapArr.clone(), i.clone())?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2474,8 +2474,8 @@ fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, 
             let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut eqs = (*eqs).clone();
             repl = BackendVarTransform::emptyReplacements();
-            eqs1 = ({let __elt = mT.clone().borrow()[(varIdx1.clone()-1) as usize].clone(); __elt});
-            eqs2 = ({let __elt = mT.clone().borrow()[(varIdx2.clone()-1) as usize].clone(); __elt});
+            eqs1 = metamodelica::arrayGet(mT.clone(), varIdx1.clone())?;
+            eqs2 = metamodelica::arrayGet(mT.clone(), varIdx2.clone())?;
             var1 = BackendVariable::getVarAt(vars.clone(), varIdx1.clone())?;
             var2 = BackendVariable::getVarAt(vars.clone(), varIdx2.clone())?;
             if BackendVariable::isStateVar(var1.clone()) {
@@ -2504,7 +2504,7 @@ fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, 
             varExp_remain = BackendVariable::varExp(var_remain.clone())?;
             varExp_alias = BackendVariable::varExp(var_alias.clone())?;
             repl = BackendVarTransform::addReplacement(repl.clone(), cref.clone(), varExp_remain.clone(), None)?;
-            eqIdcs = ({let __elt = mT.clone().borrow()[(varIdxAlias.clone()-1) as usize].clone(); __elt});
+            eqIdcs = metamodelica::arrayGet(mT.clone(), varIdxAlias.clone())?;
             eqLst = BackendEquation::getList(eqIdcs.clone(), eqs.clone())?;
             eqs = List::threadFold(eqIdcs.clone(), eqLst.clone(), (std::sync::Arc::new(BackendEquation::setAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<BackendDAE::Equation>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>), eqs.clone())?;
             BackendEquation::setAtIndex(eqs.clone(), eqIdxDel.clone(), Arc::new(BackendDAE::Equation::EQUATION { exp: varExp_remain.clone(), scalar: varExp_alias.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() }))?;

@@ -783,7 +783,7 @@ pub fn add(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<()> {
     if !(contains(zc_set.clone(), zc.clone())?) {
         DoubleEnded::push_back(zc_set.zc.clone(), zc.clone());
         addedCell = DoubleEnded::currentBackCell(zc_set.zc.clone());
-        {let _arr = zc_set.tree.clone(); let _val = ZeroCrossingTree::add(({let __elt = zc_set.tree.clone().borrow()[(1-1) as usize].clone(); __elt}), zc.clone(), addedCell.clone(), (std::sync::Arc::new(ZeroCrossingTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?; _arr.borrow_mut()[(1-1) as usize] = _val; _arr};
+        {let _arr = zc_set.tree.clone(); _arr.borrow_mut()[(1-1) as usize] = ZeroCrossingTree::add(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone(), addedCell.clone(), (std::sync::Arc::new(ZeroCrossingTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?; _arr};
     }
     Ok(())
 }
@@ -817,13 +817,13 @@ pub fn updateIndices(mut ilst: Arc<metamodelica::List<ZeroCrossing>>) -> Arc<met
 
 pub fn contains(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<bool> {
     let mut matches: bool = false;
-    matches = ZeroCrossingTree::hasKey(({let __elt = zc_set.tree.clone().borrow()[(1-1) as usize].clone(); __elt}), zc.clone())?;
+    matches = ZeroCrossingTree::hasKey(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone())?;
     Ok(matches)
 }
 
 pub fn get(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<ZeroCrossing> {
     let mut outZc: ZeroCrossing = <ZeroCrossing as ::std::default::Default>::default();
-    let __pa0 = ::match_deref::match_deref! { match &(ZeroCrossingTree::get(({let __elt = zc_set.tree.clone().borrow()[(1-1) as usize].clone(); __elt}), zc.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(ZeroCrossingTree::get(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };

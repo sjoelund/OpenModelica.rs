@@ -2081,7 +2081,7 @@ fn vararraySetnth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i
 fn vararrayNth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let true = (inIndex.clone() <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
-    let __pa0 = ::match_deref::match_deref! { match &(({let __elt = inVariableArray.varOptArr.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt})) {
+    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(inVariableArray.varOptArr.clone(), inIndex.clone())?) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2092,7 +2092,7 @@ fn vararrayNth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32)
 fn vararrayDelete(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32) -> Result<(BackendDAE::VariableArray, BackendDAE::Var)> {
     let mut outVariableArray: BackendDAE::VariableArray = inVariableArray.clone();
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let __pa0 = ::match_deref::match_deref! { match &(({let __elt = outVariableArray.varOptArr.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt})) {
+    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(outVariableArray.varOptArr.clone(), inIndex.clone())?) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -2716,7 +2716,7 @@ pub fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Variables
     let mut arr_idx: i32 = 0;
     let mut indices: Arc<metamodelica::List<BackendDAE::CrefIndex>> = metamodelica::nil();
     hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, inVariables.bucketSize.clone()) + 1;
-    indices = ({let __elt = inVariables.crefIndices.clone().borrow()[(hash_idx.clone()-1) as usize].clone(); __elt});
+    indices = metamodelica::arrayGet(inVariables.crefIndices.clone(), hash_idx.clone())?;
     match '__try0: {
         let BackendDAE::CREFINDEX { index: __pa1, .. } = (unwrap_break_err!(List::getMemberOnTrue(inVar.varName.clone(), indices.clone(), (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         arr_idx = __pa1.clone();

@@ -306,7 +306,7 @@ pub fn convertCharNonAsciiToHex(mut s: ArcStr) -> Result<ArcStr> {
     if i.clone() < 128 {
         return Ok(s.clone());
     }
-    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("0x")); __mm_s.push_str(&*({let __elt = hex.clone().borrow()[(intDiv(i.clone(), 16) + 1-1) as usize].clone(); __elt})); __mm_s.push_str(&*({let __elt = hex.clone().borrow()[(intMod(i.clone(), 16) + 1-1) as usize].clone(); __elt})); ArcStr::from(__mm_s) }).clone();
+    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("0x")); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intDiv(i.clone(), 16) + 1)?); __mm_s.push_str(&*metamodelica::arrayGet(hex.clone(), intMod(i.clone(), 16) + 1)?); ArcStr::from(__mm_s) }).clone();
     Ok(s)
 }
 

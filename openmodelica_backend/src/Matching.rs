@@ -212,7 +212,7 @@ fn BBPathFound(mut i: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32
     let mut success: bool = false;
     let mut eMarkN: i32 = eMarkN;
     let mut vMarkN: i32 = vMarkN;
-    if ({let __elt = eMark.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+    if metamodelica::arrayGet(eMark.clone(), i.clone())? {
         return Ok((success.clone(), eMarkN.clone(), vMarkN.clone()));
     }
     {let _arr = eMark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = true; _arr};
@@ -5400,7 +5400,7 @@ fn removeEdgesForNoDerivativeFunctionInputs(mut m: metamodelica::Array<Arc<metam
             {let _arr = m.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = row.clone(); _arr};
             for mut varIdx in &*varIdxs.clone() {
                 let mut varIdx = varIdx.clone();
-                row = ({let __elt = mt.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
+                row = metamodelica::arrayGet(mt.clone(), varIdx.clone())?;
                 (row, _) = List::deleteMemberOnTrue(idx.clone(), row.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                 {let _arr = mt.clone(); _arr.borrow_mut()[(varIdx.clone()-1) as usize] = row.clone(); _arr};
             }
@@ -6079,10 +6079,10 @@ fn clearArrayWithKnownSetIndexes(mut arr: metamodelica::Array<bool>, mut arrIx: 
     }
     if debug.clone() {
         for mut e in 1..=metamodelica::arrayLength(arr.clone()) {
-            Error::assertion(!(({let __elt = arr.clone().borrow()[(e.clone()-1) as usize].clone(); __elt})), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clearArrayWithKnownSetIndexes failed: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.clone()))); __mm_s.push_str(&*literal!(" n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", n.clone()))); __mm_s.push_str(&*literal!(" ixs=")); __mm_s.push_str(&*stringDelimitList(({
+            Error::assertion(!(metamodelica::arrayGet(arr.clone(), e.clone())?), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clearArrayWithKnownSetIndexes failed: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.clone()))); __mm_s.push_str(&*literal!(" n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", n.clone()))); __mm_s.push_str(&*literal!(" ixs=")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut i in (1..=n.clone()).into_iter() {
-            let __x = ArcStr::from(::std::format!("{}", ({let __elt = arrIx.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})));
+            let __x = ArcStr::from(::std::format!("{}", metamodelica::arrayGet(arrIx.clone(), i.clone())?));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

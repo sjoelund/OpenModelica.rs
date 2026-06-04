@@ -167,7 +167,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
         Deref @ ARRAY_ITERATOR { .. } => {
             let mut next: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut arrs: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = metamodelica::nil();
-            next = ({let __elt = var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone().borrow()[(var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone()-1) as usize].clone(); __elt});
+            next = metamodelica::arrayGet(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone(), var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone())?;
             if var_field!((*iterator).index, NFExpressionIterator::ARRAY_ITERATOR).clone() >= metamodelica::arrayLength(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone()) {
                 arrs = var_field!((*iterator).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone();
                 while !(arrs.clone().is_empty()) && listHead(arrs.clone())?.borrow().is_empty() {
@@ -253,7 +253,7 @@ pub fn isSubscriptedArrayCall(mut iterator: Arc<NFExpressionIterator>, mut trySi
 
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(iterator.clone()) {
-        Deref @ ARRAY_ITERATOR { .. } => is_sub_call(({let __elt = var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone().borrow()[(1-1) as usize].clone(); __elt}), trySimplify.clone())?,
+        Deref @ ARRAY_ITERATOR { .. } => is_sub_call(metamodelica::arrayGet(var_field!((*iterator).arr, NFExpressionIterator::ARRAY_ITERATOR).clone(), 1)?, trySimplify.clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

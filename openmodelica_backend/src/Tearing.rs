@@ -2806,12 +2806,12 @@ fn selectMostCausalizingVars(mut inMt: metamodelica::Array<Arc<metamodelica::Lis
     let mut num: i32 = 0;
     for mut var in &*selVars.clone() {
         let mut var = var.clone();
-        row = ({let __elt = inMt.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(inMt.clone(), var.clone())?;
         {let _arr = ass1In.clone(); _arr.borrow_mut()[(var.clone()-1) as usize] = 1; _arr};
         size = 0;
         for mut i in &*row.clone() {
             let mut i = i.clone();
-            if ({let __elt = selEqsSetArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+            if metamodelica::arrayGet(selEqsSetArray.clone(), i.clone())? {
                 size = sizeOfAssignable(i.clone(), me.clone(), ass1In.clone(), size.clone())?;
             }
         }
@@ -2840,12 +2840,12 @@ fn selectCausalizingVars(mut inMt: metamodelica::Array<Arc<metamodelica::List<i3
     let mut size: i32 = 0;
     for mut var in &*selVars.clone() {
         let mut var = var.clone();
-        row = ({let __elt = inMt.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(inMt.clone(), var.clone())?;
         {let _arr = ass1In.clone(); _arr.borrow_mut()[(var.clone()-1) as usize] = 1; _arr};
         size = 0;
         for mut i in &*row.clone() {
             let mut i = i.clone();
-            if ({let __elt = selEqsSetArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+            if metamodelica::arrayGet(selEqsSetArray.clone(), i.clone())? {
                 size = sizeOfAssignable(i.clone(), me.clone(), ass1In.clone(), size.clone())?;
             }
         }
@@ -2868,12 +2868,12 @@ fn selectOneMostCausalizingVar(mut inMt: metamodelica::Array<Arc<metamodelica::L
     let mut size: i32 = 0;
     for mut var in &*selVars.clone() {
         let mut var = var.clone();
-        row = ({let __elt = inMt.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(inMt.clone(), var.clone())?;
         {let _arr = ass1In.clone(); _arr.borrow_mut()[(var.clone()-1) as usize] = 1; _arr};
         size = 0;
         for mut i in &*row.clone() {
             let mut i = i.clone();
-            if ({let __elt = selEqsSetArray.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+            if metamodelica::arrayGet(selEqsSetArray.clone(), i.clone())? {
                 size = sizeOfAssignable(i.clone(), me.clone(), ass1In.clone(), size.clone())?;
             }
         }
@@ -3083,7 +3083,7 @@ fn traverseSingleEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut m: m
     let mut delst: DoubleEnded::MutableList<i32> = <DoubleEnded::MutableList<i32> as ::std::default::Default>::default();
     delst = DoubleEnded::empty(0);
     for mut e in 1..=metamodelica::arrayLength(inAss.clone()) {
-        if ({let __elt = inAss.clone().borrow()[(e.clone()-1) as usize].clone(); __elt}) != -1 {
+        if metamodelica::arrayGet(inAss.clone(), e.clone())? != -1 {
             continue;
         }
         eqnColl = ({let __elt = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone(); __elt});
@@ -3111,7 +3111,7 @@ fn traverseCollectiveEqnsforAssignable(mut inAss: metamodelica::Array<i32>, mut 
     for mut eqnLst in __range0 {
         eqnColl = eqnColl.clone() + 1;
         e = listHead(eqnLst.clone())?;
-        if ({let __elt = inAss.clone().borrow()[(e.clone()-1) as usize].clone(); __elt}) != -1 {
+        if metamodelica::arrayGet(inAss.clone(), e.clone())? != -1 {
             continue;
         }
         eqnSize = (eqnLst.clone().len() as i32);
@@ -3183,7 +3183,7 @@ fn eqnSolvableCheck(mut eqn_coll: i32, mut mapEqnIncRow: metamodelica::Array<Arc
     let mut vars_enh: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     eqns = ({let __elt = mapEqnIncRow.borrow()[(eqn_coll.clone()-1) as usize].clone(); __elt});
     eqn = listHead(eqns.clone())?;
-    vars = ({let __elt = m.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+    vars = metamodelica::arrayGet(m.clone(), eqn.clone())?;
     vars_enh = List::removeOnTrue(ass1.clone(), (std::sync::Arc::new(fnptr!(isAssignedSaveEnhanced, metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>))) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> Result<bool> + 'static>), ({let __elt = me.borrow()[(eqn.clone()-1) as usize].clone(); __elt}))?;
     solvable = solvableLst(vars_enh.clone())?;
     Ok((solvable, eqns, vars))
@@ -3403,10 +3403,10 @@ fn deleteEntriesFromAdjacencyMatrix(mut mUpdate: metamodelica::Array<Arc<metamod
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
-        rowsIndx = ({let __elt = mHelp.clone().borrow()[(entry.clone()-1) as usize].clone(); __elt});
+        rowsIndx = metamodelica::arrayGet(mHelp.clone(), entry.clone())?;
         for mut rowIndx in &*rowsIndx.clone() {
             let mut rowIndx = rowIndx.clone();
-            row = ({let __elt = mUpdate.clone().borrow()[(rowIndx.clone()-1) as usize].clone(); __elt});
+            row = metamodelica::arrayGet(mUpdate.clone(), rowIndx.clone())?;
             (row, _) = List::deleteMemberOnTrue(entry.clone(), row.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             Array::replaceAtWithFill(rowIndx.clone(), row.clone(), row.clone(), mUpdate.clone())?;
         }
@@ -3461,7 +3461,7 @@ fn getVarsOccurringInMostEquations(mut mtIn: metamodelica::Array<Arc<metamodelic
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut sel in &*inSelect.clone() {
         let mut sel = sel.clone();
-        row = ({let __elt = mtIn.clone().borrow()[(sel.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(mtIn.clone(), sel.clone())?;
         length1 = (row.clone().len() as i32);
         if intGt(length1.clone(), length.clone()) {
             length = length1.clone();
@@ -3480,7 +3480,7 @@ fn getVarOccurringInMostEquations(mut mtIn: metamodelica::Array<Arc<metamodelica
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut sel in &*inSelect.clone() {
         let mut sel = sel.clone();
-        row = ({let __elt = mtIn.clone().borrow()[(sel.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(mtIn.clone(), sel.clone())?;
         length1 = (row.clone().len() as i32);
         if intGt(length1.clone(), length.clone()) {
             length = length1.clone();
@@ -3496,7 +3496,7 @@ fn findNEntries(mut mtIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut sel in &*inSelect.clone() {
         let mut sel = sel.clone();
-        row = ({let __elt = mtIn.clone().borrow()[(sel.clone()-1) as usize].clone(); __elt});
+        row = metamodelica::arrayGet(mtIn.clone(), sel.clone())?;
         length = (row.clone().len() as i32);
         if intEq(num.clone(), length.clone()) {
             outList = metamodelica::cons(sel.clone(), outList.clone());
@@ -3686,7 +3686,7 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                     {let _arr = optarr_res.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = Some(eqn.clone()); _arr};
                 }
                 for mut i in 1..=n.clone() {
-                    let __pa19 = ::match_deref::match_deref! { match &(({let __elt = optarr.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})) {
+                    let __pa19 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(optarr.clone(), i.clone())?) {
                         Some(__pa19) => __pa19.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3695,8 +3695,8 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                     lhs = BackendEquation::getEquationLHS(eqn.clone())?;
                     (cr, isDer) = Expression::expOrDerCref(lhs.clone())?;
                     for mut j in i.clone() + 1..=n.clone() {
-                        if listMember(({let __elt = indx_var.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = mm.clone().borrow()[(({let __elt = indx_eq.clone().borrow()[(j.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt})) {
-                            let __pa20 = ::match_deref::match_deref! { match &(({let __elt = optarr.clone().borrow()[(j.clone()-1) as usize].clone(); __elt})) {
+                        if listMember(metamodelica::arrayGet(indx_var.clone(), i.clone())?, metamodelica::arrayGet(mm.clone(), metamodelica::arrayGet(indx_eq.clone(), j.clone())?)?) {
+                            let __pa20 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(optarr.clone(), j.clone())?) {
                                 Some(__pa20) => __pa20.clone(),
                                 _ => bail!("pattern mismatch"),
                             } };
@@ -3710,8 +3710,8 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                         }
                     }
                     for mut j in 1..=m.clone() {
-                        if listMember(({let __elt = indx_var.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = mm.clone().borrow()[(({let __elt = indx_res.clone().borrow()[(j.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt})) {
-                            let __pa21 = ::match_deref::match_deref! { match &(({let __elt = optarr_res.clone().borrow()[(j.clone()-1) as usize].clone(); __elt})) {
+                        if listMember(metamodelica::arrayGet(indx_var.clone(), i.clone())?, metamodelica::arrayGet(mm.clone(), metamodelica::arrayGet(indx_res.clone(), j.clone())?)?) {
+                            let __pa21 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(optarr_res.clone(), j.clone())?) {
                                 Some(__pa21) => __pa21.clone(),
                                 _ => bail!("pattern mismatch"),
                             } };
@@ -3736,8 +3736,8 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                     }
                 }
                 for mut i in 1..=n.clone() {
-                    eqindex = ({let __elt = indx_eq.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    let __pa22 = ::match_deref::match_deref! { match &(({let __elt = optarr.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})) {
+                    eqindex = metamodelica::arrayGet(indx_eq.clone(), i.clone())?;
+                    let __pa22 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(optarr.clone(), i.clone())?) {
                         Some(__pa22) => __pa22.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3748,8 +3748,8 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                     }
                 }
                 for mut i in 1..=m.clone() {
-                    eqindex = ({let __elt = indx_res.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    let __pa23 = ::match_deref::match_deref! { match &(({let __elt = optarr_res.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})) {
+                    eqindex = metamodelica::arrayGet(indx_res.clone(), i.clone())?;
+                    let __pa23 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(optarr_res.clone(), i.clone())?) {
                         Some(__pa23) => __pa23.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3762,7 +3762,7 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
                 if Flags::isSet(Flags::DUMP_RTEARING.clone())? {
                     metamodelica::print((literal!("****************\n")).clone());
                     for mut i in 1..=m.clone() {
-                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearVar: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(({let __elt = tear_exp.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(i.clone() - 1)); __mm_s.push_str(&*literal!("]\n")); ArcStr::from(__mm_s) }).clone());
+                        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearVar: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(metamodelica::arrayGet(tear_exp.clone(), i.clone())?)?); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*intString(i.clone() - 1)); __mm_s.push_str(&*literal!("]\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     metamodelica::print((literal!("****************\n")).clone());
                 }
@@ -3794,9 +3794,9 @@ fn recursiveTearingCollect(mut tear_exp: metamodelica::Array<Arc<DAE::Exp>>, mut
     let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    (e1, e2) = ExpressionSolve::collectX(inExp.clone(), ({let __elt = tear_exp.clone().borrow()[(1-1) as usize].clone(); __elt}), true)?;
+    (e1, e2) = ExpressionSolve::collectX(inExp.clone(), metamodelica::arrayGet(tear_exp.clone(), 1)?, true)?;
     for mut k in 2..=metamodelica::arrayLength(tear_exp.clone()) {
-        (lhs, e2) = ExpressionSolve::collectX(e2.clone(), ({let __elt = tear_exp.clone().borrow()[(k.clone()-1) as usize].clone(); __elt}), true)?;
+        (lhs, e2) = ExpressionSolve::collectX(e2.clone(), metamodelica::arrayGet(tear_exp.clone(), k.clone())?, true)?;
         e1 = Expression::expAdd(e1.clone(), lhs.clone())?;
     }
     outExp = Expression::expAdd(e2.clone(), e1.clone())?;
@@ -3823,7 +3823,7 @@ fn recursiveTearingHelper(mut rhs1: Arc<DAE::Exp>, mut tear_exp: metamodelica::A
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut rhs: Arc<DAE::Exp> = rhs1.clone();
     for mut k in 1..=m.clone() {
-        (e, rhs) = ExpressionSolve::collectX(rhs.clone(), ({let __elt = tear_exp.clone().borrow()[(k.clone()-1) as usize].clone(); __elt}), true)?;
+        (e, rhs) = ExpressionSolve::collectX(rhs.clone(), metamodelica::arrayGet(tear_exp.clone(), k.clone())?, true)?;
         sumRhs = Expression::expAdd(e.clone(), sumRhs.clone())?;
     }
     sumRhs = Expression::expAdd(rhs.clone(), sumRhs.clone())?;
@@ -4209,7 +4209,7 @@ fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
     if let Ok(__iflet2) = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut i in (userResiduals.clone()).into_iter().cloned() {
-            let __x = ({let __elt = mapEqnIncRow.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+            let __x = metamodelica::arrayGet(mapEqnIncRow.clone(), i.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

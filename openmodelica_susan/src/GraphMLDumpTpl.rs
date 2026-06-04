@@ -93,7 +93,7 @@ pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML:
             txt = Tpl::writeStr(txt.clone(), (intString(ret_3.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" -->\n")).clone() }))?;
             ret_4 = metamodelica::arrayLength(i_graphs.clone());
-            ret_5 = ({let __elt = i_graphs.clone().borrow()[(ret_4.clone()-1) as usize].clone(); __elt});
+            ret_5 = metamodelica::arrayGet(i_graphs.clone(), ret_4.clone())?;
             txt = dumpGraph(txt.clone(), ret_5.clone(), i_graphs.clone(), i_nodes.clone(), (Tpl::textString(l_edgeDump.clone())?).clone(), (i_graphNodeKey.clone()).clone(), i_attributes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -124,7 +124,7 @@ fn lm_8(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut i
             ret_0 = metamodelica::arrayLength(a_allNodes.clone());
             ret_1 = intSub(ret_0.clone(), i_idc.clone());
             ret_2 = intAdd(1, ret_1.clone());
-            ret_3 = ({let __elt = a_allNodes.clone().borrow()[(ret_2.clone()-1) as usize].clone(); __elt});
+            ret_3 = metamodelica::arrayGet(a_allNodes.clone(), ret_2.clone())?;
             txt = dumpNode(txt.clone(), ret_3.clone(), a_allGraphs.clone(), a_allNodes.clone(), (a_graphNodeKey.clone()).clone(), a_graphAttributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_8(txt.clone(), rest.clone(), a_graphAttributes.clone(), (a_graphNodeKey.clone()).clone(), a_allGraphs.clone(), a_allNodes.clone())?;
@@ -362,7 +362,7 @@ pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_al
             ret_7 = metamodelica::arrayLength(a_allGraphs.clone());
             ret_8 = intSub(ret_7.clone(), i_internalGraphIdx.clone());
             ret_9 = intAdd(1, ret_8.clone());
-            ret_10 = ({let __elt = a_allGraphs.clone().borrow()[(ret_9.clone()-1) as usize].clone(); __elt});
+            ret_10 = metamodelica::arrayGet(a_allGraphs.clone(), ret_9.clone())?;
             txt = dumpGraph(txt.clone(), ret_10.clone(), a_allGraphs.clone(), a_allNodes.clone(), (literal!("")).clone(), (a_graphNodeKey.clone()).clone(), a_graphAttributes.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -560,7 +560,7 @@ pub fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_g
     out_txt = (match (in_txt.clone(), in_a_key.clone(), in_a_graphAttributes.clone()) {
         (mut txt, (mut i_idx, mut i_val), mut a_graphAttributes) => {
             let mut ret_0: GraphML::Attribute = <GraphML::Attribute as ::std::default::Default>::default();
-            ret_0 = ({let __elt = a_graphAttributes.clone().borrow()[(i_idx.clone()-1) as usize].clone(); __elt});
+            ret_0 = metamodelica::arrayGet(a_graphAttributes.clone(), i_idx.clone())?;
             txt = fun_22(txt.clone(), ret_0.clone(), (i_val.clone()).clone(), i_idx.clone())?;
             txt.clone()
         },

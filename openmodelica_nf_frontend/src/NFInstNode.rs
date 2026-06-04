@@ -200,7 +200,7 @@ pub mod CachedData {
     }
 
     pub fn getFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
-        let mut out_cache: Arc<CachedData> = ({let __elt = in_caches.clone().borrow()[(1-1) as usize].clone(); __elt});
+        let mut out_cache: Arc<CachedData> = metamodelica::arrayGet(in_caches.clone(), 1)?;
         Ok(out_cache)
     }
 
@@ -210,7 +210,7 @@ pub mod CachedData {
     }
 
     pub fn getPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
-        let mut out_cache: Arc<CachedData> = ({let __elt = in_caches.clone().borrow()[(2-1) as usize].clone(); __elt});
+        let mut out_cache: Arc<CachedData> = metamodelica::arrayGet(in_caches.clone(), 2)?;
         Ok(out_cache)
     }
 

@@ -163,7 +163,7 @@ pub fn toRef(mut inNode: Node) -> Ref {
 
 pub fn fromRef(mut inRef: Ref) -> Result<Node> {
     let mut outNode: Node = <FCore::Node as ::std::default::Default>::default();
-    outNode = ({let __elt = inRef.clone().borrow()[(1-1) as usize].clone(); __elt});
+    outNode = metamodelica::arrayGet(inRef.clone(), 1)?;
     Ok(outNode)
 }
 

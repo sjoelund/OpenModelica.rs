@@ -165,8 +165,8 @@ pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>,
         as_aux = ({let __elt = asets.borrow()[(1-1) as usize].clone(); __elt});
         aux = minAtomPW(as_aux.clone(), lm1.clone(), lm2.clone())?;
         if !(SBPWLinearMap::isEmpty(aux.clone())) {
-            sres1 = ({let __elt = SBPWLinearMap::dom(aux.clone()).borrow()[(1-1) as usize].clone(); __elt});
-            lres1 = ({let __elt = SBPWLinearMap::lmap(aux.clone()).borrow()[(1-1) as usize].clone(); __elt});
+            sres1 = metamodelica::arrayGet(SBPWLinearMap::dom(aux.clone()), 1)?;
+            lres1 = metamodelica::arrayGet(SBPWLinearMap::lmap(aux.clone()), 1)?;
             for mut i in 2..=metamodelica::arrayLength(asets.clone()) {
                 aux = minAtomPW(({let __elt = asets.borrow()[(i.clone()-1) as usize].clone(); __elt}), lm1.clone(), lm2.clone())?;
                 aux_dom = SBPWLinearMap::dom(aux.clone());
@@ -265,15 +265,15 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
     for mut i in 1..=metamodelica::arrayLength(dom.clone()) {
         di = ({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt});
         li = ({let __elt = lmap.borrow()[(i.clone()-1) as usize].clone(); __elt});
-        gdim = ({let __elt = SBLinearMap::gain(li.clone()).borrow()[(dim.clone()-1) as usize].clone(); __elt});
-        odim = ({let __elt = SBLinearMap::offset(li.clone()).borrow()[(dim.clone()-1) as usize].clone(); __elt});
+        gdim = metamodelica::arrayGet(SBLinearMap::gain(li.clone()), dim.clone())?;
+        odim = metamodelica::arrayGet(SBLinearMap::offset(li.clone()), dim.clone())?;
         if gdim.clone() == metamodelica::OrderedFloat((1) as f64) && odim.clone() < metamodelica::OrderedFloat((0) as f64) {
             off = ((-(odim.clone())).0 as i32);
             asets = UnorderedSet::toArray(SBSet::asets(di.clone()));
             let __range0 = asets.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut adom in __range0 {
                 mi = SBAtomicSet::aset(adom.clone());
-                idim = ({let __elt = SBMultiInterval::intervals(mi.clone()).borrow()[(dim.clone()-1) as usize].clone(); __elt});
+                idim = metamodelica::arrayGet(SBMultiInterval::intervals(mi.clone()), dim.clone())?;
                 loint = SBInterval::lowerBound(idim.clone());
                 hiint = SBInterval::upperBound(idim.clone());
                 if hiint.clone() - loint.clone() > off.clone() * off.clone() {
@@ -481,7 +481,7 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
         } else {
             aux = SBPWLinearMap::image(pw1.clone(), d.clone())?;
             min_aux = SBSet::minElem(aux.clone())?;
-            lm_res = ({let __elt = SBPWLinearMap::lmap(aux_res.clone()).borrow()[(1-1) as usize].clone(); __elt});
+            lm_res = metamodelica::arrayGet(SBPWLinearMap::lmap(aux_res.clone()), 1)?;
             gres = SBLinearMap::gain(lm_res.clone());
             oi = SBLinearMap::offset(lm_res.clone());
             ginv = SBLinearMap::gain(lm_inv.clone());
@@ -508,7 +508,7 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
                 }
             }
             aux_lm2 = SBLinearMap::new(resg.clone(), reso.clone())?;
-            outMap = SBPWLinearMap::newScalar(({let __elt = SBPWLinearMap::dom(aux_res.clone()).borrow()[(1-1) as usize].clone(); __elt}), aux_lm2.clone());
+            outMap = SBPWLinearMap::newScalar(metamodelica::arrayGet(SBPWLinearMap::dom(aux_res.clone()), 1)?, aux_lm2.clone());
         }
     }
     Ok(outMap)

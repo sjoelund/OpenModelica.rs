@@ -679,7 +679,7 @@ fn evaluateInStream(mut cref: Arc<ComponentRef::NFComponentRef>, mut sets: Conne
     c = Arc::new(Connector::NFConnector { name: cr.clone(), ty: Arc::new(crate::NFType::UNKNOWN), face: Face::INSIDE.clone(), cty: ConnectorType::STREAM.clone(), source: DAE::emptyElementSource().clone() });
     match '__try0: {
         set = unwrap_break_err!(ConnectionSets::findSetArrayIndex(c.clone(), sets.clone()), '__try0);
-        sl = ({let __elt = setsArray.clone().borrow()[(set.clone()-1) as usize].clone(); __elt});
+        sl = unwrap_break_err!(metamodelica::arrayGet(setsArray.clone(), set.clone()), '__try0);
         Ok::<_, anyhow::Error>((sl.clone(),))
     } {
         Ok((__try0_o0,)) => {

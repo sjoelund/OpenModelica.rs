@@ -176,7 +176,7 @@ pub fn stripLastScopeRef(mut inGraph: Graph) -> Result<(Graph, Ref)> {
 pub fn topScope(mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (match inGraph.clone() {
-        FCore::Graph::G { .. } => ({let __elt = var_field!(inGraph.top, FCore::Graph::G).graph.clone().borrow()[(1-1) as usize].clone(); __elt}),
+        FCore::Graph::G { .. } => metamodelica::arrayGet(var_field!(inGraph.top, FCore::Graph::G).graph.clone(), 1)?,
         _ => bail!("match: no arm matched"),
     });
     Ok(outGraph)

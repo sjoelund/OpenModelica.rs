@@ -2198,7 +2198,7 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
         if Flags::isSet(Flags::BLT_DUMP.clone())? || Flags::isSet(Flags::INITIALIZATION.clone())? {
             BackendDump::dumpEquationList(list![eqn.clone()], (literal!("initial state selection equation generated:")).clone())?;
         }
-        if metamodelica::arrayLength(stateSetFixCounts.clone()) >= stateSet.index.clone() && ({let __elt = stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone(); __elt}) > 0 {
+        if metamodelica::arrayLength(stateSetFixCounts.clone()) >= stateSet.index.clone() && metamodelica::arrayGet(stateSetFixCounts.clone(), stateSet.index.clone())? > 0 {
             unfixedStates = metamodelica::nil();
             for mut state in &*stateSet.statescandidates.clone() {
                 let mut state = state.clone();
@@ -2206,7 +2206,7 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
                     unfixedStates = metamodelica::cons(state.clone(), unfixedStates.clone());
                 }
             }
-            toFix = ({let __elt = stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone(); __elt});
+            toFix = metamodelica::arrayGet(stateSetFixCounts.clone(), stateSet.index.clone())?;
             statesToFix = metamodelica::nil();
             statesToFix = SymbolicJacobian::getFixedStatesForSelfdependentSets(stateSet.clone(), unfixedStates.clone(), toFix.clone())?;
             for mut state in &*statesToFix.clone() {
@@ -2289,7 +2289,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                             stateSetSplit = __pa1.clone();
                             stateSetIdxString = substring((stateSetIdxString.clone()).clone(), 10, ((stateSetIdxString.clone()).clone().len() as i32))?;
                             stateSetIdx = stringInt((stateSetIdxString.clone()).clone())?;
-                            {let _arr = stateSetFixCounts.clone(); let _val = ({let __elt = stateSetFixCounts.clone().borrow()[(stateSetIdx.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(stateSetIdx.clone()-1) as usize] = _val; _arr};
+                            {let _arr = stateSetFixCounts.clone(); _arr.borrow_mut()[(stateSetIdx.clone()-1) as usize] = metamodelica::arrayGet(stateSetFixCounts.clone(), stateSetIdx.clone())? + 1; _arr};
                         } else {
                             if Expression::isConstValue(startExp.clone())? {
                                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: crefExp.clone(), scalar: Expression::crefExp(startCR.clone())?, source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });

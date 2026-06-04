@@ -642,7 +642,7 @@ fn addForbiddenColors<NodeType: Clone + 'static>(mut inNode: NodeType, mut inNod
 
 fn getArrayElem<Type_a: Clone + 'static>(mut inIndex: i32, mut inArray: metamodelica::Array<Type_a>) -> Result<Type_a> {
     let mut outElem: Type_a;
-    outElem = ({let __elt = inArray.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt});
+    outElem = metamodelica::arrayGet(inArray.clone(), inIndex.clone())?;
     Ok(outElem)
 }
 
@@ -666,7 +666,7 @@ fn arrayUpdateListAppend<NodeType: Clone + 'static>(mut inIndex: i32, mut inArra
 
 fn arrayElemetGtZero(mut inIndex: i32, mut inArray: metamodelica::Array<i32>) -> Result<bool> {
     let mut outBoolean: bool = false;
-    outBoolean = intGt(({let __elt = inArray.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), 0);
+    outBoolean = intGt(metamodelica::arrayGet(inArray.clone(), inIndex.clone())?, 0);
     Ok(outBoolean)
 }
 
@@ -680,7 +680,7 @@ fn arrayFindMinColorIndex<NodeType: Clone + 'static>(mut inForbiddenColor: metam
         let __mc_input = inPrintFunc.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            ::match_deref::match_deref! { match &(({let __elt = inForbiddenColor.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt})) {
+            ::match_deref::match_deref! { match &(metamodelica::arrayGet(inForbiddenColor.clone(), inIndex.clone())?) {
                 None => (),
                 _ => bail!("pattern mismatch"),
             } };
@@ -689,7 +689,7 @@ fn arrayFindMinColorIndex<NodeType: Clone + 'static>(mut inForbiddenColor: metam
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut nodes: Arc<metamodelica::List<NodeType>> = metamodelica::nil();
-            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = inForbiddenColor.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt})) {
+            let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(inForbiddenColor.clone(), inIndex.clone())?) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -704,7 +704,7 @@ fn arrayFindMinColorIndex<NodeType: Clone + 'static>(mut inForbiddenColor: metam
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut nodes: Arc<metamodelica::List<NodeType>> = metamodelica::nil();
             let mut index: i32 = 0;
-            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = inForbiddenColor.clone().borrow()[(inIndex.clone()-1) as usize].clone(); __elt})) {
+            let __pa0 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(inForbiddenColor.clone(), inIndex.clone())?) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -803,7 +803,7 @@ pub fn allReachableNodesInt(mut intmpstorage: (Arc<metamodelica::List<i32>>, Arc
                     let mut reachableNodes: Arc<metamodelica::List<i32>> = reachableNodes.clone();
                     L = List::union(L.clone(), list![node.clone()]);
                     let false = (intGe(node.clone(), inMaxGraphNode.clone())) else { bail!("pattern mismatch") };
-                    (_, edges) = ({let __elt = inGraph.clone().borrow()[(node.clone()-1) as usize].clone(); __elt});
+                    (_, edges) = metamodelica::arrayGet(inGraph.clone(), node.clone())?;
                     edges = List::filter1OnTrue(edges.clone(), std::sync::Arc::new(fnptr!(List::notMember, _, _)), L.clone())?;
                     M = List::union(M.clone(), edges.clone());
                     reachableNodes = allReachableNodesInt((M.clone(), L.clone()), inGraph.clone(), inMaxGraphNode.clone(), inMaxNodexIndex.clone())?;
@@ -863,7 +863,7 @@ fn addForbiddenColorsInt(mut inNode: i32, mut nodes: Arc<metamodelica::List<i32>
     match '__try0: {
         for mut node in &*nodes.clone() {
             let mut node = node.clone();
-            (_, indexes) = ({let __elt = inGraph.clone().borrow()[(node.clone()-1) as usize].clone(); __elt});
+            (_, indexes) = unwrap_break_err!(metamodelica::arrayGet(inGraph.clone(), node.clone()), '__try0);
             unwrap_break_err!(updateForbiddenColorArrayInt(indexes.clone(), inColored.clone(), forbiddenColor.clone(), inNode.clone()), '__try0);
         }
         Ok::<(), anyhow::Error>(())
@@ -881,7 +881,7 @@ fn updateForbiddenColorArrayInt(mut inIndexes: Arc<metamodelica::List<i32>>, mut
     let mut colorIndex: i32 = 0;
     for mut index in &*inIndexes.clone() {
         let mut index = index.clone();
-        colorIndex = ({let __elt = inColored.clone().borrow()[(index.clone()-1) as usize].clone(); __elt});
+        colorIndex = metamodelica::arrayGet(inColored.clone(), index.clone())?;
         if colorIndex.clone() > 0 {
             {let _arr = inForbiddenColor.clone(); _arr.borrow_mut()[(colorIndex.clone()-1) as usize] = inNode.clone(); _arr};
         }
@@ -892,7 +892,7 @@ fn updateForbiddenColorArrayInt(mut inIndexes: Arc<metamodelica::List<i32>>, mut
 fn arrayFindMinColorIndexInt(mut inForbiddenColor: metamodelica::Array<i32>, mut inNode: i32) -> Result<i32> {
     let mut outColor: i32 = 1;
     loop {
-        if ({let __elt = inForbiddenColor.clone().borrow()[(outColor.clone()-1) as usize].clone(); __elt}) != inNode.clone() {
+        if metamodelica::arrayGet(inForbiddenColor.clone(), outColor.clone())? != inNode.clone() {
             return Ok(outColor.clone());
         } else {
             outColor = outColor.clone() + 1;

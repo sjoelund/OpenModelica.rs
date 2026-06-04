@@ -122,7 +122,7 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut ot: Option<Arc<DAE::Type>> = None;
-    (cache, env, p, ot) = ({let __elt = arr.clone().borrow()[(1-1) as usize].clone(); __elt});
+    (cache, env, p, ot) = metamodelica::arrayGet(arr.clone(), 1)?;
     if isNone(ot.clone()) {
         (_, singletonType, _) = Lookup::lookupType(cache.clone(), env.clone(), p.clone(), Some(metamodelica::sourceInfo!()))?;
         {let _arr = arr.clone(); _arr.borrow_mut()[(1-1) as usize] = (cache.clone(), env.clone(), p.clone(), Some(singletonType.clone())); _arr};

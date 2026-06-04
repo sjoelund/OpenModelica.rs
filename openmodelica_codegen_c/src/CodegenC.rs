@@ -13940,7 +13940,7 @@ pub fn functionXXX_system0_HPCOM_PThread_func(mut txt: Tpl::Text, mut a_derivati
     let mut ret_1: i32 = 0;
     let mut l_taskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = intAdd(a_idx.clone(), 1);
-    ret_2 = ({let __elt = a_threadTasks.clone().borrow()[(ret_1.clone()-1) as usize].clone(); __elt});
+    ret_2 = metamodelica::arrayGet(a_threadTasks.clone(), ret_1.clone())?;
     l_taskEqs = functionXXX_system0_HPCOM_Thread0(Tpl::emptyTxt.clone(), a_derivativEquations.clone(), (a_name.clone()).clone(), ret_2.clone(), (a_iType.clone()).clone(), (a_modelNamePrefixStr.clone()).clone())?;
     l_assLock = function_HPCOM_assignLockByLockName(Tpl::emptyTxt.clone(), (intString(a_idx.clone())).clone(), (literal!("th_lock")).clone(), (literal!("pthreads")).clone())?;
     l_relLock = function_HPCOM_releaseLockByLockName(Tpl::emptyTxt.clone(), (intString(a_idx.clone())).clone(), (literal!("th_lock1")).clone(), (literal!("pthreads")).clone())?;

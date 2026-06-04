@@ -1347,11 +1347,11 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
     r#str = ((match tpl.clone() {
         None => literal!(""),
         Some((mut astr, mut ainfo, mut afunc)) => {
-            r#str = (({let __elt = astr.clone().borrow()[(1-1) as usize].clone(); __elt})).clone();
+            r#str = (metamodelica::arrayGet(astr.clone(), 1)?).clone();
             if r#str.clone() != literal!("") {
-                func = ({let __elt = afunc.clone().borrow()[(1-1) as usize].clone(); __elt});
+                func = metamodelica::arrayGet(afunc.clone(), 1)?;
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable ")); __mm_s.push_str(&*func((r#str.clone()).clone())?); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone();
-                info = ({let __elt = ainfo.clone().borrow()[(1-1) as usize].clone(); __elt});
+                info = metamodelica::arrayGet(ainfo.clone(), 1)?;
                 sline = info.lineNumberStart.clone();
                 scol = info.columnNumberStart.clone();
                 eline = info.lineNumberEnd.clone();
