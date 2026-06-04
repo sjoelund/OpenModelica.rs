@@ -445,20 +445,25 @@ pub fn getLDFlags() -> ArcStr {
 
 // ───────────────────────────────── dynamic library loading ────────────────────
 
-pub fn loadLibrary(_inLib: ArcStr, _relativePath: bool, _printDebug: bool) -> Result<i32> {
-    // dlopen wrapper returning an opaque handle (originally a `void*`).
-    // Needs a real implementation backed by `libloading` or raw `dlopen`;
-    // gating until a caller in the Rust frontend actually needs it.
-    todo!("System.loadLibrary: dlopen not yet ported")
+// The dlopen pipeline (compile generated C against the MetaModelica
+// runtime, load it, marshal Values through DynLoad.executeFunction) is
+// out of scope for the Rust port for now — the port evaluates functions
+// with its own interpreter instead. These fail like any other
+// MetaModelica failure (instead of panicking) so the calling script can
+// continue; -d=gen tests are expected failures.
+
+pub fn loadLibrary(inLib: ArcStr, _relativePath: bool, _printDebug: bool) -> Result<i32> {
+    eprintln!("System.loadLibrary: dlopen pipeline not supported by the Rust port ({inLib})");
+    bail!("System.loadLibrary: not supported ({inLib})")
 }
-pub fn lookupFunction(_inLibHandle: i32, _inFunc: ArcStr) -> Result<i32> {
-    todo!("System.lookupFunction: dlsym not yet ported")
+pub fn lookupFunction(_inLibHandle: i32, inFunc: ArcStr) -> Result<i32> {
+    bail!("System.lookupFunction: not supported ({inFunc})")
 }
 pub fn freeFunction(_inFuncHandle: i32, _inPrintDebug: bool) -> Result<()> {
-    todo!("System.freeFunction: free of dlsym handle not yet ported")
+    bail!("System.freeFunction: not supported")
 }
 pub fn freeLibrary(_inLibHandle: i32, _inPrintDebug: bool) -> Result<()> {
-    todo!("System.freeLibrary: dlclose not yet ported")
+    bail!("System.freeLibrary: not supported")
 }
 
 // ───────────────────────────────── file I/O ──────────────────────────────────
@@ -1359,11 +1364,79 @@ pub fn realMaxLit() -> metamodelica::Real {
 
 // ───────────────────────────────── URI / platform info ───────────────────────
 
-pub fn uriToClassAndPath(_uri: ArcStr) -> Result<(ArcStr, ArcStr, ArcStr)> {
-    // Parses `modelica://Pkg.Sub/foo` and `file://...` URIs into
-    // (className, fileName, fullPath). Defer until needed; uses the
-    // Modelica URI resolver registered by `updateUriMapping`.
-    todo!("System.uriToClassAndPath: URI resolver not yet ported")
+/// Percent-decode a URI component, mirroring `decodeUri2` in
+/// systemimpl.c: `+` becomes a space, `%XX` a hex-decoded byte, and a
+/// malformed escape is kept literally.
+fn decode_uri_component(src: &str) -> String {
+    let bytes = src.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'+' => out.push(b' '),
+            b'%' if i + 2 < bytes.len()
+                && bytes[i + 1].is_ascii_hexdigit()
+                && bytes[i + 2].is_ascii_hexdigit() =>
+            {
+                let hex = std::str::from_utf8(&bytes[i + 1..i + 3]).unwrap();
+                out.push(u8::from_str_radix(hex, 16).unwrap());
+                i += 2;
+            }
+            b => out.push(b),
+        }
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+/// `c_add_message(NULL, -1, ErrorType_scripting, ErrorLevel_error, ...)`
+/// equivalent for the URI errors below.
+fn add_scripting_error(template: &str, token: &str) {
+    let _ = crate::Error::addMessage(
+        crate::ErrorTypes::Message {
+            id: -1,
+            ty: crate::ErrorTypes::MessageType::SCRIPTING,
+            severity: crate::ErrorTypes::Severity::ERROR,
+            message: crate::Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+        },
+        metamodelica::cons(ArcStr::from(token), metamodelica::nil()),
+    );
+}
+
+/// Split `modelica://Pkg.Sub/dir/file` / `file:///some/path` URIs into
+/// `(scheme, classname, pathname)`. Port of
+/// `SystemImpl__uriToClassAndPath`; sets the error buffer and fails on
+/// malformed or unknown URIs like the C version (which MMC_THROWs).
+pub fn uriToClassAndPath(uri: ArcStr) -> Result<(ArcStr, ArcStr, ArcStr)> {
+    fn split_name_path(rest: &str) -> (String, String) {
+        match rest.find('/') {
+            Some(p) => (decode_uri_component(&rest[..p]), decode_uri_component(&rest[p..])),
+            None => (decode_uri_component(rest), String::new()),
+        }
+    }
+    let lower = uri.to_ascii_lowercase();
+    if let Some(rest) = lower.strip_prefix("modelica://").map(|r| &uri[uri.len() - r.len()..]) {
+        let (name, path) = split_name_path(rest);
+        if name.is_empty() {
+            add_scripting_error("Modelica URI lacks classname: %s", &uri);
+            bail!("Modelica URI lacks classname: {uri}");
+        }
+        return Ok((literal!("modelica://"), ArcStr::from(name), ArcStr::from(path)));
+    }
+    if let Some(rest) = lower.strip_prefix("file://").map(|r| &uri[uri.len() - r.len()..]) {
+        let (name, path) = split_name_path(rest);
+        if path.is_empty() {
+            add_scripting_error("File URI has no path: %s", &uri);
+            bail!("File URI has no path: {uri}");
+        }
+        if !name.is_empty() {
+            add_scripting_error("File URI using hostnames is not supported: %s", &uri);
+            bail!("File URI using hostnames is not supported: {uri}");
+        }
+        return Ok((literal!("file://"), literal!(""), ArcStr::from(path)));
+    }
+    add_scripting_error("Unknown uri: %s", &uri);
+    bail!("Unknown uri: {uri}")
 }
 
 pub fn modelicaPlatform() -> ArcStr {
