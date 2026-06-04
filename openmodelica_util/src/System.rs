@@ -1377,7 +1377,9 @@ pub fn intMaxLit() -> i32 {
 }
 
 pub fn realMaxLit() -> metamodelica::Real {
-    metamodelica::OrderedFloat(f64::MAX)
+    // Mirrors the C runtime (`meta_modelica_builtin.c`): `DBL_MAX / 2048`, kept
+    // below DBL_MAX so a solver adding a small eps to this value can't overflow.
+    metamodelica::OrderedFloat(f64::MAX / 2048.0)
 }
 
 // ───────────────────────────────── URI / platform info ───────────────────────
@@ -1632,6 +1634,47 @@ pub fn sprintff(format: ArcStr, val: metamodelica::Real) -> Result<ArcStr> {
     Ok(ArcStr::from(s))
 }
 
+/// Formats `val` like C's `%e`/`%E`: a mantissa followed by `e`/`E`, an explicit
+/// sign and an at-least-two-digit exponent (Rust's `{:e}` omits the sign and
+/// zero-padding, e.g. `1.5e2` rather than `1.500000e+02`).
+fn format_c_exp(val: f64, precision: usize, upper: bool) -> String {
+    let raw = format!("{:.*e}", precision, val);
+    let (mant, exp) = raw.split_once('e').unwrap_or((raw.as_str(), "0"));
+    let exp_num: i32 = exp.parse().unwrap_or(0);
+    let e_char = if upper { 'E' } else { 'e' };
+    let sign = if exp_num < 0 { '-' } else { '+' };
+    format!("{mant}{e_char}{sign}{:02}", exp_num.abs())
+}
+
+/// Returns the decimal exponent X that C's `%e` conversion of `val` would use
+/// when rendered with `sig` significant digits (so rounding can carry into a
+/// higher exponent, e.g. 9.99 at 2 sig digits -> "1.0e1", X = 1).
+fn decimal_exponent(val: f64, sig: usize) -> i32 {
+    if val == 0.0 || !val.is_finite() {
+        return 0;
+    }
+    let raw = format!("{:.*e}", sig.saturating_sub(1), val);
+    raw.split_once('e')
+        .and_then(|(_, e)| e.parse().ok())
+        .unwrap_or(0)
+}
+
+/// Strips trailing zeros (and a trailing decimal point) from the significand of
+/// a `%g` result, leaving any exponent suffix untouched. Mirrors the trailing-
+/// zero removal C performs unless the `#` flag is given.
+fn trim_g_significand(s: String) -> String {
+    let (mant, exp) = match s.find(['e', 'E']) {
+        Some(idx) => (&s[..idx], &s[idx..]),
+        None => (s.as_str(), ""),
+    };
+    let mant = if mant.contains('.') {
+        mant.trim_end_matches('0').trim_end_matches('.')
+    } else {
+        mant
+    };
+    format!("{mant}{exp}")
+}
+
 /// Best-effort port of C `snprintf` for a single floating-point conversion.
 /// Recognises `%[flags][width][.prec][fFeEgG]`. Returns `None` for shapes
 /// we don't (yet) understand so callers can decide how loudly to fail.
@@ -1670,20 +1713,28 @@ fn c_format_double(fmt: &str, val: f64) -> Option<String> {
             Some(p) => format!("{:.*}", p, val),
             None => format!("{:.6}", val),
         },
-        'e' => format!("{:.*e}", precision.unwrap_or(6), val),
-        'E' => format!("{:.*E}", precision.unwrap_or(6), val),
+        'e' => format_c_exp(val, precision.unwrap_or(6), false),
+        'E' => format_c_exp(val, precision.unwrap_or(6), true),
         'g' | 'G' => {
-            // %g picks %f or %e depending on exponent; rust has no direct
-            // analogue, so emit a compact decimal. Good enough for diag dumps.
-            let p = precision.unwrap_or(6);
-            let s = format!("{:.*}", p, val);
-            // strip trailing zeros if no flag forbids it
-            if !flags.contains('#') {
-                let trimmed = s.trim_end_matches('0').trim_end_matches('.').to_owned();
-                if trimmed.is_empty() { "0".to_owned() } else { trimmed }
+            // C's %g treats `precision` as the number of *significant digits*
+            // (default 6, a value of 0 is taken as 1). The %e-style exponent X
+            // of the value selects the presentation: %f when -4 <= X < P,
+            // otherwise %e. Unless the '#' flag is set, trailing zeros (and a
+            // dangling decimal point) are stripped from the significand.
+            let upper = spec == 'G';
+            let mut p = precision.unwrap_or(6);
+            if p == 0 { p = 1; }
+            let x = decimal_exponent(val, p);
+            let mut s = if x >= -4 && (x as i64) < p as i64 {
+                let prec = (p as i32 - 1 - x).max(0) as usize;
+                format!("{:.*}", prec, val)
             } else {
-                s
+                format_c_exp(val, p - 1, upper)
+            };
+            if !flags.contains('#') {
+                s = trim_g_significand(s);
             }
+            s
         }
         _ => return None,
     };
@@ -2104,6 +2155,31 @@ pub fn waitForInput() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sprintff_g_uses_significant_digits() {
+        // C's `%g` precision counts significant digits, not digits after the
+        // decimal point. These mirror `String(x, significantDigits=..)` results.
+        let g = |fmt: &str, v: f64| c_format_double(fmt, v).unwrap();
+        assert_eq!(g("%.3g", 1.234232), "1.23");
+        assert_eq!(g("%-0.4g", 1.2342342), "1.234");
+        assert_eq!(g("%.4g", 1.2342342), "1.234");
+        // Trailing zeros are stripped (no '#').
+        assert_eq!(g("%.6g", 1.5), "1.5");
+        // Large/small magnitudes fall back to %e with a C-style exponent.
+        assert_eq!(g("%.3g", 1234567.0), "1.23e+06");
+        assert_eq!(g("%.2g", 0.00012345), "0.00012");
+        assert_eq!(g("%.2g", 0.0000012345), "1.2e-06");
+        // Rounding can carry into a higher exponent.
+        assert_eq!(g("%.2g", 9.99), "10");
+    }
+
+    #[test]
+    fn sprintff_e_is_c_style_exponent() {
+        let e = |fmt: &str, v: f64| c_format_double(fmt, v).unwrap();
+        assert_eq!(e("%.2e", 1234.5), "1.23e+03");
+        assert_eq!(e("%.3e", 0.0012345), "1.234e-03");
+    }
 
     #[test]
     fn iconv_utf8_to_utf8_is_identity() {
