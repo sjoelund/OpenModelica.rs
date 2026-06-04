@@ -71,6 +71,9 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // comparison runtime (`runtime/SimulationResults*.c`); hand-written in
     // `openmodelica_script_util/src/SimulationResults.rs`.
     "SimulationResults",
+    // Single `external "C"` wrapper over `runtime/om_curl.c`; hand-written
+    // (spawning the `curl` CLI) in `openmodelica_script_util/src/Curl.rs`.
+    "Curl",
     // Upstream Autoconf.mo is produced by configure-time substitution
     // (Autoconf.mo.in / Autoconf.mo.omdev.mingw); the Rust port detects the
     // platform with compile-time `cfg!` instead. Hand-written in
