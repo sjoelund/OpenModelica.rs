@@ -2380,9 +2380,19 @@ pub mod VariablePointers {
         vals = Slice::indexToLocation(scal.clone() - start.clone(), sizes.clone()).reverse();
         subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        for (dim, val) in (&(dims.clone())).into_iter().zip((&(vals.clone())).into_iter()) {
-            let __x = Subscript::nth(dim.clone(), val.clone() + 1)?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = dims.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = vals.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(dim), Some(val)) => {
+                    let __x = Subscript::nth(dim.clone(), val.clone() + 1)?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

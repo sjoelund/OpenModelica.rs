@@ -781,9 +781,21 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             } else {
                 assign_variant_field!(arrayExp => Expression::NFExpression::ARRAY; elements = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for (e, v) in (var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone()).borrow().iter().cloned().zip((Expression::arrayElements(value.clone())?).borrow().iter().cloned()) {
-            let __x = assignArrayElement(e.clone(), rest_subs.clone(), v.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone();
+        let __thr_borrow0 = __thr_src0.borrow();
+        let mut __thr_it0 = __thr_borrow0.iter().cloned();
+        let __thr_src1 = Expression::arrayElements(value.clone())?;
+        let __thr_borrow1 = __thr_src1.borrow();
+        let mut __thr_it1 = __thr_borrow1.iter().cloned();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e), Some(v)) => {
+                    let __x = assignArrayElement(e.clone(), rest_subs.clone(), v.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }).into_iter().cloned().collect()));

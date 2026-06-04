@@ -753,9 +753,19 @@ fn makeTupleCrefs(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inT
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     outCrefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-        for (c, t) in (&(inCrefs.clone())).into_iter().zip((&(inTypes.clone())).into_iter()) {
-            let __x = makeTupleCref(c.clone(), t.clone(), inEnv.clone(), inCache.clone(), inInfo.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inCrefs.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inTypes.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(c), Some(t)) => {
+                    let __x = makeTupleCref(c.clone(), t.clone(), inEnv.clone(), inCache.clone(), inInfo.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -7746,9 +7756,21 @@ pub fn getUsesAnnotationOrDefault(mut p: Absyn::Program, mut requireExactVersion
     strs = List::map(usesStr.clone(), std::sync::Arc::new(fnptr!(Util::tuple43, _)))?;
     usesStr = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>> = metamodelica::nil();
-        for ((p, f), s) in (&(paths.clone())).into_iter().zip((&(fromVersions.clone())).into_iter()).zip((&(strs.clone())).into_iter()) {
-            let __x = (p.clone(), f.clone(), s.clone(), false);
-            __acc = cons(__x, __acc);
+        let __thr_src0 = paths.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = fromVersions.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        let __thr_src2 = strs.clone();
+        let mut __thr_it2 = (&__thr_src2).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
+                (Some(p), Some(f), Some(s)) => {
+                    let __x = (p.clone(), f.clone(), s.clone(), false);
+                    __acc = cons(__x, __acc);
+                }
+                (None, None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

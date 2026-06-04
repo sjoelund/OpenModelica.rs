@@ -3261,9 +3261,19 @@ fn elabMatrixCatTwo2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Re
     expl2 = __pa2.clone();
     expl1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for (e1, e2) in (&(expl1.clone())).into_iter().zip((&(expl2.clone())).into_iter()) {
-            let __x = elabMatrixCatTwo3(e1.clone(), e2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = expl1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = expl2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = elabMatrixCatTwo3(e1.clone(), e2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -7822,9 +7832,19 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     });
                     fargs = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::FuncArg>>> = metamodelica::nil();
-        for (n, t) in (&(field_names.clone())).into_iter().zip((&(tys.clone())).into_iter()) {
-                    let __x = Types::makeDefaultFuncArg((n.clone()).clone(), t.clone());
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = field_names.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = tys.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(n), Some(t)) => {
+                            let __x = Types::makeDefaultFuncArg((n.clone()).clone(), t.clone());
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });
@@ -8753,9 +8773,19 @@ fn applyArgTypesToFuncType(mut inSlots: Arc<metamodelica::List<Slot>>, mut inPar
     env = makeDummyFuncEnv(env.clone(), vars.clone(), dummy_var.clone())?;
     outParameters = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::FuncArg>>> = metamodelica::nil();
-        for (s, p) in (&(inSlots.clone())).into_iter().zip((&(inParameters.clone())).into_iter()) {
-            let __x = evaluateFuncParamDimAndMatchTypes(s.clone(), p.clone(), env.clone(), cache.clone(), inInfo.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inSlots.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inParameters.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(s), Some(p)) => {
+                    let __x = evaluateFuncParamDimAndMatchTypes(s.clone(), p.clone(), env.clone(), cache.clone(), inInfo.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

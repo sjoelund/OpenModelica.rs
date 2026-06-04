@@ -684,9 +684,19 @@ pub fn getModBindings(mut r#mod: Arc<SCode::Mod>, mut names: Arc<metamodelica::L
     }
     bindings = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (e1, e2) in (&(mod_bindings.clone())).into_iter().zip((&(bindings.clone())).into_iter()) {
-            let __x = cons(e1.clone(), e2.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = mod_bindings.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = bindings.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = cons(e1.clone(), e2.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

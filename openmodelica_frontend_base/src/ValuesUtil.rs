@@ -980,9 +980,19 @@ fn valueExpArray(mut values: Arc<metamodelica::List<Arc<Values::Value>>>, mut in
                     let mut b: bool = false;
                     explist = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for (e1, e2) in (&(values.clone())).into_iter().zip((&(exps1.clone())).into_iter()) {
-                    let __x = valueExp(e1.clone(), Some(e2.clone()))?;
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = values.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = exps1.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(e1), Some(e2)) => {
+                            let __x = valueExp(e1.clone(), Some(e2.clone()))?;
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });
@@ -2071,9 +2081,19 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
         (Deref @ Values::Value::RECORD { .. }, Deref @ DAE::Type::T_COMPLEX { .. }) => {
             assign_variant_field!(outValue => Values::Value::RECORD; orderd = ({
         let mut __acc: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-        for (val, var) in (&(var_field!((*outValue).orderd, Values::Value::RECORD).clone())).into_iter().zip((&(var_field!((*inType).varLst, DAE::Type::T_COMPLEX).clone())).into_iter()) {
-            let __x = typeConvertRecord(val.clone(), Types::getVarType(var.clone())?)?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*outValue).orderd, Values::Value::RECORD).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!((*inType).varLst, DAE::Type::T_COMPLEX).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(val), Some(var)) => {
+                    let __x = typeConvertRecord(val.clone(), Types::getVarType(var.clone())?)?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }));

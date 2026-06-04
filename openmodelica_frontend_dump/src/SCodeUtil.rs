@@ -708,9 +708,19 @@ pub fn restrictionEqual(mut restr1: SCode::Restriction, mut restr2: SCode::Restr
         (SCode::Restriction::R_UNIONTYPE { .. }, SCode::Restriction::R_UNIONTYPE { .. }) => {
             ({
         let mut __acc: Option<bool> = None;
-        for (t1, t2) in (&(var_field!(restr1.typeVars, SCode::Restriction::R_UNIONTYPE).clone())).into_iter().zip((&(var_field!(restr2.typeVars, SCode::Restriction::R_UNIONTYPE).clone())).into_iter()) {
-            let __x = t1.clone() == t2.clone();
-            __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
+        let __thr_src0 = var_field!(restr1.typeVars, SCode::Restriction::R_UNIONTYPE).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!(restr2.typeVars, SCode::Restriction::R_UNIONTYPE).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(t1), Some(t2)) => {
+                    let __x = t1.clone() == t2.clone();
+                    __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
+                }
+                (None, None) => break,
+                _ => panic!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.unwrap_or(true)
     })

@@ -2295,9 +2295,19 @@ pub fn zip<T1: Clone + 'static, T2: Clone + 'static>(mut inList1: Arc<metamodeli
     let mut outTuples: Arc<metamodelica::List<(T1, T2)>> = metamodelica::nil();
     outTuples = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (e1, e2) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()) {
-            let __x = (e1.clone(), e2.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = (e1.clone(), e2.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => panic!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2308,9 +2318,21 @@ pub fn zip3<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut l
     let mut res: Arc<metamodelica::List<(T1, T2, T3)>> = metamodelica::nil();
     res = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for ((e1, e2), e3) in (&(l1.clone())).into_iter().zip((&(l2.clone())).into_iter()).zip((&(l3.clone())).into_iter()) {
-            let __x = (e1.clone(), e2.clone(), e3.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = l1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = l2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        let __thr_src2 = l3.clone();
+        let mut __thr_it2 = (&__thr_src2).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
+                (Some(e1), Some(e2), Some(e3)) => {
+                    let __x = (e1.clone(), e2.clone(), e3.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None, None) => break,
+                _ => panic!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2370,9 +2392,19 @@ pub fn threadMap<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static>(
     let mut outList: Arc<metamodelica::List<TO>> = metamodelica::nil();
     outList = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (e1, e2) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()) {
-            let __x = inMapFunc(e1.clone(), e2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = inMapFunc(e1.clone(), e2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2411,9 +2443,19 @@ pub fn threadMapList<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'stat
     let mut outList: Arc<metamodelica::List<Arc<metamodelica::List<TO>>>> = metamodelica::nil();
     outList = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (lst1, lst2) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()) {
-            let __x = threadMap(lst1.clone(), lst2.clone(), inMapFunc.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(lst1), Some(lst2)) => {
+                    let __x = threadMap(lst1.clone(), lst2.clone(), inMapFunc.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2452,9 +2494,19 @@ pub fn threadMap1<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'stat
     let mut outList: Arc<metamodelica::List<TO>> = metamodelica::nil();
     outList = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (e1, e2) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()) {
-            let __x = inMapFunc(e1.clone(), e2.clone(), inArg1.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = inMapFunc(e1.clone(), e2.clone(), inArg1.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2484,9 +2536,19 @@ pub fn threadMap2<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'stat
     let mut outList: Arc<metamodelica::List<TO>> = metamodelica::nil();
     outList = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for (e1, e2) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()) {
-            let __x = inMapFunc(e1.clone(), e2.clone(), inArg1.clone(), inArg2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = inMapFunc(e1.clone(), e2.clone(), inArg1.clone(), inArg2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2499,9 +2561,21 @@ pub fn thread3Map<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static,
     let mut outList: Arc<metamodelica::List<TO>> = metamodelica::nil();
     outList = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
-        for ((e1, e2), e3) in (&(inList1.clone())).into_iter().zip((&(inList2.clone())).into_iter()).zip((&(inList3.clone())).into_iter()) {
-            let __x = inFunc(e1.clone(), e2.clone(), e3.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inList1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inList2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        let __thr_src2 = inList3.clone();
+        let mut __thr_it2 = (&__thr_src2).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
+                (Some(e1), Some(e2), Some(e3)) => {
+                    let __x = inFunc(e1.clone(), e2.clone(), e3.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

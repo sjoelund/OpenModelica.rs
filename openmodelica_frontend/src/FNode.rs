@@ -1734,9 +1734,19 @@ pub fn scopePathEq(mut scope1: Scope, mut scope2: Scope) -> Result<bool> {
     let mut eq: bool = false;
     eq = ({
         let mut __acc: Option<bool> = None;
-        for (r1, r2) in (&(scope1.clone())).into_iter().zip((&(scope2.clone())).into_iter()) {
-            let __x = refName(r1.clone())? == refName(r2.clone())?;
-            __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
+        let __thr_src0 = scope1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = scope2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(r1), Some(r2)) => {
+                    let __x = refName(r1.clone())? == refName(r2.clone())?;
+                    __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.unwrap_or(true)
     });

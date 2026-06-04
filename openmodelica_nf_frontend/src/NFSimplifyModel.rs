@@ -448,9 +448,19 @@ pub fn removeEmptyTupleElements(mut exp: Arc<Expression::NFExpression>) -> Resul
         Deref @ Expression::TUPLE { ty: Deref @ Type::TUPLE { types: tyl, .. }, .. } => {
             assign_variant_field!(exp => Expression::NFExpression::TUPLE; elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for (e, t) in (&(var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone())).into_iter().zip((&(tyl.clone())).into_iter()) {
-            let __x = if (Type::isEmptyArray(t.clone())?) {Arc::new(Expression::NFExpression::CREF { ty: t.clone(), cref: Arc::new(crate::NFComponentRef::WILD) })} else {e.clone()};
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = tyl.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e), Some(t)) => {
+                    let __x = if (Type::isEmptyArray(t.clone())?) {Arc::new(Expression::NFExpression::CREF { ty: t.clone(), cref: Arc::new(crate::NFComponentRef::WILD) })} else {e.clone()};
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }));

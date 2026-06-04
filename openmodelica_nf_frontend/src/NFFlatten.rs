@@ -1773,9 +1773,19 @@ fn vectorizeBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Prefix
         } else {
             iters = ({
         let mut __acc: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-        for (s, d) in (&(subs.clone())).into_iter().zip((&(dims.clone())).into_iter()) {
-            let __x = (Subscript::toIterator(s.clone())?, Dimension::toRange(d.clone())?);
-            __acc = cons(__x, __acc);
+        let __thr_src0 = subs.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = dims.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(s), Some(d)) => {
+                    let __x = (Subscript::toIterator(s.clone())?, Dimension::toRange(d.clone())?);
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc
     });

@@ -235,9 +235,19 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         Some(names) => {
             ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for (t, n) in (&(tys.clone())).into_iter().zip((&(names.clone())).into_iter()) {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*unparseType(t.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
-            __acc = cons(__x, __acc);
+        let __thr_src0 = tys.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = names.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(t), Some(n)) => {
+                    let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*unparseType(t.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     })

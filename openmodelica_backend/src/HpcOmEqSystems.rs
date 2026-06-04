@@ -2120,9 +2120,24 @@ fn dumpEqSys(mut matrix: EqSys) -> Result<()> {
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Matrix(")); __mm_s.push_str(&*intString(dim.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
     sLst = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for ((Arow, x), b) in (matrixA.clone()).borrow().iter().cloned().zip((vectorX.clone()).borrow().iter().cloned()).zip((vectorB.clone()).borrow().iter().cloned()) {
-            let __x = EqSysRowString(Arow.clone(), x.clone(), b.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = matrixA.clone();
+        let __thr_borrow0 = __thr_src0.borrow();
+        let mut __thr_it0 = __thr_borrow0.iter().cloned();
+        let __thr_src1 = vectorX.clone();
+        let __thr_borrow1 = __thr_src1.borrow();
+        let mut __thr_it1 = __thr_borrow1.iter().cloned();
+        let __thr_src2 = vectorB.clone();
+        let __thr_borrow2 = __thr_src2.borrow();
+        let mut __thr_it2 = __thr_borrow2.iter().cloned();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
+                (Some(Arow), Some(x), Some(b)) => {
+                    let __x = EqSysRowString(Arow.clone(), x.clone(), b.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

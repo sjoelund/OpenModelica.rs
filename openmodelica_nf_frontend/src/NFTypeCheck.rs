@@ -1529,9 +1529,19 @@ pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NF
     }) });
         expression = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: Expression::variability(expression.clone())?, purity: Expression::purity(expression.clone())?, exp: expression.clone(), iters: ({
         let mut __acc: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-        for (i, r) in (&(iters.clone())).into_iter().zip((&(ranges.clone())).into_iter()) {
-            let __x = (i.clone(), r.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = iters.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = ranges.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(i), Some(r)) => {
+                    let __x = (i.clone(), r.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }) }) });

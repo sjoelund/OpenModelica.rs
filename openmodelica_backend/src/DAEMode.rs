@@ -411,9 +411,19 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     crlst = ComponentReference::expandCref(cref.clone(), true)?;
                     newAuxVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-        for (cr, v) in (&(crlst.clone())).into_iter().zip((&(newAuxVars.clone())).into_iter()) {
-                    let __x = BackendVariable::copyVarNewName(ComponentReference::crefPrefixAux(cr.clone()), v.clone());
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = crlst.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = newAuxVars.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(cr), Some(v)) => {
+                            let __x = BackendVariable::copyVarNewName(ComponentReference::crefPrefixAux(cr.clone()), v.clone());
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });
@@ -509,9 +519,19 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     cref = Expression::expCref(exp.clone())?;
                     newAuxVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-        for (cr, v) in (&(varCrefLst.clone())).into_iter().zip((&(vars.clone())).into_iter()) {
-                    let __x = BackendVariable::copyVarNewName(ComponentReference::crefPrefixAux(cr.clone()), v.clone());
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = varCrefLst.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = vars.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(cr), Some(v)) => {
+                            let __x = BackendVariable::copyVarNewName(ComponentReference::crefPrefixAux(cr.clone()), v.clone());
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });

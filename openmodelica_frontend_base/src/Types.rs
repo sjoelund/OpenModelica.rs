@@ -8928,9 +8928,19 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
                 if (dims1.clone().len() as i32) == (dims2.clone().len() as i32) {
                     dims1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-        for (dim1, dim2) in (&(dims1.clone())).into_iter().zip((&(dims2.clone())).into_iter()) {
-            let __x = if (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) {dim1.clone()} else {Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)};
-            __acc = cons(__x, __acc);
+        let __thr_src0 = dims1.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = dims2.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(dim1), Some(dim2)) => {
+                    let __x = if (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) {dim1.clone()} else {Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)};
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

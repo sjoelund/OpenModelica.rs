@@ -1735,9 +1735,19 @@ fn resolveDimensionsSubscripts(mut sizes: Arc<metamodelica::List<i32>>, mut subs
     });
     values = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-        for (exp, size) in (&(replaced.clone())).into_iter().zip((&(sizes.clone())).into_iter()) {
-            let __x = resolveDimensionsSubscript(exp.clone(), size.clone(), resize.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = replaced.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = sizes.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(exp), Some(size)) => {
+                    let __x = resolveDimensionsSubscript(exp.clone(), size.clone(), resize.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

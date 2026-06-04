@@ -761,9 +761,19 @@ pub mod Iterator {
         (names, ranges, _) = getFrames(iter.clone())?;
         subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        for (name, range) in (&(names.clone())).into_iter().zip((&(ranges.clone())).into_iter()) {
-            let __x = normalizedSubscript(name.clone(), range.clone(), iter_map.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = names.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = ranges.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(name), Some(range)) => {
+                    let __x = normalizedSubscript(name.clone(), range.clone(), iter_map.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -1467,9 +1477,19 @@ pub mod Equation {
         (Deref @ IF_EQUATION { .. }, Deref @ IF_EQUATION { .. }) => IfEquationBody::isEqual(var_field!((*eqn1).body, Equation::IF_EQUATION).clone(), var_field!((*eqn2).body, Equation::IF_EQUATION).clone())?,
         (Deref @ FOR_EQUATION { .. }, Deref @ FOR_EQUATION { .. }) => Iterator::isEqual(var_field!((*eqn1).iter, Equation::FOR_EQUATION).clone(), var_field!((*eqn2).iter, Equation::FOR_EQUATION).clone())? && List::all(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
-        for (b1, b2) in (&(var_field!((*eqn1).body, Equation::FOR_EQUATION).clone())).into_iter().zip((&(var_field!((*eqn2).body, Equation::FOR_EQUATION).clone())).into_iter()) {
-            let __x = isEqual(b1.clone(), b2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*eqn1).body, Equation::FOR_EQUATION).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!((*eqn2).body, Equation::FOR_EQUATION).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(b1), Some(b2)) => {
+                    let __x = isEqual(b1.clone(), b2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }), std::sync::Arc::new(fnptr!(Util::id, _)))?,
@@ -3404,9 +3424,19 @@ pub mod IfEquationBody {
         let mut b: bool = false;
         b = List::all(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
-        for (b1, b2) in (&(body1.then_eqns.clone())).into_iter().zip((&(body2.then_eqns.clone())).into_iter()) {
-            let __x = Equation::isEqualPtr(b1.clone(), b2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = body1.then_eqns.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = body2.then_eqns.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(b1), Some(b2)) => {
+                    let __x = Equation::isEqualPtr(b1.clone(), b2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }), std::sync::Arc::new(fnptr!(Util::id, _)))? && Util::optionEqual(body1.else_if.clone(), body2.else_if.clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>, Arc<IfEquationBody>) -> Result<bool> + 'static>))?;
@@ -3754,9 +3784,19 @@ pub mod WhenEquationBody {
         let mut b: bool = false;
         b = Expression::isEqual(body1.condition.clone(), body2.condition.clone())? && List::all(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
-        for (b1, b2) in (&(body1.when_stmts.clone())).into_iter().zip((&(body2.when_stmts.clone())).into_iter()) {
-            let __x = WhenStatement::isEqual(b1.clone(), b2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = body1.when_stmts.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = body2.when_stmts.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(b1), Some(b2)) => {
+                    let __x = WhenStatement::isEqual(b1.clone(), b2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }), std::sync::Arc::new(fnptr!(Util::id, _)))? && Util::optionEqual(body1.else_when.clone(), body2.else_when.clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>, Arc<WhenEquationBody>) -> Result<bool> + 'static>))?;

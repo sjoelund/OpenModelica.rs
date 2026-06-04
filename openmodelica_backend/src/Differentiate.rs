@@ -2785,9 +2785,18 @@ fn createPartialArgumentsTuple(mut inTypesLst: Arc<metamodelica::List<Arc<DAE::T
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExpLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for (tp, number) in (&(inTypesLst.clone())).into_iter().zip((1..=(inTypesLst.clone().len() as i32)).into_iter()) {
-            let __x = createPartialArguments(tp.clone(), inArgs.clone(), inDiffedArgs.clone(), inOrginalExpl.clone(), Arc::new(DAE::Exp::TSUB { exp: inCall.clone(), ix: number.clone(), ty: tp.clone() }))?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inTypesLst.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let mut __thr_it1 = (1..=(inTypesLst.clone().len() as i32)).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(tp), Some(number)) => {
+                    let __x = createPartialArguments(tp.clone(), inArgs.clone(), inDiffedArgs.clone(), inOrginalExpl.clone(), Arc::new(DAE::Exp::TSUB { exp: inCall.clone(), ix: number.clone(), ty: tp.clone() }))?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2798,9 +2807,19 @@ fn createPartialArgumentsRecord(mut inTypesLst: Arc<metamodelica::List<Arc<DAE::
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExpLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-        for (tp, name) in (&(inTypesLst.clone())).into_iter().zip((&(inVarNames.clone())).into_iter()) {
-            let __x = createPartialArguments(tp.clone(), inArgs.clone(), inDiffedArgs.clone(), inOrginalExpl.clone(), Arc::new(DAE::Exp::RSUB { exp: inCall.clone(), ix: -1, fieldName: (name.clone()).clone(), ty: tp.clone() }))?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inTypesLst.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inVarNames.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(tp), Some(name)) => {
+                    let __x = createPartialArguments(tp.clone(), inArgs.clone(), inDiffedArgs.clone(), inOrginalExpl.clone(), Arc::new(DAE::Exp::RSUB { exp: inCall.clone(), ix: -1, fieldName: (name.clone()).clone(), ty: tp.clone() }))?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

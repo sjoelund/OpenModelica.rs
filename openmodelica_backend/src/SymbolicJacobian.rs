@@ -1334,9 +1334,20 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
     });
                         sparsetuple = ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>> = metamodelica::nil();
-        for (cr, t) in (depCompRefs.clone()).borrow().iter().cloned().zip((&(translated.clone())).into_iter()) {
-                    let __x = (cr.clone(), t.clone());
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = depCompRefs.clone();
+        let __thr_borrow0 = __thr_src0.borrow();
+        let mut __thr_it0 = __thr_borrow0.iter().cloned();
+        let __thr_src1 = translated.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(cr), Some(t)) => {
+                            let __x = (cr.clone(), t.clone());
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });
@@ -1357,9 +1368,20 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
     });
                         sparsetupleT = ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>> = metamodelica::nil();
-        for (cr, t) in (inDepCompRefs.clone()).borrow().iter().cloned().zip((&(translated.clone())).into_iter()) {
-                    let __x = (cr.clone(), t.clone());
-                    __acc = cons(__x, __acc);
+        let __thr_src0 = inDepCompRefs.clone();
+        let __thr_borrow0 = __thr_src0.borrow();
+        let mut __thr_it0 = __thr_borrow0.iter().cloned();
+        let __thr_src1 = translated.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+                    match (__thr_it0.next(), __thr_it1.next()) {
+                        (Some(cr), Some(t)) => {
+                            let __x = (cr.clone(), t.clone());
+                            __acc = cons(__x, __acc);
+                        }
+                        (None, None) => break,
+                        _ => bail!("threaded for: ranges of unequal length"),
+                    }
         }
         __acc.reverse()
     });

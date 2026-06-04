@@ -3288,9 +3288,19 @@ fn setTypesForScalarCrefs(mut allCrefs: Arc<metamodelica::List<Arc<DAE::Componen
     let mut crefsOut: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     crefsOut = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-        for (cr, ty) in (&(allCrefs.clone())).into_iter().zip((&(types.clone())).into_iter()) {
-            let __x = ComponentReference::crefSetLastType(cr.clone(), ty.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = allCrefs.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = types.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(cr), Some(ty)) => {
+                    let __x = ComponentReference::crefSetLastType(cr.clone(), ty.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -3708,9 +3718,19 @@ fn makeAssignmentMap(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhs: A
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     stmts = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-        for (e1, e2) in (&(lhs.clone())).into_iter().zip((&(rhs.clone())).into_iter()) {
-            let __x = makeAssignment(e1.clone(), e2.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = lhs.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = rhs.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(e1), Some(e2)) => {
+                    let __x = makeAssignment(e1.clone(), e2.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -3846,9 +3866,19 @@ fn convertTupleEquations(mut eqIn: Arc<BackendDAE::Equation>, mut addEqsIn: Arc<
             rhs = List::mapFlat(rhs.clone(), (std::sync::Arc::new(Expression::getComplexContents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>))?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({
         let mut __acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-        for (lh, rh) in (&(lhs.clone())).into_iter().zip((&(rhs.clone())).into_iter()) {
-            let __x = makeBackendEquation(lh.clone(), rh.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = lhs.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = rhs.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(lh), Some(rh)) => {
+                    let __x = makeBackendEquation(lh.clone(), rh.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     })) {

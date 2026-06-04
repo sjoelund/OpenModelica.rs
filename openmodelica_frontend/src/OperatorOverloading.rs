@@ -903,17 +903,37 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
     let addTypes: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = listAppend(addScalars.clone(), listAppend(addIntArrays.clone(), listAppend(addRealArrays.clone(), addStringArrays.clone())));
     let addIntArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, rhs) in (&(intarrtypes().clone())).into_iter().zip((&(inttypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::ADD_ARRAY_SCALAR { ty: int_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = intarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inttypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(rhs)) => {
+                    let __x = (DAE::Operator::ADD_ARRAY_SCALAR { ty: int_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
     let addRealArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, rhs) in (&(realarrtypes().clone())).into_iter().zip((&(realtypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::ADD_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = realarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = realtypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(rhs)) => {
+                    let __x = (DAE::Operator::ADD_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -939,17 +959,37 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
     let subTypes: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = listAppend(subScalars.clone(), listAppend(subIntArrays.clone(), subRealArrays.clone()));
     let subIntArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, lhs) in (&(intarrtypes().clone())).into_iter().zip((&(inttypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::SUB_SCALAR_ARRAY { ty: int_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = intarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inttypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(lhs)) => {
+                    let __x = (DAE::Operator::SUB_SCALAR_ARRAY { ty: int_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
     let subRealArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, lhs) in (&(realarrtypes().clone())).into_iter().zip((&(realtypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::SUB_SCALAR_ARRAY { ty: real_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = realarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = realtypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(lhs)) => {
+                    let __x = (DAE::Operator::SUB_SCALAR_ARRAY { ty: real_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -959,17 +999,37 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
     let mulMatrixProduct: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = list![(int_mul_mp.clone(), list![int_vector.clone(), int_matrix.clone()], int_vector.clone()), (int_mul_mp.clone(), list![int_matrix.clone(), int_vector.clone()], int_vector.clone()), (int_mul_mp.clone(), list![int_matrix.clone(), int_matrix.clone()], int_matrix.clone()), (real_mul_mp.clone(), list![real_vector.clone(), real_matrix.clone()], real_vector.clone()), (real_mul_mp.clone(), list![real_matrix.clone(), real_vector.clone()], real_vector.clone()), (real_mul_mp.clone(), list![real_matrix.clone(), real_matrix.clone()], real_matrix.clone())];
     let mulIntArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, rhs) in (&(intarrtypes().clone())).into_iter().zip((&(inttypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::MUL_ARRAY_SCALAR { ty: int_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = intarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inttypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(rhs)) => {
+                    let __x = (DAE::Operator::MUL_ARRAY_SCALAR { ty: int_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
     let mulRealArrayScalars: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, rhs) in (&(realarrtypes().clone())).into_iter().zip((&(realtypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::MUL_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = realarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = realtypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(rhs)) => {
+                    let __x = (DAE::Operator::MUL_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -993,17 +1053,37 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
     let mulEwTypes: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = listAppend(mulScalars.clone(), listAppend(mulIntArrayScalars.clone(), listAppend(mulRealArrayScalars.clone(), listAppend(mulIntArray.clone(), mulRealArray.clone()))));
     let divTypes: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::cons((real_div.clone(), list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_REAL_DEFAULT().clone()), ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, rhs) in (&(realarrtypes().clone())).into_iter().zip((&(realtypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::DIV_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = realarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = realtypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(rhs)) => {
+                    let __x = (DAE::Operator::DIV_ARRAY_SCALAR { ty: real_vector.clone() }, list![at.clone(), rhs.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }));
     let divRealScalarArray: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for (at, lhs) in (&(realarrtypes().clone())).into_iter().zip((&(realtypes().clone())).into_iter()) {
-            let __x = (DAE::Operator::DIV_SCALAR_ARRAY { ty: real_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = realarrtypes().clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = realtypes().clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(at), Some(lhs)) => {
+                    let __x = (DAE::Operator::DIV_SCALAR_ARRAY { ty: real_vector.clone() }, list![lhs.clone(), at.clone()], at.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -1270,9 +1350,21 @@ fn operatorReturn(mut inOperator: DAE::Operator, mut inLhsTypes: Arc<metamodelic
     let mut outOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
     outOperators = ({
         let mut __acc: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-        for ((l, r), re) in (&(inLhsTypes.clone())).into_iter().zip((&(inRhsTypes.clone())).into_iter()).zip((&(inReturnTypes.clone())).into_iter()) {
-            let __x = (inOperator.clone(), list![l.clone(), r.clone()], re.clone());
-            __acc = cons(__x, __acc);
+        let __thr_src0 = inLhsTypes.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = inRhsTypes.clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        let __thr_src2 = inReturnTypes.clone();
+        let mut __thr_it2 = (&__thr_src2).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next(), __thr_it2.next()) {
+                (Some(l), Some(r), Some(re)) => {
+                    let __x = (inOperator.clone(), list![l.clone(), r.clone()], re.clone());
+                    __acc = cons(__x, __acc);
+                }
+                (None, None, None) => break,
+                _ => panic!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });

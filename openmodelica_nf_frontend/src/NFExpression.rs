@@ -2299,9 +2299,18 @@ pub fn makeEnumLiterals(mut enumType: Arc<Type::NFType>) -> Result<Arc<metamodel
     lits = __pa0.clone();
     literals = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-        for (l, i) in (&(lits.clone())).into_iter().zip((1..=(lits.clone().len() as i32)).into_iter()) {
-            let __x = Arc::new(NFExpression::ENUM_LITERAL { ty: enumType.clone(), name: (l.clone()).clone(), index: i.clone() });
-            __acc = cons(__x, __acc);
+        let __thr_src0 = lits.clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let mut __thr_it1 = (1..=(lits.clone().len() as i32)).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(l), Some(i)) => {
+                    let __x = Arc::new(NFExpression::ENUM_LITERAL { ty: enumType.clone(), name: (l.clone()).clone(), index: i.clone() });
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     });
@@ -2409,9 +2418,19 @@ pub fn toString(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
         Deref @ EMPTY { .. } => literal!("#EMPTY#"),
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function ")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*exp).r#fn, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for (a, n) in (&(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter().zip((&(var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter()) {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*toString(a.clone())?); ArcStr::from(__mm_s) };
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(a), Some(n)) => {
+                    let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*toString(a.clone())?); ArcStr::from(__mm_s) };
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -2494,9 +2513,19 @@ pub fn toFlatString(mut exp: Arc<NFExpression>, mut format: BaseModelica::Output
         Deref @ EMPTY { .. } => literal!("#EMPTY#"),
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function ")); __mm_s.push_str(&*ComponentRef::toFlatString(var_field!((*exp).r#fn, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), format.clone())?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for (a, n) in (&(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter().zip((&(var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter()) {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*toFlatString(a.clone(), format.clone())?); ArcStr::from(__mm_s) };
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(a), Some(n)) => {
+                    let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*toFlatString(a.clone(), format.clone())?); ArcStr::from(__mm_s) };
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     }), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
@@ -6971,9 +7000,19 @@ pub fn toJSON(mut exp: Arc<NFExpression>) -> Result<Arc<JSON::JSON>> {
             json = JSON::addPair((literal!("name")).clone(), JSON::makeString((ComponentRef::toString(var_field!((*exp).r#fn, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())?).clone()), json.clone())?;
             json = JSON::addPair((literal!("arguments")).clone(), JSON::makeList(({
         let mut __acc: Arc<metamodelica::List<Arc<JSON::JSON>>> = metamodelica::nil();
-        for (arg, name) in (&(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter().zip((&(var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone())).into_iter()) {
-            let __x = dump_arg((name.clone()).clone(), arg.clone())?;
-            __acc = cons(__x, __acc);
+        let __thr_src0 = var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it0 = (&__thr_src0).into_iter();
+        let __thr_src1 = var_field!((*exp).argNames, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone();
+        let mut __thr_it1 = (&__thr_src1).into_iter();
+        loop {
+            match (__thr_it0.next(), __thr_it1.next()) {
+                (Some(arg), Some(name)) => {
+                    let __x = dump_arg((name.clone()).clone(), arg.clone())?;
+                    __acc = cons(__x, __acc);
+                }
+                (None, None) => break,
+                _ => bail!("threaded for: ranges of unequal length"),
+            }
         }
         __acc.reverse()
     })), json.clone())?;

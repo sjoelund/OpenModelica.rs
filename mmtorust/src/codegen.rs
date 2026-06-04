@@ -8258,6 +8258,26 @@ fn collapse_variant_structs(ty: &Ty, top_level: &BTreeMap<String, NameNode>) -> 
     }
 }
 
+/// Emit a diverging MetaModelica-style failure (`fail()` semantics) usable in
+/// statement/arm position. Mirrors the `"fail"` builtin's emission: inside a
+/// try-block the failure must break the labeled block (so a surrounding
+/// matchcontinue can try its next case) rather than `return Err` out of the
+/// whole function; in a fallible function body `bail!` is the normal form; in
+/// contexts with no `Result` channel (const initializers, infallible
+/// functions, filter closures) the only honest option is a panic.
+fn emit_diverging_fail(msg: &str, is_const: bool, ctx: &GenCtx) -> String {
+    if is_const {
+        return format!("panic!(\"{msg}\")");
+    }
+    match &ctx.qmode {
+        QMode::TryBlock(label) => {
+            format!("break {label} Err::<_, _>(anyhow::anyhow!(\"{msg}\"))")
+        }
+        QMode::Function if ctx.current_fn_fallible => format!("bail!(\"{msg}\")"),
+        _ => format!("panic!(\"{msg}\")"),
+    }
+}
+
 fn emit_reduction<'a>(
     func: &str,
     body: &TypedExp,
@@ -8633,34 +8653,77 @@ fn emit_reduction<'a>(
     }
 
     match iter_kind {
-        ReductionIterKind::Thread => {
-            // Build a zipped iterator over all ranges and one for-loop that
-            // destructures the bindings as a (possibly nested) tuple.
-            let mut zip_expr = String::new();
-            for (i, it) in iterators.iter().enumerate() {
-                let range_s = emit_exp(&it.range, is_const, ctx, top_level);
-                let part = match it.range.ty() {
-                    Ty::List(_) => format!("(&({range_s})).into_iter()"),
-                    // Array<T> = Rc<RefCell<Vec<T>>>; iterate through .borrow().
-                    // Clone elements so the loop body owns its value, matching
-                    // the List branch and the open_for() helper used by
-                    // Combine iteration.
-                    Ty::Array(_) => format!("({range_s}).borrow().iter().cloned()"),
-                    _ => format!("({range_s}).into_iter()"),
-                };
-                if i == 0 {
-                    zip_expr = part;
-                } else {
-                    zip_expr = format!("{zip_expr}.zip({part})");
-                }
-            }
-            let pat = iter_pattern(iterators);
-            s.push_str(&format!("        for {pat} in {zip_expr} {{\n"));
-            for it in iterators {
-                s.push_str(&guard_check(it, is_const, ctx, top_level, "            "));
-            }
+        ReductionIterKind::Thread if iterators.len() == 1 => {
+            // A single threaded iterator is the same as a plain for-loop; no
+            // equal-length obligation to enforce.
+            let it = &iterators[0];
+            let range_s = emit_exp(&it.range, is_const, ctx, top_level);
+            let part = match it.range.ty() {
+                Ty::List(_) => format!("(&({range_s})).into_iter()"),
+                Ty::Array(_) => format!("({range_s}).borrow().iter().cloned()"),
+                _ => format!("({range_s}).into_iter()"),
+            };
+            s.push_str(&format!("        for {} in {part} {{\n", escape_ident(&it.name)));
+            s.push_str(&guard_check(it, is_const, ctx, top_level, "            "));
             s.push_str(&format!("            let __x = {body_s};\n"));
             s.push_str(&format!("            {update}\n"));
+            s.push_str("        }\n");
+        }
+        ReductionIterKind::Thread => {
+            // MetaModelica's `threaded for` requires all ranges to have the
+            // same length: the bootstrapped compiler advances every range each
+            // step and throws (MMC_THROW) when only some are exhausted — see
+            // e.g. `omc_List_threadMap` in boot/build/List.c. `Iterator::zip`
+            // would silently truncate to the shortest range instead, which
+            // changes program behavior (e.g. `Types.superType` must *fail* on
+            // tuples of different lengths rather than compare a prefix). So:
+            // hoist each range to a named iterator, advance them together, and
+            // dispatch on how many are exhausted, exactly like the C version.
+            //
+            // Lists are iterated by reference (the body clones what it needs,
+            // same as the rest of the codegen); arrays clone through the
+            // `.borrow()`, which must live in a named binding so the iterator
+            // does not borrow from a dropped temporary.
+            for (i, it) in iterators.iter().enumerate() {
+                let range_s = emit_exp(&it.range, is_const, ctx, top_level);
+                match it.range.ty() {
+                    Ty::List(_) => {
+                        s.push_str(&format!("        let __thr_src{i} = {range_s};\n"));
+                        s.push_str(&format!("        let mut __thr_it{i} = (&__thr_src{i}).into_iter();\n"));
+                    }
+                    Ty::Array(_) => {
+                        s.push_str(&format!("        let __thr_src{i} = {range_s};\n"));
+                        s.push_str(&format!("        let __thr_borrow{i} = __thr_src{i}.borrow();\n"));
+                        s.push_str(&format!("        let mut __thr_it{i} = __thr_borrow{i}.iter().cloned();\n"));
+                    }
+                    _ => {
+                        s.push_str(&format!("        let mut __thr_it{i} = ({range_s}).into_iter();\n"));
+                    }
+                }
+            }
+            let next_tuple: Vec<String> =
+                (0..iterators.len()).map(|i| format!("__thr_it{i}.next()")).collect();
+            let some_pat: Vec<String> = iterators.iter()
+                .map(|it| format!("Some({})", escape_ident(&it.name)))
+                .collect();
+            let none_pat: Vec<&str> = iterators.iter().map(|_| "None").collect();
+            s.push_str("        loop {\n");
+            s.push_str(&format!("            match ({}) {{\n", next_tuple.join(", ")));
+            s.push_str(&format!("                ({}) => {{\n", some_pat.join(", ")));
+            for it in iterators {
+                s.push_str(&guard_check(it, is_const, ctx, top_level, "                    "));
+            }
+            s.push_str(&format!("                    let __x = {body_s};\n"));
+            s.push_str(&format!("                    {update}\n"));
+            s.push_str("                }\n");
+            s.push_str(&format!("                ({}) => break,\n", none_pat.join(", ")));
+            // Some ranges exhausted before others: the iteration *fails*
+            // (matchcontinue-catchable), it does not truncate.
+            s.push_str(&format!(
+                "                _ => {},\n",
+                emit_diverging_fail("threaded for: ranges of unequal length", is_const, ctx)
+            ));
+            s.push_str("            }\n");
             s.push_str("        }\n");
         }
         ReductionIterKind::Combine => {
