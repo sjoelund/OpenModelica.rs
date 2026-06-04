@@ -725,7 +725,12 @@ fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
         let parts     = cut_err(composition)
             .context(StrContext::Label("class-extends body"))
             .parse_next(input)?;
-        let classParts = body_items_to_classparts(parts);
+        // Same annotation handling as the normal-class path below: a
+        // class-level `annotation(...)` inside the body must be split out
+        // before building the class parts, and merged with any trailing
+        // annotation after `end Name`.
+        let (non_ann_parts, body_ann) = split_annotations(parts);
+        let classParts = body_items_to_classparts(non_ann_parts);
         cut_err(t(TK::End))
             .context(StrContext::Label("'end' closing class-extends"))
             .parse_next(input)?;
@@ -733,14 +738,14 @@ fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
         let ann = match opt(annotation).parse_next(input)? {
             Some(ann) => {
                 t(TK::Semi).parse_next(input)?;
-                List::new(ann)
+                body_ann.append(&List::new(Arc::new(ann)))
             },
-            None => Arc::new(List::Nil)
+            None => body_ann,
         };
         Ok(ClassSpecifier::Extends {
             name: name.clone(),
             body: Arc::new(ClassDef::CLASS_EXTENDS {
-                baseClassName: name, modifications, comment, parts: classParts, ann: to_rc_list(ann),
+                baseClassName: name, modifications, comment, parts: classParts, ann,
             }),
         })
     } else {
