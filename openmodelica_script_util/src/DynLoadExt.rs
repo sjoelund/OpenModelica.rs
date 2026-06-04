@@ -206,11 +206,29 @@ pub fn executeFunction(handle: i32, values: Arc<List<Arc<Values::Value>>>, _debu
     let mut out = TypeDesc::none();
     out.retval = 1; // request owned (malloc'd) array/string results we can free
 
+    // The generated function prints side effects through the C runtime's
+    // `stdout`, a different buffer from the port's own output. Flush ours first
+    // so anything already produced precedes the function's output.
+    {
+        use std::io::Write;
+        let _ = std::io::stdout().flush();
+    }
+
     // SAFETY: `addr` is the resolved `in_<name>` entry; its ABI is fixed by the
     // code generator. `args` outlives the call; `in_*` reads at most one element
     // per declared input.
     let func: InFn = unsafe { std::mem::transmute(addr) };
     let rc = func(thread_data, args.as_mut_ptr(), &mut out);
+
+    // Flush the C runtime's streams: on failure the generated `in_*` wrapper
+    // returns through `MMC_CATCH_TOP` before its own trailing `fflush`, so a
+    // function's `print` side effects would otherwise surface out of order
+    // (after the caller has already printed this call's result).
+    if let Some(fflush_addr) = dynload::runtime_symbol("fflush") {
+        let fflush: extern "C" fn(*mut c_void) -> i32 = unsafe { std::mem::transmute(fflush_addr) };
+        fflush(std::ptr::null_mut());
+    }
+
     if rc != 0 {
         return Ok(Arc::new(Values::Value::META_FAIL));
     }
