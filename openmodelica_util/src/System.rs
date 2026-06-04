@@ -1337,15 +1337,27 @@ pub fn unescapedStringLength(unescapedString: ArcStr) -> i32 {
 }
 
 pub fn unquoteIdentifier(r#str: ArcStr) -> ArcStr {
-    // Modelica's `'...'` quoted identifiers; the C runtime strips the
-    // surrounding quotes and unescapes the content. If the input is not
-    // a quoted identifier, it's returned verbatim.
+    // `SystemImpl__unquoteIdentifier`: identifiers that are not valid C
+    // identifiers — Modelica's `'...'` quoted form, or names containing `$`
+    // (compiler-generated temporaries like `$tmpVar1`; the generated code is
+    // compiled with `-fno-dollars-in-identifiers`) — are mapped to the
+    // canonical, reversible `_omcQ` form: alphanumerics kept, every other
+    // byte encoded as `_` plus two uppercase hex digits (e.g. `$` → `_24`).
     let s = r#str.as_str();
-    if s.len() >= 2 && s.starts_with('\'') && s.ends_with('\'') {
-        unescapedString(ArcStr::from(&s[1..s.len() - 1]))
-    } else {
-        r#str
+    if !(s.starts_with('\'') || s.contains('$')) {
+        return r#str;
     }
+    let mut out = String::with_capacity(s.len() + 8);
+    out.push_str("_omcQ");
+    for b in s.bytes() {
+        if b.is_ascii_alphanumeric() {
+            out.push(b as char);
+        } else {
+            out.push('_');
+            out.push_str(&format!("{b:02X}"));
+        }
+    }
+    ArcStr::from(out)
 }
 
 // ───────────────────────────────── numeric limits ─────────────────────────────
