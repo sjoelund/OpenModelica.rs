@@ -28,6 +28,10 @@ match_deref = "0.1.2"
 ordered-float = "5.3.0"
 num-traits = "0.2.19"
 libc = "0.2"
+# Links the system libcurl (the same library om_curl.c uses). On Windows the
+# bundled `static-curl` feature will be needed; add it when the Windows build
+# is set up (see Curl.rs).
+curl = "0.4"
 mmtorust = {path = "mmtorust"}
 metamodelica = {path = "metamodelica"}
 openmodelica_ast = {path = "openmodelica_ast"}

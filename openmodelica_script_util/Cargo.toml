@@ -15,3 +15,5 @@ tailcall.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
+curl.workspace = true
+zip = { version = "8.6.0", default-features = false, features = ["deflate"] }

@@ -1,10 +1,11 @@
 // Manually written file.
 //
 // Rust port of `OMCompiler/Compiler/Util/Curl.mo`, whose single function
-// is an `external "C"` shim into `OMCompiler/Compiler/runtime/om_curl.c`
-// (libcurl's multi interface). Instead of linking libcurl we spawn the
-// `curl` command-line tool — it is universally available wherever omc
-// runs, handles TLS/redirects, and keeps this crate dependency-free.
+// is an `external "C"` shim into `OMCompiler/Compiler/runtime/om_curl.c`.
+// Like the C runtime we use libcurl (via the `curl` crate, which links the
+// system library); parallelism comes from a small worker pool instead of
+// the curl multi interface — same observable behaviour, much simpler
+// retry/cleanup logic.
 //
 // Semantics mirrored from `om_curl_multi_download`:
 //
@@ -12,35 +13,56 @@
 //     fetched into `<filename>.tmp<N>` (N = global transfer counter) and
 //     renamed over the target on success.
 //   * On failure the temp file is removed; if more mirror URLs remain the
-//     item is re-queued (at the front) with the tail of the URL list,
-//     otherwise the download counts as failed and the result is `false`.
+//     item is retried with the tail of the URL list, otherwise the
+//     download counts as failed and the result is `false`.
 //   * At most `maxParallel` transfers run concurrently.
 //   * Diagnostics use the same message templates and token order as the C
-//     implementation (token text comes from curl's stderr instead of
-//     `curl_easy_strerror`).
+//     implementation (`c_add_message` reverses its token array, so the
+//     first `%s` gets the *last* C token; the vectors below are already in
+//     substitution order).
+//
+// The error buffer (`ErrorExt`) is thread-local, so workers only *collect*
+// diagnostics; they are pushed into the buffer from the calling thread
+// after all transfers finish.
 
 #![allow(non_snake_case)]
 
 use std::collections::VecDeque;
-use std::process::{Child, Command, Stdio};
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::Result;
 use arcstr::ArcStr;
+use curl::easy::Easy;
 use metamodelica::List;
 use openmodelica_util::Error;
 use openmodelica_util::ErrorTypes;
 use openmodelica_util::Gettext;
 
-/// One in-flight `curl` process and the state needed to retry/cleanup.
-struct Transfer {
-    child: Child,
-    url: ArcStr,
-    /// Remaining mirror URLs to try if this one fails.
-    next_try: Arc<List<ArcStr>>,
+/// One pending download: the remaining mirror URLs and the target file.
+struct WorkItem {
+    urls: VecDeque<ArcStr>,
     filename: ArcStr,
-    tmp_filename: String,
+}
+
+/// A diagnostic recorded by a worker, emitted later on the calling thread.
+type PendingMessage = (&'static str, Vec<ArcStr>);
+
+struct Shared {
+    queue: Mutex<VecDeque<WorkItem>>,
+    messages: Mutex<Vec<PendingMessage>>,
+    /// Overall success flag, cleared when any item runs out of mirrors.
+    ok: AtomicBool,
+    /// Global transfer counter used for unique `.tmp<N>` suffixes.
+    transfer_number: AtomicI32,
+}
+
+impl Shared {
+    fn add_message(&self, template: &'static str, tokens: Vec<ArcStr>) {
+        self.messages.lock().unwrap().push((template, tokens));
+    }
 }
 
 /// `c_add_message(NULL, -1, ErrorType_runtime, ErrorLevel_error, ...)`
@@ -61,180 +83,140 @@ fn add_error(template: &str, tokens: Vec<ArcStr>) -> Result<()> {
     )
 }
 
-/// Start the next transfer from the queue, mirroring `addTransfer` in
-/// `om_curl.c`. Returns `None` (and possibly flips `result` to false)
-/// when the item could not be started.
-fn start_transfer(
-    queue: &mut VecDeque<(Arc<List<ArcStr>>, ArcStr)>,
-    transfer_number: &mut i32,
-    result: &mut bool,
-) -> Result<Option<Transfer>> {
-    let Some((urls, filename)) = queue.pop_front() else {
-        return Ok(None);
+/// Download `url` into `tmp_filename` with the same transfer options as
+/// `addTransfer` in `om_curl.c`. Returns the curl error text on failure.
+fn download_one(easy: &mut Easy, url: &str, tmp_filename: &str) -> std::result::Result<(), String> {
+    let mut out_file = match std::fs::File::create(tmp_filename) {
+        Ok(f) => f,
+        // Reported by the caller as "Failed to open file for writing".
+        Err(_) => return Err(String::new()),
     };
-    let List::Cons { head: url, tail: next_try } = &*urls else {
-        // A work item with no URLs at all; the C version would read past
-        // the list end. Report it as a failed download instead.
-        add_error("Curl error for URL %s: %s", vec![
-            ArcStr::from(format!("(no URL given for {filename})")),
-            ArcStr::from("empty mirror list"),
-        ])?;
-        *result = false;
-        return Ok(None);
+    easy.url(url).map_err(|e| e.description().to_string())?;
+    easy.follow_location(true).unwrap();          // CURLOPT_FOLLOWLOCATION
+    easy.connect_timeout(Duration::from_secs(8)).unwrap(); // CURLOPT_CONNECTTIMEOUT
+    easy.fail_on_error(true).unwrap();            // CURLOPT_FAILONERROR
+    easy.useragent("OpenModelica/1.0").unwrap();  // CURLOPT_USERAGENT
+
+    let mut write_error = false;
+    let result = {
+        let mut transfer = easy.transfer();
+        transfer
+            .write_function(|data| {
+                use std::io::Write;
+                match out_file.write_all(data) {
+                    Ok(()) => Ok(data.len()),
+                    // A short write aborts the transfer with CURLE_WRITE_ERROR.
+                    Err(_) => {
+                        write_error = true;
+                        Ok(0)
+                    }
+                }
+            })
+            .unwrap();
+        transfer.perform()
     };
-    let n = *transfer_number;
-    *transfer_number += 1;
-    let tmp_filename = format!("{filename}.tmp{n}");
-
-    // `om_curl.c` opens the output with fopen before handing it to curl and
-    // reports failure as "Failed to open file for writing"; creating the
-    // file up front gives us the same early diagnostic (e.g. for a missing
-    // directory) with the same message.
-    if let Err(e) = std::fs::File::create(&tmp_filename) {
-        let _ = e; // the C message only includes the file name
-        add_error("Failed to open file for writing: %s", vec![ArcStr::from(tmp_filename)])?;
-        *result = false;
-        return Ok(None);
-    }
-
-    let child = Command::new("curl")
-        .arg("--location")            // CURLOPT_FOLLOWLOCATION
-        .arg("--connect-timeout").arg("8") // CURLOPT_CONNECTTIMEOUT
-        .arg("--fail")                // CURLOPT_FAILONERROR
-        .arg("--silent").arg("--show-error") // no progress bar, errors on stderr
-        .arg("--user-agent").arg("OpenModelica/1.0") // CURLOPT_USERAGENT
-        .arg("--output").arg(&tmp_filename)
-        .arg("--").arg(url.as_str())
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::piped())
-        .spawn();
-
-    match child {
-        Ok(child) => Ok(Some(Transfer {
-            child,
-            url: url.clone(),
-            next_try: next_try.clone(),
-            filename,
-            tmp_filename,
-        })),
-        Err(e) => {
-            // curl itself is missing/not executable: every retry would fail
-            // the same way, so report and drop the item.
-            let _ = std::fs::remove_file(&tmp_filename);
-            add_error("Curl error for URL %s: %s", vec![
-                url.clone(),
-                ArcStr::from(format!("failed to run curl: {e}")),
-            ])?;
-            *result = false;
-            Ok(None)
-        }
+    match result {
+        Ok(()) => Ok(()),
+        Err(e) if write_error => Err(format!("{} (local write failed)", e.description())),
+        Err(e) => Err(e.description().to_string()),
     }
 }
 
-/// Handle one finished transfer, mirroring the `CURLMSG_DONE` branch of
-/// `om_curl_multi_download`.
-fn finish_transfer(
-    t: Transfer,
-    queue: &mut VecDeque<(Arc<List<ArcStr>>, ArcStr)>,
-    result: &mut bool,
-) -> Result<()> {
-    let mut child = t.child;
-    let output = {
-        // try_wait() already returned Some, so this does not block.
-        let status = child.wait()?;
-        let mut stderr = String::new();
-        if let Some(mut pipe) = child.stderr.take() {
-            use std::io::Read;
-            let _ = pipe.read_to_string(&mut stderr);
+/// Worker loop: take items off the shared queue and try their mirrors in
+/// order, mirroring the retry behaviour of `om_curl_multi_download`.
+fn worker(shared: &Shared) {
+    let mut easy = Easy::new();
+    loop {
+        let Some(mut item) = shared.queue.lock().unwrap().pop_front() else {
+            return;
+        };
+        while let Some(url) = item.urls.pop_front() {
+            let n = shared.transfer_number.fetch_add(1, Ordering::Relaxed);
+            let tmp_filename = format!("{}.tmp{n}", item.filename);
+            match download_one(&mut easy, &url, &tmp_filename) {
+                Ok(()) => {
+                    if let Err(e) = std::fs::rename(&tmp_filename, item.filename.as_str()) {
+                        shared.add_message(
+                            "Failed to rename file after downloading with curl %s %s: %s",
+                            vec![
+                                ArcStr::from(tmp_filename),
+                                item.filename.clone(),
+                                ArcStr::from(e.to_string()),
+                            ],
+                        );
+                    }
+                    break;
+                }
+                Err(err_text) if err_text.is_empty() => {
+                    // Could not even create the temp file (e.g. missing
+                    // directory); retrying other mirrors cannot help.
+                    shared.add_message(
+                        "Failed to open file for writing: %s",
+                        vec![ArcStr::from(tmp_filename)],
+                    );
+                    shared.ok.store(false, Ordering::Relaxed);
+                    break;
+                }
+                Err(err_text) => {
+                    let _ = std::fs::remove_file(&tmp_filename);
+                    let err_text = ArcStr::from(err_text);
+                    if item.urls.is_empty() {
+                        shared.add_message(
+                            "Curl error for URL %s: %s",
+                            vec![url.clone(), err_text],
+                        );
+                        shared.ok.store(false, Ordering::Relaxed);
+                    } else {
+                        shared.add_message(
+                            "Will try another mirror due to curl error for URL %s: %s",
+                            vec![url.clone(), err_text],
+                        );
+                    }
+                }
+            }
         }
-        (status, stderr)
-    };
-    let (status, stderr) = output;
-
-    if status.success() {
-        if let Err(e) = std::fs::rename(&t.tmp_filename, t.filename.as_str()) {
-            add_error("Failed to rename file after downloading with curl %s %s: %s", vec![
-                ArcStr::from(t.tmp_filename.clone()),
-                t.filename.clone(),
-                ArcStr::from(e.to_string()),
-            ])?;
-        }
-        return Ok(());
     }
-
-    // Failed download: remove the partial file and either retry the next
-    // mirror or give up on this item.
-    let _ = std::fs::remove_file(&t.tmp_filename);
-    let err_text = ArcStr::from(stderr.trim().to_string());
-    if matches!(&*t.next_try, List::Nil) {
-        add_error("Curl error for URL %s: %s", vec![t.url.clone(), err_text])?;
-        *result = false;
-    } else {
-        add_error("Will try another mirror due to curl error for URL %s: %s", vec![t.url.clone(), err_text])?;
-        queue.push_front((t.next_try.clone(), t.filename.clone()));
-    }
-    Ok(())
 }
 
 pub fn multiDownload(
     urlFileList: Arc<List<(Arc<List<ArcStr>>, ArcStr)>>,
     maxParallel: i32,
 ) -> Result<bool> {
-    let max_parallel = maxParallel.max(1) as usize;
-    let mut queue: VecDeque<(Arc<List<ArcStr>>, ArcStr)> = VecDeque::new();
-    {
-        let mut cur = urlFileList;
-        while let List::Cons { head, tail } = &*cur {
-            queue.push_back(head.clone());
+    let mut queue: VecDeque<WorkItem> = VecDeque::new();
+    let mut cur = urlFileList;
+    while let List::Cons { head: (urls, filename), tail } = &*cur {
+        let mut mirror_urls = VecDeque::new();
+        let mut u = urls.clone();
+        while let List::Cons { head, tail } = &*u {
+            mirror_urls.push_back(head.clone());
             let tail = tail.clone();
-            cur = tail;
+            u = tail;
         }
-    }
-    let mut running: Vec<Transfer> = Vec::new();
-    let mut transfer_number = 1;
-    let mut result = true;
-
-    while !queue.is_empty() || !running.is_empty() {
-        // Top up the pool of concurrent transfers.
-        while running.len() < max_parallel && !queue.is_empty() {
-            if let Some(t) = start_transfer(&mut queue, &mut transfer_number, &mut result)? {
-                running.push(t);
-            }
-        }
-
-        // Reap finished transfers without blocking on any single one.
-        let mut progressed = false;
-        let mut i = 0;
-        while i < running.len() {
-            match running[i].child.try_wait() {
-                Ok(Some(_)) => {
-                    let t = running.swap_remove(i);
-                    finish_transfer(t, &mut queue, &mut result)?;
-                    progressed = true;
-                }
-                Ok(None) => i += 1,
-                Err(e) => {
-                    let t = running.swap_remove(i);
-                    let _ = std::fs::remove_file(&t.tmp_filename);
-                    add_error("Curl error for URL %s: %s", vec![
-                        t.url.clone(),
-                        ArcStr::from(format!("failed to wait for curl: {e}")),
-                    ])?;
-                    result = false;
-                    progressed = true;
-                }
-            }
-        }
-
-        if !progressed && !running.is_empty() {
-            // `om_curl.c` blocks in curl_multi_wait(..., 1000ms); a short
-            // poll interval keeps the latency low without spinning.
-            std::thread::sleep(Duration::from_millis(50));
-        }
+        queue.push_back(WorkItem { urls: mirror_urls, filename: filename.clone() });
+        let tail = tail.clone();
+        cur = tail;
     }
 
-    Ok(result)
+    let num_workers = queue.len().min(maxParallel.max(1) as usize).max(1);
+    let shared = Shared {
+        queue: Mutex::new(queue),
+        messages: Mutex::new(Vec::new()),
+        ok: AtomicBool::new(true),
+        transfer_number: AtomicI32::new(1),
+    };
+
+    std::thread::scope(|scope| {
+        for _ in 0..num_workers {
+            scope.spawn(|| worker(&shared));
+        }
+    });
+
+    // The error buffer is thread-local: emit the collected diagnostics from
+    // the calling thread, where omc will read them back.
+    for (template, tokens) in shared.messages.into_inner().unwrap() {
+        add_error(template, tokens)?;
+    }
+    Ok(shared.ok.into_inner())
 }
 
 #[cfg(test)]

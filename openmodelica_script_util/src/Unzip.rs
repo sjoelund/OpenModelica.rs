@@ -1,51 +1,248 @@
-// Auto-generated from MetaModelica source
-/*
- * This file is part of OpenModelica.
- *
- * Copyright (c) 1998-2026, Open Source Modelica Consortium (OSMC),
- * c/o Linköpings universitet, Department of Computer and Information Science,
- * SE-58183 Linköping, Sweden.
- *
- * All rights reserved.
- *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF AGPL VERSION 3 LICENSE OR
- * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.8.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GNU AGPL
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
- *
- * The OpenModelica software and the OSMC (Open Source Modelica Consortium)
- * Public License (OSMC-PL) are obtained from OSMC, either from the above
- * address, from the URLs:
- * http://www.openmodelica.org or
- * https://github.com/OpenModelica/ or
- * http://www.ida.liu.se/projects/OpenModelica,
- * and in the OpenModelica distribution.
- *
- * GNU AGPL version 3 is obtained from:
- * https://www.gnu.org/licenses/licenses.html#GPL
- *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
- * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.
- *
- * See the full OSMC Public License conditions for more details.
- *
- */
-#![allow(warnings)]
-#![allow(unreachable_patterns, unreachable_code, non_camel_case_types, non_snake_case, dead_code, unused_imports, unused_variables, non_upper_case_globals, unused_mut)]
+// Manually written file.
+//
+// Rust port of `OMCompiler/Compiler/Util/Unzip.mo`, whose single function
+// is an `external "C"` shim into `OMCompiler/Compiler/runtime/om_unzip.c`
+// (minizip). We use the pure-Rust `zip` crate instead.
+//
+// Semantics mirrored from `om_unzip`:
+//
+//   * The longest common `/`-terminated prefix of *all* entry names is
+//     stripped (GitHub-style archives wrap everything in a top-level
+//     `Repo-hash/` directory).
+//   * If the last segment of that common prefix equals `pathToExtract`,
+//     the segment is kept (the caller asked for it by name).
+//   * Only entries under `pathToExtract` (after prefix stripping) are
+//     extracted; an empty `pathToExtract` extracts everything.
+//   * Files are written to `destinationPath/<relative path>`; POSIX
+//     permissions are restored from the entry's external attributes with
+//     `rw-r--r--` as the base, directories get `rwxr-xr-x`.
+//   * Errors are reported through the error buffer (mirroring the
+//     `c_add_message` calls) and abort the whole extraction.
 
+#![allow(non_snake_case)]
+
+use std::io::Read;
 use std::sync::Arc;
-use anyhow::{Result, bail};
-use loop_unwrap::unwrap_break_err;
-use metamodelica::*; // Built-in types and functions
-use const_str;
-use arcstr::{ArcStr, literal, format};
 
-pub fn unzipPath(mut fileName: ArcStr, mut pathToExtract: ArcStr, mut destinationPath: ArcStr) -> bool {
-    let mut success: bool = false;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("om_unzip"), lang: Some("C"), output_: Some(CREF_IDENT { name: "success", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileName", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "pathToExtract", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "destinationPath", subscripts: Nil } }, tail: Nil } } }, annotation_: None }, annotation: None }
-    success
+use arcstr::ArcStr;
+use metamodelica::List;
+use openmodelica_util::Error;
+use openmodelica_util::ErrorTypes;
+use openmodelica_util::Gettext;
+
+/// `c_add_message(NULL, -1, ErrorType_runtime, ErrorLevel_error, ...)`
+/// equivalent: an ad-hoc runtime error with no source location. Failures
+/// to push the message are ignored — this function is itself only used on
+/// error paths that already return `false`.
+fn add_error(template: &str, tokens: &[&str]) {
+    let mut toks: Arc<List<ArcStr>> = Arc::new(List::Nil);
+    for t in tokens.iter().rev() {
+        toks = metamodelica::cons(ArcStr::from(*t), toks);
+    }
+    let _ = Error::addMessage(
+        ErrorTypes::Message {
+            id: -1,
+            ty: ErrorTypes::MessageType::SIMULATION,
+            severity: ErrorTypes::Severity::ERROR,
+            message: Gettext::TranslatableContent::notrans { r#str: ArcStr::from(template) },
+        },
+        toks,
+    );
 }
 
+pub fn unzipPath(fileName: ArcStr, pathToExtract: ArcStr, destinationPath: ArcStr) -> bool {
+    unzip_impl(&fileName, &pathToExtract, &destinationPath).is_ok()
+}
+
+fn unzip_impl(zip_file_name: &str, path_to_extract: &str, dest_path: &str) -> Result<(), ()> {
+    let file = match std::fs::File::open(zip_file_name) {
+        Ok(f) => f,
+        Err(_) => {
+            add_error("Failed to open file: %s", &[zip_file_name]);
+            return Err(());
+        }
+    };
+    let mut archive = match zip::ZipArchive::new(file) {
+        Ok(a) => a,
+        Err(_) => {
+            add_error("minizip failed to read file global info: %s", &[zip_file_name]);
+            return Err(());
+        }
+    };
+    if archive.is_empty() {
+        return Ok(());
+    }
+
+    // Longest common prefix of all entry names, cut back to a '/' boundary.
+    let first_name = archive.name_for_index(0).unwrap_or("").to_string();
+    let mut common_len = first_name.len();
+    for i in 1..archive.len() {
+        let name = archive.name_for_index(i).unwrap_or("");
+        common_len = name
+            .bytes()
+            .zip(first_name.bytes())
+            .take(common_len)
+            .take_while(|(a, b)| a == b)
+            .count();
+    }
+    let mut common_prefix = &first_name[..common_len];
+    while !common_prefix.is_empty() && !common_prefix.ends_with('/') {
+        common_prefix = &common_prefix[..common_prefix.len() - 1];
+    }
+    // Keep the last segment of the common prefix when it *is* the path the
+    // caller asked to extract (e.g. an archive wrapping everything in
+    // `Modelica/` with pathToExtract = "Modelica").
+    if !path_to_extract.is_empty()
+        && common_prefix.len() > path_to_extract.len()
+        && common_prefix[..common_prefix.len() - 1].ends_with(path_to_extract)
+    {
+        common_prefix = &common_prefix[..common_prefix.len() - path_to_extract.len() - 1];
+    }
+    let common_len = common_prefix.len();
+
+    for i in 0..archive.len() {
+        let mut entry = match archive.by_index(i) {
+            Ok(e) => e,
+            Err(_) => {
+                add_error("minizip failed to read file info: %s", &[zip_file_name]);
+                return Err(());
+            }
+        };
+        let name = entry.name().to_string();
+        let Some(rel) = name.get(common_len..) else { continue };
+        // Filter to the requested sub-path: `rel` must be exactly
+        // `pathToExtract` (a directory) or start with `pathToExtract/`.
+        if !path_to_extract.is_empty() {
+            let matches = rel.starts_with(path_to_extract)
+                && matches!(rel.as_bytes().get(path_to_extract.len()), None | Some(b'/'));
+            if !matches {
+                continue;
+            }
+        }
+        // Destination: destPath + '/' + remainder (the leading '/' of the
+        // remainder after stripping pathToExtract doubles as the separator).
+        let remainder = &rel[path_to_extract.len()..];
+        let out_path = if remainder.starts_with('/') || remainder.is_empty() {
+            format!("{dest_path}{remainder}")
+        } else {
+            format!("{dest_path}/{remainder}")
+        };
+
+        if name.ends_with('/') {
+            // Directory entry.
+            if std::fs::create_dir_all(&out_path).is_err() {
+                add_error("Failed to open file for writing %s", &[&out_path]);
+                return Err(());
+            }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                let _ = std::fs::set_permissions(&out_path, std::fs::Permissions::from_mode(0o755));
+            }
+            continue;
+        }
+
+        let mut fout = match std::fs::File::create(&out_path) {
+            Ok(f) => f,
+            Err(_) => {
+                add_error("Failed to open file for writing %s", &[&out_path]);
+                return Err(());
+            }
+        };
+        let mut buf = [0u8; 8192];
+        loop {
+            match entry.read(&mut buf) {
+                Ok(0) => break,
+                Ok(n) => {
+                    use std::io::Write;
+                    if let Err(e) = fout.write_all(&buf[..n]) {
+                        add_error("Failed to write data to %s: %s", &[&out_path, &e.to_string()]);
+                        return Err(());
+                    }
+                }
+                Err(_) => {
+                    add_error("minizip failed to open read data in %s", &[zip_file_name]);
+                    return Err(());
+                }
+            }
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            // Restore permissions from the entry: keep user-execute and all
+            // group/other bits, with rw-r--r-- as the base — exactly the
+            // `((external_fa >> 16) & 0x7F) | 0644` computation in om_unzip.c.
+            let mode = (entry.unix_mode().unwrap_or(0) & 0o177) | 0o644;
+            if std::fs::set_permissions(&out_path, std::fs::Permissions::from_mode(mode)).is_err()
+            {
+                add_error("fchmod failed for %s: %s", &[&out_path, "set_permissions failed"]);
+                return Err(());
+            }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    /// Build a zip with a GitHub-style wrapper directory and check both the
+    /// prefix stripping and the pathToExtract filtering.
+    #[test]
+    fn extracts_subpath_and_strips_common_prefix() {
+        let dir = std::env::temp_dir().join(format!("unzip_rs_test_{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let zip_path = dir.join("a.zip");
+        {
+            let f = std::fs::File::create(&zip_path).unwrap();
+            let mut w = zip::ZipWriter::new(f);
+            let opts: zip::write::SimpleFileOptions = Default::default();
+            w.add_directory("Repo-abc123/", opts).unwrap();
+            w.add_directory("Repo-abc123/Modelica/", opts).unwrap();
+            w.start_file("Repo-abc123/Modelica/package.mo", opts).unwrap();
+            w.write_all(b"package Modelica end Modelica;").unwrap();
+            w.start_file("Repo-abc123/README.md", opts).unwrap();
+            w.write_all(b"readme").unwrap();
+            w.finish().unwrap();
+        }
+        let dest = dir.join("out");
+        std::fs::create_dir_all(&dest).unwrap();
+        let ok = unzipPath(
+            ArcStr::from(zip_path.display().to_string()),
+            ArcStr::from("Modelica"),
+            ArcStr::from(dest.display().to_string()),
+        );
+        assert!(ok);
+        assert_eq!(
+            std::fs::read_to_string(dest.join("package.mo")).unwrap(),
+            "package Modelica end Modelica;"
+        );
+        assert!(!dest.join("README.md").exists(), "filtered path must be skipped");
+
+        // Extract-everything mode: empty pathToExtract.
+        let dest_all = dir.join("out_all");
+        std::fs::create_dir_all(&dest_all).unwrap();
+        let ok = unzipPath(
+            ArcStr::from(zip_path.display().to_string()),
+            ArcStr::from(""),
+            ArcStr::from(dest_all.display().to_string()),
+        );
+        assert!(ok);
+        assert!(dest_all.join("Modelica/package.mo").exists());
+        assert!(dest_all.join("README.md").exists());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn missing_zip_reports_failure() {
+        assert!(!unzipPath(
+            ArcStr::from("/nonexistent/x.zip"),
+            ArcStr::from(""),
+            ArcStr::from("/tmp"),
+        ));
+    }
+}
