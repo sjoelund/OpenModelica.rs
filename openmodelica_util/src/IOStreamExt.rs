@@ -1,125 +1,121 @@
-// Auto-generated from MetaModelica source
-/*
- * This file is part of OpenModelica.
- *
- * Copyright (c) 1998-2026, Open Source Modelica Consortium (OSMC),
- * c/o Linköpings universitet, Department of Computer and Information Science,
- * SE-58183 Linköping, Sweden.
- *
- * All rights reserved.
- *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF AGPL VERSION 3 LICENSE OR
- * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.8.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GNU AGPL
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
- *
- * The OpenModelica software and the OSMC (Open Source Modelica Consortium)
- * Public License (OSMC-PL) are obtained from OSMC, either from the above
- * address, from the URLs:
- * http://www.openmodelica.org or
- * https://github.com/OpenModelica/ or
- * http://www.ida.liu.se/projects/OpenModelica,
- * and in the OpenModelica distribution.
- *
- * GNU AGPL version 3 is obtained from:
- * https://www.gnu.org/licenses/licenses.html#GPL
- *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
- * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.
- *
- * See the full OSMC Public License conditions for more details.
- *
- */
-#![allow(warnings)]
-#![allow(unreachable_patterns, unreachable_code, non_camel_case_types, non_snake_case, dead_code, unused_imports, unused_variables, non_upper_case_globals, unused_mut)]
+// Manually written file.
+//
+// Rust port of `OMCompiler/Compiler/Util/IOStreamExt.mo`'s `external "C"`
+// declarations into `OMCompiler/Compiler/runtime/IOStreamExt_omc.cpp`.
+//
+// The C runtime only actually implements `appendReversedList` and
+// `printReversedList`; every file/buffer entry point prints `NYI` to
+// stderr and throws (the IOStream module's LIST() backend is the only one
+// the compiler uses). We mirror that exactly: the unimplemented functions
+// report and fail instead of panicking, so MetaModelica-level
+// try/matchcontinue around them keeps working.
+
+#![allow(non_snake_case)]
 
 use std::sync::Arc;
+
 use anyhow::{Result, bail};
-use loop_unwrap::unwrap_break_err;
-use metamodelica::*; // Built-in types and functions
-use const_str;
-use arcstr::{ArcStr, literal, format};
+use arcstr::ArcStr;
+use metamodelica::List;
 
-pub fn createFile(mut fileName: ArcStr) -> Result<i32> {
-    let mut fileID: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_createFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "fileID", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileName", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 51, columnNumberStart: 75, lineNumberEnd: 51, columnNumberEnd: 89, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 51, columnNumberStart: 67, lineNumberEnd: 51, columnNumberEnd: 89, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(fileID)
+/// Shared body for the entry points that are NYI in the C runtime too:
+/// report on stderr (like the `fprintf(stderr, "NYI: ...")` there) and
+/// fail (MMC_THROW).
+macro_rules! nyi {
+    ($name:literal) => {{
+        eprintln!(concat!("NYI: IOStreamExt.", $name));
+        bail!(concat!("NYI: IOStreamExt.", $name));
+    }};
 }
 
-pub fn closeFile(mut fileID: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_closeFile"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 57, columnNumberStart: 65, lineNumberEnd: 57, columnNumberEnd: 79, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 57, columnNumberStart: 57, lineNumberEnd: 57, columnNumberEnd: 79, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn createFile(_fileName: ArcStr) -> Result<i32> {
+    nyi!("createFile")
 }
 
-pub fn deleteFile(mut fileID: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_deleteFile"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 63, columnNumberStart: 66, lineNumberEnd: 63, columnNumberEnd: 80, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 63, columnNumberStart: 58, lineNumberEnd: 63, columnNumberEnd: 80, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn closeFile(_fileID: i32) -> Result<()> {
+    nyi!("closeFile")
 }
 
-pub fn clearFile(mut fileID: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_clearFile"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 69, columnNumberStart: 65, lineNumberEnd: 69, columnNumberEnd: 79, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 69, columnNumberStart: 57, lineNumberEnd: 69, columnNumberEnd: 79, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn deleteFile(_fileID: i32) -> Result<()> {
+    nyi!("deleteFile")
 }
 
-pub fn appendFile(mut fileID: i32, mut inString: ArcStr) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_appendFile"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inString", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 76, columnNumberStart: 75, lineNumberEnd: 76, columnNumberEnd: 89, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 76, columnNumberStart: 67, lineNumberEnd: 76, columnNumberEnd: 89, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn clearFile(_fileID: i32) -> Result<()> {
+    nyi!("clearFile")
 }
 
-pub fn readFile(mut fileID: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_readFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "outString", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 83, columnNumberStart: 74, lineNumberEnd: 83, columnNumberEnd: 88, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 83, columnNumberStart: 66, lineNumberEnd: 83, columnNumberEnd: 88, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(outString)
+pub fn appendFile(_fileID: i32, _inString: ArcStr) -> Result<()> {
+    nyi!("appendFile")
 }
 
-pub fn printFile(mut fileID: i32, mut whereToPrint: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_printFile"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "fileID", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "whereToPrint", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 90, columnNumberStart: 78, lineNumberEnd: 90, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 90, columnNumberStart: 70, lineNumberEnd: 90, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
+pub fn readFile(_fileID: i32) -> Result<ArcStr> {
+    nyi!("readFile")
+}
+
+pub fn printFile(_fileID: i32, _whereToPrint: i32) -> Result<()> {
+    nyi!("printFile")
 }
 
 pub fn createBuffer() -> Result<i32> {
-    let mut bufferID: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_createBuffer"), lang: Some("C"), output_: Some(CREF_IDENT { name: "bufferID", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 96, columnNumberStart: 73, lineNumberEnd: 96, columnNumberEnd: 87, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 96, columnNumberStart: 65, lineNumberEnd: 96, columnNumberEnd: 87, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(bufferID)
+    nyi!("createBuffer")
 }
 
-pub fn appendBuffer(mut bufferID: i32, mut inString: ArcStr) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_appendBuffer"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferID", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inString", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 103, columnNumberStart: 79, lineNumberEnd: 103, columnNumberEnd: 93, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 103, columnNumberStart: 71, lineNumberEnd: 103, columnNumberEnd: 93, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+pub fn appendBuffer(_bufferID: i32, _inString: ArcStr) -> Result<()> {
+    nyi!("appendBuffer")
+}
+
+pub fn deleteBuffer(_bufferID: i32) -> Result<()> {
+    nyi!("deleteBuffer")
+}
+
+pub fn clearBuffer(_bufferID: i32) -> Result<()> {
+    nyi!("clearBuffer")
+}
+
+pub fn readBuffer(_bufferID: i32) -> Result<ArcStr> {
+    nyi!("readBuffer")
+}
+
+pub fn printBuffer(_bufferID: i32, _whereToPrint: i32) -> Result<()> {
+    nyi!("printBuffer")
+}
+
+/// Concatenate a *reversed* list of strings: the IOStream LIST() backend
+/// conses new chunks onto the head, so the last list element is the first
+/// chunk of the output.
+pub fn appendReversedList(inStringLst: Arc<List<ArcStr>>) -> ArcStr {
+    let chunks: Vec<&ArcStr> = (&*inStringLst).into_iter().collect();
+    let total: usize = chunks.iter().map(|s| s.len()).sum();
+    let mut out = String::with_capacity(total);
+    for s in chunks.into_iter().rev() {
+        out.push_str(s);
+    }
+    ArcStr::from(out)
+}
+
+/// Print a *reversed* list of strings to stdout (`whereToPrint` = 1) or
+/// stderr (= 2); any other destination fails like the C version.
+pub fn printReversedList(inStringLst: Arc<List<ArcStr>>, whereToPrint: i32) -> Result<()> {
+    use std::io::Write;
+    let chunks: Vec<&ArcStr> = (&*inStringLst).into_iter().collect();
+    match whereToPrint {
+        1 => {
+            let stdout = std::io::stdout();
+            let mut f = stdout.lock();
+            for s in chunks.into_iter().rev() {
+                f.write_all(s.as_bytes())?;
+            }
+            f.flush()?;
+        }
+        2 => {
+            let stderr = std::io::stderr();
+            let mut f = stderr.lock();
+            for s in chunks.into_iter().rev() {
+                f.write_all(s.as_bytes())?;
+            }
+            f.flush()?;
+        }
+        _ => bail!("IOStreamExt.printReversedList: invalid whereToPrint {whereToPrint}"),
+    }
     Ok(())
 }
-
-pub fn deleteBuffer(mut bufferID: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_deleteBuffer"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 109, columnNumberStart: 70, lineNumberEnd: 109, columnNumberEnd: 84, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 109, columnNumberStart: 62, lineNumberEnd: 109, columnNumberEnd: 84, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
-}
-
-pub fn clearBuffer(mut bufferID: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_clearBuffer"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 115, columnNumberStart: 69, lineNumberEnd: 115, columnNumberEnd: 83, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 115, columnNumberStart: 61, lineNumberEnd: 115, columnNumberEnd: 83, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
-}
-
-pub fn readBuffer(mut bufferID: i32) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_readBuffer"), lang: Some("C"), output_: Some(CREF_IDENT { name: "outString", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferID", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 122, columnNumberStart: 78, lineNumberEnd: 122, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 122, columnNumberStart: 70, lineNumberEnd: 122, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(outString)
-}
-
-pub fn printBuffer(mut bufferID: i32, mut whereToPrint: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_printBuffer"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferID", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "whereToPrint", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 129, columnNumberStart: 82, lineNumberEnd: 129, columnNumberEnd: 96, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 129, columnNumberStart: 74, lineNumberEnd: 129, columnNumberEnd: 96, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
-}
-
-pub fn appendReversedList(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_appendReversedList"), lang: Some("C"), output_: Some(CREF_IDENT { name: "outString", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inStringLst", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 136, columnNumberStart: 91, lineNumberEnd: 136, columnNumberEnd: 105, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 136, columnNumberStart: 83, lineNumberEnd: 136, columnNumberEnd: 105, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    outString
-}
-
-pub fn printReversedList(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut whereToPrint: i32) -> Result<()> {
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("IOStreamExt_printReversedList"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inStringLst", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "whereToPrint", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 143, columnNumberStart: 92, lineNumberEnd: 143, columnNumberEnd: 106, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/IOStreamExt.mo", isReadOnly: false, lineNumberStart: 143, columnNumberStart: 84, lineNumberEnd: 143, columnNumberEnd: 106, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    Ok(())
-}
-
