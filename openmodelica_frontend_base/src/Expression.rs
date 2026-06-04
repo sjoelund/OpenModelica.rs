@@ -12854,13 +12854,11 @@ pub fn arrayFirstScalar(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
 }
 
 pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
-    pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
-
     let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
     let mut oa: A;
     (outCases, oa) = (::match_deref::match_deref! { match &((inCases.clone(), inA.clone())) {
         (Deref @ metamodelica::List::Nil, a) => {
-            (metamodelica::nil(), a.clone())
+            (inCases.clone(), a.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result, resultInfo, jump, info }, tail: cases }, a) => {
             let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -12882,7 +12880,6 @@ pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc
     } });
     Ok((outCases, oa))
 }
-
 pub fn traverseCasesTopDown<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
     pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>;
 

@@ -4801,6 +4801,75 @@ fn collect_type_vars_in_typed_stmts(stmts: &[typedexp::TypedStmt], out: &mut Vec
     visit_stmts(stmts, out);
 }
 
+/// Maintained Rust source for functions whose automatic lowering is provably
+/// wrong, keyed by the function's qualified MetaModelica name. [`emit_function`]
+/// writes the returned text verbatim instead of generating a body. The source
+/// must be a complete module-level item with a signature compatible with every
+/// call site (the generator still resolves calls to `Module::fn`).
+fn function_source_replacement(qname: &str) -> Option<&'static str> {
+    match qname {
+        // `List.allReferenceEq` compares list elements with `referenceEq`, but
+        // the element type is a type parameter whose representation is opaque at
+        // codegen time, so the lowering falls back to comparing two cloned
+        // stack temporaries — always false. Its one caller
+        // (`DAEUtil.traverseDAEEquationsStmtsList`) relies on a true result to
+        // preserve statement-list identity across a fixed point; the perpetual
+        // false makes match-expression simplification iterate to its maximum.
+        // Compare the elements' pointee identity directly (every instantiation
+        // is a heap handle, i.e. `T: Deref`).
+        "List.allReferenceEq" => Some(
+"pub fn allReferenceEq<T: Clone + 'static + std::ops::Deref>(inList1: Arc<metamodelica::List<T>>, inList2: Arc<metamodelica::List<T>>) -> bool {
+    match (&*inList1, &*inList2) {
+        (metamodelica::List::Cons { head: el1, tail: rest1 }, metamodelica::List::Cons { head: el2, tail: rest2 }) =>
+            metamodelica::referenceEq(&**el1, &**el2) && allReferenceEq(rest1.clone(), rest2.clone()),
+        (metamodelica::List::Nil, metamodelica::List::Nil) => true,
+        _ => false,
+    }
+}",
+        ),
+        // `Expression.traverseCases` preserves identity (returns `inCases` when
+        // no sub-expression changed) so a fixed point can stop. The empty-list
+        // base case in MetaModelica returns the `{}` literal, which is the
+        // shared `mmc_nil` singleton there, so `referenceEq(cases, {})` holds.
+        // The port's `nil()` allocates a fresh `Nil`, so the base case never
+        // compares reference-equal to the matched tail and every case (hence the
+        // whole MATCHEXPRESSION) is rebuilt on each pass — expression
+        // simplification then iterates to its maximum on any match. Return the
+        // matched input `inCases` instead, which is the identity-preserving form
+        // of returning `{}` here. The recursive case is unchanged.
+        "Expression.traverseCases" => Some(
+"pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+    let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
+    let mut oa: A;
+    (outCases, oa) = (::match_deref::match_deref! { match &((inCases.clone(), inA.clone())) {
+        (Deref @ metamodelica::List::Nil, a) => {
+            (inCases.clone(), a.clone())
+        },
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result, resultInfo, jump, info }, tail: cases }, a) => {
+            let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+            let mut result1: Option<Arc<DAE::Exp>> = None;
+            let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
+            let mut cases1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
+            let mut cases = (*cases).clone();
+            let mut a = (*a).clone();
+            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()))?;
+            body1 = __pa0.clone();
+            a = __pa1.clone();
+            (patternGuard1, a) = traverseExpOpt(patternGuard.clone(), func.clone(), a.clone())?;
+            (result1, a) = traverseExpOpt(result.clone(), func.clone(), a.clone())?;
+            (cases1, a) = traverseCases(cases.clone(), func.clone(), a.clone())?;
+            cases = if (referenceEq(&*(cases.clone()),&*(cases1.clone())) && (match (&(patternGuard.clone()), &(patternGuard1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(result.clone()), &(result1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(body.clone()),&*(body1.clone()))) {inCases.clone()} else {metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases1.clone())};
+            (cases.clone(), a.clone())
+        },
+        _ => bail!(\"match: no arm matched\"),
+    } });
+    Ok((outCases, oa))
+}",
+        ),
+        _ => None,
+    }
+}
+
 fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Class, indent: &str, ctx: &mut GenCtx, top_level: &'a BTreeMap<String, NameNode<'a>>) {
     // Short class definition: `function Alias = Base[(arg=default, ...)]`.
     // Resolved by hierarchy::resolve_function_type to Ty::FunctionAlias.
@@ -5238,6 +5307,20 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     ctx.current_fn_fallible = ctx.fallible_functions.contains(&fn_qname);
     let saved_fn_qname = std::mem::replace(&mut ctx.current_fn_qname, fn_qname.clone());
     let is_fallible_fn = ctx.current_fn_fallible;
+
+    // Hand-written per-function replacement: when the lowering of a specific
+    // function is provably wrong (a `referenceEq` on a type parameter, an
+    // intrinsic the generator can't model, …), emit a maintained Rust source in
+    // its place, keyed by the function's qualified name. The replacement is
+    // written verbatim into this module, so the call site (`Module::fn`) is
+    // unchanged. Replacements are module-level functions (top-level in their
+    // package); nested-function replacement is not supported.
+    if let Some(src) = function_source_replacement(&fn_qname) {
+        writeln!(out, "{src}").unwrap();
+        ctx.current_fn_fallible = saved_fn_fallible;
+        ctx.current_fn_qname = saved_fn_qname;
+        return;
+    }
 
     // Function-local imports (`import Foo.Bar;` between the signature and
     // `algorithm`) extend the import scope for the body of this function only.

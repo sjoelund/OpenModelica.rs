@@ -3602,25 +3602,14 @@ fn combinationMap_tail<TI: Clone + 'static, TO: Clone + 'static>(mut inElements:
     Ok(outElements)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn allReferenceEq<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> bool {
-    let mut outEqual: bool = false;
-    outEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: el1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: el2, tail: rest2 }) => {
-            if (referenceEq(&el1.clone(),&el2.clone())) {allReferenceEq(rest1.clone(), rest2.clone())} else {false}
-        },
-        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            true
-        },
-        _ => {
-            false
-        },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outEqual
+pub fn allReferenceEq<T: Clone + 'static + std::ops::Deref>(inList1: Arc<metamodelica::List<T>>, inList2: Arc<metamodelica::List<T>>) -> bool {
+    match (&*inList1, &*inList2) {
+        (metamodelica::List::Cons { head: el1, tail: rest1 }, metamodelica::List::Cons { head: el2, tail: rest2 }) =>
+            metamodelica::referenceEq(&**el1, &**el2) && allReferenceEq(rest1.clone(), rest2.clone()),
+        (metamodelica::List::Nil, metamodelica::List::Nil) => true,
+        _ => false,
+    }
 }
-
 pub fn listIsLonger<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> Result<bool> {
     let mut isLonger: bool = compareLength(inList1.clone(), inList2.clone())? > 0;
     Ok(isLonger)
