@@ -177,7 +177,7 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
             let mut vstr: ArcStr = arcstr::literal!("");
             let mut name: ArcStr = arcstr::literal!("");
             let mut vars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            name = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?;
+            name = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?;
             vars = List::map(vs.clone(), (std::sync::Arc::new(unparseVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
             vstr = stringAppendList(vars.clone());
             res = stringAppendList(list![(literal!("record ")).clone(), (name.clone()).clone(), (literal!("\n")).clone(), (vstr.clone()).clone(), (literal!("end ")).clone(), (name.clone()).clone(), (literal!(";")).clone()]);
@@ -189,7 +189,7 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
             let mut vstr: ArcStr = arcstr::literal!("");
             let mut name: ArcStr = arcstr::literal!("");
             let mut vars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            name = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?;
+            name = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?;
             vars = List::map(vs.clone(), (std::sync::Arc::new(unparseVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
             vstr = stringAppendList(vars.clone());
             r#str = (if (b.clone()) {literal!("expandable ")} else {literal!("")}).clone();
@@ -288,7 +288,7 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { .. } => {
             let mut res: ArcStr = arcstr::literal!("");
-            res = AbsynUtil::pathStringNoQual(var_field!((*inType).path, DAE::Type::T_METAUNIONTYPE).clone(), (literal!(".")).clone(), true, false)?;
+            res = AbsynUtil::pathStringNoQual(var_field!((*inType).path, DAE::Type::T_METAUNIONTYPE).clone(), (literal!(".")).clone(), false, false)?;
             if (var_field!((*inType).typeVars, DAE::Type::T_METAUNIONTYPE).clone().is_empty()) {res.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut tv in (var_field!((*inType).typeVars, DAE::Type::T_METAUNIONTYPE).clone()).into_iter().cloned() {
@@ -300,7 +300,7 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         },
         Deref @ DAE::Type::T_METARECORD { .. } => {
             let mut res: ArcStr = arcstr::literal!("");
-            res = AbsynUtil::pathStringNoQual(var_field!((*inType).path, DAE::Type::T_METARECORD).clone(), (literal!(".")).clone(), true, false)?;
+            res = AbsynUtil::pathStringNoQual(var_field!((*inType).path, DAE::Type::T_METARECORD).clone(), (literal!(".")).clone(), false, false)?;
             if (var_field!((*inType).typeVars, DAE::Type::T_METARECORD).clone().is_empty()) {res.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut tv in (var_field!((*inType).typeVars, DAE::Type::T_METARECORD).clone()).into_iter().cloned() {
@@ -671,7 +671,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 t @ Deref @ DAE::Type::T_METARECORD { .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = AbsynUtil::pathStringNoQual(var_field!((**t).path, DAE::Type::T_METARECORD).clone(), (literal!(".")).clone(), true, false)?;
+                    s1 = AbsynUtil::pathStringNoQual(var_field!((**t).path, DAE::Type::T_METARECORD).clone(), (literal!(".")).clone(), false, false)?;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("#")); ArcStr::from(__mm_s) }).clone();
                     Ok((r#str.clone(), r#str.clone()))
                 }
@@ -683,7 +683,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
                 t @ Deref @ DAE::Type::T_METAUNIONTYPE { .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
-                    s1 = AbsynUtil::pathStringNoQual(var_field!((**t).path, DAE::Type::T_METAUNIONTYPE).clone(), (literal!(".")).clone(), true, false)?;
+                    s1 = AbsynUtil::pathStringNoQual(var_field!((**t).path, DAE::Type::T_METAUNIONTYPE).clone(), (literal!(".")).clone(), false, false)?;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("#")); ArcStr::from(__mm_s) }).clone();
                     Ok((r#str.clone(), r#str.clone()))
                 }

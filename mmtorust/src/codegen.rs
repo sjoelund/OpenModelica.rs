@@ -4878,26 +4878,22 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     // (`pub use crate::path::base as alias;`). The base path is shortened to be
     // relative to the current module/scope just like a normal type reference.
     //
-    // With modifications (default-argument overrides) we cannot use a plain
-    // re-export because the alias must apply those overrides. That case isn't
-    // wired up yet, so we emit a `todo!()` placeholder so it surfaces at compile
-    // time rather than silently dropping the alias.
+    // With modifications (default-argument overrides) the re-export is still
+    // correct for the function *item* — Rust has no default arguments, so the
+    // overrides are a call-site concern: `resolve_call_formals` applies them
+    // when it fills in omitted arguments of a call to the alias. The comment
+    // documents the overrides for readers of the generated code.
     if let Ty::FunctionAlias { base, modifications } = &node.ty {
         let pub_kw = if node.visibility == MM::Visibility::Public { "pub " } else { "" };
         let alias_name = escape_ident(name);
         let base_short = ctx.shorten(base);
         if !modifications.is_empty() {
-            // TODO: emit a wrapper `pub fn {name}(...) -> ... {{ {base}(..., {arg}={value}, ...) }}`
-            // that actually applies the modifications. For now we re-export the base
-            // unchanged so callers compile; the default-argument overrides are silently
-            // ignored, which may produce wrong runtime behaviour for callers that rely
-            // on the override (e.g. `pathStringNoQual = pathString(usefq=false)`).
             let mods = modifications.iter()
                 .map(|(k, v)| format!("{k}={v}"))
                 .collect::<Vec<_>>()
                 .join(", ");
-            writeln!(out, "{indent}// FIXME: function alias `{name} = {base}({mods})` is emitted as a plain re-export;").unwrap();
-            writeln!(out, "{indent}//        the default-argument modifications are NOT applied at call sites yet.").unwrap();
+            writeln!(out, "{indent}// Function alias `{name} = {base}({mods})`; the default-argument").unwrap();
+            writeln!(out, "{indent}// overrides are applied where calls to the alias omit those arguments.").unwrap();
         }
         writeln!(out, "{indent}{pub_kw}use {base_short} as {alias_name};").unwrap();
         writeln!(out).unwrap();
@@ -11318,7 +11314,29 @@ fn resolve_call_formals<'a>(
         ];
         for cand in &candidates {
             if cand.is_empty() { continue; }
-            if let Some(formals) = resolve_call_formals(cand, ctx, top_level) {
+            if let Some(mut formals) = resolve_call_formals(cand, ctx, top_level) {
+                // Apply the alias's default-argument overrides
+                // (`function pathStringNoQual = pathString(usefq=false)`): each
+                // modification replaces the named formal's default, so call
+                // sites that omit the argument get the alias's value, not the
+                // base function's. The override expression is written in the
+                // alias's module, so it is inferred and canonicalized in that
+                // context (like a base function's own default is in its).
+                if let MM::ClassDef::Derived { arguments, .. } = &c.body {
+                    let infer_env: HashMap<String, Ty> = HashMap::new();
+                    let formal_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+                    for arg in arguments {
+                        let Absyn::ElementArg::MODIFICATION { path, modification: Some(m), .. } = arg else { continue };
+                        let Absyn::EqMod::EQMOD { exp, .. } = &*m.eqMod else { continue };
+                        let Absyn::Path::IDENT { name: param } = &**path else { continue };
+                        let Some(slot) = formals.iter_mut().find(|(n, _, _)| n.as_str() == param.as_str()) else {
+                            continue;
+                        };
+                        let tpl = typedexp::infer_exp(&**exp, &infer_env, top_level, alias_module, &[]);
+                        let tpl = canonicalize_call_funcs(tpl, alias_module, top_level, &formal_names);
+                        slot.2 = Some(tpl);
+                    }
+                }
                 return Some(formals);
             }
         }

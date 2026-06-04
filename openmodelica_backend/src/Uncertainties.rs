@@ -316,7 +316,7 @@ pub fn modelEquationsUC(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             outStringA = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Grid[{")); __mm_s.push_str(&*Print::getString()?); __mm_s.push_str(&*literal!("}]")); ArcStr::from(__mm_s) }).clone();
             writeFileIfNonEmpty((outputFile.clone()).clone(), (outStringA.clone()).clone())?;
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), true, false)?;
+            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), false, false)?;
             resstr = stringAppendList(list![(literal!("modelEquationsUC: The model equations in model")).clone(), (resstr.clone()).clone(), (literal!(" could not be extracted")).clone()]);
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(resstr.clone()).clone()])?;
             Ok(bail!("fail"))
@@ -1958,7 +1958,7 @@ fn flattenModel(mut className: Arc<Absyn::Path>, mut p: Absyn::Program, mut icac
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut resstr: ArcStr = arcstr::literal!("");
-            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), true, false)?;
+            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), false, false)?;
             resstr = stringAppendList(list![(literal!("modelEquationsUC: The model ")).clone(), (resstr.clone()).clone(), (literal!(" could not be flattened")).clone()]);
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(resstr.clone()).clone()])?;
             Ok(bail!("fail"))

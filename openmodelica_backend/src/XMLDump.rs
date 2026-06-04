@@ -608,7 +608,7 @@ fn dumpAbsynPathLst2(mut absynPathLst: Arc<metamodelica::List<Arc<Absyn::Path>>>
         },
         Deref @ metamodelica::List::Cons { head: ap, tail: apLst } => {
             let mut r#str: ArcStr = arcstr::literal!("");
-            r#str = AbsynUtil::pathStringNoQual(ap.clone(), (literal!(".")).clone(), true, false)?;
+            r#str = AbsynUtil::pathStringNoQual(ap.clone(), (literal!(".")).clone(), false, false)?;
             dumpStrTagContent((arcstr::literal!(ELEMENT)).clone(), (r#str.clone()).clone())?;
             dumpAbsynPathLst2(apLst.clone())?;
             ()
@@ -1903,7 +1903,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: args, path: fcn, .. } => {
                     let mut fs: ArcStr = arcstr::literal!("");
-                    fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), true, false)?;
+                    fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), false, false)?;
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((fs.clone()).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -2097,7 +2097,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ENUM_LITERAL { name: fcn, .. } => {
-                    dumpStrMathMLVariable(AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), true, false)?)?;
+                    dumpStrMathMLVariable(AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), false, false)?)?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -2183,10 +2183,10 @@ fn dumpExtObjCls2(mut cls: Arc<metamodelica::List<BackendDAE::ExternalObjectClas
         (Deref @ metamodelica::List::Cons { head: BackendDAE::ExternalObjectClass { path, source: _ }, tail: xs }, c) => {
             dumpStrOpenTag((c.clone()).clone())?;
             Print::printBuf((literal!("class ")).clone())?;
-            Print::printBuf(AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?)?;
+            Print::printBuf(AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?)?;
             Print::printBuf((literal!("\n  extends ExternalObject")).clone())?;
             Print::printBuf((literal!("end")).clone())?;
-            Print::printBuf(AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?)?;
+            Print::printBuf(AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?)?;
             dumpStrCloseTag((c.clone()).clone())?;
             dumpExtObjCls2(xs.clone(), (c.clone()).clone())?;
             ()
@@ -2264,7 +2264,7 @@ fn dumpFunctions3(mut fun: DAE::Function) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    dumpStrOpenTagAttr((arcstr::literal!(FUNCTION)).clone(), (arcstr::literal!(FUNCTION_NAME)).clone(), (Util::xmlEscape(AbsynUtil::pathStringNoQual(DAEUtil::functionName(fun.clone())?, (literal!(".")).clone(), true, false)?)?).clone())?;
+                    dumpStrOpenTagAttr((arcstr::literal!(FUNCTION)).clone(), (arcstr::literal!(FUNCTION_NAME)).clone(), (Util::xmlEscape(AbsynUtil::pathStringNoQual(DAEUtil::functionName(fun.clone())?, (literal!(".")).clone(), false, false)?)?).clone())?;
                     dumpStrOpenTag((arcstr::literal!(MODELICA_IMPLEMENTATION)).clone())?;
                     Print::printBuf((Util::xmlEscape((DAEDump::dumpFunctionStr(fun.clone())?).clone())?).clone())?;
                     dumpStrCloseTag((arcstr::literal!(MODELICA_IMPLEMENTATION)).clone())?;
@@ -2357,7 +2357,7 @@ fn dumpKind(mut inVarKind: BackendDAE::VarKind) -> Result<ArcStr> {
             arcstr::literal!(VARIABILITY_CONSTANT)
         },
         BackendDAE::VarKind::EXTOBJ { fullClassName: ref path } => {
-            stringAppend((arcstr::literal!(VARIABILITY_EXTERNALOBJECT)).clone(), (stringAppend((literal!(":")).clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?)).clone())
+            stringAppend((arcstr::literal!(VARIABILITY_EXTERNALOBJECT)).clone(), (stringAppend((literal!(":")).clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?)).clone())
         },
         _ => {
             let mut error_msg: ArcStr = arcstr::literal!("");

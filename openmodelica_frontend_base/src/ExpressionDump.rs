@@ -843,7 +843,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut expstr: ArcStr = arcstr::literal!("");
                     let mut iterstr: ArcStr = arcstr::literal!("");
-                    fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), true, false)?;
+                    fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), false, false)?;
                     expstr = (printExp2Str(exp.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone(), opcallfunc.clone())?).clone();
                     iterstr = stringDelimitList(List::map(riters.clone(), (std::sync::Arc::new(reductionIteratorStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     r#str = stringAppendList(list![(literal!("<reduction>")).clone(), (fs.clone()).clone(), (literal!("(")).clone(), (expstr.clone()).clone(), (literal!(" for ")).clone(), (iterstr.clone()).clone(), (literal!(")")).clone()]);

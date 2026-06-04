@@ -1013,8 +1013,8 @@ fn pathStringWork(mut inPath: Arc<Absyn::Path>, mut len: i32, mut delimiter: Arc
     Ok(s)
 }
 
-// FIXME: function alias `pathStringNoQual = pathString(usefq=false)` is emitted as a plain re-export;
-//        the default-argument modifications are NOT applied at call sites yet.
+// Function alias `pathStringNoQual = pathString(usefq=false)`; the default-argument
+// overrides are applied where calls to the alias omit those arguments.
 pub use pathString as pathStringNoQual;
 
 pub fn pathStringDefault(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {

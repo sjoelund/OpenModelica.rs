@@ -8812,7 +8812,7 @@ fn dumpFunctions(mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Func
             ()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::FUNCTION { variableDeclarations, functionArguments, outVars, name: path, .. }, tail: rest } => {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print((literal!("\toutVars: ")).clone());
             dumpVariablesString(outVars.clone(), (literal!(" , ")).clone())?;
             metamodelica::print((literal!("\n\tfunctionArguments: ")).clone());
@@ -8824,17 +8824,17 @@ fn dumpFunctions(mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Func
             ()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::PARALLEL_FUNCTION { name: path, .. }, tail: rest } => {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Parallel Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Parallel Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             dumpFunctions(rest.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::KERNEL_FUNCTION { name: path, .. }, tail: rest } => {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Kernel Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Kernel Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             dumpFunctions(rest.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { outVars, name: path, .. }, tail: rest } => {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("External Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("External Function: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print((literal!("\toutVars: ")).clone());
             dumpVariablesString(outVars.clone(), (literal!(" , ")).clone())?;
             metamodelica::print((literal!("\n")).clone());
@@ -8842,7 +8842,7 @@ fn dumpFunctions(mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Func
             ()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { locals, funArgs, name: path, .. }, tail: rest } => {
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Record: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Record: ")); __mm_s.push_str(&*AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print((literal!("\tfunArgs: ")).clone());
             dumpVariablesString(funArgs.clone(), (literal!(" , ")).clone())?;
             metamodelica::print((literal!("\n\tlocals: ")).clone());

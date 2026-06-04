@@ -927,8 +927,8 @@ fn checkExtObjOutputWork(mut ty: Arc<DAE::Type>, mut inTpl: (Arc<Absyn::Path>, S
             let mut b: bool = false;
             let mut path1 = (*path1).clone();
             path1 = AbsynUtil::joinPaths(path1.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("constructor")).clone() }))?;
-            str1 = AbsynUtil::pathStringNoQual(path2.clone(), (literal!(".")).clone(), true, false)?;
-            str2 = AbsynUtil::pathStringNoQual(path1.clone(), (literal!(".")).clone(), true, false)?;
+            str1 = AbsynUtil::pathStringNoQual(path2.clone(), (literal!(".")).clone(), false, false)?;
+            str2 = AbsynUtil::pathStringNoQual(path1.clone(), (literal!(".")).clone(), false, false)?;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
             Error::assertionOrAddSourceMessage(b.clone(), Error::FUNCTION_RETURN_EXT_OBJ.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
             outTpl = if (b.clone()) {inTpl.clone()} else {(path2.clone(), info.clone(), false)};

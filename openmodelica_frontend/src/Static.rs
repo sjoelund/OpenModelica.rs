@@ -9748,7 +9748,7 @@ fn elabPositionalInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let true = (Error::getNumErrorMessages() == numErrors.clone()) else { bail!("pattern mismatch") };
                     (cache, e_1, prop) = elabExpInExpression(cache.clone(), env.clone(), e.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     s1 = (intString(position.clone())).clone();
-                    s2 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?;
+                    s2 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?;
                     s3 = (ExpressionBasics::printExpStr(e_1.clone())?).clone();
                     s4 = (TypesDump::unparseTypeNoAttr(Types::getPropType(prop.clone())?)?).clone();
                     s5 = (TypesDump::unparseTypeNoAttr(vt.clone())?).clone();
@@ -9907,7 +9907,7 @@ fn elabNamedInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inN
                         unwrap_break_err!(findNamedArgType((id.clone()).clone(), farg.clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
-                    s1 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?;
+                    s1 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?;
                     Error::addSourceMessage(Error::NO_SUCH_PARAMETER.clone(), list![(s1.clone()).clone(), (id.clone()).clone()], info.clone())?;
                     let true = (isGraphicsExp.clone()) else { bail!("pattern mismatch") };
                     Ok((cache.clone(), slots.clone(), openmodelica_frontend_types::DAE::Const::C_CONST, polymorphicBindings.clone()))
@@ -9929,7 +9929,7 @@ fn elabNamedInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inN
                     let true = (Error::getNumErrorMessages() == numErrors.clone()) else { bail!("pattern mismatch") };
                     vt = findNamedArgType((id.clone()).clone(), farg.clone())?;
                     (cache, e_1, prop) = elabExpInExpression(cache.clone(), env.clone(), e.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
-                    s1 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?;
+                    s1 = AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?;
                     s2 = (ExpressionBasics::printExpStr(e_1.clone())?).clone();
                     s3 = (TypesDump::unparseTypeNoAttr(Types::getPropType(prop.clone())?)?).clone();
                     s4 = (TypesDump::unparseTypeNoAttr(vt.clone())?).clone();
@@ -10040,7 +10040,7 @@ fn fillSlot(mut inFuncArg: Arc<DAE::FuncArg>, mut inExp: Arc<DAE::Exp>, mut inDi
             if !(Types::constEqualOrHigher(c1.clone(), c2.clone())) {
                 exp_str = (ExpressionBasics::printExpStr(inExp.clone())?).clone();
                 c_str = (TypesDump::unparseConst(c2.clone())?).clone();
-                Error::addSourceMessageAndFail(Error::FUNCTION_SLOT_VARIABILITY.clone(), list![(fa1.clone()).clone(), (exp_str.clone()).clone(), AbsynUtil::pathStringNoQual(r#fn.clone(), (literal!(".")).clone(), true, false)?, (TypesDump::unparseConst(c1.clone())?).clone(), (c_str.clone()).clone()], inInfo.clone())?;
+                Error::addSourceMessageAndFail(Error::FUNCTION_SLOT_VARIABILITY.clone(), list![(fa1.clone()).clone(), (exp_str.clone()).clone(), AbsynUtil::pathStringNoQual(r#fn.clone(), (literal!(".")).clone(), false, false)?, (TypesDump::unparseConst(c1.clone())?).clone(), (c_str.clone()).clone()], inInfo.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
             slot = Slot { defaultArg: Arc::new(DAE::FuncArg { name: (fa2.clone()).clone(), ty: ty1.clone(), r#const: c2.clone(), par: prl.clone(), defaultBinding: binding.clone() }), slotFilled: true, arg: Some(inExp.clone()), dims: inDims.clone(), idx: idx.clone(), evalStatus: ses.clone() };

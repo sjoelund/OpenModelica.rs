@@ -195,7 +195,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Values::Value::RECORD { comp: ids, orderd: xs, record_: recordPath, .. } => {
                     let mut recordName: ArcStr = arcstr::literal!("");
-                    recordName = AbsynUtil::pathStringNoQual(recordPath.clone(), (literal!(".")).clone(), true, false)?;
+                    recordName = AbsynUtil::pathStringNoQual(recordPath.clone(), (literal!(".")).clone(), false, false)?;
                     Print::printBuf(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("record ")); __mm_s.push_str(&*recordName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     valRecordString(xs.clone(), ids.clone())?;
                     Print::printBuf(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("end ")); __mm_s.push_str(&*recordName.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone())?;

@@ -2920,7 +2920,7 @@ fn getCalledFunctionsInFunctions(mut paths: Arc<metamodelica::List<Arc<Absyn::Pa
         },
         (Deref @ metamodelica::List::Cons { head: path, tail: rest }, ht) => {
             let mut ht = (*ht).clone();
-            ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?, ht.clone(), funcs.clone())?;
+            ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?, ht.clone(), funcs.clone())?;
             ht = getCalledFunctionsInFunctions(rest.clone(), ht.clone(), funcs.clone())?;
             ht.clone()
         },
@@ -2989,7 +2989,7 @@ pub fn getCalledFunctionsInFunction(mut path: Arc<Absyn::Path>, mut funcs: Arc<A
     let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     ht = HashTableStringToPath::emptyHashTable();
-    ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?, ht.clone(), funcs.clone())?;
+    ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?, ht.clone(), funcs.clone())?;
     outPaths = BaseHashTable::hashTableValueList(ht.clone())?;
     Ok(outPaths)
 }
@@ -3000,7 +3000,7 @@ fn addDestructor(mut func: DAE::Function, mut inHt: (metamodelica::Array<Arc<met
         DAE::Function::FUNCTION { type_: Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path }, .. }, .. }, .. } => {
             let mut path = (*path).clone();
             path = AbsynUtil::joinPaths(path.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("destructor")).clone() }))?;
-            addDestructor2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?, inHt.clone())?
+            addDestructor2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?, inHt.clone())?
         },
         _ => {
             inHt.clone()

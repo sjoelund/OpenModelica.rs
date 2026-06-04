@@ -1244,7 +1244,7 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut resstr: ArcStr = arcstr::literal!("");
-            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), true, false)?;
+            resstr = AbsynUtil::pathStringNoQual(className.clone(), (literal!(".")).clone(), false, false)?;
             resstr = stringAppendList(list![(literal!("SimCode DAEmode: The model ")).clone(), (resstr.clone()).clone(), (literal!(" could not be translated")).clone()]);
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(resstr.clone()).clone()])?;
             Ok(bail!("fail"))
