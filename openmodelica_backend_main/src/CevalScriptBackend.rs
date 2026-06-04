@@ -1675,7 +1675,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "OpenModelica_uriToFilename", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: s1 }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut res: ArcStr = arcstr::literal!("");
-                    res = uriToFilename((s1.clone()).clone());
+                    res = uriToFilename((s1.clone()).clone())?;
                     if Flags::getConfigBool(Flags::BUILDING_FMU.clone())? {
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The following path is a loaded resource... ")); __mm_s.push_str(&*res.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         bail!("fail");
@@ -10683,7 +10683,7 @@ fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn
         }
         for mut script in &*scripts.clone() {
             let mut script = script.clone();
-            script = uriToFilename((script.clone()).clone());
+            script = unwrap_break_err!(uriToFilename((script.clone()).clone()), '__try0);
             cls = unwrap_break_err!(Conversion::convertPackage(cls.clone(), (script.clone()).clone()), '__try0);
         }
         cls = unwrap_break_err!(Interactive::updateUsedVersion(cls.clone(), libPath.clone(), (unwrap_break_err!(SemanticVersion::toString(lib_version.clone()), '__try0)).clone()), '__try0);

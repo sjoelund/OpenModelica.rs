@@ -2128,7 +2128,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::SCONST { string: s1 }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "OpenModelica_uriToFilename" }, .. } => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut s2: ArcStr = arcstr::literal!("");
-                    s2 = uriToFilename((s1.clone()).clone());
+                    s2 = uriToFilename((s1.clone()).clone())?;
                     if Flags::getConfigBool(Flags::BUILDING_FMU.clone())? {
                         e = Expression::makeImpureBuiltinCall((literal!("OpenModelica_fmuLoadResource")).clone(), list![Arc::new(DAE::Exp::SCONST { string: (s2.clone()).clone() })], DAE::T_STRING_DEFAULT().clone());
                     } else {

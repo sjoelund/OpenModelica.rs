@@ -2739,8 +2739,8 @@ fn evalBuiltinZeros(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
 fn evalUriToFilename(mut r#fn: Arc<Function::Function>, mut arg: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     result = (::match_deref::match_deref! { match &(arg.clone()) {
-        Deref @ Expression::STRING { .. } => Arc::new(Expression::NFExpression::FILENAME { filename: uriToFilename((var_field!((*arg).value, Expression::NFExpression::STRING).clone()).clone()) }),
-        Deref @ Expression::FILENAME { .. } => Arc::new(Expression::NFExpression::FILENAME { filename: uriToFilename((var_field!((*arg).filename, Expression::NFExpression::FILENAME).clone()).clone()) }),
+        Deref @ Expression::STRING { .. } => Arc::new(Expression::NFExpression::FILENAME { filename: uriToFilename((var_field!((*arg).value, Expression::NFExpression::STRING).clone()).clone())? }),
+        Deref @ Expression::FILENAME { .. } => Arc::new(Expression::NFExpression::FILENAME { filename: uriToFilename((var_field!((*arg).filename, Expression::NFExpression::FILENAME).clone()).clone())? }),
         _ => {
             printWrongArgsError(literal!("NFCeval.evalUriToFilename"), list![arg.clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")

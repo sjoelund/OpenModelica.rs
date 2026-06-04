@@ -649,6 +649,13 @@ pub fn subDirectories(inString: ArcStr) -> Arc<List<ArcStr>> {
 }
 
 fn files_with_ext(dir: &str, ext: &str) -> Vec<ArcStr> {
+    // Mirrors `file_select_mo`/`file_select_moc` in runtime/systemimpl.c:
+    // list `*.<ext>` files but exclude the directory's own `package.<ext>`
+    // — that file names the package itself, not a sub-class, and callers
+    // (ClassLoader.getPackageContentNames) treat every returned name as a
+    // class to load. The C version returns directory order (scandir with a
+    // NULL comparator); callers that care sort the combined list themselves.
+    let package_file = format!("package.{ext}");
     let mut out: Vec<ArcStr> = Vec::new();
     if let Ok(rd) = fs::read_dir(dir) {
         for ent in rd.flatten() {
@@ -656,6 +663,7 @@ fn files_with_ext(dir: &str, ext: &str) -> Vec<ArcStr> {
             if p.is_file()
                 && p.extension().map(|e| e == ext).unwrap_or(false)
                 && let Some(name) = p.file_name()
+                && name.to_string_lossy() != package_file.as_str()
             {
                 out.push(ArcStr::from(name.to_string_lossy().as_ref()));
             }
@@ -2046,22 +2054,13 @@ pub fn fflush() {
     let _ = std::io::stderr().flush();
 }
 
-thread_local! {
-    /// Mirrors `threadData->localRoots[LOCAL_ROOT_URI_LOOKUP]`: the
-    /// `namesAndDirs` array last installed by [`updateUriMapping`]. Odd
-    /// indexes (1-based) are package names, even indexes the corresponding
-    /// directories. Read by the Modelica-URI resolver
-    /// (`uriToClassAndPath`/`uriToFilename`) once it is ported.
-    #[allow(dead_code)]
-    static URI_LOOKUP: RefCell<metamodelica::Array<ArcStr>> = RefCell::new(Default::default());
-}
-
 pub fn updateUriMapping(namesAndDirs: metamodelica::Array<ArcStr>) {
-    // Port of `OpenModelica_updateUriMapping` (util/utility.c), which simply
-    // stashes the array in a thread-local root for the URI resolver to read
-    // later (in C the assignment also pins it against the GC; here the
-    // `Array`'s refcount does that). No parsing happens here.
-    URI_LOOKUP.with(|r| *r.borrow_mut() = namesAndDirs);
+    // Port of `OpenModelica_updateUriMapping` (util/utility.c). The table
+    // lives in the `metamodelica` crate (the analogue of the C runtime,
+    // which owns `threadData->localRoots[LOCAL_ROOT_URI_LOOKUP]`) so that
+    // `metamodelica::uriToFilename` — the `OpenModelica.Scripting.uriToFilename`
+    // builtin — can resolve `modelica://` URIs against it.
+    metamodelica::updateUriMapping(namesAndDirs);
 }
 
 pub fn getSizeOfData<T: Clone + 'static>(_data: T) -> (metamodelica::Real, metamodelica::Real, metamodelica::Real) {

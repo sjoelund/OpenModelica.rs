@@ -1232,7 +1232,7 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
         let mut path = path.clone();
         if '__try1: {
             if !(stringEmpty((path.clone()).clone())) {
-                path = uriToFilename((path.clone()).clone());
+                path = unwrap_break_err!(uriToFilename((path.clone()).clone()), '__try1);
             }
             lib_handle = lookupLibraryInCache((path.clone()).clone());
             if lib_handle.clone() == -1 {
@@ -1254,7 +1254,7 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut p in (paths.clone()).into_iter().cloned() {
             if !(!(stringEmpty((p.clone()).clone()))) { continue; }
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*Testsuite::friendly(uriToFilename((p.clone()).clone()))?); ArcStr::from(__mm_s) };
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*Testsuite::friendly(uriToFilename((p.clone()).clone())?)?); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
