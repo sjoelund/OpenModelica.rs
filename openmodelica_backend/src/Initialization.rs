@@ -522,7 +522,7 @@ fn inlineWhenForInitializationWhenStmt(mut inWhenStatement: Arc<DAE::Statement>,
             (stmts.clone(), leftCrs.clone())
         },
         _ => {
-            Error::addInternalError((literal!("function inlineWhenForInitializationWhenStmt failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function inlineWhenForInitializationWhenStmt failed")).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1059,7 +1059,7 @@ fn preBalanceInitialSystem2(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
             row = __try0_o0;
         }
         Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initialization.preBalanceInitialSystem2")); __mm_s.push_str(&*literal!(" failed")); __mm_s.push_str(&*err_str.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initialization.preBalanceInitialSystem2")); __mm_s.push_str(&*literal!(" failed")); __mm_s.push_str(&*err_str.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1465,7 +1465,7 @@ fn fixUnderDeterminedSystem(mut inM: metamodelica::Array<Arc<metamodelica::List<
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut newEqIndices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if inNAddEqns.clone() < 0 {
-        Error::addInternalError((literal!("function fixUnderDeterminedSystem failed due to invalid input")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("function fixUnderDeterminedSystem failed due to invalid input")).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
         bail!("fail");
     }
     if inNAddEqns.clone() > 0 {
@@ -1493,7 +1493,7 @@ fn fixOverDeterminedSystem(mut inM: metamodelica::Array<Arc<metamodelica::List<i
     let mut newVarIndices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut initEqsIndices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if inNAddVars.clone() < 0 {
-        Error::addInternalError((literal!("function fixOverDeterminedSystem failed due to invalid input")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("function fixOverDeterminedSystem failed due to invalid input")).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
         bail!("fail");
     }
     if inNAddVars.clone() > 0 {
@@ -2640,7 +2640,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function collectInitialVars failed for: ")); __mm_s.push_str(&*BackendDump::varString(inVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function collectInitialVars failed for: ")); __mm_s.push_str(&*BackendDump::varString(inVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2781,7 +2781,7 @@ fn collectInitialBindings(mut inVar: BackendDAE::Var, mut inTpl: (Arc<Expandable
             (var.clone(), (eqns.clone(), reeqns.clone()))
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function collectInitialBindings failed for: ")); __mm_s.push_str(&*BackendDump::varString(inVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function collectInitialBindings failed for: ")); __mm_s.push_str(&*BackendDump::varString(inVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

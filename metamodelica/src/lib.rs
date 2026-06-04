@@ -143,6 +143,21 @@ macro_rules! sourceInfo {
             lastModification: $crate::OrderedFloat(0.0_f64),
         }
     };
+    // With an explicit file: the original MetaModelica source path (the code
+    // generator knows the `.mo` a function came from, but not the statement's
+    // line — positions are zero, "unknown line in this file", which is also
+    // exactly what the reference compiler prints under Testsuite.isRunning).
+    ($file:literal) => {
+        $crate::SourceInfo {
+            fileName: ::arcstr::literal!($file),
+            isReadOnly: false,
+            lineNumberStart: 0,
+            columnNumberStart: 0,
+            lineNumberEnd: 0,
+            columnNumberEnd: 0,
+            lastModification: $crate::OrderedFloat(0.0_f64),
+        }
+    };
 }
 
 /// The Info attribute provides location information for elements and classes.

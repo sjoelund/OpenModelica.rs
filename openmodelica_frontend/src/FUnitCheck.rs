@@ -118,7 +118,7 @@ pub fn checkUnits(mut inDAE: DAE::DAElist, mut func: Arc<AvlTreePathFunction::Tr
         outDAE = unwrap_break_err!(updateDAElist(inDAE.clone(), newdaelist.clone()), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/FUnitCheck.mo"))?;
     }
     execStat(literal!("FUnitCheck.checkUnits"))?;
     Ok(outDAE)
@@ -556,7 +556,7 @@ fn foldEquation2(mut eq: Arc<DAE::Element>, mut htCr2U: (metamodelica::Array<Arc
             metamodelica::nil()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.foldEquation2")); __mm_s.push_str(&*literal!(" failed on: ")); __mm_s.push_str(&*DAEDump::dumpEquationStr(eq.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FUnitCheck.foldEquation2")); __mm_s.push_str(&*literal!(" failed on: ")); __mm_s.push_str(&*DAEDump::dumpEquationStr(eq.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/FUnitCheck.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

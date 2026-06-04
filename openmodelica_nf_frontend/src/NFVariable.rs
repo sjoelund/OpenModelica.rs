@@ -218,7 +218,7 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
             expl_len = (expl.clone().len() as i32);
             if expl_len.clone() < crefs_len.clone() {
                 if intMod(crefs_len.clone(), expl_len.clone()) != 0 {
-                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFVariable.expand")); __mm_s.push_str(&*literal!(" failed to expand ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFVariable.expand")); __mm_s.push_str(&*literal!(" failed to expand ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo"))?;
                 }
                 expl = List::flatten(List::fill(expl.clone(), intDiv(crefs_len.clone(), expl_len.clone())))?;
             }
@@ -473,7 +473,7 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
         bail!("matchcontinue: no arm matched")
     };
             }
-            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { info: metamodelica::sourceInfo!(), comment: None, binding: None, subModLst: list![Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() })], eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL }) });
+            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { info: metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo"), comment: None, binding: None, subModLst: list![Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() })], eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL }) });
             assign_field!(var.comment = SCodeUtil::appendAnnotationToComment(anno.clone(), var.comment.clone(), true)?);
         }
     }

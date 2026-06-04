@@ -120,7 +120,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
         Deref @ Type::BOOLEAN => Arc::new(crate::NFDimension::BOOLEAN),
         Deref @ Type::ENUMERATION { .. } => Arc::new(NFDimension::ENUM { enumType: ty.clone() }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromExp")); __mm_s.push_str(&*literal!(" got invalid typename")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromExp")); __mm_s.push_str(&*literal!(" got invalid typename")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFDimension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -175,7 +175,7 @@ pub fn fromRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<NFDimen
         Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: None, start: Deref @ Expression::INTEGER { value: start }, .. } => (start.clone(), 1, stop.clone()),
         Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: Some(Deref @ Expression::INTEGER { value: step }), start: Deref @ Expression::INTEGER { value: start }, .. } => (start.clone(), step.clone(), stop.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromRange")); __mm_s.push_str(&*literal!(" got non-range expression: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromRange")); __mm_s.push_str(&*literal!(" got non-range expression: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFDimension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

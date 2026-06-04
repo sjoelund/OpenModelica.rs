@@ -279,7 +279,7 @@ fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDa
             alias_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -461,7 +461,7 @@ fn aliasClocks(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqDat
             alias_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -643,8 +643,8 @@ fn findCrefs(mut exp: Arc<Expression::NFExpression>, mut tpl: CrefTpl) -> Result
     let mut tpl: CrefTpl = tpl;
     tpl = (::match_deref::match_deref! { match &(exp.clone()) {
         _ if (!(tpl.cont.clone())) => FAILED_CREF_TPL().clone(),
-        Deref @ Expression::CREF { .. } if (BVariable::isParamOrConst(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?) || ComponentRef::isTime(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?) => tpl.clone(),
-        Deref @ Expression::CREF { .. } if (isSome(BVariable::getParent(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?))) => FAILED_CREF_TPL().clone(),
+        Deref @ Expression::CREF { .. } if (BVariable::isParamOrConst(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?) || ComponentRef::isTime(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?) => tpl.clone(),
+        Deref @ Expression::CREF { .. } if (isSome(BVariable::getParent(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?))) => FAILED_CREF_TPL().clone(),
         Deref @ Expression::CREF { .. } if (tpl.varCount.clone() < 2 && !(ComponentRef::hasSubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)) => {
             tpl.cr_lst = metamodelica::cons(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), tpl.cr_lst.clone());
             tpl.varCount = tpl.varCount.clone() + 1;
@@ -814,7 +814,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             vars = BVariable::VariablePointers::fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cr in (set.simple_variables.clone()).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cr.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cr.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -837,7 +837,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             (alias_vars, collector) = chooseVariableToKeep(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cr in (set.simple_variables.clone()).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cr.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cr.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -855,7 +855,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             }
             for mut var in &*var_lst.clone() {
                 let mut var = var.clone();
-                rhs = UnorderedMap::getSafe(BVariable::getVarName(var.clone()), replacements.clone(), metamodelica::sourceInfo!())?;
+                rhs = UnorderedMap::getSafe(BVariable::getVarName(var.clone()), replacements.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
                 eq = BEquation::Equation::makeAssignment(BVariable::toExpression(var.clone())?, rhs.clone(), Pointer::create(0), (arcstr::literal!(BEquation::TMP_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?;
                 (solved_eq, _, _) = Solve::solveBody(Pointer::access(eq.clone()), BVariable::getVarName(Pointer::access(var_to_keep.clone())), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1))?;
                 collector = AttributeCollector::fixValues(collector.clone(), BVariable::getVarName(var.clone()), solved_eq.clone())?;
@@ -900,7 +900,7 @@ fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<V
     fixed_start_map = setStartFixed(attrcollector.start_map.clone(), attrcollector.fixed_map.clone(), set.clone())?;
     if UnorderedMap::size(fixed_start_map.clone()) == 1 {
         new_start = Some(listHead(UnorderedMap::valueList(fixed_start_map.clone()))?);
-        fixed_var = BVariable::getVarPointer(UnorderedMap::firstKey(fixed_start_map.clone())?, metamodelica::sourceInfo!())?;
+        fixed_var = BVariable::getVarPointer(UnorderedMap::firstKey(fixed_start_map.clone())?, metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
         BVariable::setFixed(fixed_var.clone(), false, true)?;
         UnorderedMap::add(BVariable::getVarName(fixed_var.clone()), Arc::new(Expression::NFExpression::BOOLEAN { value: false }), attrcollector.fixed_map.clone())?;
         BVariable::setFixed(var_to_keep.clone(), true, true)?;
@@ -913,7 +913,7 @@ fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<V
         Pointer::update(var_to_keep.clone(), BVariable::setStateSelect(Pointer::access(var_to_keep.clone()), Util::getOption(new_stateSelect.clone())?, true)?);
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_stateSelect.clone())?, attrcollector.stateSelect_map.clone())?;
         if Util::getOption(new_stateSelect.clone())? == StateSelect::ALWAYS.clone() {
-            new_start = Some(UnorderedMap::getSafe(Util::getOption(new_cref.clone())?, attrcollector.start_map.clone(), metamodelica::sourceInfo!())?);
+            new_start = Some(UnorderedMap::getSafe(Util::getOption(new_cref.clone())?, attrcollector.start_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?);
             Pointer::update(var_to_keep.clone(), BVariable::setStartAttribute(Pointer::access(var_to_keep.clone()), Util::getOption(new_start.clone())?, true)?);
             UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_start.clone())?, attrcollector.start_map.clone())?;
         }
@@ -1030,7 +1030,7 @@ fn setStartFixed(mut start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef:
         (cref, fval) = tpl.clone();
         if Expression::isTrue(fval.clone()) {
             count_fixed = count_fixed.clone() + 1;
-            sval = UnorderedMap::getSafe(cref.clone(), start_map.clone(), metamodelica::sourceInfo!())?;
+            sval = UnorderedMap::getSafe(cref.clone(), start_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
             UnorderedMap::add(cref.clone(), sval.clone(), fixed_start_map.clone())?;
         }
     }

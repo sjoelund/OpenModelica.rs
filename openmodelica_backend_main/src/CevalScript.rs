@@ -4271,7 +4271,7 @@ fn getMMfilePublicDependencies(mut in_package_name: ArcStr, mut public_imports_d
     packages = metamodelica::cons((in_package_name.clone()).clone(), packages.clone());
     dep_public_imports_file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*public_imports_dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*in_package_name.clone()); __mm_s.push_str(&*literal!(".public.imports")); ArcStr::from(__mm_s) }).clone();
     if !(System::regularFileExists((dep_public_imports_file.clone()).clone())) {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getMMfileTotalDependencies: missing dependency file ")); __mm_s.push_str(&*dep_public_imports_file.clone()); __mm_s.push_str(&*literal!(" — the module ")); __mm_s.push_str(&*in_package_name.clone()); __mm_s.push_str(&*literal!(" is imported (transitively) but is not part of the build. ")); __mm_s.push_str(&*literal!("Add its source file to the build configuration.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getMMfileTotalDependencies: missing dependency file ")); __mm_s.push_str(&*dep_public_imports_file.clone()); __mm_s.push_str(&*literal!(" — the module ")); __mm_s.push_str(&*in_package_name.clone()); __mm_s.push_str(&*literal!(" is imported (transitively) but is not part of the build. ")); __mm_s.push_str(&*literal!("Add its source file to the build configuration.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/CevalScript.mo"))?;
         bail!("fail");
     }
     pub_imports_total = (System::readFile((dep_public_imports_file.clone()).clone())?).clone();

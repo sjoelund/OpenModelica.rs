@@ -161,7 +161,7 @@ pub fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<Flat
     for mut alias in &*UnorderedMap::keyList(sets.elements.clone()) {
         let mut alias = alias.clone();
         if isNone(alias.variable.clone()) {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFStreamFlowAlias.fromModel")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ComponentRef::toString(alias.name.clone())?); __mm_s.push_str(&*literal!(" has no associated variable")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFStreamFlowAlias.fromModel")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ComponentRef::toString(alias.name.clone())?); __mm_s.push_str(&*literal!(" has no associated variable")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFStreamFlowAlias.mo"))?;
         }
     }
     assign_field!(flatModel.variables = metamodelica::Dangerous::listReverseInPlace(vars.clone()));

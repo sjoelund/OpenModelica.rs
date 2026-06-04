@@ -661,8 +661,8 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
                             let () = (::match_deref::match_deref! { match &((solve_opt.clone(), success.clone())) {
         (Some(solve_cref), true) => {
             stripped = ComponentRef::stripSubscriptsAll(solve_cref.clone());
-            solve_var = UnorderedMap::getSafe(stripped.clone(), unsolved_inner_vars.clone(), metamodelica::sourceInfo!())?;
-            solve_eqn = UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!())?;
+            solve_var = UnorderedMap::getSafe(stripped.clone(), unsolved_inner_vars.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;
+            solve_eqn = UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;
             inner_comps = metamodelica::cons(StrongComponent::createSliceOrSingle(solve_cref.clone(), solve_var.clone(), solve_eqn.clone())?, inner_comps.clone());
             UnorderedMap::remove(stripped.clone(), unsolved_inner_vars.clone())?;
             UnorderedMap::remove(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())?;
@@ -674,7 +674,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
             ()
         },
         (None, false) => {
-            residuals = metamodelica::cons(UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!())?, residuals.clone());
+            residuals = metamodelica::cons(UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?, residuals.clone());
             UnorderedMap::remove(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())?;
             ()
         },
@@ -712,7 +712,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
 
 fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<bool> {
     fn varIsLinear(mut var: Arc<ComponentRef::NFComponentRef>, mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut sol: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>) -> Result<bool> {
-        let mut b: bool = !(UnorderedMap::contains(var.clone(), v.clone())? && Adjacency::Solvability::isNonlinearOrImplicit(UnorderedMap::getSafe(var.clone(), sol.clone(), metamodelica::sourceInfo!())?));
+        let mut b: bool = !(UnorderedMap::contains(var.clone(), v.clone())? && Adjacency::Solvability::isNonlinearOrImplicit(UnorderedMap::getSafe(var.clone(), sol.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?));
         Ok(b)
     }
 
@@ -782,7 +782,7 @@ fn getImpliedInnerVars(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Re
             ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut out_cr in (alg.outputs.clone()).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(out_cr.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(out_cr.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -792,7 +792,7 @@ fn getImpliedInnerVars(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Re
             ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut tpl_cr in (UnorderedSet::toList(Expression::extractCrefs(tpl.clone())?)).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(tpl_cr.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(tpl_cr.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

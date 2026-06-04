@@ -195,7 +195,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Nothing done for (")); __mm_s.push_str(&*stageStr.clone()); __mm_s.push_str(&*literal!(") Index Reduction")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 }
             } else {
-                vo = UnorderedMap::merge(vo.clone(), UnorderedMap::copy(vn.clone()), metamodelica::sourceInfo!())?;
+                vo = UnorderedMap::merge(vo.clone(), UnorderedMap::copy(vn.clone()), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
                 vn = UnorderedMap::subMap(candidate_ptrs.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut var in (current_candidates.clone()).into_iter().cloned() {
@@ -229,7 +229,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
         for mut constraint in &*EquationPointers::toList(constraint_ptrs.clone())? {
             let mut constraint = constraint.clone();
             diffed_eqn = Differentiate::differentiateEquationPointer(constraint.clone(), diffArguments_ptr.clone(), (literal!("")).clone())?;
-            diffed_eqn = removeSlicedDerivatives(diffed_eqn.clone(), UnorderedMap::getSafe(Equation::getEqnName(constraint.clone())?, slice_map.clone(), metamodelica::sourceInfo!())?, dummy_slice_set.clone(), BVariable::VarData::getUniqueIndex(varData.clone())?)?;
+            diffed_eqn = removeSlicedDerivatives(diffed_eqn.clone(), UnorderedMap::getSafe(Equation::getEqnName(constraint.clone())?, slice_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?, dummy_slice_set.clone(), BVariable::VarData::getUniqueIndex(varData.clone())?)?;
             new_eqns = metamodelica::cons(diffed_eqn.clone(), new_eqns.clone());
             if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dummyselect] constraint eqn:\t\t")); __mm_s.push_str(&*Equation::toString(Pointer::access(constraint.clone()), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -299,7 +299,7 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
         dummy_slice_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cref in (UnorderedSet::toList(dummy_slice_set.clone())).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -531,7 +531,7 @@ fn getConstraintsAndCandidates(mut equations: Arc<EquationPointers::EquationPoin
     }
     for mut candidate in &*UnorderedSet::toList(state_candidates.clone()) {
         let mut candidate = candidate.clone();
-        var_ptr = BVariable::getVarPointer(candidate.clone(), metamodelica::sourceInfo!())?;
+        var_ptr = BVariable::getVarPointer(candidate.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
         states = BVariable::VariablePointers::add(var_ptr.clone(), states.clone())?;
     }
     Ok((constr, states, sliced_constr))
@@ -547,7 +547,7 @@ fn getStateCandidate(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<U
 
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    var = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+    var = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
     if BVariable::isRecord(var.clone()) {
         for mut child in &*BVariable::getRecordChildren(var.clone()) {
             let mut child = child.clone();
@@ -596,7 +596,7 @@ fn resolveSlicedUnmatched(mut old_unmatched: Arc<metamodelica::List<Arc<Slice::N
     pub fn resolveSlicedUnmatchedSingle(mut eq: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
         let mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = acc;
         let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
-        relevant_indices = UnorderedMap::getSafe(Equation::getEqnName(Slice::getT(eq.clone()))?, slice_map.clone(), metamodelica::sourceInfo!())?;
+        relevant_indices = UnorderedMap::getSafe(Equation::getEqnName(Slice::getT(eq.clone()))?, slice_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBResolveSingularities.mo"))?;
         if UnorderedSet::isEmpty(relevant_indices.clone()) {
             acc = metamodelica::cons(eq.clone(), acc.clone());
         } else {

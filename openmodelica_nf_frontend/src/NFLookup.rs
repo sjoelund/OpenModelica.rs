@@ -582,7 +582,7 @@ pub fn lookupLocalName(mut name: Arc<Absyn::Path>, mut node: Arc<InstNode::InstN
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.lookupLocalName")); __mm_s.push_str(&*literal!(" was called with an invalid path.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.lookupLocalName")); __mm_s.push_str(&*literal!(" was called with an invalid path.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -617,7 +617,7 @@ pub fn lookupLocalNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::Ins
             lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), metamodelica::cons(node.clone(), nodes.clone()), state.clone(), context.clone(), false)?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.lookupLocalNames")); __mm_s.push_str(&*literal!(" was called with an invalid path.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.lookupLocalNames")); __mm_s.push_str(&*literal!(" was called with an invalid path.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -864,7 +864,7 @@ pub fn generateInner(mut outerNode: Arc<InstNode::InstNode>, mut topScope: Arc<I
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.generateInner")); __mm_s.push_str(&*literal!(" got invalid top node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.generateInner")); __mm_s.push_str(&*literal!(" got invalid top node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -898,7 +898,7 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
             (comp.clone(), def.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -906,7 +906,7 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
             InstNode::replaceComponent(comp.clone(), InstNode::setDefinition(def.clone(), node.clone())?)?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.makeInnerNode")); __mm_s.push_str(&*literal!(" got unknown node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookup.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

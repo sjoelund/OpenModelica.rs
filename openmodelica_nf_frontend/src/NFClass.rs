@@ -460,7 +460,7 @@ pub fn setModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass>)
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClass.setModifier")); __mm_s.push_str(&*literal!(" got non-modifiable class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClass.setModifier")); __mm_s.push_str(&*literal!(" got non-modifiable class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClass.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -488,7 +488,7 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClass.mergeModifier")); __mm_s.push_str(&*literal!(" got non-modifiable class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClass.mergeModifier")); __mm_s.push_str(&*literal!(" got non-modifiable class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClass.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

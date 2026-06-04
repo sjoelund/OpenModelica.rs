@@ -1589,7 +1589,7 @@ pub fn getSupportLevel(mut obj: Arc<JSON::JSON>) -> Result<SupportLevel> {
         Deref @ JSON::STRING { r#str: Deref @ "unknown" } => SupportLevel::unknown.clone(),
         Deref @ JSON::STRING { r#str: Deref @ "noSupport" } => SupportLevel::noSupport.clone(),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown support level ")); __mm_s.push_str(&*JSON::toString(obj.clone(), false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown support level ")); __mm_s.push_str(&*JSON::toString(obj.clone(), false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/PackageManagement.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

@@ -560,7 +560,7 @@ pub mod Block {
                 subClock = Partitioning::DEFAULT_SUB_CLOCK().clone();
             }
             subPart = SimPartition::createSubPartition(subClock.clone(), blcks.clone(), vars.clone(), holdEvents.clone());
-            UnorderedMap::add(baseClock.clone(), metamodelica::cons(subPart.clone(), UnorderedMap::getSafe(baseClock.clone(), clock_collector.clone(), metamodelica::sourceInfo!())?), clock_collector.clone())?;
+            UnorderedMap::add(baseClock.clone(), metamodelica::cons(subPart.clone(), UnorderedMap::getSafe(baseClock.clone(), clock_collector.clone(), metamodelica::sourceInfo!("NSimCode/NSimStrongComponent.mo"))?), clock_collector.clone())?;
         }
         (baseParts, eventClocks, simCodeIndices) = SimPartition::createBasePartitions(clock_collector.clone(), simCodeIndices.clone());
         Ok((baseParts, eventClocks, simCodeIndices))
@@ -576,13 +576,13 @@ pub mod Block {
                 eqn = Pointer::access(ExpandableArray::get(i.clone(), equations.eqArr.clone())?);
                 (tmp, simCodeIndices) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::SCALAR_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
-            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!())?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
+            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NSimCode/NSimStrongComponent.mo"))?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
         },
         Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
-            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!())?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
+            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NSimCode/NSimStrongComponent.mo"))?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
         },
         Deref @ BEquation::Equation::RECORD_EQUATION { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
-            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!())?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
+            createEquation(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NSimCode/NSimStrongComponent.mo"))?, eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
         },
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {
             createEquation(BVariable::DUMMY_VARIABLE().clone(), eqn.clone(), Solve::Status::EXPLICIT.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?
@@ -722,7 +722,7 @@ pub mod Block {
             for mut tpl in &*var_field!((*comp).entwined_tpl_lst, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone().reverse() {
                 let mut tpl = tpl.clone();
                 (eqn_ptr, _) = tpl.clone();
-                call_order = metamodelica::cons(UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, entwined_index_map.clone(), metamodelica::sourceInfo!())?, call_order.clone());
+                call_order = metamodelica::cons(UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, entwined_index_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimStrongComponent.mo"))?, call_order.clone());
             }
             tmp = Arc::new(Block::ENTWINED_ASSIGN { index: simCodeIndices.equationIndex.clone(), call_order: call_order.clone(), single_calls: single_calls.clone(), source: DAE::emptyElementSource().clone(), attr: BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None) });
             simCodeIndices.equationIndex = simCodeIndices.equationIndex.clone() + 1;

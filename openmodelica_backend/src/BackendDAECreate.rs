@@ -256,7 +256,7 @@ fn collectRecordElementBindings(mut var: BackendDAE::Var, mut map: Arc<Unordered
     });
                 UnorderedMap::add(arrayCref.clone(), metamodelica::cons((intSubLst.clone(), binding.clone()), arrayBindingExpList.clone()), arrayMap.clone())?;
             } else {
-                ty = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(rec_cref.clone(), map.clone(), metamodelica::sourceInfo!())?) {
+                ty = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(rec_cref.clone(), map.clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?) {
         ty @ Deref @ DAE::Type::T_COMPLEX { .. } => {
             let mut ty = (*ty).clone();
             assign_variant_field!(ty => DAE::Type::T_COMPLEX; varLst = ({
@@ -354,7 +354,7 @@ fn updateRecordTypesExp(mut exp: Arc<DAE::Exp>, mut map: Arc<UnorderedMap::Unord
     let mut map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::ComponentRef>, Arc<DAE::Type>>> = map;
     (exp, cont) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cref, .. } if (UnorderedMap::contains(cref.clone(), map.clone())?) => {
-            assign_variant_field!(exp => DAE::Exp::CREF; ty = UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?);
+            assign_variant_field!(exp => DAE::Exp::CREF; ty = UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?);
             (exp.clone(), false)
         },
         _ => {
@@ -374,7 +374,7 @@ fn compareArrayBindingExp(mut inElement1: (Arc<metamodelica::List<i32>>, Arc<DAE
     (indiceLstElem1, _) = inElement1.clone();
     (indiceLstElem2, _) = inElement2.clone();
     if (indiceLstElem1.clone().len() as i32) != (indiceLstElem2.clone().len() as i32) {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.compareArrayBindingExp")); __mm_s.push_str(&*literal!(" failed because lists have different lengths.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.compareArrayBindingExp")); __mm_s.push_str(&*literal!(" failed because lists have different lengths.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?;
         bail!("fail");
     }
     rest_e2 = indiceLstElem2.clone();
@@ -435,13 +435,13 @@ fn collapseArrayBindings(mut arrayMap: Arc<UnorderedMap::UnorderedMap<Arc<DAE::C
             if let Ok(__iflet0) = List::splitEqualParts(expLst.clone(), firstDim.clone()) {
                 matLst = __iflet0;
             } else {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.collapseArrayBindings")); __mm_s.push_str(&*literal!(" failed to reshape matrix.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.collapseArrayBindings")); __mm_s.push_str(&*literal!(" failed to reshape matrix.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?;
                 bail!("fail");
             }
             Arc::new(DAE::Exp::MATRIX { ty: ComponentReference::crefTypeFull(cref.clone())?, integer: firstDim.clone(), matrix: matLst.clone() })
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.collapseArrayBindings")); __mm_s.push_str(&*literal!("failed. Array of dimension greater 2 not yet supported. Open a ticket about it.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.collapseArrayBindings")); __mm_s.push_str(&*literal!("failed. Array of dimension greater 2 not yet supported. Open a ticket about it.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?;
             bail!("fail")
         },
     });
@@ -450,7 +450,7 @@ fn collapseArrayBindings(mut arrayMap: Arc<UnorderedMap::UnorderedMap<Arc<DAE::C
             _ => bail!("pattern mismatch"),
         } };
         rec_cref = __pa0.clone();
-        ty = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(rec_cref.clone(), map.clone(), metamodelica::sourceInfo!())?) {
+        ty = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(rec_cref.clone(), map.clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?) {
         ty @ Deref @ DAE::Type::T_COMPLEX { .. } => {
             let mut ty = (*ty).clone();
             assign_variant_field!(ty => DAE::Type::T_COMPLEX; varLst = ({
@@ -601,7 +601,7 @@ fn getExternalObjectAlias3(mut eqIn: Arc<BackendDAE::Equation>, mut extVars: Bac
             tplOut = __try2_o0;
         }
         Err(_) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.getExternalObjectAlias3")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*BackendDump::equationString(eqIn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAECreate.getExternalObjectAlias3")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*BackendDump::equationString(eqIn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?;
             tplOut = tplIn.clone();
         }
     }
@@ -1542,7 +1542,7 @@ fn lowerKnownVarkind(mut varKind: DAE::VarKind, mut componentRef: Arc<DAE::Compo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("function lowerKnownVarkind failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function lowerKnownVarkind failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAECreate.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

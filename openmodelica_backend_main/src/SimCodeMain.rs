@@ -411,7 +411,7 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
         b = __pa0.clone();
         res = __pa1.clone();
         if !(b.clone()) {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*(System::dladdr(func.clone())).0); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*(System::dladdr(func.clone())).0); __mm_s.push_str(&*literal!(" failed\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
         }
         if ErrorExt::getNumMessages() > 0 {
             ErrorExt::moveMessagesToParentThread();
@@ -661,7 +661,7 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             fmutmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileNamePrefixHash.clone()); __mm_s.push_str(&*literal!(".fmutmp")); ArcStr::from(__mm_s) }).clone();
             if System::directoryExists((fmutmp.clone()).clone()) {
                 if !(System::removeDirectory((fmutmp.clone()).clone())) {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                     bail!("fail");
                 }
             }
@@ -681,14 +681,14 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
                 }
                 Util::createDirectoryTree((newdir.clone()).clone())?;
                 if 0 != System::systemCall(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("cp -rf \"")); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*literal!("\" \"")); __mm_s.push_str(&*newdir.clone()); __mm_s.push_str(&*literal!("/\"")); ArcStr::from(__mm_s) }).clone(), (literal!("")).clone()) {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy path ")); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*dirname.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy path ")); __mm_s.push_str(&*path.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*dirname.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                 }
             }
             let () = (match simCode.fmiSimulationFlags.clone() {
         Some(SimCode::FmiSimulationFlags::FMI_SIMULATION_FLAGS_FILE { path: mut pathToFlagsJson }) => {
             needSundials = true;
             if 0 != System::systemCall(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("cp -rf \"")); __mm_s.push_str(&*pathToFlagsJson.clone()); __mm_s.push_str(&*literal!("\" \"")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_flags.json\"")); ArcStr::from(__mm_s) }).clone(), (literal!("")).clone()) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy ")); __mm_s.push_str(&*pathToFlagsJson.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_flags.json")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy ")); __mm_s.push_str(&*pathToFlagsJson.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_flags.json")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
             }
             ()
         },
@@ -701,7 +701,7 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
                 let mut jac = jac.clone();
                 if !(jac.sparsity.clone().is_empty()) {
                     if 0 != System::systemCall(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mv '")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_Jac")); __mm_s.push_str(&*jac.matrixName.clone()); __mm_s.push_str(&*literal!(".bin")); __mm_s.push_str(&*literal!("' '")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), (literal!("")).clone()) {
-                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move ")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_Jac")); __mm_s.push_str(&*jac.matrixName.clone()); __mm_s.push_str(&*literal!(".bin file")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move ")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_Jac")); __mm_s.push_str(&*jac.matrixName.clone()); __mm_s.push_str(&*literal!(".bin file")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                     }
                 }
             }
@@ -716,7 +716,7 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             } else {
                 if Flags::getConfigEnum(Flags::FMI_FILTER.clone())? != Flags::FMI_BLACKBOX.clone() && Flags::getConfigEnum(Flags::FMI_FILTER.clone())? != Flags::FMI_PROTECTED.clone() {
                     if 0 != System::systemCall(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mv '")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_info.json")); __mm_s.push_str(&*literal!("' '")); __mm_s.push_str(&*resourcesDir.clone()); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), (literal!("")).clone()) {
-                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move ")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_info.json file")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move ")); __mm_s.push_str(&*simCode.fileNamePrefix.clone()); __mm_s.push_str(&*literal!("_info.json file")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                     }
                 }
             }
@@ -724,7 +724,7 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             if exportDocumentation.clone() {
                 Util::createDirectoryTree(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/documentation/")); ArcStr::from(__mm_s) }).clone())?;
                 if 0 != System::systemCall(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("mv '")); __mm_s.push_str(&*htmlFile.clone()); __mm_s.push_str(&*literal!("' '")); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/documentation/")); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), (literal!("")).clone()) {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move documentation file ")); __mm_s.push_str(&*htmlFile.clone()); __mm_s.push_str(&*literal!("")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to move documentation file ")); __mm_s.push_str(&*htmlFile.clone()); __mm_s.push_str(&*literal!("")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                 }
             }
             SimCodeUtil::resetFunctionIndex()?;
@@ -878,12 +878,12 @@ fn callTargetTemplatesFMU(mut simCode: SimCode::SimCode, mut target: ArcStr, mut
             fileprefix = (simCode.fileNamePrefix.clone()).clone();
             if System::directoryExists((simCode.fullPathPrefix.clone()).clone()) {
                 if !(System::removeDirectory((simCode.fullPathPrefix.clone()).clone())) {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*simCode.fullPathPrefix.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*simCode.fullPathPrefix.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                     bail!("fail");
                 }
             }
             if !(System::createDirectory((simCode.fullPathPrefix.clone()).clone())) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to create tmp folder ")); __mm_s.push_str(&*simCode.fullPathPrefix.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to create tmp folder ")); __mm_s.push_str(&*simCode.fullPathPrefix.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
                 System::fflush();
                 bail!("fail");
             }
@@ -1033,9 +1033,9 @@ pub fn translateModel(mut kind: TranslateModelKind, mut cache: FCore::Cache, mut
     resultValues = List::appendElt((literal!("timeFrontend"), Arc::new(Values::Value::REAL { real: timeFrontend.clone() })), resultValues.clone());
     FlagsUtil::setConfigBool(Flags::BUILDING_MODEL.clone(), false)?;
     if !(stringEmpty((flatString.clone()).clone())) && runSilent.clone() {
-        Error::addInternalError((literal!("Flat model string generated but is not being dumped. Please make sure it is not generated if it is not shown.")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("Flat model string generated but is not being dumped. Please make sure it is not generated if it is not shown.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
     } else if stringEmpty((flatString.clone()).clone()) && !(runSilent.clone()) {
-        Error::addInternalError((literal!("Flat model string generated but is empty.")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("Flat model string generated but is empty.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
     } else {
         metamodelica::print((flatString.clone()).clone());
     }
@@ -1168,7 +1168,7 @@ fn translateModelCallBackendOB(mut kind: TranslateModelKind, mut cache: FCore::C
             (libs.clone(), file_dir.clone(), timeSimCode.clone(), timeTemplates.clone())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown translateModel kind: ")); __mm_s.push_str(&*anyString(kind.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown translateModel kind: ")); __mm_s.push_str(&*anyString(kind.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
             bail!("fail")
         },
     });
@@ -1565,9 +1565,9 @@ fn copyFiles(mut files: Arc<metamodelica::List<ArcStr>>, mut source: ArcStr, mut
         f2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*destination.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*f.clone()); ArcStr::from(__mm_s) }).clone();
         d2 = (System::dirname((f2.clone()).clone())).clone();
         if !(System::directoryExists((d2.clone()).clone())) {
-            Error::assertion(Util::createDirectoryTree((d2.clone()).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to create directory ")); __mm_s.push_str(&*d2.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(Util::createDirectoryTree((d2.clone()).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to create directory ")); __mm_s.push_str(&*d2.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
         }
-        Error::assertion(System::copyFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*source.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*f.clone()); ArcStr::from(__mm_s) }).clone(), (f2.clone()).clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy file ")); __mm_s.push_str(&*f.clone()); __mm_s.push_str(&*literal!(" from ")); __mm_s.push_str(&*source.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*destination.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(System::copyFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*source.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*f.clone()); ArcStr::from(__mm_s) }).clone(), (f2.clone()).clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to copy file ")); __mm_s.push_str(&*f.clone()); __mm_s.push_str(&*literal!(" from ")); __mm_s.push_str(&*source.clone()); __mm_s.push_str(&*literal!(" to ")); __mm_s.push_str(&*destination.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeMain.mo"))?;
     }
     Ok(())
 }

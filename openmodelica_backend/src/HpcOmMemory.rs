@@ -580,7 +580,7 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("CreateMemoryMap failed!")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("CreateMemoryMap failed!")).clone(), metamodelica::sourceInfo!("BackEnd/HpcOmMemory.mo"))?;
             Ok((None, iVarToArrayIndexMapping.clone(), iVarToIndexMapping.clone()))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2702,7 +2702,7 @@ fn getTaskSimVarMapping(mut iSccEqMapping: metamodelica::Array<Arc<metamodelica:
             tmpSolvedVars = __try0_o6;
         }
         Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmMemory.getTaskSimVarMapping")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmMemory.getTaskSimVarMapping")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/HpcOmMemory.mo"))?;
             return Err(__try0_err);
         }
     }

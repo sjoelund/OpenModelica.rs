@@ -144,7 +144,7 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
                 exp = callExp.clone();
                 return Ok(exp.clone());
             }
-            Error::assertion((inputs.clone().len() as i32) == (args.clone().len() as i32), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInline.inlineCall")); __mm_s.push_str(&*literal!(" got wrong number of arguments for ")); __mm_s.push_str(&*AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion((inputs.clone().len() as i32) == (args.clone().len() as i32), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInline.inlineCall")); __mm_s.push_str(&*literal!(" got wrong number of arguments for ")); __mm_s.push_str(&*AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInline.mo"))?;
             match '__try0: {
                 for mut i in &*inputs.clone() {
                     let mut i = i.clone();

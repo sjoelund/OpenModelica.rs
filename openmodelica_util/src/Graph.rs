@@ -418,7 +418,7 @@ pub fn transposeGraph<NodeType: Clone + 'static + PartialEq>(mut intmpGraph: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.transpose failed.")).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.transpose failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -528,7 +528,7 @@ fn allReachableNodesWork<NodeType: Clone + 'static>(mut intmpstorage: (Arc<metam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.allReachableNodes failed.")).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.allReachableNodes failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
                     Ok(None)
                 }
                 _ => bail!("nomatch"),
@@ -579,7 +579,7 @@ pub fn partialDistance2color<NodeType: Clone + 'static>(mut toColorNodes: Arc<me
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.partialDistance2color failed.")).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.partialDistance2color failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -629,7 +629,7 @@ fn addForbiddenColors<NodeType: Clone + 'static>(mut inNode: NodeType, mut inNod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColors failed.")).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColors failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -656,7 +656,7 @@ fn arrayUpdateListAppend<NodeType: Clone + 'static>(mut inIndex: i32, mut inArra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.arrayUpdateListAppend failed.")).clone()], metamodelica::sourceInfo!())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.arrayUpdateListAppend failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -828,7 +828,7 @@ pub fn allReachableNodesInt(mut intmpstorage: (Arc<metamodelica::List<i32>>, Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.allReachableNodesInt failed.")).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.allReachableNodesInt failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -853,7 +853,7 @@ pub fn partialDistance2colorInt(mut inGraphT: Arc<metamodelica::List<(i32, Arc<m
         }
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.partialDistance2colorInt failed.")).clone()], metamodelica::sourceInfo!())?;
+        Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.partialDistance2colorInt failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
     }
     Ok(())
 }
@@ -870,7 +870,7 @@ fn addForbiddenColorsInt(mut inNode: i32, mut nodes: Arc<metamodelica::List<i32>
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColorsInt failed.")).clone()], metamodelica::sourceInfo!())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColorsInt failed.")).clone()], metamodelica::sourceInfo!("Util/Graph.mo"))?;
             return Err(__try0_err);
         }
     }

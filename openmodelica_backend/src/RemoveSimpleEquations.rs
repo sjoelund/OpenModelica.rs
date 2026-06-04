@@ -179,7 +179,7 @@ pub fn removeSimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<A
 pub fn removeVerySimpleEquations(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     if BackendDAEUtil::hasDAEMatching(inDAE.clone())? {
-        Error::addInternalError((literal!("Cannot run removeVerySimpleEquations on a matched system (continuing anyway)")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("Cannot run removeVerySimpleEquations on a matched system (continuing anyway)")).clone(), metamodelica::sourceInfo!("BackEnd/RemoveSimpleEquations.mo"))?;
         outDAE = inDAE.clone();
     } else {
         outDAE = performAliasEliminationBB(inDAE.clone(), true)?;

@@ -97,7 +97,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
             let mut expanded: bool = false;
             (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
             if !(expanded.clone()) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpressionIterator.fromExp")); __mm_s.push_str(&*literal!(" got unexpandable expression `")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("`")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpressionIterator.fromExp")); __mm_s.push_str(&*literal!(" got unexpandable expression `")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("`")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpressionIterator.mo"))?;
             }
             makeArrayIterator(e.clone())?
         },

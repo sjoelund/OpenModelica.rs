@@ -1026,8 +1026,8 @@ fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i
     st = intGt(lp.clone(), 0) && intLt(lp.clone(), lp1.clone());
     if st.clone() {
         if debug.clone() {
-            checkArrayModelica(LexTable::yy_accept.clone(), stCmp.clone(), metamodelica::sourceInfo!())?;
-            checkArrayModelica(LexTable::yy_acclist.clone(), lp.clone(), metamodelica::sourceInfo!())?;
+            checkArrayModelica(LexTable::yy_accept.clone(), stCmp.clone(), metamodelica::sourceInfo!("Lexers/LexerModelicaDiff.mo"))?;
+            checkArrayModelica(LexTable::yy_acclist.clone(), lp.clone(), metamodelica::sourceInfo!("Lexers/LexerModelicaDiff.mo"))?;
         }
         lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone(); __elt});
         action = ({let __elt = LexTable::yy_acclist.borrow()[(lp.clone()-1) as usize].clone(); __elt});

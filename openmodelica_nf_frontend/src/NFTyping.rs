@@ -197,7 +197,7 @@ pub fn typeComponents(mut cls: Arc<InstNode::InstNode>, mut context: i32, mut pr
         },
         Deref @ Class::INSTANCED_BUILTIN { .. } => (),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponents")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(cls.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponents")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(cls.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -290,7 +290,7 @@ pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding:
         Deref @ Class::INSTANCED_BUILTIN { .. } => var_field!((*cls).ty, Class::NFClass::INSTANCED_BUILTIN).clone(),
         Deref @ Class::TYPED_DERIVED { .. } => var_field!((*cls).ty, Class::NFClass::TYPED_DERIVED).clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeClassType")); __mm_s.push_str(&*literal!(" got noninstantiated class ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeClassType")); __mm_s.push_str(&*literal!(" got noninstantiated class ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -393,7 +393,7 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.makeRecordType")); __mm_s.push_str(&*literal!(" got record type without constructor")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.makeRecordType")); __mm_s.push_str(&*literal!(" got record type without constructor")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -452,7 +452,7 @@ pub fn typeComponent(mut component: Arc<InstNode::InstNode>, mut context: i32, m
         },
         Deref @ Component::INVALID_COMPONENT { .. } => Component::getType(c.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponent")); __mm_s.push_str(&*literal!(" got noninstantiated component ")); __mm_s.push_str(&*InstNode::name(component.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponent")); __mm_s.push_str(&*literal!(" got noninstantiated component ")); __mm_s.push_str(&*InstNode::name(component.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -511,7 +511,7 @@ pub fn typeIterator(mut iterator: Arc<InstNode::InstNode>, mut range: Arc<Expres
             (exp.clone(), ty.clone(), var.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeIterator")); __mm_s.push_str(&*literal!(" got non-iterator ")); __mm_s.push_str(&*InstNode::name(iterator.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeIterator")); __mm_s.push_str(&*literal!(" got non-iterator ")); __mm_s.push_str(&*InstNode::name(iterator.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -775,7 +775,7 @@ pub fn typeBindings(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Resul
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeBindings")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(cls.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeBindings")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(cls.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -875,7 +875,7 @@ pub fn typeComponentBinding(mut component: Arc<InstNode::InstNode>, mut context:
         },
         Deref @ Component::INVALID_COMPONENT { .. } => (),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponentBinding")); __mm_s.push_str(&*literal!(" got invalid node ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponentBinding")); __mm_s.push_str(&*literal!(" got invalid node ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -927,7 +927,7 @@ pub fn typeBinding(mut binding: Arc<Binding::NFBinding>, mut context: i32) -> Re
             binding.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeBinding")); __mm_s.push_str(&*literal!(" got uninstantiated binding")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeBinding")); __mm_s.push_str(&*literal!(" got uninstantiated binding")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1731,7 +1731,7 @@ pub fn typeSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut dimension: 
         },
         Deref @ Subscript::WHOLE => (Arc::new(crate::NFType::UNKNOWN), Dimension::variability(dimension.clone())?),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeSubscript")); __mm_s.push_str(&*literal!(" got unknown subscript")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeSubscript")); __mm_s.push_str(&*literal!(" got unknown subscript")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1886,7 +1886,7 @@ pub fn typeMatrixComma(mut elements: Arc<metamodelica::List<Arc<Expression::NFEx
     let mut n: i32 = 2;
     let mut pos: i32 = 0;
     let mut mk: MatchKind = MatchKind::EXACT;
-    Error::assertion(!(elements.clone().is_empty()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeMatrixComma")); __mm_s.push_str(&*literal!(" expected non-empty arguments")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion(!(elements.clone().is_empty()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeMatrixComma")); __mm_s.push_str(&*literal!(" expected non-empty arguments")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
     if (elements.clone().len() as i32) > 1 {
         for mut e in &*elements.clone() {
             let mut e = e.clone();
@@ -2228,7 +2228,7 @@ pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i3
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeClassSections")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(classNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeClassSections")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(classNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2284,7 +2284,7 @@ pub fn typeFunctionSections(mut classNode: Arc<InstNode::InstNode>, mut context:
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeFunctionSections")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(classNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeFunctionSections")); __mm_s.push_str(&*literal!(" got uninstantiated class ")); __mm_s.push_str(&*InstNode::name(classNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2423,7 +2423,7 @@ pub fn typeComponentSections(mut component: Arc<InstNode::InstNode>, mut context
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponentSections")); __mm_s.push_str(&*literal!(" got uninstantiated component ")); __mm_s.push_str(&*InstNode::name(component.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponentSections")); __mm_s.push_str(&*literal!(" got uninstantiated component ")); __mm_s.push_str(&*InstNode::name(component.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTyping.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

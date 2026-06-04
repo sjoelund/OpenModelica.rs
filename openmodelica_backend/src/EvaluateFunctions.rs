@@ -1799,7 +1799,7 @@ fn updateFunctionBody(mut funcIn: DAE::Function, mut body: Arc<metamodelica::Lis
             (funcOut.clone(), var_field!(funcOut.path, DAE::Function::FUNCTION).clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("EvaluateFunctions.updateFunctionBody")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("EvaluateFunctions.updateFunctionBody")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/EvaluateFunctions.mo"))?;
             bail!("fail")
         },
     });

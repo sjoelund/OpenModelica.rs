@@ -424,7 +424,7 @@ pub mod LookupState {
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { .. }, .. } => Arc::new(crate::NFLookupState::LookupState::FUNC),
         Deref @ SCode::Element::CLASS { .. } => Arc::new(crate::NFLookupState::LookupState::CLASS),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.elementState")); __mm_s.push_str(&*literal!(" got unknown element.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.elementState")); __mm_s.push_str(&*literal!(" got unknown element.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -456,7 +456,7 @@ pub mod LookupState {
         (Deref @ COMP { .. }, _) => Arc::new(LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::COMP_FUNC) }),
         (_, Deref @ CLASS_COMP { .. }) => Arc::new(LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::CLASS_COMP) }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.next2")); __mm_s.push_str(&*literal!(" failed on unknown transition for element ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.next2")); __mm_s.push_str(&*literal!(" failed on unknown transition for element ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

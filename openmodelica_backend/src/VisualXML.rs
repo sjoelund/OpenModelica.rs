@@ -259,7 +259,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
     };
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXMl.getConstCrefBinding failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXMl.getConstCrefBinding failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/VisualXML.mo"))?;
     }
     Ok(eOut)
 }
@@ -385,7 +385,7 @@ fn newVisualizer(mut cref: Arc<DAE::ComponentRef>, mut visualizerName: ArcStr) -
         Deref @ "Vector" => Visualization::VECTOR { ident: cref.clone(), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), coordinates: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), quantity: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), headAtOrigin: Arc::new(DAE::Exp::BCONST { bool: false }), twoHeadedArrow: Arc::new(DAE::Exp::BCONST { bool: false }) },
         Deref @ "Surface" => Visualization::SURFACE { ident: cref.clone(), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r_0: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), nu: Arc::new(DAE::Exp::ICONST { integer: -1 }), nv: Arc::new(DAE::Exp::ICONST { integer: -1 }), wireframe: Arc::new(DAE::Exp::BCONST { bool: false }), multiColored: Arc::new(DAE::Exp::BCONST { bool: false }), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), transparency: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }) },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXML.newVisualizer")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*visualizerName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXML.newVisualizer")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*visualizerName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/VisualXML.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

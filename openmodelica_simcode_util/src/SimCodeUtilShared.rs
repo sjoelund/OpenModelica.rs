@@ -101,7 +101,7 @@ pub fn createFunctions(mut inProgram: Absyn::Program, mut functionTree: Arc<AvlT
             outRecordDecls = __try0_o8;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("Creation of Modelica functions failed.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Creation of Modelica functions failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtilShared.mo"))?;
             return Err(__try0_err);
         }
     }

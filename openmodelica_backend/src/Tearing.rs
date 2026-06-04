@@ -136,7 +136,7 @@ pub fn tearingSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backe
             strongComponentIndex = __try0_o2;
         }
         Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.tearingSystem")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.tearingSystem")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -155,7 +155,7 @@ fn getTearingMethod(mut inTearingMethod: ArcStr) -> Result<TearingMethod> {
         Deref @ "omcTearing" => crate::Tearing::TearingMethod::OMC_TEARING,
         Deref @ "cellier" => crate::Tearing::TearingMethod::CELLIER_TEARING,
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.getTearingMethod")); __mm_s.push_str(&*literal!(" got invalid name \"")); __mm_s.push_str(&*inTearingMethod.clone()); __mm_s.push_str(&*literal!("\".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.getTearingMethod")); __mm_s.push_str(&*literal!(" got invalid name \"")); __mm_s.push_str(&*inTearingMethod.clone()); __mm_s.push_str(&*literal!("\".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1265,7 +1265,7 @@ fn isEntrySolved(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::Lis
         (_, BackendDAE::Solvability::SOLVABILITY_SOLVED { .. }, _) => true,
         (_, BackendDAE::Solvability::SOLVABILITY_PARAMETER { b: __esc_b }, _) => {
             b = (*__esc_b).clone();
-            Error::addInternalError((literal!("SOLVABILITY_PARAMETER is not handled yet. Requires revision.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("SOLVABILITY_PARAMETER is not handled yet. Requires revision.")).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             b.clone() && !(stringEqual((Flags::getConfigString(Flags::TEARING_STRICTNESS.clone())?).clone(), (literal!("veryStrict")).clone()))
         },
         _ => false,
@@ -1536,7 +1536,7 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             vars = __try0_o19;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function minimalTearing failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function minimalTearing failed")).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1560,7 +1560,7 @@ fn matchDiscreteVars(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut adjEn
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function matchDiscreteVars failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function matchDiscreteVars failed")).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1622,7 +1622,7 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function pathFound failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function pathFound failed")).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1646,7 +1646,7 @@ fn getTearingSetfromAssign(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function getTearingSetfromAssign failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function getTearingSetfromAssign failed")).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -2233,7 +2233,7 @@ fn selectTearingVar(mut me: metamodelica::Array<Arc<metamodelica::List<(i32, Bac
         Deref @ "MC3" => (std::sync::Arc::new(ModifiedCellierHeuristic_3) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<i32>>> + 'static>),
         Deref @ "MC4" => (std::sync::Arc::new(ModifiedCellierHeuristic_4) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<i32>>> + 'static>),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown tearing heuristic: ")); __mm_s.push_str(&*heuristic.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown tearing heuristic: ")); __mm_s.push_str(&*heuristic.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Tearing.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

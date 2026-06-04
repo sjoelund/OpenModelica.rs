@@ -288,7 +288,7 @@ pub fn getWhenEquationExpr(mut inWhenEquation: Arc<BackendDAE::WhenEquation>) ->
         outComponentRef = __pa2.clone();
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addInternalError((literal!("BackendEquation.getWhenEquationExpr failed\n")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("BackendEquation.getWhenEquationExpr failed\n")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
     }
     Ok((outComponentRef, outExp))
 }
@@ -1558,7 +1558,7 @@ pub fn traverseEquationToScalarResidualForm(mut inEq: Arc<BackendDAE::Equation>,
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.traverseEquationToScalarResidualForm")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.traverseEquationToScalarResidualForm")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1590,7 +1590,7 @@ pub fn convertResidualsIntoSolvedEquations(mut inResidualList: Arc<metamodelica:
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.convertResidualsIntoSolvedEquations")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.convertResidualsIntoSolvedEquations")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1653,7 +1653,7 @@ pub fn equationSource(mut eq: Arc<BackendDAE::Equation>) -> Result<Arc<DAE::Elem
             source.clone()
         },
         _ => {
-            Error::addInternalError((literal!("BackendEquation.equationSource failed!")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("BackendEquation.equationSource failed!")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1713,7 +1713,7 @@ pub fn equationSize(mut eq: Arc<BackendDAE::Equation>) -> Result<i32> {
             size.clone()
         },
         _ => {
-            Error::addInternalError((literal!("BackendEquation.equationSize failed!")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("BackendEquation.equationSize failed!")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1835,7 +1835,7 @@ pub fn equationKind(mut inEquation: Arc<BackendDAE::Equation>) -> Result<Backend
             kind.clone()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.equationKind")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.equationKind")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1902,7 +1902,7 @@ pub fn setEquationKind(mut eq: Arc<BackendDAE::Equation>, mut k: BackendDAE::Equ
             eq.clone()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.setEquationKind")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendEquation.setEquationKind")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2062,7 +2062,7 @@ pub fn getEquationAttributes(mut inEqn: Arc<BackendDAE::Equation>) -> Result<Bac
             attr.clone()
         },
         _ => {
-            Error::addInternalError((literal!("function getEquationAttributes failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function getEquationAttributes failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2101,7 +2101,7 @@ pub fn setEquationAttributes(mut inEqn: Arc<BackendDAE::Equation>, mut inAttr: B
             Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: conditions.clone(), eqnstrue: eqnstrue.clone(), eqnsfalse: eqnsfalse.clone(), source: source.clone(), attr: inAttr.clone() })
         },
         _ => {
-            Error::addInternalError((literal!("function setEquationAttributes failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function setEquationAttributes failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2123,7 +2123,7 @@ pub fn setEquationLHS(mut inEqn: Arc<BackendDAE::Equation>, mut lhs: Arc<DAE::Ex
             eqn.clone()
         },
         _ => {
-            Error::addInternalError((literal!("function setEquationLHS failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function setEquationLHS failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2155,7 +2155,7 @@ pub fn setEquationRHS(mut inEqn: Arc<BackendDAE::Equation>, mut rhs: Arc<DAE::Ex
             eqn.clone()
         },
         _ => {
-            Error::addInternalError((literal!("function setEquationRHS failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function setEquationRHS failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2472,7 +2472,7 @@ pub fn solveEquation(mut eqn: Arc<BackendDAE::Equation>, mut crefExp: Arc<DAE::E
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     BackendDump::dumpBackendDAEEqnList(list![eqn.clone()], ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function BackendEquation.solveEquation failed w.r.t ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(crefExp.clone())?); ArcStr::from(__mm_s) }).clone(), true)?;
-                    Error::addInternalError((literal!("function solveEquation failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function solveEquation failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2905,7 +2905,7 @@ pub fn addOperation(mut inEqn: Arc<BackendDAE::Equation>, mut inSymOp: Arc<DAE::
             eqn.clone()
         },
         _ => {
-            Error::addInternalError((literal!("BackendEquation.addOperation failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("BackendEquation.addOperation failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendEquation.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

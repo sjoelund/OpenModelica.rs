@@ -190,7 +190,7 @@ pub mod CachedData {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: list![r#fn.clone()], typed: false, specialBuiltin: specialBuiltin.clone() }),
         Deref @ FUNCTION { .. } => Arc::new(CachedData::FUNCTION { funcs: listAppend(var_field!((*func_cache).funcs, CachedData::FUNCTION).clone(), list![r#fn.clone()]), typed: false, specialBuiltin: var_field!((*func_cache).specialBuiltin, CachedData::FUNCTION).clone() || specialBuiltin.clone() }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.CachedData.addFunc")); __mm_s.push_str(&*literal!(": Invalid cache for function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.CachedData.addFunc")); __mm_s.push_str(&*literal!(": Invalid cache for function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1238,7 +1238,7 @@ pub mod InstNode {
         Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), metamodelica::cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?,
         Deref @ InstNodeType::IMPLICIT_SCOPE => scopeList(parent(clsNode.clone()), includeRoot.clone(), accumScopes.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopeListClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopeListClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1345,7 +1345,7 @@ pub mod InstNode {
         Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopePath2(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?,
         Deref @ InstNodeType::IMPLICIT_SCOPE => scopePath2(classParent(node.clone())?, scopeType.clone(), accumPath.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopePathClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopePathClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1464,7 +1464,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.cacheInitFunc")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.cacheInitFunc")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1480,7 +1480,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.cacheAddFunc")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.cacheAddFunc")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1496,7 +1496,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.newFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.newFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1509,7 +1509,7 @@ pub mod InstNode {
         func_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ CLASS_NODE { .. } => CachedData::getFuncCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1525,7 +1525,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1538,7 +1538,7 @@ pub mod InstNode {
         pack_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ CLASS_NODE { .. } => CachedData::getPackageCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1554,7 +1554,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.setPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1570,7 +1570,7 @@ pub mod InstNode {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.clearPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.clearPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2161,7 +2161,7 @@ pub mod InstNode {
         Deref @ Class::INSTANCED_CLASS { .. } => var_field!((*cls).sections, Class::NFClass::INSTANCED_CLASS).clone(),
         Deref @ Class::TYPED_DERIVED { .. } => getSections(var_field!((*cls).baseClass, Class::NFClass::TYPED_DERIVED).clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getSections")); __mm_s.push_str(&*literal!(" did not get an instanced class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getSections")); __mm_s.push_str(&*literal!(" did not get an instanced class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

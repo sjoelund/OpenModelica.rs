@@ -158,7 +158,7 @@ pub fn instantiate(mut functionName: Arc<Absyn::ComponentRef>, mut functionArgs:
         Deref @ Absyn::FunctionArgs::FUNCTIONARGS { .. } => instNormalCall(functionName.clone(), functionArgs.clone(), scope.clone(), context.clone(), info.clone())?,
         Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { .. } => instIteratorCall(functionName.clone(), functionArgs.clone(), scope.clone(), context.clone(), info.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.instantiate")); __mm_s.push_str(&*literal!(" got unknown call type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.instantiate")); __mm_s.push_str(&*literal!(" got unknown call type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -223,7 +223,7 @@ pub fn typeCall(mut callExp: Arc<Expression::NFExpression>, mut context: i32, mu
             callExp.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeCall")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*Expression::toString(callExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeCall")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*Expression::toString(callExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -274,7 +274,7 @@ pub fn typeNormalCall(mut call: Arc<NFCall>, mut context: i32, mut info: SourceI
             typeArgs(call.clone(), context.clone(), info.clone())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeNormalCall")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeNormalCall")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -405,7 +405,7 @@ pub fn retypeCall(mut call: Arc<NFCall>, mut context: i32, mut info: SourceInfo)
             ty_call.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.retypeCall")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.retypeCall")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -490,7 +490,7 @@ pub fn variability(mut call: Arc<NFCall>) -> Result<Variability> {
             var_field!((*call).var, NFCall::TYPED_REDUCTION).clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.variability")); __mm_s.push_str(&*literal!(" got untyped call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.variability")); __mm_s.push_str(&*literal!(" got untyped call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -652,7 +652,7 @@ pub fn typedFunction(mut call: Arc<NFCall>) -> Result<Arc<Function::Function>> {
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => NFBuiltinFuncs::ARRAY_FUNC().clone(),
         Deref @ TYPED_REDUCTION { .. } => var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typedFunction")); __mm_s.push_str(&*literal!(" got untyped function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typedFunction")); __mm_s.push_str(&*literal!(" got untyped function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -745,7 +745,7 @@ pub fn toRecordExpression(mut call: Arc<NFCall>, mut ty: Arc<Type::NFType>) -> R
     exp = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ TYPED_CALL { .. } => EvalFunction::evaluateRecordConstructor(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), ty.clone(), var_field!((*call).arguments, NFCall::TYPED_CALL).clone(), false)?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toRecordExpression")); __mm_s.push_str(&*literal!(" got unknown call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toRecordExpression")); __mm_s.push_str(&*literal!(" got unknown call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1202,7 +1202,7 @@ pub fn toAbsyn(mut call: Arc<NFCall>) -> Result<Arc<Absyn::Exp>> {
             Arc::new(Absyn::Exp::CALL { function_: AbsynUtil::pathToCref(Function::name(var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone()))?, functionArgs: toAbsynIterators(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), var_field!((*call).iters, NFCall::TYPED_REDUCTION).clone())?, typeVars: metamodelica::nil() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1271,7 +1271,7 @@ pub fn toDAE_work(mut call: Arc<NFCall>) -> Result<Arc<DAE::Exp>> {
     }) })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toDAE_work")); __mm_s.push_str(&*literal!(" got untyped call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.toDAE_work")); __mm_s.push_str(&*literal!(" got untyped call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2348,7 +2348,7 @@ fn instArgs(mut args: Arc<Absyn::FunctionArgs>, mut scope: Arc<InstNode::InstNod
             (posArgs.clone(), namedArgs.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.instArgs")); __mm_s.push_str(&*literal!(" got unknown function args")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.instArgs")); __mm_s.push_str(&*literal!(" got unknown function args")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2483,7 +2483,7 @@ fn typeArrayConstructor(mut call: Arc<NFCall>, mut context: i32, mut info: Sourc
             (Arc::new(NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: variability.clone(), purity: purity.clone(), exp: arg.clone(), iters: iters.clone() }), ty.clone(), variability.clone(), purity.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeArrayConstructor")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeArrayConstructor")); __mm_s.push_str(&*literal!(" got invalid function call expression")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2535,7 +2535,7 @@ fn typeReduction(mut call: Arc<NFCall>, mut context: i32, mut info: SourceInfo) 
             (makeTypedReduction(r#fn.clone(), ty.clone(), variability.clone(), purity.clone(), arg.clone(), iters.clone(), info.clone())?, ty.clone(), variability.clone(), purity.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeReduction")); __mm_s.push_str(&*literal!(" got invalid reduction call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.typeReduction")); __mm_s.push_str(&*literal!(" got invalid reduction call")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2570,7 +2570,7 @@ fn reductionDefaultValue(mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NF
         Deref @ "min" => Some(Expression::makeMaxValue(ty.clone())?),
         Deref @ "max" => Some(Expression::makeMinValue(ty.clone())?),
         _ => {
-            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.reductionDefaultValue")); __mm_s.push_str(&*literal!(" got unknown reduction name ")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(Function::name(r#fn.clone()))?); ArcStr::from(__mm_s) }).clone()], metamodelica::sourceInfo!())?;
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.reductionDefaultValue")); __mm_s.push_str(&*literal!(" got unknown reduction name ")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(Function::name(r#fn.clone()))?); ArcStr::from(__mm_s) }).clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

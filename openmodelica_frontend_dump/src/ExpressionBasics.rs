@@ -344,7 +344,7 @@ pub fn evalCat<Exp: Clone + 'static>(mut dim: i32, mut exps: Arc<metamodelica::L
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ExpressionBasics.mo"))?;
         }
         firstDims = metamodelica::cons(j.clone(), firstDims.clone());
         dimsLst = ({
@@ -427,7 +427,7 @@ fn evalCatGetFlatArray<Exp: Clone + 'static>(mut e: Exp, mut dim: i32, mut getAr
         if outDims.clone().is_empty() {
             outDims = dims.clone();
         } else if !(dims.clone() == outDims.clone()) {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionBasics.evalCatGetFlatArray")); __mm_s.push_str(&*literal!(": Got unbalanced array from ")); __mm_s.push_str(&*toString(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionBasics.evalCatGetFlatArray")); __mm_s.push_str(&*literal!(": Got unbalanced array from ")); __mm_s.push_str(&*toString(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ExpressionBasics.mo"))?;
         }
         outExps = listAppend(arr.clone(), outExps.clone());
         i = i.clone() + 1;
@@ -841,7 +841,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             valueCompare(inExp1.clone(), inExp2.clone())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionBasics.compare failed: ctor:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", metamodelica::valueConstructor((&*inExp1.clone()))?))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printExpStr(inExp2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionBasics.compare failed: ctor:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", metamodelica::valueConstructor((&*inExp1.clone()))?))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*printExpStr(inExp2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ExpressionBasics.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

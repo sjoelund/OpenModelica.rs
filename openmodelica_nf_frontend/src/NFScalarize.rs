@@ -318,7 +318,7 @@ pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices:
         }
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFScalarize.scalarizeBackendVariable")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFScalarize.scalarizeBackendVariable")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFScalarize.mo"))?;
     }
     Ok(vars)
 }

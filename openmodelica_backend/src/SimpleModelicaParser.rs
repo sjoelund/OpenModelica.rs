@@ -1779,7 +1779,7 @@ fn removeAddedCommentFromDiff(mut tree: Arc<metamodelica::List<(Diff, Arc<metamo
     } });
         acc = metamodelica::cons(diff.clone(), acc.clone());
     }
-    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove comment `")); __mm_s.push_str(&*comment.clone()); __mm_s.push_str(&*literal!("` from diff; but we know it is in there somewhere")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove comment `")); __mm_s.push_str(&*comment.clone()); __mm_s.push_str(&*literal!("` from diff; but we know it is in there somewhere")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Parsers/SimpleModelicaParser.mo"))?;
     Ok(tree)
 }
 
@@ -3305,7 +3305,7 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
                     acc = acc.clone();
                 } else {
                     if foundAdded.clone() {
-                        Error::addInternalError((literal!("Found multiple Add subtrees")).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError((literal!("Found multiple Add subtrees")).clone(), metamodelica::sourceInfo!("Parsers/SimpleModelicaParser.mo"))?;
                         bail!("fail");
                     }
                     addedTree = tree.clone();
@@ -3328,7 +3328,7 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
                     acc = metamodelica::cons(list![tree.clone()], acc.clone());
                 } else {
                     if foundDeleted.clone() {
-                        Error::addInternalError((literal!("Found multiple Delete subtrees")).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError((literal!("Found multiple Delete subtrees")).clone(), metamodelica::sourceInfo!("Parsers/SimpleModelicaParser.mo"))?;
                         bail!("fail");
                     }
                     deletedTree = tree.clone();
@@ -3349,7 +3349,7 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
             ()
         },
         (d, _) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", d.clone()))); __mm_s.push_str(&*literal!(" subtrees with multiple or zero entries")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", d.clone()))); __mm_s.push_str(&*literal!(" subtrees with multiple or zero entries")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Parsers/SimpleModelicaParser.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

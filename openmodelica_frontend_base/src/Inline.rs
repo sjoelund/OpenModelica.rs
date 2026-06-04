@@ -1591,7 +1591,7 @@ fn getFunctionInputsOutputBody(mut r#fn: Arc<metamodelica::List<Arc<DAE::Element
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown element: ")); __mm_s.push_str(&*DAEDump::dumpElementsStr(list![elt.clone()])?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown element: ")); __mm_s.push_str(&*DAEDump::dumpElementsStr(list![elt.clone()])?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/Inline.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

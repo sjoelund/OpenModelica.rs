@@ -918,7 +918,7 @@ pub fn buildInstanceTree(mut node: Arc<InstNode::InstNode>, mut isDerived: bool)
         },
         (_, Deref @ ClassTree::FLAT_TREE { .. }) => Arc::new(InstanceTree::CLASS { node: node.clone(), elements: if (InstNode::isEnumerationType(cls_node.clone())?) {list![ENUM_BASE().clone()]} else {metamodelica::nil()}, isExtends: isDerived.clone() }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.buildInstanceTree")); __mm_s.push_str(&*literal!(" got unknown class tree")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.buildInstanceTree")); __mm_s.push_str(&*literal!(" got unknown class tree")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/NFApi.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1318,7 +1318,7 @@ pub fn dumpJSONComponent(mut component: Arc<InstNode::InstNode>, mut originalBin
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.dumpJSONComponent")); __mm_s.push_str(&*literal!(" got unknown component ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.dumpJSONComponent")); __mm_s.push_str(&*literal!(" got unknown component ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/NFApi.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

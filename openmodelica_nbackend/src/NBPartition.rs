@@ -219,8 +219,8 @@ pub mod Association {
                 }
                 association = Arc::new(Association::CLOCKED { clock: clock.clone(), baseClock: None, clock_deps: clock_deps.clone(), holdEvents: false });
             } else {
-                base_name = UnorderedMap::getSafe(name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!())?;
-                association = Arc::new(Association::CLOCKED { clock: clock.clone(), baseClock: Some(UnorderedMap::getSafe(base_name.clone(), info.baseClocks.clone(), metamodelica::sourceInfo!())?), clock_deps: clock_deps.clone(), holdEvents: false });
+                base_name = UnorderedMap::getSafe(name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?;
+                association = Arc::new(Association::CLOCKED { clock: clock.clone(), baseClock: Some(UnorderedMap::getSafe(base_name.clone(), info.baseClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?), clock_deps: clock_deps.clone(), holdEvents: false });
             }
         } else {
             association = Arc::new(Association::CONTINUOUS { kind: kind.clone(), jacobian: None, jacobianAdjoint: None, LFG_jacobian: None, MRF_jacobian: None, R0_jacobian: None });
@@ -286,12 +286,12 @@ pub mod Association {
     fn expClocked(mut exp: Arc<Expression::NFExpression>, mut info: Arc<ClockedInfo::ClockedInfo>, mut clock_ptr: Pointer::Pointer<Option<(Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)>>, mut infer_ptr: Pointer::Pointer<Option<Arc<ComponentRef::NFComponentRef>>>, mut failed_set: Arc<UnorderedSet::UnorderedSet<(Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)>>, mut clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
         exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (BVariable::isClockOrClocked(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?)) => {
+        Deref @ Expression::CREF { .. } if (BVariable::isClockOrClocked(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?)) => {
             let mut clock_opt: Option<Arc<BClock::BClock>> = None;
             if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.baseClocks.clone())? {
-                clock_opt = Some(UnorderedMap::getSafe(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.baseClocks.clone(), metamodelica::sourceInfo!())?);
+                clock_opt = Some(UnorderedMap::getSafe(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.baseClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?);
             } else if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.subClocks.clone())? {
-                clock_opt = Some(UnorderedMap::getSafe(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.subClocks.clone(), metamodelica::sourceInfo!())?);
+                clock_opt = Some(UnorderedMap::getSafe(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), info.subClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?);
             } else {
                 clock_opt = None;
             }
@@ -329,7 +329,7 @@ pub mod Association {
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: arg, .. }, tail: _ }, .. } } if (Expression::isClockOrSampleFunction(exp.clone())?) => {
             if UnorderedMap::contains(arg.clone(), info.subClocks.clone())? {
-                UnorderedSet::add(UnorderedMap::getSafe(arg.clone(), info.subClocks.clone(), metamodelica::sourceInfo!())?, clock_deps.clone())?;
+                UnorderedSet::add(UnorderedMap::getSafe(arg.clone(), info.subClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?, clock_deps.clone())?;
                 Pointer::update(infer_ptr.clone(), Some(arg.clone()));
             }
             exp.clone()
@@ -347,10 +347,10 @@ pub mod Association {
         let mut base_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut sub_clock_names1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut sub_clock_names2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        base_name = UnorderedMap::getSafe(name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!())?;
-        base = UnorderedMap::getSafe(base_name.clone(), info.baseClocks.clone(), metamodelica::sourceInfo!())?;
+        base_name = UnorderedMap::getSafe(name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?;
+        base = UnorderedMap::getSafe(base_name.clone(), info.baseClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?;
         if BClock::isInferredClock(base.clone()) {
-            sub_clock_names1 = UnorderedMap::getSafe(base_name.clone(), info.baseToSub.clone(), metamodelica::sourceInfo!())?;
+            sub_clock_names1 = UnorderedMap::getSafe(base_name.clone(), info.baseToSub.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBPartition.mo"))?;
             for mut s_name in &*sub_clock_names1.clone() {
                 let mut s_name = s_name.clone();
                 UnorderedMap::add(s_name.clone(), new_name.clone(), info.subToBase.clone())?;

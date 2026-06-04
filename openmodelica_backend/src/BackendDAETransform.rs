@@ -100,7 +100,7 @@ pub fn strongComponentsScalar(mut inSystem: Arc<BackendDAE::EqSystem>, mut inSha
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function strongComponentsScalar failed (sorting strong components)")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function strongComponentsScalar failed (sorting strong components)")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -190,7 +190,7 @@ fn analyseStrongComponentScalar(mut inComp: Arc<metamodelica::List<i32>>, mut sy
             vlst = __try0_o6;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function analyseStrongComponentScalar failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function analyseStrongComponentScalar failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -349,7 +349,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*stringDelimitList(slst.clone(), (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
                     slst = List::map(eqn_lst.clone(), (std::sync::Arc::new(BackendDump::equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?;
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(slst.clone(), (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -367,7 +367,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*stringDelimitList(slst.clone(), (literal!("\n  ")).clone())); ArcStr::from(__mm_s) }).clone();
                     slst = List::map(eqn_lst.clone(), (std::sync::Arc::new(BackendDump::equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?;
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*msg.clone()); __mm_s.push_str(&*literal!("\nequations:\n  ")); __mm_s.push_str(&*stringDelimitList(slst.clone(), (literal!("\n  ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -376,7 +376,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function analyseStrongComponentBlock failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function analyseStrongComponentBlock failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -880,7 +880,7 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function traverseBackendDAEExpsEqnWithSymbolicOperation failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function traverseBackendDAEExpsEqnWithSymbolicOperation failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAETransform.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

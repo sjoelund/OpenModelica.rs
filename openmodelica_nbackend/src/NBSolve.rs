@@ -379,7 +379,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 tmp_vars = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut tpl in (tmp_crefs.clone()).into_iter().cloned() {
-            let __x = unwrap_break_err!(BVariable::getVarPointer(Util::tuple22(tpl.clone()), metamodelica::sourceInfo!()), '__try0);
+            let __x = unwrap_break_err!(BVariable::getVarPointer(Util::tuple22(tpl.clone()), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo")), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -419,7 +419,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                     vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut c in (alg.outputs.clone()).into_iter().cloned() {
-            let __x = Arc::new(Slice::NBSlice { t: unwrap_break_err!(BVariable::getVarPointer(c.clone(), metamodelica::sourceInfo!()), '__try0), indices: metamodelica::nil() });
+            let __x = Arc::new(Slice::NBSlice { t: unwrap_break_err!(BVariable::getVarPointer(c.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo")), '__try0), indices: metamodelica::nil() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -431,7 +431,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 strict = Arc::new(Tearing::NBTearing { iteration_vars: ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut c in (UnorderedSet::toList(solved_inputs.clone())).into_iter().cloned() {
-            let __x = Arc::new(Slice::NBSlice { t: unwrap_break_err!(BVariable::getVarPointer(c.clone(), metamodelica::sourceInfo!()), '__try0), indices: metamodelica::nil() });
+            let __x = Arc::new(Slice::NBSlice { t: unwrap_break_err!(BVariable::getVarPointer(c.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo")), '__try0), indices: metamodelica::nil() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -732,7 +732,7 @@ pub fn solveEquation(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRe
             let mut body_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
             let mut indexed_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
             let mut dummy: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
-            (indexed_var, _) = BVariable::makeVarPtrCyclic(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!())?, cref.clone())?;
+            (indexed_var, _) = BVariable::makeVarPtrCyclic(BVariable::getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?, cref.clone())?;
             dummy = Iterator::dummy(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?;
             (body_slice, status, implicit_index) = solveMultiStrongComponent(Arc::new(Slice::NBSlice { t: Pointer::create(body.clone()), indices: metamodelica::nil() }), list![Arc::new(Slice::NBSlice { t: indexed_var.clone(), indices: metamodelica::nil() })], funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), dummy.clone(), varData.clone(), eqData.clone())?;
             assign_variant_field!(eqn => Equation::Equation::FOR_EQUATION; body = list![Pointer::access(Slice::getT(body_slice.clone()))]);
@@ -905,10 +905,10 @@ fn solveSimpleLhsRhs(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expres
         (exp, Deref @ Expression::LUNARY { exp: Deref @ Expression::CREF { cref: checkCref, .. }, .. }) if (ComponentRef::isEqual(cref.clone(), checkCref.clone())? && !(Expression::containsCref(exp.clone(), cref.clone())?)) => {
             (Equation::updateLHSandRHS(eqn.clone(), Expression::logicNegate(rhs.clone()), Expression::logicNegate(lhs.clone()))?, Status::EXPLICIT.clone(), RelationInversion::FALSE.clone())
         },
-        (exp @ Deref @ Expression::TUPLE { .. }, _) if (tupleSolvable(var_field!((**exp).elements, Expression::NFExpression::TUPLE).clone(), list![BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?])?) => {
+        (exp @ Deref @ Expression::TUPLE { .. }, _) if (tupleSolvable(var_field!((**exp).elements, Expression::NFExpression::TUPLE).clone(), list![BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?])?) => {
             (eqn.clone(), Status::EXPLICIT.clone(), RelationInversion::FALSE.clone())
         },
-        (_, exp @ Deref @ Expression::TUPLE { .. }) if (tupleSolvable(var_field!((**exp).elements, Expression::NFExpression::TUPLE).clone(), list![BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?])?) => {
+        (_, exp @ Deref @ Expression::TUPLE { .. }) if (tupleSolvable(var_field!((**exp).elements, Expression::NFExpression::TUPLE).clone(), list![BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?])?) => {
             (Equation::swapLHSandRHS(eqn.clone())?, Status::EXPLICIT.clone(), RelationInversion::FALSE.clone())
         },
         _ => {
@@ -1607,7 +1607,7 @@ fn getVarSlice(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equ
         var_cref = listHead(slices_lst.clone())?;
         solve_status = Status::UNPROCESSED.clone();
     } else {
-        record_parent = BVariable::getParent(BVariable::getVarPointer(var_cref.clone(), metamodelica::sourceInfo!())?);
+        record_parent = BVariable::getParent(BVariable::getVarPointer(var_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBSolve.mo"))?);
         if isSome(record_parent.clone()) {
             (var_cref, solve_status) = getVarSlice(BVariable::getVarName(Util::getOption(record_parent.clone())?), eqn.clone())?;
         } else {

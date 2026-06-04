@@ -684,7 +684,7 @@ pub fn getPartnerCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc
     let mut partner_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>> = None;
     let mut partnerName: ArcStr = arcstr::literal!("");
-    (partner, partnerName) = func(getVarPointer(cref.clone(), metamodelica::sourceInfo!())?)?;
+    (partner, partnerName) = func(getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?)?;
     if isSome(partner.clone()) {
         partner_cref = getVarName(Util::getOption(partner.clone())?);
         if !(scalarized.clone()) {
@@ -1280,7 +1280,7 @@ pub fn makeDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut scalarized: b
             let mut derNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             let mut state: Pointer::Pointer<Arc<Variable::NFVariable>>;
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-            state = getVarPointer(state_cref.clone(), metamodelica::sourceInfo!())?;
+            state = getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             derNode = Arc::new(InstNode::InstNode::VAR_NODE { name: (arcstr::literal!(DERIVATIVE_STR)).clone(), varPointer: dummy_ptr.clone() });
             der_cref = ComponentRef::append(state_cref.clone(), ComponentRef::fromNode(derNode.clone(), ComponentRef::scalarType(state_cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             var = fromCref(ComponentRef::stripSubscriptsAll(der_cref.clone()), Variable::attributes(Pointer::access(state.clone())), Binding::EMPTY_BINDING().clone())?;
@@ -1368,7 +1368,7 @@ pub fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut arg_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     subscripts = ComponentRef::subscriptsAllFlat(cref.clone())?;
-    arg_children = getRecordChildren(getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
+    arg_children = getRecordChildren(getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?);
     children = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut child in (arg_children.clone()).into_iter().cloned() {
@@ -1431,7 +1431,7 @@ pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Co
             let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
             let mut pre: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
-            var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(PREVIOUS_STR));
             pre_cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             pre = fromCref(pre_cref.clone(), Variable::attributes(Pointer::access(var_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
@@ -1459,7 +1459,7 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut varKind: Arc<VariableKind::VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
             let mut qual = (*qual).clone();
-            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             (ovar, _) = getVarSeed(old_var_ptr.clone());
             if isSome(ovar.clone()) {
                 var_ptr = Util::getOption(ovar.clone())?;
@@ -1502,7 +1502,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
             let mut varKind: Arc<VariableKind::VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
-            res_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            res_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             (ovar, _) = getVarPDer(res_ptr.clone(), isTmp.clone());
             if isSome(ovar.clone()) {
                 var_ptr = Util::getOption(ovar.clone())?;
@@ -1574,7 +1574,7 @@ pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut old_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
-            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             (start_cref, var_ptr) = (match (getVarStart(old_var_ptr.clone())).0 {
         Some(mut __esc_var_ptr) => {
             var_ptr = __esc_var_ptr.clone();
@@ -1583,7 +1583,7 @@ pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<
         _ => {
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(START_STR));
             start_cref = ComponentRef::append(ComponentRef::stripSubscriptsAll(cref.clone()), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
-            var = fromCref(start_cref.clone(), Variable::attributes(getVar(cref.clone(), metamodelica::sourceInfo!())?), Binding::EMPTY_BINDING().clone())?;
+            var = fromCref(start_cref.clone(), Variable::attributes(getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?), Binding::EMPTY_BINDING().clone())?;
             if isRecord(old_var_ptr.clone()) {
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::RECORD { children: metamodelica::nil(), min_var: Prefixes::Variability::PARAMETER.clone(), max_var: Prefixes::Variability::CONTINUOUS.clone() })));
             } else {
@@ -1709,10 +1709,10 @@ pub fn makeTmpVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Com
             let mut old_var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
-            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(TEMPORARY_STR));
             tmp_cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
-            var = fromCref(tmp_cref.clone(), Variable::attributes(getVar(cref.clone(), metamodelica::sourceInfo!())?), Binding::EMPTY_BINDING().clone())?;
+            var = fromCref(tmp_cref.clone(), Variable::attributes(getVar(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?), Binding::EMPTY_BINDING().clone())?;
             assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), getVarKind(old_var_ptr.clone())));
             (var_ptr, tmp_cref) = makeVarPtrCyclic(var.clone(), tmp_cref.clone())?;
             ()
@@ -1879,14 +1879,14 @@ pub fn hasNonTrivialAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFV
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut binding: Arc<Expression::NFExpression> = Binding::getExp(var.binding.clone())?;
-    b = !(Expression::isTrivialCref(binding.clone())) && checkExpMap(binding.clone(), (std::sync::Arc::new(fnptr!(isTimeDependent, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?;
+    b = !(Expression::isTrivialCref(binding.clone())) && checkExpMap(binding.clone(), (std::sync::Arc::new(fnptr!(isTimeDependent, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?;
     Ok(b)
 }
 
 pub fn hasConstOrParamAliasBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = !(checkExpMap(Binding::getExp(var.binding.clone())?, (std::sync::Arc::new(fnptr!(isTimeDependent, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?);
+    b = !(checkExpMap(Binding::getExp(var.binding.clone())?, (std::sync::Arc::new(fnptr!(isTimeDependent, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Classes/NBVariable.mo"))?);
     Ok(b)
 }
 

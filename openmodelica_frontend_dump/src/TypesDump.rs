@@ -394,7 +394,7 @@ pub fn printConstStr(mut inConst: DAE::Const) -> Result<ArcStr> {
         DAE::Const::C_PARAM { .. } => literal!("C_PARAM"),
         DAE::Const::C_VAR { .. } => literal!("C_VAR"),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TypesDump.printConstStr")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TypesDump.printConstStr")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/TypesDump.mo"))?;
             bail!("fail")
         },
     })).clone();
@@ -1044,7 +1044,7 @@ pub fn printBindingStr(mut inBinding: Arc<DAE::Binding>) -> Result<ArcStr> {
             res.clone()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TypesDump.printBindingStr")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TypesDump.printBindingStr")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/TypesDump.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

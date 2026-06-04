@@ -238,7 +238,7 @@ fn CrefToMidVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result<Mi
             (ident_.clone(), ty_.clone())
         },
         _ => {
-            Error::addInternalError((literal!("CrefToMidVar error")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("CrefToMidVar error")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -275,7 +275,7 @@ fn RValueType(mut rvalue: MidCode::RValue) -> Result<Arc<DAE::Type>> {
         MidCode::RValue::ISCONS { src: _ } => DAE::T_BOOL_DEFAULT().clone(),
         MidCode::RValue::ISSOME { src: _ } => DAE::T_BOOL_DEFAULT().clone(),
         _ => {
-            Error::addInternalError((literal!("Could not find the correct type of an RValue.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Could not find the correct type of an RValue.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
     });
@@ -331,7 +331,7 @@ fn DAEFunctionToMid(mut simfunc: Arc<SimCodeFunction::Function::Function>) -> Re
             ()
         },
         _ => {
-            Error::addInternalError((literal!("Unsupported SimCodeFunction.Function type\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Unsupported SimCodeFunction.Function type\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail");
             ()
         },
@@ -382,7 +382,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             ()
         },
         Deref @ DAE::Statement::STMT_ASSIGN { type_: _, .. } => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.STMT_ASSIGN to Mid conversion failed ")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(var_field!((**stmt).exp1, DAE::Statement::STMT_ASSIGN).clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.STMT_ASSIGN to Mid conversion failed ")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(var_field!((**stmt).exp1, DAE::Statement::STMT_ASSIGN).clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { type_: _, expExpLst: expLst, exp, source: _ } => {
@@ -403,7 +403,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("outvars convertion failed ")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp1.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("outvars convertion failed ")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp1.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -502,7 +502,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Statement to Mid conversion failed ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Statement to Mid conversion failed ")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -785,7 +785,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
             varTmp = GenTmpVar(Types::complicateType(ty.clone())?, state.clone());
             let () = (::match_deref::match_deref! { match &(Types::complicateType(ty.clone())?) {
         Deref @ DAE::Type::T_TUPLE { types: _, .. } => {
-            Error::addInternalError((literal!("Not supposed to get tuple here.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Not supposed to get tuple here.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => (),
@@ -795,7 +795,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
             MidCode::RValue::VARIABLE { src: varTmp.clone() }
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Exp to Mid conversion failed:\n")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Exp to Mid conversion failed:\n")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -885,7 +885,7 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
             varRange = RValueToVar(ExpToMid(range.clone(), state.clone())?, state.clone())?;
             let () = (::match_deref::match_deref! { match &(varRange.ty.clone()) {
         Deref @ DAE::Type::T_METATYPE { ty: _ } => {
-            Error::addInternalError((literal!("metatype error")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("metatype error")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         Deref @ DAE::Type::T_METAARRAY { ty: _ } => {
@@ -918,7 +918,7 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("unknown for type ")); __mm_s.push_str(&*DAEDump::daeTypeStr(varRange.ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("unknown for type ")); __mm_s.push_str(&*DAEDump::daeTypeStr(varRange.ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1156,14 +1156,14 @@ fn MatchExpressionToMid(mut matchexpression: Arc<DAE::Exp>, mut outvars: Arc<met
             ()
         },
         (Some(daeExp), _) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Match expression output to Mid conversion failed:\n")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(daeExp.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Match expression output to Mid conversion failed:\n")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(daeExp.clone(), 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             ()
         },
         (None, Deref @ metamodelica::List::Nil) => {
             ()
         },
         (None, _) => {
-            Error::addInternalError((literal!("case fail")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("case fail")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => bail!("match: no arm matched"),
@@ -1280,7 +1280,7 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Exp to Mid conversion failed for pattern constant. Exp:")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp.clone(), 0)?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE.Exp to Mid conversion failed for pattern constant. Exp:")); __mm_s.push_str(&*ExpressionDump::dumpExpStr(exp.clone(), 0)?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1298,7 +1298,7 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             listTypes = (::match_deref::match_deref! { match &(scrutinee.ty.clone()) {
         Deref @ DAE::Type::T_METATUPLE { types: listTypes } => listTypes.clone(),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Wrong type of midvar in tuple pattern: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(scrutinee.ty.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Wrong type of midvar in tuple pattern: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(scrutinee.ty.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1331,7 +1331,7 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             ty = (::match_deref::match_deref! { match &(scrutinee.ty.clone()) {
         Deref @ DAE::Type::T_METAOPTION { ty } => ty.clone(),
         _ => {
-            Error::addInternalError((literal!("Wrong type of midvar in option pattern.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Wrong type of midvar in option pattern.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1354,12 +1354,12 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             stateAddBailOnFalse(ok.clone(), labelNoMatch.clone(), state.clone());
             ty = (::match_deref::match_deref! { match &(scrutinee.ty.clone()) {
         Deref @ DAE::Type::T_METALIST { ty: Deref @ DAE::Type::T_UNKNOWN { .. } } => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found list of unknown in cons pattern: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(scrutinee.ty.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Found list of unknown in cons pattern: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(scrutinee.ty.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         Deref @ DAE::Type::T_METALIST { ty } => ty.clone(),
         _ => {
-            Error::addInternalError((literal!("Wrong type of midvar in option pattern.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Wrong type of midvar in option pattern.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1406,19 +1406,19 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             ()
         },
         Deref @ metamodelica::List::Cons { head: (_, Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { .. }), tail: _ } => {
-            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_AS_FUNC_PTR.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_AS_FUNC_PTR.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         Deref @ metamodelica::List::Cons { head: (_, Deref @ DAE::Pattern::PAT_CALL_TUPLE { .. }), tail: _ } => {
-            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_CALL_TUPLE.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_CALL_TUPLE.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         Deref @ metamodelica::List::Cons { head: (_, Deref @ DAE::Pattern::PAT_CALL_NAMED { .. }), tail: _ } => {
-            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_CALL_NAMED.\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed. Unimplemented pattern: PAT_CALL_NAMED.\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => {
-            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed\n")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("DAE.Pattern to Mid conversion failed\n")).clone(), metamodelica::sourceInfo!("MidCode/DAEToMid.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

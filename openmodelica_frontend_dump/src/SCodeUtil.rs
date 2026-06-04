@@ -2332,7 +2332,7 @@ pub fn getStatementInfo(mut inStatement: Arc<SCode::Statement>) -> Result<Source
         Deref @ SCode::Statement::ALG_TRY { .. } => var_field!((*inStatement).info, SCode::Statement::ALG_TRY).clone(),
         Deref @ SCode::Statement::ALG_CONTINUE { .. } => var_field!((*inStatement).info, SCode::Statement::ALG_CONTINUE).clone(),
         _ => {
-            Error::addInternalError((literal!("SCodeUtil.getStatementInfo failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("SCodeUtil.getStatementInfo failed")).clone(), metamodelica::sourceInfo!("FrontEnd/SCodeUtil.mo"))?;
             Absyn::dummyInfo.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

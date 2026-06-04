@@ -839,7 +839,7 @@ pub fn differentiateComponentRef(mut exp: Arc<Expression::NFExpression>, mut dif
         _ if (diffArguments.diffType.clone() == DifferentiationType::FUNCTION.clone()) => Pointer::create(BVariable::DUMMY_VARIABLE().clone()),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::EMPTY, .. } => Pointer::create(BVariable::DUMMY_VARIABLE().clone()),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::WILD, .. } => Pointer::create(BVariable::DUMMY_VARIABLE().clone()),
-        Deref @ Expression::CREF { .. } => BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?,
+        Deref @ Expression::CREF { .. } => BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?,
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDifferentiate.differentiateComponentRef")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -932,7 +932,7 @@ pub fn differentiateComponentRef(mut exp: Arc<Expression::NFExpression>, mut dif
                 derCref = UnorderedMap::getOrFail(strippedCref.clone(), diff_map.clone())?;
                 dbg(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dCREF:JAC] mapped -> ")); __mm_s.push_str(&*ComponentRef::toString(derCref.clone())?); ArcStr::from(__mm_s) }).clone())?;
                 res = Expression::fromCref(ComponentRef::copySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), derCref.clone())?, false)?;
-                dbg(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dCREF:JAC] get variable for derivative cref: ")); __mm_s.push_str(&*BVariable::pointerToString(BVariable::getVarPointer(derCref.clone(), metamodelica::sourceInfo!())?)?); ArcStr::from(__mm_s) }).clone())?;
+                dbg(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dCREF:JAC] get variable for derivative cref: ")); __mm_s.push_str(&*BVariable::pointerToString(BVariable::getVarPointer(derCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?)?); ArcStr::from(__mm_s) }).clone())?;
                 if diffArguments.collectAdjoints.clone() {
                     adjExpr = (::match_deref::match_deref! { match &(expCrefSubscripts.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Subscript::INDEX { index: Deref @ Expression::INTEGER { value: iidx } }, tail: Deref @ metamodelica::List::Nil } => {
@@ -998,7 +998,7 @@ pub fn differentiateVariablePointer(mut var_ptr: Pointer::Pointer<Arc<Variable::
     diff_ptr = (::match_deref::match_deref! { match &(crefExp.clone()) {
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::EMPTY, .. } => Pointer::create(BVariable::DUMMY_VARIABLE().clone()),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::WILD, .. } => Pointer::create(BVariable::DUMMY_VARIABLE().clone()),
-        Deref @ Expression::CREF { .. } => BVariable::getVarPointer(var_field!((*crefExp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?,
+        Deref @ Expression::CREF { .. } => BVariable::getVarPointer(var_field!((*crefExp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?,
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDifferentiate.differentiateVariablePointer")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!(" because the result is expected to be a variable but turned out to be ")); __mm_s.push_str(&*Expression::toString(crefExp.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -1364,7 +1364,7 @@ pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExp
             let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let mut diffRest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             if isReverse.clone() {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDifferentiate.differentiateBuiltinCall")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("\nReverse Mode not implemented for `cat()`.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDifferentiate.differentiateBuiltinCall")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("\nReverse Mode not implemented for `cat()`.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?;
                 bail!("fail");
             }
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?) {
@@ -1988,7 +1988,7 @@ pub fn differentiateFunctionInterfaceNode(mut node: Arc<InstNode::InstNode>, mut
     let mut func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut d_func: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     cref = ComponentRef::fromNode(node.clone(), InstNode::getType(node.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone());
-    diff_cref = UnorderedMap::getSafe(cref.clone(), diff_map.clone(), metamodelica::sourceInfo!())?;
+    diff_cref = UnorderedMap::getSafe(cref.clone(), diff_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?;
     diff_cref = (::match_deref::match_deref! { match &(diff_cref.clone()) {
         Deref @ ComponentRef::CREF { node: __esc_d_node @ Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
             d_node = (*__esc_d_node).clone();
@@ -2138,7 +2138,7 @@ pub fn resolvePartialDerivatives(mut func: Arc<Function::Function>, mut funcMap:
                 assign_field!(diffArgs.diff_map = Some(diff_map.clone()));
                 (locals, diffArgs) = differentiateFunctionInterfaceNodes(der_func.locals.clone(), interface_map.clone(), diff_map.clone(), diffArgs.clone(), diffInfo.clone(), true)?;
                 (outputs, diffArgs) = differentiateFunctionInterfaceNodes(der_func.outputs.clone(), interface_map.clone(), diff_map.clone(), diffArgs.clone(), diffInfo.clone(), false)?;
-                diffCref = UnorderedMap::getSafe(ComponentRef::fromNode(var.clone(), InstNode::getType(var.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()), diff_map.clone(), metamodelica::sourceInfo!())?;
+                diffCref = UnorderedMap::getSafe(ComponentRef::fromNode(var.clone(), InstNode::getType(var.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()), diff_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?;
                 assign_field!(
                     der_func.locals = listAppend(locals.clone(), local_outputs.clone()),
                     der_func.outputs = outputs.clone(),
@@ -2717,7 +2717,7 @@ pub fn differentiateEquationAttributes(mut attr: Arc<EquationAttributes::Equatio
     attr = (::match_deref::match_deref! { match &((attr.clone(), diffArguments.clone())) {
         (Deref @ EquationAttributes::EQUATION_ATTRIBUTES { residualVar: Some(residualVar), .. }, Deref @ DifferentiationArguments::DIFFERENTIATION_ARGUMENTS { diffType: DifferentiationType::JACOBIAN, diff_map: Some(diff_map), .. }) if (UnorderedMap::contains(BVariable::getVarName(residualVar.clone()), diff_map.clone())?) => {
             let mut diffedResidualVar: Pointer::Pointer<Arc<Variable::NFVariable>>;
-            diffedResidualVar = BVariable::getVarPointer(UnorderedMap::getOrFail(BVariable::getVarName(residualVar.clone()), diff_map.clone())?, metamodelica::sourceInfo!())?;
+            diffedResidualVar = BVariable::getVarPointer(UnorderedMap::getOrFail(BVariable::getVarName(residualVar.clone()), diff_map.clone())?, metamodelica::sourceInfo!("NBackEnd/Util/NBDifferentiate.mo"))?;
             assign_field!(attr.residualVar = Some(diffedResidualVar.clone()));
             attr.clone()
         },

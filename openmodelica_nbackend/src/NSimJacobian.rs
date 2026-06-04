@@ -308,7 +308,7 @@ pub mod SimJacobian {
                 for mut var in &*seedVars.clone() {
                     let mut var = var.clone();
                     cref = SimVar::getName(var.clone());
-                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try0) {
+                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NSimCode/NSimJacobian.mo")), '__try0) {
                         cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarSeed, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try0);
                     }
                     unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try0);
@@ -316,7 +316,7 @@ pub mod SimJacobian {
                 for mut var in &*resVars.clone() {
                     let mut var = var.clone();
                     cref = SimVar::getName(var.clone());
-                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isPDer, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()), '__try0) {
+                    if unwrap_break_err!(BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isPDer, Pointer::Pointer<Arc<NFVariable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NSimCode/NSimJacobian.mo")), '__try0) {
                         cref = unwrap_break_err!(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(BVariable::getVarPDer(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<NFVariable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<NFVariable::NFVariable>>>, ArcStr)> + 'static>), false), '__try0);
                     }
                     unwrap_break_err!(UnorderedMap::add(cref.clone(), var.index.clone(), local_idx_map.clone()), '__try0);

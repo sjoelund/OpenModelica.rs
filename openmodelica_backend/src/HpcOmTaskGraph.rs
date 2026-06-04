@@ -6573,7 +6573,7 @@ fn getNodeForVarIdx(mut varIdx: i32, mut eqSysIdx: i32, mut varCompMapping: meta
         }
         n = n.clone() + 1;
         if n.clone() > arrayLengthVarCompMapping.clone() {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmTaskGraph.getNodeForVarIdx")); __mm_s.push_str(&*literal!(" failed (there is a loop somewhere)")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmTaskGraph.getNodeForVarIdx")); __mm_s.push_str(&*literal!(" failed (there is a loop somewhere)")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/HpcOmTaskGraph.mo"))?;
             bail!("fail");
         }
     }
@@ -7093,7 +7093,7 @@ fn getIndexBySimCodeEq(mut iEq: Arc<SimCode::SimEqSystem>) -> Result<(i32, i32)>
         Deref @ SimCode::SimEqSystem::SES_WHEN { index, .. } => (index.clone(), 0),
         Deref @ SimCode::SimEqSystem::SES_ALIAS { aliasOf: index, .. } => (index.clone(), 0),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmTaskGraph.getIndexBySimCodeEq")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmTaskGraph.getIndexBySimCodeEq")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/HpcOmTaskGraph.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

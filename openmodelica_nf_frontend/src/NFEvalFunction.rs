@@ -443,7 +443,7 @@ fn applyReplacementCref(mut map: ArgumentMap, mut cref: Arc<ComponentRef::NFComp
                 }
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.applyReplacementCref")); __mm_s.push_str(&*literal!(" could not find replacement for ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.applyReplacementCref")); __mm_s.push_str(&*literal!(" could not find replacement for ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
             }
         }
         outExp = Expression::map(outExp.clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -667,7 +667,7 @@ fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>, mut context: i32) ->
         Deref @ Statement::RETURN { .. } => FlowControl::RETURN.clone(),
         Deref @ Statement::BREAK { .. } => FlowControl::BREAK.clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.evaluateStatement")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*anyString(stmt.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.evaluateStatement")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*anyString(stmt.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -711,7 +711,7 @@ pub fn assignVariable(mut variable: Arc<Expression::NFExpression>, mut value: Ar
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.assignVariable")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*Expression::toString(variable.clone())?); __mm_s.push_str(&*literal!(" := ")); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.assignVariable")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*Expression::toString(variable.clone())?); __mm_s.push_str(&*literal!(" := ")); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -791,7 +791,7 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             arrayExp.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.assignArrayElement")); __mm_s.push_str(&*literal!(": unimplemented case for ")); __mm_s.push_str(&*Expression::toString(arrayExp.clone())?); __mm_s.push_str(&*Subscript::toStringList(subscripts.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.assignArrayElement")); __mm_s.push_str(&*literal!(": unimplemented case for ")); __mm_s.push_str(&*Expression::toString(arrayExp.clone())?); __mm_s.push_str(&*Subscript::toStringList(subscripts.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(value.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -946,7 +946,7 @@ fn evaluateAssert(mut condition: Arc<Expression::NFExpression>, mut assertStmt: 
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.evaluateAssert")); __mm_s.push_str(&*literal!(" failed to evaluate assert(false, ")); __mm_s.push_str(&*Expression::toString(msg.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(lvl.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.evaluateAssert")); __mm_s.push_str(&*literal!(" failed to evaluate assert(false, ")); __mm_s.push_str(&*Expression::toString(msg.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(lvl.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1425,7 +1425,7 @@ fn getExternalOutputResult(mut outputNode: Arc<InstNode::InstNode>, mut map: Arg
         }
         exp = Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false)?, InstNode::getType(cls_node.clone())?, metamodelica::Dangerous::listReverseInPlace(expl.clone()));
     } else {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.getExternalOutputResult")); __mm_s.push_str(&*literal!(" failed to find return value for output ")); __mm_s.push_str(&*InstNode::name(outputNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.getExternalOutputResult")); __mm_s.push_str(&*literal!(" failed to find return value for output ")); __mm_s.push_str(&*InstNode::name(outputNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFEvalFunction.mo"))?;
     }
     Ok(exp)
 }

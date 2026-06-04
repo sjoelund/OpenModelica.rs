@@ -399,7 +399,7 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SerializeInitXML.scalarVariableType")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*TypesDump::unparseType(v.type_.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SerializeInitXML.scalarVariableType")); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*TypesDump::unparseType(v.type_.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeInitXML.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

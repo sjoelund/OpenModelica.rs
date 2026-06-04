@@ -167,7 +167,7 @@ pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDA
         }
         Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (literal!("time")).clone()], metamodelica::sourceInfo!())?;
+                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (literal!("time")).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
             }
             return Err(__try0_err);
         }
@@ -211,7 +211,7 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
         }
         Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
             }
             return Err(__try0_err);
         }
@@ -247,7 +247,7 @@ pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Ar
         }
         Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+                Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
             }
             return Err(__try0_err);
         }
@@ -268,7 +268,7 @@ pub fn differentiateEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inDi
         outEquation = __pa0.clone();
         outFunctionTree = __pa1.clone();
     } else {
-        Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(inEquation.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+        Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(inEquation.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
         bail!("fail");
     }
     Ok((outEquation, outFunctionTree))
@@ -381,7 +381,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             (Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEqn.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
         _ => {
-            Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(inEquation.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+            Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(inEquation.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -422,7 +422,7 @@ fn differentiateEquations(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: eqn, tail: _ } => {
-                    Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(eqn.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationString(eqn.clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -463,7 +463,7 @@ fn differentiateEquationsLst(mut inEquationsLst: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: eqns, tail: _ } => {
-                    Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationListString(eqns.clone(), (literal!("equation list")).clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(BackendDump::equationListString(eqns.clone(), (literal!("equation list")).clone())?).clone(), (ComponentReference::crefStr(inDiffwrtCref.clone())?).clone()], metamodelica::sourceInfo!("BackEnd/Differentiate.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

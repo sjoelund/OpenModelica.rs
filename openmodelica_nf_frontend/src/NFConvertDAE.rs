@@ -275,7 +275,7 @@ fn convertRealVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertRealVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertRealVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -321,7 +321,7 @@ fn convertIntVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindin
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertIntVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertIntVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -357,7 +357,7 @@ fn convertBoolVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertBoolVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertBoolVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -393,7 +393,7 @@ fn convertStringVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bin
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStringVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStringVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -439,7 +439,7 @@ fn convertEnumVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertEnumVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertEnumVarAttributes")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -472,7 +472,7 @@ fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> 
         Deref @ Expression::CREF { .. } => InstNode::name(ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?,
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: e, .. } } => getStateSelectName(e.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -489,7 +489,7 @@ fn lookupStateSelectMember(mut name: ArcStr) -> Result<DAE::StateSelect> {
         Deref @ "prefer" => openmodelica_frontend_types::DAE::StateSelect::PREFER,
         Deref @ "always" => openmodelica_frontend_types::DAE::StateSelect::ALWAYS,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -506,7 +506,7 @@ fn convertUncertaintyAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<O
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, .. }, .. } => InstNode::name(node.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertUncertaintyAttribute")); __mm_s.push_str(&*literal!(" got invalid Uncertainty expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertUncertaintyAttribute")); __mm_s.push_str(&*literal!(" got invalid Uncertainty expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -523,7 +523,7 @@ fn lookupUncertaintyMember(mut name: ArcStr) -> Result<DAE::Uncertainty> {
         Deref @ "refine" => openmodelica_frontend_types::DAE::Uncertainty::REFINE,
         Deref @ "propagate" => openmodelica_frontend_types::DAE::Uncertainty::PROPAGATE,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupUncertaintyMember")); __mm_s.push_str(&*literal!(" got unknown Uncertainty literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.lookupUncertaintyMember")); __mm_s.push_str(&*literal!(" got unknown Uncertainty literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -601,7 +601,7 @@ fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamode
             metamodelica::cons(Arc::new(DAE::Element::NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -772,7 +772,7 @@ fn convertInitialEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<m
             metamodelica::cons(Arc::new(DAE::Element::INITIAL_NORETCALL { exp: Expression::toDAE(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?, source: var_field!((*eq).source, Equation::NFEquation::NORETCALL).clone() }), elements.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertInitialEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertInitialEquation")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -858,7 +858,7 @@ fn convertStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::St
             Arc::new(DAE::Statement::STMT_FAILURE { body: convertStatements(var_field!((*stmt).body, Statement::NFStatement::FAILURE).clone())?, source: var_field!((*stmt).source, Statement::NFStatement::FAILURE).clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStatement")); __mm_s.push_str(&*literal!(" got unknown statement ")); __mm_s.push_str(&*Statement::toString(stmt.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertStatement")); __mm_s.push_str(&*literal!(" got unknown statement ")); __mm_s.push_str(&*Statement::toString(stmt.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1123,7 +1123,7 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
         },
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::RECORD_CONSTRUCTOR, .. } => DAE::Function::RECORD_CONSTRUCTOR { path: Function::name(func.clone()), type_: Function::makeDAEType(func.clone(), false)?, source: DAE::emptyElementSource().clone() },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertFunction")); __mm_s.push_str(&*literal!(" got unknown function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertFunction")); __mm_s.push_str(&*literal!(" got unknown function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1169,7 +1169,7 @@ fn convertFunctionParam(mut node: Arc<InstNode::InstNode>) -> Result<Arc<DAE::El
             makeDAEVar(cref.clone(), ty.clone(), binding.clone(), attr.clone(), InstNode::visibility(node.clone()), var_attr.clone(), var_field!((*comp).comment, Component::NFComponent::COMPONENT).clone(), FUNCTION_VARIABLE_CONVERSION_SETTINGS.clone(), info.clone(), false)?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertFunctionParam")); __mm_s.push_str(&*literal!(" got invalid component.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertFunctionParam")); __mm_s.push_str(&*literal!(" got invalid component.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

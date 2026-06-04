@@ -1183,7 +1183,7 @@ fn lexer(mut inCharList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function lexer failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function lexer failed")).clone(), metamodelica::sourceInfo!("FrontEnd/FUnit.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

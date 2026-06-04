@@ -371,7 +371,7 @@ fn loadCompletePackageFromMp(mut id: ArcStr, mut inIdent: ArcStr, mut inString: 
             packagefile = stringAppendList(list![(mp_1.clone()).clone(), (pd.clone()).clone(), (if (encrypted.clone()) {literal!("package.moc")} else {literal!("package.mo")}).clone()]);
             orderfile = stringAppendList(list![(mp_1.clone()).clone(), (pd.clone()).clone(), (literal!("package.order")).clone()]);
             if !(System::regularFileExists((packagefile.clone()).clone())) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected file ")); __mm_s.push_str(&*packagefile.clone()); __mm_s.push_str(&*literal!(" to exist")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected file ")); __mm_s.push_str(&*packagefile.clone()); __mm_s.push_str(&*literal!(" to exist")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ClassLoader.mo"))?;
                 bail!("fail");
             }
             opt_cl = parsePackageFile((packagefile.clone()).clone(), strategy.clone(), true, within_.clone(), (id.clone()).clone(), encrypted.clone())?;
@@ -398,7 +398,7 @@ fn loadCompletePackageFromMp(mut id: ArcStr, mut inIdent: ArcStr, mut inString: 
         if let Ok(__v) = (|| -> Result<_> {
             let (mut pack, mut mp, _) = __mc_input.clone() else { bail!("nomatch") };
             let true = (numError.clone() == Error::getNumErrorMessages()) else { bail!("pattern mismatch") };
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("loadCompletePackageFromMp failed for unknown reason: mp=")); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*literal!(" pack=")); __mm_s.push_str(&*pack.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("loadCompletePackageFromMp failed for unknown reason: mp=")); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*literal!(" pack=")); __mm_s.push_str(&*pack.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ClassLoader.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -462,7 +462,7 @@ fn loadCompletePackageFromMp2(mut po: PackageOrder, mut mp: ArcStr, mut strategy
             } else {
                 file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*mp.clone()); __mm_s.push_str(&*pd.clone()); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*if (encrypted.clone()) {literal!(".moc")} else {literal!(".mo")}); ArcStr::from(__mm_s) }).clone();
                 if !(System::regularFileExists((file.clone()).clone())) {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected file ")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(" to exist")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expected file ")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(" to exist")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ClassLoader.mo"))?;
                     bail!("fail");
                 }
                 cl = parsePackageFile((file.clone()).clone(), strategy.clone(), false, w1.clone(), (id.clone()).clone(), encrypted.clone())?;
@@ -840,7 +840,7 @@ fn getProgramFromStrategy(mut filename: ArcStr, mut strategy: LoadFileStrategy) 
                 if let Ok(__iflet0) = List::getMemberOnTrue((filename.clone()).clone(), BaseHashTable::hashTableKeyList(var_field!(strategy.ht, LoadFileStrategy::STRATEGY_HASHTABLE).clone())?, (std::sync::Arc::new(fnptr!(Util::stringEqCaseInsensitive, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)) {
                     f = __iflet0;
                 } else {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HashTable missing file: ")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(" - all entries include:\n")); __mm_s.push_str(&*stringDelimitList(BaseHashTable::hashTableKeyList(var_field!(strategy.ht, LoadFileStrategy::STRATEGY_HASHTABLE).clone())?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HashTable missing file: ")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(" - all entries include:\n")); __mm_s.push_str(&*stringDelimitList(BaseHashTable::hashTableKeyList(var_field!(strategy.ht, LoadFileStrategy::STRATEGY_HASHTABLE).clone())?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ClassLoader.mo"))?;
                     bail!("fail");
                 }
             }

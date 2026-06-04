@@ -262,7 +262,7 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
         })() { deadEndEqsMark = __wb0; deadEndVarsMark = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("function resolveLoops_cutNodes failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function resolveLoops_cutNodes failed")).clone(), metamodelica::sourceInfo!("BackEnd/ResolveLoops.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -483,7 +483,7 @@ fn resolveLoops_findLoops2(mut eqsIn: Arc<metamodelica::List<i32>>, mut eqCrossL
             (paths.clone(), None)
         },
         _ => {
-            Error::addInternalError((literal!("function resolveLoops_findLoops2 failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function resolveLoops_findLoops2 failed")).clone(), metamodelica::sourceInfo!("BackEnd/ResolveLoops.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1389,7 +1389,7 @@ fn closePathDirectly(mut pathIn: Arc<metamodelica::List<i32>>, mut pathLstIn: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function ResolveLoops.closePathDirectly failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function ResolveLoops.closePathDirectly failed")).clone(), metamodelica::sourceInfo!("BackEnd/ResolveLoops.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1435,7 +1435,7 @@ fn findPathByEnds(mut pathLstIn: Arc<metamodelica::List<Arc<metamodelica::List<i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function ResolveLoops.findPathByEnds failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function ResolveLoops.findPathByEnds failed")).clone(), metamodelica::sourceInfo!("BackEnd/ResolveLoops.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1587,7 +1587,7 @@ fn getPathTillNextCrossEq(mut checkEqCrossNodes: Arc<metamodelica::List<i32>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function ResolveLoops.getPathTillNextCrossEq failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function ResolveLoops.getPathTillNextCrossEq failed")).clone(), metamodelica::sourceInfo!("BackEnd/ResolveLoops.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

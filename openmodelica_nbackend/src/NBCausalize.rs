@@ -298,8 +298,8 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     }))?;
             (adj_matching, full) = Adjacency::Matrix::expand(adj_matching.clone(), full.clone(), vo.clone(), vn.clone(), eo.clone(), en.clone(), partition.unknowns.clone(), partition.equations.clone(), BPartition::Partition::getKind(partition.clone()))?;
             matching = Matching::regular(matching.clone(), adj_matching.clone(), true, true, true)?;
-            vo = UnorderedMap::merge(vo.clone(), vn.clone(), metamodelica::sourceInfo!())?;
-            eo = UnorderedMap::merge(eo.clone(), en.clone(), metamodelica::sourceInfo!())?;
+            vo = UnorderedMap::merge(vo.clone(), vn.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
+            eo = UnorderedMap::merge(eo.clone(), en.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBCausalize.mo"))?;
             vn = UnorderedMap::subMap(partition.unknowns.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut var in (fixable.clone()).into_iter().cloned() {

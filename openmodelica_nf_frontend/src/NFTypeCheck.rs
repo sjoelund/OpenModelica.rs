@@ -1200,7 +1200,7 @@ pub fn matchExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<
             compatibleType.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchExpressions")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchExpressions")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTypeCheck.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1267,7 +1267,7 @@ pub fn matchTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type:
             compatibleType.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchTypes")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchTypes")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTypeCheck.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2321,7 +2321,7 @@ pub fn matchBinding(mut binding: Arc<Binding::NFBinding>, mut componentType: Arc
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchBinding")); __mm_s.push_str(&*literal!(" got untyped binding ")); __mm_s.push_str(&*Binding::toString(binding.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTypeCheck.matchBinding")); __mm_s.push_str(&*literal!(" got untyped binding ")); __mm_s.push_str(&*Binding::toString(binding.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFTypeCheck.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

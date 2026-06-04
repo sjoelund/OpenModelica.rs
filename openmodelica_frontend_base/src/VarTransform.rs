@@ -322,7 +322,7 @@ pub fn applyReplacementsDAEElts(mut inDae: Arc<metamodelica::List<Arc<DAE::Eleme
             Arc::new(DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e11.clone(), rhs: e22.clone(), source: source.clone() })
         },
         _ => {
-            Error::addInternalError((literal!("applyReplacementsDAEElts should not fail")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("applyReplacementsDAEElts should not fail")).clone(), metamodelica::sourceInfo!("Util/VarTransform.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1258,7 +1258,7 @@ fn replaceExpCref(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut replacementPerformed: bool = false;
     if !(replaceExpCond(inCondition.clone(), inExp.clone())) {
-        Error::addInternalError((literal!("Got exp to replace when condition is not allowing replacements. Check traversal.")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("Got exp to replace when condition is not allowing replacements. Check traversal.")).clone(), metamodelica::sourceInfo!("Util/VarTransform.mo"))?;
     }
     replacementPerformed = false;
     outExp = inExp.clone();

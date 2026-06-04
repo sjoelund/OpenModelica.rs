@@ -1175,7 +1175,7 @@ fn flattenClass(mut cls: Arc<Class::NFClass>, mut prefix: Arc<Prefix::Prefix>, m
         },
         Deref @ Class::INSTANCED_BUILTIN { .. } => (),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenClass")); __mm_s.push_str(&*literal!(" got non-instantiated component ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenClass")); __mm_s.push_str(&*literal!(" got non-instantiated component ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1214,7 +1214,7 @@ fn flattenComponent(mut component: Arc<InstNode::InstNode>, mut prefix: Arc<Pref
             flattenSimpleComponent(comp_node.clone(), c.clone(), vis.clone(), outerBinding.clone(), Class::getTypeAttributes(cls.clone()), prefix.clone(), vars.clone(), sections.clone(), settings.clone(), children.clone().reverse())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenComponent")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenComponent")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
             bail!("fail")
         },
     });
@@ -1225,7 +1225,7 @@ fn flattenComponent(mut component: Arc<InstNode::InstNode>, mut prefix: Arc<Pref
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenComponent")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenComponent")); __mm_s.push_str(&*literal!(" got unknown component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1498,12 +1498,12 @@ fn getRecordBindings(mut binding: Arc<Binding::NFBinding>, mut comps: metamodeli
         __acc.reverse()
     }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got non-record binding ")); __mm_s.push_str(&*Expression::toString(binding_exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got non-record binding ")); __mm_s.push_str(&*Expression::toString(binding_exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Error::assertion((recordBindings.clone().len() as i32) == metamodelica::arrayLength(comps.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got record binding with wrong number of elements for ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion((recordBindings.clone().len() as i32) == metamodelica::arrayLength(comps.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.getRecordBindings")); __mm_s.push_str(&*literal!(" got record binding with wrong number of elements for ")); __mm_s.push_str(&*Prefix::toString(prefix.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
     Ok(recordBindings)
 }
 
@@ -2091,7 +2091,7 @@ pub fn flattenBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Pref
             bail!("fail")
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenBinding")); __mm_s.push_str(&*literal!(" got untyped binding.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFlatten.flattenBinding")); __mm_s.push_str(&*literal!(" got untyped binding.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFlatten.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

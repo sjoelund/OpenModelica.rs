@@ -110,7 +110,7 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
             sparseGraphT = __try0_o7;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function createColoring failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createColoring failed")).clone(), metamodelica::sourceInfo!("BackEnd/Coloring.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -138,7 +138,7 @@ fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, m
     } {
         Ok(()) => {}
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function mapIndexColors failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function mapIndexColors failed")).clone(), metamodelica::sourceInfo!("BackEnd/Coloring.mo"))?;
             return Err(__try0_err);
         }
     }

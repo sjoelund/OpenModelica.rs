@@ -1236,7 +1236,7 @@ pub fn fromEquationsToAlgAssignments(mut cp: Arc<Absyn::ClassPart>) -> Result<Ar
         _ => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (Dump::unparseClassPart(cp.clone())?).clone();
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Static.fromEquationsToAlgAssignments: Unknown classPart in match expression:\n")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Static.fromEquationsToAlgAssignments: Unknown classPart in match expression:\n")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/Static.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -9290,7 +9290,7 @@ fn checkConst(mut inType: Arc<DAE::Type>, mut c: DAE::Const) -> Result<Arc<DAE::
     let mut outTupleConst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     outTupleConst = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_TUPLE { .. } => {
-            Error::addInternalError((literal!("No support for tuples built by tuples")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("No support for tuples built by tuples")).clone(), metamodelica::sourceInfo!("FrontEnd/Static.mo"))?;
             bail!("fail")
         },
         _ => Arc::new(DAE::TupleConst::SINGLE_CONST { r#const: c.clone() }),

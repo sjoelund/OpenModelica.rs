@@ -216,7 +216,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRecord.collectRecordParams")); __mm_s.push_str(&*literal!(" got non-instantiated function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRecord.collectRecordParams")); __mm_s.push_str(&*literal!(" got non-instantiated function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFRecord.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

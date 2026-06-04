@@ -1123,7 +1123,7 @@ pub fn compare(mut exp1: Arc<NFExpression>, mut exp2: Arc<NFExpression>) -> Resu
             InstNode::refCompare(var_field!((*exp1).scope, NFExpression::INSTANCE_NAME).clone(), node.clone())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.compare")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.compare")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1699,14 +1699,14 @@ pub fn getIntegerRange(mut range: Arc<NFExpression>, mut resize: bool) -> Result
                     stop = __try0_o2;
                 }
                 Err(__try0_err) => {
-                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getIntegerRange")); __mm_s.push_str(&*literal!(" range could not be parsed to integer values: ")); __mm_s.push_str(&*toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getIntegerRange")); __mm_s.push_str(&*literal!(" range could not be parsed to integer values: ")); __mm_s.push_str(&*toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
                     return Err(__try0_err);
                 }
             }
             (start.clone(), step.clone(), stop.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getIntegerRange")); __mm_s.push_str(&*literal!(" expression not RANGE(): ")); __mm_s.push_str(&*toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getIntegerRange")); __mm_s.push_str(&*literal!(" expression not RANGE(): ")); __mm_s.push_str(&*toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1728,7 +1728,7 @@ pub fn getInteger(mut exp: Arc<NFExpression>, mut resize: bool) -> Result<i32> {
             i.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getInteger")); __mm_s.push_str(&*literal!(" cannot be parsed to an integer: ")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getInteger")); __mm_s.push_str(&*literal!(" cannot be parsed to an integer: ")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1981,7 +1981,7 @@ pub fn applySubscriptRange(mut subscript: Arc<Subscript::NFSubscript>, mut exp: 
             Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: exp.clone(), subscripts: list![sub.clone()], ty: ty.clone(), split: true })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.applySubscriptRange")); __mm_s.push_str(&*literal!(" got unknown subscript '")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.applySubscriptRange")); __mm_s.push_str(&*literal!(" got unknown subscript '")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2168,7 +2168,7 @@ pub fn makeSubscriptedExp(mut subscripts: Arc<metamodelica::List<Arc<Subscript::
     dim_count = Type::dimensionCount(ty.clone());
     (subs, extra_subs) = Subscript::mergeList(subscripts.clone(), subs.clone(), dim_count.clone(), backend.clone())?;
     if !(extra_subs.clone().is_empty()) {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.makeSubscriptedExp")); __mm_s.push_str(&*literal!(": too few dimensions in ")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!(" to apply subscripts ")); __mm_s.push_str(&*Subscript::toStringList(subscripts.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.makeSubscriptedExp")); __mm_s.push_str(&*literal!(": too few dimensions in ")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!(" to apply subscripts ")); __mm_s.push_str(&*Subscript::toStringList(subscripts.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
     }
     ty = Type::subscript(ty.clone(), subs.clone(), true)?;
     outExp = Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: e.clone(), subscripts: subs.clone(), ty: ty.clone(), split: split.clone() });
@@ -2252,7 +2252,7 @@ pub fn arrayFromList_impl(mut inExps: Arc<metamodelica::List<Arc<NFExpression>>>
     let mut newlst: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
     let mut partexps: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFExpression>>>>> = metamodelica::nil();
     let mut dimsize: i32 = 0;
-    Error::assertion(!(inDims.clone().is_empty()), (literal!("Empty dimension list given in arrayFromList.")).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion(!(inDims.clone().is_empty()), (literal!("Empty dimension list given in arrayFromList.")).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inDims.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -2262,7 +2262,7 @@ pub fn arrayFromList_impl(mut inExps: Arc<metamodelica::List<Arc<NFExpression>>>
     dimsize = Dimension::size(ldim.clone(), false)?;
     ty = Type::liftArrayLeft(elemTy.clone(), ldim.clone());
     if List::hasOneElement(inDims.clone()) {
-        Error::assertion(dimsize.clone() == (inExps.clone().len() as i32), (literal!("Length mismatch in arrayFromList.")).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(dimsize.clone() == (inExps.clone().len() as i32), (literal!("Length mismatch in arrayFromList.")).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
         outExp = makeArray(ty.clone(), metamodelica::arrayFromVec(inExps.clone().into_iter().cloned().collect()), false);
         return Ok(outExp.clone());
     }
@@ -2849,7 +2849,7 @@ pub fn toAbsyn(mut exp: Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> {
             AbsynUtil::makeCall(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("getInstanceName")).clone(), subscripts: metamodelica::nil() }), metamodelica::nil(), metamodelica::nil())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown expression '")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown expression '")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3006,7 +3006,7 @@ pub fn toDAE(mut exp: Arc<NFExpression>, mut allowEmpty: bool) -> Result<Arc<DAE
             Arc::new(DAE::Exp::CALL { path: Arc::new(Path::IDENT { name: (literal!("getInstanceName")).clone() }), expLst: metamodelica::nil(), attr: DAE::callAttrBuiltinString().clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toDAE")); __mm_s.push_str(&*literal!(" got unknown expression '")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toDAE")); __mm_s.push_str(&*literal!(" got unknown expression '")); __mm_s.push_str(&*toString(exp.clone())?); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3084,7 +3084,7 @@ pub fn toDAEValue(mut exp: Arc<NFExpression>) -> Result<Arc<Values::Value>> {
             Arc::new(Values::Value::STRING { string: (var_field!((*exp).filename, NFExpression::FILENAME).clone()).clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toDAEValue")); __mm_s.push_str(&*literal!(" got unhandled expression ")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.toDAEValue")); __mm_s.push_str(&*literal!(" got unhandled expression ")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5946,7 +5946,7 @@ pub fn variability(mut exp: Arc<NFExpression>) -> Result<Variability> {
         Deref @ FILENAME { .. } => Variability::CONSTANT.clone(),
         Deref @ INSTANCE_NAME { .. } => Variability::CONSTANT.clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.variability")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.variability")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6018,7 +6018,7 @@ pub fn purity(mut exp: Arc<NFExpression>) -> Result<Purity> {
         Deref @ FILENAME { .. } => Purity::PURE.clone(),
         Deref @ INSTANCE_NAME { .. } => Purity::PURE.clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.purity")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.purity")); __mm_s.push_str(&*literal!(" got unknown expression.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpression.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

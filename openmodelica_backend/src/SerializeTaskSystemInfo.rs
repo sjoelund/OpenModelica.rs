@@ -98,7 +98,7 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
             success = __try0_o0;
         }
         Err(_) => {
-            Error::addInternalError((literal!("SerializeTaskSystemInfo.serializeParModWork failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("SerializeTaskSystemInfo.serializeParModWork failed")).clone(), metamodelica::sourceInfo!("SimCode/SerializeTaskSystemInfo.mo"))?;
             success = false;
         }
     }
@@ -773,7 +773,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             true
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeTaskSystemInfo.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

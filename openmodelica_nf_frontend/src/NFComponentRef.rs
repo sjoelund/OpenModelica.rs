@@ -682,7 +682,7 @@ pub fn mergeSubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFS
     let mut new_subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     (new_subscripts, cref) = mergeSubscripts2(subscripts.clone(), cref.clone(), applyToScope.clone(), backend.clone(), reverse.clone())?;
     if !(new_subscripts.clone().is_empty()) {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.mergeSubscripts")); __mm_s.push_str(&*literal!(" failed because the subscripts ")); __mm_s.push_str(&*List::toString(subscripts.clone(), (std::sync::Arc::new(Subscript::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" could not be fully merged onto ")); __mm_s.push_str(&*toString(old_cref.clone())?); __mm_s.push_str(&*literal!(".\nResult: ")); __mm_s.push_str(&*toString(cref.clone())?); __mm_s.push_str(&*literal!(" with leftover: ")); __mm_s.push_str(&*List::toString(new_subscripts.clone(), (std::sync::Arc::new(Subscript::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.mergeSubscripts")); __mm_s.push_str(&*literal!(" failed because the subscripts ")); __mm_s.push_str(&*List::toString(subscripts.clone(), (std::sync::Arc::new(Subscript::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!(" could not be fully merged onto ")); __mm_s.push_str(&*toString(old_cref.clone())?); __mm_s.push_str(&*literal!(".\nResult: ")); __mm_s.push_str(&*toString(cref.clone())?); __mm_s.push_str(&*literal!(" with leftover: ")); __mm_s.push_str(&*List::toString(new_subscripts.clone(), (std::sync::Arc::new(Subscript::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFComponentRef.mo"))?;
         bail!("fail");
     }
     Ok(cref)
@@ -725,7 +725,7 @@ pub fn mergeSubscriptsMapped(mut cref: Arc<NFComponentRef>, mut dims_map: Arc<Un
             new_subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut iter_name in (Util::getOption(iter_crefs.clone())?).into_iter().cloned() {
-            let __x = UnorderedMap::getSafe(iter_name.clone(), iter_map.clone(), metamodelica::sourceInfo!())?;
+            let __x = UnorderedMap::getSafe(iter_name.clone(), iter_map.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFComponentRef.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -977,7 +977,7 @@ pub fn transferSubscripts(mut srcCref: Arc<NFComponentRef>, mut dstCref: Arc<NFC
         },
         (Deref @ CREF { .. }, Deref @ CREF { .. }) => transferSubscripts(var_field!((*srcCref).restCref, NFComponentRef::CREF).clone(), dstCref.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.transferSubscripts")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.transferSubscripts")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFComponentRef.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1133,7 +1133,7 @@ pub fn compare(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -
         (Deref @ EMPTY { .. }, _) => -1,
         (Deref @ WILD { .. }, _) => -1,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.compare")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFComponentRef.compare")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFComponentRef.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

@@ -185,7 +185,7 @@ pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFImport.instUnqualified")); __mm_s.push_str(&*literal!(" got invalid class tree")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFImport.instUnqualified")); __mm_s.push_str(&*literal!(" got invalid class tree")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFImport.mo"))?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

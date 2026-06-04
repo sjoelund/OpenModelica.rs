@@ -618,7 +618,7 @@ pub mod SuperNode {
     });
                 let () = (::match_deref::match_deref! { match &(val.clone()) {
         Deref @ Value::SINGLE_VAL { .. } => {
-            mergeArrayNodes(super_nodes.clone(), var_field!((*val).cref_to_solve, Value::Value::SINGLE_VAL).clone(), var_lst.clone(), index.clone(), UnorderedMap::getSafe(mode.eqn_name.clone(), eqn_map.clone(), metamodelica::sourceInfo!())?, false)?;
+            mergeArrayNodes(super_nodes.clone(), var_field!((*val).cref_to_solve, Value::Value::SINGLE_VAL).clone(), var_lst.clone(), index.clone(), UnorderedMap::getSafe(mode.eqn_name.clone(), eqn_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBSorting.mo"))?, false)?;
             ()
         },
         Deref @ Value::MULTI_VAL { .. } => {
@@ -642,7 +642,7 @@ pub mod SuperNode {
                 eqn_lst = Value::getEquations(val.clone())?;
                 let () = (::match_deref::match_deref! { match &(val.clone()) {
         Deref @ Value::SINGLE_VAL { .. } => {
-            mergeArrayNodes(super_nodes.clone(), var_field!((*val).cref_to_solve, Value::Value::SINGLE_VAL).clone(), eqn_lst.clone(), index.clone(), UnorderedMap::getSafe(mode.eqn_name.clone(), eqn_map.clone(), metamodelica::sourceInfo!())?, true)?;
+            mergeArrayNodes(super_nodes.clone(), var_field!((*val).cref_to_solve, Value::Value::SINGLE_VAL).clone(), eqn_lst.clone(), index.clone(), UnorderedMap::getSafe(mode.eqn_name.clone(), eqn_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBSorting.mo"))?, true)?;
             ()
         },
         Deref @ Value::MULTI_VAL { .. } => {

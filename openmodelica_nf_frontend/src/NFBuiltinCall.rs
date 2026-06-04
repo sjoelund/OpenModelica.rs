@@ -99,7 +99,7 @@ pub fn needSpecialHandling(mut call: Arc<Call::NFCall>) -> Result<bool> {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.needSpecialHandling")); __mm_s.push_str(&*literal!(" got unknown call: ")); __mm_s.push_str(&*Call::toString(call.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.needSpecialHandling")); __mm_s.push_str(&*literal!(" got unknown call: ")); __mm_s.push_str(&*Call::toString(call.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBuiltinCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -163,7 +163,7 @@ pub fn typeSpecial(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sour
         Deref @ "vector" => typeVectorCall(call.clone(), next_context.clone(), info.clone())?,
         Deref @ "zeros" => typeZerosOnesCall((literal!("zeros")).clone(), call.clone(), next_context.clone(), info.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.typeSpecial")); __mm_s.push_str(&*literal!(" got unhandled builtin function: ")); __mm_s.push_str(&*Call::toString(call.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.typeSpecial")); __mm_s.push_str(&*literal!(" got unhandled builtin function: ")); __mm_s.push_str(&*Call::toString(call.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBuiltinCall.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -217,7 +217,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
     let mut maxn: i32 = 0;
     let mut pos: i32 = 0;
     let mut sumDim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    Error::assertion((args.clone().len() as i32) == (tys.clone().len() as i32) && !(args.clone().is_empty()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.makeCatExp")); __mm_s.push_str(&*literal!(" got wrong input sizes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion((args.clone().len() as i32) == (tys.clone().len() as i32) && !(args.clone().is_empty()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBuiltinCall.makeCatExp")); __mm_s.push_str(&*literal!(" got wrong input sizes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBuiltinCall.mo"))?;
     for mut arg in &*args.clone() {
         let mut arg = arg.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tys2.clone()) {

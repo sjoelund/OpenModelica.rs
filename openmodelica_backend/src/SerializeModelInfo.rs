@@ -115,7 +115,7 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
         })() { fileName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("SerializeModelInfo.serialize failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("SerializeModelInfo.serialize failed")).clone(), metamodelica::sourceInfo!("SimCode/SerializeModelInfo.mo"))?;
             Ok((false, literal!("")))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -394,7 +394,7 @@ fn serializeOperation(mut file: File::File, mut op: Arc<DAE::SymbolicOperation>)
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeOperation failed: ")); __mm_s.push_str(&*anyString(op.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeOperation failed: ")); __mm_s.push_str(&*anyString(op.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeModelInfo.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1171,7 +1171,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("serializeEquation failed: ")); __mm_s.push_str(&*anyString(eq.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SerializeModelInfo.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

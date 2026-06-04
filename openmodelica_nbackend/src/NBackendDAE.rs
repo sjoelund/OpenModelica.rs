@@ -931,7 +931,7 @@ pub fn lowerRecordChildren(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
                 children = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut child in (var.children.clone()).into_iter().cloned() {
-            let __x = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(child.name.clone()), Some(metamodelica::sourceInfo!()))?;
+            let __x = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(child.name.clone()), Some(metamodelica::sourceInfo!("NBackEnd/Classes/NBackendDAE.mo")))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1528,7 +1528,7 @@ pub fn lowerComponentReference(mut cref: Arc<ComponentRef::NFComponentRef>, mut 
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     if '__try0: {
         if !(ComponentRef::isWild(cref.clone())) {
-            var = unwrap_break_err!(BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(cref.clone()), if (complete.clone()) {Some(metamodelica::sourceInfo!())} else {None}), '__try0);
+            var = unwrap_break_err!(BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(cref.clone()), if (complete.clone()) {Some(metamodelica::sourceInfo!("NBackEnd/Classes/NBackendDAE.mo"))} else {None}), '__try0);
             cref = unwrap_break_err!(lowerComponentReferenceInstNode(cref.clone(), var.clone()), '__try0);
             cref = unwrap_break_err!(ComponentRef::mapSubscripts(cref.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = complete.clone(); move |__pe_a0| lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Subscript::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<Arc<Subscript::NFSubscript>> + 'static>), false), '__try0);
         }
@@ -1606,7 +1606,7 @@ fn lowerInstNode(mut node: Arc<InstNode::InstNode>, mut variables: Arc<VariableP
     let mut node: Arc<InstNode::InstNode> = node;
     let mut cref: Arc<ComponentRef::NFComponentRef> = ComponentRef::fromNode(node.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    var = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(cref.clone()), Some(metamodelica::sourceInfo!()))?;
+    var = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(cref.clone()), Some(metamodelica::sourceInfo!("NBackEnd/Classes/NBackendDAE.mo")))?;
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: (InstNode::name(node.clone())?).clone(), varPointer: var.clone() });
     Ok(node)
 }

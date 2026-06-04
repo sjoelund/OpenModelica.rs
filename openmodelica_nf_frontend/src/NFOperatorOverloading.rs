@@ -114,7 +114,7 @@ pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperatorOverloading.instOperatorFunctions")); __mm_s.push_str(&*literal!(" got non-instantiated function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperatorOverloading.instOperatorFunctions")); __mm_s.push_str(&*literal!(" got non-instantiated function")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperatorOverloading.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

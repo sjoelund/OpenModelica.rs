@@ -751,7 +751,7 @@ pub mod StateEvent {
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut name in (eqn_names.clone()).into_iter().cloned() {
             if !(UnorderedMap::contains(name.clone(), equation_map.clone())?) { continue; }
-            let __x = Block::getIndex(UnorderedMap::getSafe(name.clone(), equation_map.clone(), metamodelica::sourceInfo!())?)?;
+            let __x = Block::getIndex(UnorderedMap::getSafe(name.clone(), equation_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBEvents.mo"))?)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1158,7 +1158,7 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
             Pointer::update(bucket_ptr.clone(), bucket.clone());
             exp.clone()
         },
-        Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?)) => {
+        Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBEvents.mo"))?)) => {
             let mut bucket: Arc<Bucket> = Arc::new(<Bucket as ::std::default::Default>::default());
             (exp, bucket) = CompositeEvent::add(exp.clone(), iter.clone(), Pointer::access(bucket_ptr.clone()), createEqn.clone())?;
             Pointer::update(bucket_ptr.clone(), bucket.clone());

@@ -469,7 +469,7 @@ pub fn splitDAEIntoVarsAndEquations(mut inDae: DAE::DAElist) -> Result<(DAE::DAE
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEUtil.splitDAEIntoVarsAndEquations")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*DAEDump::dumpDAEElementsStr(DAE::DAElist { elementLst: list![elt.clone()] })?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEUtil.splitDAEIntoVarsAndEquations")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*DAEDump::dumpDAEElementsStr(DAE::DAElist { elementLst: list![elt.clone()] })?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/DAEUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6604,7 +6604,7 @@ fn optMRFAFieldType(mut fields: Arc<metamodelica::List<Arc<DAE::Var>>>, mut fnam
             return Ok(ty.clone());
         }
     }
-    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("optMRFAFieldType: field ")); __mm_s.push_str(&*fname.clone()); __mm_s.push_str(&*literal!(" not found in metarecord")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("optMRFAFieldType: field ")); __mm_s.push_str(&*fname.clone()); __mm_s.push_str(&*literal!(" not found in metarecord")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/DAEUtil.mo"))?;
     bail!("fail");
     Ok(ty)
 }

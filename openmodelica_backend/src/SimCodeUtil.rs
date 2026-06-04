@@ -807,7 +807,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
             zeroCrossings = __try0_o68;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function createSimCode failed [Transformation from optimised DAE to simulation code structure failed]")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createSimCode failed [Transformation from optimised DAE to simulation code structure failed]")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1484,7 +1484,7 @@ fn createEquationsForSystems(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
             ouniqueEqIndex = __try0_o12;
         }
         Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.createEquationsForSystems")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.createEquationsForSystems")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -1754,7 +1754,7 @@ fn createEquationsForSystem1(mut comp: Arc<BackendDAE::StrongComponent>, mut inA
         _ => {
             let mut message: ArcStr = arcstr::literal!("");
             message = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function createEquationsForSystem1 failed for component ")); __mm_s.push_str(&*BackendDump::strongComponentString(comp.clone())?); ArcStr::from(__mm_s) }).clone();
-            Error::addInternalError((message.clone()).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((message.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1890,7 +1890,7 @@ fn createEquationsWork(mut includeWhen: bool, mut skipDiscInZc: bool, mut genDis
             (equations1.clone(), noDiscEquations1.clone(), uniqueEqIndex.clone(), tempvars.clone())
         },
         _ => {
-            Error::addInternalError((literal!("createEquation failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("createEquation failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2122,7 +2122,7 @@ fn createEquationImpl(mut eqn: Arc<BackendDAE::Equation>, mut v: BackendDAE::Var
                     solveEqns = __pa5.clone();
                     solveCr = __pa6.clone();
                 } else {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("solving FOR_EQUATION body: ")); __mm_s.push_str(&*BackendDump::equationString(var_field!((*eqn).body, BackendDAE::Equation::FOR_EQUATION).clone())?); __mm_s.push_str(&*literal!("\nfor variable: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("solving FOR_EQUATION body: ")); __mm_s.push_str(&*BackendDump::equationString(var_field!((*eqn).body, BackendDAE::Equation::FOR_EQUATION).clone())?); __mm_s.push_str(&*literal!("\nfor variable: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     bail!("fail");
                 }
                 simEqSys = Arc::new(SimCode::SimEqSystem::SES_FOR_LOOP { index: iuniqueEqIndex.clone(), iter: varexp.clone(), startIt: start.clone(), endIt: cond.clone(), cref: cr.clone(), exp: exp_.clone(), source: source.clone(), eqAttr: eqAttr.clone() });
@@ -2257,7 +2257,7 @@ fn createEquationImpl(mut eqn: Arc<BackendDAE::Equation>, mut v: BackendDAE::Var
                     algStr = (DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() })])?).clone();
                     message = (ComponentReferenceBasics::printComponentRefStr(BackendVariable::varCref(v.clone())?)?).clone();
                     message = stringAppendList(list![(literal!("Inverse Algorithm needs to be solved for ")).clone(), (message.clone()).clone(), (literal!(" in\n")).clone(), (algStr.clone()).clone(), (literal!("This has not been implemented yet.\n")).clone()]);
-                    Error::addInternalError((message.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((message.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     bail!("fail");
                 }
             }
@@ -2669,7 +2669,7 @@ fn createNonlinearResidualEquationsComplex(mut inExp: Arc<DAE::Exp>, mut inExp1:
                     s1 = (ExpressionBasics::printExpStr(inExp.clone())?).clone();
                     s2 = (ExpressionBasics::printExpStr(inExp1.clone())?).clone();
                     s = stringAppendList(list![(literal!("function createNonlinearResidualEquationsComplex failed for: ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
-                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -3211,7 +3211,7 @@ fn makeSES_SIMPLE_ASSIGNwithArray(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut
                 outSimEqn = outSimEqn.clone().reverse();
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.makeSES_SIMPLE_ASSIGNwithArray")); __mm_s.push_str(&*literal!(" failed because expression ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(right.clone())?); __mm_s.push_str(&*literal!(" could not be scalarized.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.makeSES_SIMPLE_ASSIGNwithArray")); __mm_s.push_str(&*literal!(" failed because expression ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(right.clone())?); __mm_s.push_str(&*literal!(" could not be scalarized.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             }
             (outSimEqn.clone(), ouniqueEqIndex.clone())
         },
@@ -3242,7 +3242,7 @@ fn makeSolved(mut eq: Arc<BackendDAE::Equation>, mut uniqueEqIndex: i32) -> Resu
             Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: uniqueEqIndex.clone(), statements: stmts.clone(), eqAttr: var_field!((*eq).attr, BackendDAE::Equation::ALGORITHM).clone() })
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.makeSolved")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.makeSolved")); __mm_s.push_str(&*literal!(" failed!")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3329,7 +3329,7 @@ fn createOdeSystem(mut genDiscrete: bool, mut skipDiscInAlgorithm: bool, mut isy
                 _ => {
                     let mut msg: ArcStr = arcstr::literal!("");
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function createOdeSystem failed for component ")); __mm_s.push_str(&*BackendDump::strongComponentString(inComp.clone())?); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -3466,7 +3466,7 @@ fn createOdeSystem2(mut mixedEvent: bool, mut inVars: BackendDAE::Variables, mut
                     let mut r#str: ArcStr = arcstr::literal!("");
                     r#str = (BackendDump::jacobianTypeStr(inJacobianType.clone())?).clone();
                     r#str = stringAppendList(list![(literal!("createOdeSystem2 failed for ")).clone(), (r#str.clone()).clone()]);
-                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -3966,7 +3966,7 @@ fn createAllEquationOMSI(mut constSysts: Arc<metamodelica::List<Arc<BackendDAE::
                 components = __try0_o0;
             }
             Err(__try0_err) => {
-                Error::addInternalError((literal!("The matching information is missing in function createAllEquationOMSI!")).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError((literal!("The matching information is missing in function createAllEquationOMSI!")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                 return Err(__try0_err);
             }
         }
@@ -4130,7 +4130,7 @@ fn generateEquationsForComponents(mut components: Arc<metamodelica::List<Arc<Bac
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" - case for component ")); __mm_s.push_str(&*BackendDump::printComponent(component.clone(), None)?); __mm_s.push_str(&*literal!(" not implemented in SimCodeUtil.createAllEquationOMSI")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" - case for component ")); __mm_s.push_str(&*BackendDump::printComponent(component.clone(), None)?); __mm_s.push_str(&*literal!(" not implemented in SimCodeUtil.createAllEquationOMSI")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail");
             ()
         },
@@ -4215,7 +4215,7 @@ fn generateSingleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDA
                     uniqueEqIndex = __try0_o11;
                 }
                 Err(__try0_err) => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" could not resolved for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" in SimCodeUtil.generateSingleEquation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" could not resolved for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" in SimCodeUtil.generateSingleEquation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     return Err(__try0_err);
                 }
             }
@@ -4237,7 +4237,7 @@ fn generateSingleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDA
             whenStmtLst = __pa1.clone();
             oelseWhen = __pa2.clone();
             if isSome(oelseWhen.clone()) {
-                Error::addInternalError((literal!("Else when equation not implemented in SimCodeUtil.generateSingleEquation")).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError((literal!("Else when equation not implemented in SimCodeUtil.generateSingleEquation")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                 bail!("fail");
             }
             (conditions, initialCall) = BackendDAEUtil::getConditionList(cond.clone())?;
@@ -4256,7 +4256,7 @@ fn generateSingleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDA
         _ => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (BackendDump::equationString(eqn.clone())?).clone();
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" not implemented SimCodeUtil.generateSingleEquation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" not implemented SimCodeUtil.generateSingleEquation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail");
             ()
         },
@@ -4433,7 +4433,7 @@ fn createStateSetsSets(mut iStateSets: Arc<metamodelica::List<BackendDAE::StateS
                 _ => {
                     let mut errorMessage: ArcStr = arcstr::literal!("");
                     errorMessage = (literal!("function createStateSetsSets failed.")).clone();
-                    Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -4614,7 +4614,7 @@ pub fn createSymbolicSimulationJacobian(mut inJacobian: Arc<BackendDAE::Jacobian
                     let mut errorMessage: ArcStr = arcstr::literal!("");
                     if Flags::isSet(Flags::JAC_DUMP.clone())? {
                         errorMessage = (literal!("function createSymbolicSimulationJacobian failed.")).clone();
-                        Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     }
                     Ok((None, iuniqueEqIndex.clone(), itempvars.clone()))
                 }
@@ -4988,7 +4988,7 @@ pub fn createSymbolicJacobianssSimCode(mut inSymJacobians: Arc<metamodelica::Lis
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("Generation of symbolic matrix SimCode (SimCodeUtil.createSymbolicJacobianssSimCode) failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("Generation of symbolic matrix SimCode (SimCodeUtil.createSymbolicJacobianssSimCode) failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5085,7 +5085,7 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
             createJacSimVarsColumn(restVar.clone(), inCref.clone(), inAllVars.clone(), resIndex.clone(), tmpIndex.clone(), (inMatrixName.clone()).clone(), tmpVars.clone(), resVars.clone())?
         },
         _ => {
-            Error::addInternalError((literal!("function createAllDiffedSimVars failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createAllDiffedSimVars failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5501,7 +5501,7 @@ fn createDerivativeMatrix(mut inJacobian: Arc<BackendDAE::Jacobian>, mut iunique
                     let mut errorMessage: ArcStr = arcstr::literal!("");
                     if Flags::isSet(Flags::JAC_DUMP.clone())? {
                         errorMessage = (literal!("function createSymbolicSimulationJacobian failed.")).clone();
-                        Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError((errorMessage.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     }
                     Ok((None, iuniqueEqIndex.clone()))
                 }
@@ -5578,7 +5578,7 @@ pub fn extractDelayedExpressions(mut dlow: Arc<BackendDAE::BackendDAE>) -> Resul
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function extractDelayedExpressions failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function extractDelayedExpressions failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5647,7 +5647,7 @@ pub fn extractSpatialDistributionInfoExp(mut callExp: Arc<DAE::Exp>, mut spatial
                 Mutable::update(maxIndex_ptr.clone(), i.clone());
             }
             if !(Expression::sizeOf(Expression::r#typeof(initPnts.clone())?)? == Expression::sizeOf(Expression::r#typeof(initVals.clone())?)?) {
-                Error::addInternalError((literal!("function extractDelayedExpressions failed: initialPoints and initialValues of spatialDistribution are not of the same size.")).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError((literal!("function extractDelayedExpressions failed: initialPoints and initialValues of spatialDistribution are not of the same size.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             }
             initSize = Expression::sizeOf(Expression::r#typeof(initPnts.clone())?)?;
             metamodelica::cons(SimCode::SpatialDistribution { index: i.clone(), in0: in0.clone(), in1: in1.clone(), pos: pos.clone(), dir: dir.clone(), initPnts: initPnts.clone(), initVals: initVals.clone(), initSize: initSize.clone() }, spatialInfo.clone())
@@ -5748,7 +5748,7 @@ fn createAlgorithmAndEquationAsserts(mut syst: Arc<BackendDAE::EqSystem>, mut sh
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function createAlgorithmAndEquationAsserts failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function createAlgorithmAndEquationAsserts failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5805,7 +5805,7 @@ pub fn extractDiscreteModelVars(mut syst: Arc<BackendDAE::EqSystem>, mut shared:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function extractDiscreteModelVars failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function extractDiscreteModelVars failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5922,7 +5922,7 @@ fn createSingleWhenEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inVars
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function createSingleWhenEqnCode failed. When equations currently only supported on form v = ...")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function createSingleWhenEqnCode failed. When equations currently only supported on form v = ...")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6001,7 +6001,7 @@ fn createSingleIfEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inVars: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("SimCodeUtil.createSingleIfEqnCode failed.")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("SimCodeUtil.createSingleIfEqnCode failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6046,7 +6046,7 @@ fn createEquationsIfBranch(mut inConditions: Arc<metamodelica::List<Arc<DAE::Exp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("SimCodeUtil.createEquationfromList failed.")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("SimCodeUtil.createEquationfromList failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6122,7 +6122,7 @@ pub fn createEquationsfromList(mut inEquations: Arc<metamodelica::List<Arc<Backe
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("SimCodeUtil.createEquationfromList failed.")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("SimCodeUtil.createEquationfromList failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6216,7 +6216,7 @@ fn createSingleComplexEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inV
                     s2 = (ExpressionBasics::printExpStr(e2.clone())?).clone();
                     s3 = (ComponentReferenceBasics::printComponentRefListStr(crefs.clone())?).clone();
                     s = stringAppendList(list![(literal!("No support of solving not real variables with a non-linear solver. Equation:\n")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (literal!(" solve for ")).clone(), (s3.clone()).clone()]);
-                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6236,7 +6236,7 @@ fn createSingleComplexEqnCode(mut inEquation: Arc<BackendDAE::Equation>, mut inV
                     s2 = (ExpressionBasics::printExpStr(e2.clone())?).clone();
                     s3 = (ComponentReferenceBasics::printComponentRefListStr(crefs.clone())?).clone();
                     s = stringAppendList(list![(literal!("complex equations currently only supported on form v = functioncall(...). Equation: ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (literal!(" solve for ")).clone(), (s3.clone()).clone()]);
-                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((s.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6790,7 +6790,7 @@ fn createSingleArrayEqnCode(mut genDiscrete: bool, mut inEquations: Arc<metamode
                     cr = __pa0.clone();
                     r#str = (BackendDump::dumpEqnsStr(inEquations.clone())?).clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("solving array equation: ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\nfor variable: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6924,7 +6924,7 @@ fn createSingleAlgorithmCode(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Eq
                     let false = (CheckModel::isCrefListAlgorithmOutput(solvedVars.clone(), alg.clone(), source.clone(), crefExpand.clone())?) else { bail!("pattern mismatch") };
                     crefsStr = (ComponentReferenceBasics::printComponentRefListStr(solvedVars.clone())?).clone();
                     algStr = (DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() })])?).clone();
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Inverse Algorithm needs to be solved for ")); __mm_s.push_str(&*crefsStr.clone()); __mm_s.push_str(&*literal!(" in\n")); __mm_s.push_str(&*algStr.clone()); __mm_s.push_str(&*literal!("Discrete variables are not supported yet.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Inverse Algorithm needs to be solved for ")); __mm_s.push_str(&*crefsStr.clone()); __mm_s.push_str(&*literal!(" in\n")); __mm_s.push_str(&*algStr.clone()); __mm_s.push_str(&*literal!("Discrete variables are not supported yet.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6933,7 +6933,7 @@ fn createSingleAlgorithmCode(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Eq
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function createSingleAlgorithmCode failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function createSingleAlgorithmCode failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -7109,7 +7109,7 @@ fn dlowEqToSimEqSystem(mut inEquation: Arc<BackendDAE::Equation>, mut iuniqueEqI
         },
         _ => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
-                Error::addInternalError((literal!("function dlowEqToSimEqSystem failed.")).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError((literal!("function dlowEqToSimEqSystem failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             }
             bail!("fail")
         },
@@ -7153,7 +7153,7 @@ pub fn createStartValueEquations(mut syst: Arc<BackendDAE::EqSystem>, mut shared
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function createStartValueEquations failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function createStartValueEquations failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -7179,7 +7179,7 @@ pub fn createValueEquationsShared(mut shared: Arc<BackendDAE::Shared>, mut value
             (uniqueEqIndex.clone(), listAppend(simeqns1.clone(), simeqns.clone()))
         },
         _ => {
-            Error::addInternalError((literal!("function createValueEquationsShared failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createValueEquationsShared failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7200,7 +7200,7 @@ pub fn createNominalValueEquations(mut syst: Arc<BackendDAE::EqSystem>, mut shar
             (uniqueEqIndex.clone(), listAppend(simeqns1.clone(), simeqns.clone()))
         },
         _ => {
-            Error::addInternalError((literal!("function createNominalValueEquations failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createNominalValueEquations failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7221,7 +7221,7 @@ pub fn createMinValueEquations(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
             (uniqueEqIndex.clone(), listAppend(simeqns1.clone(), simeqns.clone()))
         },
         _ => {
-            Error::addInternalError((literal!("function createMinValueEquations failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createMinValueEquations failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7242,7 +7242,7 @@ pub fn createMaxValueEquations(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
             (uniqueEqIndex.clone(), listAppend(simeqns1.clone(), simeqns.clone()))
         },
         _ => {
-            Error::addInternalError((literal!("function createMaxValueEquations failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createMaxValueEquations failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -7618,7 +7618,7 @@ pub fn createModelInfo(mut class_: Arc<Absyn::Path>, mut program: Absyn::Program
             version = __try0_o31;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("createModelInfo failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("createModelInfo failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -8486,7 +8486,7 @@ fn getExportVar(mut var: BackendDAE::Var) -> Result<Option<Arc<DAE::ComponentRef
             exportVar = Some(ComponentReference::getConcealedCref());
         }
     } else {
-        Error::addInternalError((literal!("Unknown value detected for --fmiFilter")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("Unknown value detected for --fmiFilter")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
         bail!("fail");
     }
     Ok(exportVar)
@@ -8522,7 +8522,7 @@ fn extractVarFromVar2(mut dlowVar: BackendDAE::Var, mut inAliasVars: BackendDAE:
             simVar.clone()
         },
         _ => {
-            Error::addInternalError((literal!("Failed to SimCodeUtil.extractVarFromVar of input variable")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Failed to SimCodeUtil.extractVarFromVar of input variable")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
     });
@@ -8587,7 +8587,7 @@ fn extractVarFromVar2(mut dlowVar: BackendDAE::Var, mut inAliasVars: BackendDAE:
                 addSimVar(simVar.clone(), SimVarsIndex::stringConst.clone(), simVars.clone());
             }
         } else {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to find SimVar list for Var: ")); __mm_s.push_str(&*BackendDump::varString(dlowVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to find SimVar list for Var: ")); __mm_s.push_str(&*BackendDump::varString(dlowVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
         }
     } else if BackendVariable::isExtObj(dlowVar.clone()) {
         addSimVar(simVar.clone(), SimVarsIndex::extObj.clone(), simVars.clone());
@@ -8599,7 +8599,7 @@ fn extractVarFromVar2(mut dlowVar: BackendDAE::Var, mut inAliasVars: BackendDAE:
         addSimVar(simVar.clone(), SimVarsIndex::alg.clone(), simVars.clone());
     } else if BackendVariable::isDAEmodeVar(dlowVar.clone()) {
     } else {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to find the correct SimVar list for Var: ")); __mm_s.push_str(&*BackendDump::varString(dlowVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to find the correct SimVar list for Var: ")); __mm_s.push_str(&*BackendDump::varString(dlowVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
     }
     Ok(())
 }
@@ -9503,7 +9503,7 @@ fn sortSimvars(mut simvars: metamodelica::Array<Arc<metamodelica::List<SimCodeVa
             i.clone() + 1
         },
         _ => {
-            Error::addInternalError((literal!("Failed to update indexes of simvars")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Failed to update indexes of simvars")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
     });
@@ -9814,7 +9814,7 @@ pub fn createCrefToSimVarHT(mut modelInfo: SimCode::ModelInfo) -> Result<(metamo
             vars = __try0_o4;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("function createCrefToSimVarHT failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createCrefToSimVarHT failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -10402,7 +10402,7 @@ fn extractVarUnitStr(mut exp: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
         r#str = ((::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::SCONST { .. } => var_field!((*e).string, DAE::Exp::SCONST).clone(),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unexpected expression (should have been handled earlier, probably in the front-end. Unit/displayUnit expression is not a string literal: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unexpected expression (should have been handled earlier, probably in the front-end. Unit/displayUnit expression is not a string literal: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -12271,7 +12271,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             (eq.clone(), a.clone())
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.traverseExpsEqSystem")); __mm_s.push_str(&*literal!(" got unknown equation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.traverseExpsEqSystem")); __mm_s.push_str(&*literal!(" got unknown equation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -14067,7 +14067,7 @@ pub fn createFMIModelStructure(mut inSymjacs: Arc<metamodelica::List<(Option<(Ar
                     varsA = __try28_o7;
                 }
                 Err(__try28_err) => {
-                    Error::addInternalError((literal!("SimCodeUtil.createFMIModelStructure failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("SimCodeUtil.createFMIModelStructure failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
                     return Err(__try28_err);
                 }
             }
@@ -14568,7 +14568,7 @@ pub fn getValueReference(mut inSimVar: SimCodeVar::SimVar, mut inSimCode: SimCod
     } });
             valueReference = (getVarIndexByMapping(inSimCode.varToArrayIndexMapping.clone(), simVar.name.clone(), true, (literal!("-1")).clone())?).clone();
             if stringEqual((valueReference.clone()).clone(), (literal!("-1")).clone()) {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("invalid return value from getVarIndexByMapping for ")); __mm_s.push_str(&*simVarString(simVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("invalid return value from getVarIndexByMapping for ")); __mm_s.push_str(&*simVarString(simVar.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             }
             valueReference.clone()
         },
@@ -14596,7 +14596,7 @@ fn getDefaultValueReference(mut inSimVar: SimCodeVar::SimVar, mut inVarInfo: Sim
     } else if reference.clone() > numReal.clone() {
         reference = reference.clone() - numReal.clone();
     } else if reference.clone() < 0 {
-        Error::addInternalError((literal!("invalid return value from getVariableIndex")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("invalid return value from getVariableIndex")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
     }
     outDefaultValueReference = ArcStr::from(::std::format!("{}", reference.clone() - 1));
     Ok(outDefaultValueReference)
@@ -14617,7 +14617,7 @@ pub fn getLocalValueReference(mut inSimVar: SimCodeVar::SimVar, mut inSimCode: S
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("getLocalValueReference failed.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("getLocalValueReference failed.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             Ok(literal!("ERROR: getLocalValueReference failed"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -14966,7 +14966,7 @@ pub fn getInputIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
     inputIndex = (match var.clone() {
         SimCodeVar::SimVar { inputIndex: Some(mut v), .. } if (metamodelica::arrayLength(v.clone()) == 1) => metamodelica::arrayGet(v.clone(), 1)?,
         SimCodeVar::SimVar { inputIndex: Some(_), .. } => {
-            Error::addInternalError((literal!("Failed to SimCodeUtil.getInputIndex of variable")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Failed to SimCodeUtil.getInputIndex of variable")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
         _ => -1,
@@ -15012,7 +15012,7 @@ pub fn getSimCode() -> Result<SimCode::SimCode> {
             code.clone()
         },
         _ => {
-            Error::addInternalError((literal!("Tried to generate code that requires the SimCode structure, but this is not set (function context?)")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Tried to generate code that requires the SimCode structure, but this is not set (function context?)")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             bail!("fail")
         },
     });
@@ -15553,7 +15553,7 @@ pub fn generateRunnerBatScript(mut code: SimCode::SimCode) -> Result<ArcStr> {
         })() { fileName = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("SimCodeMain.generateRunnerBatScript failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("SimCodeMain.generateRunnerBatScript failed")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
             Ok(literal!(""))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -15667,13 +15667,13 @@ pub fn getCMakeVersion(mut pathToCMake: ArcStr) -> Result<SemanticVersion::Versi
     retVal = System::systemCallRestrictedEnv(({ let mut __mm_s = String::new(); __mm_s.push_str(&*pathToCMake.clone()); __mm_s.push_str(&*literal!(" --version")); ArcStr::from(__mm_s) }).clone(), (cmakeVersionLogFile.clone()).clone())?;
     if 0 != retVal.clone() {
         System::removeFile((cmakeVersionLogFile.clone()).clone());
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to get version from ")); __mm_s.push_str(&*pathToCMake.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to get version from ")); __mm_s.push_str(&*pathToCMake.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
         bail!("fail");
     }
     (numMatches, regexOut) = System::regex((System::trimWhitespace((System::readFile((cmakeVersionLogFile.clone()).clone())?).clone())).clone(), (literal!("[0-9]+\\.[0-9]+\\.[0-9]+")).clone(), 1, true, false);
     if numMatches.clone() == 0 {
         System::removeFile((cmakeVersionLogFile.clone()).clone());
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to read semantic version from ")); __mm_s.push_str(&*pathToCMake.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to read semantic version from ")); __mm_s.push_str(&*pathToCMake.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeUtil.mo"))?;
         bail!("fail");
     }
     cmakeVersionString = (listHead(regexOut.clone())?).clone();

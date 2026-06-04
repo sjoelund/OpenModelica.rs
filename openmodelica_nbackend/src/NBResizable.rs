@@ -169,7 +169,7 @@ pub fn resize(mut equations: Arc<EquationPointers::EquationPointers>, mut varDat
 
 pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>>> {
     let mut order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> as ::std::default::Default>::default();
-    let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!())?;
+    let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
     let mut var_occurences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut ite_occurences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut occ_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -222,7 +222,7 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
                         iterators = UnorderedSet::toList(ite_occurences.clone());
                         let () = (::match_deref::match_deref! { match &(iterators.clone()) {
         Deref @ metamodelica::List::Cons { head: iter, tail: Deref @ metamodelica::List::Nil } => {
-            eval = UnorderedMap::getSafe(iter.clone(), order.clone(), metamodelica::sourceInfo!())?;
+            eval = UnorderedMap::getSafe(iter.clone(), order.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
             if eval.clone() < EvalOrder::FAILED.clone() {
                 args = Differentiate::DifferentiationArguments::simpleCref(iter.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1));
                 opt_factor = None;
@@ -438,7 +438,7 @@ fn expContainsResizable(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> 
     let mut b: bool = b;
     if !(b.clone()) {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isResizableParameter, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?,
+        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isResizableParameter, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -449,7 +449,7 @@ fn expContainsResizable(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> 
 fn collectResizables(mut exp: Arc<Expression::NFExpression>, mut collector: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isResizableParameter, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?) => {
+        Deref @ Expression::CREF { .. } if (BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isResizableParameter, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?) => {
             UnorderedSet::add(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), collector.clone())?;
             ()
         },
@@ -499,7 +499,7 @@ fn collectOccurencesSubscriptExp(mut exp: Arc<Expression::NFExpression>, mut occ
 
 fn addOccurence(mut iter: Arc<ComponentRef::NFComponentRef>, mut subExp: Arc<Expression::NFExpression>, mut occs: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut iter: Arc<ComponentRef::NFComponentRef> = iter;
-    let mut local_occ: Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>> = UnorderedMap::getSafe(iter.clone(), occs.clone(), metamodelica::sourceInfo!())?;
+    let mut local_occ: Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>> = UnorderedMap::getSafe(iter.clone(), occs.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
     UnorderedSet::add(subExp.clone(), local_occ.clone())?;
     Ok(iter)
 }
@@ -507,7 +507,7 @@ fn addOccurence(mut iter: Arc<ComponentRef::NFComponentRef>, mut subExp: Arc<Exp
 fn collectVars(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut collector: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (func(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?)?) => {
+        Deref @ Expression::CREF { .. } if (func(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?)?) => {
             UnorderedSet::add(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), collector.clone())?;
             ()
         },
@@ -524,7 +524,7 @@ fn findOptimalValue(mut eqn: Arc<Equation::Equation>, mut occs: Arc<UnorderedMap
     let mut args: Arc<DifferentiationArguments::DifferentiationArguments> = Arc::new(<DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
     for mut cref in &*UnorderedMap::keyList(occs.clone()) {
         let mut cref = cref.clone();
-        range = UnorderedMap::getSafe(cref.clone(), resizables.clone(), metamodelica::sourceInfo!())?;
+        range = UnorderedMap::getSafe(cref.clone(), resizables.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
         Expression::map(range.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); move |__pe_a0| collectResizables(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         let () = (::match_deref::match_deref! { match &(range.clone()) {
         Deref @ Expression::RANGE { .. } => {
@@ -629,7 +629,7 @@ fn getDistance(mut cref: Arc<ComponentRef::NFComponentRef>, mut exp: Arc<Express
 
 fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equation::Equation>, mut replacements: Option<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>>, mut c2pi: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>> {
     let mut c2pi: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = c2pi;
-    let mut var: Arc<Variable::NFVariable> = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = Type::arrayDims(var.ty.clone());
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = ComponentRef::subscriptsAllWithWholeFlat(cref.clone())?;
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
@@ -648,7 +648,7 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
         } {
             Ok(()) => {}
             Err(__try0_err) => {
-                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= ")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= ")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
                 return Err(__try0_err);
             }
         }
@@ -659,7 +659,7 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
         } {
             Ok(()) => {}
             Err(__try1_err) => {
-                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= 1")); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= 1")); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
                 return Err(__try1_err);
             }
         }
@@ -751,7 +751,7 @@ fn getInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut target: Arc
         UnorderedSet::add(cref.clone(), min_parameters.clone())?;
     } else if Expression::isNegative(diff.clone())? {
     } else {
-        var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
+        var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
         binding = Binding::getExp(var.binding.clone())?;
         UnorderedMap::add(cref.clone(), binding.clone(), optimal_values.clone())?;
     }
@@ -764,7 +764,7 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
     let mut attributes: Arc<VariableAttributes::VariableAttributes> = Arc::new(<VariableAttributes::VariableAttributes as ::std::default::Default>::default());
     let mut value: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     if !(UnorderedMap::contains(cref.clone(), optimal_values.clone())?) {
-        var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
+        var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
         value = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: __esc_attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
             attributes = (*__esc_attributes).clone();
@@ -810,7 +810,7 @@ fn invertConstraintParameterMap(mut c2p: Arc<UnorderedMap::UnorderedMap<Arc<Expr
         (r#const, params) = tpl.clone();
         for mut param in &*params.clone() {
             let mut param = param.clone();
-            UnorderedMap::add(param.clone(), metamodelica::cons(r#const.clone(), UnorderedMap::getSafe(param.clone(), p2c.clone(), metamodelica::sourceInfo!())?), p2c.clone())?;
+            UnorderedMap::add(param.clone(), metamodelica::cons(r#const.clone(), UnorderedMap::getSafe(param.clone(), p2c.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?), p2c.clone())?;
         }
     }
     Ok(p2c)
@@ -863,9 +863,9 @@ fn fixConstraints(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<Compone
                 if status.clone() == Solve::Status::EXPLICIT.clone() {
                     let () = (match checkConstraint(Util::getOption(Equation::getRHS(solved_eqn.clone())?)?, optimal_values.clone())? {
         Some(mut value) => {
-            old_optimal_value = UnorderedMap::getSafe(cref.clone(), optimal_values.clone(), metamodelica::sourceInfo!())?;
+            old_optimal_value = UnorderedMap::getSafe(cref.clone(), optimal_values.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
             UnorderedMap::add(cref.clone(), Arc::new(Expression::NFExpression::INTEGER { value: value.clone() }), optimal_values.clone())?;
-            for mut cons in &*UnorderedMap::getSafe(cref.clone(), p2c.clone(), metamodelica::sourceInfo!())? {
+            for mut cons in &*UnorderedMap::getSafe(cref.clone(), p2c.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))? {
                 let mut cons = cons.clone();
                 if UnorderedSet::contains(constraint.clone(), parsed_constraints.clone())? && !(func(Util::getOptionOrDefault(checkConstraint(cons.clone(), optimal_values.clone())?, 1))?) {
                     failed = true;
@@ -948,7 +948,7 @@ fn optimalValuesToString(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<
     for mut tpl in &*UnorderedMap::toList(optimal_values.clone()) {
         let mut tpl = tpl.clone();
         (param, value) = tpl.clone();
-        var = Pointer::access(BVariable::getVarPointer(param.clone(), metamodelica::sourceInfo!())?);
+        var = Pointer::access(BVariable::getVarPointer(param.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
         names = metamodelica::cons((ComponentRef::toString(param.clone())?).clone(), names.clone());
         new_vals = metamodelica::cons((Expression::toString(value.clone())?).clone(), new_vals.clone());
         old_vals = metamodelica::cons((Binding::toString(var.binding.clone(), (literal!("")).clone())?).clone(), old_vals.clone());

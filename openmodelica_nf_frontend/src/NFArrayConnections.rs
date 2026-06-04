@@ -260,7 +260,7 @@ fn addConnectionsToGraph(mut equations: Arc<metamodelica::List<Arc<Equation::NFE
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFArrayConnections.addConnectionsToGraph")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFArrayConnections.addConnectionsToGraph")); __mm_s.push_str(&*literal!(" got unknown equation ")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFArrayConnections.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -707,7 +707,7 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
             outExpl = metamodelica::cons(e.clone(), outExpl.clone());
             flowRange = true;
         } else {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFArrayConnections.transMulti")); __mm_s.push_str(&*literal!(" got invalid intervals.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFArrayConnections.transMulti")); __mm_s.push_str(&*literal!(" got invalid intervals.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFArrayConnections.mo"))?;
         }
     }
     outExpl = metamodelica::Dangerous::listReverseInPlace(outExpl.clone());

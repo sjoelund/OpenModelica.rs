@@ -501,7 +501,7 @@ pub fn subMap<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     sub_map = Arc::new(UnorderedMap { buckets: Vector::newFill(Util::nextPrime(len.clone()), metamodelica::nil()), keys: Vector::new(len.clone()), values: Vector::new(len.clone()), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
     for mut k in &*lst.clone() {
         let mut k = k.clone();
-        add(k.clone(), getSafe(k.clone(), map.clone(), metamodelica::sourceInfo!())?, sub_map.clone())?;
+        add(k.clone(), getSafe(k.clone(), map.clone(), metamodelica::sourceInfo!("Util/UnorderedMap.mo"))?, sub_map.clone())?;
     }
     Ok(sub_map)
 }

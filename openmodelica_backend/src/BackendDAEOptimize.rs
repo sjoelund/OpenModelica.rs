@@ -1609,7 +1609,7 @@ pub fn copyRecordConstructorAndExternalObjConstructorDestructor(mut inAllFunctio
                     var_list = __try0_o0;
                 }
                 Err(__try0_err) => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEOptimize.copyRecordConstructorAndExternalObjConstructorDestructor")); __mm_s.push_str(&*literal!(" got unxpected record constructor structure for  ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone()], metamodelica::sourceInfo!())?;
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEOptimize.copyRecordConstructorAndExternalObjConstructorDestructor")); __mm_s.push_str(&*literal!(" got unxpected record constructor structure for  ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone()], metamodelica::sourceInfo!("BackEnd/BackendDAEOptimize.mo"))?;
                     return Err(__try0_err);
                 }
             }
@@ -1669,7 +1669,7 @@ fn removeUnusedFunctionsSymJacs(mut inShared: Arc<BackendDAE::Shared>, mut inFun
             ()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEOptimize.removeUnusedFunctionsSymJacs")); __mm_s.push_str(&*literal!(": Unexpected data reconciliation jacobian structure. ")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEOptimize.removeUnusedFunctionsSymJacs")); __mm_s.push_str(&*literal!(": Unexpected data reconciliation jacobian structure. ")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEOptimize.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

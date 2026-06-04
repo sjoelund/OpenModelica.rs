@@ -3816,7 +3816,7 @@ fn cevalBuiltinDiv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                     } };
                     cache = __pa2.clone();
                     rv2 = __pa3.clone();
-                    Error::addInternalError((literal!("cevalBuiltinDiv got Integer and Real (type error)\n")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("cevalBuiltinDiv got Integer and Real (type error)\n")).clone(), metamodelica::sourceInfo!("FrontEnd/Ceval.mo"))?;
                     rv_1 = rv1.clone() / rv2.clone();
                     b = rv_1.clone() < metamodelica::OrderedFloat(0.0_f64);
                     rv_2 = if (b.clone()) {(rv_1.clone()).ceil()} else {(rv_1.clone()).floor()};
@@ -3847,7 +3847,7 @@ fn cevalBuiltinDiv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                     } };
                     cache = __pa2.clone();
                     ri = __pa3.clone();
-                    Error::addInternalError((literal!("cevalBuiltinDiv got Real and Integer (type error)\n")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("cevalBuiltinDiv got Real and Integer (type error)\n")).clone(), metamodelica::sourceInfo!("FrontEnd/Ceval.mo"))?;
                     rv2 = intReal(ri.clone());
                     rv_1 = rv1.clone() / rv2.clone();
                     b = rv_1.clone() < metamodelica::OrderedFloat(0.0_f64);

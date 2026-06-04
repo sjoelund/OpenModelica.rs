@@ -295,7 +295,7 @@ pub mod SimVar {
         let mut index: i32 = 0;
         let mut var: Arc<SimVar> = Arc::new(<SimVar as ::std::default::Default>::default());
         match '__try0: {
-            var = unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), sim_map.clone(), metamodelica::sourceInfo!()), '__try0);
+            var = unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), sim_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo")), '__try0);
             index = var.index.clone();
             Ok::<_, anyhow::Error>((index.clone(), var.clone()))
         } {
@@ -668,7 +668,7 @@ pub mod Alias {
         (Deref @ Expression::CREF { .. }, _) if (Expression::isConstNumber(e2.clone())) => (var_field!((*e1).cref, Expression::NFExpression::CREF).clone(), Expression::realValue(e2.clone())?),
         (_, Deref @ Expression::CREF { .. }) if (Expression::isConstNumber(e1.clone())) => (var_field!((*e2).cref, Expression::NFExpression::CREF).clone(), Expression::realValue(e1.clone())?),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.Alias.getGainAlias")); __mm_s.push_str(&*literal!(" cannot generate gain alias from Expressions: {")); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.Alias.getGainAlias")); __mm_s.push_str(&*literal!(" cannot generate gain alias from Expressions: {")); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -696,7 +696,7 @@ pub mod Alias {
             (cref.clone(), gain.clone(), Expression::realValue(e1.clone())?)
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.Alias.getOffsetAlias")); __mm_s.push_str(&*literal!(" cannot generate offset alias from Expressions: {")); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.Alias.getOffsetAlias")); __mm_s.push_str(&*literal!(" cannot generate offset alias from Expressions: {")); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1089,7 +1089,7 @@ pub mod SimVars {
         for mut tpl in &*hash_tpl.clone() {
             let mut tpl = tpl.clone();
             (cref, var) = tpl.clone();
-            if BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? {
+            if BVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isSeed, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))? {
                 seed_vars = metamodelica::cons(var.clone(), seed_vars.clone());
             } else {
                 jacobian_vars = metamodelica::cons(var.clone(), jacobian_vars.clone());
@@ -1293,7 +1293,7 @@ pub mod SimVars {
     }))?,
         Deref @ StrongComponent::SLICED_COMPONENT { .. } => getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), simcode_map.clone())?,
         Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), simcode_map.clone())?,
-        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!())?, simcode_map.clone())?,
+        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?, simcode_map.clone())?,
         Deref @ StrongComponent::ENTWINED_COMPONENT { .. } => List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut c in (var_field!((*comp).entwined_slices, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone()).into_iter().cloned() {
@@ -1326,13 +1326,13 @@ pub mod SimVars {
             vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         for mut v in ((BVariable::VariablePointers::scalarizeList(list![var.clone()])?).0).into_iter().cloned() {
-            let __x = UnorderedMap::getSafe(BVariable::getVarName(v.clone()), simcode_map.clone(), metamodelica::sourceInfo!())?;
+            let __x = UnorderedMap::getSafe(BVariable::getVarName(v.clone()), simcode_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
         } else {
-            vars = list![UnorderedMap::getSafe(BVariable::getVarName(var.clone()), simcode_map.clone(), metamodelica::sourceInfo!())?];
+            vars = list![UnorderedMap::getSafe(BVariable::getVarName(var.clone()), simcode_map.clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?];
         }
         Ok(vars)
     }

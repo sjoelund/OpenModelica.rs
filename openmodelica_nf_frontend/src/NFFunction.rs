@@ -1461,7 +1461,7 @@ pub mod Function {
         functions = (::match_deref::match_deref! { match &(functionRef.clone()) {
         Deref @ ComponentRef::CREF { .. } => typeNodeCache(var_field!((*functionRef).node, ComponentRef::NFComponentRef::CREF).clone(), context.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.typeRefCache")); __mm_s.push_str(&*literal!(" got invalid function call reference")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.typeRefCache")); __mm_s.push_str(&*literal!(" got invalid function call reference")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2104,7 +2104,7 @@ pub mod Function {
             let mut l = l.clone();
             if InstNode::isComponent(l.clone())? {
                 binding = Component::getBinding(InstNode::component(l.clone())?);
-                Error::assertion(Binding::hasExp(binding.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getLocalArguments")); __mm_s.push_str(&*literal!(" got local component without binding")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(Binding::hasExp(binding.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getLocalArguments")); __mm_s.push_str(&*literal!(" got local component without binding")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
                 localArgs = metamodelica::cons(Binding::getExp(binding.clone())?, localArgs.clone());
             }
         }
@@ -2120,7 +2120,7 @@ pub mod Function {
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut n: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut check_vis: bool = false;
-        Error::assertion(InstNode::isClass(node.clone())? || InstNode::isComponent(node.clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-class/non-component node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(InstNode::isClass(node.clone())? || InstNode::isComponent(node.clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-class/non-component node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
         cls = InstNode::getClass(node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
@@ -2149,7 +2149,7 @@ pub mod Function {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-instantiated function ")); __mm_s.push_str(&*AbsynUtil::pathString(InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-instantiated function ")); __mm_s.push_str(&*AbsynUtil::pathString(InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2223,7 +2223,7 @@ pub mod Function {
             slot = Arc::new(Slot::Slot { node: component.clone(), ty: SlotType::GENERIC.clone(), default: default.clone(), arg: None, index: index.clone(), evalStatus: SlotEvalStatus::NOT_EVALUATED.clone() });
             Ok::<(), anyhow::Error>(())
         }.is_err() {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeSlot")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeSlot")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
         }
         Ok(slot)
     }
@@ -2272,7 +2272,7 @@ pub mod Function {
         let mut purity: DAE::Purity = DAE::Purity::PURE;
         def = InstNode::classDefinition(Class::lastBaseClass(node.clone())?)?;
         res = SCodeUtil::getClassRestriction(def.clone())?;
-        Error::assertion(SCodeUtil::isFunctionRestriction(res.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeAttributes")); __mm_s.push_str(&*literal!(" got non-function restriction")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(SCodeUtil::isFunctionRestriction(res.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeAttributes")); __mm_s.push_str(&*literal!(" got non-function restriction")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
         let SCode::Restriction::R_FUNCTION { functionRestriction: __pa0 } = (res.clone()) else { bail!("pattern mismatch") };
         fres = __pa0.clone();
         is_partial = InstNode::isPartial(node.clone())?;
@@ -2477,15 +2477,15 @@ pub mod Function {
         },
         Deref @ Sections::EMPTY => metamodelica::nil(),
         Deref @ Sections::EXTERNAL { .. } => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got function with external section (not algorithm section)")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got function with external section (not algorithm section)")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         Deref @ Sections::SECTIONS { .. } => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got function with multiple algorithm sections")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got function with multiple algorithm sections")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got unknown sections")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got unknown sections")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

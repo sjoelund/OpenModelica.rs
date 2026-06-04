@@ -725,7 +725,7 @@ fn getSubClockForClkConstructor(mut refClock: Arc<DAE::ClockKind>, mut clk: Arc<
             BackendDAE::SubClock::SUBCLOCK { factor: MMath::divRational(MMath::Rational { nom: 1, denom: ((metamodelica::OrderedFloat(1.0_f64) / r1.clone()).0 as i32) }, MMath::Rational { nom: 1, denom: ((metamodelica::OrderedFloat(1.0_f64) / r2.clone()).0 as i32) })?, shift: MMath::RAT0.clone(), solver: None }
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.getSubClockForClkConstructor")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.getSubClockForClkConstructor")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -821,7 +821,7 @@ fn computeAbsoluteSubClock(mut preClock: BackendDAE::SubClock, mut subSeqClock: 
             subSeqClock.clone()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.computeAbsoluteSubClock")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.computeAbsoluteSubClock")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;
             bail!("fail")
         },
     });
@@ -2337,7 +2337,7 @@ fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
             false
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.isClockEquation")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.isClockEquation")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2454,7 +2454,7 @@ fn detectEqPartitionCall1(mut expClocked: bool, mut refClocked: bool, mut inPart
             (setClockedPartition(Some(expClocked.clone()), inPartition.clone(), None, info.clone())?, metamodelica::cons((cr.clone(), refClocked.clone()), inRefs.clone()))
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.detectEqPartitionCall1")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.detectEqPartitionCall1")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

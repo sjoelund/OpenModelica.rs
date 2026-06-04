@@ -223,7 +223,7 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
         ((TypeRestriction::MATRIX { .. }, _), (TypeRestriction::MATRIX { .. }, ty)) => (SizeClassification::ELEMENT_WISE.clone(), ty.clone()),
         ((TypeRestriction::ARRAY { .. }, _), (TypeRestriction::ARRAY { .. }, ty)) => (SizeClassification::ELEMENT_WISE.clone(), ty.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.repairMultary")); __mm_s.push_str(&*literal!(" failed because the multary arguments have incompatible sizes: ")); __mm_s.push_str(&*List::toString(types.clone(), (std::sync::Arc::new(Type::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.repairMultary")); __mm_s.push_str(&*literal!(" failed because the multary arguments have incompatible sizes: ")); __mm_s.push_str(&*List::toString(types.clone(), (std::sync::Arc::new(Type::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -257,7 +257,7 @@ pub fn repairBinary(mut operator: Arc<NFOperator>, mut ty1: Arc<Type::NFType>, m
             (getSizeClassification(operator.clone())?, ty1.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.repairBinary")); __mm_s.push_str(&*literal!(" failed because the binary arguments have incompatible sizes: ")); __mm_s.push_str(&*Type::toString(ty1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Type::toString(ty2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.repairBinary")); __mm_s.push_str(&*literal!(" failed because the binary arguments have incompatible sizes: ")); __mm_s.push_str(&*Type::toString(ty1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Type::toString(ty2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     });
@@ -369,7 +369,7 @@ pub fn toAbsyn(mut op: Arc<NFOperator>) -> Result<Absyn::Operator> {
         Op::EQUAL => openmodelica_ast::Absyn::Operator::EQUAL,
         Op::NEQUAL => openmodelica_ast::Absyn::Operator::NEQUAL,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.toAbsyn")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     });
@@ -427,7 +427,7 @@ pub fn toDAE(mut op: Arc<NFOperator>) -> Result<(DAE::Operator, bool, bool)> {
         Op::EQUAL => DAE::Operator::EQUAL { ty: ty.clone() },
         Op::NEQUAL => DAE::Operator::NEQUAL { ty: ty.clone() },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.toDAE")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*opToString(op.op.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.toDAE")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*opToString(op.op.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     });
@@ -496,7 +496,7 @@ pub fn symbol(mut op: Arc<NFOperator>, mut spacing: ArcStr) -> Result<ArcStr> {
         Op::EQUAL => literal!("=="),
         Op::NEQUAL => literal!("<>"),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.symbol")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.symbol")); __mm_s.push_str(&*literal!(" got unknown type.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     })).clone();
@@ -904,7 +904,7 @@ pub fn classify(mut op: Arc<NFOperator>) -> Result<Classification> {
         Op::EQUAL => (MathClassification::RELATION.clone(), SizeClassification::RELATION.clone()),
         Op::NEQUAL => (MathClassification::RELATION.clone(), SizeClassification::RELATION.clone()),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.classify")); __mm_s.push_str(&*literal!(": Don't know how to handle ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", op.op.clone()))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.classify")); __mm_s.push_str(&*literal!(": Don't know how to handle ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", op.op.clone()))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     });
@@ -947,7 +947,7 @@ pub fn fromClassification(mut cl: Classification, mut ty: Arc<Type::NFType>) -> 
         (MathClassification::MULTIPLICATION, SizeClassification::VECTOR_MATRIX) => Op::MUL_VECTOR_MATRIX.clone(),
         (MathClassification::MULTIPLICATION, SizeClassification::MATRIX_VECTOR) => Op::MUL_MATRIX_VECTOR.clone(),
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.fromClassification")); __mm_s.push_str(&*literal!(": Don't know how to handle math class and size class combination: ")); __mm_s.push_str(&*classificationString(cl.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.fromClassification")); __mm_s.push_str(&*literal!(": Don't know how to handle math class and size class combination: ")); __mm_s.push_str(&*classificationString(cl.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")
         },
     });

@@ -180,7 +180,7 @@ pub fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Res
             Arc::new(NFRangeIterator::INT_RANGE { current: 1, last: if (resizable.clone()) {Util::getOptionOrDefault(var_field!((*dim).opt_size, Dimension::NFDimension::RESIZABLE).clone(), var_field!((*dim).size, Dimension::NFDimension::RESIZABLE).clone())} else {var_field!((*dim).size, Dimension::NFDimension::RESIZABLE).clone()} })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.fromDim")); __mm_s.push_str(&*literal!(" got unknown dim")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.fromDim")); __mm_s.push_str(&*literal!(" got unknown dim")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFRangeIterator.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -213,7 +213,7 @@ pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>,
             nextExp.clone()
         },
         Deref @ INVALID_RANGE { .. } => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.next")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.next")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFRangeIterator.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -229,7 +229,7 @@ pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
         Deref @ REAL_RANGE { .. } => var_field!((*iterator).current, NFRangeIterator::REAL_RANGE).clone() < var_field!((*iterator).steps, NFRangeIterator::REAL_RANGE).clone(),
         Deref @ ARRAY_RANGE { .. } => var_field!((*iterator).index, NFRangeIterator::ARRAY_RANGE).clone() <= metamodelica::arrayLength(var_field!((*iterator).values, NFRangeIterator::ARRAY_RANGE).clone()),
         Deref @ INVALID_RANGE { .. } => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.hasNext")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.hasNext")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFRangeIterator.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

@@ -200,7 +200,7 @@ pub mod BClock {
         clock = (::match_deref::match_deref! { match &(clock.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
             let mut base_clock: Arc<BClock> = Arc::new(<BClock as ::std::default::Default>::default());
-            base_clock = UnorderedMap::getSafe(var_field!((*clock).base_ref, BClock::INFERRED_CLOCK).clone(), base_clock_inferrence.clone(), metamodelica::sourceInfo!())?;
+            base_clock = UnorderedMap::getSafe(var_field!((*clock).base_ref, BClock::INFERRED_CLOCK).clone(), base_clock_inferrence.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             baseClockInferrence(base_clock.clone(), base_clock_inferrence.clone())?
         },
         Deref @ BASE_CLOCK { clock: Deref @ ClockKind::INFERRED_CLOCK { .. } } => {
@@ -265,7 +265,7 @@ pub mod BClock {
             } else {
                 unwrap_break_err!(UnorderedMap::add(clock_name.clone(), clock.clone(), info.baseClocks.clone()), '__try0);
             }
-            clock_var = unwrap_break_err!(BVariable::getVarPointer(clock_name.clone(), metamodelica::sourceInfo!()), '__try0);
+            clock_var = unwrap_break_err!(BVariable::getVarPointer(clock_name.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo")), '__try0);
             if !(BVariable::isClockOrClocked(clock_var.clone())) {
                 BVariable::setVarKind(clock_var.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCKED));
             }
@@ -442,7 +442,7 @@ pub mod ClockedInfo {
     fn resolveImplicitSubClock(mut key: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut clock: Arc<ComponentRef::NFComponentRef> = key.clone();
         if UnorderedMap::contains(key.clone(), clock_map.clone())? {
-            clock = UnorderedMap::getSafe(key.clone(), clock_map.clone(), metamodelica::sourceInfo!())?;
+            clock = UnorderedMap::getSafe(key.clone(), clock_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             if !(UnorderedMap::contains(clock.clone(), info.subClocks.clone())? || UnorderedMap::contains(clock.clone(), info.baseClocks.clone())?) {
                 clock = resolveImplicitSubClock(clock.clone(), info.clone(), clock_map.clone())?;
                 UnorderedMap::add(key.clone(), clock.clone(), clock_map.clone())?;
@@ -454,7 +454,7 @@ pub mod ClockedInfo {
     fn resolveSubClock(mut clock_name: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo>, mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> {
         let mut base_clock: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut implicit_clock: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut parent_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!())?;
+        let mut parent_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
         let mut implicit_clock_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
         let mut dest: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
         let mut src: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
@@ -463,11 +463,11 @@ pub mod ClockedInfo {
         } else {
             if !(UnorderedMap::contains(parent_clock.clone(), info.subClocks.clone())?) {
                 implicit_clock_opt = Some(parent_clock.clone());
-                parent_clock = UnorderedMap::getSafe(parent_clock.clone(), clock_map.clone(), metamodelica::sourceInfo!())?;
+                parent_clock = UnorderedMap::getSafe(parent_clock.clone(), clock_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             }
             base_clock = resolveSubClock(parent_clock.clone(), info.clone(), clock_map.clone())?;
-            dest = UnorderedMap::getSafe(parent_clock.clone(), info.subClocks.clone(), metamodelica::sourceInfo!())?;
-            src = UnorderedMap::getSafe(clock_name.clone(), info.subClocks.clone(), metamodelica::sourceInfo!())?;
+            dest = UnorderedMap::getSafe(parent_clock.clone(), info.subClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
+            src = UnorderedMap::getSafe(clock_name.clone(), info.subClocks.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             UnorderedMap::add(clock_name.clone(), BClock::updateSubClock(dest.clone(), src.clone())?, info.subClocks.clone())?;
             UnorderedMap::add(clock_name.clone(), base_clock.clone(), info.subToBase.clone())?;
             if isSome(implicit_clock_opt.clone()) {
@@ -484,7 +484,7 @@ pub mod ClockedInfo {
     }
 
     fn addSubClock(mut clock_name: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo>) -> Result<()> {
-        let mut base_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!())?;
+        let mut base_clock: Arc<ComponentRef::NFComponentRef> = UnorderedMap::getSafe(clock_name.clone(), info.subToBase.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
         let mut current_clocks: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         current_clocks = UnorderedMap::getOrDefault(base_clock.clone(), info.baseToSub.clone(), metamodelica::nil())?;
         UnorderedMap::add(base_clock.clone(), metamodelica::cons(clock_name.clone(), current_clocks.clone()), info.baseToSub.clone())?;
@@ -630,9 +630,9 @@ pub fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_coll: Arc<
             let mut clock_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             clock = Arc::new(BClock::BClock::BASE_CLOCK { clock: var_field!((*exp).clk, Expression::NFExpression::CLKCONST).clone() });
             if UnorderedMap::contains(clock.clone(), clck_coll.clone())? {
-                clock_name = UnorderedMap::getSafe(clock.clone(), clck_coll.clone(), metamodelica::sourceInfo!())?;
+                clock_name = UnorderedMap::getSafe(clock.clone(), clck_coll.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             } else if UnorderedMap::contains(clock.clone(), infr_coll.clone())? {
-                clock_name = UnorderedMap::getSafe(clock.clone(), infr_coll.clone(), metamodelica::sourceInfo!())?;
+                clock_name = UnorderedMap::getSafe(clock.clone(), infr_coll.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             } else {
                 (clock_var, clock_name) = BVariable::makeClockVar(Pointer::access(idx.clone()), Expression::typeOf(exp.clone()))?;
                 if BClock::isInferredClock(clock.clone()) {
@@ -727,7 +727,7 @@ pub mod Cluster {
             let mut clock_opt: Option<Arc<ComponentRef::NFComponentRef>> = Pointer::access(clock_ptr.clone());
             exp = (::match_deref::match_deref! { match &((exp.clone(), clock_opt.clone())) {
         (_, Some(_)) => exp.clone(),
-        (Deref @ Expression::CREF { .. }, None) if (BVariable::isClockOrClocked(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?)) => {
+        (Deref @ Expression::CREF { .. }, None) if (BVariable::isClockOrClocked(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?)) => {
             Pointer::update(clock_ptr.clone(), Some(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()));
             exp.clone()
         },
@@ -777,7 +777,7 @@ pub mod Cluster {
         var_lst = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut cref in (cvars.clone()).into_iter().cloned() {
-            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1147,7 +1147,7 @@ fn sortAndMergeClockedPartitions(mut partitions: Arc<metamodelica::List<Arc<Part
             subClock = DEFAULT_SUB_CLOCK().clone();
         }
         partition = Partition::Partition::setClocks(partition.clone(), subClock.clone(), Some(baseClock.clone()))?;
-        subClockMap = UnorderedMap::getSafe(baseClock.clone(), clock_collector.clone(), metamodelica::sourceInfo!())?;
+        subClockMap = UnorderedMap::getSafe(baseClock.clone(), clock_collector.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
         new_part = (::match_deref::match_deref! { match &(UnorderedMap::get(subClock.clone(), subClockMap.clone())?) {
         Some(new_part) => Partition::Partition::merge(new_part.clone(), partition.clone(), true)?,
         _ => partition.clone(),
@@ -1187,7 +1187,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
         let __range0 = &*UnorderedSet::toList(Partition::Partition::getClockDependencies(({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}))?);
         for mut clock in __range0 {
             let mut clock = clock.clone();
-            j = UnorderedMap::getSafe(clock.clone(), index_map.clone(), metamodelica::sourceInfo!())?;
+            j = UnorderedMap::getSafe(clock.clone(), index_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             {
                 let __cell1 = metamodelica::cons(j.clone(), ({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 m.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
@@ -1244,7 +1244,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
                 var_clocks = UnorderedSet::new((std::sync::Arc::new(BClock::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 13);
                 for mut var in &*sub_comp_vars.clone() {
                     let mut var = var.clone();
-                    UnorderedSet::add(UnorderedMap::getSafe(var.clone(), var_clock_map.clone(), metamodelica::sourceInfo!())?, var_clocks.clone())?;
+                    UnorderedSet::add(UnorderedMap::getSafe(var.clone(), var_clock_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?, var_clocks.clone())?;
                 }
                 collector = (::match_deref::match_deref! { match &((collector.clone(), UnorderedSet::toList(var_clocks.clone()))) {
         (None, Deref @ metamodelica::List::Cons { head: new_clock, tail: Deref @ metamodelica::List::Nil }) => Some((sub_comp_vars.clone(), sub_comp_eqns.clone(), new_clock.clone())),
@@ -1317,7 +1317,7 @@ fn collectPartitioningCrefs(mut exp: Arc<Expression::NFExpression>, mut var_cref
         Deref @ Expression::CREF { .. } => {
             let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            children = (::match_deref::match_deref! { match &(BVariable::getVar(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?) {
+            children = (::match_deref::match_deref! { match &(BVariable::getVar(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { varKind: Deref @ VariableKind::RECORD { children: children_vars, .. }, .. }, .. } => {
             ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -1336,7 +1336,7 @@ fn collectPartitioningCrefs(mut exp: Arc<Expression::NFExpression>, mut var_cref
             for mut child in &*children.clone() {
                 let mut child = child.clone();
                 stripped = ComponentRef::stripSubscriptsAll(child.clone());
-                if !(BVariable::checkCref(stripped.clone(), (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?) {
+                if !(BVariable::checkCref(stripped.clone(), (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?) {
                     addCrefToSet(stripped.clone(), var_crefs.clone())?;
                 }
             }
@@ -1351,7 +1351,7 @@ fn collectPartitioningCrefs(mut exp: Arc<Expression::NFExpression>, mut var_cref
 }
 
 fn addCrefToSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
-    let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+    let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
     if BVariable::isState(var_ptr.clone()) {
         UnorderedSet::add(BVariable::getPartnerCref(cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::getVarDer, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>), false)?, set.clone())?;
     } else if BVariable::isPrevious(var_ptr.clone()) {

@@ -224,7 +224,7 @@ pub fn solve(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: A
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     if Flags::isSet(Flags::FAILTRACE.clone())? {
-                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to solve \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\" w.r.t. \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to solve \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\" w.r.t. \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/ExpressionSolve.mo"))?;
                     }
                     Ok(bail!("fail"))
                 }
@@ -273,7 +273,7 @@ pub fn solve2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inExp3: 
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     if Flags::isSet(Flags::FAILTRACE.clone())? {
-                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to solve \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\" w.r.t. \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to solve \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp2.clone())?); __mm_s.push_str(&*literal!("\" w.r.t. \"")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp3.clone())?); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/ExpressionSolve.mo"))?;
                     }
                     Ok(bail!("fail"))
                 }

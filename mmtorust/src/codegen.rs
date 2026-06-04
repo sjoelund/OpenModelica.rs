@@ -397,6 +397,11 @@ struct GenCtx {
     /// time. We do the same in codegen rather than at runtime so the constant
     /// is folded directly into the call site.
     current_fn_qname: String,
+    /// The `.mo` file the current output file was generated from, as the
+    /// reference compiler reports it in diagnostics: relative to
+    /// `OMCompiler/Compiler/` (e.g. `SimCode/SimCodeFunctionUtil.mo`).
+    /// Used to emit `sourceInfo()`.
+    source_file: String,
     /// True while emitting a global `const`/`static`/`thread_local!` initializer
     /// — a context whose Rust type is the raw `T`, never `Result<T>`, so a
     /// fallible call inside it *must* be lowered with `.unwrap()` (there is no
@@ -587,6 +592,7 @@ impl GenCtx {
             types_needing_default,
             current_fn_fallible: true,
             current_fn_qname: String::new(),
+            source_file: String::new(),
             in_infallible_const_init: false,
             infallible_unwrap_sites: std::cell::RefCell::new(BTreeSet::new()),
             expected_arg_fn_formal: None,
@@ -1790,6 +1796,16 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
 fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
+    if let NodeKind::Class(c) = &node.kind {
+        // Diagnostics (`sourceInfo()`) report the .mo relative to
+        // `OMCompiler/Compiler/`, like the reference compiler. Match the
+        // directory component exactly — `OMCompiler/` itself contains the
+        // substring `Compiler/`.
+        ctx.source_file = match c.info.fileName.rsplit_once("/Compiler/") {
+            Some((_, rel)) => rel.to_owned(),
+            None => c.info.fileName.to_string(),
+        };
+    }
     // Build the set of all RustEnum qnames so `constructor_needs_arc` can
     // tell variant records (parent is a RustEnum) from sibling nested types
     // that just happen to share a qname prefix. Walks the whole hierarchy.
@@ -9000,12 +9016,21 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
         }
         "sourceInfo" if args.is_empty() => {
             // MetaModelica's `sourceInfo()` returns a SourceInfo populated from the
-            // *compiler* call-site — i.e. the location in the .mo source. We emit
-            // the `sourceInfo!()` macro, which uses Rust's `file!()`/`line!()` to
-            // capture the Rust call-site (i.e. the generated .rs file). For a
-            // bootstrap that's the closest equivalent: the Rust file lines map
-            // 1:1 to the original MetaModelica statements.
-            Ok("metamodelica::sourceInfo!()".to_owned())
+            // *compiler* call-site — i.e. the location in the .mo source. We know
+            // which .mo the current file was generated from (`ctx.source_file`)
+            // but statement-level positions are not threaded through TypedStmt
+            // yet, so the line/column come out as 0 ("somewhere in this file").
+            // That matches what the reference compiler prints in testsuite mode
+            // (Error.addInternalError zeroes the position, keeping the file).
+            // TODO: carry Absyn.ALGORITHMITEM info through typedexp so the real
+            // .mo line can be emitted here.
+            if ctx.source_file.is_empty() {
+                // No source file known (shouldn't happen for generated code);
+                // fall back to the Rust call-site.
+                Ok("metamodelica::sourceInfo!()".to_owned())
+            } else {
+                Ok(format!("metamodelica::sourceInfo!({:?})", ctx.source_file))
+            }
         }
         "list" => {
             if args.is_empty() {

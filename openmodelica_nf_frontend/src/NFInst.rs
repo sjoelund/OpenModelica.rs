@@ -468,7 +468,7 @@ pub fn partialInstClass2(mut definition: Arc<SCode::Element>, mut scope: Arc<Ins
     let mut ce_cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut prefs: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
-    Error::assertion(SCodeUtil::elementIsClass(definition.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.partialInstClass2")); __mm_s.push_str(&*literal!(" got non-class element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::assertion(SCodeUtil::elementIsClass(definition.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.partialInstClass2")); __mm_s.push_str(&*literal!(" got non-class element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
     let __pa0 = ::match_deref::match_deref! { match &(definition.clone()) {
         Deref @ SCode::Element::CLASS { classDef: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -570,7 +570,7 @@ pub fn expandClass2(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Resu
         Deref @ SCode::ClassDef::OVERLOAD { .. } => node.clone(),
         Deref @ SCode::ClassDef::PDER { .. } => expandClassDerived(def.clone(), Arc::new(SCode::ClassDef::DERIVED { typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: var_field!((*cdef).functionPath, SCode::ClassDef::PDER).clone(), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), attributes: SCode::defaultVarAttr.clone() }), node.clone(), context.clone(), info.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.expandClass2")); __mm_s.push_str(&*literal!(" got unknown class:\n")); __mm_s.push_str(&*SCodeDump::unparseElementStr(def.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.expandClass2")); __mm_s.push_str(&*literal!(" got unknown class:\n")); __mm_s.push_str(&*SCodeDump::unparseElementStr(def.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1001,7 +1001,7 @@ pub fn instClassDef(mut cls: Arc<Class::NFClass>, mut outerMod: Arc<Modifier::Mo
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instClassDef")); __mm_s.push_str(&*literal!(" got unknown class.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instClassDef")); __mm_s.push_str(&*literal!(" got unknown class.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1400,7 +1400,7 @@ pub fn redeclareClass(mut redeclareNode: Arc<InstNode::InstNode>, mut originalNo
             Arc::new(Class::NFClass::PARTIAL_CLASS { elements: cls_tree.clone(), modifier: r#mod.clone(), ccMod: constrainingMod.clone(), prefixes: prefs.clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareClass")); __mm_s.push_str(&*literal!(" got unknown classes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareClass")); __mm_s.push_str(&*literal!(" got unknown classes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1410,7 +1410,7 @@ pub fn redeclareClass(mut redeclareNode: Arc<InstNode::InstNode>, mut originalNo
         (Deref @ Class::PARTIAL_BUILTIN { .. }, _) => redeclareEnum(rdcl_cls.clone(), orig_cls.clone(), prefs.clone(), r#mod.clone(), redeclareNode.clone(), originalNode.clone(), context.clone())?,
         (_, Deref @ Class::PARTIAL_CLASS { .. }) => Arc::new(Class::NFClass::PARTIAL_CLASS { elements: var_field!((*rdcl_cls).elements, Class::NFClass::PARTIAL_CLASS).clone(), modifier: r#mod.clone(), ccMod: constrainingMod.clone(), prefixes: prefs.clone() }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareClass")); __mm_s.push_str(&*literal!(" got unknown classes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareClass")); __mm_s.push_str(&*literal!(" got unknown classes")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1722,7 +1722,7 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
             Arc::new(Component::NFComponent::COMPONENT { classInst: var_field!((*rdcl_comp).classInst, Component::NFComponent::COMPONENT).clone(), ty: rdcl_ty.clone(), binding: binding.clone(), condition: condition.clone(), attributes: attr.clone(), comment: cmt.clone(), state: ComponentState::PartiallyInstantiated.clone(), info: var_field!((*rdcl_comp).info, Component::NFComponent::COMPONENT).clone() })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareComponent")); __mm_s.push_str(&*literal!(" got unknown components")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.redeclareComponent")); __mm_s.push_str(&*literal!(" got unknown components")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2005,7 +2005,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
         Deref @ Class::INSTANCED_BUILTIN { .. } => (),
         Deref @ Class::INSTANCED_CLASS { .. } => (),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instExpressions")); __mm_s.push_str(&*literal!(" got invalid class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instExpressions")); __mm_s.push_str(&*literal!(" got invalid class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2125,7 +2125,7 @@ pub fn instComponentExpressions(mut component: Arc<InstNode::InstNode>, mut cont
         },
         _ => {
             if !(InstContext::inRelaxed(context.clone())) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instComponentExpressions")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instComponentExpressions")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
                 bail!("fail");
             }
             ()
@@ -2334,7 +2334,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
     }), ty: Arc::new(crate::NFType::UNKNOWN), split: false })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instExp")); __mm_s.push_str(&*literal!(" got unknown expression: ")); __mm_s.push_str(&*Dump::printExpStr(absynExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instExp")); __mm_s.push_str(&*literal!(" got unknown expression: ")); __mm_s.push_str(&*Dump::printExpStr(absynExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2358,7 +2358,7 @@ pub fn instCref(mut absynCref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNode
         Deref @ InstNode::COMPONENT_NODE { .. } => instCrefComponent(cref.clone(), var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), found_scope.clone(), info.clone())?,
         Deref @ InstNode::CLASS_NODE { .. } => if (Class::isFunction(InstNode::getClass(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone())?)) {instCrefFunction(cref.clone(), found_scope.clone(), context.clone(), info.clone())?} else {instCrefTypename(cref.clone(), var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone(), info.clone())?},
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instCref")); __mm_s.push_str(&*literal!(" got invalid instance node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instCref")); __mm_s.push_str(&*literal!(" got invalid instance node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2410,7 +2410,7 @@ pub fn instCrefTypename(mut cref: Arc<ComponentRef::NFComponentRef>, mut node: A
         Deref @ Type::BOOLEAN => Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![Arc::new(crate::NFDimension::BOOLEAN)] }),
         Deref @ Type::ENUMERATION { .. } => Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![Arc::new(Dimension::NFDimension::ENUM { enumType: ty.clone() })] }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instCrefTypename")); __mm_s.push_str(&*literal!(" got unknown class node ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instCrefTypename")); __mm_s.push_str(&*literal!(" got unknown class node ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2798,7 +2798,7 @@ pub fn instEquation(mut scodeEq: Arc<SCode::Equation>, mut scope: Arc<InstNode::
             metamodelica::cons(Arc::new(Equation::NFEquation::NORETCALL { exp: exp1.clone(), scope: scope.clone(), source: makeSource(var_field!((*scodeEq).comment, SCode::Equation::EQ_NORETCALL).clone(), info.clone()) }), equations.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instEquation")); __mm_s.push_str(&*literal!(" got unknown equation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instEquation")); __mm_s.push_str(&*literal!(" got unknown equation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3003,7 +3003,7 @@ pub fn instStatement(mut scodeStmt: Arc<SCode::Statement>, mut scope: Arc<InstNo
             Arc::new(Statement::NFStatement::FAILURE { body: stmtl.clone(), source: makeSource(var_field!((*scodeStmt).comment, SCode::Statement::ALG_FAILURE).clone(), var_field!((*scodeStmt).info, SCode::Statement::ALG_FAILURE).clone()) })
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instStatement")); __mm_s.push_str(&*literal!(" got unknown statement")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instStatement")); __mm_s.push_str(&*literal!(" got unknown statement")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

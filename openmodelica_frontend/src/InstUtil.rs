@@ -6143,7 +6143,7 @@ pub fn traverseModAddFinal(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(literal!("InstUtil.traverseModAddFinal"), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(literal!("InstUtil.traverseModAddFinal"), metamodelica::sourceInfo!("FrontEnd/InstUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -6516,7 +6516,7 @@ fn instConditionalDeclaration(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
             true
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstUtil.instConditionalDeclaration got unexpected value ")); __mm_s.push_str(&*ValuesDump::valString(val.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstUtil.instConditionalDeclaration got unexpected value ")); __mm_s.push_str(&*ValuesDump::valString(val.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/InstUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

@@ -85,7 +85,7 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
         for mut dim in &*dims.clone() {
             let mut dim = dim.clone();
             if !(Dimension::isKnown(dim.clone(), false)) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.multiIntervalFromDimensions")); __mm_s.push_str(&*literal!(": unknown dimension ")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.multiIntervalFromDimensions")); __mm_s.push_str(&*literal!(": unknown dimension ")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
             }
             dim_size = Dimension::size(dim.clone(), false)?;
             vc = Vector::get(vCount.clone(), index.clone())?;
@@ -193,7 +193,7 @@ pub fn intervalFromExp(mut e: Arc<Expression::NFExpression>) -> Result<Arc<SBInt
         Deref @ Expression::UNARY { .. } => intervalFromUnaryExp(var_field!((*e).exp, Expression::NFExpression::UNARY).clone())?,
         Deref @ Expression::RANGE { .. } => intervalFromRange(e.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromExp")); __mm_s.push_str(&*literal!(" got unknown expression ")); __mm_s.push_str(&*Expression::toString(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromExp")); __mm_s.push_str(&*literal!(" got unknown expression ")); __mm_s.push_str(&*Expression::toString(e.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -235,12 +235,12 @@ pub fn intervalFromBinaryExp(mut lhs: Arc<Expression::NFExpression>, mut op: Arc
         Operator::Op::SUB => SBInterval::new(llo.clone() - rlo.clone(), step.clone(), lhi.clone() - rhi.clone()),
         Operator::Op::MUL => SBInterval::new(llo.clone() * rlo.clone(), llo.clone() * step.clone(), lhi.clone() * rhi.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromBinaryExp")); __mm_s.push_str(&*literal!(" got unknown operator ")); __mm_s.push_str(&*Operator::symbol(op.clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromBinaryExp")); __mm_s.push_str(&*literal!(" got unknown operator ")); __mm_s.push_str(&*Operator::symbol(op.clone(), (literal!(" ")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
             bail!("fail")
         },
     });
     } else {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromBinaryExp")); __mm_s.push_str(&*literal!(" got unknown expression ")); __mm_s.push_str(&*Expression::toString(Arc::new(Expression::NFExpression::BINARY { exp1: lhs.clone(), operator: op.clone(), exp2: rhs.clone() }))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.intervalFromBinaryExp")); __mm_s.push_str(&*literal!(" got unknown expression ")); __mm_s.push_str(&*Expression::toString(Arc::new(Expression::NFExpression::BINARY { exp1: lhs.clone(), operator: op.clone(), exp2: rhs.clone() }))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
     }
     Ok(i)
 }
@@ -311,7 +311,7 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
     ints2 = SBMultiInterval::intervals(mi2.clone());
     mi2_sz = SBMultiInterval::size(mi2.clone());
     if SBMultiInterval::ndim(mi1.clone()) != SBMultiInterval::ndim(mi2.clone()) && mi1_sz.clone() != 1 && mi2_sz.clone() != 1 {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.linearMapFromIntervals")); __mm_s.push_str(&*literal!(" got incompatible connect")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.linearMapFromIntervals")); __mm_s.push_str(&*literal!(" got incompatible connect")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
     }
     sz = metamodelica::arrayLength(ints1.clone());
     g1 = metamodelica::arrayCreate(sz.clone(), metamodelica::OrderedFloat(0.0_f64));
@@ -324,7 +324,7 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
         sz1 = SBInterval::size(({let __elt = ints1.borrow()[(i.clone()-1) as usize].clone(); __elt}));
         sz2 = SBInterval::size(({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt}));
         if sz1.clone() != sz2.clone() && sz1.clone() != 1 && sz2.clone() != 1 {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.linearMapFromIntervals")); __mm_s.push_str(&*literal!(" got incompatible connect")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.linearMapFromIntervals")); __mm_s.push_str(&*literal!(" got incompatible connect")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSBGraphUtil.mo"))?;
         }
         count = std::cmp::max(sz1.clone(), sz2.clone());
         aux_ec = Vector::get(eCount.clone(), i.clone())?;

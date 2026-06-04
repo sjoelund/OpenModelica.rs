@@ -126,7 +126,7 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
         flatModel = unwrap_break_err!(updateModel(flatModel.clone(), htCr2U2.clone(), htU2S.clone()), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFUnitCheck.mo"))?;
     }
     execStat(literal!("NFUnitCheck.checkUnits"))?;
     Ok(flatModel)

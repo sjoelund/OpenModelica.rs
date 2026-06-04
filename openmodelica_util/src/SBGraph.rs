@@ -323,7 +323,7 @@ pub mod BipartiteIncidenceList {
             Vector::size(il.U_vertices.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.addVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.addVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -345,7 +345,7 @@ pub mod BipartiteIncidenceList {
             index.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.findVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.findVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -359,7 +359,7 @@ pub mod BipartiteIncidenceList {
         SetType::F => Vector::get(il.F_vertices.clone(), d.clone())?,
         SetType::U => Vector::get(il.U_vertices.clone(), d.clone())?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.getVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.getVertex")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -425,7 +425,7 @@ pub mod BipartiteIncidenceList {
         SetType::F => Vector::size(il.F_vertices.clone()),
         SetType::U => Vector::size(il.U_vertices.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertexCount")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertexCount")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });
@@ -444,7 +444,7 @@ pub mod BipartiteIncidenceList {
         SetType::F => Vector::toList(il.F_vertices.clone()),
         SetType::U => Vector::toList(il.U_vertices.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertices")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SBGraph.BipartiteIncidenceList.vertices")); __mm_s.push_str(&*literal!(" failed for wrong SetType: ")); __mm_s.push_str(&*setTypeString(ST.clone())); __mm_s.push_str(&*literal!("\nAllowed: V,F,U")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Util/SBGraph.mo"))?;
             bail!("fail")
         },
     });

@@ -9266,7 +9266,7 @@ pub fn getMetaRecordFields(mut ty: Arc<DAE::Type>) -> Result<Arc<metamodelica::L
             fields.clone()
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: false, .. } => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.getMetaRecordFields")); __mm_s.push_str(&*literal!(" called on a non-singleton uniontype: ")); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.getMetaRecordFields")); __mm_s.push_str(&*literal!(" called on a non-singleton uniontype: ")); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/Types.mo"))?;
             bail!("fail")
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: Deref @ DAE::Type::T_METARECORD { fields: __esc_fields, .. } }, .. } => {
@@ -9282,7 +9282,7 @@ pub fn getMetaRecordFields(mut ty: Arc<DAE::Type>) -> Result<Arc<metamodelica::L
             fields.clone()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.getMetaRecordFields")); __mm_s.push_str(&*literal!(" called on a non-singleton uniontype: ")); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.getMetaRecordFields")); __mm_s.push_str(&*literal!(" called on a non-singleton uniontype: ")); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/Types.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

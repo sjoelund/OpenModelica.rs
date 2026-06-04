@@ -1416,7 +1416,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function generateSparsePattern failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function generateSparsePattern failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1614,7 +1614,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             } };
             comp = __pa0.clone();
             BackendDump::dumpComponent(comp.clone(), None)?;
-            Error::addInternalError((literal!("function getSparsePattern failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function getSparsePattern failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1803,7 +1803,7 @@ pub fn createFMIModelDerivatives(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) 
             outJacobianMatrices = __try0_o1;
         }
         Err(_) => {
-            Error::addInternalError((literal!("function createFMIModelDerivatives failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createFMIModelDerivatives failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             outJacobianMatrices = metamodelica::nil();
             outFunctionTree = inBackendDAE.shared.functionTree.clone();
         }
@@ -1946,7 +1946,7 @@ pub fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::B
             outJacobianMatrices = __try0_o0;
         }
         Err(_) => {
-            Error::addInternalError((literal!("function createFMIModelDerivativesForInitialization failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createFMIModelDerivativesForInitialization failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             outJacobianMatrices = metamodelica::nil();
         }
     }
@@ -2115,7 +2115,7 @@ fn createLinearModelMatrices(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
             (linearModelMatrices.clone().reverse(), functionTree.clone())
         },
         _ => {
-            Error::addInternalError((literal!("Generation of LinearModel Matrices failed.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Generation of LinearModel Matrices failed.")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2214,7 +2214,7 @@ fn createJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inDiffVars:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("function createJacobian failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function createJacobian failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2286,7 +2286,7 @@ fn optimizeJacobianMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inC
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function optimizeJacobianMatrix failed")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function optimizeJacobianMatrix failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2377,7 +2377,7 @@ fn generateSymbolicJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.generateSymbolicJacobian")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.generateSymbolicJacobian")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2588,7 +2588,7 @@ pub fn getJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Resul
         },
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: None, .. } => metamodelica::nil(),
         _ => {
-            Error::addInternalError((literal!("function getJacobianDependencies failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function getJacobianDependencies failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2922,7 +2922,7 @@ fn calculateJacobianComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut 
             unwrap_break_err!(checkNonLinDependecies(outComp.clone(), inEqns.clone()), '__try0);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
-            Error::addInternalError((literal!("function calculateJacobianComponent failed to check all non-linear iteration variables for start values.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function calculateJacobianComponent failed to check all non-linear iteration variables for start values.")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
         }
     }
     Ok((outComp, outShared))
@@ -3262,7 +3262,7 @@ pub fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquat
         }
         Err(_) => {
             if Flags::isSet(Flags::JAC_DUMP.clone())? {
-                Error::addInternalError((literal!("function getSymbolicJacobian failed")).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError((literal!("function getSymbolicJacobian failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             }
             outJacobian = Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN);
             outShared = inShared.clone();
@@ -3462,7 +3462,7 @@ fn createResidualSetEquations(mut iEqs: Arc<metamodelica::List<Arc<BackendDAE::E
             eqn.clone()
         },
         eqn => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function createResidualSetEquations failed for equation: ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function createResidualSetEquations failed for equation: ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4493,7 +4493,7 @@ pub mod LinearJacobian {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.LinearJacobian.solveRow")); __mm_s.push_str(&*literal!(" key does not have an element in pivot row.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.LinearJacobian.solveRow")); __mm_s.push_str(&*literal!(" key does not have an element in pivot row.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             ()
         },
     });

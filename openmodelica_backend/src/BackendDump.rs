@@ -2773,7 +2773,7 @@ pub fn partitionKindString(mut inPartitionKind: BackendDAE::BaseClockPartitionKi
             literal!("unknown partition")
         },
         _ => {
-            Error::addInternalError((literal!("function partitionKindString failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function partitionKindString failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDump.mo"))?;
             bail!("fail")
         },
     })).clone();
@@ -2818,7 +2818,7 @@ fn equationKindString(mut inEqKind: BackendDAE::EquationKind) -> Result<ArcStr> 
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clocked(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => {
-            Error::addInternalError((literal!("function equationKindString failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function equationKindString failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDump.mo"))?;
             bail!("fail")
         },
     })).clone();
@@ -3173,7 +3173,7 @@ pub fn dumpMarkedVarList(mut varList: Arc<metamodelica::List<BackendDAE::Var>>, 
         if let Ok(__iflet0) = (varList.clone()).get(sel.clone()) {
             var = __iflet0;
         } else {
-            Error::addInternalError((literal!("function dumpMarkedVarList failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function dumpMarkedVarList failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDump.mo"))?;
             Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Could not get variable ")); __mm_s.push_str(&*intString(sel.clone())); __mm_s.push_str(&*literal!(" from varList \n")); __mm_s.push_str(&*varListString(varList.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
             bail!("fail");
         }

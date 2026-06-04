@@ -3399,7 +3399,7 @@ pub fn traverseBackendDAEVarsWithUpdate<ArgT: Clone + 'static>(mut inVariables: 
     buckets = __pa3.clone();
     num_vars2 = __pa4.clone();
     if num_vars1.clone() != num_vars2.clone() {
-        Error::addInternalError((literal!("function traverseBackendDAEVarsWithUpdate failed")).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError((literal!("function traverseBackendDAEVarsWithUpdate failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendVariable.mo"))?;
         bail!("fail");
     }
     (vars, outArg) = BackendDAEUtil::traverseArrayNoCopyWithUpdate(vars.clone(), inFunc.clone(), (std::sync::Arc::new(traverseBackendDAEVarsWithUpdate2) as std::sync::Arc<dyn ::std::ops::Fn(Option<BackendDAE::Var>, _, _) -> Result<_> + 'static>), inArg.clone(), num_vars1.clone())?;

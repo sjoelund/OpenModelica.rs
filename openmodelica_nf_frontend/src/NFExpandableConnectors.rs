@@ -364,7 +364,7 @@ fn augmentExpandableConnector(mut conn: Arc<Connector::NFConnector>, mut expanda
             if InstNode::isComponent(comp_node.clone())? {
                 markComponentPresent(comp_node.clone())?;
             } else {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpandableConnectors.augmentExpandableConnector")); __mm_s.push_str(&*literal!(" got non-component element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpandableConnectors.augmentExpandableConnector")); __mm_s.push_str(&*literal!(" got non-component element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFExpandableConnectors.mo"))?;
             }
         }
     }

@@ -1048,7 +1048,7 @@ pub mod VariableAttributes {
         Deref @ VAR_ATTR_ENUMERATION { .. } => scalarizeEnumeration(ExpressionIterator::fromExpOpt(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, ExpressionIterator::fromExpOpt(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, var_field!((*attributes).isProtected, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), var_field!((*attributes).finalPrefix, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), ExpressionIterator::fromExpOpt(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone())?, length.clone())?,
         Deref @ VAR_ATTR_RECORD { .. } => list![attributes.clone()],
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.scalarize")); __mm_s.push_str(&*literal!("failed. Not yet handled: ")); __mm_s.push_str(&*toString(attributes.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.scalarize")); __mm_s.push_str(&*literal!("failed. Not yet handled: ")); __mm_s.push_str(&*toString(attributes.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1065,7 +1065,7 @@ pub mod VariableAttributes {
         Deref @ VAR_ATTR_CLOCK { .. } => Arc::new(crate::NFType::CLOCK),
         Deref @ VAR_ATTR_STRING { .. } => Arc::new(crate::NFType::STRING),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.elemType")); __mm_s.push_str(&*literal!(" cannot create type from attributes: ")); __mm_s.push_str(&*toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.elemType")); __mm_s.push_str(&*literal!(" cannot create type from attributes: ")); __mm_s.push_str(&*toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1225,7 +1225,7 @@ pub mod VariableAttributes {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createReal")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createReal")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1273,7 +1273,7 @@ pub mod VariableAttributes {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createInt")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createInt")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1311,7 +1311,7 @@ pub mod VariableAttributes {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createBool")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createBool")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1349,7 +1349,7 @@ pub mod VariableAttributes {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createString")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createString")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1397,7 +1397,7 @@ pub mod VariableAttributes {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createEnum")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.createEnum")); __mm_s.push_str(&*literal!(" got unknown type attribute ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1476,13 +1476,13 @@ pub mod VariableAttributes {
             arg = __pa0.clone();
             rest = __pa1.clone();
             if !(rest.clone().is_empty() || List::all(rest.clone(), (std::sync::Arc::new({ let __pe_b1 = arg.clone(); move |__pe_a0| Expression::isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
                 bail!("fail");
             }
             getStateSelectName(arg.clone())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1499,7 +1499,7 @@ pub mod VariableAttributes {
         Deref @ "prefer" => StateSelect::PREFER.clone(),
         Deref @ "always" => StateSelect::ALWAYS.clone(),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.lookupStateSelectMember")); __mm_s.push_str(&*literal!(" got unknown StateSelect literal ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

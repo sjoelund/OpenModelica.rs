@@ -234,7 +234,7 @@ pub fn filterExp(mut exp: Arc<Expression::NFExpression>, mut filter: Arc<dyn ::s
 
 pub fn getContinuous(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut init: bool) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
-    if BVariable::checkCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? {
+    if BVariable::checkCref(cref.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))? {
         UnorderedSet::add(cref.clone(), acc.clone())?;
     }
     Ok(cref)
@@ -255,7 +255,7 @@ pub fn getDependentCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Ar
     let mut childCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     checkCref = if (pseudo.clone()) {ComponentRef::stripSubscriptsAll(cref.clone())} else {cref.clone()};
-    record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!())?);
+    record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?);
     if record_children.clone().is_empty() {
         if UnorderedMap::contains(checkCref.clone(), map.clone())? {
             UnorderedSet::add(cref.clone(), acc.clone())?;
@@ -278,7 +278,7 @@ pub fn getDependentCrefCausalized(mut cref: Arc<ComponentRef::NFComponentRef>, m
     let mut childCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut record_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     checkCref = ComponentRef::stripSubscriptsAll(cref.clone());
-    record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!())?);
+    record_children = BVariable::getRecordChildren(BVariable::getVarPointer(checkCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?);
     if record_children.clone().is_empty() {
         if UnorderedSet::contains(checkCref.clone(), set.clone())? {
             UnorderedSet::add(cref.clone(), acc.clone())?;
@@ -326,7 +326,7 @@ pub fn getDependentCrefIndicesPseudoScalar(mut dependencies: Arc<metamodelica::L
     for mut cref in &*scalarized_dependencies.clone() {
         let mut cref = cref.clone();
         stripped = ComponentRef::stripSubscriptsAll(cref.clone());
-        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!())?;
+        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
         (var_start, _) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
         sizes = ComponentRef::sizes(stripped.clone(), false, false, metamodelica::nil())?;
         int_subs = ComponentRef::subscriptsToInteger(cref.clone())?;
@@ -381,7 +381,7 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
     for mut cref in &*scalarized_dependencies.clone() {
         let mut cref = cref.clone();
         stripped = ComponentRef::stripSubscriptsAll(cref.clone());
-        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!())?;
+        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
         subs = ComponentRef::subscriptsAllWithWholeFlat(cref.clone())?;
         ty = ComponentRef::getSubscriptedType(stripped.clone(), true)?;
         dims = Type::arrayDims(ty.clone());
@@ -1114,7 +1114,7 @@ pub fn upgradeRowFull(mut dependencies: Arc<metamodelica::List<Arc<ComponentRef:
         replaced = ComponentRef::mapExp(cref.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         replaced = ComponentRef::simplifySubscripts(replaced.clone(), false)?;
         stripped = ComponentRef::stripSubscriptsAll(replaced.clone());
-        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!())?;
+        var_arr_idx = UnorderedMap::getSafe(stripped.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
         (var_start, _) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
         sizes = ComponentRef::sizes(stripped.clone(), false, false, metamodelica::nil())?;
         int_subs = ComponentRef::subscriptsToInteger(replaced.clone())?;
@@ -1181,7 +1181,7 @@ fn resolveSkips(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamo
             let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut field: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
-            field = (match BVariable::getParent(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?) {
+            field = (match BVariable::getParent(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?) {
         Some(mut parent) => {
             subs = ComponentRef::subscriptsAll(cref.clone());
             crefs = ({
@@ -1332,7 +1332,7 @@ fn resolveDependency(mut original_cref: Arc<ComponentRef::NFComponentRef>, mut e
     match '__try0: {
         cref = unwrap_break_err!(ComponentRef::mapExp(original_cref.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
         cref = unwrap_break_err!(ComponentRef::simplifySubscripts(cref.clone(), false), '__try0);
-        d = unwrap_break_err!(UnorderedMap::getSafe(original_cref.clone(), dep.clone(), metamodelica::sourceInfo!()), '__try0);
+        d = unwrap_break_err!(UnorderedMap::getSafe(original_cref.clone(), dep.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo")), '__try0);
         (start, _) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
         if !(unwrap_break_err!(UnorderedSet::contains(cref.clone(), rep.clone()), '__try0)) {
             skip_lst = unwrap_break_err!(resolveSkipsLst(start.clone(), ty.clone(), Arc::new(d.skips.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), cref.clone(), fullmap.clone()), '__try0);
@@ -1391,7 +1391,7 @@ fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
         for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((scal_size.clone()) as f64)).0 as i32) {
             for mut scal in &*scalarized.clone() {
                 let mut scal = scal.clone();
-                for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!())? {
+                for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))? {
                     let mut scal_idx = scal_idx.clone();
                     addMatrixEntry(m.clone(), modes.clone(), skip_idx.clone() + shift.clone(), scal_idx.clone(), mode.clone())?;
                     shift = shift.clone() + 1;
@@ -1428,7 +1428,7 @@ fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: 
         map2 = UnorderedMap::new((std::sync::Arc::new(fnptr!(keyHash, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<i32> + 'static>), (std::sync::Arc::new(keyEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<bool> + 'static>), 1);
         for mut k in &*UnorderedMap::keyList(map1.clone()) {
             let mut k = k.clone();
-            scalarized = UnorderedMap::getSafe(k.clone(), map1.clone(), metamodelica::sourceInfo!())?;
+            scalarized = UnorderedMap::getSafe(k.clone(), map1.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
             scal_lst = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut scal in (scalarized.clone()).into_iter().cloned() {
@@ -1497,7 +1497,7 @@ fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
             if !(repeated.clone()) {
                 mode = Mode::create(eqn_name.clone(), list![original_cref.clone()], true)?;
             }
-            for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!())? {
+            for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))? {
                 let mut scal_idx = scal_idx.clone();
                 if intMod(shift.clone(), iter_size.clone()) == 0 {
                     shift = 0;
@@ -1516,7 +1516,7 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
             let mut eqn_idx: i32 = 0;
             let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             eqn_idx = Pointer::access(eqn_idx_ptr.clone());
-            scal_lst = UnorderedMap::getSafe(Arc::new(key.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), map.clone(), metamodelica::sourceInfo!())?;
+            scal_lst = UnorderedMap::getSafe(Arc::new(key.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?;
             for mut scal_idx in &*scal_lst.clone() {
                 let mut scal_idx = scal_idx.clone();
                 addMatrixEntry(m.clone(), modes.clone(), eqn_idx.clone(), scal_idx.clone(), mode.clone())?;
@@ -1694,7 +1694,7 @@ fn getVarArrIdx(mut cref: Arc<ComponentRef::NFComponentRef>, mut mapping: Arc<Ma
         },
         _ => {
             cref = ComponentRef::stripSubscriptsAll(cref.clone());
-            (UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?, cref.clone())
+            (UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?, cref.clone())
         },
     });
     Ok((cref, var_arr_idx))

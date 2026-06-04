@@ -476,15 +476,15 @@ pub mod SparsityPattern {
                         row_vars = metamodelica::cons(cref.clone(), row_vars.clone());
                         for mut dep in &*tmp.clone() {
                             let mut dep = dep.clone();
-                            UnorderedMap::add(dep.clone(), metamodelica::cons(cref.clone(), UnorderedMap::getSafe(dep.clone(), map.clone(), metamodelica::sourceInfo!())?), map.clone())?;
+                            UnorderedMap::add(dep.clone(), metamodelica::cons(cref.clone(), UnorderedMap::getSafe(dep.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?), map.clone())?;
                         }
                     }
                 }
             }
             for mut cref in &*seed_vars.clone().reverse() {
                 let mut cref = cref.clone();
-                if jacType.clone() == JacobianType::NLS.clone() || NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isState, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? || (jacType.clone() == JacobianType::OPT_LFG.clone() || jacType.clone() == JacobianType::OPT_MRF.clone() || jacType.clone() == JacobianType::OPT_R0.clone()) {
-                    tmp = UnorderedSet::unique_list(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+                if jacType.clone() == JacobianType::NLS.clone() || NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isState, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? || (jacType.clone() == JacobianType::OPT_LFG.clone() || jacType.clone() == JacobianType::OPT_MRF.clone() || jacType.clone() == JacobianType::OPT_R0.clone()) {
+                    tmp = UnorderedSet::unique_list(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?, (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
                     cols = metamodelica::cons((cref.clone(), tmp.clone()), cols.clone());
                     col_vars = metamodelica::cons(cref.clone(), col_vars.clone());
                 }
@@ -589,9 +589,9 @@ pub mod SparsityColoring {
         fn getIndices(mut cref: Arc<ComponentRef::NFComponentRef>, mut seed_indices: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut partial_indices: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut rows: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
             let mut indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
             if UnorderedMap::contains(cref.clone(), seed_indices.clone())? {
-                indices = list![UnorderedMap::getSafe(cref.clone(), seed_indices.clone(), metamodelica::sourceInfo!())?];
+                indices = list![UnorderedMap::getSafe(cref.clone(), seed_indices.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?];
             } else if UnorderedMap::contains(cref.clone(), partial_indices.clone())? {
-                indices = ({let __elt = rows.borrow()[(UnorderedMap::getSafe(cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
+                indices = ({let __elt = rows.borrow()[(UnorderedMap::getSafe(cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?-1) as usize].clone(); __elt});
             } else {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBJacobian.SparsityColoring.PartialD2ColoringAlgC.getIndices")); __mm_s.push_str(&*literal!(" failed because cref ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" is neither a seed nor a partial candidate!")); ArcStr::from(__mm_s) }).clone()])?;
                 bail!("fail");
@@ -647,12 +647,12 @@ pub mod SparsityColoring {
                 let __cell0 = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut dep in (deps.clone()).into_iter().cloned() {
-            let __x = UnorderedMap::getSafe(dep.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?;
+            let __x = UnorderedMap::getSafe(dep.clone(), partial_indices.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-                cols.clone().borrow_mut()[(UnorderedMap::getSafe(idx_cref.clone(), seed_indices.clone(), metamodelica::sourceInfo!())?-1) as usize] = __cell0;
+                cols.clone().borrow_mut()[(UnorderedMap::getSafe(idx_cref.clone(), seed_indices.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?-1) as usize] = __cell0;
             }
         }
         for mut tpl in &*sparsityPattern.row_wise_pattern.clone() {
@@ -667,7 +667,7 @@ pub mod SparsityColoring {
         }
         __acc
     });
-                rows.clone().borrow_mut()[(UnorderedMap::getSafe(idx_cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?-1) as usize] = __cell1;
+                rows.clone().borrow_mut()[(UnorderedMap::getSafe(idx_cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?-1) as usize] = __cell1;
             }
         }
         colored_cols = Coloring::createColoring(rows.clone(), cols.clone(), sizeCols.clone(), sizeRows.clone())?;
@@ -745,11 +745,11 @@ pub mod SparsityColoring {
         groups = arrayCreate(n.clone(), metamodelica::nil());
         for mut i in 1..=n.clone() {
             node = ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt});
-            for mut mid in &*UnorderedMap::getSafe(node.clone(), map.clone(), metamodelica::sourceInfo!())? {
+            for mut mid in &*UnorderedMap::getSafe(node.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? {
                 let mut mid = mid.clone();
-                for mut neigh in &*UnorderedMap::getSafe(mid.clone(), map.clone(), metamodelica::sourceInfo!())? {
+                for mut neigh in &*UnorderedMap::getSafe(mid.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? {
                     let mut neigh = neigh.clone();
-                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(neigh.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
+                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(neigh.clone(), index_lookup.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?-1) as usize].clone(); __elt});
                     if color.clone() > 0 {
                         {
                             let __cell0 = i.clone();
@@ -807,12 +807,12 @@ pub mod SparsityColoring {
         col_coloring = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), metamodelica::nil());
         row_coloring = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), metamodelica::nil());
         for mut i in 1..=metamodelica::arrayLength(cref_lookup.clone()) {
-            let __range0 = &*UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!())?;
+            let __range0 = &*UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
             for mut row_var in __range0 {
                 let mut row_var = row_var.clone();
-                for mut col_var in &*UnorderedMap::getSafe(row_var.clone(), map.clone(), metamodelica::sourceInfo!())? {
+                for mut col_var in &*UnorderedMap::getSafe(row_var.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? {
                     let mut col_var = col_var.clone();
-                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(col_var.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
+                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(col_var.clone(), index_lookup.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?-1) as usize].clone(); __elt});
                     if color.clone() > 0 {
                         {
                             let __cell1 = i.clone();
@@ -830,7 +830,7 @@ pub mod SparsityColoring {
                 coloring.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
             }
             {
-                let __cell3 = listAppend(({let __elt = row_coloring.borrow()[(color.clone()-1) as usize].clone(); __elt}), UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!())?);
+                let __cell3 = listAppend(({let __elt = row_coloring.borrow()[(color.clone()-1) as usize].clone(); __elt}), UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?);
                 row_coloring.clone().borrow_mut()[(color.clone()-1) as usize] = __cell3;
             }
             {
@@ -883,7 +883,7 @@ pub mod SparsityColoring {
 // ToDo: all the DAEMode stuff is probably incorrect!
 fn isRowInJacobian(mut cref: Arc<ComponentRef::NFComponentRef>, mut jacType: JacobianType) -> Result<bool> {
     let mut b: bool = false;
-    b = NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isResidual, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? || NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? && jacType.clone() != JacobianType::OPT_MRF.clone() && jacType.clone() != JacobianType::OPT_R0.clone() || jacType.clone() == JacobianType::OPT_LFG.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isLfgFunction, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? || jacType.clone() == JacobianType::OPT_MRF.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isMrfFunction, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())? || jacType.clone() == JacobianType::OPT_R0.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isInitialConstraint, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?;
+    b = NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isResidual, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? || NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? && jacType.clone() != JacobianType::OPT_MRF.clone() && jacType.clone() != JacobianType::OPT_R0.clone() || jacType.clone() == JacobianType::OPT_LFG.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isLfgFunction, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? || jacType.clone() == JacobianType::OPT_MRF.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isMrfFunction, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))? || jacType.clone() == JacobianType::OPT_R0.clone() && NBVariable::checkCref(cref.clone(), (std::sync::Arc::new(fnptr!(NBVariable::isInitialConstraint, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
     Ok(b)
 }
 
@@ -1258,7 +1258,7 @@ fn makeAdjointComponent(mut lhsKey: Arc<ComponentRef::NFComponentRef>, mut adjoi
     terms = UnorderedMap::getOrFail(lhsKey.clone(), adjoint_map.clone())?;
     rhsExpr = buildAdjointRhs(lhsKey.clone(), terms.clone())?;
     eqPtr = NBEquation::Equation::makeAssignment(Expression::fromCref(lhsKey.clone(), false)?, rhsExpr.clone(), Pointer::create(eqIndex.clone()), (contextName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
-    lhsVarPtr = NBVariable::getVarPointer(lhsKey.clone(), metamodelica::sourceInfo!())?;
+    lhsVarPtr = NBVariable::getVarPointer(lhsKey.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
     eq = Pointer::access(eqPtr.clone());
     diffed_comp = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ NBEquation::Equation::SCALAR_EQUATION { .. } => {
@@ -1485,7 +1485,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
             diff_map_y = populateDiffMap(itVarPtrs.clone(), diff_map.clone())?;
             seedPtrListX = NBVariable::VariablePointers::toList(seedCandidates.clone())?;
             diff_map_x = populateDiffMap(seedPtrListX.clone(), diff_map.clone())?;
-            diff_map_union = UnorderedMap::merge(diff_map_y.clone(), diff_map_x.clone(), metamodelica::sourceInfo!())?;
+            diff_map_union = UnorderedMap::merge(diff_map_y.clone(), diff_map_x.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
             for mut itVarPtr in &*itVarPtrs.clone() {
                 let mut itVarPtr = itVarPtr.clone();
                 addEntryToLPAMap(itVarPtr.clone(), diff_map_y.clone(), loop_product_adjoint_map.clone())?;
@@ -1669,11 +1669,11 @@ fn makeVarTraverse(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut
         Some(mut parent) => {
             parent_name = NBVariable::getVarName(parent.clone());
             diff_parent = (::match_deref::match_deref! { match &(UnorderedMap::get(parent_name.clone(), map.clone())?) {
-        Some(diff_parent_name) => NBVariable::getVarPointer(diff_parent_name.clone(), metamodelica::sourceInfo!())?,
+        Some(diff_parent_name) => NBVariable::getVarPointer(diff_parent_name.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?,
         _ => {
             (diff_parent_name, _) = makeVar(parent_name.clone(), (name.clone()).clone())?;
             UnorderedMap::add(parent_name.clone(), diff_parent_name.clone(), map.clone())?;
-            NBVariable::getVarPointer(diff_parent_name.clone(), metamodelica::sourceInfo!())?
+            NBVariable::getVarPointer(diff_parent_name.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

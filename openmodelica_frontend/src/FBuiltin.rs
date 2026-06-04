@@ -458,7 +458,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Error::addInternalError((literal!("FBuiltin.getInitialFunctions failed.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("FBuiltin.getInitialFunctions failed.")).clone(), metamodelica::sourceInfo!("FFrontEnd/FBuiltin.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

@@ -1251,7 +1251,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
         }
         __acc.reverse()
     })))?;
-                        Error::assertion(false, (literal!("Lexed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!())?;
+                        Error::assertion(false, (literal!("Lexed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                         bail!("fail");
                     }
                     ExecStat::execStat((literal!("diffModelicaFileListings scan string 1")).clone())?;
@@ -1260,7 +1260,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     if false && s1.clone() != SimpleModelicaParser::parseTreeStr(parseTree1.clone())? {
                         System::writeFile((literal!("string.before")).clone(), (s1.clone()).clone())?;
                         System::writeFile((literal!("string.after")).clone(), (SimpleModelicaParser::parseTreeStr(parseTree1.clone())?).clone())?;
-                        Error::assertion(false, (literal!("Parsed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!())?;
+                        Error::assertion(false, (literal!("Parsed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                         bail!("fail");
                     }
                     (s2, bom) = StringUtil::stripBOM((s2.clone()).clone())?;
@@ -1274,7 +1274,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     if false && s2.clone() != SimpleModelicaParser::parseTreeStr(parseTree2.clone())? {
                         System::writeFile((literal!("string.before")).clone(), (s2.clone()).clone())?;
                         System::writeFile((literal!("string.after")).clone(), (SimpleModelicaParser::parseTreeStr(parseTree2.clone())?).clone())?;
-                        Error::assertion(false, (literal!("Parsed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!())?;
+                        Error::assertion(false, (literal!("Parsed string does not match the original. See files string.before and string.after")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                         bail!("fail");
                     }
                     treeDiffs = SimpleModelicaParser::treeDiff(parseTree1.clone(), parseTree2.clone(), std::cmp::max((tokens1.clone().len() as i32), (tokens2.clone().len() as i32)))?;
@@ -1294,7 +1294,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                             }
                             Err(__try0_err) => {
                                         System::writeFile((literal!("SanityCheckFail.mo")).clone(), (s5.clone()).clone())?;
-                                        Error::addInternalError((literal!("Failed to parse merged string (see generated file SanityCheckFail.mo)\n")).clone(), metamodelica::sourceInfo!())?;
+                                        Error::addInternalError((literal!("Failed to parse merged string (see generated file SanityCheckFail.mo)\n")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                                         return Err(__try0_err);
                             }
                         }
@@ -1302,10 +1302,10 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                             System::writeFile((literal!("SanityCheckFailBefore.mo")).clone(), (s3.clone()).clone())?;
                             System::writeFile((literal!("SanityCheckFailAfter.mo")).clone(), (s4.clone()).clone())?;
                             if b.clone() {
-                                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("After merging the strings, the semantics changed for some reason (see generated files SanityCheckFailBefore.mo SanityCheckFailAfter.mo). Will return the empty string:\ns1:\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\ns2:\n")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\ns3:\n")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("\ns4:\n")); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("\ns5:\n")); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*literal!("\nparseTree2:")); __mm_s.push_str(&*SimpleModelicaParser::parseTreeStr(parseTree2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("After merging the strings, the semantics changed for some reason (see generated files SanityCheckFailBefore.mo SanityCheckFailAfter.mo). Will return the empty string:\ns1:\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\ns2:\n")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\ns3:\n")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("\ns4:\n")); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("\ns5:\n")); __mm_s.push_str(&*s5.clone()); __mm_s.push_str(&*literal!("\nparseTree2:")); __mm_s.push_str(&*SimpleModelicaParser::parseTreeStr(parseTree2.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                                         bail!("fail");
                             } else {
-                                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("After merging the strings, the semantics changed for some reason (see generated files SanityCheckFailBefore.mo SanityCheckFailAfter.mo). Will return s2:\ns1:\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\ns2:\n")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\ns3:\n")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("\ns4:\n")); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("\ns5:\n")); __mm_s.push_str(&*s5.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                                        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("After merging the strings, the semantics changed for some reason (see generated files SanityCheckFailBefore.mo SanityCheckFailAfter.mo). Will return s2:\ns1:\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\ns2:\n")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\ns3:\n")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("\ns4:\n")); __mm_s.push_str(&*s4.clone()); __mm_s.push_str(&*literal!("\ns5:\n")); __mm_s.push_str(&*s5.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                             }
                             sanityCheckFailed = true;
                         }
@@ -1339,7 +1339,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         _ => {
-                            Error::addInternalError((literal!("Unknown diffModelicaFileListings choice")).clone(), metamodelica::sourceInfo!())?;
+                            Error::addInternalError((literal!("Unknown diffModelicaFileListings choice")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                             Ok(bail!("fail"))
                         }
                         _ => bail!("nomatch"),
@@ -1848,7 +1848,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     List::map_0(ClockIndexes::buildModelClocks.clone(), (std::sync::Arc::new(System::realtimeClear) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<()> + 'static>))?;
                     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
                     if (vals.clone().len() as i32) != 13 {
-                        Error::addInternalError((literal!("reduceTerms expected 13 arguments")).clone(), metamodelica::sourceInfo!())?;
+                        Error::addInternalError((literal!("reduceTerms expected 13 arguments")).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                     }
                     (vals.clone()).get(13)?;
                     vals = listDelete(vals.clone(), 13)?;
@@ -6251,7 +6251,7 @@ fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
     }
     if !(Flags::getConfigBool(Flags::FMI_SOURCES.clone())?) || Flags::getConfigEnum(Flags::FMI_FILTER.clone())? == Flags::FMI_BLACKBOX.clone() {
         if !(System::removeDirectory(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) }).clone())) {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
         }
     }
     cmd = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rm -f \"")); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu\" && cd \"")); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("\" && zip -r \"../")); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu\" *")); ArcStr::from(__mm_s) }).clone();
@@ -6265,7 +6265,7 @@ fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
     }
     if !(Flags::isSet(Flags::GEN_DEBUG_SYMBOLS.clone())?) {
         if !(System::removeDirectory((fmutmp.clone()).clone())) {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
         }
     }
     Ok((cache, outValue))
@@ -9847,8 +9847,8 @@ fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absy
                     fargs = Interactive::createFuncargsFromElementargs(r#mod.clone())?;
                     p_1 = AbsynToSCode::translateAbsyn2SCode(lineProgram.clone())?;
                     (cache, env) = Inst::makeEnvFromProgram(p_1.clone())?;
-                    (_, newexp, prop) = StaticScript::elabGraphicsExp(cache.clone(), env.clone(), Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (annName.clone()).clone(), subscripts: metamodelica::nil() }), functionArgs: fargs.clone(), typeVars: metamodelica::nil() }), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, metamodelica::sourceInfo!())?;
-                    (cache, newexp, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), newexp.clone(), prop.clone(), false, metamodelica::sourceInfo!())?;
+                    (_, newexp, prop) = StaticScript::elabGraphicsExp(cache.clone(), env.clone(), Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (annName.clone()).clone(), subscripts: metamodelica::nil() }), functionArgs: fargs.clone(), typeVars: metamodelica::nil() }), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
+                    (cache, newexp, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), newexp.clone(), prop.clone(), false, metamodelica::sourceInfo!("Script/CevalScriptBackend.mo"))?;
                     Print::clearErrorBuf();
                     gexpstr = (ExpressionBasics::printExpStr(newexp.clone())?).clone();
                     res = getAnnotationInEquationElArgs(rest.clone())?;

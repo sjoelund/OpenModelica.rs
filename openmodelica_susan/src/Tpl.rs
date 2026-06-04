@@ -538,7 +538,7 @@ pub fn pushIter(mut txt: Text, mut inIterOptions: Arc<IterOptions>) -> Result<Te
             let () = (::match_deref::match_deref! { match &(iopts.clone()) {
         Deref @ IterOptions { wrapWidth: 0, alignNum: 0, .. } => (),
         _ => {
-            Error::addInternalError((literal!("Tpl.mo FILE_TEXT does not support aligning or wrapping elements")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Tpl.mo FILE_TEXT does not support aligning or wrapping elements")).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -640,7 +640,7 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             txt2.clone()
         },
         _ => {
-            Error::addInternalError((literal!("-!!!Tpl.nextIter failed - nextIter was called in a non-iteration context?")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("-!!!Tpl.nextIter failed - nextIter was called in a non-iteration context?")).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1778,7 +1778,7 @@ fn getTextOpaqueFile(mut text: Text) -> Result<Option<i32>> {
     opaqueFile = (match text.clone() {
         Text::FILE_TEXT { .. } => var_field!(text.opaqueFile, Text::FILE_TEXT).clone(),
         _ => {
-            Error::addInternalError((literal!("tokFile got non-file text input")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("tokFile got non-file text input")).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
             bail!("fail")
         },
     });
@@ -1875,7 +1875,7 @@ pub fn debugSusan() -> Result<bool> {
 }
 
 pub fn fakeStackOverflow() -> Result<()> {
-    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow:\n")); __mm_s.push_str(&*StackOverflow::generateReadableMessage(1000, 4, (literal!("\n")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow:\n")); __mm_s.push_str(&*StackOverflow::generateReadableMessage(1000, 4, (literal!("\n")).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
     StackOverflow::triggerStackOverflow()?;
     Ok(())
 }

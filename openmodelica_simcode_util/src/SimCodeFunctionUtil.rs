@@ -889,7 +889,7 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#fn, _, _, _, _) => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function elaborateFunction failed for function:\n")); __mm_s.push_str(&*DAEDump::dumpFunctionStr(r#fn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function elaborateFunction failed for function:\n")); __mm_s.push_str(&*DAEDump::dumpFunctionStr(r#fn.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -984,7 +984,7 @@ fn daeInOutSimVar(mut inElement: Arc<DAE::Element>) -> Result<Arc<SimCodeFunctio
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("function daeInOutSimVar failed\n")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("function daeInOutSimVar failed\n")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -1442,7 +1442,7 @@ fn replaceLiteralExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::A
                 (exp, _) => {
                     let mut msg: ArcStr = arcstr::literal!("");
                     msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function replaceLiteralExp failed. Falling back to not replacing ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((msg.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok((inExp.clone(), inTpl.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1767,7 +1767,7 @@ fn getCrefFromExp(mut e: Arc<DAE::Exp>) -> Result<Arc<Absyn::ComponentRef>> {
             crefa.clone()
         },
         _ => {
-            Error::addInternalError((literal!("function getCrefFromExp failed: input was not of type DAE.CREF")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("function getCrefFromExp failed: input was not of type DAE.CREF")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2531,7 +2531,7 @@ fn getLibraryStringInMSVCFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("Failed to process Library annotation for external function")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("Failed to process Library annotation for external function")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2694,7 +2694,7 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError((literal!("Failed to process Library annotation for external function")).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((literal!("Failed to process Library annotation for external function")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -2974,7 +2974,7 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function getCalledFunctionsInFunction2: Class ")); __mm_s.push_str(&*pathstr.clone()); __mm_s.push_str(&*literal!(" not found in global scope.")); ArcStr::from(__mm_s) }).clone();
-                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError((r#str.clone()).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -3266,7 +3266,7 @@ pub fn getCurrentCrefPrefix(mut context: SimCodeFunction::Context) -> Result<Arc
             cref_pref.clone()
         },
         _ => {
-            Error::addInternalError((literal!("Tried to get cref prefix from a non FUNCTION_CONTEXT() context. cref_pref is only avaiable in FUNCTION_CONTEXT.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Tried to get cref prefix from a non FUNCTION_CONTEXT() context. cref_pref is only avaiable in FUNCTION_CONTEXT.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
             bail!("fail")
         },
     })).clone();
@@ -3280,7 +3280,7 @@ pub fn appendCurrentCrefPrefix(mut context: SimCodeFunction::Context, mut in_cre
     out_context = (match context.clone() {
         SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: mut cref_pref, is_parallel: mut prl } => SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*cref_pref.clone()); __mm_s.push_str(&*in_cref_pref.clone()); ArcStr::from(__mm_s) }).clone(), is_parallel: prl.clone() },
         _ => {
-            Error::addInternalError((literal!("Tried to append cref prefix from a non FUNCTION_CONTEXT() context. cref_pref is only avaiable in FUNCTION_CONTEXT.")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Tried to append cref prefix from a non FUNCTION_CONTEXT() context. cref_pref is only avaiable in FUNCTION_CONTEXT.")).clone(), metamodelica::sourceInfo!("SimCode/SimCodeFunctionUtil.mo"))?;
             bail!("fail")
         },
     });

@@ -422,7 +422,7 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
             expandArrayCref(cr.clone(), dims.clone(), metamodelica::nil())?
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown var ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" in ConnectUtil.daeVarToCrefs")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown var ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" in ConnectUtil.daeVarToCrefs")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/ConnectUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

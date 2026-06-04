@@ -539,7 +539,7 @@ pub mod Matrix {
             repetitions = arrayCreate(size.clone(), UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13));
             for mut eqn_ptr in &*BEquation::EquationPointers::toList(eqns.clone())? {
                 let mut eqn_ptr = eqn_ptr.clone();
-                index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!())?;
+                index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                 dep_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
                 sol_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
                 rep_set = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -622,7 +622,7 @@ pub mod Matrix {
                 for mut eqn in &*eqns.clone() {
                     let mut eqn = eqn.clone();
                     eqn_name = BEquation::Equation::getEqnName(eqn.clone())?;
-                    eqn_index = UnorderedMap::getSafe(eqn_name.clone(), index_map.clone(), metamodelica::sourceInfo!())?;
+                    eqn_index = UnorderedMap::getSafe(eqn_name.clone(), index_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                     local_deps = metamodelica::nil();
                     changed = false;
                     let __range0 = &*UnorderedMap::toList(({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt}));
@@ -829,7 +829,7 @@ pub mod Matrix {
             );
             rank = Solvability::rank(Solvability::fromStrictness(getStrictness(adj.clone())?))?;
             if !(UnorderedMap::isEmpty(vn.clone())) && !(UnorderedMap::isEmpty(en.clone())) {
-                v = UnorderedMap::merge(v.clone(), vn.clone(), metamodelica::sourceInfo!())?;
+                v = UnorderedMap::merge(v.clone(), vn.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
             }
             if !(UnorderedMap::isEmpty(vn.clone())) {
                 for mut e in &*UnorderedMap::valueList(eo.clone()) {
@@ -917,7 +917,7 @@ pub mod Matrix {
                 for mut e in &*UnorderedMap::valueList(eo.clone()) {
                     let mut e = e.clone();
                     eqn_ptr = BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?;
-                    index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!())?;
+                    index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                     occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vn.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
                         let __cell0 = UnorderedSet::union(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), occ_set.clone())?;
@@ -929,7 +929,7 @@ pub mod Matrix {
                 for mut e in &*UnorderedMap::valueList(en.clone()) {
                     let mut e = e.clone();
                     eqn_ptr = BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?;
-                    index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!())?;
+                    index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                     occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vars.map.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
                         let __cell1 = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
@@ -986,9 +986,9 @@ pub mod Matrix {
                 let __range1 = UnorderedSet::toArray(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})).borrow().iter().cloned().collect::<Vec<_>>();
                 for mut var in __range1 {
                     if UnorderedMap::contains(var.clone(), v.clone())? {
-                        sol = UnorderedMap::getSafe(var.clone(), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}), metamodelica::sourceInfo!())?;
+                        sol = UnorderedMap::getSafe(var.clone(), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                         if Solvability::rank(sol.clone())? < Solvability::rank(Arc::new(crate::NBAdjacency::Solvability::IMPLICIT))? {
-                            if eqnIsDiscrete.clone() || !(BVariable::checkCref(var.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?) {
+                            if eqnIsDiscrete.clone() || !(BVariable::checkCref(var.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?) {
                                 (_, status, _) = Solve::solveSimple(Pointer::access(eqn_ptr.clone()), var.clone())?;
                                 sol = if (status.clone() == Solve::Status::EXPLICIT.clone()) {Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { pars: None, vars: None })} else {Arc::new(crate::NBAdjacency::Solvability::UNSOLVABLE)};
                             } else if eqnIsIf.clone() {
@@ -1003,8 +1003,8 @@ pub mod Matrix {
                                     sol = Arc::new(Solvability::Solvability::EXPLICIT_NONLINEAR { unique: Expression::containsCref(exp.clone(), var.clone())? });
                                 } else {
                                     linear_set = Expression::extractCrefs(exp.clone())?;
-                                    linear_set = UnorderedSet::filterOnFalse(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!(); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
-                                    (param_set, var_set) = UnorderedSet::splitOnTrue(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!(); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+                                    linear_set = UnorderedSet::filterOnFalse(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+                                    (param_set, var_set) = UnorderedSet::splitOnTrue(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
                                     sol = Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { vars: if (UnorderedSet::isEmpty(var_set.clone())) {None} else {Some(var_set.clone())}, pars: if (UnorderedSet::isEmpty(param_set.clone())) {None} else {Some(param_set.clone())} });
                                 }
                             }
@@ -1060,8 +1060,8 @@ pub mod Matrix {
             for mut eqn_ptr in &*BEquation::EquationPointers::toList(eqns.clone())? {
                 let mut eqn_ptr = eqn_ptr.clone();
                 name = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
-                index_new = UnorderedMap::getSafe(name.clone(), eqns.map.clone(), metamodelica::sourceInfo!())?;
-                index_old = UnorderedMap::getSafe(name.clone(), old_map.clone(), metamodelica::sourceInfo!())?;
+                index_new = UnorderedMap::getSafe(name.clone(), eqns.map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
+                index_old = UnorderedMap::getSafe(name.clone(), old_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
                 (old_start, old_size) = ({let __elt = var_field!((*adj).mapping, Matrix::FINAL).eqn_AtS.borrow()[(index_old.clone()-1) as usize].clone(); __elt});
                 (new_start, new_size) = ({let __elt = mapping.eqn_AtS.borrow()[(index_new.clone()-1) as usize].clone(); __elt});
                 if old_size.clone() == new_size.clone() {
@@ -1716,7 +1716,7 @@ pub mod Matrix {
 
     fn fullString(mut cref: Arc<ComponentRef::NFComponentRef>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("[")); ArcStr::from(__mm_s) };
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Solvability::toString(UnorderedMap::getSafe(cref.clone(), sol_map.clone(), metamodelica::sourceInfo!())?)?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*Dependency::toString(UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!())?)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Solvability::toString(UnorderedMap::getSafe(cref.clone(), sol_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?)?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*Dependency::toString(UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?)?); ArcStr::from(__mm_s) }).clone();
         if UnorderedSet::contains(cref.clone(), rep_set.clone())? {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("+")); ArcStr::from(__mm_s) }).clone();
         }
@@ -1726,7 +1726,7 @@ pub mod Matrix {
 
     fn sparseString(mut cref: Arc<ComponentRef::NFComponentRef>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> {
         let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("[")); ArcStr::from(__mm_s) };
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Dependency::toString(UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!())?)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*Dependency::toString(UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?)?); ArcStr::from(__mm_s) }).clone();
         if UnorderedSet::contains(cref.clone(), rep_set.clone())? {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("+")); ArcStr::from(__mm_s) }).clone();
         }
@@ -2057,7 +2057,7 @@ pub mod Dependency {
         for mut cref in &*crefs.clone() {
             let mut cref = cref.clone();
             repeats = UnorderedSet::contains(cref.clone(), rep_set.clone())?;
-            let () = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?) {
+            let () = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?) {
         Deref @ Dependency { skips, .. } if (!(Array::all(skips.clone(), std::sync::Arc::new(fnptr!(listEmpty, _)))?)) => {
             K = metamodelica::cons(cref.clone(), K.clone());
             ()
@@ -2178,7 +2178,7 @@ pub mod Solvability {
         let mut QQ: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut cref in &*crefs.clone() {
             let mut cref = cref.clone();
-            let () = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?) {
+            let () = (::match_deref::match_deref! { match &(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?) {
         Deref @ UNSOLVABLE { .. } => {
             XX = metamodelica::cons(cref.clone(), XX.clone());
             ()
@@ -2223,7 +2223,7 @@ pub mod Solvability {
         for mut cref in &*all_occ.clone() {
             let mut cref = cref.clone();
             if UnorderedMap::contains(cref.clone(), rel.clone())? {
-                r = rank(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?)?;
+                r = rank(UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?)?;
                 if r.clone() >= min.clone() && r.clone() <= max.clone() {
                     occ = metamodelica::cons(cref.clone(), occ.clone());
                 }
@@ -2565,7 +2565,7 @@ pub fn collectDependenciesCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut 
         Solvability::update(cref.clone(), Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { pars: None, vars: None }), sol_map.clone())?;
         crefs = list![cref.clone()];
     } else {
-        var = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+        var = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?;
         if BVariable::isRecord(var.clone()) {
             subs = ComponentRef::subscriptsAllFlat(cref.clone())?;
             crefs = ({
@@ -2804,12 +2804,12 @@ pub fn addInitialStartOccurrences(mut occs: Arc<UnorderedSet::UnorderedSet<Arc<C
     if Partition::kindIsInitial(kind.clone()) {
         for mut cref in &*UnorderedSet::toList(occs.clone()) {
             let mut cref = cref.clone();
-            let () = (match (BVariable::getVarStart(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?)).0 {
+            let () = (match (BVariable::getVarStart(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?)).0 {
         Some(mut start) if (BVariable::isStart(start.clone())) => {
             let mut start_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             start_cref = BVariable::getVarName(start.clone());
             UnorderedSet::add(start_cref.clone(), occs.clone())?;
-            UnorderedMap::add(start_cref.clone(), UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!())?, dep_map.clone())?;
+            UnorderedMap::add(start_cref.clone(), UnorderedMap::getSafe(cref.clone(), dep_map.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"))?, dep_map.clone())?;
             UnorderedMap::add(start_cref.clone(), Arc::new(crate::NBAdjacency::Solvability::UNSOLVABLE), sol_map.clone())?;
             if UnorderedSet::contains(cref.clone(), rep_set.clone())? {
                 UnorderedSet::add(start_cref.clone(), rep_set.clone())?;

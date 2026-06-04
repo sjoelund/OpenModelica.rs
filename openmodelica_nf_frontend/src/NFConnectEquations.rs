@@ -120,7 +120,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
                 set_eql = generateStreamEquations(set.clone(), flowThreshold.clone(), variables.clone())?;
             }
         } else {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.generateEquations")); __mm_s.push_str(&*literal!(" got connection set with invalid type '")); __mm_s.push_str(&*Prefixes::ConnectorType::toDebugString(cty.clone())); __mm_s.push_str(&*literal!("': ")); __mm_s.push_str(&*List::toString(set.clone(), (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.generateEquations")); __mm_s.push_str(&*literal!(" got connection set with invalid type '")); __mm_s.push_str(&*Prefixes::ConnectorType::toDebugString(cty.clone())); __mm_s.push_str(&*literal!("': ")); __mm_s.push_str(&*List::toString(set.clone(), (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnectEquations.mo"))?;
             bail!("fail");
         }
         equations = listAppend(set_eql.clone(), equations.clone());
@@ -663,7 +663,7 @@ fn evaluateOperatorArrayConstructorExp(mut exp: Arc<Expression::NFExpression>, m
     let mut expanded: bool = false;
     (evalExp, expanded) = ExpandExp::expand(exp.clone(), false, false)?;
     if !(expanded.clone()) {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.evaluateOperatorArrayConstructorExp")); __mm_s.push_str(&*literal!(" failed to expand call containing stream operator: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.evaluateOperatorArrayConstructorExp")); __mm_s.push_str(&*literal!(" failed to expand call containing stream operator: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnectEquations.mo"))?;
     }
     evalExp = evaluateOperators(evalExp.clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?;
     Ok(evalExp)
@@ -913,7 +913,7 @@ fn lookupVarAttr(mut varName: Arc<ComponentRef::NFComponentRef>, mut attrName: A
         ovar = UnorderedMap::get(ComponentRef::stripSubscriptsAll(varName.clone()), variables.clone())?;
     }
     if isNone(ovar.clone()) {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.lookupVarAttr")); __mm_s.push_str(&*literal!(" could not find the variable ")); __mm_s.push_str(&*ComponentRef::toString(varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.lookupVarAttr")); __mm_s.push_str(&*literal!(" could not find the variable ")); __mm_s.push_str(&*ComponentRef::toString(varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConnectEquations.mo"))?;
     }
     let __pa0 = ::match_deref::match_deref! { match &(ovar.clone()) {
         Some(__pa0) => __pa0.clone(),

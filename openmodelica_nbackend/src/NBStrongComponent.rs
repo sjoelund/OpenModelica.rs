@@ -514,7 +514,7 @@ pub fn createPseudoSlice(mut var_arr_idx: i32, mut eqn_arr_idx: i32, mut cref_to
     let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
     let mut var_scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> as ::std::default::Default>::default();
-    var_ptr = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!())?;
+    var_ptr = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?;
     eqn_ptr = EquationPointers::getEqnAt(eqns.clone(), eqn_arr_idx.clone())?;
     (first_var, var_size) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
     (first_eqn, eqn_size) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
@@ -584,7 +584,7 @@ pub fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut e
         let mut tpl = tpl.clone();
         (eqn_arr_idx, scal_indices) = tpl.clone();
         var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(({let __elt = eqn_to_var.borrow()[(Util::tuple21(({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt}))-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
-        entwined_slices = metamodelica::cons(createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), UnorderedMap::getSafe(eqn_arr_idx.clone(), cref_map.clone(), metamodelica::sourceInfo!())?, scal_indices.clone(), eqn_to_var.clone(), eqns.clone(), mapping.clone(), false)?, entwined_slices.clone());
+        entwined_slices = metamodelica::cons(createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), UnorderedMap::getSafe(eqn_arr_idx.clone(), cref_map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?, scal_indices.clone(), eqn_to_var.clone(), eqns.clone(), mapping.clone(), false)?, entwined_slices.clone());
     }
     entwined_tpl_lst = ({
         let mut __acc: Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>> = metamodelica::nil();
@@ -794,10 +794,10 @@ pub fn fromSolvedEquationSlice(mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointe
     let mut comp: Arc<NBStrongComponent> = Arc::new(<NBStrongComponent as ::std::default::Default>::default());
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>> = Slice::getT(eqn_slice.clone());
     comp = (::match_deref::match_deref! { match &(Pointer::access(eqn.clone())) {
-        Deref @ Equation::SCALAR_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!())?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
-        Deref @ Equation::ARRAY_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!())?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
-        Deref @ Equation::RECORD_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!())?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
-        Deref @ Equation::IF_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!())?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
+        Deref @ Equation::SCALAR_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
+        Deref @ Equation::ARRAY_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
+        Deref @ Equation::RECORD_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
+        Deref @ Equation::IF_EQUATION { .. } => Arc::new(NBStrongComponent::SINGLE_COMPONENT { var: BVariable::getVarPointer(Expression::toCref(Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?)?, metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))?, eqn: eqn.clone(), status: Solve::Status::EXPLICIT.clone() }),
         Deref @ Equation::FOR_EQUATION { .. } => Arc::new(NBStrongComponent::SLICED_COMPONENT { var_cref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY), var: Arc::new(Slice::NBSlice { t: Pointer::create(BVariable::DUMMY_VARIABLE().clone()), indices: metamodelica::nil() }), eqn: eqn_slice.clone(), status: Solve::Status::EXPLICIT.clone() }),
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.fromSolvedEquationSlice")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*Slice::toString(eqn_slice.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), 10)?); ArcStr::from(__mm_s) }).clone()])?;
@@ -1416,10 +1416,10 @@ fn updateDependencyMap(mut cref: Arc<ComponentRef::NFComponentRef>, mut dependen
 fn prepareDependencies(mut dependencies: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut jacType: JacobianType) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
     fn addSubDependencies(mut dep: Arc<ComponentRef::NFComponentRef>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut checkFn: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
         let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = set;
-        if BVariable::checkCref(dep.clone(), checkFn.clone(), metamodelica::sourceInfo!())? {
+        if BVariable::checkCref(dep.clone(), checkFn.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))? {
             UnorderedSet::add(dep.clone(), set.clone())?;
         } else {
-            for mut tmp in &*UnorderedMap::getSafe(dep.clone(), map.clone(), metamodelica::sourceInfo!())? {
+            for mut tmp in &*UnorderedMap::getSafe(dep.clone(), map.clone(), metamodelica::sourceInfo!("NBackEnd/Classes/NBStrongComponent.mo"))? {
                 let mut tmp = tmp.clone();
                 UnorderedSet::add(tmp.clone(), set.clone())?;
             }

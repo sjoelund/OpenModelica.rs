@@ -935,7 +935,7 @@ pub fn simplifyMultary(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Exp
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSimplifyExp.mo"))?;
             }
             (arguments, inv_arguments) = cancelTermsInMultary(arguments.clone(), inv_arguments.clone())?;
             result = (::match_deref::match_deref! { match &((mcl.clone(), arguments.clone(), inv_arguments.clone())) {
@@ -1518,7 +1518,7 @@ pub fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Expression
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    }), (literal!(", ")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSimplifyExp.mo"))?;
             bail!("fail")
         },
     });
@@ -1531,7 +1531,7 @@ fn getConstantValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodeli
         value = unwrap_break_err!(Expression::realValue(unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::noTarget().clone()), '__try0)), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSimplifyExp.getConstantValue")); __mm_s.push_str(&*literal!(" expression is not known to be a constant number: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSimplifyExp.getConstantValue")); __mm_s.push_str(&*literal!(" expression is not known to be a constant number: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSimplifyExp.mo"))?;
     }
     Ok(value)
 }

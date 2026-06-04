@@ -125,7 +125,7 @@ pub fn prependEquation(mut eq: Arc<Equation::NFEquation>, mut sections: Arc<NFSe
         },
         Deref @ EMPTY { .. } => if (isInitial.clone()) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: list![eq.clone()], algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })} else {Arc::new(NFSections::SECTIONS { equations: list![eq.clone()], initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: metamodelica::nil() })},
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependEquation")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend equation to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependEquation")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend equation to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSections.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -146,7 +146,7 @@ pub fn prependAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut sections: Arc<
         },
         Deref @ EMPTY { .. } => if (isInitial.clone()) {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: metamodelica::nil(), initialAlgorithms: list![alg.clone()] })} else {Arc::new(NFSections::SECTIONS { equations: metamodelica::nil(), initialEquations: metamodelica::nil(), algorithms: list![alg.clone()], initialAlgorithms: metamodelica::nil() })},
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependAlgorithm")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend algorithm to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSections.prependAlgorithm")); __mm_s.push_str(&*literal!(" got invalid Sections to prepend algorithm to")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSections.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

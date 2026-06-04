@@ -7837,7 +7837,7 @@ pub fn traverseBackendDAEExps<Type_a: Clone + 'static>(mut inBackendDAE: Arc<Bac
                 _ => {
                     let mut name: ArcStr = arcstr::literal!("");
                     (_, _, name) = System::dladdr(func.clone());
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExps failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExps failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -7970,7 +7970,7 @@ pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static>(mut inBackendD
         }
         Err(__try0_err) => {
             (_, _, name) = System::dladdr(func.clone());
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExpsNoCopyWithUpdate failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExpsNoCopyWithUpdate failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -8038,7 +8038,7 @@ pub fn traverseBackendDAEExpsVarsWithUpdate<Type_a: Clone + 'static>(mut inVaria
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut name: ArcStr = arcstr::literal!("");
             (_, _, name) = System::dladdr(func.clone());
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExpsVarsWithUpdate failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExpsVarsWithUpdate failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -8383,7 +8383,7 @@ pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static>(mut equationArray:
         Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 (_, _, name) = System::dladdr(func.clone());
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseBackendDAEExpsEqnsWithStop failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseBackendDAEExpsEqnsWithStop failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             }
             return Err(__try0_err);
         }
@@ -8786,7 +8786,7 @@ fn sortEqnsDAEWork(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
             syst = __try0_o4;
         }
         Err(__try0_err) => {
-            Error::addInternalError((literal!("Transformation module sort components failed")).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError((literal!("Transformation module sort components failed")).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             return Err(__try0_err);
         }
     }
@@ -9375,7 +9375,7 @@ fn selectOptModules1(mut strOptModule: ArcStr, mut inOptModules: Arc<metamodelic
             selectOptModules1((strOptModule.clone()).clone(), rest.clone())?
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selection of optimization module ")); __mm_s.push_str(&*strOptModule.clone()); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selection of optimization module ")); __mm_s.push_str(&*strOptModule.clone()); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -9627,7 +9627,7 @@ fn getConditionList1(mut inConditionList: Arc<metamodelica::List<Arc<DAE::Exp>>>
             (conditionVarList.clone(), initialCall.clone())
         },
         Deref @ metamodelica::List::Cons { head: exp, tail: _ } => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function getConditionList1 failed for ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function getConditionList1 failed for ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -10285,7 +10285,7 @@ pub fn traverseEqSystemStrongComponents<Type_a: Clone + 'static>(mut syst: Arc<B
         }
         Err(__try0_err) => {
             (_, _, name) = System::dladdr(func.clone());
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseEqSystemStrongComponents failed ")); __mm_s.push_str(&*literal!("with function:\n")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseEqSystemStrongComponents failed ")); __mm_s.push_str(&*literal!("with function:\n")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
             return Err(__try0_err);
         }
     }

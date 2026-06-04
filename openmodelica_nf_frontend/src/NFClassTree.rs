@@ -347,7 +347,7 @@ pub mod ClassTree {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.expand")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.expand")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -504,10 +504,10 @@ pub mod ClassTree {
             }
             breakComponents(instance.clone(), comps.clone(), ltree.clone(), dups.clone())?;
             if comp_idx.clone() != compCount.clone() + 1 {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted components in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted components in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             }
             if cls_idx.clone() != classCount.clone() + 1 {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted classes in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted classes in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             }
             local_comps = metamodelica::Dangerous::listReverseInPlace(local_comps.clone());
             assign_variant_field!(cls => Class::NFClass::EXPANDED_CLASS; elements = Arc::new(ClassTree::INSTANTIATED_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), localComponents: local_comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: dups.clone() }));
@@ -544,7 +544,7 @@ pub mod ClassTree {
             bail!("fail")
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" got invalid class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" got invalid class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -642,7 +642,7 @@ pub mod ClassTree {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.appendComponentsToInstTree")); __mm_s.push_str(&*literal!(" failed for non-instantiated tree.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.appendComponentsToInstTree")); __mm_s.push_str(&*literal!(" failed for non-instantiated tree.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -662,7 +662,7 @@ pub mod ClassTree {
             ()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.appendComponentsToFlatTree")); __mm_s.push_str(&*literal!(" failed for non-flat tree.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.appendComponentsToFlatTree")); __mm_s.push_str(&*literal!(" failed for non-flat tree.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1164,7 +1164,7 @@ pub mod ClassTree {
             }
             Ok::<(), anyhow::Error>(())
         }.is_err() {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.getRedeclaredNode")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.getRedeclaredNode")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
         }
         Ok(node)
     }
@@ -1452,11 +1452,11 @@ pub mod ClassTree {
                     break;
                 }
             }
-            Error::assertion(i.clone() == var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry index")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(i.clone() == var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry index")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             node.clone()
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.findLocalConflictElement")); __mm_s.push_str(&*literal!(" got invalid entry")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFClassTree.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

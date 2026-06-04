@@ -168,7 +168,7 @@ fn checkDebugFlags() -> Result<()> {
         index = index.clone() + 1;
         if flag.index.clone() != index.clone() {
             err_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Invalid flag '")); __mm_s.push_str(&*flag.name.clone()); __mm_s.push_str(&*literal!("' with index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", flag.index.clone()))); __mm_s.push_str(&*literal!(" (expected ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!(") in Flags.allDebugFlags. Make sure that all flags are present and ordered correctly!")); ArcStr::from(__mm_s) }).clone();
-            Error::terminateError((err_str.clone()).clone(), metamodelica::sourceInfo!())?;
+            Error::terminateError((err_str.clone()).clone(), metamodelica::sourceInfo!("Util/FlagsUtil.mo"))?;
             unreachable!("Error.terminateError always fails — caller-side flow-analysis hint");
         }
     }
@@ -183,7 +183,7 @@ fn checkConfigFlags() -> Result<()> {
         index = index.clone() + 1;
         if flag.index.clone() != index.clone() {
             err_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Invalid flag '")); __mm_s.push_str(&*flag.name.clone()); __mm_s.push_str(&*literal!("' with index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", flag.index.clone()))); __mm_s.push_str(&*literal!(" (expected ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!(") in Flags.allConfigFlags. Make sure that all flags are present and ordered correctly!")); ArcStr::from(__mm_s) }).clone();
-            Error::terminateError((err_str.clone()).clone(), metamodelica::sourceInfo!())?;
+            Error::terminateError((err_str.clone()).clone(), metamodelica::sourceInfo!("Util/FlagsUtil.mo"))?;
             unreachable!("Error.terminateError always fails — caller-side flow-analysis hint");
         }
     }

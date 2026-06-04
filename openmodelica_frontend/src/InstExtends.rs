@@ -1515,7 +1515,7 @@ fn fixStatement(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstExtends.fixStatement")); __mm_s.push_str(&*literal!(" failed: ")); __mm_s.push_str(&*Dump::unparseAlgorithmStr(SCodeUtil::statementToAlgorithmItem(inStmt.clone())?)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("InstExtends.fixStatement")); __mm_s.push_str(&*literal!(" failed: ")); __mm_s.push_str(&*Dump::unparseAlgorithmStr(SCodeUtil::statementToAlgorithmItem(inStmt.clone())?)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/InstExtends.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

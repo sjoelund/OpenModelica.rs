@@ -171,7 +171,7 @@ pub fn toIndexList(mut subscript: Arc<NFSubscript>, mut length: i32) -> Result<A
             List::intRange2(start.clone(), stop.clone())
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toIndexList")); __mm_s.push_str(&*literal!(" got an incorrect subscript type ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toIndexList")); __mm_s.push_str(&*literal!(" got an incorrect subscript type ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -191,7 +191,7 @@ pub fn makeIndex(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFSubscri
     if isValidIndexType(ty.clone())? {
         subscript = Arc::new(NFSubscript::INDEX { index: exp.clone() });
     } else {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeIndex")); __mm_s.push_str(&*literal!(" got a non integer type exp to make an index sub")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeIndex")); __mm_s.push_str(&*literal!(" got a non integer type exp to make an index sub")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
         bail!("fail");
     }
     Ok(subscript)
@@ -200,7 +200,7 @@ pub fn makeIndex(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFSubscri
 pub fn makeSplitIndex(mut node: Arc<InstNode::InstNode>, mut dimIndex: i32) -> Result<Arc<NFSubscript>> {
     let mut subscript: Arc<NFSubscript> = Arc::new(NFSubscript::SPLIT_INDEX { node: node.clone(), dimIndex: dimIndex.clone() });
     if dimIndex.clone() < 1 {
-        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeSplitIndex")); __mm_s.push_str(&*literal!(" got invalid index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", dimIndex.clone()))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.makeSplitIndex")); __mm_s.push_str(&*literal!(" got invalid index ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", dimIndex.clone()))); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
     }
     Ok(subscript)
 }
@@ -678,7 +678,7 @@ pub fn toAbsyn(mut subscript: Arc<NFSubscript>) -> Result<Arc<Absyn::Subscript>>
         Deref @ SLICE { .. } => Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: Expression::toAbsyn(var_field!((*subscript).slice, NFSubscript::SLICE).clone())? }),
         Deref @ WHOLE { .. } => Arc::new(openmodelica_ast::Absyn::Subscript::NOSUB),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toAbsyn")); __mm_s.push_str(&*literal!(" failed on unknown subscript")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toAbsyn")); __mm_s.push_str(&*literal!(" failed on unknown subscript")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -693,7 +693,7 @@ pub fn toDAE(mut subscript: Arc<NFSubscript>) -> Result<Arc<DAE::Subscript>> {
         Deref @ SLICE { .. } => Arc::new(DAE::Subscript::SLICE { exp: Expression::toDAE(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), false)? }),
         Deref @ WHOLE { .. } => Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDAE")); __mm_s.push_str(&*literal!(" failed on unknown subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDAE")); __mm_s.push_str(&*literal!(" failed on unknown subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -843,7 +843,7 @@ pub fn toDimension(mut subscript: Arc<NFSubscript>) -> Result<Arc<Dimension::NFD
         Deref @ WHOLE { .. } => Arc::new(crate::NFDimension::UNKNOWN),
         Deref @ SPLIT_INDEX { .. } => Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone()),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDimension")); __mm_s.push_str(&*literal!(" got wrong subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.toDimension")); __mm_s.push_str(&*literal!(" got wrong subscript ")); __mm_s.push_str(&*toString(subscript.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1130,7 +1130,7 @@ pub fn nth(mut dim: Arc<Dimension::NFDimension>, mut i: i32) -> Result<Arc<NFSub
         Deref @ Dimension::ENUM { .. } => Arc::new(NFSubscript::INDEX { index: Expression::nthEnumLiteral(var_field!((*dim).enumType, Dimension::NFDimension::ENUM).clone(), i.clone())? }),
         Deref @ Dimension::RESIZABLE { .. } => Arc::new(NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }) }),
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.nth")); __mm_s.push_str(&*literal!(" got an incorrect dimension type ")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSubscript.nth")); __mm_s.push_str(&*literal!(" got an incorrect dimension type ")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFSubscript.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

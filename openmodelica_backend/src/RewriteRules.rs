@@ -1233,7 +1233,7 @@ pub fn loadRulesFromFile(mut inFile: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unable to parse rewrite rules file: ")); __mm_s.push_str(&*inFile.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unable to parse rewrite rules file: ")); __mm_s.push_str(&*inFile.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/RewriteRules.mo"))?;
                     { let __v = None; crate::Globals::rewriteRulesIndex.with(|__root| *__root.borrow_mut() = __v) };
                     Ok(())
                 }
@@ -1354,7 +1354,7 @@ fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: s, tail: _ } => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unable to parse rewrite rule: ")); __mm_s.push_str(&*GlobalScriptDump::printIstmtStr(s.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unable to parse rewrite rule: ")); __mm_s.push_str(&*GlobalScriptDump::printIstmtStr(s.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("Script/RewriteRules.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

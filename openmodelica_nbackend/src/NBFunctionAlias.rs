@@ -246,7 +246,7 @@ pub mod Call_Aux {
             let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
             vars = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::WILD, .. } => metamodelica::nil(),
-        Deref @ Expression::CREF { .. } => list![BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?],
+        Deref @ Expression::CREF { .. } => list![BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBFunctionAlias.mo"))?],
         Deref @ Expression::TUPLE { .. } => List::flatten(({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut elem in (var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone()).into_iter().cloned() {
@@ -839,7 +839,7 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
             for mut cref in &*UnorderedSet::toList(call_crefs.clone()) {
                 let mut cref = cref.clone();
                 cref_size = Type::sizeOf(ComponentRef::getSubscriptedType(cref.clone(), false)?, true)?;
-                var_size = BVariable::size(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?, true)?;
+                var_size = BVariable::size(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBFunctionAlias.mo"))?, true)?;
                 if var_size.clone() != cref_size.clone() * iter_size.clone() {
                     stripped_cref = ComponentRef::stripSubscriptsAll(cref.clone());
                     indices = UnorderedMap::getOrDefault(stripped_cref.clone(), map.clone(), UnorderedSet::new(std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 13))?;
@@ -877,7 +877,7 @@ fn getSlicedStatesSet(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::
     for mut tpl in &*UnorderedMap::toList(map.clone()) {
         let mut tpl = tpl.clone();
         (state, indices) = tpl.clone();
-        if BVariable::size(BVariable::getVarPointer(state.clone(), metamodelica::sourceInfo!())?, true)? != UnorderedSet::size(indices.clone()) {
+        if BVariable::size(BVariable::getVarPointer(state.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBFunctionAlias.mo"))?, true)? != UnorderedSet::size(indices.clone()) {
             UnorderedSet::add(state.clone(), set.clone())?;
         }
     }

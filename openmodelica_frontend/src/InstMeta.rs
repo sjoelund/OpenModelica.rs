@@ -124,7 +124,7 @@ fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<A
     let mut ot: Option<Arc<DAE::Type>> = None;
     (cache, env, p, ot) = metamodelica::arrayGet(arr.clone(), 1)?;
     if isNone(ot.clone()) {
-        (_, singletonType, _) = Lookup::lookupType(cache.clone(), env.clone(), p.clone(), Some(metamodelica::sourceInfo!()))?;
+        (_, singletonType, _) = Lookup::lookupType(cache.clone(), env.clone(), p.clone(), Some(metamodelica::sourceInfo!("FrontEnd/InstMeta.mo")))?;
         {let _arr = arr.clone(); _arr.borrow_mut()[(1-1) as usize] = (cache.clone(), env.clone(), p.clone(), Some(singletonType.clone())); _arr};
     } else {
         let __pa0 = ::match_deref::match_deref! { match &(ot.clone()) {

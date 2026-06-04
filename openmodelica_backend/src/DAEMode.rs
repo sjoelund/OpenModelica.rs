@@ -590,7 +590,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEMode.traverserStrongComponents failed on equation:\n")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nVariables:\n")); __mm_s.push_str(&*BackendDump::varListString(inVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEMode.traverserStrongComponents failed on equation:\n")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nVariables:\n")); __mm_s.push_str(&*BackendDump::varListString(inVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/DAEMode.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

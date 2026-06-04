@@ -308,7 +308,7 @@ pub fn createWhenReplacementEquation(mut tpl: (Arc<ComponentRef::NFComponentRef>
     let mut kind: EquationKind = EquationKind::CONTINUOUS;
     let mut eq: Pointer::Pointer<Arc<Equation::Equation>>;
     (cref, iter) = tpl.clone();
-    var_ptr = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+    var_ptr = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBInitialization.mo"))?;
     (var_pre, _) = BVariable::getVarPre(var_ptr.clone());
     if isSome(var_pre.clone()) {
         pre = BVariable::getVarName(Util::getOption(var_pre.clone())?);
@@ -1058,7 +1058,7 @@ pub fn removeConditionEquation(mut stmt: Arc<Statement::NFStatement>, mut condit
 pub fn findPreVars(mut exp: Arc<Expression::NFExpression>, mut pre_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?)) => {
+        Deref @ Expression::CREF { .. } if (BVariable::isPrevious(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBInitialization.mo"))?)) => {
             UnorderedSet::add(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), pre_set.clone())?;
             ()
         },

@@ -197,7 +197,7 @@ pub fn applySimple(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::Va
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
         (aliasCref, replacement) = entry.clone();
-        var_ptr = BVariable::getVarPointer(aliasCref.clone(), metamodelica::sourceInfo!())?;
+        var_ptr = BVariable::getVarPointer(aliasCref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBReplacements.mo"))?;
         var = Pointer::access(var_ptr.clone());
         assign_field!(var.binding = Binding::update(var.binding.clone(), replacement.clone())?);
         Pointer::update(var_ptr.clone(), var.clone());
@@ -256,7 +256,7 @@ pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, m
     let mut cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
     cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone())?;
     if isSome(cref.clone()) {
-        var_ptr = BVariable::getVarPointer(Util::getOption(cref.clone())?, metamodelica::sourceInfo!())?;
+        var_ptr = BVariable::getVarPointer(Util::getOption(cref.clone())?, metamodelica::sourceInfo!("NBackEnd/Util/NBReplacements.mo"))?;
     }
     Ok(var_ptr)
 }
@@ -340,7 +340,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             body_exp = Function::getSingleBodyExp(r#fn.clone())?;
             body_exp = Expression::map(body_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = local_replacements.clone(); move |__pe_a0| applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(List::all(input_crefs.clone(), (std::sync::Arc::new(ComponentRef::sizeKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?) {
-                (body_exp, _, _, _) = Typing::typeExp(body_exp.clone(), InstContext::RHS.clone(), metamodelica::sourceInfo!(), true)?;
+                (body_exp, _, _, _) = Typing::typeExp(body_exp.clone(), InstContext::RHS.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBReplacements.mo"), true)?;
             }
             body_exp = SimplifyExp::combineBinaries(body_exp.clone())?;
             body_exp = SimplifyExp::simplifyDump(body_exp.clone(), true, literal!("NBReplacements.applyFuncExp"), (literal!("")).clone())?;

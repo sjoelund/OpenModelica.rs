@@ -119,7 +119,7 @@ pub fn addSimVarToHashTable(mut simvarIn: SimCodeVar::SimVar, mut inHT: HashTabl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    addInternalError((literal!("function addSimVarToHashTable failed")).clone(), metamodelica::sourceInfo!())?;
+                    addInternalError((literal!("function addSimVarToHashTable failed")).clone(), metamodelica::sourceInfo!("Util/HashTableCrefSimVar.mo"))?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),

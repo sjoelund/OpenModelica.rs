@@ -1796,7 +1796,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             metamodelica::nil()
         },
         _ => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.getCrefFromExp")); __mm_s.push_str(&*literal!(" failed ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.getCrefFromExp")); __mm_s.push_str(&*literal!(" failed ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/AbsynUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6576,7 +6576,7 @@ pub fn elementArgEqual(mut arg1: Arc<Absyn::ElementArg>, mut arg2: Arc<Absyn::El
         (Deref @ Absyn::ElementArg::ELEMENTARGCOMMENT { .. }, Deref @ Absyn::ElementArg::ELEMENTARGCOMMENT { .. }) => var_field!((*arg1).comment, Absyn::ElementArg::ELEMENTARGCOMMENT).clone() == var_field!((*arg2).comment, Absyn::ElementArg::ELEMENTARGCOMMENT).clone(),
         (Deref @ Absyn::ElementArg::INHERITANCEBREAK { .. }, Deref @ Absyn::ElementArg::INHERITANCEBREAK { .. }) => equationEqual(var_field!((*arg1).cnct, Absyn::ElementArg::INHERITANCEBREAK).clone(), var_field!((*arg2).cnct, Absyn::ElementArg::INHERITANCEBREAK).clone(), false, true)?,
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.elementArgEqual")); __mm_s.push_str(&*literal!(" got unknown element.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.elementArgEqual")); __mm_s.push_str(&*literal!(" got unknown element.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/AbsynUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6714,7 +6714,7 @@ pub fn equationEqual(mut eq1: Arc<Absyn::Equation>, mut eq2: Arc<Absyn::Equation
             shallow.clone() || equationItemEqual(var_field!((*eq1).equ, Absyn::Equation::EQ_FAILURE).clone(), eq.clone(), false, ignoreComment.clone())?
         },
         _ => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.equationEqual")); __mm_s.push_str(&*literal!(" got unknown equation.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.equationEqual")); __mm_s.push_str(&*literal!(" got unknown equation.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/AbsynUtil.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
