@@ -1641,6 +1641,9 @@ fn equation_item(input: &mut TokenInput) -> ModalResult<EquationItem> {
         Some(TK::When) => when_equation_e(input)?,
         Some(TK::Failure)  => failure_equation(input)?,
         Some(TK::Connect)  => connect_equation(input)?,
+        // Only `equality(`: a bare `equality` is an ordinary identifier.
+        Some(TK::Equality) if matches!(input.get(1).map(|tok| &tok.kind), Some(TK::LParen)) =>
+            equality_equation(input)?,
         _              => equality_or_noretcall_equation(input)?,
     };
     let comment = comment(input)?;
@@ -1780,6 +1783,60 @@ fn failure_equation(input: &mut TokenInput) -> ModalResult<Equation> {
     Ok(Equation::EQ_FAILURE { equ: Arc::new(body) })
 }
 
+/// `equality(e1 = e2)` — MetaModelica's primitive equality equation
+/// (`EQUALITY LPAR expression EQUALS expression RPAR` in the ANTLR grammar),
+/// represented like there: a no-return call to `equality` with the two
+/// operands as positional arguments.
+fn equality_equation(input: &mut TokenInput) -> ModalResult<Equation> {
+    next_tok(input)?; // Equality
+    t(TK::LParen).parse_next(input)?;
+    let lhs = cut_err(expression)
+        .context(StrContext::Label("left operand of equality()"))
+        .parse_next(input)?;
+    cut_err(t(TK::Equal))
+        .context(StrContext::Label("'=' in equality equation"))
+        .parse_next(input)?;
+    let rhs = cut_err(expression)
+        .context(StrContext::Label("right operand of equality()"))
+        .parse_next(input)?;
+    cut_err(t(TK::RParen))
+        .context(StrContext::Label("')' closing equality()"))
+        .parse_next(input)?;
+    Ok(Equation::EQ_NORETCALL {
+        functionName: Arc::new(ComponentRef::CREF_IDENT { name: literal!("equality"), subscripts: nil() }),
+        functionArgs: Arc::new(FunctionArgs::FUNCTIONARGS {
+            args: cons(Arc::new(lhs), cons(Arc::new(rhs), nil())),
+            argNames: nil(),
+        }),
+    })
+}
+
+/// `equality(e1 := e2)` — the algorithm-section form of [`equality_equation`]
+/// (`EQUALITY LPAR expression ASSIGN expression RPAR`).
+fn equality_algorithm(input: &mut TokenInput) -> ModalResult<Algorithm> {
+    next_tok(input)?; // Equality
+    t(TK::LParen).parse_next(input)?;
+    let lhs = cut_err(expression)
+        .context(StrContext::Label("left operand of equality()"))
+        .parse_next(input)?;
+    cut_err(t(TK::Assign))
+        .context(StrContext::Label("':=' in equality statement"))
+        .parse_next(input)?;
+    let rhs = cut_err(expression)
+        .context(StrContext::Label("right operand of equality()"))
+        .parse_next(input)?;
+    cut_err(t(TK::RParen))
+        .context(StrContext::Label("')' closing equality()"))
+        .parse_next(input)?;
+    Ok(Algorithm::ALG_NORETCALL {
+        functionCall: Arc::new(ComponentRef::CREF_IDENT { name: literal!("equality"), subscripts: nil() }),
+        functionArgs: Arc::new(FunctionArgs::FUNCTIONARGS {
+            args: cons(Arc::new(lhs), cons(Arc::new(rhs), nil())),
+            argNames: nil(),
+        }),
+    })
+}
+
 fn connect_equation(input: &mut TokenInput) -> ModalResult<Equation> {
     next_tok(input)?; // Connect
     t(TK::LParen).parse_next(input)?;
@@ -1832,6 +1889,9 @@ fn algorithm_item(input: &mut TokenInput) -> ModalResult<AlgorithmItem> {
         Some(TK::Return)   => { next_tok(input)?; Algorithm::ALG_RETURN {} }
         Some(TK::Break)    => { next_tok(input)?; Algorithm::ALG_BREAK {} }
         Some(TK::Continue) => { next_tok(input)?; Algorithm::ALG_CONTINUE {} }
+        // Only `equality(`: a bare `equality` is an ordinary identifier.
+        Some(TK::Equality) if matches!(input.get(1).map(|tok| &tok.kind), Some(TK::LParen)) =>
+            equality_algorithm(input)?,
         _                  => assign_clause_a(input)?,
     };
     let comment = comment(input)?;

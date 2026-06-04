@@ -278,7 +278,7 @@ AlgorithmAnnotationList
 
 Equation
     : ( EqualityOrNoretcallEquation | ConditionalEquationE | ForClauseE | ConnectClause
-      | WhenClauseE | "failure" "(" Equation ")" | "equality" "(" Expression "=" Expression )
+      | WhenClauseE | "failure" "(" Equation ")" | "equality" "(" Expression "=" Expression ")" )
       Comment
     ;
 
@@ -317,7 +317,7 @@ EquationListThen
 Algorithm
     : ( AssignClauseA | ConditionalEquationA | ForClauseA | WhileClause
       | TryClause | WhenClauseA | "break" | "return" | "continue"
-      | "failure" "(" Algorithm ")" | "equality" "(" Expression ":=" Expression )
+      | "failure" "(" Algorithm ")" | "equality" "(" Expression ":=" Expression ")" )
       Comment
     ;
 
