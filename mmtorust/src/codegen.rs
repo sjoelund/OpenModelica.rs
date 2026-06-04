@@ -87,6 +87,11 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // platform with compile-time `cfg!` instead. Hand-written in
     // `openmodelica_util/src/Autoconf.rs`.
     "Autoconf",
+    // Single `external "C"` wrapper over `runtime/ffi_omc.cpp`
+    // (FFI_callFunction — dynamic foreign calls for compile-time evaluation
+    // of external functions); hand-written (using the `libffi` crate) in
+    // `openmodelica_nf_frontend/src/FFI.rs`.
+    "FFI",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.

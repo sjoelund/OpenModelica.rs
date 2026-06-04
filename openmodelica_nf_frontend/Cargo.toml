@@ -16,3 +16,8 @@ const-str.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
+libc.workspace=true
+libffi.workspace=true
+
+[build-dependencies]
+cc.workspace=true

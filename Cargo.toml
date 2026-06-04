@@ -28,6 +28,12 @@ match_deref = "0.1.2"
 ordered-float = "5.3.0"
 num-traits = "0.2.19"
 libc = "0.2"
+# Dynamic foreign-function calls for FFI.callFunction (port of
+# Compiler/runtime/ffi_omc.cpp). Builds the bundled libffi C sources via cc,
+# so no system libffi is needed; works on Linux and mingw alike.
+libffi = "5"
+# Build-time C/C++ compilation for the FFI exception-catch shim (FFI.rs).
+cc = "1"
 # Links the system libcurl (the same library om_curl.c uses). On Windows the
 # bundled `static-curl` feature will be needed; add it when the Windows build
 # is set up (see Curl.rs).

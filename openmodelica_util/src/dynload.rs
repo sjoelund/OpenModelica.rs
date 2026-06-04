@@ -82,10 +82,56 @@ fn dlsym_addr(handle: usize, name: &str) -> Option<usize> {
     if p.is_null() { None } else { Some(p as usize) }
 }
 
+/// Preload the OMC C runtime libraries that external-function shared
+/// objects link against (DT_NEEDED), once per process.
+///
+/// The reference `omc` binary itself links `libOpenModelicaRuntimeC.so`
+/// (which pulls in `libomcgc`), so when an external library such as
+/// `ffi/libModelicaExternalC.so` is dlopen'ed, the loader resolves that
+/// dependency against the already-loaded copy. The Rust port does not link
+/// the C runtime, so we dlopen it RTLD_GLOBAL from the installation's omc
+/// lib dir before loading user libraries. A missing runtime lib is not an
+/// error — libraries without that dependency still load fine.
+fn ensure_runtime_solibs() {
+    use std::sync::Once;
+    static ONCE: Once = Once::new();
+    ONCE.call_once(|| {
+        for lib in ["libOpenModelicaRuntimeC.so"] {
+            // First by basename: this resolves through the binary's RUNPATH
+            // (`$ORIGIN/../lib/<triple>/omc`, see openmodelica/build.rs) and
+            // — crucially — registers the library in ld.so's link map under
+            // its DT_NEEDED name, since it has no SONAME. Only then does a
+            // dependent library's `NEEDED libOpenModelicaRuntimeC.so` match
+            // the already-loaded copy, exactly as it does in the reference
+            // omc process (which links the library outright).
+            let by_name = CString::new(lib).unwrap();
+            unsafe { libc::dlerror() };
+            if !unsafe { libc::dlopen(by_name.as_ptr(), libc::RTLD_GLOBAL | libc::RTLD_NOW) }
+                .is_null()
+            {
+                continue;
+            }
+            // Fallback for uninstalled layouts (e.g. running from
+            // target/debug): load by full path from the installation's omc
+            // lib dir. This satisfies direct dlopen uses but not DT_NEEDED
+            // references (the link-map name is then the full path).
+            let Ok(install_dir) = crate::Settings::getInstallationDirectoryPath() else { return };
+            let path = format!("{install_dir}/lib/{}/omc/{lib}", crate::Autoconf::triple);
+            if let Ok(c) = CString::new(path) {
+                unsafe {
+                    libc::dlerror();
+                    libc::dlopen(c.as_ptr(), libc::RTLD_GLOBAL | libc::RTLD_NOW);
+                }
+            }
+        }
+    });
+}
+
 /// `System.loadLibrary`: `dlopen` the shared object and return a handle.
 /// `relative` resolves the name against the current directory like the C
 /// runtime (`./name`); an empty name opens the running process.
 pub fn load_library(path: &str, relative: bool, debug: bool) -> Result<i32> {
+    ensure_runtime_solibs();
     let handle = if path.is_empty() {
         unsafe { libc::dlerror() };
         let h = unsafe { libc::dlopen(std::ptr::null(), DLOPEN_FLAGS) };
