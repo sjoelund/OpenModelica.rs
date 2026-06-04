@@ -772,6 +772,9 @@ fn class_specifier2(input: &mut TokenInput) -> ModalResult<Arc<ClassDef>> {
             };
             t(TK::RParen).parse_next(input)?;
             let comment = comment.parse_next(input)?;
+            // The cons-built list is back to front; restore the source order —
+            // overload resolution tries the candidates in declaration order.
+            let functionNames = functionNames.reverse();
             return Ok(Arc::new(ClassDef::OVERLOAD { functionNames: to_rc_list(functionNames), comment: comment.map(Arc::new) }));
         }
         let attributes = type_prefix.parse_next(input)?;
