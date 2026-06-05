@@ -991,9 +991,12 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
             t(TK::LParen).parse_next(input)?;
             if opt(t(TK::Colon)).parse_next(input)?.is_some() {
                 t(TK::RParen).parse_next(input)?;
+                // `enumeration(:)` takes a trailing comment just like the
+                // literal-list form (`enumeration(:) "Substances in Fluid"`).
+                let comment = comment.parse_next(input)?;
                 return Ok(Arc::new(ClassDef::ENUMERATION {
                     enumLiterals: Arc::new(EnumDef::ENUM_COLON {}),
-                    comment: None,
+                    comment: comment.map(Arc::new),
                 }));
             }
             let literals = cut_err(enum_list)
