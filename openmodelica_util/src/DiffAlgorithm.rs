@@ -94,9 +94,27 @@ pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::Lis
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool = false;
     let mut i: i32 = 0;
-    // TODO: inherit algorithm from base function via `extends` clause.
-    // Requires substituting `replaceable package` constant overrides into the inherited body.
-    todo!("function `printDiffTerminalColor` inherits its algorithm via `extends` — not yet implemented")
+    i = Print::saveAndClearBuf().unwrap();
+    for mut d in &*seq.clone() {
+        let mut d = d.clone();
+        (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
+        (Diff::Equal, ts) => (literal!(""), literal!(""), ts.clone(), true),
+        (Diff::Add, ts) => (literal!("\u{1b}[4;32m"), literal!("\u{1b}[0m"), ts.clone(), true),
+        (Diff::Delete, ts) => (literal!("\u{1b}[9;31m"), literal!("\u{1b}[0m"), ts.clone(), true),
+        _ => panic!("match: no arm matched"),
+    } });
+        if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
+            Print::printBuf((open.clone()).clone()).unwrap();
+            for mut t in &*ts.clone() {
+                let mut t = t.clone();
+                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+            }
+            Print::printBuf((close.clone()).clone()).unwrap();
+        }
+    }
+    res = (Print::getString().unwrap()).clone();
+    Print::restoreBuf(i.clone()).unwrap();
+    res
 }
 
 pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
@@ -106,9 +124,27 @@ pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, A
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool = false;
     let mut i: i32 = 0;
-    // TODO: inherit algorithm from base function via `extends` clause.
-    // Requires substituting `replaceable package` constant overrides into the inherited body.
-    todo!("function `printDiffXml` inherits its algorithm via `extends` — not yet implemented")
+    i = Print::saveAndClearBuf().unwrap();
+    for mut d in &*seq.clone() {
+        let mut d = d.clone();
+        (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
+        (Diff::Equal, ts) => (literal!("<equal>"), literal!("</equal>"), ts.clone(), true),
+        (Diff::Add, ts) => (literal!("<add>"), literal!("</add>"), ts.clone(), true),
+        (Diff::Delete, ts) => (literal!("<del>"), literal!("</del>"), ts.clone(), true),
+        _ => panic!("match: no arm matched"),
+    } });
+        if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
+            Print::printBuf((open.clone()).clone()).unwrap();
+            for mut t in &*ts.clone() {
+                let mut t = t.clone();
+                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+            }
+            Print::printBuf((close.clone()).clone()).unwrap();
+        }
+    }
+    res = (Print::getString().unwrap()).clone();
+    Print::restoreBuf(i.clone()).unwrap();
+    res
 }
 
 pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> ArcStr {
@@ -118,9 +154,27 @@ pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Ar
     let mut ts: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut b: bool = false;
     let mut i: i32 = 0;
-    // TODO: inherit algorithm from base function via `extends` clause.
-    // Requires substituting `replaceable package` constant overrides into the inherited body.
-    todo!("function `printActual` inherits its algorithm via `extends` — not yet implemented")
+    i = Print::saveAndClearBuf().unwrap();
+    for mut d in &*seq.clone() {
+        let mut d = d.clone();
+        (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
+        (Diff::Equal, ts) => (literal!(""), literal!(""), ts.clone(), true),
+        (Diff::Add, ts) => (literal!(""), literal!(""), ts.clone(), true),
+        (Diff::Delete, ts) => (literal!(""), literal!(""), ts.clone(), false),
+        _ => panic!("match: no arm matched"),
+    } });
+        if !(ts.clone().is_empty()) && (b.clone() || true && true && false) {
+            Print::printBuf((open.clone()).clone()).unwrap();
+            for mut t in &*ts.clone() {
+                let mut t = t.clone();
+                Print::printBuf((toString(t.clone()).unwrap()).clone()).unwrap();
+            }
+            Print::printBuf((close.clone()).clone()).unwrap();
+        }
+    }
+    res = (Print::getString().unwrap()).clone();
+    Print::restoreBuf(i.clone()).unwrap();
+    res
 }
 
 fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut isWhitespace: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut inStart1: i32, mut inEnd1: i32, mut inStart2: i32, mut inEnd2: i32, mut inPrefixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut inSuffixes: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>> {

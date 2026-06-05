@@ -6,9 +6,9 @@
 // DiffAlgorithm::diff computes a diff of two lists of tokens, returning a
 // list of (Diff, tokens) pairs tagged with Add, Delete, or Equal.
 //
-// Note: printDiffTerminalColor, printDiffXml, and printActual are all
-// `todo!()` stubs (inheriting via `extends` is not yet implemented).
-// Tests for those functions are therefore omitted here.
+// printDiffTerminalColor, printDiffXml, and printActual inherit
+// `partialPrintDiff`'s algorithm via `extends`, specialising its
+// `replaceable package DiffStrings` constants; they are tested below.
 //
 // Known bugs / limitations found while writing these tests are documented
 // inline with "Bug:" prefixes.
@@ -275,37 +275,59 @@ fn diff_enum_ordinals_match_metamodelica_source() {
 }
 
 // ---------------------------------------------------------------------------
-// no-op stubs: document that printDiffTerminalColor / printDiffXml /
-// printActual are not yet implemented.
+// print functions: printActual / printDiffXml / printDiffTerminalColor inherit
+// `partialPrintDiff`'s algorithm via `extends`, specialising its `replaceable
+// package DiffStrings` constants. printActual suppresses deletions
+// (printDelete=false); printDiffXml wraps each chunk in tags.
 // ---------------------------------------------------------------------------
 
-/// printDiffTerminalColor is a `todo!()` stub.
-/// This test documents that calling it will panic.
-#[test]
-#[should_panic]
-fn print_diff_terminal_color_is_unimplemented() {
-    DiffAlgorithm::printDiffTerminalColor::<ArcStr>(
-        metamodelica::nil(),
-        Arc::new(to_str),
-    );
+/// One diff chunk `(tag, [tokens...])`.
+fn chunk(tag: Diff, tokens: &[&str]) -> (Diff, Arc<metamodelica::List<ArcStr>>) {
+    let toks = tokens
+        .iter()
+        .rev()
+        .fold(metamodelica::nil(), |acc, &s| cons(arcstr::format!("{}", s), acc));
+    (tag, toks)
 }
 
-/// printDiffXml is a `todo!()` stub.
-#[test]
-#[should_panic]
-fn print_diff_xml_is_unimplemented() {
-    DiffAlgorithm::printDiffXml::<ArcStr>(
-        metamodelica::nil(),
-        Arc::new(to_str),
-    );
+/// A sequence with one equal, one added and one deleted chunk.
+fn sample_seq() -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<ArcStr>>)>> {
+    [
+        chunk(Diff::Equal, &["a"]),
+        chunk(Diff::Add, &["b"]),
+        chunk(Diff::Delete, &["c"]),
+    ]
+    .into_iter()
+    .rev()
+    .fold(metamodelica::nil(), |acc, c| cons(c, acc))
 }
 
-/// printActual is a `todo!()` stub.
+/// printActual prints equal + added tokens but suppresses deletions.
 #[test]
-#[should_panic]
-fn print_actual_is_unimplemented() {
-    DiffAlgorithm::printActual::<ArcStr>(
-        metamodelica::nil(),
-        Arc::new(to_str),
-    );
+fn print_actual_suppresses_deletions() {
+    let s = DiffAlgorithm::printActual::<ArcStr>(sample_seq(), Arc::new(to_str));
+    assert_eq!(s.as_str(), "ab");
+}
+
+/// printDiffXml wraps each chunk in its tag, including deletions.
+#[test]
+fn print_diff_xml_wraps_in_tags() {
+    let s = DiffAlgorithm::printDiffXml::<ArcStr>(sample_seq(), Arc::new(to_str));
+    assert_eq!(s.as_str(), "<equal>a</equal><add>b</add><del>c</del>");
+}
+
+/// printDiffTerminalColor leaves equal text bare and brackets add/del in the
+/// terminal control sequences supplied by its `DiffStrings` override.
+#[test]
+fn print_diff_terminal_color_brackets_changes() {
+    let s = DiffAlgorithm::printDiffTerminalColor::<ArcStr>(sample_seq(), Arc::new(to_str));
+    assert_eq!(s.as_str(), "a\u{1b}[4;32mb\u{1b}[0m\u{1b}[9;31mc\u{1b}[0m");
+}
+
+/// All three printers return the empty string for an empty diff.
+#[test]
+fn print_functions_empty_input() {
+    assert_eq!(DiffAlgorithm::printActual::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
+    assert_eq!(DiffAlgorithm::printDiffXml::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
+    assert_eq!(DiffAlgorithm::printDiffTerminalColor::<ArcStr>(metamodelica::nil(), Arc::new(to_str)).as_str(), "");
 }

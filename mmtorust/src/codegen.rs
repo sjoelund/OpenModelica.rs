@@ -4899,6 +4899,298 @@ fn function_source_replacement(qname: &str) -> Option<&'static str> {
     }
 }
 
+// ── Inherited-algorithm (`extends`) instantiation ───────────────────────────
+//
+// A function `F` may inherit its algorithm from a partial base function `G`
+// via `extends G(Pkg(c1=v1, ...))`. `G`'s body references the constants of its
+// `replaceable package Pkg` as `Pkg.cN`. To emit `F` we inline `G`'s algorithm
+// and rewrite each `Pkg.cN` component reference to the value supplied by the
+// `extends` modification, falling back to the package's own declared default.
+// (`G`'s protected locals and signature are already merged into `F` by the
+// `collect_from_class` inheritance pass.)
+
+/// The EQMOD right-hand side of a modification, if any.
+fn extends_eqmod_exp(m: &Option<Arc<Absyn::Modification>>) -> Option<Arc<Absyn::Exp>> {
+    match &*m.as_ref()?.eqMod {
+        Absyn::EqMod::EQMOD { exp, .. } => Some(exp.clone()),
+        Absyn::EqMod::NOMOD => None,
+    }
+}
+
+/// Build the `"Pkg.const" → value` substitution implied by a derived function's
+/// `extends Base(Pkg(c=v, ...))` clause: each `replaceable package` in `base_c`
+/// contributes its declared constant defaults, overlaid with the overrides from
+/// the `extends` modification's element args.
+fn build_extends_const_subst(
+    base_c: &MM::Class,
+    element_args: &[Absyn::ElementArg],
+) -> HashMap<String, Arc<Absyn::Exp>> {
+    let mut map: HashMap<String, Arc<Absyn::Exp>> = HashMap::new();
+    let base_members: &[MM::ClassMember] = match &base_c.body {
+        MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members,
+        _ => &[],
+    };
+    // 1. Defaults from each replaceable package's constant declarations.
+    for m in base_members {
+        let MM::ClassMember::ClassDef(cd) = m else { continue };
+        let pkg = &cd.class_def;
+        if !matches!(pkg.restriction, Absyn::R_PACKAGE) {
+            continue;
+        }
+        let pkg_members: &[MM::ClassMember] = match &pkg.body {
+            MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members,
+            _ => &[],
+        };
+        for pm in pkg_members {
+            if let MM::ClassMember::Component(comp) = pm
+                && let Some(exp) = extends_eqmod_exp(&comp.modification) {
+                    map.insert(format!("{}.{}", pkg.name, comp.name), exp);
+                }
+        }
+    }
+    // 2. Overrides from the extends modification `Pkg(c=v, ...)`.
+    for ea in element_args {
+        let Absyn::ElementArg::MODIFICATION { path, modification: Some(modif), .. } = ea else { continue };
+        let Absyn::Path::IDENT { name: pkg_name } = &**path else { continue };
+        for inner in &*modif.elementArgLst {
+            if let Absyn::ElementArg::MODIFICATION { path: ipath, modification: imod, .. } = inner.as_ref()
+                && let Absyn::Path::IDENT { name: cname } = &**ipath
+                && let Some(exp) = extends_eqmod_exp(imod) {
+                    map.insert(format!("{pkg_name}.{cname}"), exp);
+                }
+        }
+    }
+    map
+}
+
+/// If `cref` is a two-level qualified reference `A.B` with no subscripts,
+/// return `"A.B"` (unwrapping a leading fully-qualified marker).
+fn cref_dotted2(cref: &Absyn::ComponentRef) -> Option<String> {
+    use Absyn::ComponentRef as C;
+    match cref {
+        C::CREF_FULLYQUALIFIED { componentRef } => cref_dotted2(componentRef),
+        C::CREF_QUAL { name, subscripts, componentRef }
+            if matches!(&**subscripts, metamodelica::List::Nil) =>
+        {
+            if let C::CREF_IDENT { name: n2, subscripts: s2 } = &**componentRef
+                && matches!(&**s2, metamodelica::List::Nil)
+            {
+                return Some(format!("{name}.{n2}"));
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+fn subst_exp_list(
+    l: &metamodelica::List<Arc<Absyn::Exp>>,
+    map: &HashMap<String, Arc<Absyn::Exp>>,
+) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
+    Arc::new(metamodelica::List::from_iter(l.into_iter().map(|e| subst_exp(e, map))))
+}
+
+fn subst_subscripts(
+    l: &metamodelica::List<Arc<Absyn::Subscript>>,
+    map: &HashMap<String, Arc<Absyn::Exp>>,
+) -> Arc<metamodelica::List<Arc<Absyn::Subscript>>> {
+    Arc::new(metamodelica::List::from_iter(l.into_iter().map(|s| match &**s {
+        Absyn::Subscript::SUBSCRIPT { subscript } =>
+            Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: subst_exp(subscript, map) }),
+        Absyn::Subscript::NOSUB => s.clone(),
+    })))
+}
+
+/// Rewrite every `Pkg.const` component reference in an expression.
+fn subst_exp(e: &Arc<Absyn::Exp>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::Exp> {
+    use Absyn::Exp as E;
+    match &**e {
+        E::CREF { componentRef } => {
+            if let Some(key) = cref_dotted2(componentRef)
+                && let Some(v) = map.get(&key) {
+                    return v.clone();
+                }
+            e.clone()
+        }
+        E::BINARY { exp1, op, exp2 } => Arc::new(E::BINARY { exp1: subst_exp(exp1, map), op: op.clone(), exp2: subst_exp(exp2, map) }),
+        E::LBINARY { exp1, op, exp2 } => Arc::new(E::LBINARY { exp1: subst_exp(exp1, map), op: op.clone(), exp2: subst_exp(exp2, map) }),
+        E::RELATION { exp1, op, exp2 } => Arc::new(E::RELATION { exp1: subst_exp(exp1, map), op: op.clone(), exp2: subst_exp(exp2, map) }),
+        E::UNARY { op, exp } => Arc::new(E::UNARY { op: op.clone(), exp: subst_exp(exp, map) }),
+        E::LUNARY { op, exp } => Arc::new(E::LUNARY { op: op.clone(), exp: subst_exp(exp, map) }),
+        E::IFEXP { ifExp, trueBranch, elseBranch, elseIfBranch } => Arc::new(E::IFEXP {
+            ifExp: subst_exp(ifExp, map),
+            trueBranch: subst_exp(trueBranch, map),
+            elseBranch: subst_exp(elseBranch, map),
+            elseIfBranch: Arc::new(metamodelica::List::from_iter(
+                elseIfBranch.into_iter().map(|(c, t)| (subst_exp(c, map), subst_exp(t, map))),
+            )),
+        }),
+        E::CALL { function_, functionArgs, typeVars } => Arc::new(E::CALL {
+            function_: function_.clone(), functionArgs: subst_fargs(functionArgs, map), typeVars: typeVars.clone(),
+        }),
+        E::PARTEVALFUNCTION { function_, functionArgs } => Arc::new(E::PARTEVALFUNCTION {
+            function_: function_.clone(), functionArgs: subst_fargs(functionArgs, map),
+        }),
+        E::ARRAY { arrayExp } => Arc::new(E::ARRAY { arrayExp: subst_exp_list(arrayExp, map) }),
+        E::MATRIX { matrix } => Arc::new(E::MATRIX {
+            matrix: Arc::new(metamodelica::List::from_iter(matrix.into_iter().map(|row| subst_exp_list(row, map)))),
+        }),
+        E::RANGE { start, step, stop } => Arc::new(E::RANGE {
+            start: subst_exp(start, map), step: step.as_ref().map(|s| subst_exp(s, map)), stop: subst_exp(stop, map),
+        }),
+        E::TUPLE { expressions } => Arc::new(E::TUPLE { expressions: subst_exp_list(expressions, map) }),
+        E::CONS { head, rest } => Arc::new(E::CONS { head: subst_exp(head, map), rest: subst_exp(rest, map) }),
+        E::AS { id, exp } => Arc::new(E::AS { id: id.clone(), exp: subst_exp(exp, map) }),
+        E::LIST { exps } => Arc::new(E::LIST { exps: subst_exp_list(exps, map) }),
+        E::DOT { exp, index } => Arc::new(E::DOT { exp: subst_exp(exp, map), index: subst_exp(index, map) }),
+        E::SUBSCRIPTED_EXP { exp, subscripts } => Arc::new(E::SUBSCRIPTED_EXP {
+            exp: subst_exp(exp, map), subscripts: subst_subscripts(subscripts, map),
+        }),
+        E::EXPRESSIONCOMMENT { commentsBefore, exp, commentsAfter } => Arc::new(E::EXPRESSIONCOMMENT {
+            commentsBefore: commentsBefore.clone(), exp: subst_exp(exp, map), commentsAfter: commentsAfter.clone(),
+        }),
+        E::MATCHEXP { matchTy, inputExp, localDecls, cases, comment } => Arc::new(E::MATCHEXP {
+            matchTy: matchTy.clone(), inputExp: subst_exp(inputExp, map), localDecls: localDecls.clone(),
+            cases: Arc::new(metamodelica::List::from_iter(cases.into_iter().map(|cse| subst_case(cse, map)))),
+            comment: comment.clone(),
+        }),
+        // Leaves with no sub-expressions.
+        E::INTEGER { .. } | E::REAL { .. } | E::STRING { .. } | E::BOOL { .. }
+        | E::END | E::CODE { .. } | E::BREAK => e.clone(),
+    }
+}
+
+fn subst_fargs(fa: &Arc<Absyn::FunctionArgs>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::FunctionArgs> {
+    use Absyn::FunctionArgs as F;
+    match &**fa {
+        F::FUNCTIONARGS { args, argNames } => Arc::new(F::FUNCTIONARGS {
+            args: subst_exp_list(args, map),
+            argNames: Arc::new(metamodelica::List::from_iter(argNames.into_iter().map(|na| {
+                let Absyn::NamedArg { argName, argValue } = &**na;
+                Arc::new(Absyn::NamedArg { argName: argName.clone(), argValue: subst_exp(argValue, map) })
+            }))),
+        }),
+        F::FOR_ITER_FARG { exp, iterType, iterators } => Arc::new(F::FOR_ITER_FARG {
+            exp: subst_exp(exp, map), iterType: iterType.clone(), iterators: subst_for_iterators(iterators, map),
+        }),
+    }
+}
+
+fn subst_for_iterators(
+    l: &Absyn::ForIterators,
+    map: &HashMap<String, Arc<Absyn::Exp>>,
+) -> Absyn::ForIterators {
+    Arc::new(metamodelica::List::from_iter(l.into_iter().map(|it| {
+        let Absyn::ForIterator { name, guardExp, range } = &**it;
+        Arc::new(Absyn::ForIterator {
+            name: name.clone(),
+            guardExp: guardExp.as_ref().map(|g| subst_exp(g, map)),
+            range: range.as_ref().map(|r| subst_exp(r, map)),
+        })
+    })))
+}
+
+fn subst_alg_item_list(
+    l: &metamodelica::List<Arc<Absyn::AlgorithmItem>>,
+    map: &HashMap<String, Arc<Absyn::Exp>>,
+) -> Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> {
+    Arc::new(metamodelica::List::from_iter(l.into_iter().map(|it| subst_alg_item(it, map))))
+}
+
+fn subst_alg_elseif(
+    l: &metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>,
+    map: &HashMap<String, Arc<Absyn::Exp>>,
+) -> Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>> {
+    Arc::new(metamodelica::List::from_iter(
+        l.into_iter().map(|(cond, body)| (subst_exp(cond, map), subst_alg_item_list(body, map))),
+    ))
+}
+
+fn subst_alg_item(it: &Arc<Absyn::AlgorithmItem>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::AlgorithmItem> {
+    use Absyn::AlgorithmItem as AI;
+    match &**it {
+        AI::ALGORITHMITEM { algorithm_, comment, info } => Arc::new(AI::ALGORITHMITEM {
+            algorithm_: subst_algorithm(algorithm_, map), comment: comment.clone(), info: info.clone(),
+        }),
+        AI::ALGORITHMITEMCOMMENT { .. } => it.clone(),
+    }
+}
+
+fn subst_algorithm(a: &Arc<Absyn::Algorithm>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::Algorithm> {
+    use Absyn::Algorithm as A;
+    match &**a {
+        A::ALG_ASSIGN { assignComponent, value } => Arc::new(A::ALG_ASSIGN {
+            assignComponent: subst_exp(assignComponent, map), value: subst_exp(value, map),
+        }),
+        A::ALG_IF { ifExp, trueBranch, elseIfAlgorithmBranch, elseBranch } => Arc::new(A::ALG_IF {
+            ifExp: subst_exp(ifExp, map),
+            trueBranch: subst_alg_item_list(trueBranch, map),
+            elseIfAlgorithmBranch: subst_alg_elseif(elseIfAlgorithmBranch, map),
+            elseBranch: subst_alg_item_list(elseBranch, map),
+        }),
+        A::ALG_FOR { iterators, forBody } => Arc::new(A::ALG_FOR {
+            iterators: subst_for_iterators(iterators, map), forBody: subst_alg_item_list(forBody, map),
+        }),
+        A::ALG_PARFOR { iterators, parforBody } => Arc::new(A::ALG_PARFOR {
+            iterators: subst_for_iterators(iterators, map), parforBody: subst_alg_item_list(parforBody, map),
+        }),
+        A::ALG_WHILE { boolExpr, whileBody } => Arc::new(A::ALG_WHILE {
+            boolExpr: subst_exp(boolExpr, map), whileBody: subst_alg_item_list(whileBody, map),
+        }),
+        A::ALG_WHEN_A { boolExpr, whenBody, elseWhenAlgorithmBranch } => Arc::new(A::ALG_WHEN_A {
+            boolExpr: subst_exp(boolExpr, map),
+            whenBody: subst_alg_item_list(whenBody, map),
+            elseWhenAlgorithmBranch: subst_alg_elseif(elseWhenAlgorithmBranch, map),
+        }),
+        A::ALG_NORETCALL { functionCall, functionArgs } => Arc::new(A::ALG_NORETCALL {
+            functionCall: functionCall.clone(), functionArgs: subst_fargs(functionArgs, map),
+        }),
+        A::ALG_FAILURE { equ } => Arc::new(A::ALG_FAILURE { equ: subst_alg_item_list(equ, map) }),
+        A::ALG_TRY { body, elseBody } => Arc::new(A::ALG_TRY {
+            body: subst_alg_item_list(body, map), elseBody: subst_alg_item_list(elseBody, map),
+        }),
+        A::ALG_RETURN | A::ALG_BREAK | A::ALG_CONTINUE => a.clone(),
+    }
+}
+
+fn subst_case(cse: &Arc<Absyn::Case>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::Case> {
+    use Absyn::Case as K;
+    match &**cse {
+        K::CASE { pattern, patternGuard, patternInfo, localDecls, classPart, result, resultInfo, comment, info } =>
+            Arc::new(K::CASE {
+                pattern: subst_exp(pattern, map),
+                patternGuard: patternGuard.as_ref().map(|g| subst_exp(g, map)),
+                patternInfo: patternInfo.clone(),
+                localDecls: localDecls.clone(),
+                classPart: subst_classpart(classPart, map),
+                result: subst_exp(result, map),
+                resultInfo: resultInfo.clone(),
+                comment: comment.clone(),
+                info: info.clone(),
+            }),
+        K::ELSE { localDecls, classPart, result, resultInfo, comment, info } =>
+            Arc::new(K::ELSE {
+                localDecls: localDecls.clone(),
+                classPart: subst_classpart(classPart, map),
+                result: subst_exp(result, map),
+                resultInfo: resultInfo.clone(),
+                comment: comment.clone(),
+                info: info.clone(),
+            }),
+    }
+}
+
+fn subst_classpart(cp: &Arc<Absyn::ClassPart>, map: &HashMap<String, Arc<Absyn::Exp>>) -> Arc<Absyn::ClassPart> {
+    use Absyn::ClassPart as CP;
+    match &**cp {
+        CP::ALGORITHMS { contents } => Arc::new(CP::ALGORITHMS { contents: subst_alg_item_list(contents, map) }),
+        CP::INITIALALGORITHMS { contents } => Arc::new(CP::INITIALALGORITHMS { contents: subst_alg_item_list(contents, map) }),
+        // Match-case `then`-form bodies use an (empty) ALGORITHMS section; other
+        // class-part kinds don't appear in inheritable function bodies.
+        _ => cp.clone(),
+    }
+}
+
 fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Class, indent: &str, ctx: &mut GenCtx, top_level: &'a BTreeMap<String, NameNode<'a>>) {
     // Short class definition: `function Alias = Base[(arg=default, ...)]`.
     // Resolved by hierarchy::resolve_function_type to Ty::FunctionAlias.
@@ -4992,12 +5284,28 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
             }
         }
     };
+    // When this function has no algorithm of its own but `extends` a base
+    // function that does, capture that base (and the `extends` modification's
+    // element args) so its algorithm can be inlined below. `base_with_alg`
+    // checks the base actually carries an algorithm.
+    let base_with_alg = |bc: &MM::Class| matches!(&bc.body,
+        MM::ClassDef::Parts { algorithms, .. } | MM::ClassDef::ClassExtends { algorithms, .. } if !algorithms.is_empty());
+    let mut inherited_alg_base: Option<(&MM::Class, Vec<Absyn::ElementArg>)> = None;
     if let Some(base_fn) = node.base_fn {
         // base_fn has no associated NameNode handle here (we only have the
         // MM::Class). Type fallback for header-form extends still works because
         // `flatten_extends` did copy children into our node — but we keep the
         // call shape uniform.
         collect_from_class(base_fn, None, &mut inherited_components, &mut seen, &mut inherited_tys);
+        if base_with_alg(base_fn) {
+            // Header form `function F extends G(...)`: the modification lives in
+            // the ClassExtends body.
+            let modifs = match &c.body {
+                MM::ClassDef::ClassExtends { modifications, .. } => modifications.clone(),
+                _ => Vec::new(),
+            };
+            inherited_alg_base = Some((base_fn, modifs));
+        }
     }
     // Snapshot the point at which only `base_fn` inherited components are in
     // the list. Anything appended after this index came from `node.extends`
@@ -5081,6 +5389,12 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         if let Some(bn) = base_node
             && let NodeKind::Class(base_c) = &bn.kind {
                 collect_from_class(base_c, Some(&bn.children), &mut inherited_components, &mut seen, &mut inherited_tys);
+                // Member form `function F ... extends G(...); ... end F`: capture
+                // the base function (and its extends modification) so its
+                // algorithm can be inlined when F has none of its own.
+                if inherited_alg_base.is_none() && base_with_alg(base_c) {
+                    inherited_alg_base = Some((base_c, ext.element_args.clone()));
+                }
             }
     }
     let members: &[MM::ClassMember] = if inherited_components.is_empty() {
@@ -5443,9 +5757,32 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
     for (n, t, _, _) in &outputs { infer_env.insert(n.clone(), t.clone()); }
     for (n, t, _, _) in &protected { infer_env.insert(n.clone(), t.clone()); }
 
-    let alg_items: &[Arc<Absyn::AlgorithmItem>] = match &c.body {
+    let local_alg_items: &[Arc<Absyn::AlgorithmItem>] = match &c.body {
         MM::ClassDef::Parts { algorithms, .. } | MM::ClassDef::ClassExtends { algorithms, .. } => algorithms,
         _ => &[],
+    };
+
+    // If this function has no algorithm of its own but `extends` a base that
+    // does, inline the base's algorithm with the `replaceable package` constant
+    // overrides from the `extends` modification substituted in (see the
+    // `subst_*` helpers above). This realises MetaModelica function inheritance
+    // for partial base functions parameterised over a constant package.
+    let inherited_alg_items: Option<Vec<Arc<Absyn::AlgorithmItem>>> =
+        if local_alg_items.is_empty() {
+            inherited_alg_base.as_ref().map(|(base_c, element_args)| {
+                let base_algs: &[Arc<Absyn::AlgorithmItem>] = match &base_c.body {
+                    MM::ClassDef::Parts { algorithms, .. } | MM::ClassDef::ClassExtends { algorithms, .. } => algorithms,
+                    _ => &[],
+                };
+                let subst = build_extends_const_subst(base_c, element_args);
+                base_algs.iter().map(|it| subst_alg_item(it, &subst)).collect()
+            })
+        } else {
+            None
+        };
+    let alg_items: &[Arc<Absyn::AlgorithmItem>] = match &inherited_alg_items {
+        Some(v) => v,
+        None => local_alg_items,
     };
 
     let typed_stmts = typedexp::infer_stmts(alg_items, &mut infer_env, top_level, &pkg_prefix, &all_type_vars);
@@ -12914,8 +13251,14 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // unifies with any T) and avoids `bail!`-style return-out
                 // semantics that wouldn't typecheck in every callsite.
                 ",\n        _ => unreachable!(\"match_deref! exhaustiveness placeholder\")".to_owned()
-            } else {
+            } else if ctx.current_fn_fallible {
                 ",\n        _ => bail!(\"match: no arm matched\")".to_owned()
+            } else {
+                // A non-fallible function can't `bail!`; a runtime miss of a
+                // non-exhaustive match panics instead (the typical source is an
+                // inlined `extends` body whose match is exhaustive in practice
+                // but not provably so over a tuple/guarded pattern).
+                ",\n        _ => panic!(\"match: no arm matched\")".to_owned()
             };
             // When the match is itself the tail expression of a
             // `#[tailcall::tailcall]` body, drop the outer parentheses.
