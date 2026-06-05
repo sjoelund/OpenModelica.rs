@@ -156,8 +156,8 @@ fn encapsulateWhenConditions_Equation(mut inEq: Arc<BackendDAE::Equation>, mut i
             let mut index = (*index).clone();
             let mut ht = (*ht).clone();
             (whenEquation, vars1, eqns1, index, ht) = encapsulateWhenConditions_Equations(whenEquation.clone(), source.clone(), index.clone(), ht.clone())?;
-            DoubleEnded::push_list_back(vars.clone(), vars1.clone());
-            DoubleEnded::push_list_back(eqns.clone(), eqns1.clone());
+            DoubleEnded::push_list_back(vars.clone(), vars1.clone())?;
+            DoubleEnded::push_list_back(eqns.clone(), eqns1.clone())?;
             eqn = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEquation.clone(), source: source.clone(), attr: attr.clone() });
             equationArray = BackendEquation::add(eqn.clone(), equationArray.clone())?;
             (eqn.clone(), (equationArray.clone(), vars.clone(), eqns.clone(), index.clone(), ht.clone()))
@@ -1565,7 +1565,7 @@ fn collectZCAlgsFor(mut inExp: Arc<DAE::Exp>, mut inTpl: ForArgType) -> Result<(
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (1): ")); __mm_s.push_str(&*intString((explst.clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             zcLstNew = createZeroCrossings(explst.clone(), list![alg_indx.clone()])?;
-            DoubleEnded::push_list_back(relations.clone(), zcLstNew.clone());
+            DoubleEnded::push_list_back(relations.clone(), zcLstNew.clone())?;
             if Flags::isSet(Flags::RELIDX.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" number of new zc (2): ")); __mm_s.push_str(&*intString(DoubleEnded::length(relations.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }

@@ -191,7 +191,7 @@ pub fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc
             ()
         },
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: lst, attributes: Absyn::ElementAttributes { variability: Absyn::Variability::CONST { .. }, .. }, .. }, .. } } if (includeConstants.clone()) => {
-            DoubleEnded::push_list_back(delst.clone(), getComponentItemsName(lst.clone(), false));
+            DoubleEnded::push_list_back(delst.clone(), getComponentItemsName(lst.clone(), false))?;
             ()
         },
         _ => {

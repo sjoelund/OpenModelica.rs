@@ -369,7 +369,7 @@ pub fn splitDAEIntoVarsAndEquations(mut inDae: DAE::DAElist) -> Result<(DAE::DAE
             elts11 = __pa0.clone();
             elts3 = __pa1.clone();
             DoubleEnded::push_back(vars.clone(), Arc::new(DAE::Element::COMP { ident: (id.clone()).clone(), dAElist: elts11.clone(), source: source.clone(), comment: cmt.clone() }));
-            DoubleEnded::push_list_back(eqs.clone(), elts3.clone());
+            DoubleEnded::push_list_back(eqs.clone(), elts3.clone())?;
             ()
         },
         Deref @ DAE::Element::EQUATION { .. } => {

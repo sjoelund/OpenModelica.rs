@@ -1118,7 +1118,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
                     let mut color2: i32 = 0;
                     let mut color3: i32 = 0;
                     let mut res = (*res).clone();
-                    (color1, color2, color3) = getMappedColor(x.clone());
+                    (color1, color2, color3) = getMappedColor(x.clone())?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("color")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }), info: info.clone() }) })), comment: com.clone(), info: mod_info.clone() }), res.clone()))
                 }
@@ -1534,7 +1534,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
                     let mut color1: i32 = 0;
                     let mut color2: i32 = 0;
                     let mut color3: i32 = 0;
-                    (color1, color2, color3) = getMappedColor(x.clone());
+                    (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
                 }
@@ -1548,7 +1548,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
                     let mut color1: i32 = 0;
                     let mut color2: i32 = 0;
                     let mut color3: i32 = 0;
-                    (color1, color2, color3) = getMappedColor(x.clone());
+                    (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("color")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
                 }
@@ -1562,7 +1562,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
                     let mut color1: i32 = 0;
                     let mut color2: i32 = 0;
                     let mut color3: i32 = 0;
-                    (color1, color2, color3) = getMappedColor(x.clone());
+                    (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("lineColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
                 }
@@ -1576,7 +1576,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
                     let mut color1: i32 = 0;
                     let mut color2: i32 = 0;
                     let mut color3: i32 = 0;
-                    (color1, color2, color3) = getMappedColor(x.clone());
+                    (color1, color2, color3) = getMappedColor(x.clone())?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("fillColor")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: list![Arc::new(Absyn::Exp::INTEGER { value: color1.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color2.clone() }), Arc::new(Absyn::Exp::INTEGER { value: color3.clone() })] }) }), restRes.clone()))
                 }
@@ -2184,21 +2184,21 @@ fn setDefaultLineInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg
     outList
 }
 
-fn getMappedColor(mut inColor: i32) -> (i32, i32, i32) {
+fn getMappedColor(mut inColor: i32) -> Result<(i32, i32, i32)> {
     let mut color1: i32 = 0;
     let mut color2: i32 = 0;
     let mut color3: i32 = 0;
     (color1, color2, color3) = (match inColor.clone() {
         mut color => {
             let mut rcol: rgbColor = metamodelica::nil();
-            rcol = (colorMapList.clone()).get(color.clone() + 1).unwrap();
-            color1 = (rcol.clone()).get(1).unwrap();
-            color2 = (rcol.clone()).get(2).unwrap();
-            color3 = (rcol.clone()).get(3).unwrap();
+            rcol = (colorMapList.clone()).get(color.clone() + 1)?;
+            color1 = (rcol.clone()).get(1)?;
+            color2 = (rcol.clone()).get(2)?;
+            color3 = (rcol.clone()).get(3)?;
             (color1.clone(), color2.clone(), color3.clone())
         },
     });
-    (color1, color2, color3)
+    Ok((color1, color2, color3))
 }
 
 fn matrixToArray(mut inLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<Absyn::Exp> {

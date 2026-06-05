@@ -4085,8 +4085,8 @@ pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComp
                     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut compEqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut compVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-                    compEqLst = List::map1(eqIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), eqsIn.clone())?;
-                    compVarLst = List::map1(varIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varsIn.clone())?;
+                    compEqLst = List::map1(eqIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), eqsIn.clone())?;
+                    compVarLst = List::map1(varIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varsIn.clone())?;
                     compVars = BackendVariable::listVar1(compVarLst.clone())?;
                     compEqs = BackendEquation::listEquation(compEqLst.clone())?;
                     numEqs = (compEqLst.clone().len() as i32);
@@ -4123,8 +4123,8 @@ pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComp
                     varIdcs = List::flatten(varIdcsLst.clone())?;
                     eqIdcs = listAppend(eqIdcs.clone(), rEqIdcs.clone());
                     varIdcs = listAppend(varIdcs.clone(), tVarIdcs.clone());
-                    compEqLst = List::map1(eqIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), eqsIn.clone())?;
-                    compVarLst = List::map1(varIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varsIn.clone())?;
+                    compEqLst = List::map1(eqIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), eqsIn.clone())?;
+                    compVarLst = List::map1(varIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varsIn.clone())?;
                     compVars = BackendVariable::listVar1(compVarLst.clone())?;
                     compEqs = BackendEquation::listEquation(compEqLst.clone())?;
                     numEqs = (compEqLst.clone().len() as i32);

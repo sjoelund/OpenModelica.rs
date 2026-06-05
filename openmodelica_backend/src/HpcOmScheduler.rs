@@ -1497,7 +1497,7 @@ fn BLS_mergeSmallSections(mut sectionsIn: Arc<metamodelica::List<Arc<metamodelic
             costs = List::map1List(sectionsIn.clone(), (std::sync::Arc::new(HpcOmTaskGraph::getExeCostReqCycles) as std::sync::Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<metamodelica::Real> + 'static>), iMeta.clone())?;
             sectionCosts = List::map(costs.clone(), (std::sync::Arc::new(realSum) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<metamodelica::Real> + 'static>))?;
             (mergedSectionIdcs, _) = BLS_mergeToTargetSize(List::intRange((sectionsIn.clone().len() as i32)), sectionCosts.clone(), targetCosts.clone(), metamodelica::nil())?;
-            sectionsNewUnflattened = List::map1List(mergedSectionIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), sectionsIn.clone())?;
+            sectionsNewUnflattened = List::map1List(mergedSectionIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), sectionsIn.clone())?;
             sectionsNew = List::map(sectionsNewUnflattened.clone(), (std::sync::Arc::new(List::flatten) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             sectionsNew = List::map1(sectionsNew.clone(), (std::sync::Arc::new(List::sort) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             sectionsNew.clone()
@@ -1587,7 +1587,7 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
                     critPathCost = HpcOmTaskGraph::getExeCostReqCycles(critPathNode.clone(), iMeta.clone())?;
                     critNodeLevel = metamodelica::arrayGet(levelAssIn.clone(), critPathNode.clone())?;
                     let true = (critPathCost.clone() < targetCosts.clone()) else { bail!("pattern mismatch") };
-                    levelNodes = List::flatten(List::map1(List::intRange2(levelIdx.clone(), critNodeLevel.clone()), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), levelIn.clone())?)?;
+                    levelNodes = List::flatten(List::map1(List::intRange2(levelIdx.clone(), critNodeLevel.clone()), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), levelIn.clone())?)?;
                     (levelNodes, _) = List::deleteMemberOnTrue(critPathNode.clone(), levelNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     necessaryPredecessors = metamodelica::arrayGet(iGraphT.clone(), listHead(restCritNodes.clone())?)?;
                     unassNodes = listAppend(levelNodes.clone(), unassNodesIn.clone());
@@ -1619,7 +1619,7 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
                     critPathCost = HpcOmTaskGraph::getExeCostReqCycles(critPathNode.clone(), iMeta.clone())?;
                     critNodeLevel = metamodelica::arrayGet(levelAssIn.clone(), critPathNode.clone())?;
                     let true = (critPathCost.clone() >= targetCosts.clone()) else { bail!("pattern mismatch") };
-                    levelNodes = List::flatten(List::map1(List::intRange2(levelIdx.clone(), critNodeLevel.clone()), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), levelIn.clone())?)?;
+                    levelNodes = List::flatten(List::map1(List::intRange2(levelIdx.clone(), critNodeLevel.clone()), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), levelIn.clone())?)?;
                     (levelNodes, _) = List::deleteMemberOnTrue(critPathNode.clone(), levelNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     metamodelica::arrayGet(iGraphT.clone(), listHead(restCritNodes.clone())?)?;
                     unassNodes = listAppend(unassNodesIn.clone(), levelNodes.clone());
@@ -3683,7 +3683,7 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     pos = List::map1(clPredTasks.clone(), (std::sync::Arc::new(List::position) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<i32> + 'static>), clTasks.clone())?;
                     clTasks = metamodelica::arrayGet(procAssIn.clone(), threadIdx.clone())?;
                     clTasks = clTasks.clone().reverse();
-                    clPredTasks = List::map1(pos.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), clTasks.clone())?;
+                    clPredTasks = List::map1(pos.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), clTasks.clone())?;
                     (duplPredTasks, _, _) = List::intersection1OnTrue(clPredTasks.clone(), clTasks.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     taskGraph = List::fold1(duplPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![node.clone()], taskGraphIn.clone())?;
                     taskGraphOut = List::fold1(origPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![node.clone()], taskGraph.clone())?;
@@ -3817,7 +3817,7 @@ fn TDS_duplicateTasks2(mut node: i32, mut allCluster: Arc<metamodelica::List<Arc
     pos = List::map1(clPredTasks.clone(), (std::sync::Arc::new(List::position) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<i32> + 'static>), clTasks.clone())?;
     clTasks = metamodelica::arrayGet(procAssOut.clone(), threadIdx.clone())?;
     clTasks = clTasks.clone().reverse();
-    clPredTasks = List::map1(pos.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), clTasks.clone())?;
+    clPredTasks = List::map1(pos.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), clTasks.clone())?;
     (duplPredTasks, _, _) = List::intersection1OnTrue(clPredTasks.clone(), clTasks.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     taskGraph = List::fold1(duplPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![taskIdx.clone()], taskGraphIn.clone())?;
     taskGraphOut = List::fold1(origPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![taskIdx.clone()], taskGraph.clone())?;
@@ -4309,7 +4309,7 @@ fn TDS_CompactClusters(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::
     clusterExeCosts = List::map1(clustersIn.clone(), (std::sync::Arc::new(TDS_computeClusterCosts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, HpcOmTaskGraph::TaskGraphMeta) -> Result<metamodelica::Real> + 'static>), iTaskGraphMeta.clone())?;
     (_, clusterOrder) = quicksortWithOrder(clusterExeCosts.clone())?;
     clusterOrder = clusterOrder.clone().reverse();
-    clusters = List::map1(clusterOrder.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), clustersIn.clone())?;
+    clusters = List::map1(clusterOrder.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), clustersIn.clone())?;
     numMergeClusters = intMin(intDiv((clustersIn.clone().len() as i32), 2), intSub((clustersIn.clone().len() as i32), numProc.clone()));
     (firstClusters, lastClusters) = List::split(clusters.clone(), numMergeClusters.clone())?;
     (middleCluster, lastClusters) = List::split(lastClusters.clone(), intSub((lastClusters.clone().len() as i32), numMergeClusters.clone()))?;
@@ -4328,7 +4328,7 @@ fn TDS_SortCompactClusters(mut clusterIn: Arc<metamodelica::List<i32>>, mut tdsL
     tdsLevels = List::map1(cluster.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), tdsLevelIn.clone())?;
     (_, order) = quicksortWithOrder(tdsLevels.clone())?;
     order = order.clone().reverse();
-    clusterOut = List::map1(order.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), cluster.clone())?;
+    clusterOut = List::map1(order.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), cluster.clone())?;
     Ok(clusterOut)
 }
 
@@ -5068,7 +5068,7 @@ fn lengthNotOne(mut lstIn: Arc<metamodelica::List<i32>>) -> bool {
 
 fn mapListGet(mut mapLstIn: Arc<metamodelica::List<i32>>, mut argLst: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut mapLstOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    mapLstOut = List::map1(mapLstIn.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), argLst.clone())?;
+    mapLstOut = List::map1(mapLstIn.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), argLst.clone())?;
     Ok(mapLstOut)
 }
 

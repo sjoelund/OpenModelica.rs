@@ -2299,10 +2299,10 @@ fn getCSE2(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
                     lhs = __pa12.clone();
                     (rhs2, _) = ExpressionSolve::solve(lhs.clone(), rhs2.clone(), varExp2.clone(), None)?;
                     let true = (ExpressionBasics::expEqual(rhs1.clone(), rhs2.clone())?) else { bail!("pattern mismatch") };
-                    sharedVarIdcs = List::map1(sharedVarIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varMap.clone())?;
+                    sharedVarIdcs = List::map1(sharedVarIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varMap.clone())?;
                     varIdcs2 = listAppend(varIdcs1.clone(), varIdcs2.clone());
-                    varIdcs2 = List::map1(varIdcs2.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varMap.clone())?;
-                    eqIdcs = List::map1(partition.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), eqMap.clone())?;
+                    varIdcs2 = List::map1(varIdcs2.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varMap.clone())?;
+                    eqIdcs = List::map1(partition.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), eqMap.clone())?;
                     Ok(metamodelica::cons(CommonSubExp::ASSIGNMENT_CSE { eqIdcs: eqIdcs.clone(), sharedVars: sharedVarIdcs.clone(), aliasVars: varIdcs2.clone() }, cseIn.clone()))
                 }
                 _ => bail!("nomatch"),

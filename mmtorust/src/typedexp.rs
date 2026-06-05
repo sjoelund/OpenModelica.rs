@@ -107,6 +107,13 @@ pub enum TypedExp {
         named_args: Vec<(String, TypedExp)>,
         sig_ty: Ty,
         ty: Ty,
+        /// True when `func` is a function-typed local variable (e.g.
+        /// `Slice.filterCref filter; … function filter(acc = occ2)`), so the
+        /// partial application closes over the variable's *value*. Codegen
+        /// must call the local (an `Arc<dyn Fn(..) -> Result<..>>`, hence
+        /// always fallible) instead of resolving the name to a function
+        /// declaration.
+        callee_is_local: bool,
     },
     If {
         cond: Box<TypedExp>,
@@ -1941,9 +1948,26 @@ pub fn infer_exp<'a>(
             // inside its enclosing package) are found.  Built-ins (e.g.
             // `realEq`) live outside the hierarchy and are looked up in
             // `builtin_function_ty`.
-            let sig_ty = match resolve_call_node(&func, top_level, pkg_prefix) {
-                Some((_, node)) => node.ty.clone(),
-                None => builtin_function_ty(&func).unwrap_or_else(|| lookup_ty_in_hierarchy(&func, top_level)),
+            // A plain name bound to a function type in the local scope is a
+            // function-typed *component* — `function v(arg = e)` partially
+            // applies the function value stored in `v`, and the formal list
+            // comes from the variable's declared (partial-)function type.
+            // Locals shadow function declarations here, same as in a call.
+            let local_fn_ty: Option<Ty> = if !func.contains('.') {
+                match env.get(&func) {
+                    Some(t @ (Ty::Function { .. } | Ty::FunctionAlias { .. })) => Some(t.clone()),
+                    _ => None,
+                }
+            } else {
+                None
+            };
+            let callee_is_local = local_fn_ty.is_some();
+            let sig_ty = match local_fn_ty {
+                Some(t) => t,
+                None => match resolve_call_node(&func, top_level, pkg_prefix) {
+                    Some((_, node)) => node.ty.clone(),
+                    None => builtin_function_ty(&func).unwrap_or_else(|| lookup_ty_in_hierarchy(&func, top_level)),
+                },
             };
             // `function f = g;` declares `f` as an alias of `g` — its node
             // carries `Ty::FunctionAlias`, not `Ty::Function`, so the formal
@@ -1980,7 +2004,7 @@ pub fn infer_exp<'a>(
                 }
                 _ => Ty::Unknown,
             };
-            TypedExp::PartEval { func, args, named_args, sig_ty, ty }
+            TypedExp::PartEval { func, args, named_args, sig_ty, ty, callee_is_local }
         }
 
         Absyn::Exp::TUPLE { expressions } => {

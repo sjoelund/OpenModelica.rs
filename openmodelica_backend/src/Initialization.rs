@@ -1094,8 +1094,8 @@ fn analyzeInitialSystem(mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut inInitVa
         }
         __acc.reverse()
     });
-            DoubleEnded::push_list_back(removedEqns.clone(), filtered_initial_eqs.clone());
-            DoubleEnded::push_list_back(removedEqns.clone(), BackendEquation::equationList(syst.removedEqs.clone())?);
+            DoubleEnded::push_list_back(removedEqns.clone(), filtered_initial_eqs.clone())?;
+            DoubleEnded::push_list_back(removedEqns.clone(), BackendEquation::equationList(syst.removedEqs.clone())?)?;
         }
     }
     dae = Arc::new(BackendDAE::BackendDAE { eqs: eqs.clone(), shared: inInitDAE.shared.clone() });
@@ -1260,7 +1260,7 @@ fn resolveOverAndUnderconstraints(mut syst: Arc<BackendDAE::EqSystem>, mut initV
     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut new_eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     redundant_lst = BackendEquation::getList(redundantEqns.clone(), syst.orderedEqs.clone())?;
-    DoubleEnded::push_list_back(removedEqns.clone(), redundant_lst.clone());
+    DoubleEnded::push_list_back(removedEqns.clone(), redundant_lst.clone())?;
     new_eqns = BackendEquation::deleteList(syst.orderedEqs.clone(), redundantEqns.clone())?;
     if debug.clone() {
         BackendDump::dumpEquationList(redundant_lst.clone(), (literal!("removed eqns")).clone())?;
@@ -1274,7 +1274,7 @@ fn resolveOverAndUnderconstraints(mut syst: Arc<BackendDAE::EqSystem>, mut initV
         __acc.reverse()
     });
     (new_eqns, var_lst) = addStartValueEquations(var_lst.clone(), new_eqns.clone(), metamodelica::nil())?;
-    DoubleEnded::push_list_back(dumpVars.clone(), var_lst.clone());
+    DoubleEnded::push_list_back(dumpVars.clone(), var_lst.clone())?;
     if debug.clone() {
         failed_var_lst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -1365,7 +1365,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
                 consistencyCheck(redundantEqns.clone(), inEqSystem.orderedEqs.clone(), inEqSystem.orderedVars.clone(), inShared.clone(), nAddVars.clone(), m_.clone(), me.clone(), ass1.clone(), ass2.clone(), mapIncRowEqn.clone())?;
                 removedEqns2 = BackendEquation::getList(redundantEqns.clone(), inEqSystem.orderedEqs.clone())?;
                 eqns2 = BackendEquation::deleteList(inEqSystem.orderedEqs.clone(), redundantEqns.clone())?;
-                DoubleEnded::push_list_back(removedEqns.clone(), removedEqns2.clone());
+                DoubleEnded::push_list_back(removedEqns.clone(), removedEqns2.clone())?;
             } else {
                 eqns2 = inEqSystem.orderedEqs.clone();
             }
@@ -1374,7 +1374,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
                 range = mapIndices(range.clone(), ass2.clone())?;
                 initVarList = List::map1r(range.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), inEqSystem.orderedVars.clone())?;
                 (eqns2, dumpVars2) = addStartValueEquations(initVarList.clone(), eqns2.clone(), metamodelica::nil())?;
-                DoubleEnded::push_list_back(dumpVars.clone(), dumpVars2.clone());
+                DoubleEnded::push_list_back(dumpVars.clone(), dumpVars2.clone())?;
             }
             outEqSystem = BackendDAEUtil::setEqSystEqs(inEqSystem.clone(), eqns2.clone());
             return Ok((outEqSystem.clone(), outShared.clone(), dummy.clone()));

@@ -3898,7 +3898,7 @@ fn createTornSystemInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendD
         }
         comp = createTornSystemInnerEqns1(eqn.clone(), eqnindx.clone(), vars.clone())?;
         (simequations, _, ouniqueEqIndex, otempvars) = createEquationsWork(genDiscrete.clone(), false, genDiscrete.clone(), skipDiscInAlgorithm.clone(), isyst.clone(), ishared.clone(), comp.clone(), ouniqueEqIndex.clone(), otempvars.clone(), cons.clone())?;
-        DoubleEnded::push_list_back(equations.clone(), simequations.clone());
+        DoubleEnded::push_list_back(equations.clone(), simequations.clone())?;
     }
     equations_ = DoubleEnded::toListAndClear(equations.clone(), metamodelica::nil());
     Ok((equations_, ouniqueEqIndex, otempvars, nVars, homotopySupport))
@@ -4288,7 +4288,7 @@ fn generateInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendDAE::Inne
         eqn = BackendEquation::get(syst.orderedEqs.clone(), eqnindx.clone())?;
         comp = createTornSystemInnerEqns1(eqn.clone(), eqnindx.clone(), vars.clone())?;
         (omsiFuncEquations, uniqueEqIndex) = generateEquationsForComponents(list![comp.clone()], syst.clone(), shared.clone(), uniqueEqIndex.clone())?;
-        DoubleEnded::push_list_back(dblLstEqns.clone(), omsiFuncEquations.equations.clone());
+        DoubleEnded::push_list_back(dblLstEqns.clone(), omsiFuncEquations.equations.clone())?;
     }
     outputVars = Dangerous::listReverseInPlace(outputVars.clone());
     equations = DoubleEnded::toListAndClear(dblLstEqns.clone(), metamodelica::nil());
@@ -5692,7 +5692,7 @@ fn orderExtVars(mut varLstIn: Arc<metamodelica::List<BackendDAE::Var>>, mut isIn
         (varsWithBind, varsWithoutBind) = unwrap_break_err!(List::separateOnTrue(varLstIn.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::varHasBindExp, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0);
         (comps, ass1, ass2) = unwrap_break_err!(BackendDAEUtil::causalizeVarBindSystem(varsWithBind.clone(), isInitial.clone()), '__try0);
         order = unwrap_break_err!(List::map1(unwrap_break_err!(List::flatten(comps.clone()), '__try0), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), ass1.clone()), '__try0);
-        varsWithBind = unwrap_break_err!(List::map1(order.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varsWithBind.clone()), '__try0);
+        varsWithBind = unwrap_break_err!(List::map1(order.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varsWithBind.clone()), '__try0);
         varLstOut = listAppend(varsWithoutBind.clone(), varsWithBind.clone());
         Ok::<_, anyhow::Error>((varLstOut.clone(),))
     } {
@@ -9636,7 +9636,7 @@ fn rewriteIndexColumnMajor(mut inVars: Arc<metamodelica::List<SimCodeVar::SimVar
         subs = ComponentReference::crefLastSubs(var.name.clone())?;
         if (subs.clone().len() as i32) > 1 {
             arrayDimensions = List::map(var.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>))?;
-            elementIndex = SimCodeUtilShared::getScalarElementIndex(subs.clone(), arrayDimensions.clone());
+            elementIndex = SimCodeUtilShared::getScalarElementIndex(subs.clone(), arrayDimensions.clone())?;
             var.index = index.clone() - elementIndex.clone() + convertIndexToColumnMajor(elementIndex.clone(), arrayDimensions.clone())?;
         } else {
             var.index = index.clone();
@@ -12342,7 +12342,7 @@ fn getVarIndexInfosByMapping(mut iVarToArrayIndexMapping: (metamodelica::Array<A
         } else {
             arraySize = metamodelica::arrayLength(varIndices.clone());
         }
-        concreteVarIndex = SimCodeUtilShared::getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone());
+        concreteVarIndex = SimCodeUtilShared::getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone())?;
         toColumnMajor = iColumnMajor.clone() && (arrayDimensions.clone().len() as i32) > 1;
         if toColumnMajor.clone() {
             concreteVarIndex = convertIndexToColumnMajor(concreteVarIndex.clone(), arrayDimensions.clone())?;
@@ -15050,7 +15050,7 @@ pub fn simVarFromHT(mut inCref: Arc<DAE::ComponentRef>, mut crefToSimVarHT: (met
             }
             sv.variable_index = (match sv.variable_index.clone() {
         Some(mut index) => {
-            Some(index.clone() + SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
+            Some(index.clone() + unwrap_break_err!(SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)), '__try0) - 1)
         },
         _ => {
             sv.variable_index.clone()
@@ -15058,7 +15058,7 @@ pub fn simVarFromHT(mut inCref: Arc<DAE::ComponentRef>, mut crefToSimVarHT: (met
     });
             sv.fmi_index = (match sv.fmi_index.clone() {
         Some(mut fmiIndex) => {
-            Some(fmiIndex.clone() + SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
+            Some(fmiIndex.clone() + unwrap_break_err!(SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)), '__try0) - 1)
         },
         _ => {
             sv.fmi_index.clone()
@@ -15191,15 +15191,15 @@ pub fn codegenExpSanityCheck(mut e: Arc<DAE::Exp>, mut context: SimCodeFunction:
     Ok(e)
 }
 
-pub fn absoluteClockIdxForBaseClock(mut baseClockIdx: i32, mut allBaseClockPartitions: Arc<metamodelica::List<SimCode::ClockedPartition>>) -> i32 {
+pub fn absoluteClockIdxForBaseClock(mut baseClockIdx: i32, mut allBaseClockPartitions: Arc<metamodelica::List<SimCode::ClockedPartition>>) -> Result<i32> {
     let mut absBaseClockIdx: i32 = 0;
     let mut i: i32 = 1;
     absBaseClockIdx = 1;
     while i.clone() < baseClockIdx.clone() {
-        absBaseClockIdx = absBaseClockIdx.clone() + (getSubPartition((allBaseClockPartitions.clone()).get(i.clone()).unwrap()).len() as i32);
+        absBaseClockIdx = absBaseClockIdx.clone() + (getSubPartition((allBaseClockPartitions.clone()).get(i.clone())?).len() as i32);
         i = i.clone() + 1;
     }
-    absBaseClockIdx
+    Ok(absBaseClockIdx)
 }
 
 pub fn getClockedPartitions(mut simcode: SimCode::SimCode) -> Arc<metamodelica::List<SimCode::ClockedPartition>> {

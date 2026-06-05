@@ -472,10 +472,10 @@ pub fn restOrEmpty<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>) -
     Ok(outList)
 }
 
-pub fn getIndexFirst<T: Clone + 'static>(mut index: i32, mut inList: Arc<metamodelica::List<T>>) -> T {
+pub fn getIndexFirst<T: Clone + 'static>(mut index: i32, mut inList: Arc<metamodelica::List<T>>) -> Result<T> {
     let mut element: T;
-    element = (inList.clone()).get(index.clone()).unwrap();
-    element
+    element = (inList.clone()).get(index.clone())?;
+    Ok(element)
 }
 
 pub fn getAtIndexLst<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>, mut positions: Arc<metamodelica::List<i32>>, mut zeroBased: bool) -> Arc<metamodelica::List<T>> {

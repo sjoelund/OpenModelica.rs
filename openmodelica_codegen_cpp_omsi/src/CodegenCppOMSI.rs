@@ -41262,7 +41262,7 @@ fn lm_1513(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCode::
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = SimCodeUtil::absoluteClockIdxForBaseClock(ret_0.clone(), a_clockPartitions.clone());
+            ret_1 = SimCodeUtil::absoluteClockIdxForBaseClock(ret_0.clone(), a_clockPartitions.clone())?;
             txt = booleanSubClockActivation1(txt.clone(), ret_1.clone(), i_baseClock.clone(), (a_numberOfTimeEvents.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_1513(txt.clone(), rest.clone(), (a_numberOfTimeEvents.clone()).clone(), a_clockPartitions.clone())?;

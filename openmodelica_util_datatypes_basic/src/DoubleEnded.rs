@@ -210,7 +210,7 @@ pub fn push_back<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> (
     ()
 }
 
-pub fn push_list_back<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Arc<metamodelica::List<T>>) -> () {
+pub fn push_list_back<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<()> {
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lstLength: i32 = 0;
     let mut tail: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -218,25 +218,25 @@ pub fn push_list_back<T: Clone + 'static>(mut delst: MutableList<T>, mut lst: Ar
     let mut t: T;
     lstLength = (lst.clone().len() as i32);
     if lstLength.clone() == 0 {
-        return ();
+        return Ok(());
     }
     Mutable::update(delst.length.clone(), length.clone() + lstLength.clone());
-    t = (lst.clone()).get(1).unwrap();
+    t = (lst.clone()).get(1)?;
     tmp = list![t.clone()];
     if length.clone() == 0 {
         Mutable::update(delst.front.clone(), tmp.clone());
     } else {
-        Dangerous::listSetRest(Mutable::access(delst.back.clone()), tmp.clone()).unwrap();
+        Dangerous::listSetRest(Mutable::access(delst.back.clone()), tmp.clone())?;
     }
     tail = tmp.clone();
-    for mut l in &*listRest(lst.clone()).unwrap() {
+    for mut l in &*listRest(lst.clone())? {
         let mut l = l.clone();
         tmp = list![l.clone()];
-        Dangerous::listSetRest(tail.clone(), tmp.clone()).unwrap();
+        Dangerous::listSetRest(tail.clone(), tmp.clone())?;
         tail = tmp.clone();
     }
     Mutable::update(delst.back.clone(), tail.clone());
-    ()
+    Ok(())
 }
 
 pub fn toListAndClear<T: Clone + 'static>(mut delst: MutableList<T>, mut prependToList: Arc<metamodelica::List<T>>) -> Arc<metamodelica::List<T>> {

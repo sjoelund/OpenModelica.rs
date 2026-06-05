@@ -6654,7 +6654,7 @@ fn getNthComponent2(mut inClass: Arc<Absyn::Class>, mut n: i32, mut genv: Graphi
     let mut comp_name: ArcStr = arcstr::literal!("");
     let mut cmt: ArcStr = arcstr::literal!("");
     let mut ty: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    comp = InteractiveUtil::getNthComponentInClass(inClass.clone(), n.clone());
+    comp = InteractiveUtil::getNthComponentInClass(inClass.clone(), n.clone())?;
     (comp_name, ty, cmt) = getComponentInfoOld(comp.clone(), genv.clone())?;
     result = Arc::new(Values::Value::ARRAY { valueLst: list![ValuesMake::makeCodeTypeName(ty.clone()), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_VARIABLENAME { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (comp_name.clone()).clone(), subscripts: metamodelica::nil() }) }) }), ValuesMake::makeString((cmt.clone()).clone())], dimLst: list![3] });
     Ok(result)
@@ -6792,7 +6792,7 @@ pub fn getNthComponentAnnotation(mut classPath: Arc<Absyn::Path>, mut n: i32, mu
         let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
         let mut comp: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
         cdef = ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false)?;
-        comp = InteractiveUtil::getNthComponentInClass(cdef.clone(), n.clone());
+        comp = InteractiveUtil::getNthComponentInClass(cdef.clone(), n.clone())?;
         result = InteractiveUtil::getElementAnnotationsFromElts(list![comp.clone()], cdef.clone(), program.clone(), classPath.clone())?;
         if ValuesUtil::isArray(result.clone()) && ValuesUtil::arraySize(result.clone())? == 1 {
             result = ValuesUtil::arrayScalar(result.clone())?;
@@ -6811,7 +6811,7 @@ pub fn getNthComponentModification(mut classPath: Arc<Absyn::Path>, mut n: i32, 
     let mut comp: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
-        comp = InteractiveUtil::getNthComponentInClass(cls.clone(), n.clone());
+        comp = unwrap_break_err!(InteractiveUtil::getNthComponentInClass(cls.clone(), n.clone()), '__try0);
         result = unwrap_break_err!(getComponentModification(comp.clone()), '__try0);
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
@@ -6832,7 +6832,7 @@ pub fn getNthComponentCondition(mut classPath: Arc<Absyn::Path>, mut n: i32, mut
     let mut r#str: ArcStr = arcstr::literal!("");
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
-        comp = InteractiveUtil::getNthComponentInClass(cls.clone(), n.clone());
+        comp = unwrap_break_err!(InteractiveUtil::getNthComponentInClass(cls.clone(), n.clone()), '__try0);
         r#str = (unwrap_break_err!(getComponentCondition(comp.clone()), '__try0)).clone();
         r#str = (System::trim((r#str.clone()).clone(), (literal!(" ")).clone())).clone();
         result = ValuesMake::makeString((r#str.clone()).clone());

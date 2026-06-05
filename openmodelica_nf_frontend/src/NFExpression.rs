@@ -5756,11 +5756,11 @@ pub fn arrayScalarElement(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpre
 
 pub fn hasArrayCall(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut hasArrayCall: bool = false;
-    hasArrayCall = contains(exp.clone(), (std::sync::Arc::new(fnptr!(hasArrayCall2, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?;
+    hasArrayCall = contains(exp.clone(), (std::sync::Arc::new(hasArrayCall2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?;
     Ok(hasArrayCall)
 }
 
-pub fn hasArrayCall2(mut exp: Arc<NFExpression>) -> bool {
+pub fn hasArrayCall2(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut hasArrayCall: bool = false;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -5770,13 +5770,13 @@ pub fn hasArrayCall2(mut exp: Arc<NFExpression>) -> bool {
             Type::isArray(ty.clone()) && Call::isVectorizeable(call.clone())
         },
         Deref @ TUPLE_ELEMENT { tupleExp: Deref @ CALL { call }, .. } => {
-            ty = Type::nthTupleType(Call::typeOf(call.clone()), var_field!((*exp).index, NFExpression::TUPLE_ELEMENT).clone());
+            ty = Type::nthTupleType(Call::typeOf(call.clone()), var_field!((*exp).index, NFExpression::TUPLE_ELEMENT).clone())?;
             Type::isArray(ty.clone()) && Call::isVectorizeable(call.clone())
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasArrayCall
+    Ok(hasArrayCall)
 }
 
 pub fn transposeArray(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {

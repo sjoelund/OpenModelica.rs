@@ -6676,7 +6676,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
             }
             predecessors = HpcOmTaskGraph::getAllSuccessors(outputTasks.clone(), taskGraphT.clone())?;
             predecessors = List::sort(predecessors.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-            compsNew = List::map1(listAppend(outputTasks.clone(), predecessors.clone()), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), comps.clone())?;
+            compsNew = List::map1(listAppend(outputTasks.clone(), predecessors.clone()), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), comps.clone())?;
             if debug.clone() {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("predecessors of outputs ")); __mm_s.push_str(&*stringDelimitList(List::map(predecessors.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -6705,7 +6705,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                     stateTasks1 = List::map(List::map1(stateIndxs.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varCompMapping.clone())?, std::sync::Arc::new(fnptr!(Util::tuple31, _)))?;
                     stateTasks = List::append_reverse(stateTasks1.clone(), stateTasks.clone());
                     predecessors = HpcOmTaskGraph::getAllSuccessors(stateTasks1.clone(), taskGraphT.clone())?;
-                    addComps = List::map1(listAppend(stateTasks1.clone(), predecessors.clone()), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), comps.clone())?;
+                    addComps = List::map1(listAppend(stateTasks1.clone(), predecessors.clone()), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), comps.clone())?;
                     eqLstNew = listAppend(BackendDAEUtil::getStrongComponentEquations(addComps.clone(), eqs.clone(), vars.clone())?, eqLstNew.clone());
                 }
             }
@@ -6715,7 +6715,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
             if debug.clone() {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("predecessors of outputs and states ")); __mm_s.push_str(&*stringDelimitList(List::map(tasks.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            compsNew = List::map1(tasks.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), comps.clone())?;
+            compsNew = List::map1(tasks.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), comps.clone())?;
             compsNew = List::unique(compsNew.clone());
             if debug.clone() {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("There have been ")); __mm_s.push_str(&*intString((comps.clone().len() as i32))); __mm_s.push_str(&*literal!(" SCCs and now there are ")); __mm_s.push_str(&*intString((compsNew.clone().len() as i32))); __mm_s.push_str(&*literal!(" SCCs.\n")); ArcStr::from(__mm_s) }).clone());

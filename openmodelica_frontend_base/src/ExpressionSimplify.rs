@@ -232,7 +232,7 @@ pub fn simplifyWork(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplifyTyp
             (e.clone(), options.clone())
         },
         Deref @ DAE::Exp::TSUB { .. } => {
-            (simplifyTSub(inExp.clone()), options.clone())
+            (simplifyTSub(inExp.clone())?, options.clone())
         },
         Deref @ DAE::Exp::UNARY { exp: e1, operator: op } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -7127,14 +7127,14 @@ fn simplifySize(mut origExp: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut optDim: 
     Ok(outExp)
 }
 
-fn simplifyTSub(mut origExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
+fn simplifyTSub(mut origExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &(origExp.clone()) {
         Deref @ DAE::Exp::TSUB { ix: i, exp: Deref @ DAE::Exp::CAST { exp: Deref @ DAE::Exp::TUPLE { PR: expl }, .. }, .. } => {
-            (expl.clone()).get(i.clone()).unwrap()
+            (expl.clone()).get(i.clone())?
         },
         Deref @ DAE::Exp::TSUB { ix: i, exp: Deref @ DAE::Exp::TUPLE { PR: expl }, .. } => {
-            (expl.clone()).get(i.clone()).unwrap()
+            (expl.clone()).get(i.clone())?
         },
         Deref @ DAE::Exp::TSUB { exp: e @ Deref @ DAE::Exp::RCONST { .. }, .. } => {
             e.clone()
@@ -7144,7 +7144,7 @@ fn simplifyTSub(mut origExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outExp
+    Ok(outExp)
 }
 
 fn simplifyNoEvent(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {

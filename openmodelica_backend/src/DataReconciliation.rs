@@ -2564,7 +2564,7 @@ pub fn findPredecessorBlocks(mut blockinfo: Arc<metamodelica::List<(Arc<metamode
             tmpcount = tmpcount.clone() + 1;
         }
         if !(targetexist.clone()) {
-            (exist, dependencyequation, constantEquations, foundblockranks) = findSquareAndNonSquareBlocksHelper1(targetblocks.clone(), targetblocksvar.clone());
+            (exist, dependencyequation, constantEquations, foundblockranks) = findSquareAndNonSquareBlocksHelper1(targetblocks.clone(), targetblocksvar.clone())?;
             outblockinfo = metamodelica::cons((blockitems1.clone(), targetblocks.clone(), targetblocksvar.clone(), dependencyequation.clone(), constantEquations.clone(), foundblockranks.clone()), outblockinfo.clone());
         }
         count = count.clone() + 1;
@@ -2573,7 +2573,7 @@ pub fn findPredecessorBlocks(mut blockinfo: Arc<metamodelica::List<(Arc<metamode
     Ok(outblockinfo)
 }
 
-pub fn findSquareAndNonSquareBlocksHelper1(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>) -> (bool, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
+pub fn findSquareAndNonSquareBlocksHelper1(mut inlist1: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, i32)>>, mut inlist2: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, i32)>>) -> Result<(bool, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut exists: bool = false;
     let mut foundknownblocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut constantBlocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2586,36 +2586,36 @@ pub fn findSquareAndNonSquareBlocksHelper1(mut inlist1: Arc<metamodelica::List<(
         let mut i = i.clone();
         (blocksvarlist, rank) = i.clone();
         if rank.clone() > 0 && count.clone() == 1 {
-            (targetblocks, _) = (inlist1.clone()).get(count.clone()).unwrap();
+            (targetblocks, _) = (inlist1.clone()).get(count.clone())?;
             if listMember((literal!("knowns")).clone(), blocksvarlist.clone()) {
                 exists = true;
                 blockranks = metamodelica::cons(rank.clone(), blockranks.clone());
-                foundknownblocks = getKnownOrExactEquationBlocksHelper(blocksvarlist.clone(), targetblocks.clone(), (literal!("knowns")).clone());
+                foundknownblocks = getKnownOrExactEquationBlocksHelper(blocksvarlist.clone(), targetblocks.clone(), (literal!("knowns")).clone())?;
             } else if listMember((literal!("constants")).clone(), blocksvarlist.clone()) {
                 exists = true;
                 blockranks = metamodelica::cons(rank.clone(), blockranks.clone());
-                constantBlocks = getKnownOrExactEquationBlocksHelper(blocksvarlist.clone(), targetblocks.clone(), (literal!("constants")).clone());
+                constantBlocks = getKnownOrExactEquationBlocksHelper(blocksvarlist.clone(), targetblocks.clone(), (literal!("constants")).clone())?;
             }
         }
         count = count.clone() + 1;
     }
     foundknownblocks = foundknownblocks.clone().reverse();
     blockranks = blockranks.clone().reverse();
-    (exists, foundknownblocks, constantBlocks, blockranks)
+    Ok((exists, foundknownblocks, constantBlocks, blockranks))
 }
 
-fn getKnownOrExactEquationBlocksHelper(mut blocksVarList: Arc<metamodelica::List<ArcStr>>, mut targetBlocks: Arc<metamodelica::List<i32>>, mut knownOrConstant: ArcStr) -> Arc<metamodelica::List<i32>> {
+fn getKnownOrExactEquationBlocksHelper(mut blocksVarList: Arc<metamodelica::List<ArcStr>>, mut targetBlocks: Arc<metamodelica::List<i32>>, mut knownOrConstant: ArcStr) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outBlocks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut count: i32 = 1;
     for mut j in &*blocksVarList.clone() {
         let mut j = j.clone();
         if (j.clone()).clone() == knownOrConstant.clone() {
-            outBlocks = metamodelica::cons((targetBlocks.clone()).get(count.clone()).unwrap(), outBlocks.clone());
-            return outBlocks.clone();
+            outBlocks = metamodelica::cons((targetBlocks.clone()).get(count.clone())?, outBlocks.clone());
+            return Ok(outBlocks.clone());
         }
         count = count.clone() + 1;
     }
-    outBlocks
+    Ok(outBlocks)
 }
 
 /* end of finding PredecessorBlocks Algorithm */

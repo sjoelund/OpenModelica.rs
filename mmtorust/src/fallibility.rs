@@ -150,8 +150,9 @@ pub fn builtin_fallibility(name: &str) -> Option<Fallibility> {
         // wraps in Arc<List<_>> via a single allocation and never fails.
         "cons" | "nil" => Infallible,
         "listHead" | "listRest" => Fallible,
-        // `listDelete` bounds-checks the 1-based index and bails on OOB.
-        "listDelete" => Fallible,
+        // `listGet` / `listDelete` bounds-check the 1-based index and bail
+        // on OOB (`(list).get(i)` returns `Result`).
+        "listGet" | "listDelete" => Fallible,
 
         // ── Array ────────────────────────────────────────────────────────────
         // arrayLength / arrayEmpty / arrayList / listArray / arrayCopy /

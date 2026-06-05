@@ -5694,10 +5694,10 @@ pub fn reorderConnectEquationsExpandable(mut cache: FCore::Cache, mut env: FCore
     }
     ErrorExt::rollBack((literal!("expandableConnectorsOrder")).clone());
     DoubleEnded::push_list_front(delst.clone(), expandableEqs.clone())?;
-    DoubleEnded::push_list_back(delst.clone(), expandableEqs.clone());
+    DoubleEnded::push_list_back(delst.clone(), expandableEqs.clone())?;
     let () = (::match_deref::match_deref! { match &(expandableEqs.clone()) {
         Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } => {
-            DoubleEnded::push_list_back(delst.clone(), expandableEqs.clone());
+            DoubleEnded::push_list_back(delst.clone(), expandableEqs.clone())?;
             ()
         },
         _ => (),

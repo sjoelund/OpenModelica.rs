@@ -753,15 +753,15 @@ pub fn firstTupleType(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
     Ok(outTy)
 }
 
-pub fn nthTupleType(mut ty: Arc<NFType>, mut n: i32) -> Arc<NFType> {
+pub fn nthTupleType(mut ty: Arc<NFType>, mut n: i32) -> Result<Arc<NFType>> {
     let mut outTy: Arc<NFType> = Arc::new(NFType::ANY);
     outTy = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ TUPLE { .. } => (var_field!((*ty).types, NFType::TUPLE).clone()).get(n.clone()).unwrap(),
-        Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: nthTupleType(var_field!((*ty).elementType, NFType::ARRAY).clone(), n.clone()), dimensions: var_field!((*ty).dimensions, NFType::ARRAY).clone() }),
+        Deref @ TUPLE { .. } => (var_field!((*ty).types, NFType::TUPLE).clone()).get(n.clone())?,
+        Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: nthTupleType(var_field!((*ty).elementType, NFType::ARRAY).clone(), n.clone())?, dimensions: var_field!((*ty).dimensions, NFType::ARRAY).clone() }),
         _ => ty.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outTy
+    Ok(outTy)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,

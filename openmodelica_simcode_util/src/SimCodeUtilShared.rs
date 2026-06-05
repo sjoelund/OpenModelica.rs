@@ -197,7 +197,7 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
     });
                     varIndices = arrayCreate(List::fold(arrayDimensions.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?, 0);
                 }
-                arrayIndex = getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone());
+                arrayIndex = getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone())?;
                 varIndices = {let _arr = varIndices.clone(); _arr.borrow_mut()[(arrayIndex.clone()-1) as usize] = varIdx.clone(); _arr};
                 varToArrayIndexMapping = BaseHashTable::add((arrayName.clone(), (arrayDimensions.clone(), varIndices.clone())), varToArrayIndexMapping.clone())?;
             }
@@ -294,18 +294,18 @@ fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut
     Ok((oVarIdx, iCurrentVarIndices))
 }
 
-pub fn getScalarElementIndex(mut arraySubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut arrayDimensions: Arc<metamodelica::List<i32>>) -> i32 {
+pub fn getScalarElementIndex(mut arraySubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut arrayDimensions: Arc<metamodelica::List<i32>>) -> Result<i32> {
     let mut arrayIndex: i32 = 0;
     let mut idx: i32 = 0;
     let mut fac: i32 = 0;
     arrayIndex = 1;
     fac = 1;
     for mut i in ({let __s=(arraySubscripts.clone().len() as i32); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
-        idx = DAEUtil::getSubscriptIndex((arraySubscripts.clone()).get(i.clone()).unwrap());
+        idx = DAEUtil::getSubscriptIndex((arraySubscripts.clone()).get(i.clone())?);
         arrayIndex = arrayIndex.clone() + (idx.clone() - 1) * fac.clone();
-        fac = fac.clone() * (arrayDimensions.clone()).get(i.clone()).unwrap();
+        fac = fac.clone() * (arrayDimensions.clone()).get(i.clone())?;
     }
-    arrayIndex
+    Ok(arrayIndex)
 }
 
 pub fn getNumElems(mut var: SimCodeVar::SimVar) -> Result<i32> {

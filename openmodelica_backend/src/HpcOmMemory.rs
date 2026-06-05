@@ -3270,7 +3270,7 @@ fn getDimElemCount(mut iNumArrayElems: Arc<metamodelica::List<ArcStr>>, mut iDim
     dims = if (intLe(iDims.clone(), 0)) {(iNumArrayElems.clone().len() as i32)} else {iDims.clone()};
     dimList = List::intRange(dims.clone());
     intNumArrayElems = List::map(iNumArrayElems.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>))?;
-    oNumArrayElems = List::map1(dimList.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), intNumArrayElems.clone())?;
+    oNumArrayElems = List::map1(dimList.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), intNumArrayElems.clone())?;
     Ok(oNumArrayElems)
 }
 

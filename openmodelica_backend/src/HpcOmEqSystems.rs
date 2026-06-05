@@ -732,7 +732,7 @@ fn buildLinearJacobian1(mut rowIdx: i32, mut columns: Arc<metamodelica::List<i32
     let mut outJac: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
     let mut elements: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     elements = (inElements.clone()).get(rowIdx.clone())?;
-    elements = List::map1(columns.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), elements.clone())?;
+    elements = List::map1(columns.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), elements.clone())?;
     outJac = List::fold2(columns.clone(), (std::sync::Arc::new(buildLinearJacobian2) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>) -> Result<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>> + 'static>), elements.clone(), rowIdx.clone(), inJac.clone())?;
     Ok(outJac)
 }
@@ -1780,7 +1780,7 @@ fn generateCramerEqs(mut varIdcs: Arc<metamodelica::List<i32>>, mut dim: i32, mu
                     detAexp = (metamodelica::arrayGet(matrixA.clone(), 1)?).get(1)?;
                     rangeX = List::intRange2(2, dim.clone());
                     detAiexp = metamodelica::arrayGet(vectorB.clone(), 1)?;
-                    detAiExpLst = List::map1(rangeX.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), metamodelica::arrayGet(matrixA.clone(), 1)?)?;
+                    detAiExpLst = List::map1(rangeX.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), metamodelica::arrayGet(matrixA.clone(), 1)?)?;
                     xLst = List::map(List::map1(rangeX.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), vectorX.clone())?, (std::sync::Arc::new(BackendVariable::varExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     detAiExpLst = List::threadMap(xLst.clone(), detAiExpLst.clone(), (std::sync::Arc::new({ let __pe_b1 = DAE::Operator::MUL { ty: ty.clone() }; move |__pe_a0, __pe_a2| Ok(Expression::makeBinaryExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     detAiexp = List::foldr(detAiExpLst.clone(), (std::sync::Arc::new({ let __pe_b1 = DAE::Operator::SUB { ty: ty.clone() }; move |__pe_a0, __pe_a2| Ok(Expression::makeBinaryExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), detAiexp.clone())?;
@@ -2350,8 +2350,8 @@ fn pts_traverseCompsAndParallelize(mut inComps: Arc<metamodelica::List<Arc<Backe
                     numResEqs = (resEqs.clone().len() as i32);
                     eqIdcsSys = List::intRange(numEqs.clone());
                     (varIdcLstSys, _) = List::mapFold(varIdcsLsts.clone(), (std::sync::Arc::new(fnptr!(genSystemVarIdcs, Arc<metamodelica::List<i32>>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32) -> Result<(Arc<metamodelica::List<i32>>, i32)> + 'static>), 1)?;
-                    otherEqLst = List::map1(eqIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), eqsIn.clone())?;
-                    otherVarLst = List::map1(varIdcs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), varsIn.clone())?;
+                    otherEqLst = List::map1(eqIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), eqsIn.clone())?;
+                    otherVarLst = List::map1(varIdcs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varsIn.clone())?;
                     otherVars = BackendVariable::listVar1(otherVarLst.clone())?;
                     otherEqs = BackendEquation::listEquation(otherEqLst.clone())?;
                     (m, mT) = BackendDAEUtil::adjacencyMatrixDispatch(otherVars.clone(), otherEqs.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone())?;

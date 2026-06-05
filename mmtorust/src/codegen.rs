@@ -8322,8 +8322,8 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
         TypedExp::Reduction { func, body, iterators, iter_kind, ty } =>
             emit_reduction(func, body, iterators, *iter_kind, ty, is_const, ctx, top_level),
 
-        TypedExp::PartEval { func, args, named_args, sig_ty, .. } =>
-            emit_parteval(func, args, named_args, sig_ty, is_const, ctx, top_level),
+        TypedExp::PartEval { func, args, named_args, sig_ty, callee_is_local, .. } =>
+            emit_parteval(func, args, named_args, sig_ty, *callee_is_local, is_const, ctx, top_level),
 
         TypedExp::Todo(s) => format!("todo!(/*{}*/)", s.chars().take(60).collect::<String>()),
     }
@@ -8355,6 +8355,7 @@ fn emit_parteval<'a>(
     args: &[TypedExp],
     named_args: &[(String, TypedExp)],
     sig_ty: &Ty,
+    callee_is_local: bool,
     is_const: bool,
     ctx: &mut GenCtx,
     top_level: &'a BTreeMap<String, NameNode<'a>>,
@@ -8362,7 +8363,12 @@ fn emit_parteval<'a>(
     // A builtin whose call form lowers to a method/index (no nameable `fn`)
     // must reference its runtime free-function backing (see `builtin_value_fn`)
     // when the closure body calls it — `arrayGet` → `metamodelica::arrayGet`.
-    let func_str = if let Some((path, _, _)) = builtin_value_fn(func) {
+    let func_str = if callee_is_local {
+        // The callee is a function-typed local variable; Rust's call syntax
+        // auto-derefs the `Arc<dyn Fn>` it holds. A local shadows any
+        // builtin or function declaration sharing the name.
+        escape_ident(func)
+    } else if let Some((path, _, _)) = builtin_value_fn(func) {
         path.to_owned()
     } else if func.contains('.') {
         // Resolve `func` through import aliases to its canonical FQN *before*
@@ -8397,7 +8403,7 @@ fn emit_parteval<'a>(
     // `resolve_call_qname` (which also consults `ctx.current_fn_qname` and the
     // enclosing-scope walk), then follow a `function f = g;` alias to its base.
     let mut effective_sig: Ty = sig_ty.clone();
-    if !matches!(effective_sig, Ty::Function { .. } | Ty::FunctionAlias { .. }) {
+    if !callee_is_local && !matches!(effective_sig, Ty::Function { .. } | Ty::FunctionAlias { .. }) {
         if let Some(q) = resolve_call_qname(func, ctx, top_level)
             && let Some(node) = lookup_node(&q, top_level)
         {
@@ -8526,12 +8532,18 @@ fn emit_parteval<'a>(
     // signature returns `T`), the closure body produces `T` and we have to
     // re-wrap it in `Ok(...)` to satisfy the slot. The fallible case yields a
     // `Result<T>` from the call directly and needs no extra wrapping.
-    let callee_qname = resolve_call_qname(func, ctx, top_level);
+    let callee_qname = if callee_is_local { None } else { resolve_call_qname(func, ctx, top_level) };
     // User functions shadow same-named builtins — only consult the builtin
-    // table when the name does not resolve to a user function.
-    let inner_infallible = match callee_qname.as_deref() {
-        Some(q) => ctx.is_known_infallible_user_fn(q, top_level),
-        None => is_infallible_builtin(func),
+    // table when the name does not resolve to a user function. A function-
+    // typed local is an `Arc<dyn Fn(..) -> Result<..>>` and thus always
+    // returns `Result` — never wrap in `Ok(..)`.
+    let inner_infallible = if callee_is_local {
+        false
+    } else {
+        match callee_qname.as_deref() {
+            Some(q) => ctx.is_known_infallible_user_fn(q, top_level),
+            None => is_infallible_builtin(func),
+        }
     };
     let body_expr = if inner_infallible {
         format!("Ok({call_expr})")
@@ -12164,10 +12176,17 @@ fn canonicalize_call_funcs<'a>(
         // exactly like a `Call`, so when the default is inlined at a call site
         // in another module the alias is resolved to the real path
         // (`NFSimplifyExp.simplifyDump`) rather than emitted verbatim (E0433).
-        E::PartEval { func, args, named_args, sig_ty, ty } => {
-            let canonical = match typedexp::resolve_call_node(&func, top_level, module_prefix) {
-                Some((q, _)) => q,
-                None => func,
+        E::PartEval { func, args, named_args, sig_ty, ty, callee_is_local } => {
+            // A local-variable callee has no canonical path — its name is
+            // only meaningful in its defining scope (and a default binding
+            // can't reference one anyway).
+            let canonical = if callee_is_local {
+                func
+            } else {
+                match typedexp::resolve_call_node(&func, top_level, module_prefix) {
+                    Some((q, _)) => q,
+                    None => func,
+                }
             };
             E::PartEval {
                 func: canonical,
@@ -12175,6 +12194,7 @@ fn canonicalize_call_funcs<'a>(
                 named_args: named_args.into_iter().map(|(n, a)| (n, recur(a))).collect(),
                 sig_ty,
                 ty,
+                callee_is_local,
             }
         }
         E::Constructor { name, args, named_args, ty, field_names } => E::Constructor {
@@ -12416,7 +12436,7 @@ fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) 
             iter_kind: *iter_kind,
             ty: ty.clone(),
         },
-        TypedExp::PartEval { func, args, named_args, sig_ty, ty } => TypedExp::PartEval {
+        TypedExp::PartEval { func, args, named_args, sig_ty, ty, callee_is_local } => TypedExp::PartEval {
             func: func.clone(),
             args: args.iter().map(|a| substitute_formal_refs(a, bindings)).collect(),
             named_args: named_args.iter()
@@ -12424,6 +12444,7 @@ fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) 
                 .collect(),
             sig_ty: sig_ty.clone(),
             ty: ty.clone(),
+            callee_is_local: *callee_is_local,
         },
         TypedExp::Todo(s) => TypedExp::Todo(s.clone()),
     }

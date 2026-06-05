@@ -10438,7 +10438,7 @@ pub fn isFuncCallWithNoDerAnnotation1(mut expIn: Arc<DAE::Exp>, mut tplIn: (Arc<
                     let DAE::FUNCTION_DER_MAPPER { conditionRefs: __pa0, .. } = (mapper.clone()) else { bail!("pattern mismatch") };
                     conditionRefs = __pa0.clone();
                     inputPos = getNoDerivativeInputPosition(conditionRefs.clone());
-                    expLst = List::map1(inputPos.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), expLst.clone())?;
+                    expLst = List::map1(inputPos.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), expLst.clone())?;
                     expLst = List::filter1OnTrue(expLst.clone(), (std::sync::Arc::new(isNotFunctionCall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<bool> + 'static>), functionTree.clone())?;
                     noDerivativeInputs = List::flatten(List::map(expLst.clone(), (std::sync::Arc::new(Expression::getAllCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>))?)?;
                     Ok((expIn.clone(), true, (functionTree.clone(), listAppend(noDerivativeInputs.clone(), crefsIn.clone()))))

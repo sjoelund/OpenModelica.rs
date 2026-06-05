@@ -8716,7 +8716,7 @@ pub fn daeExpCall(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in_a_
             let mut l_absClockIdx: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_4 = SimCodeUtil::getClockedPartitions(a_simCode.clone());
-            ret_5 = SimCodeUtil::absoluteClockIdxForBaseClock(i_arg_integer.clone(), ret_4.clone());
+            ret_5 = SimCodeUtil::absoluteClockIdxForBaseClock(i_arg_integer.clone(), ret_4.clone())?;
             l_absClockIdx = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_5.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_time_conditions[")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_absClockIdx.clone())?;

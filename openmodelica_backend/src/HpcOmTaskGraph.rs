@@ -759,7 +759,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut desc: ArcStr = arcstr::literal!("");
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone())?)?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
-                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ARRAY:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
+                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ARRAY:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
                     descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
@@ -775,7 +775,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut desc: ArcStr = arcstr::literal!("");
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone())?)?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
-                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ALGO: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
+                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ALGO: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
                     descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
@@ -791,7 +791,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut desc: ArcStr = arcstr::literal!("");
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone())?)?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
-                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("COMPLEX: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
+                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("COMPLEX: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
                     descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
@@ -807,7 +807,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut desc: ArcStr = arcstr::literal!("");
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone())?)?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
-                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("WHEN:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
+                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("WHEN:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
                     descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
@@ -823,7 +823,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut desc: ArcStr = arcstr::literal!("");
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone())?)?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
-                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("IFEQ:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
+                    desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("IFEQ:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?)?, (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
                     descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
@@ -3575,7 +3575,7 @@ fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta
                     (_, singleNodes, _) = List::intersection1OnTrue(singleNodes.clone(), doNotMergeIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     exeCosts = List::map1(singleNodes.clone(), (std::sync::Arc::new(getExeCostReqCycles) as std::sync::Arc<dyn ::std::ops::Fn(i32, TaskGraphMeta) -> Result<metamodelica::Real> + 'static>), iTaskGraphMeta.clone())?;
                     (exeCosts, pos) = HpcOmScheduler::quicksortWithOrder(exeCosts.clone())?;
-                    singleNodes = List::map1(pos.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), singleNodes.clone())?;
+                    singleNodes = List::map1(pos.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), singleNodes.clone())?;
                     singleNodes = singleNodes.clone().reverse();
                     exeCosts = exeCosts.clone().reverse();
                     distributeToClusters(singleNodes.clone(), exeCosts.clone(), numProc.clone())?;
@@ -6658,7 +6658,7 @@ fn multirate_orderStateTasksInSimVarStateOrder(mut stateTasks: Arc<metamodelica:
         simVarIdxs = metamodelica::cons(simVarIdx.clone(), simVarIdxs.clone());
     }
     (_, order) = HpcOmScheduler::quicksortWithOrder(List::map(simVarIdxs.clone().reverse(), (std::sync::Arc::new(fnptr!(intReal, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<metamodelica::Real> + 'static>))?)?;
-    orderedTasks = List::map1(order.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), stateTasks.clone())?;
+    orderedTasks = List::map1(order.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), stateTasks.clone())?;
     Ok(orderedTasks)
 }
 
@@ -6834,7 +6834,7 @@ fn dumpPartitionData(mut partData: SimCode::PartitionData) -> Result<()> {
     }
     metamodelica::print((literal!("\n")).clone());
     for mut part in 1..=numPartitions.clone() {
-        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activators: ")); __mm_s.push_str(&*intLstString((activatorsForPartitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tderStateTasks: ")); __mm_s.push_str(&*intLstString(List::map1((activatorsForPartitions.clone()).get(part.clone())?, std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), stateToActivators.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tnodes: \t")); __mm_s.push_str(&*intLstString((partitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("activators: ")); __mm_s.push_str(&*intLstString((activatorsForPartitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tderStateTasks: ")); __mm_s.push_str(&*intLstString(List::map1((activatorsForPartitions.clone()).get(part.clone())?, (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), stateToActivators.clone())?)?); __mm_s.push_str(&*literal!("\t\t\t\tnodes: \t")); __mm_s.push_str(&*intLstString((partitions.clone()).get(part.clone())?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }

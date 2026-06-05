@@ -1217,7 +1217,7 @@ pub fn getComponentInClass(mut cls: Arc<Absyn::Class>, mut componentName: ArcStr
     Ok(component)
 }
 
-pub fn getNthComponentInClass(mut inClass: Arc<Absyn::Class>, mut nth: i32) -> Arc<Absyn::Element> {
+pub fn getNthComponentInClass(mut inClass: Arc<Absyn::Class>, mut nth: i32) -> Result<Arc<Absyn::Element>> {
     let mut outElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut r#pub: Arc<metamodelica::List<Arc<Absyn::Element>>> = metamodelica::nil();
     let mut pro: Arc<metamodelica::List<Arc<Absyn::Element>>> = metamodelica::nil();
@@ -1225,12 +1225,12 @@ pub fn getNthComponentInClass(mut inClass: Arc<Absyn::Class>, mut nth: i32) -> A
     r#pub = getPublicComponentsInClass(inClass.clone());
     n = (r#pub.clone().len() as i32);
     if nth.clone() <= n.clone() {
-        outElement = (r#pub.clone()).get(nth.clone()).unwrap();
+        outElement = (r#pub.clone()).get(nth.clone())?;
     } else {
         pro = getProtectedComponentsInClass(inClass.clone());
-        outElement = (pro.clone()).get(nth.clone() - n.clone()).unwrap();
+        outElement = (pro.clone()).get(nth.clone() - n.clone())?;
     }
-    outElement
+    Ok(outElement)
 }
 
 pub fn getComponentsInClass(mut inClass: Arc<Absyn::Class>, mut visibility: Visibility) -> Arc<metamodelica::List<Arc<Absyn::Element>>> {
@@ -3140,7 +3140,7 @@ pub fn getClassnamesInEltsNoPartial(mut inAbsynElementItemLst: Arc<metamodelica:
             ()
         },
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: lst, attributes: Absyn::ElementAttributes { variability: Absyn::Variability::CONST { .. }, .. }, .. }, .. } } if (includeConstants.clone()) => {
-            DoubleEnded::push_list_back(delst.clone(), ProgramUtil::getComponentItemsName(lst.clone(), false));
+            DoubleEnded::push_list_back(delst.clone(), ProgramUtil::getComponentItemsName(lst.clone(), false))?;
             ()
         },
         _ => {

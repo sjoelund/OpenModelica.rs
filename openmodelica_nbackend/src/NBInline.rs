@@ -744,20 +744,20 @@ fn createInlinedEquation(mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<E
 fn inlineRecordConstructorExp(mut exp: Arc<Expression::NFExpression>, mut index: i32, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = Expression::nthRecordElement(index.clone(), exp.clone())?;
-    exp = Expression::map(exp.clone(), (std::sync::Arc::new(fnptr!(inlineRecordConstructorElements, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    exp = Expression::map(exp.clone(), (std::sync::Arc::new(inlineRecordConstructorElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     exp = Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = true; move |__pe_a0| BackendDAE::lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(exp)
 }
 
-fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Arc<Expression::NFExpression> {
+fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::RECORD_ELEMENT { recordExp: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } }, .. } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             if Function::isDefaultRecordConstructor(r#fn.clone()) {
-                new_exp = (var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone()).get(var_field!((*exp).index, Expression::NFExpression::RECORD_ELEMENT).clone()).unwrap();
+                new_exp = (var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone()).get(var_field!((*exp).index, Expression::NFExpression::RECORD_ELEMENT).clone())?;
             } else if Function::isNonDefaultRecordConstructor(r#fn.clone()) {
-                new_exp = (var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone()).get(var_field!((*exp).index, Expression::NFExpression::RECORD_ELEMENT).clone()).unwrap();
+                new_exp = (var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone()).get(var_field!((*exp).index, Expression::NFExpression::RECORD_ELEMENT).clone())?;
             } else {
                 new_exp = exp.clone();
             }
@@ -768,7 +768,7 @@ fn inlineRecordConstructorElements(mut exp: Arc<Expression::NFExpression>) -> Ar
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp
+    Ok(exp)
 }
 
 fn getElementList(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
