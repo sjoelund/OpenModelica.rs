@@ -1891,11 +1891,32 @@ pub(crate) fn lookup_record_through_unions<'a>(
     None
 }
 
+/// Strip wrapper nodes the parser adds around an expression without changing
+/// its meaning: comment attachments (`EXPRESSIONCOMMENT`) and parentheses
+/// (a single-element `TUPLE`, mirroring the regular omc parser — see
+/// `Modelica.g` `primary` and Static.elabExp_Tuple_LHS_RHS). Use this before
+/// matching on the *shape* of an `Absyn::Exp`; `infer_exp`/`infer_pat`
+/// already unwrap both themselves.
+pub(crate) fn strip_exp_wrappers(mut e: &Absyn::Exp) -> &Absyn::Exp {
+    loop {
+        match e {
+            Absyn::Exp::EXPRESSIONCOMMENT { exp, .. } => e = exp,
+            Absyn::Exp::TUPLE { expressions } => match &**expressions {
+                metamodelica::List::Cons { head, tail } if tail.is_empty() => e = head,
+                _ => return e,
+            },
+            _ => return e,
+        }
+    }
+}
+
 /// Extract the raw `Absyn::Exp` from a modification, for typed inference in codegen.
+/// Comment and parenthesis wrappers are stripped so callers can match on the
+/// expression's shape (literal constant folding, self-reference checks, …).
 pub(crate) fn extract_default_exp(modification: &Option<std::sync::Arc<Absyn::Modification>>) -> Option<&Absyn::Exp> {
     match modification {
         Some(m) => match &*m.eqMod {
-            Absyn::EqMod::EQMOD { exp, .. } => Some(&**exp),
+            Absyn::EqMod::EQMOD { exp, .. } => Some(strip_exp_wrappers(&**exp)),
             _ => None,
         },
         _ => None,
@@ -1965,6 +1986,18 @@ fn fmt_exp(exp: &Absyn::Exp) -> String {
         Absyn::Exp::ARRAY { arrayExp } => {
             let items: Vec<_> = (&**arrayExp).into_iter().map(|e| fmt_exp(e.as_ref())).collect();
             format!("{{{}}}", items.join(", "))
+        }
+        // A parenthesized source expression: the parser keeps `(e)` as a
+        // single-element TUPLE. Emit the parentheses — this formatter
+        // produces Rust expression text, where they are still significant.
+        Absyn::Exp::TUPLE { expressions } => {
+            let items: Vec<_> = (&**expressions).into_iter().map(|e| fmt_exp(e.as_ref())).collect();
+            if let [single] = items.as_slice() {
+                format!("({single})")
+            } else {
+                // A real tuple constant; Rust tuple syntax happens to match.
+                format!("({})", items.join(", "))
+            }
         }
         Absyn::Exp::IFEXP { ifExp, trueBranch, elseBranch, elseIfBranch } => {
             let else_if: String = (&**elseIfBranch).into_iter().map(|(cond, branch)| format!(" else if {} {{{}}}", fmt_exp(cond.as_ref()), fmt_exp(branch.as_ref()))).collect();

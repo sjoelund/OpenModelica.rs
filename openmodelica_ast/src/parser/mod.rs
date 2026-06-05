@@ -2828,13 +2828,34 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
             let (exprs, is_tuple) = output_expression_list(input)?;
             let raw_subs = opt(array_subscripts).parse_next(input)?;
             if let Some(subs) = raw_subs {
+                // `(e)[subs]` stores the bare expression; the dump re-adds
+                // the parentheses for SUBSCRIPTED_EXP itself. Subscripting a
+                // tuple is a syntax error, as in `Modelica.g` `primary`.
+                if is_tuple {
+                    return Err(ErrMode::Cut(ContextError::new().add_context(
+                        input, &input.checkpoint(),
+                        StrContext::Label("Tuple expression can not be subscripted"),
+                    )));
+                }
+                let exp = match &*exprs {
+                    List::Cons { head, .. } => head.clone(),
+                    // output_expression_list only reports `()` as a tuple, so
+                    // a non-tuple result always has exactly one element.
+                    List::Nil => unreachable!("non-tuple output_expression_list returned no expression"),
+                };
                 let mut rc_subs: Arc<List<Arc<Subscript>>> = nil();
                 for s in &*(subs.reverse()) { rc_subs = cons(s.clone(), rc_subs); }
-                return Ok(Absyn::Exp::SUBSCRIPTED_EXP {
-                    exp: Arc::new(to_tuple_or_exp(exprs, is_tuple)), subscripts: rc_subs,
-                });
+                return Ok(Absyn::Exp::SUBSCRIPTED_EXP { exp, subscripts: rc_subs });
             }
-            return Ok(to_tuple_or_exp(exprs, is_tuple));
+            // Parentheses are preserved in the AST: like the regular (non-
+            // OMC_BOOTSTRAPPING) C parser in `Modelica.g` `primary`, `(e)`
+            // becomes a single-element TUPLE. The dumps rely on this instead
+            // of re-deriving operator precedence (AbsynDumpTpl.dumpOperand
+            // has shouldParenthesize commented out), and the semantic phases
+            // unwrap it (Static.elabExp_Tuple_LHS_RHS, NFInst.instExp,
+            // Patternm.elabPattern). For a non-tuple, `exprs` is already the
+            // single-element list to wrap.
+            return Ok(Absyn::Exp::TUPLE { expressions: exprs });
         }
         Some(TK::LBracket) => {
             next_tok(input)?;
@@ -2883,17 +2904,6 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
         _ => {}
     }
     component_reference__function_call(input)
-}
-
-fn to_tuple_or_exp(exprs: Arc<List<Arc<Absyn::Exp>>>, is_tuple: bool) -> Absyn::Exp {
-    if is_tuple {
-        Absyn::Exp::TUPLE { expressions: exprs }
-    } else {
-        match *exprs {
-            List::Cons { ref head, .. } => (**head).clone(),
-            List::Nil                 => Absyn::Exp::TUPLE { expressions: nil() },
-        }
-    }
 }
 
 fn number_literal(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
@@ -3388,6 +3398,59 @@ end P;\n\
             }
         }
         assert!(saw_wrapper, "expected an EXPRESSIONCOMMENT wrapper around the RHS");
+    }
+
+    #[test]
+    fn parens_preserved_as_single_element_tuple() {
+        // `(e)` is kept in the AST as a single-element TUPLE, mirroring the
+        // regular (non-OMC_BOOTSTRAPPING) ANTLR3 parser in `Modelica.g`
+        // `primary`. The Absyn dumps print parentheses from this node —
+        // AbsynDumpTpl.dumpOperand no longer re-derives operator precedence
+        // (shouldParenthesize is commented out upstream) — so dropping the
+        // wrapper regresses e.g. openmodelica/diff/RLC.mos. Real tuples and
+        // subscripted parenthesized expressions keep their own shapes.
+        let code = "\
+package P\n\
+algorithm\n\
+  x := a*(b + c);\n\
+  (u, v) := f(y);\n\
+  w := (g(y))[1];\n\
+end P;\n\
+";
+        let prog = parse(code, "t.mo", "t.mo", Grammar::MetaModelica).expect("parse");
+        let Program { classes, .. } = prog;
+        let first = match &*classes { List::Cons { head, .. } => head.clone(), _ => panic!("no classes") };
+        let Class { body, .. } = &*first;
+        let ClassDef::PARTS { classParts, .. } = &**body else { panic!("expected PARTS"); };
+        let mut assigns: Vec<(Arc<Exp>, Arc<Exp>)> = Vec::new();
+        for cp in &**classParts {
+            if let ClassPart::ALGORITHMS { contents } = &**cp {
+                for ai in &**contents {
+                    if let AlgorithmItem::ALGORITHMITEM { algorithm_, .. } = &**ai
+                        && let Algorithm::ALG_ASSIGN { assignComponent, value } = &**algorithm_
+                    {
+                        assigns.push((assignComponent.clone(), value.clone()));
+                    }
+                }
+            }
+        }
+        assert_eq!(assigns.len(), 3, "expected three assignments");
+
+        // a*(b + c): the right operand is a parenthesized BINARY.
+        let Exp::BINARY { exp2, .. } = &*assigns[0].1 else { panic!("expected BINARY, got {:?}", assigns[0].1) };
+        let Exp::TUPLE { expressions } = &**exp2 else { panic!("expected TUPLE wrapper, got {exp2:?}") };
+        let List::Cons { head, tail } = &**expressions else { panic!("expected one element") };
+        assert!(tail.is_empty(), "expected exactly one element, got {expressions:?}");
+        assert!(matches!(&**head, Exp::BINARY { .. }), "expected inner BINARY, got {head:?}");
+
+        // (u, v) := …: a real tuple LHS keeps both elements.
+        let Exp::TUPLE { expressions } = &*assigns[1].0 else { panic!("expected TUPLE LHS, got {:?}", assigns[1].0) };
+        assert_eq!(expressions.len(), 2, "expected a two-element tuple LHS");
+
+        // (g(y))[1]: SUBSCRIPTED_EXP stores the bare expression; the dump
+        // re-adds the parentheses for this node itself.
+        let Exp::SUBSCRIPTED_EXP { exp, .. } = &*assigns[2].1 else { panic!("expected SUBSCRIPTED_EXP, got {:?}", assigns[2].1) };
+        assert!(matches!(&**exp, Exp::CALL { .. }), "expected bare CALL inside SUBSCRIPTED_EXP, got {exp:?}");
     }
 
     #[test]

@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use openmodelica_ast::Absyn;
 use crate::MM;
-use crate::hierarchy::{FunctionInput, NameNode, NodeKind, Ty, extract_default_exp, lookup_record_through_unions, collect_type_vars_in_ty, collect_type_vars_in_env};
+use crate::hierarchy::{FunctionInput, NameNode, NodeKind, Ty, extract_default_exp, strip_exp_wrappers, lookup_record_through_unions, collect_type_vars_in_ty, collect_type_vars_in_env};
 
 // ── Literal values ────────────────────────────────────────────────────────────
 
@@ -1984,10 +1984,19 @@ pub fn infer_exp<'a>(
         }
 
         Absyn::Exp::TUPLE { expressions } => {
-            let elems: Vec<TypedExp> = (&**expressions).into_iter()
+            let mut elems: Vec<TypedExp> = (&**expressions).into_iter()
                 .map(|e| infer_exp(e.as_ref(), env, top_level, pkg_prefix, type_vars))
                 .collect();
-            TypedExp::Tuple(elems)
+            // The parser preserves source parentheses as a single-element
+            // TUPLE (regular omc does the same, see `Modelica.g` `primary`).
+            // MetaModelica has no one-element tuple type, so `(e)` always
+            // means a parenthesized expression; unwrap it like
+            // Static.elabExp_Tuple_LHS_RHS does.
+            if elems.len() == 1 {
+                elems.pop().unwrap()
+            } else {
+                TypedExp::Tuple(elems)
+            }
         }
 
         Absyn::Exp::ARRAY { arrayExp } => {
@@ -2010,9 +2019,9 @@ pub fn infer_exp<'a>(
             // bodies can refer to the un-decomposed value. Lift the `AS`
             // wrapper out into an explicit `as_binding`; the real scrutinee
             // is the inner expression.
-            let (real_input, as_binding): (&Absyn::Exp, Option<String>) = match &**inputExp {
+            let (real_input, as_binding): (&Absyn::Exp, Option<String>) = match strip_exp_wrappers(inputExp) {
                 Absyn::Exp::AS { id, exp } => (exp.as_ref(), Some(id.to_string())),
-                _ => (inputExp.as_ref(), None),
+                other => (other, None),
             };
             let input = infer_exp(real_input, env, top_level, pkg_prefix, type_vars);
             let kind = match matchTy {
@@ -3036,7 +3045,17 @@ pub fn infer_pat<'a>(
         }
 
         Absyn::Exp::TUPLE { expressions } => {
-            TypedPat::Tuple((&**expressions).into_iter().map(|e| infer_pat(e.as_ref(), env, top_level, pkg_prefix, type_vars)).collect())
+            let mut pats: Vec<TypedPat> = (&**expressions).into_iter()
+                .map(|e| infer_pat(e.as_ref(), env, top_level, pkg_prefix, type_vars))
+                .collect();
+            // `(pat)` is a parenthesized pattern, kept as a single-element
+            // TUPLE by the parser; unwrap it like Patternm.elabPattern does
+            // (`case (cache, Absyn.TUPLE({exp}), _)`).
+            if pats.len() == 1 {
+                pats.pop().unwrap()
+            } else {
+                TypedPat::Tuple(pats)
+            }
         }
 
         Absyn::Exp::ARRAY { arrayExp } => {

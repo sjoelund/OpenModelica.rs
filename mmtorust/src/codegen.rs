@@ -1696,11 +1696,13 @@ fn scan_algitem_for_root_clear(item: &Absyn::AlgorithmItem, out: &mut HashSet<St
                 return;
             }
             let Absyn::FunctionArgs::FUNCTIONARGS { args, .. } = &**functionArgs else { return; };
-            let positional: Vec<&Arc<Absyn::Exp>> = args.into_iter().collect();
+            let positional: Vec<&Absyn::Exp> = args.into_iter()
+                .map(|a| crate::hierarchy::strip_exp_wrappers(a))
+                .collect();
             if positional.len() == 2
-                && let Absyn::Exp::CREF { componentRef } = &**positional[0]
+                && let Absyn::Exp::CREF { componentRef } = positional[0]
                 && let Some(idx_name) = cref_bare_name(componentRef)
-                && matches!(&**positional[1], Absyn::Exp::INTEGER { value: 0 })
+                && matches!(positional[1], Absyn::Exp::INTEGER { value: 0 })
             {
                 out.insert(idx_name);
             }
@@ -21124,7 +21126,7 @@ fn collect_external_arg_names(args: &std::sync::Arc<metamodelica::List<std::sync
     let mut out = Vec::new();
     let mut cur = args.clone();
     while let metamodelica::List::Cons { head, tail } = &*cur {
-        match &**head {
+        match crate::hierarchy::strip_exp_wrappers(head) {
             // `OpenModelica.threadData()` — drop.
             Absyn::Exp::CALL { function_, .. }
                 if matches!(&**function_,
