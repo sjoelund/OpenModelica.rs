@@ -1030,7 +1030,7 @@ fn partJacobian(mut part: Arc<Partition::Partition::Partition>, mut funcMap: Arc
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 (tmp, updated) = compJacobian(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), part.adjacencyMatrix.clone(), funcMap.clone(), kind.clone())?;
                 if updated.clone() {
-                    {let _arr = comps.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = tmp.clone(); _arr};
+                    {let _arr = comps.clone(); let _idx = i.clone(); let _val = tmp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 }
             }
             Some(comps.clone())

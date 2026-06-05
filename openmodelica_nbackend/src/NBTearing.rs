@@ -347,7 +347,7 @@ fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partit
                     (tmp, full, idx) = func(tmp.clone(), full.clone(), funcMap.clone(), idx.clone(), part.unknowns.clone(), part.equations.clone(), eq_index.clone(), kind.clone())?;
                 }
                 if !(referenceEq(&*(tmp.clone()),&*(({let __elt = strongComponents.borrow()[(i.clone()-1) as usize].clone(); __elt})))) {
-                    {let _arr = strongComponents.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = tmp.clone(); _arr};
+                    {let _arr = strongComponents.clone(); let _idx = i.clone(); let _val = tmp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 }
             }
             assign_field!(

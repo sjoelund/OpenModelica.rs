@@ -1273,7 +1273,7 @@ fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierar
                     newpos = valueArrayLength(varr.clone())?;
                     varr_1 = valueArrayAdd(varr.clone(), v.clone())?;
                     indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-                    hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+                    hashvec_1 = {let _arr = hashvec.clone(); let _idx = indx.clone() + 1; let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     n_1 = valueArrayLength(varr_1.clone())?;
                     Ok(InstHierarchyHashTable { hashTable: hashvec_1.clone(), valueArr: varr_1.clone(), bucketSize: bsize.clone(), numberOfEntries: n_1.clone() })
                 }
@@ -1471,7 +1471,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
             let mut n_1: i32 = 0;
             let mut arr_1: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>> = Default::default();
             n_1 = n.clone() + 1;
-            arr_1 = {let _arr = arr.clone(); _arr.borrow_mut()[(n.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+            arr_1 = {let _arr = arr.clone(); let _idx = n.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(ValueArray { numberOfElements: n_1.clone(), valueArray: arr_1.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1492,7 +1492,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
             expandsize_1 = intMax(expandsize.clone(), 1);
             arr_1 = Array::expand(expandsize_1.clone(), arr.clone(), None)?;
             n_1 = n.clone() + 1;
-            arr_2 = {let _arr = arr_1.clone(); _arr.borrow_mut()[(n.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+            arr_2 = {let _arr = arr_1.clone(); let _idx = n.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(ValueArray { numberOfElements: n_1.clone(), valueArray: arr_2.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1512,7 +1512,7 @@ fn valueArraySetnth(mut valueArray: ValueArray, mut pos: i32, mut entry: (Arc<DA
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
-            {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+            {let _arr = arr.clone(); let _idx = pos.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(valueArray.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1532,7 +1532,7 @@ fn valueArrayClearnth(mut valueArray: ValueArray, mut pos: i32) -> Result<ValueA
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { numberOfElements: _, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             if !((pos.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
-            {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = None; _arr};
+            {let _arr = arr.clone(); let _idx = pos.clone() + 1; let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(valueArray.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

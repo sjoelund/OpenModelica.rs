@@ -1185,7 +1185,7 @@ pub mod ClassTree {
 
     pub fn setClassExtends(mut extNode: Arc<InstNode::InstNode>, mut tree: Arc<ClassTree>) -> Result<Arc<ClassTree>> {
         let mut tree: Arc<ClassTree> = tree;
-        {let _arr = getExtends(tree.clone()); _arr.borrow_mut()[(1-1) as usize] = extNode.clone(); _arr};
+        {let _arr = getExtends(tree.clone()); let _idx = 1; let _val = extNode.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         Ok(tree)
     }
 
@@ -1328,7 +1328,7 @@ pub mod ClassTree {
             _ => bail!("pattern mismatch"),
         } };
         index = __pa0.clone();
-        {let _arr = getClasses(tree.clone())?; _arr.borrow_mut()[(index.clone()-1) as usize] = node.clone(); _arr};
+        {let _arr = getClasses(tree.clone())?; let _idx = index.clone(); let _val = node.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         Ok(tree)
     }
 
@@ -1501,11 +1501,11 @@ pub mod ClassTree {
             imp2 = ({let __elt = imports.borrow()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone(); __elt});
             entry = (::match_deref::match_deref! { match &((imp1.clone(), imp2.clone())) {
         (Deref @ Import::UNRESOLVED_IMPORT { .. }, Deref @ Import::UNRESOLVED_IMPORT { .. }) => {
-            {let _arr = imports.clone(); _arr.borrow_mut()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize] = Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }); _arr};
+            {let _arr = imports.clone(); let _idx = var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone(); let _val = Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             oldEntry.clone()
         },
         (Deref @ Import::RESOLVED_IMPORT { .. }, Deref @ Import::RESOLVED_IMPORT { .. }) => {
-            {let _arr = imports.clone(); _arr.borrow_mut()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize] = Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }); _arr};
+            {let _arr = imports.clone(); let _idx = var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone(); let _val = Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             oldEntry.clone()
         },
         (Deref @ Import::UNRESOLVED_IMPORT { .. }, _) => newEntry.clone(),
@@ -1619,7 +1619,7 @@ pub mod ClassTree {
     } });
         (element, changed, imp) = Import::resolve(({let __elt = imports.borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
         if changed.clone() {
-            {let _arr = imports.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = imp.clone(); _arr};
+            {let _arr = imports.clone(); let _idx = index.clone(); let _val = imp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
         Ok(element)
     }

@@ -124,7 +124,7 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
                 newpos = valueArrayLength(varr.clone());
                 varr = valueArrayAdd(varr.clone(), key.clone())?;
                 indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-                hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+                hashvec = {let _arr = hashvec.clone(); let _idx = indx.clone() + 1; let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 n = valueArrayLength(varr.clone());
             }
             (hashvec.clone(), varr.clone(), bsize.clone(), n.clone(), fntpl.clone())
@@ -161,7 +161,7 @@ pub fn addNoUpdCheck<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
             indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+            hashvec_1 = {let _arr = hashvec.clone(); let _idx = indx.clone() + 1; let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
         },
@@ -183,7 +183,7 @@ pub fn addUnique<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) 
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
             indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
-            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+            hashvec_1 = {let _arr = hashvec.clone(); let _idx = indx.clone() + 1; let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
         },
@@ -363,7 +363,7 @@ pub fn valueArrayAdd<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut 
         size = expandsize_1.clone() + size.clone();
         arr = Array::expand(expandsize_1.clone(), arr.clone(), None)?;
     }
-    arr = {let _arr = arr.clone(); _arr.borrow_mut()[(n.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+    arr = {let _arr = arr.clone(); let _idx = n.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outValueArray = (n.clone() + 1, size.clone(), arr.clone());
     Ok(outValueArray)
 }
@@ -376,7 +376,7 @@ pub fn valueArraySetnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, m
     let mut size: i32 = 0;
     (n, size, arr) = valueArray.clone();
     let true = (pos.clone() < size.clone()) else { bail!("pattern mismatch") };
-    arr_1 = {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+    arr_1 = {let _arr = arr.clone(); let _idx = pos.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outValueArray = (n.clone(), size.clone(), arr_1.clone());
     Ok(outValueArray)
 }
@@ -389,7 +389,7 @@ pub fn valueArrayClearnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>,
     let mut size: i32 = 0;
     (n, size, arr) = valueArray.clone();
     let true = (pos.clone() < size.clone()) else { bail!("pattern mismatch") };
-    arr_1 = {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone() + 1-1) as usize] = None; _arr};
+    arr_1 = {let _arr = arr.clone(); let _idx = pos.clone() + 1; let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outValueArray = (n.clone(), size.clone(), arr_1.clone());
     Ok(outValueArray)
 }

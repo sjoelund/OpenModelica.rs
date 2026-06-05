@@ -792,7 +792,7 @@ pub fn add(mut zc_set: ZeroCrossingSet, mut zc: ZeroCrossing) -> Result<()> {
     if !(contains(zc_set.clone(), zc.clone())?) {
         DoubleEnded::push_back(zc_set.zc.clone(), zc.clone());
         addedCell = DoubleEnded::currentBackCell(zc_set.zc.clone());
-        {let _arr = zc_set.tree.clone(); _arr.borrow_mut()[(1-1) as usize] = ZeroCrossingTree::add(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone(), addedCell.clone(), (std::sync::Arc::new(ZeroCrossingTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?; _arr};
+        {let _arr = zc_set.tree.clone(); let _idx = 1; let _val = ZeroCrossingTree::add(metamodelica::arrayGet(zc_set.tree.clone(), 1)?, zc.clone(), addedCell.clone(), (std::sync::Arc::new(ZeroCrossingTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     Ok(())
 }

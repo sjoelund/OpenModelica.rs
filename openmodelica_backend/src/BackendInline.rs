@@ -513,7 +513,7 @@ fn inlineVarOptArray(mut inVarArray: metamodelica::Array<Option<BackendDAE::Var>
         var = ({let __elt = inVarArray.borrow()[(index.clone()-1) as usize].clone(); __elt});
         (var, b) = inlineVarOpt(var.clone(), fns.clone())?;
         if b.clone() {
-            {let _arr = inVarArray.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = var.clone(); _arr};
+            {let _arr = inVarArray.clone(); let _idx = index.clone(); let _val = var.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
         oInlined = oInlined.clone() || b.clone();
     }

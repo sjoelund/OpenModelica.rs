@@ -939,12 +939,12 @@ fn lookupQualifiedExtends2(mut inExtends: ExtendsWrapper, mut inExtendsTable: Ex
 }
 
 fn addUnqualifiedToTable(mut inExtends: Extends, mut inIndex: i32, mut inExtendsTable: ExtendsTableArray) -> Result<()> {
-    {let _arr = inExtendsTable.clone(); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = ExtendsWrapper::UNQUALIFIED_EXTENDS { ext: inExtends.clone() }; _arr};
+    {let _arr = inExtendsTable.clone(); let _idx = inIndex.clone(); let _val = ExtendsWrapper::UNQUALIFIED_EXTENDS { ext: inExtends.clone() }; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(())
 }
 
 fn updateQualifiedInTable(mut inExtends: Extends, mut inIndex: i32, mut inExtendsTable: ExtendsTableArray) -> Result<()> {
-    {let _arr = inExtendsTable.clone(); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = ExtendsWrapper::QUALIFIED_EXTENDS { ext: inExtends.clone() }; _arr};
+    {let _arr = inExtendsTable.clone(); let _idx = inIndex.clone(); let _val = ExtendsWrapper::QUALIFIED_EXTENDS { ext: inExtends.clone() }; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(())
 }
 

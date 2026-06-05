@@ -78,9 +78,9 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = inComponents.clone();
     let mut SCC: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqn2: i32 = 0;
-    {let _arr = number.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
-    {let _arr = lowlink.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
-    {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = true; _arr};
+    {let _arr = number.clone(); let _idx = eqn.clone(); let _val = outIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = outIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    {let _arr = onStack.clone(); let _idx = eqn.clone(); let _val = true; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outIndex = outIndex.clone() + 1;
     outStack = metamodelica::cons(eqn.clone(), outStack.clone());
     for mut eqn2 in &*Matching::incomingEquations(eqn.clone(), m.clone(), ass1.clone()) {
@@ -99,7 +99,7 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
         } };
         eqn2 = __pa0.clone();
         outStack = __pa1.clone();
-        {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
+        {let _arr = onStack.clone(); let _idx = eqn2.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         SCC = list![eqn2.clone()];
         while eqn.clone() != eqn2.clone() {
             let (__pa2, __pa3) = ::match_deref::match_deref! { match &(outStack.clone()) {
@@ -108,7 +108,7 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
             } };
             eqn2 = __pa2.clone();
             outStack = __pa3.clone();
-            {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
+            {let _arr = onStack.clone(); let _idx = eqn2.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             SCC = metamodelica::cons(eqn2.clone(), SCC.clone());
         }
         outComponents = metamodelica::cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());
@@ -142,9 +142,9 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
     let mut SCC: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut var: i32 = 0;
     let mut eqn2: i32 = 0;
-    {let _arr = number.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
-    {let _arr = lowlink.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
-    {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = true; _arr};
+    {let _arr = number.clone(); let _idx = eqn.clone(); let _val = outIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = outIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    {let _arr = onStack.clone(); let _idx = eqn.clone(); let _val = true; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outIndex = outIndex.clone() + 1;
     outStack = metamodelica::cons(eqn.clone(), outStack.clone());
     var = ({let __elt = ass2.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
@@ -169,7 +169,7 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
         } };
         eqn2 = __pa1.clone();
         outStack = __pa2.clone();
-        {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
+        {let _arr = onStack.clone(); let _idx = eqn2.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         SCC = list![eqn2.clone()];
         while eqn.clone() != eqn2.clone() {
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(outStack.clone()) {
@@ -178,7 +178,7 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
             } };
             eqn2 = __pa3.clone();
             outStack = __pa4.clone();
-            {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
+            {let _arr = onStack.clone(); let _idx = eqn2.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             SCC = metamodelica::cons(eqn2.clone(), SCC.clone());
         }
         outComponents = metamodelica::cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());

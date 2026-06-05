@@ -287,7 +287,7 @@ pub mod ConnectionSets {
         }
         parent = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
         while parent.clone() > 0 {
-            {let _arr = nodes.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = rootIndex.clone(); _arr};
+            {let _arr = nodes.clone(); let _idx = idx.clone(); let _val = rootIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             idx = parent.clone();
             parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
         }
@@ -364,12 +364,12 @@ pub mod ConnectionSets {
             rank1 = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt});
             rank2 = ({let __elt = sets.nodes.borrow()[(set2.clone()-1) as usize].clone(); __elt});
             if rank1.clone() > rank2.clone() {
-                {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = set1.clone(); _arr};
+                {let _arr = sets.nodes.clone(); let _idx = set2.clone(); let _val = set1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             } else if rank1.clone() < rank2.clone() {
-                {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set1.clone()-1) as usize] = set2.clone(); _arr};
+                {let _arr = sets.nodes.clone(); let _idx = set1.clone(); let _val = set2.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             } else {
                 {let _arr = sets.nodes.clone(); let _idx = set1.clone(); let _val = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-                {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = set1.clone(); _arr};
+                {let _arr = sets.nodes.clone(); let _idx = set2.clone(); let _val = set1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
         }
         Ok(sets)

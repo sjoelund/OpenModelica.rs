@@ -152,7 +152,7 @@ pub fn add<Key: Clone + 'static, Value: Clone + 'static>(mut entry: HashEntry<Ke
         }
     }
     (varr, new_pos) = valueArrayAdd(varr.clone(), entry.clone())?;
-    {let _arr = hashvec.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = metamodelica::cons((key.clone(), new_pos.clone()), indices.clone()); _arr};
+    {let _arr = hashvec.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::cons((key.clone(), new_pos.clone()), indices.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outHashTable = (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone());
     Ok(outHashTable)
 }
@@ -211,7 +211,7 @@ pub fn addNoUpdCheck<Key: Clone + 'static, Value: Clone + 'static>(mut entry: Ha
             indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
             (varr, newpos) = valueArrayAdd(varr.clone(), v.clone())?;
             indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});
-            hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone()-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+            hashvec = {let _arr = hashvec.clone(); let _idx = indx.clone(); let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone())
         },
     });
@@ -243,7 +243,7 @@ pub fn addUnique<Key: Clone + 'static, Value: Clone + 'static>(mut entry: HashEn
     indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
     (varr, newpos) = valueArrayAdd(varr.clone(), entry.clone())?;
     indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});
-    hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone()-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+    hashvec = {let _arr = hashvec.clone(); let _idx = indx.clone(); let _val = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outHashTable = (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone());
     Ok(outHashTable)
 }
@@ -512,7 +512,7 @@ fn valueArrayAdd<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray: V
         size = expandsize_1.clone() + size.clone();
         arr = Array::expand(expandsize_1.clone(), arr.clone(), None)?;
     }
-    arr = {let _arr = arr.clone(); _arr.borrow_mut()[(n.clone() + 1-1) as usize] = Some(entry.clone()); _arr};
+    arr = {let _arr = arr.clone(); let _idx = n.clone() + 1; let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     outValueArray = (n.clone() + 1, size.clone(), arr.clone());
     newpos = n.clone() + 1;
     Ok((outValueArray, newpos))
@@ -523,7 +523,7 @@ fn valueArraySet<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray: V
     outValueArray = (match valueArray.clone() {
         (mut n, mut size, mut arr) => {
             let true = (pos.clone() <= size.clone()) else { bail!("pattern mismatch") };
-            arr = {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = Some(entry.clone()); _arr};
+            arr = {let _arr = arr.clone(); let _idx = pos.clone(); let _val = Some(entry.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (n.clone(), size.clone(), arr.clone())
         },
     });
@@ -535,7 +535,7 @@ fn valueArrayClear<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray:
     let mut size: i32 = 0;
     (_, size, arr) = valueArray.clone();
     let true = (pos.clone() <= size.clone()) else { bail!("pattern mismatch") };
-    {let _arr = arr.clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = None; _arr};
+    {let _arr = arr.clone(); let _idx = pos.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(())
 }
 
@@ -612,8 +612,8 @@ pub fn clear<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable<Key
         let () = (match metamodelica::arrayGet(vae.clone(), i.clone())? {
         Some((mut key, _)) => {
             hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
-            {let _arr = hv.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = metamodelica::nil(); _arr};
-            {let _arr = vae.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = None; _arr};
+            {let _arr = hv.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            {let _arr = vae.clone(); let _idx = i.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             ()
         },
         _ => (),
@@ -648,9 +648,9 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
         Some((mut key, _)) => {
             if !(workaroundForBug.clone()) {
                 hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
-                {let _arr = hv.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = metamodelica::nil(); _arr};
+                {let _arr = hv.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
-            {let _arr = vae.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = None; _arr};
+            {let _arr = vae.clone(); let _idx = i.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             ()
         },
         _ => {
@@ -676,7 +676,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
                 if debug.clone() {
                     metamodelica::print((literal!("hv not empty\n")).clone());
                 }
-                {let _arr = hv.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
+                {let _arr = hv.clone(); let _idx = i.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
         }
     }

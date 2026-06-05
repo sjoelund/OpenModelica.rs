@@ -198,7 +198,7 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
                     varIndices = arrayCreate(List::fold(arrayDimensions.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?, 0);
                 }
                 arrayIndex = getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone())?;
-                varIndices = {let _arr = varIndices.clone(); _arr.borrow_mut()[(arrayIndex.clone()-1) as usize] = varIdx.clone(); _arr};
+                varIndices = {let _arr = varIndices.clone(); let _idx = arrayIndex.clone(); let _val = varIdx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 varToArrayIndexMapping = BaseHashTable::add((arrayName.clone(), (arrayDimensions.clone(), varIndices.clone())), varToArrayIndexMapping.clone())?;
             }
             ()
@@ -280,7 +280,7 @@ fn getVarToArrayIndexByType(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut
     let mut iCurrentVarIndices: metamodelica::Array<i32> = iCurrentVarIndices;
     match '__try0: {
         oVarIdx = unwrap_break_err!(metamodelica::arrayGet(iCurrentVarIndices.clone(), iVarType.clone()), '__try0);
-        {let _arr = iCurrentVarIndices.clone(); _arr.borrow_mut()[(iVarType.clone()-1) as usize] = oVarIdx.clone() + unwrap_break_err!(getNumElems(iVar.clone()), '__try0); _arr};
+        {let _arr = iCurrentVarIndices.clone(); let _idx = iVarType.clone(); let _val = oVarIdx.clone() + unwrap_break_err!(getNumElems(iVar.clone()), '__try0); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         Ok::<_, anyhow::Error>((oVarIdx.clone(),))
     } {
         Ok((__try0_o0,)) => {

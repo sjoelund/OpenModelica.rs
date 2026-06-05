@@ -9947,18 +9947,16 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             if arr_is_uninit {
                 Ok(format!("unsafe {{ metamodelica::Dangerous::arrayInitSlot({arg1}, {arg2}, {arg3}) }}"))
             } else {
-                // If the index or value expression reads from any RefCell (`.borrow(`)
-                // it may alias the array we're about to `borrow_mut()` — e.g.
-                // `arrayUpdate(parent, find(dsf,i), v)` where `find` reads `parent`.
-                // Hoist them to temps (index first, matching arg order) so every read
-                // finishes before the mutable borrow is acquired. Otherwise emit the
-                // compact form without temps.
-                let may_alias = |s: &str| s.contains(".borrow(") || s.contains(".borrow_mut(");
-                if may_alias(&arg2) || may_alias(&arg3) {
-                    Ok(format!("{{let _arr = {}; let _idx = {}; let _val = {}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr}}", arg1, arg2, arg3))
-                } else {
-                    Ok(format!("{{let _arr = {}; _arr.borrow_mut()[({}-1) as usize] = {}; _arr}}", arg1, arg2, arg3))
-                }
+                // Hoist the index and value into temps so every read finishes
+                // before the mutable borrow is acquired (the temp order also
+                // matches MetaModelica's arr/idx/val evaluation order). The
+                // expressions may read the array we're about to `borrow_mut()`
+                // through *any* function call — directly (`arrayUpdate(work,
+                // arrayLength(work)-c, v)`, SimpleModelicaParser.findTokens) or
+                // transitively (`arrayUpdate(parent, find(dsf,i), v)` where
+                // `find` reads `parent`) — so no syntactic check on the emitted
+                // strings can soundly prove the compact in-place form safe.
+                Ok(format!("{{let _arr = {}; let _idx = {}; let _val = {}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr}}", arg1, arg2, arg3))
             }
         },
         // Real call into the runtime's truly-unchecked variant (see the

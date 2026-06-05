@@ -831,7 +831,7 @@ pub fn uniqueIntN(mut inList: Arc<metamodelica::List<i32>>, mut inN: i32) -> Res
         if metamodelica::arrayGet(arr.clone(), i.clone())? {
             outList = metamodelica::cons(i.clone(), outList.clone());
         }
-        {let _arr = arr.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = false; _arr};
+        {let _arr = arr.clone(); let _idx = i.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     GCExt::free(arr.clone());
     Ok(outList)
@@ -1165,7 +1165,7 @@ fn addPos(mut inList: Arc<metamodelica::List<i32>>, mut inArray: metamodelica::A
     let mut outArray: metamodelica::Array<i32> = Default::default();
     for mut i in &*inList.clone() {
         let mut i = i.clone();
-        {let _arr = inArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = intAdd(metamodelica::arrayGet(inArray.clone(), i.clone())?, inIndex.clone()); _arr};
+        {let _arr = inArray.clone(); let _idx = i.clone(); let _val = intAdd(metamodelica::arrayGet(inArray.clone(), i.clone())?, inIndex.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     outArray = inArray.clone();
     Ok(outArray)

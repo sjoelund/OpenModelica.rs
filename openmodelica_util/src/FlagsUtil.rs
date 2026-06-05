@@ -236,7 +236,7 @@ fn updateDebugFlagArray(mut inFlags: metamodelica::Array<bool>, mut inValue: boo
     let Flags::DEBUG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
     outOldValue = metamodelica::arrayGet(inFlags.clone(), index.clone())?;
-    outFlags = {let _arr = inFlags.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = inValue.clone(); _arr};
+    outFlags = {let _arr = inFlags.clone(); let _idx = index.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok((outFlags, outOldValue))
 }
 
@@ -245,7 +245,7 @@ fn updateConfigFlagArray(mut inFlags: metamodelica::Array<Flags::FlagData>, mut 
     let mut index: i32 = 0;
     let Flags::CONFIG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
-    outFlags = {let _arr = inFlags.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = inValue.clone(); _arr};
+    outFlags = {let _arr = inFlags.clone(); let _idx = index.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     applySideEffects(inFlag.clone(), inValue.clone())?;
     Ok(outFlags)
 }

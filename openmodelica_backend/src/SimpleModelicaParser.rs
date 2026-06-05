@@ -2958,7 +2958,7 @@ fn findTokens(mut t: Arc<ParseTree>, mut work: metamodelica::Array<Token>, mut i
     let mut count: i32 = inCount.clone();
     let mut commentCount: i32 = inCommentCount.clone();
     if parseTreeIsComment(t.clone()) {
-        {let _arr = work.clone(); _arr.borrow_mut()[(metamodelica::arrayLength(work.clone()) - commentCount.clone()-1) as usize] = firstTokenInTree(t.clone())?; _arr};
+        {let _arr = work.clone(); let _idx = metamodelica::arrayLength(work.clone()) - commentCount.clone(); let _val = firstTokenInTree(t.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         commentCount = commentCount.clone() + 1;
         return Ok((count.clone(), commentCount.clone()));
     } else if parseTreeIsWhitespace(t.clone()) {
@@ -2968,7 +2968,7 @@ fn findTokens(mut t: Arc<ParseTree>, mut work: metamodelica::Array<Token>, mut i
         Deref @ ParseTree::EMPTY { .. } => (),
         Deref @ ParseTree::LEAF { .. } => {
             count = count.clone() + 1;
-            {let _arr = work.clone(); _arr.borrow_mut()[(count.clone()-1) as usize] = var_field!((*t).token, ParseTree::LEAF).clone(); _arr};
+            {let _arr = work.clone(); let _idx = count.clone(); let _val = var_field!((*t).token, ParseTree::LEAF).clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             ()
         },
         Deref @ ParseTree::NODE { .. } => {

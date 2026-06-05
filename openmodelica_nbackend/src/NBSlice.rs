@@ -397,8 +397,8 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
         for mut var_scal_idx in &*scal_lst.clone().reverse() {
             let mut var_scal_idx = var_scal_idx.clone();
             mode_to_var_row = ({let __elt = mode_to_var.borrow()[(idx.clone()-1) as usize].clone(); __elt});
-            {let _arr = mode_to_var_row.clone(); _arr.borrow_mut()[(mode.clone()-1) as usize] = var_scal_idx.clone(); _arr};
-            {let _arr = mode_to_var.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = mode_to_var_row.clone(); _arr};
+            {let _arr = mode_to_var_row.clone(); let _idx = mode.clone(); let _val = var_scal_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            {let _arr = mode_to_var.clone(); let _idx = idx.clone(); let _val = mode_to_var_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {
                 let __cell1 = metamodelica::cons(var_scal_idx.clone(), ({let __elt = indices.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
                 let __idx1 = idx.clone();
@@ -584,7 +584,7 @@ pub fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr
     let mut eqn_idx: i32 = eqn_idx;
     let mut mode_to_var_row: metamodelica::Array<i32> = Default::default();
     mode_to_var_row = ({let __elt = mode_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
-    {let _arr = mode_to_var_row.clone(); _arr.borrow_mut()[(mode.clone()-1) as usize] = var_idx.clone(); _arr};
+    {let _arr = mode_to_var_row.clone(); let _idx = mode.clone(); let _val = var_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     {let _arr = indices.clone(); let _idx = eqn_idx.clone(); let _val = metamodelica::cons(var_idx.clone(), ({let __elt = indices.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     eqn_idx = eqn_idx.clone() + 1;
     Ok(eqn_idx)
@@ -1539,7 +1539,7 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
         },
         Deref @ metamodelica::List::Cons { head: (dim, true), tail: rest } => {
             for mut i in 1..=Dimension::size(dim.clone(), true)? {
-                {let _arr = key.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = i.clone(); _arr};
+                {let _arr = key.clone(); let _idx = index.clone(); let _val = i.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 resolveEquationDimensions(rest.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
             }
             ()
@@ -1585,7 +1585,7 @@ fn resolveReductions(mut lst: Arc<metamodelica::List<(Arc<Subscript::NFSubscript
             sub_idx = 1;
             for mut s in &*Subscript::scalarize(sub.clone(), dim.clone(), true)? {
                 let mut s = s.clone();
-                {let _arr = key.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = sub_idx.clone(); _arr};
+                {let _arr = key.clone(); let _idx = index.clone(); let _val = sub_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 resolveReductions(rest.clone(), map.clone(), key.clone(), stripped.clone(), metamodelica::cons(s.clone(), acc.clone()), index.clone() + 1)?;
                 sub_idx = sub_idx.clone() + 1;
             }

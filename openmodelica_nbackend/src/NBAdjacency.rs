@@ -2001,14 +2001,14 @@ pub mod Dependency {
             dep = __pa0.clone();
             if num.clone() < 0 {
                 for mut i in 1..=metamodelica::arrayLength(dep.skips.clone()) {
-                    {let _arr = dep.skips.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
+                    {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 }
             } else {
                 i = if (reverse.clone()) {metamodelica::arrayLength(dep.skips.clone())} else {1};
                 while rest.clone() > 0 && i.clone() > 0 && i.clone() < metamodelica::arrayLength(dep.skips.clone()) + 1 {
                     len = (({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
                     if len.clone() <= rest.clone() {
-                        {let _arr = dep.skips.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
+                        {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     } else if len.clone() > 0 {
                         if reverse.clone() {
                             {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};

@@ -540,7 +540,7 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
             let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
             if InstContext::inFunction(context.clone()) {
                 dim = crate::NFDimension::interned_UNKNOWN();
-                {let _arr = dimensions.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = dim.clone(); _arr};
+                {let _arr = dimensions.clone(); let _idx = index.clone(); let _val = dim.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             } else {
                 dim = dimension.clone();
             }
@@ -552,7 +552,7 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
             let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
             let mut target: Arc<Ceval::EvalTarget::EvalTarget> = Arc::new(<Ceval::EvalTarget::EvalTarget as ::std::default::Default>::default());
-            {let _arr = dimensions.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = Arc::new(Dimension::NFDimension::UNTYPED { dimension: var_field!((*dimension).dimension, Dimension::NFDimension::UNTYPED).clone(), isProcessing: true }); _arr};
+            {let _arr = dimensions.clone(); let _idx = index.clone(); let _val = Arc::new(Dimension::NFDimension::UNTYPED { dimension: var_field!((*dimension).dimension, Dimension::NFDimension::UNTYPED).clone(), isProcessing: true }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (exp, ty, var, _) = typeExp(var_field!((*dimension).dimension, Dimension::NFDimension::UNTYPED).clone(), InstContext::set(context.clone(), InstContext::DIMENSION.clone()), info.clone(), false)?;
             TypeCheck::checkDimensionType(exp.clone(), ty.clone(), info.clone())?;
             if !(InstContext::inFunction(context.clone())) {
@@ -574,7 +574,7 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
             }
             exp = subscriptDimExp(exp.clone(), component.clone())?;
             dim = Dimension::fromExp(exp.clone(), var.clone())?;
-            {let _arr = dimensions.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = dim.clone(); _arr};
+            {let _arr = dimensions.clone(); let _idx = index.clone(); let _val = dim.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             dim.clone()
         },
         Deref @ Dimension::UNKNOWN if (InstContext::inFunction(context.clone()) && (Binding::isUnbound(binding.clone()) && InstNode::isOutput(component.clone()) || !(InstNode::isOutput(component.clone())))) => {
@@ -592,7 +592,7 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
             let mut target: Arc<Ceval::EvalTarget::EvalTarget> = Arc::new(<Ceval::EvalTarget::EvalTarget as ::std::default::Default>::default());
             b = binding.clone();
             parent_dims = 0;
-            {let _arr = dimensions.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = Arc::new(Dimension::NFDimension::UNTYPED { dimension: WHOLEDIM_CREF().clone(), isProcessing: true }); _arr};
+            {let _arr = dimensions.clone(); let _idx = index.clone(); let _val = Arc::new(Dimension::NFDimension::UNTYPED { dimension: WHOLEDIM_CREF().clone(), isProcessing: true }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             if Binding::isUnbound(binding.clone()) {
                 (b, parent_dims) = getRecordElementBinding(component.clone(), context.clone())?;
                 if Binding::isUnbound(b.clone()) {
@@ -639,7 +639,7 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
         _ => dim.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            {let _arr = dimensions.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = dim.clone(); _arr};
+            {let _arr = dimensions.clone(); let _idx = index.clone(); let _val = dim.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             dim.clone()
         },
         _ => {

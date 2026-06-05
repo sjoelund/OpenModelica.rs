@@ -2292,7 +2292,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                             stateSetSplit = __pa1.clone();
                             stateSetIdxString = substring((stateSetIdxString.clone()).clone(), 10, ((stateSetIdxString.clone()).clone().len() as i32))?;
                             stateSetIdx = stringInt((stateSetIdxString.clone()).clone())?;
-                            {let _arr = stateSetFixCounts.clone(); _arr.borrow_mut()[(stateSetIdx.clone()-1) as usize] = metamodelica::arrayGet(stateSetFixCounts.clone(), stateSetIdx.clone())? + 1; _arr};
+                            {let _arr = stateSetFixCounts.clone(); let _idx = stateSetIdx.clone(); let _val = metamodelica::arrayGet(stateSetFixCounts.clone(), stateSetIdx.clone())? + 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                         } else {
                             if Expression::isConstValue(startExp.clone())? {
                                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: crefExp.clone(), scalar: Expression::crefExp(startCR.clone())?, source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });

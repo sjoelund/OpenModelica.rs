@@ -1096,7 +1096,7 @@ fn checkNominalThreshold(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRe
         current = metamodelica::nil();
         for mut i in 1..=metamodelica::arrayLength(arr_iter.clone()) {
             (iter, exp) = ExpressionIterator::next(({let __elt = arr_iter.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
-            {let _arr = arr_iter.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = iter.clone(); _arr};
+            {let _arr = arr_iter.clone(); let _idx = i.clone(); let _val = iter.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             current = metamodelica::cons(exp.clone(), current.clone());
         }
         checkNominalThresholdSingle(current.clone(), map.clone(), set.clone(), index.clone())?;

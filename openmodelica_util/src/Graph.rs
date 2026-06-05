@@ -569,7 +569,7 @@ pub fn partialDistance2color<NodeType: Clone + 'static>(mut toColorNodes: Arc<me
                     (_, nodes) = findNodeInGraph(node.clone(), inGraphT.clone(), inEqualFunc.clone())?;
                     forbiddenColor = addForbiddenColors(node.clone(), nodes.clone(), inColored.clone(), inforbiddenColor.clone(), inGraph.clone(), inEqualFunc.clone(), inPrintFunc.clone())?;
                     color = arrayFindMinColorIndex(forbiddenColor.clone(), node.clone(), 1, metamodelica::arrayLength(inColored.clone()) + 1, inEqualFunc.clone(), inPrintFunc.clone())?;
-                    colored = {let _arr = inColored.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = color.clone(); _arr};
+                    colored = {let _arr = inColored.clone(); let _idx = index.clone(); let _val = color.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     colored = partialDistance2color(rest.clone(), forbiddenColor.clone(), inColors.clone(), inGraph.clone(), inGraphT.clone(), colored.clone(), inEqualFunc.clone(), inPrintFunc.clone())?;
                     Ok(colored.clone())
                 }
@@ -651,7 +651,7 @@ fn arrayUpdateListAppend<NodeType: Clone + 'static>(mut inIndex: i32, mut inArra
         let __mc_input = inArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            {let _arr = inArray.clone(); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = inNode.clone(); _arr};
+            {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = inNode.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -849,7 +849,7 @@ pub fn partialDistance2colorInt(mut inGraphT: Arc<metamodelica::List<(i32, Arc<m
             (node, nodes) = tpl.clone();
             unwrap_break_err!(addForbiddenColorsInt(node.clone(), nodes.clone(), inColored.clone(), inforbiddenColor.clone(), inGraph.clone()), '__try0);
             color = unwrap_break_err!(arrayFindMinColorIndexInt(inforbiddenColor.clone(), node.clone()), '__try0);
-            {let _arr = inColored.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = color.clone(); _arr};
+            {let _arr = inColored.clone(); let _idx = node.clone(); let _val = color.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
         Ok::<(), anyhow::Error>(())
     }.is_err() {
@@ -883,7 +883,7 @@ fn updateForbiddenColorArrayInt(mut inIndexes: Arc<metamodelica::List<i32>>, mut
         let mut index = index.clone();
         colorIndex = metamodelica::arrayGet(inColored.clone(), index.clone())?;
         if colorIndex.clone() > 0 {
-            {let _arr = inForbiddenColor.clone(); _arr.borrow_mut()[(colorIndex.clone()-1) as usize] = inNode.clone(); _arr};
+            {let _arr = inForbiddenColor.clone(); let _idx = colorIndex.clone(); let _val = inNode.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
     }
     Ok(())

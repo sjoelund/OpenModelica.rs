@@ -1079,7 +1079,7 @@ pub mod Function {
                 return Ok((args.clone(), matching.clone()));
             }
             assign_field!(slot.arg = Some(arg.clone()));
-            {let _arr = slots_arr.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = slot.clone(); _arr};
+            {let _arr = slots_arr.clone(); let _idx = index.clone(); let _val = slot.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             index = index.clone() + 1;
         }
         for mut narg in &*namedArgs.clone() {
@@ -1216,7 +1216,7 @@ pub mod Function {
             let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
             let mut pur: Prefixes::Purity = Prefixes::Purity::PURE;
             assign_field!(slot.evalStatus = SlotEvalStatus::EVALUATING.clone());
-            {let _arr = slots.clone(); _arr.borrow_mut()[(slot.index.clone()-1) as usize] = slot.clone(); _arr};
+            {let _arr = slots.clone(); let _idx = slot.index.clone(); let _val = slot.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             exp = evaluateSlotExp(Util::getOption(slot.default.clone())?, slots.clone(), context.clone(), info.clone())?;
             (exp, ty, var, pur) = Typing::typeExp(exp.clone(), context.clone(), info.clone(), false)?;
             outArg = Arc::new(TypedArg { name: None, value: exp.clone(), ty: ty.clone(), var: var.clone(), purity: pur.clone() });
@@ -1224,7 +1224,7 @@ pub mod Function {
                 slot.arg = Some(outArg.clone()),
                 slot.evalStatus = SlotEvalStatus::EVALUATED.clone()
             );
-            {let _arr = slots.clone(); _arr.borrow_mut()[(slot.index.clone()-1) as usize] = slot.clone(); _arr};
+            {let _arr = slots.clone(); let _idx = slot.index.clone(); let _val = slot.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             outArg.clone()
         },
     });

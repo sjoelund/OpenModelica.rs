@@ -8175,12 +8175,12 @@ fn fillDefaultSlot2(mut inSlot: Slot, mut inSlotArray: metamodelica::Array<Slot>
         Slot { evalStatus: 0, idx, defaultArg: Deref @ DAE::FuncArg { defaultBinding: Some(exp), .. }, .. } => {
             let mut exp = (*exp).clone();
             outSlot.evalStatus = SLOT_EVALUATING.clone();
-            {let _arr = inSlotArray.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = outSlot.clone(); _arr};
+            {let _arr = inSlotArray.clone(); let _idx = idx.clone(); let _val = outSlot.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             exp = evaluateSlotExp(exp.clone(), inSlotArray.clone(), inInfo.clone())?;
             outSlot.arg = Some(exp.clone());
             outSlot.slotFilled = true;
             outSlot.evalStatus = SLOT_EVALUATED.clone();
-            {let _arr = inSlotArray.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = outSlot.clone(); _arr};
+            {let _arr = inSlotArray.clone(); let _idx = idx.clone(); let _val = outSlot.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (exp.clone(), outSlot.clone())
         },
         _ => bail!("match: no arm matched"),

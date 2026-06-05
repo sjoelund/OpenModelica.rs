@@ -1318,9 +1318,9 @@ pub fn updateCurrentComponent(mut component: ArcStr, mut info: SourceInfo, mut f
             ()
         },
         Some((mut astr, mut ainfo, mut afunc)) => {
-            {let _arr = astr.clone(); _arr.borrow_mut()[(1-1) as usize] = (component.clone()).clone(); _arr};
-            {let _arr = ainfo.clone(); _arr.borrow_mut()[(1-1) as usize] = info.clone(); _arr};
-            {let _arr = afunc.clone(); _arr.borrow_mut()[(1-1) as usize] = func.clone(); _arr};
+            {let _arr = astr.clone(); let _idx = 1; let _val = (component.clone()).clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            {let _arr = ainfo.clone(); let _idx = 1; let _val = info.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            {let _arr = afunc.clone(); let _idx = 1; let _val = func.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             ()
         },
     });

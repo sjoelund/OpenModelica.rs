@@ -223,7 +223,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     tree = getLocalIdentList(cdef_els.clone(), tree.clone(), (std::sync::Arc::new(getLocalIdentElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<AvlSetString::Tree>) -> Result<Arc<AvlSetString::Tree>> + 'static>))?;
                     tree = getLocalIdentList(import_els.clone(), tree.clone(), (std::sync::Arc::new(getLocalIdentElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<AvlSetString::Tree>) -> Result<Arc<AvlSetString::Tree>> + 'static>))?;
                     htHasEntries = !(AvlSetString::isEmpty(tree.clone()));
-                    {let _arr = cacheArr.clone(); _arr.borrow_mut()[(1-1) as usize] = outCache.clone(); _arr};
+                    {let _arr = cacheArr.clone(); let _idx = 1; let _val = outCache.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     if htHasEntries.clone() {
                         els2 = fixList(cacheArr.clone(), cenv.clone(), els2.clone(), tree.clone(), (std::sync::Arc::new(fixLocalIdent) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, (Arc<SCode::Element>, Arc<DAE::Mod>, bool), Arc<AvlSetString::Tree>) -> Result<(Arc<SCode::Element>, Arc<DAE::Mod>, bool)> + 'static>))?;
                     }
@@ -1615,7 +1615,7 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     (cache, path) = Inst::makeFullyQualified(metamodelica::arrayGet(inCache.clone(), 1)?, inEnv.clone(), inPath.clone())?;
                     path = FGraph::pathStripGraphScopePrefix(path.clone(), inEnv.clone(), false)?;
-                    {let _arr = inCache.clone(); _arr.borrow_mut()[(1-1) as usize] = cache.clone(); _arr};
+                    {let _arr = inCache.clone(); let _idx = 1; let _val = cache.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     Ok(path.clone())
                 }
                 _ => bail!("nomatch"),

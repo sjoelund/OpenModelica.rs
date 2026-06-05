@@ -189,11 +189,11 @@ pub fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica:
         }
         __acc.reverse()
     });
-            {let _arr = mnew.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = row.clone(); _arr};
+            {let _arr = mnew.clone(); let _idx = index.clone(); let _val = row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             tailcall::call!{ getOtherEqSysAdjacencyMatrix(m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone()) }
         },
         _ => {
-            {let _arr = mnew.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = metamodelica::nil(); _arr};
+            {let _arr = mnew.clone(); let _idx = index.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             tailcall::call!{ getOtherEqSysAdjacencyMatrix(m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone()) }
         },
     }
@@ -231,7 +231,7 @@ fn transposeRow(mut row: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Arr
             mt = Array::expand(iabs.clone() - metamodelica::arrayLength(mt.clone()), mt.clone(), metamodelica::nil())?;
             col = ({let __elt = mt.borrow()[(iabs.clone()-1) as usize].clone(); __elt});
             indx1 = if (intLt(i.clone(), 0)) {-(indx.clone())} else {indx.clone()};
-            {let _arr = mt.clone(); _arr.borrow_mut()[(iabs.clone()-1) as usize] = metamodelica::cons(indx1.clone(), col.clone()); _arr};
+            {let _arr = mt.clone(); let _idx = iabs.clone(); let _val = metamodelica::cons(indx1.clone(), col.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             transposeRow(res.clone(), mt.clone(), indx.clone())?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

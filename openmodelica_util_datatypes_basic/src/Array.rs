@@ -283,7 +283,7 @@ pub fn reduce<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inRed
 }
 
 pub fn updateIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inValue: T, mut inArray: metamodelica::Array<T>) -> Result<()> {
-    {let _arr = inArray.clone(); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = inValue.clone(); _arr};
+    {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(())
 }
 
@@ -295,7 +295,7 @@ pub fn getIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inArray: metamode
 pub fn replaceAtWithFill<T: Clone + 'static>(mut inPos: i32, mut inTypeReplace: T, mut inTypeFill: T, mut inArray: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
     outArray = expandToSize(inPos.clone(), inArray.clone(), inTypeFill.clone())?;
-    {let _arr = outArray.clone(); _arr.borrow_mut()[(inPos.clone()-1) as usize] = inTypeReplace.clone(); _arr};
+    {let _arr = outArray.clone(); let _idx = inPos.clone(); let _val = inTypeReplace.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(outArray)
 }
 
@@ -443,7 +443,7 @@ pub fn setRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArra
         bail!("fail");
     }
     for mut i in inStart.clone()..=inEnd.clone() {
-        {let _arr = inArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = inValue.clone(); _arr};
+        {let _arr = inArray.clone(); let _idx = i.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     Ok(outArray)
 }
@@ -500,8 +500,8 @@ pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Resul
     for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
         elem1 = metamodelica::arrayGet(inArray.clone(), i.clone())?;
         elem2 = metamodelica::arrayGet(inArray.clone(), size.clone() - i.clone() + 1)?;
-        outArray = {let _arr = outArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = elem2.clone(); _arr};
-        outArray = {let _arr = outArray.clone(); _arr.borrow_mut()[(size.clone() - i.clone() + 1-1) as usize] = elem1.clone(); _arr};
+        outArray = {let _arr = outArray.clone(); let _idx = i.clone(); let _val = elem2.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        outArray = {let _arr = outArray.clone(); let _idx = size.clone() - i.clone() + 1; let _val = elem1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     Ok(outArray)
 }

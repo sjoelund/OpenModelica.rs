@@ -583,8 +583,8 @@ fn GRS_newGraph2(mut origNodes: Arc<metamodelica::List<i32>>, mut removedNodes: 
             row = HpcOmTaskGraph::filterContractedNodes(row.clone(), contrTasks.clone())?;
             row = HpcOmTaskGraph::updateContinuousEntriesInList(row.clone(), removedNodes.clone())?;
             comps = metamodelica::arrayGet(origInComps.clone(), node.clone())?;
-            {let _arr = newGraph.clone(); _arr.borrow_mut()[(newNode.clone()-1) as usize] = row.clone(); _arr};
-            {let _arr = newInComps.clone(); _arr.borrow_mut()[(newNode.clone()-1) as usize] = comps.clone(); _arr};
+            {let _arr = newGraph.clone(); let _idx = newNode.clone(); let _val = row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            {let _arr = newInComps.clone(); let _idx = newNode.clone(); let _val = comps.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             GRS_newGraph2(rest.clone(), removedNodes.clone(), contrTasks.clone(), origGraph.clone(), origInComps.clone(), newGraph.clone(), newInComps.clone(), newNode.clone() + 1)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

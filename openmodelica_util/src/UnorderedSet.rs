@@ -303,7 +303,7 @@ pub fn apply<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dy
                 }
             }
             if !(duplicate.clone()) {
-                {let _arr = new_buckets.clone(); _arr.borrow_mut()[(hash.clone() + 1-1) as usize] = metamodelica::cons(newKey.clone(), bucket.clone()); _arr};
+                {let _arr = new_buckets.clone(); let _idx = hash.clone() + 1; let _val = metamodelica::cons(newKey.clone(), bucket.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 size = size.clone() + 1;
             }
         }
@@ -443,7 +443,7 @@ pub fn rehash<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
         for mut k in &*b.clone() {
             let mut k = k.clone();
             hash = intMod(hashfn(k.clone())?, bucket_count.clone());
-            {let _arr = new_buckets.clone(); _arr.borrow_mut()[(hash.clone() + 1-1) as usize] = metamodelica::cons(k.clone(), metamodelica::arrayGet(new_buckets.clone(), hash.clone() + 1)?); _arr};
+            {let _arr = new_buckets.clone(); let _idx = hash.clone() + 1; let _val = metamodelica::cons(k.clone(), metamodelica::arrayGet(new_buckets.clone(), hash.clone() + 1)?); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
     }
     Mutable::update(set.buckets.clone(), new_buckets.clone());
@@ -708,7 +708,7 @@ fn addKey<T: Clone + 'static>(mut key: T, mut hash: i32, mut set: Arc<UnorderedS
         buckets = Mutable::access(set.buckets.clone());
         h = hash.clone();
     }
-    {let _arr = buckets.clone(); _arr.borrow_mut()[(h.clone() + 1-1) as usize] = metamodelica::cons(key.clone(), metamodelica::arrayGet(buckets.clone(), h.clone() + 1)?); _arr};
+    {let _arr = buckets.clone(); let _idx = h.clone() + 1; let _val = metamodelica::cons(key.clone(), metamodelica::arrayGet(buckets.clone(), h.clone() + 1)?); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Mutable::update(set.size.clone(), Mutable::access(set.size.clone()) + 1);
     Ok(())
 }
