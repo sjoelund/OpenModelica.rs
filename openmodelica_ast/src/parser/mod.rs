@@ -220,6 +220,21 @@ thread_local! {
     /// the equivalent of `parse_expression_enabled()` in `Modelica.g`,
     /// which relaxes some pure-Modelica restrictions (e.g. `{}` literals).
     static INTERACTIVE_PARSE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// The `allowPartEvalFunc` argument of the ANTLR `expression` rule: a
+    /// partial function application (`function f(...)`) is only allowed as a
+    /// function-call argument. Set true around such argument expressions and
+    /// cleared on entry to `expression_inner` so it applies to that one
+    /// expression only (not nested ones), exactly like the rule parameter.
+    static ALLOW_PART_EVAL_FUNC: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Parse a function-call argument expression, permitting a top-level partial
+/// function application (`expression[1]` in Modelica.g).
+fn arg_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(true));
+    let r = expression(input);
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(false));
+    r
 }
 
 /// `metamodelica_enabled()` from `Modelica.g`: MetaModelica (and
@@ -2887,10 +2902,26 @@ fn component_reference2(input: &mut TokenInput) -> ModalResult<Absyn::ComponentR
 /// Inner expression parser without comment splicing. Kept private so external
 /// callers can't bypass the EXPRESSIONCOMMENT wrapper.
 fn expression_inner(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
+    // Consume the `allowPartEvalFunc` flag: it governs only this expression,
+    // so nested expressions (parsed below) see it cleared.
+    let allow_part_eval = ALLOW_PART_EVAL_FUNC.with(|f| f.replace(false));
     match peek_kind(input) {
         Some(TK::If)                             => return if_expression(input),
         Some(TK::Match) | Some(TK::Matchcontinue) => return match_expression(input),
-        Some(TK::Function)                       => return part_eval_function_expression(input),
+        Some(TK::Function)                       => {
+            let start = *input;
+            let e = part_eval_function_expression(input)?;
+            if !allow_part_eval {
+                let (l2, c2) = next_pos(input);
+                add_syntax_message(
+                    SyntaxSeverity::Error,
+                    "Function partial application expressions are only allowed as inputs to functions.".to_owned(),
+                    start[0].line, start[0].col, l2, c2,
+                );
+                return Err(ErrMode::Cut(ContextError::new()));
+            }
+            return Ok(e);
+        }
         Some(TK::Code) | Some(TK::CodeName) | Some(TK::CodeExp) | Some(TK::CodeVar) | Some(TK::CodeAnnotation) => return code_expression(input),
         _ => {}
     }
@@ -3525,7 +3556,7 @@ fn for_or_expression_list(input: &mut TokenInput) -> ModalResult<Absyn::Function
     // If the first token cannot start an expression (e.g. a keyword used as a record
     // field name like `constraint = value`), try all-named-arguments directly.
     let mut checkpoint = input.checkpoint();
-    let mut exp = match expression(input) {
+    let mut exp = match arg_expression(input) {
         Ok(e) => e,
         Err(ErrMode::Backtrack(_)) => {
             input.reset(&checkpoint);
@@ -3572,7 +3603,7 @@ fn for_or_expression_list(input: &mut TokenInput) -> ModalResult<Absyn::Function
         args = cons(Arc::new(exp), args);
         if opt(t(TK::Comma)).parse_next(input)?.is_none() { break; }
         checkpoint = input.checkpoint();
-        exp = expression(input)?;
+        exp = arg_expression(input)?;
     }
     Ok(Absyn::FunctionArgs::FUNCTIONARGS { args: args.reverse(), argNames: arg_names.reverse() })
 }
@@ -3580,7 +3611,7 @@ fn for_or_expression_list(input: &mut TokenInput) -> ModalResult<Absyn::Function
 fn named_argument(input: &mut TokenInput) -> ModalResult<Absyn::NamedArg> {
     let argName  = t_any_ident(input)?;
     t(TK::Equal).parse_next(input)?;
-    let argValue = Arc::new(expression(input)?);
+    let argValue = Arc::new(arg_expression(input)?);
     Ok(Absyn::NamedArg { argName, argValue })
 }
 
