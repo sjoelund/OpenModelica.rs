@@ -7127,8 +7127,8 @@ fn moveSourceInfo(mut inInfo: SourceInfo, mut dstPath: ArcStr) -> Result<SourceI
     let mut outInfo: SourceInfo = inInfo.clone();
     let () = (match outInfo.clone() {
         SourceInfo { .. } => {
-            todo!("unhandled field-assign shape: outInfo.fileName");
-            todo!("unhandled field-assign shape: outInfo.isReadOnly");
+            outInfo.fileName = dstPath.clone();
+            outInfo.isReadOnly = false;
             ()
         },
         _ => bail!("match: no arm matched"),

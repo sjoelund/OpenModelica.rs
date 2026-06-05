@@ -2521,7 +2521,7 @@ pub fn setClassFilename(mut inClass: Arc<Absyn::Class>, mut fileName: ArcStr) ->
         cl @ Deref @ Absyn::Class { info: info @ SourceInfo { .. }, .. } => {
             let mut cl = (*cl).clone();
             let mut info = (*info).clone();
-            todo!("unhandled field-assign shape: info.fileName");
+            info.fileName = fileName.clone();
             assign_field!(cl.info = info.clone());
             cl.clone()
         },

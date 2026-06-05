@@ -14819,6 +14819,23 @@ fn record_field_tys<'a>(
     qname: &str,
     top_level: &'a BTreeMap<String, NameNode<'a>>,
 ) -> Option<Vec<(String, Ty)>> {
+    // `SourceInfo` is a built-in record hand-defined in the `metamodelica`
+    // crate, so it has no Class node in the hierarchy. Supply its fields
+    // directly — they mirror the construction path in `emit_builtin_call`
+    // (the `SOURCEINFO`/`SourceInfo` arm). Without this, a field update like
+    // `info.fileName := name` (AbsynUtil.setClassFilename) has no resolvable
+    // field list and falls through to a `todo!()`.
+    if qname == "SourceInfo" {
+        return Some(vec![
+            ("fileName".into(), Ty::Str),
+            ("isReadOnly".into(), Ty::Bool),
+            ("lineNumberStart".into(), Ty::I32),
+            ("columnNumberStart".into(), Ty::I32),
+            ("lineNumberEnd".into(), Ty::I32),
+            ("columnNumberEnd".into(), Ty::I32),
+            ("lastModification".into(), Ty::F64),
+        ]);
+    }
     // Follow import aliases. A pattern's constructor is recorded in its
     // MetaModelica spelling (e.g. `Expression.ARRAY`) which only resolves once
     // an enclosing `import Expression = NFExpression` is applied. Without this
