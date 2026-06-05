@@ -245,13 +245,20 @@ fn value_to_mmc(rt: &MmcAlloc, v: &Values::Value) -> Result<usize> {
 /// its lifetime. The handful of bytes per interactive call is acceptable.
 fn leak_record_description(path: &Arc<Absyn::Path>, field_names: &List<ArcStr>) -> Result<usize> {
     let name = AbsynUtil::pathString(path.clone(), arcstr::literal!("."), false, false)?;
+    let fields: Vec<&str> = field_names.into_iter().map(|f| f.as_str()).collect();
+    leak_record_description_raw(&underscore_path_string(path), name.as_str(), &fields)
+}
+
+/// Lower-level form of [`leak_record_description`] for descriptions whose
+/// paths are known statically (the Flags marshalling below).
+fn leak_record_description_raw(mangled_path: &str, dotted_name: &str, field_names: &[&str]) -> Result<usize> {
     let fields: Vec<*const c_char> = field_names
-        .into_iter()
-        .map(|f| Ok(CString::new(f.as_str())?.into_raw() as *const c_char))
+        .iter()
+        .map(|f| Ok(CString::new(*f)?.into_raw() as *const c_char))
         .collect::<Result<_>>()?;
     let desc = RecordDescription {
-        path: CString::new(underscore_path_string(path))?.into_raw(),
-        name: CString::new(name.as_str())?.into_raw(),
+        path: CString::new(mangled_path)?.into_raw(),
+        name: CString::new(dotted_name)?.into_raw(),
         field_names: Box::leak(fields.into_boxed_slice()).as_ptr(),
     };
     Ok(Box::into_raw(Box::new(desc)) as usize)
@@ -651,6 +658,105 @@ fn decode_metatype(m: usize) -> Result<Arc<Values::Value>> {
 /// point identified by `handle`, marshalling `values` in and the result out. A
 /// non-zero return from `in_*` means the generated function failed (`MMC_THROW`);
 /// the C runtime returns `Values.META_FAIL` for that, so we do too.
+/// Interned `record_description`s for the Flags structures marshalled by
+/// [`sync_flags_global_root`]. Indexed by the MMC constructor they describe;
+/// built once (the descriptions are immutable and deliberately leaked).
+fn flag_data_descs() -> &'static [usize; 8] {
+    static DESCS: std::sync::OnceLock<[usize; 8]> = std::sync::OnceLock::new();
+    DESCS.get_or_init(|| {
+        let d = |mangled: &str, dotted: &str, fields: &[&str]| {
+            leak_record_description_raw(mangled, dotted, fields)
+                .expect("static record description")
+        };
+        [
+            d("Flags_FlagData_EMPTY__FLAG", "Flags.FlagData.EMPTY_FLAG", &[]),
+            d("Flags_FlagData_BOOL__FLAG", "Flags.FlagData.BOOL_FLAG", &["data"]),
+            d("Flags_FlagData_INT__FLAG", "Flags.FlagData.INT_FLAG", &["data"]),
+            d("Flags_FlagData_INT__LIST__FLAG", "Flags.FlagData.INT_LIST_FLAG", &["data"]),
+            d("Flags_FlagData_REAL__FLAG", "Flags.FlagData.REAL_FLAG", &["data"]),
+            d("Flags_FlagData_STRING__FLAG", "Flags.FlagData.STRING_FLAG", &["data"]),
+            d("Flags_FlagData_STRING__LIST__FLAG", "Flags.FlagData.STRING_LIST_FLAG", &["data"]),
+            d("Flags_FlagData_ENUM__FLAG", "Flags.FlagData.ENUM_FLAG", &["data", "validValues"]),
+        ]
+    })
+}
+
+/// Encode one [`Flags::FlagData`] as an MMC record box. Constructor numbers
+/// are `3 + declaration index` like every MMC uniontype record.
+fn flag_data_to_mmc(rt: &MmcAlloc, fd: &openmodelica_util::Flags::FlagData) -> Result<usize> {
+    use openmodelica_util::Flags::FlagData;
+    let descs = flag_data_descs();
+    let cons_spine = |rt: &MmcAlloc, items: Vec<usize>| {
+        let mut lst = rt.mk_box(0, &[]); // {}
+        for item in items.into_iter().rev() {
+            lst = rt.mk_box(1, &[item, lst]);
+        }
+        lst
+    };
+    Ok(match fd {
+        FlagData::EMPTY_FLAG => rt.mk_box(3, &[descs[0]]),
+        FlagData::BOOL_FLAG { data } => rt.mk_box(4, &[descs[1], mmc_immediate(*data as i64)]),
+        FlagData::INT_FLAG { data } => rt.mk_box(5, &[descs[2], mmc_immediate(*data as i64)]),
+        FlagData::INT_LIST_FLAG { data } => {
+            let items: Vec<usize> = (&**data).into_iter().map(|i| mmc_immediate(*i as i64)).collect();
+            rt.mk_box(6, &[descs[3], cons_spine(rt, items)])
+        }
+        FlagData::REAL_FLAG { data } => rt.mk_box(7, &[descs[4], (rt.mk_rcon)(data.into_inner())]),
+        FlagData::STRING_FLAG { data } => rt.mk_box(8, &[descs[5], make_c_string(data)?]),
+        FlagData::STRING_LIST_FLAG { data } => {
+            let items: Vec<usize> = (&**data).into_iter().map(|s| make_c_string(s)).collect::<Result<_>>()?;
+            rt.mk_box(9, &[descs[6], cons_spine(rt, items)])
+        }
+        FlagData::ENUM_FLAG { data, validValues } => {
+            let items: Vec<usize> = (&**validValues)
+                .into_iter()
+                .map(|(name, value)| Ok(rt.mk_box(0, &[make_c_string(name)?, mmc_immediate(*value as i64)])))
+                .collect::<Result<_>>()?;
+            rt.mk_box(10, &[descs[7], mmc_immediate(*data as i64), cons_spine(rt, items)])
+        }
+    })
+}
+
+/// Mirror the host's Flags global root into the dlopened runtime.
+///
+/// In the C omc the `-d=gen` generated code runs inside the same MMC runtime
+/// as the compiler, so `getGlobalRoot(Global.flagsIndex)` inside a generated
+/// function sees the live flags. The Rust port dlopens a *separate* MMC
+/// runtime whose global roots start unset, so any generated function that
+/// consults Flags (`Flags.getConfigBool` & co. — e.g. `Dump.unparseStr`)
+/// silently failed. Marshal the current FLAGS structure (an `array<Boolean>`
+/// plus an `array<FlagData>`; the flag *descriptors* are not part of the
+/// root) into the C heap and store it with `boxptr_setGlobalRoot` before
+/// every call — flags can change between interactive statements. The root
+/// set keeps the structure alive; the previous copy becomes garbage.
+fn sync_flags_global_root(rt: &MmcAlloc, thread_data: *mut c_void) -> Result<()> {
+    use openmodelica_util::Flags;
+    let Flags::Flag::FLAGS { debugFlags, configFlags } = Flags::getFlags(true) else {
+        return Ok(()); // host flags not loaded yet: nothing to mirror
+    };
+    let debug: Vec<usize> = debugFlags.borrow().iter().map(|b| mmc_immediate(*b as i64)).collect();
+    let config: Vec<usize> = configFlags
+        .borrow()
+        .iter()
+        .map(|fd| flag_data_to_mmc(rt, fd))
+        .collect::<Result<_>>()?;
+    static FLAGS_DESC: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    let desc = *FLAGS_DESC.get_or_init(|| {
+        leak_record_description_raw("Flags_Flag_FLAGS", "Flags.Flag.FLAGS", &["debugFlags", "configFlags"])
+            .expect("static record description")
+    });
+    let flags_box = rt.mk_box(3, &[
+        desc,
+        rt.mk_box(MMC_ARRAY_CTOR, &debug),
+        rt.mk_box(MMC_ARRAY_CTOR, &config),
+    ]);
+    let set_root = dynload::runtime_symbol("boxptr_setGlobalRoot")
+        .ok_or_else(|| anyhow::anyhow!("runtime symbol `boxptr_setGlobalRoot` not found"))?;
+    let set_root: extern "C" fn(*mut c_void, usize, usize) = unsafe { std::mem::transmute(set_root) };
+    set_root(thread_data, mmc_immediate(openmodelica_util::Global::flagsIndex as i64), flags_box);
+    Ok(())
+}
+
 pub fn executeFunction(handle: i32, values: Arc<List<Arc<Values::Value>>>, _debug: bool) -> Result<Arc<Values::Value>> {
     let addr = dynload::function_addr(handle)?;
     let thread_data = dynload::thread_data()? as *mut c_void;
@@ -677,6 +783,10 @@ pub fn executeFunction(handle: i32, values: Arc<List<Arc<Values::Value>>>, _debu
 
 fn executeFunctionGuarded(addr: usize, thread_data: *mut c_void, values: &Arc<List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> {
     let rt = MmcAlloc::resolve()?;
+    // Generated functions read the compiler flags through the dlopened
+    // runtime's global roots; keep them in sync with the host's (see
+    // `sync_flags_global_root`).
+    sync_flags_global_root(&rt, thread_data)?;
     // Keeps the buffers behind structured arguments alive until after the call
     // (and after result decoding — a result may alias argument data).
     let mut store = ArgStorage::default();
