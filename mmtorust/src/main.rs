@@ -298,7 +298,7 @@ fn main() {
         .map(|(path, ix)| {
             let result = std::fs::read_to_string(path)
                 .map_err(|e| format!("read error: {e}"))
-                .and_then(|code: String| parse(&code, path, path, if path.contains("NFBuiltin.mo") {Grammar::Modelica3} else {grammar}).map_err(|e| format!("{e}")));
+                .and_then(|code: String| parse(&code, path, path, grammar).map_err(|e| format!("{e}")));
             match result {
                 Ok(program) => {
                     *programs[*ix].lock().unwrap() = program;

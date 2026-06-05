@@ -381,6 +381,7 @@ dependencies = [
  "loop_unwrap",
  "match_deref",
  "metamodelica",
+ "openmodelica_util",
  "rayon",
  "tailcall",
  "winnow",

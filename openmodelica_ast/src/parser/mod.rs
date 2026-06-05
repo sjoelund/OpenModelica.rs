@@ -107,6 +107,75 @@ fn restore_comment_cursor(idx: usize) {
     COMMENT_STREAM.with(|s| s.borrow_mut().cursor = idx);
 }
 
+// ---------------------------------------------------------------------------
+// Syntax diagnostics
+// ---------------------------------------------------------------------------
+
+/// Severity of a recorded syntax diagnostic; mirrors the `ErrorLevel_*`
+/// values the ANTLR3 grammar passes to `c_add_source_message`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SyntaxSeverity {
+    Error,
+    Warning,
+}
+
+/// One positioned diagnostic produced while parsing, equivalent to a
+/// `c_add_source_message(…, ErrorType_syntax, …)` call in `Modelica.g` /
+/// `Parser/parse.c`. `message` is the final rendered text (including any
+/// `"Parse error: "` prefix); positions are 1-based line / column spans in
+/// the source named by [`CURRENT_ERROR_FILE`].
+#[derive(Debug, Clone)]
+pub struct SyntaxMessage {
+    pub severity: SyntaxSeverity,
+    pub message: String,
+    pub line1: u32,
+    pub col1: u32,
+    pub line2: u32,
+    pub col2: u32,
+}
+
+thread_local! {
+    /// Diagnostics recorded during the current `run_entry` invocation.
+    ///
+    /// Like [`COMMENT_STREAM`], this must only be appended to at points the
+    /// parser has committed to (an assert about already-consumed tokens, or
+    /// just before returning a `Cut` error) — never inside a speculative
+    /// branch that an enclosing `alt`/`opt` may retry with different rules,
+    /// or a successful reparse would leave a stale diagnostic behind.
+    static SYNTAX_MESSAGES: RefCell<Vec<SyntaxMessage>> = const { RefCell::new(Vec::new()) };
+}
+
+/// Record a non-fatal syntax diagnostic. With `SyntaxSeverity::Error` the
+/// parse continues but `run_entry` fails afterwards, mirroring the C
+/// parser's `ModelicaParser_lexerError = ANTLR3_TRUE` convention; a
+/// `Warning` does not affect the parse result (e.g. the `der(cr) :=`
+/// interoperability warning).
+fn add_syntax_message(severity: SyntaxSeverity, message: String, line1: u32, col1: u32, line2: u32, col2: u32) {
+    SYNTAX_MESSAGES.with(|m| m.borrow_mut().push(SyntaxMessage {
+        severity, message, line1, col1, line2, col2,
+    }));
+}
+
+/// `modelicaParserAssert` failure: record `"Parse error: <message>"` over the
+/// given span and return the `Cut` error that aborts the parse. The span
+/// arguments follow the grammar's convention of 1-based columns (ANTLR
+/// `charPosition+1` == our `Token::col`).
+fn parser_assert_fail(message: &str, line1: u32, col1: u32, line2: u32, col2: u32) -> ErrMode<ContextError> {
+    add_syntax_message(SyntaxSeverity::Error, format!("Parse error: {message}"), line1, col1, line2, col2);
+    ErrMode::Cut(ContextError::new())
+}
+
+/// Drain the diagnostics recorded by the most recent `parse_*` call on this
+/// thread. `ParserExt` forwards these to the `Error` subsystem
+/// (`ErrorExt::addSourceMessage`), which is how they end up in omc's error
+/// buffer with the standard `[file:l:c-l:c:writable] Error: …` rendering.
+/// Must be called after every entry-point invocation (success or failure)
+/// if the caller wants warnings — a successful parse can still record e.g.
+/// the `der(cr) :=` warning.
+pub fn take_syntax_messages() -> Vec<SyntaxMessage> {
+    SYNTAX_MESSAGES.with(|m| std::mem::take(&mut *m.borrow_mut()))
+}
+
 /// Drain every remaining comment. Used at end-of-stream / after the last
 /// `end ClassName;` for `commentsAfterEnd`.
 fn take_comments_remaining() -> Vec<ArcStr> {
@@ -135,12 +204,35 @@ pub struct ParserConfig {
     pub grammar: Grammar,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Grammar {
     Modelica2,
     Modelica3,
     MetaModelica,
     Optimica,
+}
+
+thread_local! {
+    /// Grammar selected for the current parse; backs the equivalent of the
+    /// ANTLR grammar's `metamodelica_enabled()` checks.
+    static CURRENT_GRAMMAR: std::cell::Cell<Grammar> = const { std::cell::Cell::new(Grammar::Modelica3) };
+    /// True while parsing interactive input (a `.mos` statement stream) —
+    /// the equivalent of `parse_expression_enabled()` in `Modelica.g`,
+    /// which relaxes some pure-Modelica restrictions (e.g. `{}` literals).
+    static INTERACTIVE_PARSE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// `metamodelica_enabled()` from `Modelica.g`: MetaModelica (and
+/// ParModelica, which shares the lexer/grammar selection) relaxes the
+/// Modelica-only grammar restrictions.
+fn metamodelica_enabled() -> bool {
+    CURRENT_GRAMMAR.with(|g| g.get()) == Grammar::MetaModelica
+}
+
+/// `parse_expression_enabled()` from `Modelica.g`: interactive statement
+/// parsing also lifts some restrictions (e.g. empty array constructors).
+fn parse_expression_enabled() -> bool {
+    INTERACTIVE_PARSE.with(|f| f.get())
 }
 
 // ---------------------------------------------------------------------------
@@ -153,6 +245,11 @@ pub struct ParserError {
     pub line: u32,
     pub col: u32,
     pub inner: ContextError,
+    /// The positioned syntax diagnostics recorded while parsing (also left
+    /// in the thread-local sink for [`take_syntax_messages`]). Carried here
+    /// too so plain `Display` consumers (mmtorust, tests) show the real
+    /// diagnostic instead of only a generic context trace.
+    pub syntax_messages: Vec<SyntaxMessage>,
 }
 
 impl ParserError {
@@ -166,11 +263,19 @@ impl ParserError {
             .or_else(|| all_tokens.last())
             .map(|t| (t.line, t.col))
             .unwrap_or((0, 0));
-        ParserError { line, col, inner: err.inner().clone() }
+        ParserError { line, col, inner: err.inner().clone(), syntax_messages: Vec::new() }
     }
 
     pub fn display(&self) -> String {
         let mut out = format!("error: parsing failed at {} {}:{}\n", CURRENT_ERROR_FILE.take(), self.line, self.col);
+        for m in &self.syntax_messages {
+            out.push_str(&format!(
+                "  [{}:{}-{}:{}] {}: {}\n",
+                m.line1, m.col1, m.line2, m.col2,
+                match m.severity { SyntaxSeverity::Error => "error", SyntaxSeverity::Warning => "warning" },
+                m.message,
+            ));
+        }
         let mut labels: Vec<String> = Vec::new();
         let mut expected: Vec<String> = Vec::new();
         for ctx in self.inner.context() {
@@ -224,23 +329,115 @@ fn run_entry<T>(
     filename: &str,
     info_filename: &str,
     grammar: Grammar,
+    interactive: bool,
     mut entry: fn(&mut &[LexToken]) -> ModalResult<T>,
 ) -> Result<T, Box<dyn std::error::Error>> {
     CURRENT_FILE.with(|f| *f.borrow_mut() = ArcStr::from(filename));
     CURRENT_ERROR_FILE.with(|f| *f.borrow_mut() = ArcStr::from(info_filename));
-    let (tokens, comments) = lexer::lex_with_comments(src, grammar)?;
+    CURRENT_GRAMMAR.with(|g| g.set(grammar));
+    INTERACTIVE_PARSE.with(|f| f.set(interactive));
+    // Discard diagnostics from a previous parse whose caller never drained
+    // them, so this run starts from a clean sink.
+    SYNTAX_MESSAGES.with(|m| m.borrow_mut().clear());
+    let (tokens, comments) = match lexer::lex_with_comments(src, grammar) {
+        Ok(v) => v,
+        Err(e) => {
+            // Surface lexer failures as positioned diagnostics too, like
+            // handleLexerError in Parser/parse.c. The message text is our
+            // own — ANTLR's "Lexer got '…' but failed to recognize the
+            // rest" depends on its internal lexer state.
+            add_syntax_message(SyntaxSeverity::Error, e.message.clone(), e.line, e.col, e.line, e.col);
+            return Err(Box::new(e));
+        }
+    };
     COMMENT_STREAM.with(|s| *s.borrow_mut() = CommentStream::new(comments));
-    let result = entry
-        .parse(tokens.as_slice())
-        .map_err(|e| Box::new(ParserError::from_parse_error(e, &tokens)) as Box<dyn std::error::Error>);
+    let result = entry.parse(tokens.as_slice());
     // Don't keep references to the previous file's comments alive across calls.
     COMMENT_STREAM.with(|s| *s.borrow_mut() = CommentStream::empty());
-    result
+    match result {
+        Ok(value) => {
+            // Non-fatal syntax errors (`add_syntax_message` with
+            // `SyntaxSeverity::Error`) let the parse continue but must fail
+            // the entry point, like `ModelicaParser_lexerError` in parse.c.
+            let first_err = SYNTAX_MESSAGES.with(|m| {
+                m.borrow().iter().find(|m| m.severity == SyntaxSeverity::Error).cloned()
+            });
+            match first_err {
+                None => Ok(value),
+                Some(err) => {
+                    let messages = SYNTAX_MESSAGES.with(|m| m.borrow().clone());
+                    Err(Box::new(ParserError {
+                        line: err.line1,
+                        col: err.col1,
+                        inner: ContextError::new(),
+                        syntax_messages: messages,
+                    }) as Box<dyn std::error::Error>)
+                }
+            }
+        }
+        Err(e) => {
+            let failed_at = e.offset();
+            let mut parser_error = ParserError::from_parse_error(e, &tokens);
+            let has_error_msg = SYNTAX_MESSAGES.with(|m| {
+                m.borrow().iter().any(|m| m.severity == SyntaxSeverity::Error)
+            });
+            if !has_error_msg {
+                // No specific diagnostic was recorded: synthesize the generic
+                // one the ANTLR3 parser produces (`Parser/parse.c`
+                // `displayRecognitionError`).
+                add_generic_syntax_error(&tokens, failed_at, src);
+            }
+            parser_error.syntax_messages = SYNTAX_MESSAGES.with(|m| m.borrow().clone());
+            Err(Box::new(parser_error) as Box<dyn std::error::Error>)
+        }
+    }
+}
+
+/// Record the generic diagnostic for a parse failure with no specific
+/// recorded message, mirroring ANTLR3's error display (`Parser/parse.c`):
+///
+/// - mid-stream: `"No viable alternative near token: <text>"`, spanning from
+///   LT(1) — the first unconsumed token, 1-based column — to LT(2)'s 0-based
+///   column (ANTLR `charPosition` without the usual `+1`).
+/// - at end of input: ANTLR reports a mismatched-token exception through its
+///   default branch, `"Parser error: <msg> near: <text> (<token>)"`, with the
+///   synthetic EOF token sitting at column 0 of the line after the last
+///   newline. We approximate ANTLR's exception taxonomy by always using the
+///   default branch at EOF; the C parser additionally produces
+///   "Expected token of type …" / "Missing token: …" variants from its
+///   recovery machinery that a non-recovering parser has no equivalent for.
+fn add_generic_syntax_error(tokens: &[LexToken], failed_at: usize, src: &str) {
+    match tokens.get(failed_at) {
+        Some(lt1) => {
+            let (n_line, n_col) = match tokens.get(failed_at + 1) {
+                Some(lt2) => (lt2.line, lt2.col.saturating_sub(1)),
+                // LT(2) is the synthetic EOF token; ANTLR's `charPosition`
+                // for it is -1, clamping the end of the span to the start.
+                None => (lt1.line, lt1.col),
+            };
+            add_syntax_message(
+                SyntaxSeverity::Error,
+                format!("No viable alternative near token: {}", lexer::source_text(&lt1.kind)),
+                lt1.line, lt1.col, n_line, n_col,
+            );
+        }
+        None => {
+            // Failure at end of input. ANTLR's EOF token reports
+            // charPosition -1 (column 0) on the line following the final
+            // newline.
+            let eof_line = src.matches('\n').count() as u32 + 1;
+            add_syntax_message(
+                SyntaxSeverity::Error,
+                "Parser error: Unexpected token near:  (<EOF>)".to_owned(),
+                eof_line, 0, eof_line, 0,
+            );
+        }
+    }
 }
 
 /// Lex then parse `src`.  Returns the AST or the first error encountered.
 pub fn parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
-    run_entry(src, filename, info_filename, grammar, stored_definition)
+    run_entry(src, filename, info_filename, grammar, false, stored_definition)
 }
 
 /// Parse a `.mos` script / sequence of interactive statements (ANTLR3 rule
@@ -252,31 +449,31 @@ pub fn parse_statements(
     info_filename: &str,
     grammar: Grammar,
 ) -> Result<crate::GlobalScript::Statements, Box<dyn std::error::Error>> {
-    run_entry(src, filename, info_filename, grammar, interactive_stmt)
+    run_entry(src, filename, info_filename, grammar, true, interactive_stmt)
 }
 
 /// Parse a dotted name path such as `Modelica.Blocks.Sources` (ANTLR3 rule
 /// `name_path_end`; entry point for `ParserExt.stringPath`).
 pub fn parse_path(src: &str, filename: &str, grammar: Grammar) -> Result<Path, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, name_path)
+    run_entry(src, filename, filename, grammar, false, name_path)
 }
 
 /// Parse a component reference such as `a.b[1].c` (ANTLR3 rule
 /// `component_reference_end`; entry point for `ParserExt.stringCref`).
 pub fn parse_cref(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ComponentRef, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, component_reference)
+    run_entry(src, filename, filename, grammar, false, component_reference)
 }
 
 /// Parse a single element modification such as `x(start = 1.0)` (ANTLR3 rule
 /// `element_modification_or_replaceable`; entry point for `ParserExt.stringMod`).
 pub fn parse_modification(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ElementArg, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, element_modification_or_replaceable)
+    run_entry(src, filename, filename, grammar, false, element_modification_or_replaceable)
 }
 
 /// Parse a single equation such as `x = y + 1` (ANTLR3 rule `equation`;
 /// entry point for `ParserExt.stringEq`).
 pub fn parse_equation(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::EquationItem, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, equation_item)
+    run_entry(src, filename, filename, grammar, false, equation_item)
 }
 
 // ---------------------------------------------------------------------------
@@ -716,6 +913,9 @@ fn class_type_function(input: &mut TokenInput) -> ModalResult<Restriction> {
 }
 
 fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
+    // `$start` of the ANTLR class_specifier rule: the `extends` keyword or
+    // the class name. Used as the span start of the name-mismatch assert.
+    let (start_line, start_col) = next_pos(input);
     if opt(t(TK::Extends)).parse_next(input)?.is_some() {
         let name = cut_err(t_ident)
             .context(StrContext::Label("class name after 'extends'"))
@@ -734,7 +934,17 @@ fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
         cut_err(t(TK::End))
             .context(StrContext::Label("'end' closing class-extends"))
             .parse_next(input)?;
-            let _end_name = t_ident(input)?;
+        let end_name = t_ident(input)?;
+        if end_name != name {
+            let (l2, c2) = match input.first() {
+                Some(t) => (t.line, t.col.saturating_sub(1)),
+                None => (start_line, start_col),
+            };
+            return Err(parser_assert_fail(
+                "The identifier at start and end are different",
+                start_line, start_col, l2, c2,
+            ));
+        }
         let ann = match opt(annotation).parse_next(input)? {
             Some(ann) => {
                 t(TK::Semi).parse_next(input)?;
@@ -750,12 +960,16 @@ fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
         })
     } else {
         let name = t_ident(input)?;
-        let body = class_specifier2(input)?;
+        let body = class_specifier2(input, &name, start_line, start_col)?;
         Ok(ClassSpecifier::Normal { name, body })
     }
 }
 
-fn class_specifier2(input: &mut TokenInput) -> ModalResult<Arc<ClassDef>> {
+/// `start_name` and its position come from the enclosing
+/// [`class_specifier`]; the long-form (`… end Name;`) branch checks the
+/// closing identifier against it (the `modelicaParserAssert` at
+/// `Modelica.g` `class_specifier`).
+fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32, start_col: u32) -> ModalResult<Arc<ClassDef>> {
     if opt(t(TK::Subtypeof)).parse_next(input)?.is_some() {
         let ts = type_specifier(input)?;
         return Ok(Arc::new(ClassDef::DERIVED {
@@ -831,9 +1045,19 @@ fn class_specifier2(input: &mut TokenInput) -> ModalResult<Arc<ClassDef>> {
     cut_err(t(TK::End))
         .context(StrContext::Label("'end' closing class body"))
         .parse_next(input)?;
-    let _end_name = cut_err(t_ident)
+    let end_name = cut_err(t_ident)
         .context(StrContext::Label("class name after 'end'"))
         .parse_next(input)?;
+    if end_name != *start_name {
+        let (l2, c2) = match input.first() {
+            Some(t) => (t.line, t.col.saturating_sub(1)),
+            None => (start_line, start_col),
+        };
+        return Err(parser_assert_fail(
+            "The identifier at start and end are different",
+            start_line, start_col, l2, c2,
+        ));
+    }
 
     // Annotations can appear either inside the class body (body_ann) or after `end Name`
     // (Modelica2 style). Collect both into ann.
@@ -936,6 +1160,20 @@ fn element_list(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>>
             Some(TK::Public) | Some(TK::Protected) | Some(TK::Equation) | Some(TK::Algorithm)
             | Some(TK::External) | Some(TK::End) | Some(TK::Initial) | Some(TK::Case)
             | Some(TK::Else) | Some(TK::Then) | None => break,
+            Some(TK::Connect) => {
+                // `element` rule, `conn=CONNECT` alternative: a connect
+                // equation in an element section gets a dedicated hint.
+                let (l1, c1) = (input[0].line, input[0].col);
+                next_tok(input)?;
+                let (l2, c2) = match input.first() {
+                    Some(t) => (t.line, t.col.saturating_sub(1)),
+                    None => (l1, c1 + 6),
+                };
+                return Err(parser_assert_fail(
+                    "Found the start of a connect equation but expected an element (are you missing the equation keyword?)",
+                    l1, c1, l2, c2,
+                ));
+            }
             _ => {}
         }
 
@@ -1421,11 +1659,21 @@ fn element_redeclaration(input: &mut TokenInput) -> ModalResult<ElementArg> {
 fn element_modification(input: &mut TokenInput) -> ModalResult<ElementArg> {
     let start = *input;
     let path = name_path(input)?;
-    if opt(t(TK::LBracket))
-        .context(StrContext::Label("subscripting modifiers not allowed"))
-        .parse_next(input)?.is_some()
-    {
-        return Err(ErrMode::Backtrack(ContextError::default()));
+    if opt(t(TK::LBracket)).parse_next(input)?.is_some() {
+        // `element_modification` in Modelica.g records this diagnostic and
+        // lets ANTLR's recovery resynchronize. We abort instead — the
+        // recorded message suppresses the generic fallback, so the
+        // observable diagnostic is the same.
+        let (l2, c2) = match input.first() {
+            Some(t) => (t.line, t.col.saturating_sub(1)),
+            None => (start[0].line, start[0].col),
+        };
+        add_syntax_message(
+            SyntaxSeverity::Error,
+            "Subscripting modifiers is not allowed. Apply the modification on the whole identifier using an array-expression or an each-modifier.".to_owned(),
+            start[0].line, start[0].col, l2, c2,
+        );
+        return Err(ErrMode::Cut(ContextError::new()));
     }
     let modification = opt(modification).parse_next(input)?;
     let comment      = string_comment(input)?;
@@ -1687,18 +1935,47 @@ fn equation_item(input: &mut TokenInput) -> ModalResult<EquationItem> {
     })
 }
 
+/// `equality_or_noretcall_equation` from `Modelica.g`, including its
+/// `modelicaParserAssert` diagnostics: `:=` is rejected in equation
+/// sections, and a standalone expression must be a function call.
 fn equality_or_noretcall_equation(input: &mut TokenInput) -> ModalResult<Equation> {
+    let start = *input;
     let lhs = simple_expression(input)?;
-    if opt(t(TK::Equal)).parse_next(input)?.is_some() {
+    if matches!(peek_kind(input), Some(TK::Equal) | Some(TK::Assign)) {
+        let is_assign = matches!(input[0].kind, TK::Assign);
+        let (ass_line, ass_col) = (input[0].line, input[0].col);
+        next_tok(input)?;
         let rhs = cut_err(expression)
             .context(StrContext::Label("right-hand side of equation"))
             .parse_next(input)?;
+        if is_assign {
+            // Parsed like the C grammar (`(EQUALS | ass=ASSIGN) e2`), then
+            // rejected with the `:=` token as the span.
+            return Err(parser_assert_fail(
+                "Equations can not contain assignments (':='), use equality ('=') instead",
+                ass_line, ass_col, ass_line, ass_col + 1,
+            ));
+        }
+        // NOTE: the `INDOMAIN component_reference2` suffix (PDEModelica,
+        // `Absyn.EQ_PDE`) is not implemented; the lexer has no `indomain`
+        // token either.
         Ok(Equation::EQ_EQUALS { leftSide: Arc::new(lhs), rightSide: Arc::new(rhs) })
     } else {
         match lhs {
             Absyn::Exp::CALL { function_, functionArgs, .. } =>
                 Ok(Equation::EQ_NORETCALL { functionName: Arc::new((*function_).clone()), functionArgs }),
-            _ => Err(ErrMode::Backtrack(ContextError::default())),
+            _ => {
+                // `modelicaParserAssert(isCall(e1), …)` — a hard error, like
+                // the standalone-expression case in `assign_clause_a`.
+                let (lt1_line, lt1_col) = match input.first() {
+                    Some(t) => (t.line, t.col),
+                    None => (start[0].line, start[0].col + 1),
+                };
+                Err(parser_assert_fail(
+                    "A singleton expression in an equation section is required to be a function call",
+                    start[0].line, start[0].col, lt1_line, lt1_col.saturating_sub(1),
+                ))
+            }
         }
     }
 }
@@ -1725,10 +2002,13 @@ fn if_equation_e(input: &mut TokenInput) -> ModalResult<Equation> {
         }
         else_if_branches.push((Arc::new(elif_cond), to_rc_list(equation_list(input)?)));
     }
+    let mut has_else = false;
     let else_items = if matches!(peek_kind(input), Some(TK::Else)) {
+        has_else = true;
         next_tok(input)?;
         equation_list(input)?
     } else { Arc::new(List::Nil) };
+    let (end_line, end_col) = next_pos(input);
     match cut_err(next_tok)
         .context(StrContext::Label("'end' closing if-equation"))
         .parse_next(input)?
@@ -1736,7 +2016,34 @@ fn if_equation_e(input: &mut TokenInput) -> ModalResult<Equation> {
         TK::End => {}
         _       => return Err(ErrMode::Cut(ContextError::default())),
     }
-    next_tok(input)?; // "if" or end-ident
+    // ANTLR lexes `end if` / `end <ident>` / `end for` / `end when` as
+    // composite tokens and `conditional_equation_e` accepts all of them,
+    // rejecting everything but END_IF with a dedicated diagnostic for the
+    // classic nested-`else if` mistake.
+    match peek_kind(input) {
+        Some(TK::If) => { next_tok(input)?; }
+        Some(TK::Ident(_)) | Some(TK::For) | Some(TK::When) => {
+            next_tok(input)?;
+            let (l2, c2) = match input.first() {
+                Some(t) => (t.line, t.col),
+                None => (end_line, end_col),
+            };
+            return Err(parser_assert_fail(
+                if has_else {
+                    "Expected 'end if'; did you use a nested 'else if' instead of 'elseif'?"
+                } else {
+                    "Expected 'end if'"
+                },
+                end_line, end_col, l2, c2,
+            ));
+        }
+        _ => {
+            return Err(ErrMode::Cut(ContextError::new().add_context(
+                input, &input.checkpoint(),
+                StrContext::Label("'if' after 'end' closing if-equation"),
+            )));
+        }
+    }
     let mut elseif_list: Arc<List<(Arc<Absyn::Exp>, Arc<List<Arc<EquationItem>>>)>> = Arc::new(List::Nil);
     for branch in else_if_branches.into_iter().rev() { elseif_list = cons(branch, elseif_list); }
     Ok(Equation::EQ_IF {
@@ -1935,21 +2242,108 @@ fn algorithm_item(input: &mut TokenInput) -> ModalResult<AlgorithmItem> {
     })
 }
 
+/// `AbsynUtil.isDerCref`: a `der(cr)` call with a single positional cref
+/// argument. Used for the non-standard `der(cr) := exp` statement form.
+fn is_der_cref(exp: &Absyn::Exp) -> bool {
+    if let Absyn::Exp::CALL { function_, functionArgs, .. } = exp
+        && let Absyn::ComponentRef::CREF_IDENT { name, subscripts } = &**function_
+        && name.as_str() == "der" && subscripts.is_empty()
+        && let Absyn::FunctionArgs::FUNCTIONARGS { args, argNames } = &**functionArgs
+        && argNames.is_empty()
+        && let List::Cons { head, tail } = &**args
+        && tail.is_empty()
+    {
+        return matches!(&**head, Absyn::Exp::CREF { .. });
+    }
+    false
+}
+
+/// `assign_clause_a` from `Modelica.g`, including its `modelicaParserAssert`
+/// diagnostics: `=` is rejected in algorithm sections, and outside
+/// MetaModelica the statement must be `cref := exp`,
+/// `(out, …) := call(…)`, a `der(cr) := exp` compatibility form (which only
+/// gets a warning), or a standalone function call.
 fn assign_clause_a(input: &mut TokenInput) -> ModalResult<Algorithm> {
+    let start = *input;
     let lhs = simple_expression(input)?;
     if matches!(peek_kind(input), Some(TK::Assign) | Some(TK::Equal)) {
+        let is_equals = matches!(input[0].kind, TK::Equal);
+        let (eq_line, eq_col) = (input[0].line, input[0].col);
         next_tok(input)?;
         let value = cut_err(expression)
             .context(StrContext::Label("right-hand side of assignment"))
             .parse_next(input)?;
+        if is_equals {
+            // The grammar parses the RHS before rejecting the statement, so
+            // the recorded span is just the `=` token itself.
+            return Err(parser_assert_fail(
+                "Algorithms can not contain equations ('='), use assignments (':=') instead",
+                eq_line, eq_col, eq_line, eq_col + 1,
+            ));
+        }
+        if !metamodelica_enabled() {
+            // MetaModelica allows pattern matching on arbitrary expressions
+            // in algorithm sections; plain Modelica restricts the LHS form.
+            // Like the C parser, the RHS call check looks at the raw node —
+            // a comment-wrapped call does not count.
+            let looks_like_cref = matches!(lhs, Absyn::Exp::CREF { .. });
+            let looks_like_call = matches!(lhs, Absyn::Exp::TUPLE { .. })
+                && matches!(value, Absyn::Exp::CALL { .. });
+            let looks_like_der_cr = !looks_like_cref && !looks_like_call && is_der_cref(&lhs);
+            // LT(1) position; ANTLR uses charPosition (0-based) for the
+            // assert's end column but charPosition+1 for the warning's.
+            let (lt1_line, lt1_col) = match input.first() {
+                Some(t) => (t.line, t.col),
+                None => (start[0].line, start[0].col + 1),
+            };
+            if !(looks_like_cref || looks_like_call || looks_like_der_cr) {
+                return Err(parser_assert_fail(
+                    "Modelica assignment statements are either on the form 'component_reference := expression' or '( output_expression_list ) := function_call'",
+                    start[0].line, start[0].col, lt1_line, lt1_col.saturating_sub(1),
+                ));
+            }
+            if looks_like_der_cr {
+                add_syntax_message(
+                    SyntaxSeverity::Warning,
+                    "der(cr) := exp is not legal Modelica code. OpenModelica accepts it for interoperability with non-standards-compliant Modelica tools. There is no way to suppress this warning.".to_owned(),
+                    start[0].line, start[0].col, lt1_line, lt1_col,
+                );
+            }
+        }
         Ok(Algorithm::ALG_ASSIGN { assignComponent: Arc::new(lhs), value: Arc::new(value) })
     } else {
         match lhs {
             Absyn::Exp::CALL { function_, functionArgs, .. } =>
                 Ok(Algorithm::ALG_NORETCALL { functionCall: Arc::new((*function_).clone()), functionArgs }),
-            _ => Err(ErrMode::Backtrack(ContextError::default())),
+            _ => {
+                // `modelicaParserAssert(isCall(e1), …)`: a standalone
+                // non-call expression is a hard syntax error, not a
+                // backtrack — every caller has already committed to a
+                // statement here (bare expressions in .mos scripts are
+                // consumed by `top_algorithm`'s expression predicate).
+                let (lt1_line, lt1_col) = match input.first() {
+                    Some(t) => (t.line, t.col),
+                    None => (start[0].line, start[0].col + 1),
+                };
+                Err(parser_assert_fail(
+                    "Only function call expressions may stand alone in an algorithm section",
+                    start[0].line, start[0].col, lt1_line, lt1_col.saturating_sub(1),
+                ))
+            }
         }
     }
+}
+
+/// `top_assign_clause_a` (Modelica.g): the interactive (.mos) assignment
+/// statement. Unlike [`assign_clause_a`] it only accepts `:=` and performs
+/// none of the algorithm-section shape checks.
+fn top_assign_clause_a(input: &mut TokenInput) -> ModalResult<Algorithm> {
+    let lhs = simple_expression(input)?;
+    t(TK::Assign).parse_next(input)?;
+    let value = cut_err(expression)
+        .context(StrContext::Label("right-hand side of assignment"))
+        .parse_next(input)?;
+    Ok(Algorithm::ALG_ASSIGN { assignComponent: Arc::new(lhs), value: Arc::new(value) })
 }
 
 fn if_algorithm(input: &mut TokenInput) -> ModalResult<Algorithm> {
@@ -1971,14 +2365,43 @@ fn if_algorithm(input: &mut TokenInput) -> ModalResult<Algorithm> {
         }
         else_if_branches.push((Arc::new(elif_cond), to_rc_list(algorithm_list(input)?)));
     }
+    let mut has_else = false;
     let else_items = if matches!(peek_kind(input), Some(TK::Else)) {
+        has_else = true;
         next_tok(input)?; algorithm_list(input)?
     } else { Arc::new(List::Nil) };
+    let (end_line, end_col) = next_pos(input);
     match cut_err(next_tok).context(StrContext::Label("'end' closing if-algorithm")).parse_next(input)? {
         TK::End => {}
         _       => return Err(ErrMode::Cut(ContextError::default())),
     }
-    next_tok(input)?; // "if" or end-ident
+    // See if_equation_e: only `end if` closes the statement; an `end`
+    // followed by an identifier/for/when/while is the nested-`else if`
+    // mistake (conditional_equation_a in Modelica.g).
+    match peek_kind(input) {
+        Some(TK::If) => { next_tok(input)?; }
+        Some(TK::Ident(_)) | Some(TK::For) | Some(TK::When) | Some(TK::While) => {
+            next_tok(input)?;
+            let (l2, c2) = match input.first() {
+                Some(t) => (t.line, t.col),
+                None => (end_line, end_col),
+            };
+            return Err(parser_assert_fail(
+                if has_else {
+                    "Expected 'end if'; did you use a nested 'else if' instead of 'elseif'?"
+                } else {
+                    "Expected 'end if'"
+                },
+                end_line, end_col, l2, c2,
+            ));
+        }
+        _ => {
+            return Err(ErrMode::Cut(ContextError::new().add_context(
+                input, &input.checkpoint(),
+                StrContext::Label("'if' after 'end' closing if-statement"),
+            )));
+        }
+    }
     let mut elseif_list: Arc<List<(Arc<Absyn::Exp>, Arc<List<Arc<AlgorithmItem>>>)>> = Arc::new(List::Nil);
     for branch in else_if_branches.into_iter().rev() { elseif_list = cons(branch, elseif_list); }
     Ok(Algorithm::ALG_IF {
@@ -2147,7 +2570,7 @@ fn top_algorithm(input: &mut TokenInput) -> ModalResult<crate::GlobalScript::Sta
         Some(TK::Try)   => try_algorithm(input)?,   // try_clause
         // NOTE: `parfor_clause_a` (ParModelica) is not implemented — the
         // algorithm-section parser does not support parfor loops either.
-        _               => assign_clause_a(input)?, // top_assign_clause_a
+        _               => top_assign_clause_a(input)?,
     };
     let cmt = comment(input)?;
     Ok(crate::GlobalScript::Statement::IALG {
@@ -2824,18 +3247,27 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
         Some(TK::Str(s))=> { let value = s.clone(); next_tok(input)?; return Ok(Absyn::Exp::STRING { value }); }
         Some(TK::Int(_)) | Some(TK::Real(..)) => { return number_literal(input); }
         Some(TK::LParen) => {
+            let (paren_line, paren_col) = next_pos(input);
             next_tok(input)?;
             let (exprs, is_tuple) = output_expression_list(input)?;
             let raw_subs = opt(array_subscripts).parse_next(input)?;
             if let Some(subs) = raw_subs {
                 // `(e)[subs]` stores the bare expression; the dump re-adds
                 // the parentheses for SUBSCRIPTED_EXP itself. Subscripting a
-                // tuple is a syntax error, as in `Modelica.g` `primary`.
+                // tuple is a syntax error, as in `Modelica.g` `primary`
+                // (recorded there as a non-fatal c_add_source_message; we
+                // abort, which yields the same observable diagnostic).
                 if is_tuple {
-                    return Err(ErrMode::Cut(ContextError::new().add_context(
-                        input, &input.checkpoint(),
-                        StrContext::Label("Tuple expression can not be subscripted"),
-                    )));
+                    let (l2, c2) = match input.first() {
+                        Some(t) => (t.line, t.col),
+                        None => (paren_line, paren_col),
+                    };
+                    add_syntax_message(
+                        SyntaxSeverity::Error,
+                        "Tuple expression can not be subscripted.".to_owned(),
+                        paren_line, paren_col, l2, c2,
+                    );
+                    return Err(ErrMode::Cut(ContextError::new()));
                 }
                 let exp = match &*exprs {
                     List::Cons { head, .. } => head.clone(),
@@ -2864,6 +3296,7 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
             return Ok(Absyn::Exp::MATRIX { matrix: rows });
         }
         Some(TK::LBrace) => {
+            let (brace_line, brace_col) = next_pos(input);
             next_tok(input)?;
             let fa = for_or_expression_list(input)?;
             t(TK::RBrace).parse_next(input)?;
@@ -2876,8 +3309,22 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
                         typeVars: nil(),
                     })
                 }
-                Absyn::FunctionArgs::FUNCTIONARGS { args, argNames } if argNames.is_empty() =>
-                    Ok(Absyn::Exp::ARRAY { arrayExp: args }),
+                Absyn::FunctionArgs::FUNCTIONARGS { args, argNames } if argNames.is_empty() => {
+                    // `{}` is only allowed in MetaModelica (the empty list)
+                    // and in interactive .mos scripts (`Modelica.g` allows it
+                    // there explicitly).
+                    if args.is_empty() && !metamodelica_enabled() && !parse_expression_enabled() {
+                        let (l2, c2) = match input.first() {
+                            Some(t) => (t.line, t.col.saturating_sub(1)),
+                            None => (brace_line, brace_col + 1),
+                        };
+                        return Err(parser_assert_fail(
+                            "Empty array constructors are not valid in Modelica.",
+                            brace_line, brace_col, l2, c2,
+                        ));
+                    }
+                    Ok(Absyn::Exp::ARRAY { arrayExp: args })
+                }
                 _ => Err(ErrMode::Backtrack(ContextError::default())),
             };
         }
@@ -3267,7 +3714,19 @@ mod tests {
 
     #[test]
     fn empty_array() {
+        // `{}` is a syntax error in plain Modelica (`Modelica.g` `primary`:
+        // "Empty array constructors are not valid in Modelica.")…
+        CURRENT_GRAMMAR.with(|g| g.set(Grammar::Modelica3));
+        INTERACTIVE_PARSE.with(|f| f.set(false));
         let tokens = lexer::lex("{};", Grammar::Modelica3).unwrap();
+        let mut ts = tokens.as_slice();
+        assert!(expression(&mut ts).is_err());
+        let msgs = take_syntax_messages();
+        assert!(msgs.iter().any(|m| m.message.contains("Empty array constructors")),
+                "messages = {msgs:?}");
+        // …but it is the empty-list literal in MetaModelica.
+        CURRENT_GRAMMAR.with(|g| g.set(Grammar::MetaModelica));
+        let tokens = lexer::lex("{};", Grammar::MetaModelica).unwrap();
         let mut ts = tokens.as_slice();
         let exp = expression(&mut ts).unwrap();
         assert!(matches!(exp, Exp::ARRAY { arrayExp } if arrayExp.is_empty()));

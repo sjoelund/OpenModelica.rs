@@ -59,6 +59,36 @@ fn select_grammar(acceptedGram: i32, languageStandardInt: i32) -> Grammar {
     }
 }
 
+/// Forward the syntax diagnostics recorded by the most recent parser
+/// invocation to the Error subsystem, the way the C parser's
+/// `displayRecognitionError` calls `c_add_source_message` (Parser/parse.c).
+/// Must run after every entry-point call, success or failure: a successful
+/// parse can still record warnings (e.g. the `der(cr) :=` compatibility
+/// warning).
+fn report_syntax_messages(info_filename: &str) {
+    use openmodelica_util::ErrorTypes::{MessageType, Severity};
+    for m in parser::take_syntax_messages() {
+        openmodelica_util::ErrorExt::addSourceMessage(
+            // Error id used by the C parser for every syntax diagnostic
+            // (the literal `2` in its c_add_source_message calls).
+            2,
+            MessageType::SYNTAX,
+            match m.severity {
+                parser::SyntaxSeverity::Error => Severity::ERROR,
+                parser::SyntaxSeverity::Warning => Severity::WARNING,
+            },
+            m.line1 as i32,
+            m.col1 as i32,
+            m.line2 as i32,
+            m.col2 as i32,
+            false,
+            ArcStr::from(info_filename),
+            ArcStr::from(m.message),
+            metamodelica::nil(),
+        );
+    }
+}
+
 /// Wrap [`parser::parse`]'s `Box<dyn Error>` into an `anyhow::Error` so
 /// the MetaModelica-facing signatures (which return `anyhow::Result`)
 /// can use `?` directly. `filename` is the real path stored into SOURCEINFO;
@@ -66,7 +96,9 @@ fn select_grammar(acceptedGram: i32, languageStandardInt: i32) -> Grammar {
 /// display syntax errors — same split as the C parser's `filename_C` vs
 /// `filename_C_testsuiteFriendly` (Parser/parse.c).
 fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Absyn::Program> {
-    parser::parse(src, filename, info_filename, grammar).map_err(|e| anyhow!(e.to_string()))
+    let result = parser::parse(src, filename, info_filename, grammar).map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(info_filename);
+    result
 }
 
 pub fn parse(
@@ -126,7 +158,9 @@ pub fn parseexp(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
+    let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 pub fn parsestringexp(
@@ -137,7 +171,9 @@ pub fn parsestringexp(
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()))
+    let result = parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 pub fn stringPath(
@@ -148,9 +184,11 @@ pub fn stringPath(
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::Path>> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_path(r#str.as_str(), infoFilename.as_str(), grammar)
+    let result = parser::parse_path(r#str.as_str(), infoFilename.as_str(), grammar)
         .map(Arc::new)
-        .map_err(|e| anyhow!(e.to_string()))
+        .map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 pub fn stringCref(
@@ -161,9 +199,11 @@ pub fn stringCref(
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::ComponentRef>> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_cref(r#str.as_str(), infoFilename.as_str(), grammar)
+    let result = parser::parse_cref(r#str.as_str(), infoFilename.as_str(), grammar)
         .map(Arc::new)
-        .map_err(|e| anyhow!(e.to_string()))
+        .map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 pub fn stringMod(
@@ -174,9 +214,11 @@ pub fn stringMod(
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::ElementArg>> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_modification(r#str.as_str(), infoFilename.as_str(), grammar)
+    let result = parser::parse_modification(r#str.as_str(), infoFilename.as_str(), grammar)
         .map(Arc::new)
-        .map_err(|e| anyhow!(e.to_string()))
+        .map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 pub fn stringEq(
@@ -187,9 +229,11 @@ pub fn stringEq(
     _runningTestsuite: bool,
 ) -> Result<Arc<Absyn::EquationItem>> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    parser::parse_equation(r#str.as_str(), infoFilename.as_str(), grammar)
+    let result = parser::parse_equation(r#str.as_str(), infoFilename.as_str(), grammar)
         .map(Arc::new)
-        .map_err(|e| anyhow!(e.to_string()))
+        .map_err(|e| anyhow!(e.to_string()));
+    report_syntax_messages(infoFilename.as_str());
+    result
 }
 
 // ---------------------------------------------------------------------

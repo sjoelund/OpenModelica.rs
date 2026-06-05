@@ -356,6 +356,71 @@ pub fn keyword_as_str(kind: &TokenKind) -> Option<&'static str> {
     }
 }
 
+/// Source spelling of a token, for syntax diagnostics like
+/// `"No viable alternative near token: %s"` (the C parser uses the ANTLR
+/// token text here, see `Parser/parse.c` `displayRecognitionError`).
+///
+/// Quoted identifiers lose their quotes (the lexer strips them), matching
+/// the limitation documented on [`TokenKind::source_char_len`].
+pub fn source_text(kind: &TokenKind) -> String {
+    match kind {
+        TokenKind::Ident(s)   => s.to_string(),
+        TokenKind::Int(n)     => n.to_string(),
+        TokenKind::Real(_, s) => s.to_string(),
+        TokenKind::Str(s)     => format!("\"{s}\""),
+
+        TokenKind::Wild    => "_".to_owned(),
+        TokenKind::Allwild => "__".to_owned(),
+
+        TokenKind::Plus => "+".to_owned(),
+        TokenKind::Minus => "-".to_owned(),
+        TokenKind::Star => "*".to_owned(),
+        TokenKind::Slash => "/".to_owned(),
+        TokenKind::Power => "^".to_owned(),
+        TokenKind::Percent => "%".to_owned(),
+        TokenKind::PlusEw => ".+".to_owned(),
+        TokenKind::MinusEw => ".-".to_owned(),
+        TokenKind::StarEw => ".*".to_owned(),
+        TokenKind::SlashEw => "./".to_owned(),
+        TokenKind::PowerEw => ".^".to_owned(),
+
+        TokenKind::Less => "<".to_owned(),
+        TokenKind::Leq => "<=".to_owned(),
+        TokenKind::Greater => ">".to_owned(),
+        TokenKind::Geq => ">=".to_owned(),
+        TokenKind::EqEq => "==".to_owned(),
+        TokenKind::NotEq => "<>".to_owned(),
+
+        TokenKind::LParen => "(".to_owned(),
+        TokenKind::RParen => ")".to_owned(),
+        TokenKind::LBracket => "[".to_owned(),
+        TokenKind::RBracket => "]".to_owned(),
+        TokenKind::LBrace => "{".to_owned(),
+        TokenKind::RBrace => "}".to_owned(),
+        TokenKind::Equal => "=".to_owned(),
+        TokenKind::Assign => ":=".to_owned(),
+        TokenKind::Comma => ",".to_owned(),
+        TokenKind::Colon => ":".to_owned(),
+        TokenKind::ColonColon => "::".to_owned(),
+        TokenKind::Semi => ";".to_owned(),
+        TokenKind::Dot => ".".to_owned(),
+        TokenKind::Pipe => "|".to_owned(),
+
+        TokenKind::Code => "$Code".to_owned(),
+        TokenKind::CodeName => "$TypeName".to_owned(),
+        TokenKind::CodeExp => "$Expression".to_owned(),
+        TokenKind::CodeVar => "$Var".to_owned(),
+        TokenKind::CodeAnnotation => "$annotation".to_owned(),
+
+        TokenKind::BOM => "\u{FEFF}".to_owned(),
+
+        // All remaining variants are keywords covered by keyword_as_str.
+        other => keyword_as_str(other)
+            .expect("token kind has neither dedicated spelling nor keyword text")
+            .to_owned(),
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Error type
 // ---------------------------------------------------------------------------
@@ -693,9 +758,32 @@ impl<'s> Lexer<'s> {
                 Err(e) => Err(self.err(format!("invalid real literal '{}': {}", s, e))),
             }
         } else {
-            s.parse::<i32>()
-                .map(TokenKind::Int)
-                .map_err(|e| self.err(format!("integer literal '{}' out of i32 range: {}", s, e)))
+            match s.parse::<i32>() {
+                Ok(n) => Ok(TokenKind::Int(n)),
+                Err(_) => {
+                    // The C parser (`Modelica.g` `primary`, the strtol/strtod
+                    // fallback) turns an integer literal that does not fit
+                    // `modelica_integer` into a Real literal with a warning.
+                    // The port's modelica_integer is i32, so this matches the
+                    // 32-bit build of omc. (The 31/63-bit MMC fixnum
+                    // truncation branch does not apply: the port's integers
+                    // are not tagged.)
+                    match s.parse::<f64>() {
+                        Ok(d) if d.is_finite() => {
+                            let col1 = self.col - s.chars().count() as u32;
+                            super::add_syntax_message(
+                                super::SyntaxSeverity::Warning,
+                                format!("Modelica only supports 32-bit signed integers! Transforming: {s} into a real"),
+                                self.line, col1, self.line, self.col,
+                            );
+                            Ok(TokenKind::Real(d, s.into()))
+                        }
+                        _ => Err(self.err(format!(
+                            "Number is too large to be represented by a double on this machine: {s}"
+                        ))),
+                    }
+                }
+            }
         }
     }
 
