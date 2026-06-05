@@ -96,7 +96,18 @@ fn ensure_runtime_solibs() {
     use std::sync::Once;
     static ONCE: Once = Once::new();
     ONCE.call_once(|| {
-        for lib in ["libOpenModelicaRuntimeC.so"] {
+        // libomcruntime holds process-global state — the System PRNG seed
+        // (`system_random_seed`), the Print buffers, the errorext message
+        // stack. In the C omc that state lives in the executable and never
+        // resets; pin the library here so the dlclose of a function library
+        // (each `-d=gen` call frees its `.so` afterwards) can never drop its
+        // refcount to zero and reset those statics. Its `RTLD_NOW` load needs
+        // two symbol sources that the C omc's executable provides by linking
+        // them outright: openblas (libomcruntime underlinks LAPACK — `dgesv_`
+        // and friends are not in its DT_NEEDED closure), pinned global just
+        // before it, and `omc_Error_getCurrentComponent` from the executable's
+        // dynamic symbol table (the shim in DynLoadExt.rs).
+        for lib in ["libOpenModelicaRuntimeC.so", "libopenblas.so.0", "libomcruntime.so"] {
             // First by basename: this resolves through the binary's RUNPATH
             // (`$ORIGIN/../lib/<triple>/omc`, see openmodelica/build.rs) and
             // — crucially — registers the library in ld.so's link map under

@@ -757,6 +757,51 @@ fn sync_flags_global_root(rt: &MmcAlloc, thread_data: *mut c_void) -> Result<()>
     Ok(())
 }
 
+/// `omc_Error_getCurrentComponent`, exported for the dlopened `-d=gen`
+/// runtime: libomcruntime.so's error reporting (`c_add_message` in
+/// errorext.cpp) calls back into the *compiler* for the current
+/// instantiation-context prefix. In the C omc that symbol comes from the
+/// compiled Error module inside the omc executable; the Rust port must
+/// provide it itself or `dlopen` of any generated function linking
+/// `-lomcruntime` fails with an unresolved-symbol error. Delegates to the
+/// port's Error module and marshals the two strings into the caller's MMC
+/// heap (the GC is paused around every `executeFunction` call, so they stay
+/// put while errorext copies them). Exported from the executable's dynamic
+/// symbol table via the link flag in `openmodelica/build.rs`.
+#[unsafe(no_mangle)]
+pub extern "C" fn omc_Error_getCurrentComponent(
+    _thread_data: *mut c_void,
+    sline: *mut i64,
+    scol: *mut i64,
+    eline: *mut i64,
+    ecol: *mut i64,
+    read_only: *mut i64,
+    filename: *mut *mut c_void,
+) -> *mut c_void {
+    let (s, sl, sc, el, ec, ro, file) = openmodelica_util::Error::getCurrentComponent()
+        .unwrap_or_else(|_| (ArcStr::default(), 0, 0, 0, 0, false, ArcStr::default()));
+    // Allocation failure leaves us with nothing valid to hand the C side;
+    // that only happens if the runtime is torn down mid-call. Abort rather
+    // than unwind across the FFI boundary.
+    let str_box = make_c_string(s.as_str()).unwrap_or_else(|e| {
+        eprintln!("omc_Error_getCurrentComponent: {e}");
+        std::process::abort()
+    });
+    let file_box = make_c_string(file.as_str()).unwrap_or_else(|e| {
+        eprintln!("omc_Error_getCurrentComponent: {e}");
+        std::process::abort()
+    });
+    unsafe {
+        *sline = sl as i64;
+        *scol = sc as i64;
+        *eline = el as i64;
+        *ecol = ec as i64;
+        *read_only = ro as i64;
+        *filename = file_box as *mut c_void;
+    }
+    str_box as *mut c_void
+}
+
 pub fn executeFunction(handle: i32, values: Arc<List<Arc<Values::Value>>>, _debug: bool) -> Result<Arc<Values::Value>> {
     let addr = dynload::function_addr(handle)?;
     let thread_data = dynload::thread_data()? as *mut c_void;

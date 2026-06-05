@@ -21,4 +21,12 @@ fn main() {
     };
     println!("cargo:rustc-link-arg-bins=-Wl,-rpath,$ORIGIN/../lib/{triple}/omc");
     println!("cargo:rustc-link-arg-bins=-Wl,-rpath,$ORIGIN");
+    // libomcruntime.so (dlopened by the `-d=gen` pipeline) resolves the
+    // compiler callback `omc_Error_getCurrentComponent` against the host
+    // executable — in the C omc it comes from the compiled Error module in
+    // the binary. Export the Rust port's shim (DynLoadExt.rs) from the
+    // dynamic symbol table; `-u` keeps the rlib object alive through the
+    // link so there is a definition to export.
+    println!("cargo:rustc-link-arg-bins=-Wl,-u,omc_Error_getCurrentComponent");
+    println!("cargo:rustc-link-arg-bins=-Wl,--export-dynamic-symbol=omc_Error_getCurrentComponent");
 }
