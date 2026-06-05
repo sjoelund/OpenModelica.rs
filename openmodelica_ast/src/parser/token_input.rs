@@ -115,6 +115,23 @@ pub fn t_ident(input: &mut &[LexToken]) -> ModalResult<ArcStr> {
     Ok(s)
 }
 
+/// Consume a name-path component: `IDENT | CODE` only (ANTLR `name_path2`).
+/// Unlike [`t_ident`] this does *not* accept `der`/`initial`/`equality`, which
+/// the grammar admits as declaration names but not inside a qualified name or
+/// type reference (so `Real x(initial = 1)` is correctly a syntax error).
+#[inline]
+pub fn t_path_ident(input: &mut &[LexToken]) -> ModalResult<ArcStr> {
+    match input.first() {
+        Some(LexToken { kind: TK::Ident(s), .. }) => {
+            let s = s.clone(); *input = &input[1..]; Ok(s)
+        }
+        Some(LexToken { kind: TK::Code, .. }) => {
+            *input = &input[1..]; Ok(literal!("$Code"))
+        }
+        _ => Err(ErrMode::Backtrack(ContextError::default())),
+    }
+}
+
 /// Consume an `Ident` *or* any keyword token, returning the source spelling.
 /// Used where keywords may appear as field/record names (e.g. named arguments).
 #[inline]

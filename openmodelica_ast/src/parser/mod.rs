@@ -19,7 +19,7 @@ pub use lexer::{Token as LexToken, TokenKind, LexError};
 pub use token_input::TokenInput;
 
 use lexer::{Token, TokenKind as TK};
-use token_input::{t, next_tok, peek_kind, try_tok, t_ident, t_any_ident, t_str_token};
+use token_input::{t, next_tok, peek_kind, try_tok, t_ident, t_path_ident, t_any_ident, t_str_token};
 use winnow::stream::Stream;
 use metamodelica::{cons, nil, SourceInfo};
 
@@ -2832,8 +2832,10 @@ fn name_path(input: &mut TokenInput) -> ModalResult<Path> {
 }
 
 fn name_path2(input: &mut TokenInput) -> ModalResult<Path> {
+    // `name_path2` (Modelica.g) is `IDENT|CODE`, not the looser `identifier`
+    // rule: keyword-names like `der`/`initial` are not valid path components.
     let mut parts = Vec::new();
-    let mut last_id = t_ident(input)?;
+    let mut last_id = t_path_ident(input)?;
     loop {
         // Only treat Dot as separator if the next token after it is an Ident.
         if input.len() >= 2
@@ -2842,7 +2844,7 @@ fn name_path2(input: &mut TokenInput) -> ModalResult<Path> {
         {
             *input = &input[1..]; // consume Dot
             parts.push(last_id);
-            last_id = t_ident(input)?;
+            last_id = t_path_ident(input)?;
         } else {
             break;
         }
