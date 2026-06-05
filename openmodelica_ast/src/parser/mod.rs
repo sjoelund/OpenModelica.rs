@@ -221,19 +221,33 @@ thread_local! {
     /// which relaxes some pure-Modelica restrictions (e.g. `{}` literals).
     static INTERACTIVE_PARSE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// The `allowPartEvalFunc` argument of the ANTLR `expression` rule: a
-    /// partial function application (`function f(...)`) is only allowed as a
-    /// function-call argument. Set true around such argument expressions and
-    /// cleared on entry to `expression_inner` so it applies to that one
-    /// expression only (not nested ones), exactly like the rule parameter.
-    static ALLOW_PART_EVAL_FUNC: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// partial function application (`function f(...)`) is allowed as a
+    /// function-call argument (`expression[1]`), disallowed in match patterns
+    /// (`expression[0]`), and allowed iff MetaModelica everywhere else
+    /// (`expression[metamodelica_enabled()]`). `Some(_)` is an explicit
+    /// argument; `None` is the default `metamodelica_enabled()` case. The
+    /// cell is consumed on entry to `expression_inner` so an explicit value
+    /// applies to just that expression — nested expressions fall back to the
+    /// default, exactly like the explicit rule arguments in Modelica.g.
+    static ALLOW_PART_EVAL_FUNC: std::cell::Cell<Option<bool>> = const { std::cell::Cell::new(None) };
 }
 
 /// Parse a function-call argument expression, permitting a top-level partial
 /// function application (`expression[1]` in Modelica.g).
 fn arg_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
-    ALLOW_PART_EVAL_FUNC.with(|f| f.set(true));
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(Some(true)));
     let r = expression(input);
-    ALLOW_PART_EVAL_FUNC.with(|f| f.set(false));
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(None));
+    r
+}
+
+/// Parse a match-case pattern expression, rejecting a top-level partial
+/// function application even in MetaModelica (`expression[0]` in the
+/// `pattern` rule of Modelica.g).
+fn pattern_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(Some(false)));
+    let r = expression(input);
+    ALLOW_PART_EVAL_FUNC.with(|f| f.set(None));
     r
 }
 
@@ -2742,7 +2756,7 @@ fn match_onecase(input: &mut TokenInput) -> ModalResult<Absyn::Case> {
         _        => return Err(ErrMode::Backtrack(ContextError::default())),
     }
     let start_pattern = *input;
-    let pattern = expression(input)?;
+    let pattern = pattern_expression(input)?;
     // `pattern` (Modelica.g) computes its info right after the expression,
     // so the end is the start of whatever follows (guard/`then`/...).
     let patternInfo = parser_info(&start_pattern, input);
@@ -2902,9 +2916,13 @@ fn component_reference2(input: &mut TokenInput) -> ModalResult<Absyn::ComponentR
 /// Inner expression parser without comment splicing. Kept private so external
 /// callers can't bypass the EXPRESSIONCOMMENT wrapper.
 fn expression_inner(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
-    // Consume the `allowPartEvalFunc` flag: it governs only this expression,
-    // so nested expressions (parsed below) see it cleared.
-    let allow_part_eval = ALLOW_PART_EVAL_FUNC.with(|f| f.replace(false));
+    // Consume the `allowPartEvalFunc` flag: an explicit value governs only
+    // this expression; nested expressions (parsed below) see the default,
+    // which is `metamodelica_enabled()` like `expression[metamodelica_enabled()]`
+    // at almost every call site in Modelica.g.
+    let allow_part_eval = ALLOW_PART_EVAL_FUNC
+        .with(|f| f.replace(None))
+        .unwrap_or_else(metamodelica_enabled);
     match peek_kind(input) {
         Some(TK::If)                             => return if_expression(input),
         Some(TK::Match) | Some(TK::Matchcontinue) => return match_expression(input),
