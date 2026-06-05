@@ -1104,35 +1104,63 @@ fn composition2(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>>
         }
         if opt(t(TK::Initial)).parse_next(input)?.is_some() {
             if opt(t(TK::Equation)).parse_next(input)?.is_some() {
-                let items = cut_err(equation_section_items)
+                let (items, anns) = cut_err(equation_section_items)
                     .context(StrContext::Label("initial equation section"))
                     .parse_next(input)?;
                 parts = cons(ClassBodyItem::InitialEquations(items), parts);
+                for ann in anns { parts = cons(ClassBodyItem::Annotation(ann), parts); }
             } else if opt(t(TK::Algorithm)).parse_next(input)?.is_some() {
-                let items = cut_err(algorithm_section_items)
+                let (items, anns) = cut_err(algorithm_section_items)
                     .context(StrContext::Label("initial algorithm section"))
                     .parse_next(input)?;
                 parts = cons(ClassBodyItem::InitialAlgorithms(items), parts);
+                for ann in anns { parts = cons(ClassBodyItem::Annotation(ann), parts); }
             } else {
                 return Err(ErrMode::Backtrack(ContextError::default()));
             }
             continue;
         }
         if opt(t(TK::Equation)).parse_next(input)?.is_some() {
-            let items = cut_err(equation_section_items)
+            let (items, anns) = cut_err(equation_section_items)
                 .context(StrContext::Label("equation section"))
                 .parse_next(input)?;
-            parts = cons(ClassBodyItem::Equations(items), parts); continue;
+            parts = cons(ClassBodyItem::Equations(items), parts);
+            for ann in anns { parts = cons(ClassBodyItem::Annotation(ann), parts); }
+            continue;
         }
         if opt(t(TK::Algorithm)).parse_next(input)?.is_some() {
-            let items = cut_err(algorithm_section_items)
+            let (items, anns) = cut_err(algorithm_section_items)
                 .context(StrContext::Label("algorithm section"))
                 .parse_next(input)?;
-            parts = cons(ClassBodyItem::Algorithms(items), parts); continue;
+            parts = cons(ClassBodyItem::Algorithms(items), parts);
+            for ann in anns { parts = cons(ClassBodyItem::Annotation(ann), parts); }
+            continue;
         }
         break;
     }
     Ok(parts.reverse())
+}
+
+/// `constraining_clause_comment?` on a `replaceable` element (Modelica.g):
+/// `constrainedby Path mod?` and the pre-Modelica-3 spelling
+/// `extends Path mod?` both produce the same `EXTENDS` element spec, followed
+/// by the constraining clause's own comment/annotation. Only consulted after
+/// a `replaceable` prefix, so it can never swallow a following
+/// `extends X;` element — that one is separated by the element's `;`.
+fn opt_constraining_clause(input: &mut TokenInput, replaceable_: bool) -> ModalResult<Option<ConstrainClass>> {
+    if !replaceable_
+        || !matches!(peek_kind(input), Some(TK::Constrainedby) | Some(TK::Extends))
+    {
+        return Ok(None);
+    }
+    next_tok(input)?;
+    let path       = cut_err(name_path).context(StrContext::Label("path in constraining clause")).parse_next(input)?;
+    let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
+    let cmt        = comment(input)?;
+    Ok(Some(ConstrainClass {
+        elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
+        comment: cmt.map(Arc::new),
+    }))
 }
 
 fn element_list(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>> {
@@ -1239,15 +1267,7 @@ fn element_list(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>>
         let had_prefixes = redeclare_ || final_ || inner_ || outer_ || replaceable_;
 
         if let Some(cls) = opt(class_definition).parse_next(input)? {
-            let constrainClass = if replaceable_ && opt(t(TK::Constrainedby)).parse_next(input)?.is_some() {
-                let path       = cut_err(name_path).context(StrContext::Label("path in constrainedby")).parse_next(input)?;
-                let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
-                let cmt        = comment(input)?;
-                Some(ConstrainClass {
-                    elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
-                    comment: cmt.map(Arc::new),
-                })
-            } else { None };
+            let constrainClass = opt_constraining_clause(input, replaceable_)?;
             let last_tok = &input[0];
             cut_err(t(TK::Semi)).context(StrContext::Label("';' after class definition")).parse_next(input)?;
             let elem = Absyn::Element::ELEMENT {
@@ -1258,15 +1278,7 @@ fn element_list(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>>
             items = cons(ClassBodyItem::Element(elem), items); continue;
         }
         if let Some(cc) = opt(component_clause).parse_next(input)? {
-            let constrainClass = if replaceable_ && opt(t(TK::Constrainedby)).parse_next(input)?.is_some() {
-                let path       = cut_err(name_path).context(StrContext::Label("path in constrainedby")).parse_next(input)?;
-                let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
-                let cmt        = comment(input)?;
-                Some(ConstrainClass {
-                    elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
-                    comment: cmt.map(Arc::new),
-                })
-            } else { None };
+            let constrainClass = opt_constraining_clause(input, replaceable_)?;
             let last_tok = &input[0];
             let elem = Absyn::Element::ELEMENT {
                 finalPrefix: final_, redeclareKeywords, innerOuter,
@@ -1349,15 +1361,7 @@ fn element(input: &mut TokenInput) -> ModalResult<Absyn::Element> {
     let had_prefixes = redeclare_ || final_ || inner_ || outer_ || replaceable_;
 
     if let Some(cls) = opt(class_definition).parse_next(input)? {
-        let constrainClass = if replaceable_ && opt(t(TK::Constrainedby)).parse_next(input)?.is_some() {
-            let path       = cut_err(name_path).context(StrContext::Label("path in constrainedby")).parse_next(input)?;
-            let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
-            let cmt        = comment(input)?;
-            Some(ConstrainClass {
-                elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
-                comment: cmt.map(Arc::new),
-            })
-        } else { None };
+        let constrainClass = opt_constraining_clause(input, replaceable_)?;
         let last_tok = &input[0];
         cut_err(t(TK::Semi)).context(StrContext::Label("';' after class definition")).parse_next(input)?;
         let elem = Absyn::Element::ELEMENT {
@@ -1368,15 +1372,7 @@ fn element(input: &mut TokenInput) -> ModalResult<Absyn::Element> {
         return Ok(elem);
     }
     if let Some(cc) = opt(component_clause).parse_next(input)? {
-        let constrainClass = if replaceable_ && opt(t(TK::Constrainedby)).parse_next(input)?.is_some() {
-            let path       = cut_err(name_path).context(StrContext::Label("path in constrainedby")).parse_next(input)?;
-            let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
-            let cmt        = comment(input)?;
-            Some(ConstrainClass {
-                elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
-                comment: cmt.map(Arc::new),
-            })
-        } else { None };
+        let constrainClass = opt_constraining_clause(input, replaceable_)?;
         let last_tok = &input[0];
         let elem = Absyn::Element::ELEMENT {
             finalPrefix: final_, redeclareKeywords, innerOuter,
@@ -1608,19 +1604,7 @@ fn parse_replaceable_spec(input: &mut TokenInput) -> ModalResult<(ElementSpec, O
             .parse_next(input)?;
         ElementSpec::COMPONENTS { attributes: typePrefix, typeSpec: Arc::new(typeSpec), components: List::new(Arc::new(comp)) }
     };
-    let constrainClass = if opt(t(TK::Constrainedby)).parse_next(input)?.is_some() {
-        let path       = cut_err(name_path)
-            .context(StrContext::Label("path in constrainedby clause"))
-            .parse_next(input)?;
-        let elementArg = opt(class_modification).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
-        let comment    = comment(input)?;
-        Some(ConstrainClass {
-            elementSpec: Arc::new(ElementSpec::EXTENDS { path: Arc::new(path), elementArg, annotationOpt: None }),
-            comment: comment.map(Arc::new),
-        })
-    } else {
-        None
-    };
+    let constrainClass = opt_constraining_clause(input, true)?;
     Ok((elementSpec, constrainClass))
 }
 
@@ -1848,8 +1832,15 @@ fn external_part(input: &mut TokenInput) -> ModalResult<ClassBodyItem> {
 // Equation / algorithm sections
 // ---------------------------------------------------------------------------
 
-fn equation_section_items(input: &mut TokenInput) -> ModalResult<Arc<List<EquationItem>>> {
+/// Equation-section contents: equations interleaved with `annotation(…);`
+/// items. The annotations are *class-level* annotations in the AST — the
+/// ANTLR3 `equation_annotation_list` collects them into the class's `ann`
+/// out-parameter — so they are returned separately for the caller to splice
+/// in as [`ClassBodyItem::Annotation`] entries (which `split_annotations`
+/// hoists like any other class annotation).
+fn equation_section_items(input: &mut TokenInput) -> ModalResult<(Arc<List<EquationItem>>, Vec<Annotation>)> {
     let mut items: Arc<List<EquationItem>> = Arc::new(List::Nil);
+    let mut anns: Vec<Annotation> = Vec::new();
     loop {
         let (next_l, next_c) = next_pos(input);
         for txt in take_comments_before(next_l, next_c) {
@@ -1858,17 +1849,28 @@ fn equation_section_items(input: &mut TokenInput) -> ModalResult<Arc<List<Equati
         if input.is_empty() { break; }
         match peek_kind(input) {
             Some(TK::Public) | Some(TK::Protected) | Some(TK::Equation) | Some(TK::Algorithm)
-            | Some(TK::External) | Some(TK::End) | Some(TK::Initial) | Some(TK::Annotation) => break,
+            | Some(TK::External) | Some(TK::End) | Some(TK::Initial) => break,
+            Some(TK::Annotation) => {
+                let ann = annotation(input)?;
+                cut_err(t(TK::Semi))
+                    .context(StrContext::Label("';' after annotation in equation section"))
+                    .parse_next(input)?;
+                anns.push(ann);
+                continue;
+            }
             _ => {}
         }
         items = cons(equation_item(input)?, items);
         cut_err(t(TK::Semi)).context(StrContext::Label("';' after equation")).parse_next(input)?;
     }
-    Ok(items.reverse())
+    Ok((items.reverse(), anns))
 }
 
-fn algorithm_section_items(input: &mut TokenInput) -> ModalResult<Arc<List<AlgorithmItem>>> {
+/// Algorithm-section contents; see [`equation_section_items`] for the
+/// interleaved-annotation handling (`algorithm_annotation_list` in ANTLR3).
+fn algorithm_section_items(input: &mut TokenInput) -> ModalResult<(Arc<List<AlgorithmItem>>, Vec<Annotation>)> {
     let mut items: Arc<List<AlgorithmItem>> = Arc::new(List::Nil);
+    let mut anns: Vec<Annotation> = Vec::new();
     loop {
         let (next_l, next_c) = next_pos(input);
         for txt in take_comments_before(next_l, next_c) {
@@ -1877,13 +1879,21 @@ fn algorithm_section_items(input: &mut TokenInput) -> ModalResult<Arc<List<Algor
         if input.is_empty() { break; }
         match peek_kind(input) {
             Some(TK::Public) | Some(TK::Protected) | Some(TK::Equation) | Some(TK::Algorithm)
-            | Some(TK::Initial) | Some(TK::End) | Some(TK::External) | Some(TK::Annotation) => break,
+            | Some(TK::Initial) | Some(TK::End) | Some(TK::External) => break,
+            Some(TK::Annotation) => {
+                let ann = annotation(input)?;
+                cut_err(t(TK::Semi))
+                    .context(StrContext::Label("';' after annotation in algorithm section"))
+                    .parse_next(input)?;
+                anns.push(ann);
+                continue;
+            }
             _ => {}
         }
         items = cons(algorithm_item(input)?, items);
         cut_err(t(TK::Semi)).context(StrContext::Label("';' after statement")).parse_next(input)?;
     }
-    Ok(items.reverse())
+    Ok((items.reverse(), anns))
 }
 
 /// Equations stopping at Then / Else / Elseif / Elsewhen / End.
