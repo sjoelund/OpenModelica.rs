@@ -730,9 +730,12 @@ fn test_get_at_index_lst() {
 
 // ── GetIndexFirst ──
 #[test]
-fn test_get_index_first() {
+fn test_get_index_first() -> Result<()> {
+    // getIndexFirst forwards to listGet, which bounds-checks (fallible).
     let lst = list![10i32, 20, 30];
-    assert_eq!(L::getIndexFirst(1, Arc::clone(&lst)), 10);
+    assert_eq!(L::getIndexFirst(1, Arc::clone(&lst))?, 10);
+    assert!(L::getIndexFirst(4, Arc::clone(&lst)).is_err());
+    Ok(())
 }
 
 // ── GetMember ──
