@@ -112,11 +112,27 @@ pub enum NFBinding {
     },
     WILD,
 }
+impl NFBinding {
+    pub fn interned_UNBOUND() -> Arc<NFBinding> {
+        thread_local! {
+            static INTERNED: Arc<NFBinding> = Arc::new(NFBinding::UNBOUND);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_WILD() -> Arc<NFBinding> {
+        thread_local! {
+            static INTERNED: Arc<NFBinding> = Arc::new(NFBinding::WILD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_UNBOUND() -> Arc<NFBinding> { NFBinding::interned_UNBOUND() }
+pub fn interned_WILD() -> Arc<NFBinding> { NFBinding::interned_WILD() }
 impl Default for NFBinding {
     fn default() -> Self { Self::UNBOUND }
 }
 pub use self::NFBinding::{UNBOUND,RAW_BINDING,UNTYPED_BINDING,TYPED_BINDING,FLAT_BINDING,CEVAL_BINDING,INVALID_BINDING,WILD};
-thread_local! { static __EMPTY_BINDING_TLS: Arc<NFBinding> = Arc::new(crate::NFBinding::UNBOUND); }
+thread_local! { static __EMPTY_BINDING_TLS: Arc<NFBinding> = crate::NFBinding::interned_UNBOUND(); }
 pub fn EMPTY_BINDING() -> Arc<NFBinding> { __EMPTY_BINDING_TLS.with(|__t| __t.clone()) }
 
 pub const NO_CONFIDENCE: i32 = 99999;
@@ -441,9 +457,9 @@ pub fn getInfo(mut binding: Arc<NFBinding>) -> SourceInfo {
 pub fn getType(mut binding: Arc<NFBinding>) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ UNBOUND { .. } => Arc::new(crate::NFType::UNKNOWN),
-        Deref @ RAW_BINDING { .. } => Arc::new(crate::NFType::UNKNOWN),
-        Deref @ UNTYPED_BINDING { .. } => Arc::new(crate::NFType::UNKNOWN),
+        Deref @ UNBOUND { .. } => crate::NFType::interned_UNKNOWN(),
+        Deref @ RAW_BINDING { .. } => crate::NFType::interned_UNKNOWN(),
+        Deref @ UNTYPED_BINDING { .. } => crate::NFType::interned_UNKNOWN(),
         Deref @ TYPED_BINDING { .. } => var_field!((*binding).bindingType, NFBinding::TYPED_BINDING).clone(),
         Deref @ FLAT_BINDING { .. } => Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone()),
         Deref @ CEVAL_BINDING { .. } => Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone()),
@@ -546,11 +562,11 @@ pub fn isEqual(mut binding1: Arc<NFBinding>, mut binding2: Arc<NFBinding>) -> Re
 pub fn toDAE(mut binding: Arc<NFBinding>) -> Result<Arc<DAE::Binding>> {
     let mut outBinding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
     outBinding = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ WILD { .. } => Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND),
-        Deref @ UNBOUND { .. } => Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND),
+        Deref @ WILD { .. } => openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(),
+        Deref @ UNBOUND { .. } => openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(),
         Deref @ TYPED_BINDING { .. } => makeDAEBinding(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone(), var_field!((*binding).variability, NFBinding::TYPED_BINDING).clone())?,
         Deref @ FLAT_BINDING { .. } => makeDAEBinding(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone(), var_field!((*binding).variability, NFBinding::FLAT_BINDING).clone())?,
-        Deref @ CEVAL_BINDING { .. } => Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND),
+        Deref @ CEVAL_BINDING { .. } => openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(),
         Deref @ INVALID_BINDING { .. } => {
             Error::addTotalMessages(var_field!((*binding).errors, NFBinding::INVALID_BINDING).clone())?;
             bail!("fail")

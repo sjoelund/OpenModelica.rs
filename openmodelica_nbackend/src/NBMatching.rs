@@ -151,7 +151,7 @@ pub fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::M
     }
     if changed.clone() {
         full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
-        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
         if Partition::kindIsInitial(kind.clone()) {
             matching = regular(EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;
         } else {

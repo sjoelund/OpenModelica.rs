@@ -142,6 +142,15 @@ pub enum ForType {
         vars: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, SourceInfo)>>,
     },
 }
+impl ForType {
+    pub fn interned_NORMAL() -> Arc<ForType> {
+        thread_local! {
+            static INTERNED: Arc<ForType> = Arc::new(ForType::NORMAL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NORMAL() -> Arc<ForType> { ForType::interned_NORMAL() }
 impl Default for ForType {
     fn default() -> Self { Self::NORMAL }
 }

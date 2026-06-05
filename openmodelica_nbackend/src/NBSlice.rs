@@ -817,8 +817,8 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
             let mut addOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
             let mut mulOp: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
             let mut linMap: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            addOp = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
-            mulOp = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
+            addOp = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
+            mulOp = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
             if metamodelica::arrayLength(loc1.clone()) != metamodelica::arrayLength(loc2.clone()) {
                 status = FrameOrderingStatus::FAILURE.clone();
                 return Ok((resolved.clone(), status.clone()));

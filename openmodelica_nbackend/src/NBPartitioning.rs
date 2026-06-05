@@ -267,7 +267,7 @@ pub mod BClock {
             }
             clock_var = unwrap_break_err!(BVariable::getVarPointer(clock_name.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo")), '__try0);
             if !(BVariable::isClockOrClocked(clock_var.clone())) {
-                BVariable::setVarKind(clock_var.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCKED));
+                BVariable::setVarKind(clock_var.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CLOCKED());
             }
             Ok::<_, anyhow::Error>((baseClock.clone(), clock.clone(), clock_var.clone()))
         } {
@@ -805,7 +805,7 @@ pub mod Cluster {
             partVariables = BVariable::VariablePointers::mapRemovePtr(partVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = inferred_clocks.clone(); move |__pe_a0| collectInferredClock(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
             partEquations = BEquation::EquationPointers::mapRemovePtr(partEquations.clone(), (std::sync::Arc::new({ let __pe_b1 = inferred_clocks.clone(); move |__pe_a0| removeInferredClock(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>))?;
             partEquations = BEquation::EquationPointers::map(partEquations.clone(), (std::sync::Arc::new(replaceClockedWhen) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
-            partVariables = BVariable::VariablePointers::mapPtr(partVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCKED); move |__pe_a0| Ok(BVariable::setVarKind(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
+            partVariables = BVariable::VariablePointers::mapPtr(partVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CLOCKED(); move |__pe_a0| Ok(BVariable::setVarKind(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
             if BEquation::EquationPointers::size(partEquations.clone()) == 0 {
                 UnorderedSet::merge(infer_del.clone(), inferred_clocks.clone())?;
             }
@@ -1238,7 +1238,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
                 part = Partition::Partition::merge(part.clone(), ({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}), false)?;
             }
             (_, baseClock, _) = Partition::Partition::getClocks(part.clone())?;
-            (_, sub_comps) = Causalize::simple(part.unknowns.clone(), part.equations.clone(), Partition::Partition::getKind(part.clone()), NBAdjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            (_, sub_comps) = Causalize::simple(part.unknowns.clone(), part.equations.clone(), Partition::Partition::getKind(part.clone()), NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             collector = None;
             for mut sub_comp in &*sub_comps.clone().reverse() {
                 let mut sub_comp = sub_comp.clone();

@@ -263,6 +263,15 @@ pub enum NFExpression {
         scope: Arc<InstNode::InstNode>,
     },
 }
+impl NFExpression {
+    pub fn interned_END() -> Arc<NFExpression> {
+        thread_local! {
+            static INTERNED: Arc<NFExpression> = Arc::new(NFExpression::END);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_END() -> Arc<NFExpression> { NFExpression::interned_END() }
 impl Default for NFExpression {
     fn default() -> Self { Self::END }
 }
@@ -1155,12 +1164,12 @@ pub fn compareList(mut expl1: Arc<metamodelica::List<Arc<NFExpression>>>, mut ex
 pub fn typeOf(mut exp: Arc<NFExpression>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ INTEGER { .. } => Arc::new(crate::NFType::INTEGER),
-        Deref @ REAL { .. } => Arc::new(crate::NFType::REAL),
-        Deref @ STRING { .. } => Arc::new(crate::NFType::STRING),
-        Deref @ BOOLEAN { .. } => Arc::new(crate::NFType::BOOLEAN),
+        Deref @ INTEGER { .. } => crate::NFType::interned_INTEGER(),
+        Deref @ REAL { .. } => crate::NFType::interned_REAL(),
+        Deref @ STRING { .. } => crate::NFType::interned_STRING(),
+        Deref @ BOOLEAN { .. } => crate::NFType::interned_BOOLEAN(),
         Deref @ ENUM_LITERAL { .. } => var_field!((*exp).ty, NFExpression::ENUM_LITERAL).clone(),
-        Deref @ CLKCONST { .. } => Arc::new(crate::NFType::CLOCK),
+        Deref @ CLKCONST { .. } => crate::NFType::interned_CLOCK(),
         Deref @ CREF { .. } => var_field!((*exp).ty, NFExpression::CREF).clone(),
         Deref @ TYPENAME { .. } => var_field!((*exp).ty, NFExpression::TYPENAME).clone(),
         Deref @ ARRAY { .. } => var_field!((*exp).ty, NFExpression::ARRAY).clone(),
@@ -1168,14 +1177,14 @@ pub fn typeOf(mut exp: Arc<NFExpression>) -> Arc<Type::NFType> {
         Deref @ TUPLE { .. } => var_field!((*exp).ty, NFExpression::TUPLE).clone(),
         Deref @ RECORD { .. } => var_field!((*exp).ty, NFExpression::RECORD).clone(),
         Deref @ CALL { .. } => Call::typeOf(var_field!((*exp).call, NFExpression::CALL).clone()),
-        Deref @ SIZE { .. } => if (isSome(var_field!((*exp).dimIndex, NFExpression::SIZE).clone())) {Arc::new(crate::NFType::INTEGER)} else {Type::sizeType(typeOf(var_field!((*exp).exp, NFExpression::SIZE).clone()))},
-        Deref @ END { .. } => Arc::new(crate::NFType::INTEGER),
+        Deref @ SIZE { .. } => if (isSome(var_field!((*exp).dimIndex, NFExpression::SIZE).clone())) {crate::NFType::interned_INTEGER()} else {Type::sizeType(typeOf(var_field!((*exp).exp, NFExpression::SIZE).clone()))},
+        Deref @ END { .. } => crate::NFType::interned_INTEGER(),
         Deref @ MULTARY { .. } => Operator::typeOf(var_field!((*exp).operator, NFExpression::MULTARY).clone()),
         Deref @ BINARY { .. } => Operator::typeOf(var_field!((*exp).operator, NFExpression::BINARY).clone()),
         Deref @ UNARY { .. } => Operator::typeOf(var_field!((*exp).operator, NFExpression::UNARY).clone()),
         Deref @ LBINARY { .. } => Operator::typeOf(var_field!((*exp).operator, NFExpression::LBINARY).clone()),
         Deref @ LUNARY { .. } => Operator::typeOf(var_field!((*exp).operator, NFExpression::LUNARY).clone()),
-        Deref @ RELATION { .. } => Type::copyDims(Operator::typeOf(var_field!((*exp).operator, NFExpression::RELATION).clone()), Arc::new(crate::NFType::BOOLEAN)),
+        Deref @ RELATION { .. } => Type::copyDims(Operator::typeOf(var_field!((*exp).operator, NFExpression::RELATION).clone()), crate::NFType::interned_BOOLEAN()),
         Deref @ IF { .. } => var_field!((*exp).ty, NFExpression::IF).clone(),
         Deref @ CAST { .. } => var_field!((*exp).ty, NFExpression::CAST).clone(),
         Deref @ BOX { .. } => Arc::new(Type::NFType::METABOXED { ty: typeOf(var_field!((*exp).exp, NFExpression::BOX).clone()) }),
@@ -1187,9 +1196,9 @@ pub fn typeOf(mut exp: Arc<NFExpression>) -> Arc<Type::NFType> {
         Deref @ SHARED_LITERAL { .. } => typeOf(var_field!((*exp).exp, NFExpression::SHARED_LITERAL).clone()),
         Deref @ EMPTY { .. } => var_field!((*exp).ty, NFExpression::EMPTY).clone(),
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => var_field!((*exp).ty, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(),
-        Deref @ FILENAME { .. } => Arc::new(crate::NFType::STRING),
-        Deref @ INSTANCE_NAME { .. } => Arc::new(crate::NFType::STRING),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        Deref @ FILENAME { .. } => crate::NFType::interned_STRING(),
+        Deref @ INSTANCE_NAME { .. } => crate::NFType::interned_STRING(),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty
@@ -1601,13 +1610,13 @@ pub fn makeEmptyArray(mut ty: Arc<Type::NFType>) -> Arc<NFExpression> {
 
 pub fn makeIntegerArray(mut values: Arc<metamodelica::List<i32>>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = Arc::new(NFExpression::END);
-    exp = makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![Dimension::fromInteger((values.clone().len() as i32), Prefixes::Variability::CONSTANT.clone())] }), Array::mapList(values.clone(), (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<NFExpression>> + 'static>))?, true);
+    exp = makeArray(Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![Dimension::fromInteger((values.clone().len() as i32), Prefixes::Variability::CONSTANT.clone())] }), Array::mapList(values.clone(), (std::sync::Arc::new(fnptr!(makeInteger, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<NFExpression>> + 'static>))?, true);
     Ok(exp)
 }
 
 pub fn makeRealArray(mut values: Arc<metamodelica::List<metamodelica::Real>>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = Arc::new(NFExpression::END);
-    exp = makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::REAL), dimensions: list![Dimension::fromInteger((values.clone().len() as i32), Prefixes::Variability::CONSTANT.clone())] }), Array::mapList(values.clone(), (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<NFExpression>> + 'static>))?, true);
+    exp = makeArray(Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_REAL(), dimensions: list![Dimension::fromInteger((values.clone().len() as i32), Prefixes::Variability::CONSTANT.clone())] }), Array::mapList(values.clone(), (std::sync::Arc::new(fnptr!(makeReal, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<Arc<NFExpression>> + 'static>))?, true);
     Ok(exp)
 }
 
@@ -1616,10 +1625,10 @@ pub fn makeRealMatrix(mut values: Arc<metamodelica::List<Arc<metamodelica::List<
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
     if values.clone().is_empty() {
-        ty = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::REAL), dimensions: list![Dimension::fromInteger(0, Prefixes::Variability::CONSTANT.clone()), Arc::new(crate::NFDimension::UNKNOWN)] });
+        ty = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_REAL(), dimensions: list![Dimension::fromInteger(0, Prefixes::Variability::CONSTANT.clone()), crate::NFDimension::interned_UNKNOWN()] });
         exp = makeEmptyArray(ty.clone());
     } else {
-        ty = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::REAL), dimensions: list![Dimension::fromInteger((listHead(values.clone())?.len() as i32), Prefixes::Variability::CONSTANT.clone())] });
+        ty = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_REAL(), dimensions: list![Dimension::fromInteger((listHead(values.clone())?.len() as i32), Prefixes::Variability::CONSTANT.clone())] });
         expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
         for mut row in (values.clone()).into_iter().cloned() {
@@ -2823,7 +2832,7 @@ pub fn toAbsyn(mut exp: Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> {
             AbsynUtil::makeCall(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("size")).clone(), subscripts: metamodelica::nil() }), if (isSome(var_field!((*exp).dimIndex, NFExpression::SIZE).clone())) {list![toAbsyn(Util::getOption(var_field!((*exp).dimIndex, NFExpression::SIZE).clone())?)?]} else {metamodelica::nil()}, metamodelica::nil())
         },
         Deref @ END { .. } => {
-            Arc::new(openmodelica_ast::Absyn::Exp::END)
+            openmodelica_ast::Absyn::Exp::interned_END()
         },
         Deref @ BINARY { .. } => {
             Arc::new(Absyn::Exp::BINARY { exp1: toAbsyn(var_field!((*exp).exp1, NFExpression::BINARY).clone())?, op: Operator::toAbsyn(var_field!((*exp).operator, NFExpression::BINARY).clone())?, exp2: toAbsyn(var_field!((*exp).exp2, NFExpression::BINARY).clone())? })

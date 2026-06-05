@@ -93,6 +93,15 @@ pub enum Tree {
     },
     EMPTY,
 }
+impl Tree {
+    pub fn interned_EMPTY() -> Arc<Tree> {
+        thread_local! {
+            static INTERNED: Arc<Tree> = Arc::new(Tree::EMPTY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
 impl Default for Tree {
     fn default() -> Self { Self::EMPTY }
 }
@@ -128,9 +137,9 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key, mut inValue: Value, mut confli
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::AvlTreeCRToInt::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::AvlTreeCRToInt::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
                 if !(((var_field!((*tree).value, Tree::LEAF).clone()) == (value.clone()))) {
@@ -197,9 +206,9 @@ pub fn addUpdate(mut tree: Arc<Tree>, mut key: Key, mut r#fn: Arc<dyn ::std::ops
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: crate::AvlTreeCRToInt::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::AvlTreeCRToInt::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -346,7 +355,7 @@ pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Co
 }
 
 pub fn fromList(mut inValues: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(i32, i32, Arc<DAE::ComponentRef>) -> Result<i32> + 'static>) -> Result<Arc<Tree>> {
-    let mut tree: Arc<Tree> = Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY);
+    let mut tree: Arc<Tree> = crate::AvlTreeCRToInt::Tree::interned_EMPTY();
     let mut key: Key = Arc::new(DAE::ComponentRef::WILD);
     let mut value: Value = 0;
     for mut t in &*inValues.clone() {
@@ -590,7 +599,7 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
 }
 
 pub fn new() -> Arc<Tree> {
-    let mut outTree: Arc<Tree> = Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY);
+    let mut outTree: Arc<Tree> = crate::AvlTreeCRToInt::Tree::interned_EMPTY();
     outTree
 }
 
@@ -650,8 +659,8 @@ fn rotateLeft(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::AvlTreeCRToInt::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::AvlTreeCRToInt::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -671,8 +680,8 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::AvlTreeCRToInt::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::AvlTreeCRToInt::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()

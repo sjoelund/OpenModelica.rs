@@ -103,6 +103,15 @@ pub mod ZeroCrossingTree {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            thread_local! {
+                static INTERNED: Arc<Tree> = Arc::new(Tree::EMPTY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -138,9 +147,9 @@ pub mod ZeroCrossingTree {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -207,9 +216,9 @@ pub mod ZeroCrossingTree {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -356,7 +365,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ZeroCrossing, Arc<metamodelica::List<ZeroCrossing>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<ZeroCrossing>>, Arc<metamodelica::List<ZeroCrossing>>, ZeroCrossing) -> Result<Arc<metamodelica::List<ZeroCrossing>>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY();
         let mut key: Key = <ZeroCrossing as ::std::default::Default>::default();
         let mut value: Value = metamodelica::nil();
         for mut t in &*inValues.clone() {
@@ -600,7 +609,7 @@ pub mod ZeroCrossingTree {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY();
         outTree
     }
 
@@ -660,8 +669,8 @@ pub mod ZeroCrossingTree {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -681,8 +690,8 @@ pub mod ZeroCrossingTree {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::ZeroCrossings::ZeroCrossingTree::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::ZeroCrossings::ZeroCrossingTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()

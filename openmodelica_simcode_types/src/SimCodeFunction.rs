@@ -311,6 +311,15 @@ pub mod SimExtArg {
         },
         SIMNOEXTARG,
     }
+    impl SimExtArg {
+        pub fn interned_SIMNOEXTARG() -> Arc<SimExtArg> {
+            thread_local! {
+                static INTERNED: Arc<SimExtArg> = Arc::new(SimExtArg::SIMNOEXTARG);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_SIMNOEXTARG() -> Arc<SimExtArg> { SimExtArg::interned_SIMNOEXTARG() }
     impl Default for SimExtArg {
         fn default() -> Self { Self::SIMNOEXTARG }
     }

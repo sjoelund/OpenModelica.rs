@@ -97,13 +97,13 @@ pub mod ConnectorType {
     pub fn toDAE(mut cty: Type) -> Arc<DAE::ConnectorType> {
         let mut dcty: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
         if intBitAnd(cty.clone(), POTENTIAL.clone()) > 0 {
-            dcty = Arc::new(openmodelica_frontend_types::DAE::ConnectorType::POTENTIAL);
+            dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_POTENTIAL();
         } else if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
-            dcty = Arc::new(openmodelica_frontend_types::DAE::ConnectorType::FLOW);
+            dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW();
         } else if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
             dcty = Arc::new(DAE::ConnectorType::STREAM { associatedFlow: None });
         } else {
-            dcty = Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR);
+            dcty = openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR();
         }
         dcty
     }

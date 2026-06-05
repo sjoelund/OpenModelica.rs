@@ -550,7 +550,7 @@ pub fn subscriptBinding3(mut subscript: Arc<Subscript::NFSubscript>, mut subMap:
                 } };
                 subs = __pa0.clone();
                 if var_field!((*subscript).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone() > (subs.clone().len() as i32) {
-                    outSubscript = Arc::new(crate::NFSubscript::WHOLE);
+                    outSubscript = crate::NFSubscript::interned_WHOLE();
                 } else {
                     outSubscript = (subs.clone()).get(var_field!((*subscript).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?;
                 }
@@ -793,11 +793,11 @@ pub fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Result<Arc<E
         }
         __acc.reverse()
     });
-            (Arc::new(crate::NFType::INTEGER), expl.clone())
+            (crate::NFType::interned_INTEGER(), expl.clone())
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => {
             expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), var_field!((*step).value, Expression::NFExpression::REAL).clone(), var_field!((*stop).value, Expression::NFExpression::REAL).clone());
-            (Arc::new(crate::NFType::REAL), expl.clone())
+            (crate::NFType::interned_REAL(), expl.clone())
         },
         _ => {
             printWrongArgsError(literal!("NFCeval.evalRangeExp"), list![start.clone(), step.clone(), stop.clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
@@ -816,11 +816,11 @@ pub fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Result<Arc<E
         }
         __acc.reverse()
     });
-            (Arc::new(crate::NFType::INTEGER), expl.clone())
+            (crate::NFType::interned_INTEGER(), expl.clone())
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => {
             expl = evalRangeReal(var_field!((*start).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat(1.0_f64), var_field!((*stop).value, Expression::NFExpression::REAL).clone());
-            (Arc::new(crate::NFType::REAL), expl.clone())
+            (crate::NFType::interned_REAL(), expl.clone())
         },
         (Deref @ Expression::BOOLEAN { .. }, Deref @ Expression::BOOLEAN { .. }) => {
             expl = ({
@@ -831,7 +831,7 @@ pub fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Result<Arc<E
         }
         __acc.reverse()
     });
-            (Arc::new(crate::NFType::BOOLEAN), expl.clone())
+            (crate::NFType::interned_BOOLEAN(), expl.clone())
         },
         (Deref @ Expression::ENUM_LITERAL { ty: ty @ Deref @ Type::ENUMERATION { .. }, .. }, Deref @ Expression::ENUM_LITERAL { .. }) => {
             expl = ({
@@ -951,7 +951,7 @@ pub fn evalBinaryAdd(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::EMPTY { .. }, _) => exp2.clone(),
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeAdd(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeAdd(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryAdd"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -973,7 +973,7 @@ pub fn evalBinarySub(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::EMPTY { .. }, _) => evalBinarySub(Expression::makeZero(Expression::typeOf(exp2.clone()))?, exp2.clone())?,
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeSub(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeSub(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinarySub"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1010,7 +1010,7 @@ pub fn evalBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::EMPTY { .. }, _) => exp2.clone(),
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryMul"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1027,7 +1027,7 @@ pub fn evalBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
                 Error::addSourceMessage(Error::DIVISION_BY_ZERO.clone(), list![(Expression::toString(exp1.clone())?).clone(), (Expression::toString(exp2.clone())?).clone()], EvalTarget::getInfo(target.clone()))?;
                 bail!("fail");
             } else {
-                exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeDiv(Arc::new(crate::NFType::REAL)), exp2: exp2.clone() });
+                exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: exp2.clone() });
             }
             exp.clone()
         },
@@ -1042,7 +1042,7 @@ pub fn evalBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::EMPTY { .. }, _) => evalBinaryDiv(Expression::makeOne(Expression::typeOf(exp2.clone()))?, exp2.clone(), target.clone())?,
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeDiv(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeDiv(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryDiv"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1074,12 +1074,12 @@ pub fn evalBinaryPow(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
                 Error::addSourceMessage(Error::INVALID_NEGATIVE_POW.clone(), list![(Expression::toString(exp1.clone())?).clone(), (Expression::toString(exp2.clone())?).clone()], EvalTarget::getInfo(target.clone()))?;
                 bail!("fail");
             }
-            Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makePow(Arc::new(crate::NFType::REAL)), exp2: exp2.clone() })
+            Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makePow(crate::NFType::interned_REAL()), exp2: exp2.clone() })
         },
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: (var_field!((*exp1).value, Expression::NFExpression::REAL).clone()).powf(var_field!((*exp2).value, Expression::NFExpression::REAL).clone()) }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if (metamodelica::arrayLength(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone()) == metamodelica::arrayLength(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone())) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryPow(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makePow(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makePow(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryPow"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1124,7 +1124,7 @@ pub fn evalBinaryMulVectorMatrix(mut vectorExp: Arc<Expression::NFExpression>, m
             Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![m.clone()] }), arr.clone(), true)
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: vectorExp.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::UNKNOWN)), exp2: matrixExp.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: vectorExp.clone(), operator: Operator::makeMul(crate::NFType::interned_UNKNOWN()), exp2: matrixExp.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryMulVectorMatrix"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1145,7 +1145,7 @@ pub fn evalBinaryMulMatrixVector(mut matrixExp: Arc<Expression::NFExpression>, m
             Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![n.clone()] }), arr.clone(), true)
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: matrixExp.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::UNKNOWN)), exp2: vectorExp.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: matrixExp.clone(), operator: Operator::makeMul(crate::NFType::interned_UNKNOWN()), exp2: vectorExp.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryMulMatrixVector"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1165,7 +1165,7 @@ pub fn evalBinaryScalarProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
             exp.clone()
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryScalarProduct"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1202,7 +1202,7 @@ pub fn evalBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
             exp.clone()
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: Operator::makeMul(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryMatrixProduct"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1217,11 +1217,11 @@ pub fn evalBinaryPowMatrix(mut matrixExp: Arc<Expression::NFExpression>, mut nEx
     exp = (::match_deref::match_deref! { match &(nExp.clone()) {
         Deref @ Expression::INTEGER { value: 0 } => {
             n = Dimension::size(listHead(Type::arrayDims(Expression::typeOf(matrixExp.clone())))?, false)?;
-            Expression::makeIdentityMatrix(n.clone(), Arc::new(crate::NFType::REAL))?
+            Expression::makeIdentityMatrix(n.clone(), crate::NFType::interned_REAL())?
         },
         Deref @ Expression::INTEGER { value: n } => evalBinaryPowMatrix2(matrixExp.clone(), n.clone())?,
         _ => {
-            exp = Arc::new(Expression::NFExpression::BINARY { exp1: matrixExp.clone(), operator: Operator::makePow(Arc::new(crate::NFType::UNKNOWN)), exp2: nExp.clone() });
+            exp = Arc::new(Expression::NFExpression::BINARY { exp1: matrixExp.clone(), operator: Operator::makePow(crate::NFType::interned_UNKNOWN()), exp2: nExp.clone() });
             printFailedEvalError(literal!("NFCeval.evalBinaryPowMatrix"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1270,7 +1270,7 @@ pub fn evalUnaryMinus(mut exp1: Arc<Expression::NFExpression>) -> Result<Arc<Exp
             exp1.clone()
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(Arc::new(crate::NFType::UNKNOWN)), exp: exp1.clone() });
+            exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_UNKNOWN()), exp: exp1.clone() });
             printFailedEvalError(literal!("NFCeval.evalUnaryMinus"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1336,7 +1336,7 @@ pub fn evalLogicBinaryAnd(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc
                     } };
                     arr = __pa0.clone();
                     arr = Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), arr.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalLogicBinaryAnd(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-                    Ok(Expression::makeArray(Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Arc::new(crate::NFType::BOOLEAN)), arr.clone(), true))
+                    Ok(Expression::makeArray(Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), crate::NFType::interned_BOOLEAN()), arr.clone(), true))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1345,7 +1345,7 @@ pub fn evalLogicBinaryAnd(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
-                    exp = Arc::new(Expression::NFExpression::LBINARY { exp1: exp1.clone(), operator: Operator::makeAnd(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+                    exp = Arc::new(Expression::NFExpression::LBINARY { exp1: exp1.clone(), operator: Operator::makeAnd(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
                     printFailedEvalError(literal!("NFCeval.evalLogicBinaryAnd"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
                     Ok((bail!("fail"), exp.clone()))
                 }
@@ -1371,10 +1371,10 @@ pub fn evalLogicBinaryOr(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<
             } };
             arr = __pa0.clone();
             arr = Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), arr.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalLogicBinaryOr(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            Expression::makeArray(Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Arc::new(crate::NFType::BOOLEAN)), arr.clone(), true)
+            Expression::makeArray(Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), crate::NFType::interned_BOOLEAN()), arr.clone(), true)
         },
         _ => {
-            exp = Arc::new(Expression::NFExpression::LBINARY { exp1: exp1.clone(), operator: Operator::makeOr(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone() });
+            exp = Arc::new(Expression::NFExpression::LBINARY { exp1: exp1.clone(), operator: Operator::makeOr(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone() });
             printFailedEvalError(literal!("NFCeval.evalLogicBinaryOr"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1401,7 +1401,7 @@ pub fn evalLogicUnaryNot(mut exp1: Arc<Expression::NFExpression>) -> Result<Arc<
         Deref @ Expression::BOOLEAN { .. } => Arc::new(Expression::NFExpression::BOOLEAN { value: !(var_field!((*exp1).value, Expression::NFExpression::BOOLEAN).clone()) }),
         Deref @ Expression::ARRAY { .. } => Expression::mapArrayElements(exp1.clone(), (std::sync::Arc::new(evalLogicUnaryNot) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         _ => {
-            exp = Arc::new(Expression::NFExpression::LUNARY { operator: Operator::makeNot(Arc::new(crate::NFType::UNKNOWN)), exp: exp1.clone() });
+            exp = Arc::new(Expression::NFExpression::LUNARY { operator: Operator::makeNot(crate::NFType::interned_UNKNOWN()), exp: exp1.clone() });
             printFailedEvalError(literal!("NFCeval.evalLogicUnaryNot"), exp.clone(), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
@@ -1463,7 +1463,7 @@ pub fn evalRelationLess(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<E
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) < 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() < var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationLess"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeLess(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationLess"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeLess(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1483,7 +1483,7 @@ pub fn evalRelationLessEq(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) <= 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() <= var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationLessEq"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeLessEq(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationLessEq"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeLessEq(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1503,7 +1503,7 @@ pub fn evalRelationGreater(mut exp1: Arc<Expression::NFExpression>, mut exp2: Ar
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) > 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() > var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationGreater"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeGreater(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationGreater"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeGreater(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1523,7 +1523,7 @@ pub fn evalRelationGreaterEq(mut exp1: Arc<Expression::NFExpression>, mut exp2: 
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) >= 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() >= var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationGreaterEq"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeGreaterEq(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationGreaterEq"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeGreaterEq(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1543,7 +1543,7 @@ pub fn evalRelationEqual(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) == 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() == var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationEqual"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeEqual(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationEqual"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeEqual(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1563,7 +1563,7 @@ pub fn evalRelationNotEqual(mut exp1: Arc<Expression::NFExpression>, mut exp2: A
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => stringCompare((var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()).clone(), (var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()).clone()) != 0,
         (Deref @ Expression::ENUM_LITERAL { .. }, Deref @ Expression::ENUM_LITERAL { .. }) => var_field!((*exp1).index, Expression::NFExpression::ENUM_LITERAL).clone() != var_field!((*exp2).index, Expression::NFExpression::ENUM_LITERAL).clone(),
         _ => {
-            printFailedEvalError(literal!("NFCeval.evalRelationNotEqual"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeNotEqual(Arc::new(crate::NFType::UNKNOWN)), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
+            printFailedEvalError(literal!("NFCeval.evalRelationNotEqual"), Arc::new(Expression::NFExpression::RELATION { exp1: exp1.clone(), operator: Operator::makeNotEqual(crate::NFType::interned_UNKNOWN()), exp2: exp2.clone(), index: -1 }), metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2104,7 +2104,7 @@ fn evalBuiltinFloor(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expres
 fn evalBuiltinIdentity(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     result = (::match_deref::match_deref! { match &(arg.clone()) {
-        Deref @ Expression::INTEGER { .. } => Expression::makeIdentityMatrix(var_field!((*arg).value, Expression::NFExpression::INTEGER).clone(), Arc::new(crate::NFType::INTEGER))?,
+        Deref @ Expression::INTEGER { .. } => Expression::makeIdentityMatrix(var_field!((*arg).value, Expression::NFExpression::INTEGER).clone(), crate::NFType::interned_INTEGER())?,
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinIdentity"), list![arg.clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")
@@ -3022,7 +3022,7 @@ fn evalSize(mut exp: Arc<Expression::NFExpression>, mut optIndex: Option<Arc<Exp
         arr = Array::mapList(Type::arrayDims(ty.clone()), (std::sync::Arc::new(Dimension::sizeExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         Array::mapNoCopy(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         dim = Dimension::fromInteger(metamodelica::arrayLength(arr.clone()), Variability::PARAMETER.clone());
-        outExp = Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![dim.clone()] }), arr.clone(), false);
+        outExp = Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![dim.clone()] }), arr.clone(), false);
     }
     Ok(outExp)
 }

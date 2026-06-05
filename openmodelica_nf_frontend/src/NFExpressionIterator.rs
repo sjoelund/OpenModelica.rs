@@ -72,6 +72,15 @@ pub enum NFExpressionIterator {
         all: Arc<metamodelica::List<Arc<Expression::NFExpression>>>,
     },
 }
+impl NFExpressionIterator {
+    pub fn interned_NONE_ITERATOR() -> Arc<NFExpressionIterator> {
+        thread_local! {
+            static INTERNED: Arc<NFExpressionIterator> = Arc::new(NFExpressionIterator::NONE_ITERATOR);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NONE_ITERATOR() -> Arc<NFExpressionIterator> { NFExpressionIterator::interned_NONE_ITERATOR() }
 impl Default for NFExpressionIterator {
     fn default() -> Self { Self::NONE_ITERATOR }
 }
@@ -115,7 +124,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut backend: bool, mut re
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut expanded: bool = false;
             (e, expanded) = ExpandExp::expand(exp.clone(), backend.clone(), resize.clone())?;
-            if (expanded.clone()) {if (Expression::isEqual(e.clone(), exp.clone())?) {Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: exp.clone() })} else {fromExp(e.clone(), backend.clone(), resize.clone())?}} else {Arc::new(crate::NFExpressionIterator::NONE_ITERATOR)}
+            if (expanded.clone()) {if (Expression::isEqual(e.clone(), exp.clone())?) {Arc::new(NFExpressionIterator::SCALAR_ITERATOR { exp: exp.clone() })} else {fromExp(e.clone(), backend.clone(), resize.clone())?}} else {crate::NFExpressionIterator::interned_NONE_ITERATOR()}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -129,7 +138,7 @@ pub fn fromExpOpt(mut optExp: Option<Arc<Expression::NFExpression>>) -> Result<A
             fromExp(exp.clone(), false, false)?
         },
         _ => {
-            Arc::new(crate::NFExpressionIterator::NONE_ITERATOR)
+            crate::NFExpressionIterator::interned_NONE_ITERATOR()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -184,7 +193,7 @@ pub fn next(mut iterator: Arc<NFExpressionIterator>) -> Result<(Arc<NFExpression
             (iterator.clone(), next.clone())
         },
         Deref @ SCALAR_ITERATOR { .. } => {
-            (Arc::new(crate::NFExpressionIterator::NONE_ITERATOR), var_field!((*iterator).exp, NFExpressionIterator::SCALAR_ITERATOR).clone())
+            (crate::NFExpressionIterator::interned_NONE_ITERATOR(), var_field!((*iterator).exp, NFExpressionIterator::SCALAR_ITERATOR).clone())
         },
         Deref @ EACH_ITERATOR { .. } => {
             (iterator.clone(), var_field!((*iterator).exp, NFExpressionIterator::EACH_ITERATOR).clone())

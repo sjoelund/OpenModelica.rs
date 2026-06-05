@@ -133,6 +133,15 @@ pub enum Task {
     },
     TASKEMPTY,
 }
+impl Task {
+    pub fn interned_TASKEMPTY() -> Arc<Task> {
+        thread_local! {
+            static INTERNED: Arc<Task> = Arc::new(Task::TASKEMPTY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_TASKEMPTY() -> Arc<Task> { Task::interned_TASKEMPTY() }
 impl Default for Task {
     fn default() -> Self { Self::TASKEMPTY }
 }

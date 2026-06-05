@@ -361,7 +361,7 @@ fn stripModifiersKeepRedeclares(mut inMod: Option<Arc<Absyn::Modification>>) -> 
         }
         __acc.reverse()
     });
-            m = Arc::new(Absyn::Modification { elementArgLst: ea.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) });
+            m = Arc::new(Absyn::Modification { elementArgLst: ea.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() });
             Some(m.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -471,9 +471,9 @@ fn setExtendsSubmodifierInElement(mut element: Arc<Absyn::Element>, mut extendsP
                     (_, full_path) = Interactive::mkFullyQual(env.clone(), var_field!((*ext_spec).path, Absyn::ElementSpec::EXTENDS).clone(), false)?;
                     let true = (AbsynUtil::pathEqual(extendsPath.clone(), full_path.clone())) else { bail!("pattern mismatch") };
                     if AbsynUtil::pathFirstIdent(elementName.clone())? == literal!("_") {
-                        opt_mod = propagateMod(elementName.clone(), r#mod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: eargs.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })))?;
+                        opt_mod = propagateMod(elementName.clone(), r#mod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: eargs.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })))?;
                     } else {
-                        opt_mod = propagateMod(AbsynUtil::prefixPath((literal!("dummy")).clone(), elementName.clone()), r#mod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: eargs.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })))?;
+                        opt_mod = propagateMod(AbsynUtil::prefixPath((literal!("dummy")).clone(), elementName.clone()), r#mod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: eargs.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })))?;
                     }
                     assign_variant_field!(ext_spec => Absyn::ElementSpec::EXTENDS; elementArg = (::match_deref::match_deref! { match &(opt_mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: eargs, .. }) => eargs.clone(),
@@ -526,7 +526,7 @@ fn setSubmodifierInClass(mut inElementName: Arc<Absyn::Path>, mut inClass: Arc<A
             body = cls.body.clone();
             body = (::match_deref::match_deref! { match &(body.clone()) {
         Deref @ Absyn::ClassDef::DERIVED { .. } => {
-            let __pa0 = ::match_deref::match_deref! { match &(propagateMod(inElementName.clone(), inMod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: var_field!((*body).arguments, Absyn::ClassDef::DERIVED).clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })))?) {
+            let __pa0 = ::match_deref::match_deref! { match &(propagateMod(inElementName.clone(), inMod.clone(), Some(Arc::new(Absyn::Modification { elementArgLst: var_field!((*body).arguments, Absyn::ClassDef::DERIVED).clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })))?) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -602,7 +602,7 @@ pub fn propagateMod(mut inComponentName: Arc<Absyn::Path>, mut inNewMod: Arc<Abs
         old_args = __pa1.clone();
     } else {
         old_args = metamodelica::nil();
-        old_eqmod = Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD);
+        old_eqmod = openmodelica_ast::Absyn::EqMod::interned_NOMOD();
     }
     if AbsynUtil::pathIsIdent(inComponentName.clone()) {
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(inNewMod.clone()) {
@@ -611,7 +611,7 @@ pub fn propagateMod(mut inComponentName: Arc<Absyn::Path>, mut inNewMod: Arc<Abs
         } };
         new_eqmod = __pa2.clone();
         new_args = __pa3.clone();
-        if new_eqmod.clone() == Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) && !(new_args.clone().is_empty()) {
+        if new_eqmod.clone() == openmodelica_ast::Absyn::EqMod::interned_NOMOD() && !(new_args.clone().is_empty()) {
             new_eqmod = old_eqmod.clone();
         }
         if !(AbsynUtil::isEmptyMod(inNewMod.clone())) {
@@ -732,7 +732,7 @@ fn createNestedSubMod(mut inComponentName: Arc<Absyn::Path>, mut inMod: Arc<Absy
         outSubMod = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: inComponentName.clone(), modification: Some(inMod.clone()), comment: None, info: Absyn::dummyInfo.clone() });
     } else {
         outSubMod = createNestedSubMod(AbsynUtil::pathRest(inComponentName.clone())?, inMod.clone())?;
-        outSubMod = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: AbsynUtil::pathFirstPath(inComponentName.clone())?, modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![outSubMod.clone()], eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: None, info: Absyn::dummyInfo.clone() });
+        outSubMod = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: AbsynUtil::pathFirstPath(inComponentName.clone())?, modification: Some(Arc::new(Absyn::Modification { elementArgLst: list![outSubMod.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() });
     }
     Ok(outSubMod)
 }
@@ -770,7 +770,7 @@ pub fn getElementModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRe
                 optMod = __pa0.clone();
                 name = __pa1.clone();
                 if stringEq((name.clone()).clone(), (elName.clone()).clone()) {
-                    let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))) {
+                    let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))) {
                         Deref @ Absyn::Modification { elementArgLst: __pa2, .. } => __pa2.clone(),
                         _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
@@ -925,7 +925,7 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
             res.clone()
         },
         (Deref @ metamodelica::List::Cons { head: elArg @ Deref @ Absyn::ElementArg::REDECLARATION { elementSpec: elSpec, .. }, tail: _ }, p1) if (AbsynUtil::pathFirstIdent(p1.clone())? == AbsynUtil::elementSpecName(elSpec.clone())?) => {
-            Arc::new(Absyn::Modification { elementArgLst: list![elArg.clone()], eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })
+            Arc::new(Absyn::Modification { elementArgLst: list![elArg.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
             let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
@@ -972,7 +972,7 @@ pub fn getElementModifierNames(mut path: Arc<Absyn::Path>, mut inElementName: Ar
                 optMod = __pa0.clone();
                 name = __pa1.clone();
                 if stringEq((name.clone()).clone(), (inElementName.clone()).clone()) {
-                    let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))) {
+                    let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))) {
                         Deref @ Absyn::Modification { elementArgLst: __pa2, .. } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1395,7 +1395,7 @@ pub fn createEnvironment(mut p: Absyn::Program, mut os: Option<Arc<metamodelica:
         permissive = Flags::getConfigBool(Flags::PERMISSIVE.clone())?;
         FlagsUtil::setConfigBool(Flags::PERMISSIVE.clone(), true)?;
         match '__try6: {
-            (_, env2, _, _, _) = unwrap_break_err!(Inst::partialInstClassIn(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), c.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0), '__try6);
+            (_, env2, _, _, _) = unwrap_break_err!(Inst::partialInstClassIn(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), c.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0), '__try6);
             unwrap_break_err!(FlagsUtil::setConfigBool(Flags::PERMISSIVE.clone(), permissive.clone()), '__try6);
             Ok::<_, anyhow::Error>((env2.clone(),))
         } {
@@ -1628,7 +1628,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
                     if !(listMember((ann_name.clone()).clone(), list![(literal!("Icon")).clone(), (literal!("Diagram")).clone(), (literal!("choices")).clone()])) {
                         (cache, env, _, outCache) = buildEnvForGraphicProgram(outCache.clone(), r#mod.clone())?;
                         (cache, c, env2) = Lookup::lookupClassIdent(cache.clone(), inEnv.clone(), (ann_name.clone()).clone(), None)?;
-                        smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: r#mod.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
+                        smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: r#mod.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
                         (cache, dmod) = Mod::elabMod(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, smod.clone(), false, Mod::ModScope::COMPONENT { name: (ann_name.clone()).clone() }, Absyn::dummyInfo.clone())?;
                         c = SCodeUtil::classSetPartial(c.clone(), openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;
                         (_, _, _, _, dae, _, _, _, _, _) = Inst::instClass(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), dmod.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, c.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
@@ -1653,7 +1653,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
                                         (cache, env, graphic_prog, _) = buildEnvForGraphicProgram(inCache.clone(), metamodelica::nil())?;
                             }
                         }
-                        smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: stripped_mod.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
+                        smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: stripped_mod.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
                         (cache, dmod) = Mod::elabMod(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, smod.clone(), false, Mod::ModScope::COMPONENT { name: (ann_name.clone()).clone() }, info.clone())?;
                         placement_cls = AbsynToSCode::translateClass(ProgramUtil::getClassInProgram((ann_name.clone()).clone(), graphic_prog.clone())?)?;
                         (cache, _, _, _, dae, _, _, _, _, _) = Inst::instClass(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), dmod.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, placement_cls.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
@@ -1696,7 +1696,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
                     (cache, _, _, outCache) = buildEnvForGraphicProgram(outCache.clone(), metamodelica::nil())?;
                     (cache, c, env) = Lookup::lookupClassIdent(cache.clone(), inEnv.clone(), (ann_name.clone()).clone(), None)?;
                     c = SCodeUtil::classSetPartial(c.clone(), openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;
-                    (_, _, _, _, dae, _, _, _, _, _) = Inst::instClass(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, c.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
+                    (_, _, _, _, dae, _, _, _, _, _) = Inst::instClass(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, c.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
                     r#str = (DAEUtil::getVariableBindingsStr(DAEUtil::daeElements(dae.clone())?)?).clone();
                     Ok((if (addAnnotationName.clone()) {stringAppendList(list![(ann_name.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()])} else {r#str.clone()}, outCache.clone()))
                 }
@@ -2480,7 +2480,7 @@ fn recordConstructorToModification(mut inExp: Arc<Absyn::Exp>) -> Result<Arc<Abs
                     eltarglst = List::map(nargs.clone(), (std::sync::Arc::new(namedargToModification) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<Arc<Absyn::ElementArg>> + 'static>))?;
                     emod = recordConstructorToModification(e.clone())?;
                     p = AbsynUtil::crefToPath(cr.clone())?;
-                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: p.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::cons(emod.clone(), eltarglst.clone()), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: None, info: Absyn::dummyInfo.clone() });
+                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: p.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::cons(emod.clone(), eltarglst.clone()), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() });
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2494,7 +2494,7 @@ fn recordConstructorToModification(mut inExp: Arc<Absyn::Exp>) -> Result<Arc<Abs
                     let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     eltarglst = List::map(nargs.clone(), (std::sync::Arc::new(namedargToModification) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<Arc<Absyn::ElementArg>> + 'static>))?;
                     p = AbsynUtil::crefToPath(cr.clone())?;
-                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: p.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: eltarglst.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: None, info: Absyn::dummyInfo.clone() });
+                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: p.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: eltarglst.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() });
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2542,7 +2542,7 @@ fn namedargToModification(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc<Ab
                         _ => bail!("pattern mismatch"),
                     } };
                     elts = __pa0.clone();
-                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: elts.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: None, info: Absyn::dummyInfo.clone() });
+                    res = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: elts.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: None, info: Absyn::dummyInfo.clone() });
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5032,7 +5032,7 @@ pub fn offsetOriginAnnotation(mut arg: Arc<Absyn::ElementArg>, mut x: i32, mut y
                 } };
                 r#mod = __pa0.clone();
             } else {
-                r#mod = Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) });
+                r#mod = Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() });
             }
             eq_mod = r#mod.eqMod.clone();
             assign_field!(r#mod.eqMod = (::match_deref::match_deref! { match &(eq_mod.clone()) {

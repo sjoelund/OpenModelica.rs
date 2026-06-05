@@ -141,27 +141,99 @@ pub mod LookupState {
             errorState: Arc<LookupState>,
         },
     }
+    impl LookupState {
+        pub fn interned_BEGIN() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::BEGIN));
+            (*INTERNED).clone()
+        }
+        pub fn interned_COMP() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::COMP));
+            (*INTERNED).clone()
+        }
+        pub fn interned_CLASS_COMP() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::CLASS_COMP));
+            (*INTERNED).clone()
+        }
+        pub fn interned_COMP_CLASS() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::COMP_CLASS));
+            (*INTERNED).clone()
+        }
+        pub fn interned_COMP_FUNC() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::COMP_FUNC));
+            (*INTERNED).clone()
+        }
+        pub fn interned_PACKAGE() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::PACKAGE));
+            (*INTERNED).clone()
+        }
+        pub fn interned_CLASS() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::CLASS));
+            (*INTERNED).clone()
+        }
+        pub fn interned_FUNC() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::FUNC));
+            (*INTERNED).clone()
+        }
+        pub fn interned_PREDEF_COMP() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::PREDEF_COMP));
+            (*INTERNED).clone()
+        }
+        pub fn interned_PREDEF_CLASS() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::PREDEF_CLASS));
+            (*INTERNED).clone()
+        }
+        pub fn interned_IMPORT() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::IMPORT));
+            (*INTERNED).clone()
+        }
+        pub fn interned_PARTIAL_CLASS() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::PARTIAL_CLASS));
+            (*INTERNED).clone()
+        }
+        pub fn interned_NON_CONSTANT() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::NON_CONSTANT));
+            (*INTERNED).clone()
+        }
+        pub fn interned_NON_ENCAPSULATED() -> Arc<LookupState> {
+            static INTERNED: std::sync::LazyLock<Arc<LookupState>> = std::sync::LazyLock::new(|| Arc::new(LookupState::NON_ENCAPSULATED));
+            (*INTERNED).clone()
+        }
+    }
+    pub fn interned_BEGIN() -> Arc<LookupState> { LookupState::interned_BEGIN() }
+    pub fn interned_COMP() -> Arc<LookupState> { LookupState::interned_COMP() }
+    pub fn interned_CLASS_COMP() -> Arc<LookupState> { LookupState::interned_CLASS_COMP() }
+    pub fn interned_COMP_CLASS() -> Arc<LookupState> { LookupState::interned_COMP_CLASS() }
+    pub fn interned_COMP_FUNC() -> Arc<LookupState> { LookupState::interned_COMP_FUNC() }
+    pub fn interned_PACKAGE() -> Arc<LookupState> { LookupState::interned_PACKAGE() }
+    pub fn interned_CLASS() -> Arc<LookupState> { LookupState::interned_CLASS() }
+    pub fn interned_FUNC() -> Arc<LookupState> { LookupState::interned_FUNC() }
+    pub fn interned_PREDEF_COMP() -> Arc<LookupState> { LookupState::interned_PREDEF_COMP() }
+    pub fn interned_PREDEF_CLASS() -> Arc<LookupState> { LookupState::interned_PREDEF_CLASS() }
+    pub fn interned_IMPORT() -> Arc<LookupState> { LookupState::interned_IMPORT() }
+    pub fn interned_PARTIAL_CLASS() -> Arc<LookupState> { LookupState::interned_PARTIAL_CLASS() }
+    pub fn interned_NON_CONSTANT() -> Arc<LookupState> { LookupState::interned_NON_CONSTANT() }
+    pub fn interned_NON_ENCAPSULATED() -> Arc<LookupState> { LookupState::interned_NON_ENCAPSULATED() }
     impl Default for LookupState {
         fn default() -> Self { Self::BEGIN }
     }
     pub use self::LookupState::{BEGIN,COMP,CLASS_COMP,COMP_CLASS,COMP_FUNC,PACKAGE,CLASS,FUNC,PREDEF_COMP,PREDEF_CLASS,IMPORT,PARTIAL_CLASS,NON_CONSTANT,NON_ENCAPSULATED,ERROR};
     pub fn assertClass(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), Arc::new(crate::NFLookupState::LookupState::CLASS), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_CLASS(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
     pub fn assertFunction(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), Arc::new(crate::NFLookupState::LookupState::FUNC), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_FUNC(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
     pub fn assertComponent(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::ComponentRef>, mut context: i32, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), Arc::new(crate::NFLookupState::LookupState::COMP), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
+        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_COMP(), node.clone(), Arc::new(LookupStateName::LookupStateName::CREF { cref: name.clone() }), context.clone(), info.clone())?;
         Ok(())
     }
 
     pub fn assertImport(mut endState: Arc<LookupState>, mut node: Arc<InstNode::InstNode>, mut name: Arc<Absyn::Path>, mut info: SourceInfo) -> Result<()> {
-        assertState(endState.clone(), Arc::new(crate::NFLookupState::LookupState::IMPORT), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), InstContext::NO_CONTEXT.clone(), info.clone())?;
+        assertState(endState.clone(), crate::NFLookupState::LookupState::interned_IMPORT(), node.clone(), Arc::new(LookupStateName::LookupStateName::PATH { path: name.clone() }), InstContext::NO_CONTEXT.clone(), info.clone())?;
         Ok(())
     }
 
@@ -410,7 +482,7 @@ pub mod LookupState {
     pub fn nodeState(mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState> = Arc::new(LookupState::BEGIN);
         if InstNode::isComponent(node.clone())? || InstNode::isName(node.clone()) || InstNode::isEmpty(node.clone()) {
-            state = Arc::new(crate::NFLookupState::LookupState::COMP);
+            state = crate::NFLookupState::LookupState::interned_COMP();
         } else {
             state = elementState(InstNode::definition(node.clone())?)?;
         }
@@ -420,9 +492,9 @@ pub mod LookupState {
     pub fn elementState(mut element: Arc<SCode::Element>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState> = Arc::new(LookupState::BEGIN);
         state = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => Arc::new(crate::NFLookupState::LookupState::PACKAGE),
-        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { .. }, .. } => Arc::new(crate::NFLookupState::LookupState::FUNC),
-        Deref @ SCode::Element::CLASS { .. } => Arc::new(crate::NFLookupState::LookupState::CLASS),
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => crate::NFLookupState::LookupState::interned_PACKAGE(),
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { .. }, .. } => crate::NFLookupState::LookupState::interned_FUNC(),
+        Deref @ SCode::Element::CLASS { .. } => crate::NFLookupState::LookupState::interned_CLASS(),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.elementState")); __mm_s.push_str(&*literal!(" got unknown element.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
             bail!("fail")
@@ -436,25 +508,25 @@ pub mod LookupState {
         let mut nextState: Arc<LookupState> = Arc::new(LookupState::BEGIN);
         nextState = (::match_deref::match_deref! { match &((elementState.clone(), currentState.clone())) {
         (_, Deref @ BEGIN { .. }) => elementState.clone(),
-        (Deref @ COMP { .. }, Deref @ COMP { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP),
-        (Deref @ FUNC { .. }, Deref @ COMP { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_FUNC),
-        (_, Deref @ COMP { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_CLASS),
-        (Deref @ COMP { .. }, Deref @ CLASS_COMP { .. }) => Arc::new(crate::NFLookupState::LookupState::CLASS_COMP),
-        (Deref @ CLASS_COMP { .. }, Deref @ CLASS_COMP { .. }) => Arc::new(crate::NFLookupState::LookupState::CLASS_COMP),
-        (Deref @ COMP { .. }, Deref @ PACKAGE { .. }) => Arc::new(crate::NFLookupState::LookupState::CLASS_COMP),
+        (Deref @ COMP { .. }, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP(),
+        (Deref @ FUNC { .. }, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP_FUNC(),
+        (_, Deref @ COMP { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
+        (Deref @ COMP { .. }, Deref @ CLASS_COMP { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
+        (Deref @ CLASS_COMP { .. }, Deref @ CLASS_COMP { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
+        (Deref @ COMP { .. }, Deref @ PACKAGE { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
         (_, Deref @ PACKAGE { .. }) => elementState.clone(),
-        (Deref @ COMP { .. }, Deref @ CLASS { .. }) => Arc::new(crate::NFLookupState::LookupState::CLASS_COMP),
+        (Deref @ COMP { .. }, Deref @ CLASS { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
         (_, Deref @ CLASS { .. }) => elementState.clone(),
-        (Deref @ COMP { .. }, Deref @ FUNC { .. }) => Arc::new(crate::NFLookupState::LookupState::CLASS_COMP),
+        (Deref @ COMP { .. }, Deref @ FUNC { .. }) => crate::NFLookupState::LookupState::interned_CLASS_COMP(),
         (_, Deref @ FUNC { .. }) => elementState.clone(),
-        (Deref @ FUNC { .. }, Deref @ COMP_CLASS { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_FUNC),
-        (Deref @ CLASS { .. }, Deref @ COMP_CLASS { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_CLASS),
-        (Deref @ PACKAGE { .. }, Deref @ COMP_CLASS { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_CLASS),
-        (Deref @ FUNC { .. }, Deref @ COMP_FUNC { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_FUNC),
-        (Deref @ CLASS { .. }, Deref @ COMP_FUNC { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_CLASS),
-        (Deref @ PACKAGE { .. }, Deref @ COMP_FUNC { .. }) => Arc::new(crate::NFLookupState::LookupState::COMP_CLASS),
-        (Deref @ COMP { .. }, _) => Arc::new(LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::COMP_FUNC) }),
-        (_, Deref @ CLASS_COMP { .. }) => Arc::new(LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::CLASS_COMP) }),
+        (Deref @ FUNC { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_FUNC(),
+        (Deref @ CLASS { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
+        (Deref @ PACKAGE { .. }, Deref @ COMP_CLASS { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
+        (Deref @ FUNC { .. }, Deref @ COMP_FUNC { .. }) => crate::NFLookupState::LookupState::interned_COMP_FUNC(),
+        (Deref @ CLASS { .. }, Deref @ COMP_FUNC { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
+        (Deref @ PACKAGE { .. }, Deref @ COMP_FUNC { .. }) => crate::NFLookupState::LookupState::interned_COMP_CLASS(),
+        (Deref @ COMP { .. }, _) => Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_COMP_FUNC() }),
+        (_, Deref @ CLASS_COMP { .. }) => Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_CLASS_COMP() }),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookupState.LookupState.next2")); __mm_s.push_str(&*literal!(" failed on unknown transition for element ")); __mm_s.push_str(&*InstNode::name(node.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFLookupState.mo"))?;
             bail!("fail")
@@ -470,7 +542,7 @@ pub mod LookupState {
             return Ok(state.clone());
         }
         if inEnclosingScope.clone() && !(InstContext::inRelaxed(context.clone())) && isNonConstantComponent(ComponentRef::node(cref.clone())?)? {
-            state = Arc::new(LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::NON_CONSTANT) });
+            state = Arc::new(LookupState::ERROR { errorState: crate::NFLookupState::LookupState::interned_NON_CONSTANT() });
         }
         Ok(state)
     }

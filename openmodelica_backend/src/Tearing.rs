@@ -1348,11 +1348,11 @@ fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE:
             ovars = List::map1r(tvars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone())?;
             innerEquations = omcTearing4_1(othercomps.clone(), ass2.clone(), mapIncRowEqn.clone(), eindxarr.clone(), varindxarr.clone(), columark.clone(), mark.clone())?;
             linear = BackendDAEUtil::getLinearfromJacType(jacType.clone())?;
-            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() }), true))
+            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() }), true))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: metamodelica::nil(), residualequations: metamodelica::nil(), innerEquations: metamodelica::nil(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: false, mixedSystem: mixedSystem.clone() }), false))
+            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: metamodelica::nil(), residualequations: metamodelica::nil(), innerEquations: metamodelica::nil(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: false, mixedSystem: mixedSystem.clone() }), false))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
@@ -1512,7 +1512,7 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     });
         iterationVars = unwrap_break_err!(selectFromList_rev(vindx.clone(), iterationVars.clone()), '__try0);
         residualequations = unwrap_break_err!(selectFromList_rev(eindex.clone(), residualequations.clone()), '__try0);
-        ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: iterationVars.clone().reverse(), residualequations: residualequations.clone().reverse(), innerEquations: innerEquations.clone().reverse(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
+        ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: iterationVars.clone().reverse(), residualequations: residualequations.clone().reverse(), innerEquations: innerEquations.clone().reverse(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
         Ok::<_, anyhow::Error>((adjEnh.clone(), adjEnhT.clone(), eqArray.clone(), eqn_lst.clone(), eqns.clone(), innerEquations.clone(), iterationVars.clone(), nE.clone(), nV.clone(), ocomp.clone(), qidx.clone(), residualequations.clone(), size.clone(), subsyst.clone(), unsolvedCSEVars.clone(), unsolvedCombined.clone(), unsolvedDiscreteVars.clone(), varArray.clone(), var_lst.clone(), vars.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10, __try0_o11, __try0_o12, __try0_o13, __try0_o14, __try0_o15, __try0_o16, __try0_o17, __try0_o18, __try0_o19)) => {
@@ -1831,7 +1831,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     if debug.clone() {
         execStat((literal!("Tearing.CellierTearing -> 5")).clone())?;
     }
-    strictTearingSet = BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
+    strictTearingSet = BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() };
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         dumpTearingSetGlobalIndexes(strictTearingSet.clone(), size.clone(), (literal!(" - STRICT SET")).clone())?;
     }
@@ -1878,9 +1878,9 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             OutTVars = selectFromList_rev(vindx.clone(), OutTVars.clone())?;
             residual = selectFromList_rev(eindex.clone(), residual_coll.clone())?;
             innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), Some(me.clone()))?;
-            casualTearingSet = Some(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) });
+            casualTearingSet = Some(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() });
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
-                dumpTearingSetGlobalIndexes(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, size.clone(), (literal!(" - CASUAL SET")).clone())?;
+                dumpTearingSetGlobalIndexes(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, size.clone(), (literal!(" - CASUAL SET")).clone())?;
             }
             if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 if linear.clone() {
@@ -4136,7 +4136,7 @@ fn createTearingSets(mut tVarsIn: Arc<metamodelica::List<i32>>, mut matchingList
         tVars = selectFromList_rev(vindx.clone(), tVarsIn.clone())?;
         residual = selectFromList_rev(eindex.clone(), residual_coll.clone())?;
         innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), None)?;
-        tearingSetsOut = metamodelica::cons(BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, tearingSetsOut.clone());
+        tearingSetsOut = metamodelica::cons(BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, tearingSetsOut.clone());
         if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTearing Variables:\n")); __mm_s.push_str(&*stringDelimitList(List::map(tVarsIn.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Residual Equations:\n")); __mm_s.push_str(&*stringDelimitList(List::map(residual_coll.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -4282,7 +4282,7 @@ fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
         tVars = selectFromList_rev(vindx.clone(), userTVars.clone())?;
         residuals = selectFromList_rev(eindex.clone(), userResiduals.clone())?;
         innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), None)?;
-        tearingSet = BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residuals.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
+        tearingSet = BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residuals.clone(), innerEquations: innerEquations.clone(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() };
         ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: tearingSet.clone(), casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
         outRunMatching = true;
         if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {

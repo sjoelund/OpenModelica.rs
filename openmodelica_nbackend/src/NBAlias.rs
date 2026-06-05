@@ -349,7 +349,7 @@ fn checkReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Compon
             UnorderedMap::add(cref.clone(), exp.clone(), newReplacements.clone())?;
         } else {
             attr = BackendDAE::lowerEquationAttributes(ComponentRef::getSubscriptedType(cref.clone(), false)?, false)?;
-            eqPtr = BEquation::Equation::makeAssignment(Expression::fromCref(cref.clone(), false)?, exp.clone(), BEquation::EqData::getUniqueIndex(eqData.clone())?, (literal!("SIM")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), attr.clone())?;
+            eqPtr = BEquation::Equation::makeAssignment(Expression::fromCref(cref.clone(), false)?, exp.clone(), BEquation::EqData::getUniqueIndex(eqData.clone())?, (literal!("SIM")).clone(), crate::NBEquation::Iterator::interned_EMPTY(), attr.clone())?;
             auxEquations = metamodelica::cons(eqPtr.clone(), auxEquations.clone());
         }
     }
@@ -820,7 +820,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
         __acc.reverse()
     }), true)?;
             eqs = BEquation::EquationPointers::fromList(metamodelica::cons(const_eq.clone(), set.simple_equations.clone()))?;
-            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             Replacements::simple(comps.clone(), replacements.clone())?;
             replacements.clone()
         },
@@ -844,7 +844,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
     }), var_to_keep.clone())?;
             vars = BVariable::VariablePointers::fromList(alias_vars.clone(), false)?;
             eqs = BEquation::EquationPointers::fromList(set.simple_equations.clone())?;
-            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            (_, comps) = Causalize::simple(vars.clone(), eqs.clone(), kind.clone(), NBAdjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_3((literal!("Variable to keep (values of attributes before replacements):")).clone())); __mm_s.push_str(&*BVariable::pointerToString(Pointer::access(var_to_keep.clone()))?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -856,7 +856,7 @@ fn createReplacementRules(mut set: Arc<AliasSet::AliasSet>, mut replacements: Ar
             for mut var in &*var_lst.clone() {
                 let mut var = var.clone();
                 rhs = UnorderedMap::getSafe(BVariable::getVarName(var.clone()), replacements.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBAlias.mo"))?;
-                eq = BEquation::Equation::makeAssignment(BVariable::toExpression(var.clone())?, rhs.clone(), Pointer::create(0), (arcstr::literal!(BEquation::TMP_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?;
+                eq = BEquation::Equation::makeAssignment(BVariable::toExpression(var.clone())?, rhs.clone(), Pointer::create(0), (arcstr::literal!(BEquation::TMP_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?;
                 (solved_eq, _, _) = Solve::solveBody(Pointer::access(eq.clone()), BVariable::getVarName(Pointer::access(var_to_keep.clone())), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1))?;
                 collector = AttributeCollector::fixValues(collector.clone(), BVariable::getVarName(var.clone()), solved_eq.clone())?;
             }

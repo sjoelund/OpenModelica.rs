@@ -190,7 +190,7 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
             fun_.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY)
+            openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -928,7 +928,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     cref = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-                    controlVar = BackendDAE::Var { varName: cref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                    controlVar = BackendDAE::Var { varName: cref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     inputData = addGlobalVars(list![controlVar.clone()], inInputData.clone())?;
                     (derivedStatements1, functions) = differentiateStatements(statementLst.clone(), inDiffwrtCref.clone(), inputData.clone(), inDiffType.clone(), metamodelica::nil(), inFunctionTree.clone(), maxIter.clone())?;
                     derivedStatements1 = list![Arc::new(DAE::Statement::STMT_FOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: exp.clone(), statementLst: derivedStatements1.clone(), source: source.clone() })];
@@ -946,7 +946,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     (derivedStatements1, functions) = differentiateStatements(statementLst.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), metamodelica::nil(), inFunctionTree.clone(), maxIter.clone())?;
-                    derivedStatements1 = list![Arc::new(DAE::Statement::STMT_IF { exp: exp.clone(), statementLst: derivedStatements1.clone(), else_: Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE), source: source.clone() })];
+                    derivedStatements1 = list![Arc::new(DAE::Statement::STMT_IF { exp: exp.clone(), statementLst: derivedStatements1.clone(), else_: openmodelica_frontend_types::DAE::Else::interned_NOELSE(), source: source.clone() })];
                     derivedStatements2 = listAppend(derivedStatements1.clone(), inStmtsAccum.clone());
                     (derivedStatements2, functions) = differentiateStatements(restStatements.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), derivedStatements2.clone(), functions.clone(), maxIter.clone())?;
                     Ok((derivedStatements2.clone(), functions.clone()))

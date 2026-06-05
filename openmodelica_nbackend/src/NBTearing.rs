@@ -547,7 +547,7 @@ fn minimal(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adja
         }
         __acc.reverse()
     }))?;
-                adj = Adjacency::Matrix::fullToFinal(full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+                adj = Adjacency::Matrix::fullToFinal(full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
                 matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj.clone(), true, true, true)?;
                 (matched_vars, _, _, _) = Matching::getMatches(matching.clone(), Adjacency::Matrix::getMappingOpt(adj.clone()), variables.clone(), equations.clone())?;
                 for mut var in &*matched_vars.clone() {
@@ -560,7 +560,7 @@ fn minimal(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adja
                         iteration_vars = metamodelica::cons(var.clone(), iteration_vars.clone());
                     }
                 }
-                adj = Adjacency::Matrix::upgrade(adj.clone(), full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+                adj = Adjacency::Matrix::upgrade(adj.clone(), full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
                 inner_comps = Sorting::tarjan(adj.clone(), matching.clone(), variables.clone(), equations.clone())?;
                 assign_field!(
                     strict.innerEquations = metamodelica::arrayFromVec(inner_comps.clone().into_iter().cloned().collect()),

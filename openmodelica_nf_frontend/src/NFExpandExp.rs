@@ -908,7 +908,7 @@ pub fn expandBinaryPowMatrix(mut exp: Arc<Expression::NFExpression>, mut resize:
     (outExp, expanded) = (::match_deref::match_deref! { match &(exp2.clone()) {
         Deref @ Expression::INTEGER { value: 0 } => {
             n = Dimension::size(listHead(Type::arrayDims(Operator::typeOf(op.clone())))?, false)?;
-            (Expression::makeIdentityMatrix(n.clone(), Arc::new(crate::NFType::REAL))?, true)
+            (Expression::makeIdentityMatrix(n.clone(), crate::NFType::interned_REAL())?, true)
         },
         Deref @ Expression::INTEGER { value: n } if (n.clone() > 0) => {
             (exp1, expanded) = expand(exp1.clone(), false, false)?;

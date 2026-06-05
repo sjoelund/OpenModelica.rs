@@ -510,7 +510,7 @@ pub fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Bindin
     if Binding::isBound(var.binding.clone()) {
         var_exp = Expression::fromTypedCref(var.name.clone(), var.ty.clone());
         bind_exp = Binding::getExp(var.binding.clone())?;
-        bind_eq = Equation::makeEquality(var_exp.clone(), bind_exp.clone(), var.ty.clone(), DAE::emptyElementSource().clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+        bind_eq = Equation::makeEquality(var_exp.clone(), bind_exp.clone(), var.ty.clone(), DAE::emptyElementSource().clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
         equations = metamodelica::cons(bind_eq.clone(), equations.clone());
     }
     assign_field!(

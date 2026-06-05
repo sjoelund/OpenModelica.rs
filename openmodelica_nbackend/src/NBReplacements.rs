@@ -333,7 +333,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
                 if isSome(binding_exp_opt.clone()) {
                     binding_exp = Expression::map(Util::getOption(binding_exp_opt.clone())?, (std::sync::Arc::new({ let __pe_b1 = local_replacements.clone(); move |__pe_a0| applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 } else {
-                    binding_exp = Arc::new(Expression::NFExpression::CREF { ty: Arc::new(openmodelica_nf_frontend::NFType::UNKNOWN), cref: Arc::new(openmodelica_nf_frontend::NFComponentRef::WILD) });
+                    binding_exp = Arc::new(Expression::NFExpression::CREF { ty: openmodelica_nf_frontend::NFType::interned_UNKNOWN(), cref: openmodelica_nf_frontend::NFComponentRef::interned_WILD() });
                 }
                 addInputArgTpl((local_cref.clone(), binding_exp.clone()), local_replacements.clone(), false)?;
             }

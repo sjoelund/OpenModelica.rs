@@ -363,7 +363,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 unwrap_break_err!(UnorderedSet::remove(solved_cref.clone(), output_crefs.clone()), '__try0);
             }
             if UnorderedSet::isEmpty(output_crefs.clone()) {
-                (eqn_slice, solve_status, implicit_index) = unwrap_break_err!(solveMultiStrongComponent(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), varData.clone(), eqData.clone()), '__try0);
+                (eqn_slice, solve_status, implicit_index) = unwrap_break_err!(solveMultiStrongComponent(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), crate::NBEquation::Iterator::interned_EMPTY(), varData.clone(), eqData.clone()), '__try0);
                 solved_comp = Arc::new(StrongComponent::NBStrongComponent::MULTI_COMPONENT { vars: var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), eqn: eqn_slice.clone(), status: solve_status.clone() });
             } else {
                 solve_status = Status::IMPLICIT.clone();
@@ -387,7 +387,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 tmp_eqns = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut tpl in (tmp_crefs.clone()).into_iter().cloned() {
-            let __x = unwrap_break_err!(Equation::makeAssignment(unwrap_break_err!(Expression::fromCref(Util::tuple21(tpl.clone()), false), '__try0), unwrap_break_err!(Expression::fromCref(Util::tuple22(tpl.clone()), false), '__try0), idx.clone(), (literal!("TMP")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None)), '__try0);
+            let __x = unwrap_break_err!(Equation::makeAssignment(unwrap_break_err!(Expression::fromCref(Util::tuple21(tpl.clone()), false), '__try0), unwrap_break_err!(Expression::fromCref(Util::tuple22(tpl.clone()), false), '__try0), idx.clone(), (literal!("TMP")).clone(), crate::NBEquation::Iterator::interned_EMPTY(), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None)), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -450,7 +450,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (solved_comp.clone(), solve_status.clone())
         },
         _ => {
-            (eqn_slice, solve_status, implicit_index) = unwrap_break_err!(solveMultiStrongComponent(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), varData.clone(), eqData.clone()), '__try0);
+            (eqn_slice, solve_status, implicit_index) = unwrap_break_err!(solveMultiStrongComponent(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), crate::NBEquation::Iterator::interned_EMPTY(), varData.clone(), eqData.clone()), '__try0);
             (Arc::new(StrongComponent::NBStrongComponent::MULTI_COMPONENT { vars: var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone(), eqn: eqn_slice.clone(), status: solve_status.clone() }), solve_status.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

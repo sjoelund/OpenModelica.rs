@@ -145,7 +145,7 @@ fn showDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClass
             comp = Arc::new(DAE::Element::COMP { ident: (sstr.clone()).clone(), dAElist: els.clone(), source: DAE::emptyElementSource().clone(), comment: None });
             dae = DAE::DAElist { elementLst: list![comp.clone()] };
             r#str = (if (System::getPartialInstantiation()) {literal!(" partial")} else {literal!(" full")}).clone();
-            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: parent: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inParentEnv.clone())?); __mm_s.push_str(&*literal!(" class: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inClassEnv.clone())?); __mm_s.push_str(&*literal!(" state: ")); __mm_s.push_str(&*sstr.clone()); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*DAEDump::dumpStr(dae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE: parent: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inParentEnv.clone())?); __mm_s.push_str(&*literal!(" class: ")); __mm_s.push_str(&*FGraph::getGraphNameStr(inClassEnv.clone())?); __mm_s.push_str(&*literal!(" state: ")); __mm_s.push_str(&*sstr.clone()); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*DAEDump::dumpStr(dae.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -263,7 +263,7 @@ fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::
                 (vn, Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: tp, .. }, ct, kind, dir, daePrl, prot, e, inst_dims, start, dae_var_attr, comment, _) => {
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut dae_var_attr = (*dae_var_attr).clone();
-                    (_, dae_var_attr) = InstBinding::instDaeVariableAttributes(FCore::emptyCache(), FGraph::empty(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), tp.clone(), metamodelica::nil())?;
+                    (_, dae_var_attr) = InstBinding::instDaeVariableAttributes(FCore::emptyCache(), FGraph::empty(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), tp.clone(), metamodelica::nil())?;
                     dae = daeDeclare2(vn.clone(), tp.clone(), ct.clone(), kind.clone(), dir.clone(), daePrl.clone(), prot.clone(), e.clone(), inst_dims.clone(), start.clone(), dae_var_attr.clone(), comment.clone(), io.clone(), source.clone(), declareComplexVars.clone())?;
                     Ok(dae.clone())
                 }

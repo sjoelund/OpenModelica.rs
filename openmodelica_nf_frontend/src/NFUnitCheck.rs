@@ -193,7 +193,7 @@ fn notification(mut inHtCr2U1: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::
 
 fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Unit::Unit)>>, mut inHtCr2U2: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut inHtU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>) -> Result<ArcStr> {
     let mut outS: ArcStr = arcstr::literal!("");
-    let mut cr1: Arc<ComponentRef::NFComponentRef> = Arc::new(crate::NFComponentRef::EMPTY);
+    let mut cr1: Arc<ComponentRef::NFComponentRef> = crate::NFComponentRef::interned_EMPTY();
     let mut factor: metamodelica::Real = metamodelica::OrderedFloat((0) as f64);
     let mut s: i32 = 0;
     let mut m: i32 = 0;
@@ -265,7 +265,7 @@ fn foldBindingExp(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedM
     let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     if Type::isReal(var.ty.clone())? && Binding::isBound(var.binding.clone()) {
         binding_exp = Binding::getTypedExp(var.binding.clone())?;
-        eq = Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, binding_exp.clone(), var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+        eq = Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, binding_exp.clone(), var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
         foldEquation(eq.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone(), dumpEqInitStruct.clone())?;
     }
     Ok(())
@@ -324,7 +324,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
         },
         Deref @ Equation::EQUALITY { .. } => {
             let mut temp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            temp = Arc::new(Expression::NFExpression::BINARY { exp1: var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), operator: Operator::makeSub(Arc::new(crate::NFType::REAL)), exp2: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone() });
+            temp = Arc::new(Expression::NFExpression::BINARY { exp1: var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), operator: Operator::makeSub(crate::NFType::interned_REAL()), exp2: var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone() });
             if dumpEqInitStruct.clone() {
                 metamodelica::print((Expression::toString(temp.clone())?).clone());
                 metamodelica::print((literal!("--------------------\n")).clone());
@@ -356,7 +356,7 @@ fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, 
 
 fn makeNewCref(mut paramName: ArcStr, mut fnName: ArcStr) -> Arc<Expression::NFExpression> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    outExp = Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::UNKNOWN), cref: ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (paramName.clone()).clone() }), Arc::new(crate::NFType::UNKNOWN), metamodelica::nil(), ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fnName.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }), Arc::new(crate::NFType::UNKNOWN), metamodelica::nil(), ComponentRef::Origin::CREF.clone())) });
+    outExp = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_UNKNOWN(), cref: ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (paramName.clone()).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::fromNode(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fnName.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone())) });
     outExp
 }
 

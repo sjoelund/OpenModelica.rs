@@ -630,7 +630,7 @@ fn removeSlicedDerivatives(mut derivative: Pointer::Pointer<Arc<Equation::Equati
     let mut derivative: Pointer::Pointer<Arc<Equation::Equation>> = derivative;
     let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
     if !(UnorderedSet::isEmpty(slice_set.clone())) {
-        eqn = removeSlicedDerivateEqn(Pointer::access(derivative.clone()), Arc::new(crate::NBEquation::Iterator::EMPTY), dummy_slice_set.clone(), aux_index.clone())?;
+        eqn = removeSlicedDerivateEqn(Pointer::access(derivative.clone()), crate::NBEquation::Iterator::interned_EMPTY(), dummy_slice_set.clone(), aux_index.clone())?;
         Pointer::update(derivative.clone(), eqn.clone());
     }
     Ok(derivative)

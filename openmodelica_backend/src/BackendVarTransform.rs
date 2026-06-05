@@ -1296,7 +1296,7 @@ pub fn addConstantRecordReplacements(mut ty: Arc<DAE::Type>, mut expl: Arc<metam
 }
 
 pub fn getRecordElement(mut name: ArcStr, mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut cref: Arc<DAE::ComponentRef> = Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD);
+    let mut cref: Arc<DAE::ComponentRef> = openmodelica_frontend_types::DAE::ComponentRef::interned_WILD();
     for mut e in &*expl.clone() {
         let mut e = e.clone();
         let () = (::match_deref::match_deref! { match &(e.clone()) {

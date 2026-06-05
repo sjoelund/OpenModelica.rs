@@ -161,7 +161,7 @@ pub fn evaluateBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Com
                     eexp = Ceval::evalExp(eexp.clone(), Ceval::EvalTarget::new(info.clone(), context.clone(), None))?;
                 }
             }
-            eexp = Flatten::flattenExp(eexp.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: prefix.clone() }), info.clone())?;
+            eexp = Flatten::flattenExp(eexp.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: prefix.clone() }), info.clone())?;
         } else {
             eexp = evaluateExp(exp.clone(), Binding::getInfo(binding.clone()))?;
         }
@@ -217,7 +217,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                     ErrorExt::setCheckpoint(literal!("NFEvalConstants.evaluateExpTraverser"));
                     if '__try4: {
                         e = unwrap_break_err!(Ceval::evalCref(cref.clone(), outExp.clone(), Ceval::noTarget().clone(), false, true), '__try4);
-                        e = unwrap_break_err!(Flatten::flattenExp(e.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cref.clone() }), info.clone()), '__try4);
+                        e = unwrap_break_err!(Flatten::flattenExp(e.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: cref.clone() }), info.clone()), '__try4);
                         outExp = e.clone();
                         outChanged = true;
                         Ok::<(), anyhow::Error>(())
@@ -226,7 +226,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                     ErrorExt::rollBack(literal!("NFEvalConstants.evaluateExpTraverser"));
                 } else {
                     outExp = Ceval::evalCref(cref.clone(), outExp.clone(), Ceval::EvalTarget::new(info.clone(), InstContext::NO_CONTEXT.clone(), None), false, true)?;
-                    outExp = Flatten::flattenExp(outExp.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cref.clone() }), info.clone())?;
+                    outExp = Flatten::flattenExp(outExp.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: cref.clone() }), info.clone())?;
                     outChanged = true;
                 }
             } else if outChanged.clone() {

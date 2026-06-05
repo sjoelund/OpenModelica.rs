@@ -1106,7 +1106,7 @@ fn callExternalFunction(mut extName: ArcStr, mut r#fn: Arc<Function::Function>, 
     fn_handle = loadLibraryFunction((pkg_name.clone()).clone(), (extName.clone()).clone(), extAnnotation.clone(), debug.clone(), info.clone())?;
     match '__try0: {
         (mapped_args, specs) = unwrap_break_err!(mapExternalArgs(r#fn.clone(), args.clone(), extArgs.clone()), '__try0);
-        ret_ty = if (ComponentRef::isCref(outputRef.clone())) {unwrap_break_err!(ComponentRef::nodeType(outputRef.clone()), '__try0)} else {Arc::new(crate::NFType::NORETCALL)};
+        ret_ty = if (ComponentRef::isCref(outputRef.clone())) {unwrap_break_err!(ComponentRef::nodeType(outputRef.clone()), '__try0)} else {crate::NFType::interned_NORETCALL()};
         (res, output_vals) = unwrap_break_err!(FFI::callFunction(fn_handle.clone(), mapped_args.clone(), specs.clone(), ret_ty.clone()), '__try0);
         unwrap_break_err!(freeLibraryFunction(fn_handle.clone(), debug.clone()), '__try0);
         Ok::<_, anyhow::Error>((mapped_args.clone(), output_vals.clone(), res.clone(), ret_ty.clone(), specs.clone()))

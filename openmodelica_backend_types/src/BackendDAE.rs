@@ -767,6 +767,15 @@ pub enum Equation {
     },
     DUMMY_EQUATION,
 }
+impl Equation {
+    pub fn interned_DUMMY_EQUATION() -> Arc<Equation> {
+        thread_local! {
+            static INTERNED: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_DUMMY_EQUATION() -> Arc<Equation> { Equation::interned_DUMMY_EQUATION() }
 impl Default for Equation {
     fn default() -> Self { Self::DUMMY_EQUATION }
 }
@@ -887,6 +896,15 @@ pub enum Matching {
         comps: StrongComponents,
     },
 }
+impl Matching {
+    pub fn interned_NO_MATCHING() -> Arc<Matching> {
+        thread_local! {
+            static INTERNED: Arc<Matching> = Arc::new(Matching::NO_MATCHING);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NO_MATCHING() -> Arc<Matching> { Matching::interned_NO_MATCHING() }
 impl Default for Matching {
     fn default() -> Self { Self::NO_MATCHING }
 }
@@ -1423,6 +1441,15 @@ pub enum Jacobian {
     },
     EMPTY_JACOBIAN,
 }
+impl Jacobian {
+    pub fn interned_EMPTY_JACOBIAN() -> Arc<Jacobian> {
+        thread_local! {
+            static INTERNED: Arc<Jacobian> = Arc::new(Jacobian::EMPTY_JACOBIAN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_EMPTY_JACOBIAN() -> Arc<Jacobian> { Jacobian::interned_EMPTY_JACOBIAN() }
 impl Default for Jacobian {
     fn default() -> Self { Self::EMPTY_JACOBIAN }
 }
@@ -1494,7 +1521,7 @@ impl Default for DifferentiateInputData {
 pub type DIFFINPUTDATA = DifferentiateInputData;
 
 
-thread_local! { static __emptyInputData_TLS: DifferentiateInputData = DifferentiateInputData { independenentVars: None, dependenentVars: None, knownVars: None, allVars: None, controlVars: metamodelica::nil(), diffCrefs: metamodelica::nil(), matrixName: None, diffedFunctions: Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY) }; }
+thread_local! { static __emptyInputData_TLS: DifferentiateInputData = DifferentiateInputData { independenentVars: None, dependenentVars: None, knownVars: None, allVars: None, controlVars: metamodelica::nil(), diffCrefs: metamodelica::nil(), matrixName: None, diffedFunctions: openmodelica_ast_collections::AvlSetPath::Tree::interned_EMPTY() }; }
 pub fn emptyInputData() -> DifferentiateInputData { __emptyInputData_TLS.with(|__t| __t.clone()) }
 
 pub type DifferentiateInputArguments = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, DifferentiateInputData, DifferentiationType, Arc<AvlTreePathFunction::Tree>);

@@ -108,7 +108,7 @@ fn mkClassGraph(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut inKi
     outGraph = (::match_deref::match_deref! { match &((inClass.clone(), inGraph.clone())) {
         (Deref @ SCode::Element::CLASS { .. }, g) => {
             let mut g = (*g).clone();
-            g = mkClassNode(inClass.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), inParentRef.clone(), inKind.clone(), g.clone(), checkDuplicate.clone())?;
+            g = mkClassNode(inClass.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), inParentRef.clone(), inKind.clone(), g.clone(), checkDuplicate.clone())?;
             g.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -386,7 +386,7 @@ pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, m
         },
         (Deref @ SCode::Element::CLASS { .. }, g) => {
             let mut g = (*g).clone();
-            g = mkClassNode(inElement.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), inParentRef.clone(), inKind.clone(), g.clone(), false)?;
+            g = mkClassNode(inElement.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), inParentRef.clone(), inKind.clone(), g.clone(), false)?;
             g.clone()
         },
         (Deref @ SCode::Element::EXTENDS { modifications: m, baseClassPath: p, .. }, g) => {
@@ -395,7 +395,7 @@ pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, m
             let mut nr: Ref = Default::default();
             let mut g = (*g).clone();
             name = (FNode::mkExtendsName(p.clone())?).clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::EX { e: inElement.clone(), r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD) });
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::EX { e: inElement.clone(), r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), nr.clone(), inKind.clone(), g.clone())?;
@@ -504,7 +504,7 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
             let mut name: Name = arcstr::literal!("");
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
-            g = mkExpressionNode((name.clone()).clone(), Arc::new(openmodelica_ast::Absyn::Exp::END), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = mkExpressionNode((name.clone()).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },

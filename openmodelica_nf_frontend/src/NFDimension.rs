@@ -103,6 +103,22 @@ pub enum NFDimension {
     },
     UNKNOWN,
 }
+impl NFDimension {
+    pub fn interned_BOOLEAN() -> Arc<NFDimension> {
+        thread_local! {
+            static INTERNED: Arc<NFDimension> = Arc::new(NFDimension::BOOLEAN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_UNKNOWN() -> Arc<NFDimension> {
+        thread_local! {
+            static INTERNED: Arc<NFDimension> = Arc::new(NFDimension::UNKNOWN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_BOOLEAN() -> Arc<NFDimension> { NFDimension::interned_BOOLEAN() }
+pub fn interned_UNKNOWN() -> Arc<NFDimension> { NFDimension::interned_UNKNOWN() }
 impl Default for NFDimension {
     fn default() -> Self { Self::BOOLEAN }
 }
@@ -117,7 +133,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
         },
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: ty, .. } } => {
             (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::BOOLEAN => Arc::new(crate::NFDimension::BOOLEAN),
+        Deref @ Type::BOOLEAN => crate::NFDimension::interned_BOOLEAN(),
         Deref @ Type::ENUMERATION { .. } => Arc::new(NFDimension::ENUM { enumType: ty.clone() }),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromExp")); __mm_s.push_str(&*literal!(" got invalid typename")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFDimension.mo"))?;
@@ -212,7 +228,7 @@ pub fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
             Arc::new(DAE::Dimension::DIM_INTEGER { integer: var_field!((*dim).size, NFDimension::INTEGER).clone() })
         },
         Deref @ BOOLEAN { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_BOOLEAN)
+            openmodelica_frontend_types::DAE::Dimension::interned_DIM_BOOLEAN()
         },
         Deref @ ENUM { enumType: ty @ Deref @ Type::ENUMERATION { .. } } => {
             Arc::new(DAE::Dimension::DIM_ENUM { enumTypeName: var_field!((**ty).typePath, Type::NFType::ENUMERATION).clone(), literals: var_field!((**ty).literals, Type::NFType::ENUMERATION).clone(), size: (var_field!((**ty).literals, Type::NFType::ENUMERATION).clone().len() as i32) })
@@ -224,7 +240,7 @@ pub fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
             Arc::new(DAE::Dimension::DIM_EXP { exp: Expression::toDAE(var_field!((*dim).exp, NFDimension::RESIZABLE).clone(), false)? })
         },
         Deref @ UNKNOWN { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)
+            openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -233,7 +249,7 @@ pub fn toDAE(mut dim: Arc<NFDimension>) -> Result<Arc<DAE::Dimension>> {
 
 pub fn add(mut a: Arc<NFDimension>, mut b: Arc<NFDimension>) -> Arc<NFDimension> {
     fn addExp(mut e1: Arc<Expression::NFExpression>, mut e2: Arc<Expression::NFExpression>) -> Arc<Expression::NFExpression> {
-        let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: Arc::new(Operator::NFOperator { ty: Arc::new(crate::NFType::INTEGER), op: Operator::Op::ADD.clone() }), exp2: e2.clone() });
+        let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: Arc::new(Operator::NFOperator { ty: crate::NFType::interned_INTEGER(), op: Operator::Op::ADD.clone() }), exp2: e2.clone() });
         res
     }
 
@@ -252,8 +268,8 @@ pub fn add(mut a: Arc<NFDimension>, mut b: Arc<NFDimension>) -> Arc<NFDimension>
 
     let mut c: Arc<NFDimension> = Arc::new(NFDimension::BOOLEAN);
     c = (::match_deref::match_deref! { match &((a.clone(), b.clone())) {
-        (Deref @ UNKNOWN { .. }, _) => Arc::new(crate::NFDimension::UNKNOWN),
-        (_, Deref @ UNKNOWN { .. }) => Arc::new(crate::NFDimension::UNKNOWN),
+        (Deref @ UNKNOWN { .. }, _) => crate::NFDimension::interned_UNKNOWN(),
+        (_, Deref @ UNKNOWN { .. }) => crate::NFDimension::interned_UNKNOWN(),
         (Deref @ INTEGER { .. }, Deref @ INTEGER { .. }) => Arc::new(NFDimension::INTEGER { size: var_field!((*a).size, NFDimension::INTEGER).clone() + var_field!((*b).size, NFDimension::INTEGER).clone(), var: Prefixes::variabilityMax(var_field!((*a).var, NFDimension::INTEGER).clone(), var_field!((*b).var, NFDimension::INTEGER).clone()) }),
         (Deref @ INTEGER { .. }, Deref @ EXP { .. }) => Arc::new(NFDimension::EXP { exp: addExp(var_field!((*b).exp, NFDimension::EXP).clone(), Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*a).size, NFDimension::INTEGER).clone() })), var: var_field!((*b).var, NFDimension::EXP).clone() }),
         (Deref @ EXP { .. }, Deref @ INTEGER { .. }) => Arc::new(NFDimension::EXP { exp: addExp(var_field!((*a).exp, NFDimension::EXP).clone(), Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*b).size, NFDimension::INTEGER).clone() })), var: var_field!((*a).var, NFDimension::EXP).clone() }),
@@ -263,7 +279,7 @@ pub fn add(mut a: Arc<NFDimension>, mut b: Arc<NFDimension>) -> Arc<NFDimension>
         (Deref @ EXP { .. }, Deref @ RESIZABLE { .. }) => Arc::new(NFDimension::EXP { exp: addExp(var_field!((*a).exp, NFDimension::EXP).clone(), var_field!((*b).exp, NFDimension::RESIZABLE).clone()), var: Prefixes::variabilityMax(var_field!((*a).var, NFDimension::EXP).clone(), var_field!((*b).var, NFDimension::RESIZABLE).clone()) }),
         (Deref @ RESIZABLE { .. }, Deref @ EXP { .. }) => Arc::new(NFDimension::EXP { exp: addExp(var_field!((*a).exp, NFDimension::RESIZABLE).clone(), var_field!((*b).exp, NFDimension::EXP).clone()), var: Prefixes::variabilityMax(var_field!((*a).var, NFDimension::RESIZABLE).clone(), var_field!((*b).var, NFDimension::EXP).clone()) }),
         (Deref @ RESIZABLE { .. }, Deref @ RESIZABLE { .. }) => Arc::new(NFDimension::RESIZABLE { size: var_field!((*a).size, NFDimension::RESIZABLE).clone() + var_field!((*b).size, NFDimension::RESIZABLE).clone(), opt_size: addOpt(var_field!((*a).opt_size, NFDimension::RESIZABLE).clone(), var_field!((*b).opt_size, NFDimension::RESIZABLE).clone()), exp: addExp(var_field!((*a).exp, NFDimension::RESIZABLE).clone(), var_field!((*b).exp, NFDimension::RESIZABLE).clone()), var: Prefixes::variabilityMax(var_field!((*a).var, NFDimension::RESIZABLE).clone(), var_field!((*b).var, NFDimension::RESIZABLE).clone()) }),
-        _ => Arc::new(crate::NFDimension::UNKNOWN),
+        _ => crate::NFDimension::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     c
@@ -439,12 +455,12 @@ pub fn isOne(mut dim: Arc<NFDimension>) -> Result<bool> {
 pub fn subscriptType(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ INTEGER { .. } => Arc::new(crate::NFType::INTEGER),
-        Deref @ BOOLEAN { .. } => Arc::new(crate::NFType::BOOLEAN),
+        Deref @ INTEGER { .. } => crate::NFType::interned_INTEGER(),
+        Deref @ BOOLEAN { .. } => crate::NFType::interned_BOOLEAN(),
         Deref @ ENUM { .. } => var_field!((*dim).enumType, NFDimension::ENUM).clone(),
         Deref @ EXP { .. } => Expression::typeOf(var_field!((*dim).exp, NFDimension::EXP).clone()),
         Deref @ RESIZABLE { .. } => Expression::typeOf(var_field!((*dim).exp, NFDimension::RESIZABLE).clone()),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty
@@ -751,12 +767,12 @@ pub fn simplify(mut dim: Arc<NFDimension>) -> Result<Arc<NFDimension>> {
 pub fn typeOf(mut dim: Arc<NFDimension>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ INTEGER { .. } => Arc::new(crate::NFType::INTEGER),
-        Deref @ BOOLEAN { .. } => Arc::new(crate::NFType::BOOLEAN),
+        Deref @ INTEGER { .. } => crate::NFType::interned_INTEGER(),
+        Deref @ BOOLEAN { .. } => crate::NFType::interned_BOOLEAN(),
         Deref @ ENUM { .. } => var_field!((*dim).enumType, NFDimension::ENUM).clone(),
         Deref @ EXP { .. } => Expression::typeOf(var_field!((*dim).exp, NFDimension::EXP).clone()),
         Deref @ RESIZABLE { .. } => Expression::typeOf(var_field!((*dim).exp, NFDimension::RESIZABLE).clone()),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty

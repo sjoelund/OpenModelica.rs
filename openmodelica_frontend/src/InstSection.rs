@@ -137,7 +137,7 @@ fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     match '__try0: {
         state = unwrap_break_err!(ClassInfUtil::trans(inState.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EQUATION), '__try0);
         (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = unwrap_break_err!(instEquationCommonWork(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), state.clone(), inEquation.clone(), inInitial.clone(), inImpl.clone(), inGraph.clone(), Arc::new(DAE::SymbolicOperation::FLATTEN { scode: inEquation.clone(), dae: None })), '__try0);
-        (outDae, _, _) = unwrap_break_err!(DAEUtil::traverseDAE(outDae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone())), '__try0);
+        (outDae, _, _) = unwrap_break_err!(DAEUtil::traverseDAE(outDae.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone())), '__try0);
         Ok::<_, anyhow::Error>((outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outSets.clone(), outState.clone(), state.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
@@ -1079,7 +1079,7 @@ fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Pr
                     let mut tupleConst2: Arc<metamodelica::List<Arc<DAE::TupleConst>>> = metamodelica::nil();
                     fillValue = (typeList.clone().len() as i32) - (aexpl.clone().len() as i32);
                     lst2 = List::fill(DAE::T_ANYTYPE_DEFAULT().clone(), fillValue.clone());
-                    aexpl2 = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD) }), fillValue.clone());
+                    aexpl2 = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: openmodelica_ast::Absyn::ComponentRef::interned_WILD() }), fillValue.clone());
                     tupleConst2 = List::fill(Arc::new(DAE::TupleConst::SINGLE_CONST { r#const: openmodelica_frontend_types::DAE::Const::C_VAR }), fillValue.clone());
                     aexpl2 = listAppend(aexpl.clone(), aexpl2.clone());
                     lst2 = listAppend(lst.clone(), lst2.clone());
@@ -1100,7 +1100,7 @@ fn expandTupleEquationWithWild(mut inExp: Arc<Absyn::Exp>, mut propCall: DAE::Pr
                     let mut tupleConst: Arc<metamodelica::List<Arc<DAE::TupleConst>>> = metamodelica::nil();
                     let mut tupleConst2: Arc<metamodelica::List<Arc<DAE::TupleConst>>> = metamodelica::nil();
                     fillValue = (typeList.clone().len() as i32) - 1;
-                    aexpl2 = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD) }), fillValue.clone());
+                    aexpl2 = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: openmodelica_ast::Absyn::ComponentRef::interned_WILD() }), fillValue.clone());
                     lst2 = List::fill(DAE::T_ANYTYPE_DEFAULT().clone(), fillValue.clone());
                     tupleConst2 = List::fill(Arc::new(DAE::TupleConst::SINGLE_CONST { r#const: openmodelica_frontend_types::DAE::Const::C_VAR }), fillValue.clone());
                     aexpl = metamodelica::cons(inExp.clone(), aexpl2.clone());
@@ -1186,14 +1186,14 @@ fn unroll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<meta
 fn addForLoopScope(mut env: FCore::Graph, mut iterName: Ident, mut iterType: Arc<DAE::Type>, mut iterVariability: SCode::Variability, mut constOfForIteratorRange: Option<DAE::Const>) -> Result<FCore::Graph> {
     let mut newEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     newEnv = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (arcstr::literal!(FCore::forScopeName)).clone(), None)?;
-    newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), iterVariability.clone(), constOfForIteratorRange.clone())?;
+    newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), iterVariability.clone(), constOfForIteratorRange.clone())?;
     Ok(newEnv)
 }
 
 fn addParForLoopScope(mut env: FCore::Graph, mut iterName: Ident, mut iterType: Arc<DAE::Type>, mut iterVariability: SCode::Variability, mut constOfForIteratorRange: Option<DAE::Const>) -> Result<FCore::Graph> {
     let mut newEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     newEnv = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (arcstr::literal!(FCore::parForScopeName)).clone(), None)?;
-    newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), iterVariability.clone(), constOfForIteratorRange.clone())?;
+    newEnv = FGraph::addForIterator(newEnv.clone(), (iterName.clone()).clone(), iterType.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), iterVariability.clone(), constOfForIteratorRange.clone())?;
     Ok(newEnv)
 }
 
@@ -2379,7 +2379,7 @@ fn makeAssignment(mut inLhs: Arc<DAE::Exp>, mut inLhsProps: DAE::Properties, mut
             } };
             wild_props = __pa0.clone();
             wild_count = (wild_props.clone().len() as i32);
-            wildCrefExp = Expression::makeCrefExp(Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), DAE::T_UNKNOWN_DEFAULT().clone())?;
+            wildCrefExp = Expression::makeCrefExp(openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             wilds = List::fill(wildCrefExp.clone(), wild_count.clone());
             wild_props = List::fill(DAE::Properties::PROP { type_: DAE::T_ANYTYPE_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, wild_count.clone());
             Algorithm::makeTupleAssignment(metamodelica::cons(inLhs.clone(), wilds.clone()), metamodelica::cons(inLhsProps.clone(), wild_props.clone()), inRhs.clone(), inRhsProps.clone(), inInitial.clone(), inSource.clone())?
@@ -3264,7 +3264,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     daeDims = TypesDump::getDimensions(ty2.clone());
                     arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
                     envExpandable = FGraph::cloneLastScopeRef(envExpandable.clone())?;
-                    envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
+                    envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
                     env = updateEnvComponentsOnQualPath(cache.clone(), env.clone(), c1_2.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), envExpandable.clone())?;
                     (cache, env, ih, sets, dae, graph) = connectExpandableVariables(cache.clone(), env.clone(), ih.clone(), sets.clone(), pre.clone(), c1.clone(), c2.clone(), variablesUnion.clone(), r#impl.clone(), graph.clone(), info.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets.clone(), dae.clone(), graph.clone()))
@@ -3358,7 +3358,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     envComponentEmpty = FGraph::removeComponentsFromScope(envComponent.clone())?;
                     daeDims = TypesDump::getDimensions(ty2.clone());
                     arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
-                    envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
+                    envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
                     env = updateEnvComponentsOnQualPath(cache.clone(), env.clone(), c1_2.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), envExpandable.clone())?;
                     let (__pa11, __pa12) = ::match_deref::match_deref! { match &(Static::elabCref(cache.clone(), env.clone(), c1.clone(), r#impl.clone(), false, pre.clone(), info.clone())?) {
                         (__pa11, Some((Deref @ DAE::Exp::CREF { componentRef: __pa12, ty: _ }, _, _))) => (__pa11.clone(), __pa12.clone()),
@@ -4068,7 +4068,7 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     (cache, equalityConstraintFunction, env) = Lookup::lookupClass(cache.clone(), env.clone(), fpath1.clone(), None)?;
                     (cache, fpath1) = Inst::makeFullyQualified(cache.clone(), env.clone(), fpath1.clone())?;
                     cache = FCore::addCachedInstFuncGuard(cache.clone(), fpath1.clone())?;
-                    (cache, env, ih) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, equalityConstraintFunction.clone(), metamodelica::nil())?;
+                    (cache, env, ih) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, equalityConstraintFunction.clone(), metamodelica::nil())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets_1.clone(), dae.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4107,7 +4107,7 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     (cache, equalityConstraintFunction, env) = Lookup::lookupClass(cache.clone(), env.clone(), fpath1.clone(), None)?;
                     (cache, fpath1) = Inst::makeFullyQualified(cache.clone(), env.clone(), fpath1.clone())?;
                     cache = FCore::addCachedInstFuncGuard(cache.clone(), fpath1.clone())?;
-                    (cache, env, ih) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, equalityConstraintFunction.clone(), metamodelica::nil())?;
+                    (cache, env, ih) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, equalityConstraintFunction.clone(), metamodelica::nil())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets_1.clone(), dae.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),

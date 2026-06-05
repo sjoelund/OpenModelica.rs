@@ -289,6 +289,13 @@ pub mod EnvTree {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
+            (*INTERNED).clone()
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -324,9 +331,9 @@ pub mod EnvTree {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -391,9 +398,9 @@ pub mod EnvTree {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -540,7 +547,7 @@ pub mod EnvTree {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Item>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Item>, Arc<Item>, ArcStr) -> Result<Arc<Item>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY();
         let mut key: Key = arcstr::literal!("");
         let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
         for mut t in &*inValues.clone() {
@@ -784,7 +791,7 @@ pub mod EnvTree {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY();
         outTree
     }
 
@@ -844,8 +851,8 @@ pub mod EnvTree {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -865,8 +872,8 @@ pub mod EnvTree {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::NFSCodeEnv::EnvTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -1795,7 +1802,7 @@ fn extendEnvWithEnum(mut inEnum: Arc<SCode::Enum>, mut inEnumPath: Arc<Absyn::Pa
     lit_name = __pa0.clone();
     index = (intString(inValue.clone())).clone();
     ty = Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("$EnumType")).clone(), path: Arc::new(Absyn::Path::QUALIFIED { name: (index.clone()).clone(), path: inEnumPath.clone() }) }), arrayDim: None });
-    enum_lit = Arc::new(SCode::Element::COMPONENT { name: (lit_name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: ty.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: inInfo.clone() });
+    enum_lit = Arc::new(SCode::Element::COMPONENT { name: (lit_name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: ty.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: inInfo.clone() });
     outEnv = extendEnvWithElement(enum_lit.clone(), inEnv.clone())?;
     Ok(outEnv)
 }
@@ -1817,7 +1824,7 @@ fn extendEnvWithIterator(mut inIterator: Arc<Absyn::ForIterator>, mut inEnv: Env
         _ => bail!("pattern mismatch"),
     } };
     iter_name = __pa0.clone();
-    iter = Arc::new(SCode::Element::COMPONENT { name: (iter_name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
+    iter = Arc::new(SCode::Element::COMPONENT { name: (iter_name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     outEnv = extendEnvWithElement(iter.clone(), inEnv.clone())?;
     Ok(outEnv)
 }

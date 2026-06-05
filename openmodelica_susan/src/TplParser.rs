@@ -102,6 +102,13 @@ pub mod CacheTree {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
+            (*INTERNED).clone()
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -137,9 +144,9 @@ pub mod CacheTree {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: Arc::new(crate::TplParser::CacheTree::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::TplParser::CacheTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -206,9 +213,9 @@ pub mod CacheTree {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: Arc::new(crate::TplParser::CacheTree::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::TplParser::CacheTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::TplParser::CacheTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::TplParser::CacheTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -355,7 +362,7 @@ pub mod CacheTree {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::TplParser::CacheTree::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::TplParser::CacheTree::Tree::interned_EMPTY();
         let mut key: Key = arcstr::literal!("");
         let mut value: Value = metamodelica::nil();
         for mut t in &*inValues.clone() {
@@ -599,7 +606,7 @@ pub mod CacheTree {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::TplParser::CacheTree::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::TplParser::CacheTree::Tree::interned_EMPTY();
         outTree
     }
 
@@ -659,8 +666,8 @@ pub mod CacheTree {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::TplParser::CacheTree::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::TplParser::CacheTree::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -680,8 +687,8 @@ pub mod CacheTree {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::TplParser::CacheTree::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::TplParser::CacheTree::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -1295,7 +1302,7 @@ pub fn templPackageFromFile(mut inFile: ArcStr) -> Result<TplAbsyn::TemplPackage
             let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
             (chars, linfo, errOpt) = openFile((file.clone()).clone())?;
             linfo = parseErrorPrevPositionOpt(chars.clone(), linfo.clone(), linfo.clone(), errOpt.clone(), true)?;
-            (chars, linfo, tplPackage, _) = templPackage(chars.clone(), linfo.clone(), Arc::new(crate::TplParser::CacheTree::Tree::EMPTY))?;
+            (chars, linfo, tplPackage, _) = templPackage(chars.clone(), linfo.clone(), crate::TplParser::CacheTree::Tree::interned_EMPTY())?;
             (_, linfo) = interleaveExpectEndOfFile(chars.clone(), linfo.clone())?;
             printAndFailIfError(linfo.clone())?;
             Ok(tplPackage.clone())
@@ -1421,7 +1428,7 @@ pub fn templateDefToAstDefType(mut inTemplateDef: (ArcStr, TplAbsyn::TemplateDef
         let __mc_input = inTemplateDef.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let (mut id, TplAbsyn::TemplateDef::STR_TOKEN_DEF { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok((id.clone(), TplAbsyn::TypeInfo::TI_CONST_TYPE { constType: Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) }))
+            Ok((id.clone(), TplAbsyn::TypeInfo::TI_CONST_TYPE { constType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut id, TplAbsyn::TemplateDef::LITERAL_DEF { litType: mut litType, .. }) = __mc_input.clone() else { bail!("nomatch") };
@@ -2327,10 +2334,10 @@ pub fn typeSig_restList(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
 pub fn typeSigFromPathIdent(mut inPathIdent: Arc<TplAbsyn::PathIdent>) -> Arc<TplAbsyn::TypeSignature> {
     let mut outTypeSignature: Arc<TplAbsyn::TypeSignature> = Arc::new(TplAbsyn::TypeSignature::BOOLEAN_TYPE);
     outTypeSignature = (::match_deref::match_deref! { match &(inPathIdent.clone()) {
-        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "String" } => Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE),
-        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Integer" } => Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE),
-        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Real" } => Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE),
-        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Boolean" } => Arc::new(crate::TplAbsyn::TypeSignature::BOOLEAN_TYPE),
+        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "String" } => crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(),
+        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Integer" } => crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(),
+        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Real" } => crate::TplAbsyn::TypeSignature::interned_REAL_TYPE(),
+        Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "Boolean" } => crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE(),
         _ => Arc::new(TplAbsyn::TypeSignature::NAMED_TYPE { name: inPathIdent.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3405,7 +3412,7 @@ pub fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, strRevList) = stringConstant(chars.clone(), linfo.clone())?;
                     st = makeStrTokFromRevStrList(strRevList.clone())?;
-                    Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::STR_TOKEN_DEF { value: st.clone() }, Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::STR_TOKEN_DEF { value: st.clone() }, crate::TplAbsyn::TypeSignature::interned_STRING_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3443,7 +3450,7 @@ pub fn templDef_Const(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     let mut linfo = (*linfo).clone();
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expected a constant definition after the position.")).clone(), true)?;
                     litType = Arc::new(TplAbsyn::TypeSignature::UNRESOLVED_TYPE { reason: (literal!("#Error#")).clone() });
-                    Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::TEMPLATE_DEF { args: metamodelica::nil(), lesc: (literal!("")).clone(), resc: (literal!("")).clone(), exp: (Arc::new(crate::TplAbsyn::ExpressionBase::ERROR_EXP), dummySourceInfo.clone()) }, litType.clone()))
+                    Ok((chars.clone(), linfo.clone(), TplAbsyn::TemplateDef::TEMPLATE_DEF { args: metamodelica::nil(), lesc: (literal!("")).clone(), resc: (literal!("")).clone(), exp: (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone()) }, litType.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3470,7 +3477,7 @@ pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "S", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "g", tail: chars } } } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3479,7 +3486,7 @@ pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "I", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "g", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: chars } } } } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3488,7 +3495,7 @@ pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "R", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: chars } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::TypeSignature::interned_REAL_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3497,7 +3504,7 @@ pub fn constantType(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "B", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: chars } } } } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::TypeSignature::BOOLEAN_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3635,7 +3642,7 @@ pub fn templArgs(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: L
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone())?;
-                    Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE)), args.clone())))
+                    Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()), args.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3781,7 +3788,7 @@ pub fn templArgs_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIn
                     (chars, linfo, name) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, args) = templArgs_rest(chars.clone(), linfo.clone())?;
-                    Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE)), args.clone())))
+                    Ok((chars.clone(), linfo.clone(), metamodelica::cons((name.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()), args.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3897,7 +3904,7 @@ pub fn expression(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: 
                 (chars, linfo, _, _, false) => {
                     let mut linfo = (*linfo).clone();
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expecting an expression - not able to parse from this point.")).clone(), true)?;
-                    Ok((chars.clone(), linfo.clone(), (Arc::new(crate::TplAbsyn::ExpressionBase::ERROR_EXP), dummySourceInfo.clone())))
+                    Ok((chars.clone(), linfo.clone(), (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4367,7 +4374,7 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     (chars, linfo) = interleave(startChars.clone(), startLInfo.clone())?;
                     (chars, linfo, _) = identifierNoOpt(chars.clone(), linfo.clone())?;
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expecting a '=' or '+=' text variable creation/addition (&var = exp or &var += exp) at the position.")).clone(), true)?;
-                    Ok((chars.clone(), linfo.clone(), (Arc::new(crate::TplAbsyn::ExpressionBase::ERROR_EXP), dummySourceInfo.clone())))
+                    Ok((chars.clone(), linfo.clone(), (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4407,7 +4414,7 @@ pub fn letExp(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo: Line
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, _) = pathIdentNoOpt(chars.clone(), linfo.clone())?;
                     linfo = parseError(chars.clone(), linfo.clone(), (literal!("Expecting a non-return function call( let () = [package.]funName(args,...) ) at the position.")).clone(), true)?;
-                    Ok((chars.clone(), linfo.clone(), (Arc::new(crate::TplAbsyn::ExpressionBase::ERROR_EXP), dummySourceInfo.clone())))
+                    Ok((chars.clone(), linfo.clone(), (crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP(), dummySourceInfo.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5044,7 +5051,7 @@ pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "r", tail: Deref @ metamodelica::List::Cons { head: Deref @ "u", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), literal!("true"), Arc::new(crate::TplAbsyn::TypeSignature::BOOLEAN_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), literal!("true"), crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5053,7 +5060,7 @@ pub fn literalConstant(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "f", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "l", tail: Deref @ metamodelica::List::Cons { head: Deref @ "s", tail: Deref @ metamodelica::List::Cons { head: Deref @ "e", tail: chars } } } } }, linfo) => {
                     afterKeyword(chars.clone())?;
-                    Ok((chars.clone(), linfo.clone(), literal!("false"), Arc::new(crate::TplAbsyn::TypeSignature::BOOLEAN_TYPE)))
+                    Ok((chars.clone(), linfo.clone(), literal!("false"), crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5425,7 +5432,7 @@ pub fn makeStrTokFromRevStrList(mut inRevStrList: Arc<metamodelica::List<ArcStr>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } } => {
-                    Ok(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE))
+                    Ok(crate::Tpl::StringToken::interned_ST_NEW_LINE())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5558,7 +5565,7 @@ pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<me
                         _ => bail!("pattern mismatch"),
                     } };
                     dn = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*stringCharListString(ds.clone())); ArcStr::from(__mm_s) }).clone();
-                    Ok((chars.clone(), dn.clone(), Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE)))
+                    Ok((chars.clone(), dn.clone(), crate::TplAbsyn::TypeSignature::interned_REAL_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5566,7 +5573,7 @@ pub fn dotNumber(mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<me
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inChars.clone(), literal!(""), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE)))
+                    Ok((inChars.clone(), literal!(""), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5604,7 +5611,7 @@ pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc
                         _ => bail!("pattern mismatch"),
                     } };
                     ex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("e")); __mm_s.push_str(&*pm.clone()); __mm_s.push_str(&*stringCharListString(ds.clone())); ArcStr::from(__mm_s) }).clone();
-                    Ok((chars.clone(), ex.clone(), Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE)))
+                    Ok((chars.clone(), ex.clone(), crate::TplAbsyn::TypeSignature::interned_REAL_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5623,7 +5630,7 @@ pub fn exponent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLitType: Arc
                         _ => bail!("pattern mismatch"),
                     } };
                     ex = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E")); __mm_s.push_str(&*pm.clone()); __mm_s.push_str(&*stringCharListString(ds.clone())); ArcStr::from(__mm_s) }).clone();
-                    Ok((chars.clone(), ex.clone(), Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE)))
+                    Ok((chars.clone(), ex.clone(), crate::TplAbsyn::TypeSignature::interned_REAL_TYPE()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5913,7 +5920,7 @@ pub fn restOfTemplLine(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineI
     }
     outChars = metamodelica::nil();
     outLineInfo = parseError(metamodelica::nil(), inLineInfo.clone(), (literal!("Not able to parse the text template expression from the point.")).clone(), true)?;
-    outExpressionBase = Arc::new(crate::TplAbsyn::ExpressionBase::ERROR_EXP);
+    outExpressionBase = crate::TplAbsyn::ExpressionBase::interned_ERROR_EXP();
     Ok((outChars, outLineInfo, outExpressionBase))
 }
 
@@ -6133,7 +6140,7 @@ pub fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::Exp
             ::match_deref::match_deref! { match &__mc_input {
                 (expLst @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, indStack, actInd, _, Deref @ metamodelica::List::Nil) => {
                     let mut expLst = (*expLst).clone();
-                    expLst = metamodelica::cons((Arc::new(crate::TplAbsyn::ExpressionBase::SOFT_NEW_LINE), dummySourceInfo.clone()), expLst.clone());
+                    expLst = metamodelica::cons((crate::TplAbsyn::ExpressionBase::interned_SOFT_NEW_LINE(), dummySourceInfo.clone()), expLst.clone());
                     Ok((expLst.clone(), indStack.clone(), actInd.clone(), None))
                 }
                 _ => bail!("nomatch"),
@@ -6517,7 +6524,7 @@ pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (Deref @ TplAbsyn::ExpressionBase::STR_TOKEN { value: Deref @ Tpl::StringToken::ST_STRING_LIST { lastHasNewLine: false, strList: Deref @ metamodelica::List::Cons { head: Deref @ "", tail: Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: Deref @ metamodelica::List::Nil } } } }, _), tail: expLst } => {
                     let mut expLst = (*expLst).clone();
-                    expLst = metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }), dummySourceInfo.clone()), expLst.clone());
+                    expLst = metamodelica::cons((Arc::new(TplAbsyn::ExpressionBase::STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), dummySourceInfo.clone()), expLst.clone());
                     Ok(expLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -6917,7 +6924,7 @@ pub fn matchElseCase(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInf
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo, exp) = expressionLet(chars.clone(), linfo.clone(), (lesc.clone()).clone(), (resc.clone()).clone())?;
-                    Ok((chars.clone(), linfo.clone(), list![(Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), exp.clone())]))
+                    Ok((chars.clone(), linfo.clone(), list![(crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), exp.clone())]))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7251,7 +7258,7 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
                     afterKeyword(chars.clone())?;
                     (chars, linfo) = interleave(chars.clone(), linfo.clone())?;
                     (chars, linfo) = takeEmptyBraces(chars.clone(), linfo.clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::MatchingExp::NONE_MATCH)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::MatchingExp::interned_NONE_MATCH()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7309,7 +7316,7 @@ pub fn matchBinding_base(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLin
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ "_", tail: chars }, linfo) => {
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::MatchingExp::interned_REST_MATCH()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7399,7 +7406,7 @@ pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
                     } };
                     chars = __pa0.clone();
                     (chars, linfo) = interleaveExpectChar(chars.clone(), linfo.clone(), (literal!(")")).clone())?;
-                    Ok((chars.clone(), linfo.clone(), Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH)))
+                    Ok((chars.clone(), linfo.clone(), crate::TplAbsyn::MatchingExp::interned_REST_MATCH()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7421,7 +7428,7 @@ pub fn someBinding_rest(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLine
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inChars.clone(), inLineInfo.clone(), Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH)))
+                    Ok((inChars.clone(), inLineInfo.clone(), crate::TplAbsyn::MatchingExp::interned_REST_MATCH()))
                 }
                 _ => bail!("nomatch"),
             }}

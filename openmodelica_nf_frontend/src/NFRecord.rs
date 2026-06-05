@@ -127,14 +127,14 @@ pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result
             recordNode = __try0_o0;
         }
         Err(_) => {
-            recordNode = InstNode::replaceClass(Arc::new(crate::NFClass::NOT_INSTANTIATED), node.clone())?;
+            recordNode = InstNode::replaceClass(crate::NFClass::interned_NOT_INSTANTIATED(), node.clone())?;
         }
     }
     next_context = InstContext::set(context.clone(), InstContext::RELAXED.clone());
     next_context = InstContext::set(next_context.clone(), InstContext::FUNCTION.clone());
     recordNode = InstNode::makeRootClass(recordNode.clone(), InstNode::parent(node.clone()), None);
-    recordNode = Inst::instantiate(recordNode.clone(), Arc::new(crate::NFModifier::Modifier::NOMOD), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), next_context.clone(), false)?;
-    Inst::instExpressions(recordNode.clone(), recordNode.clone(), Arc::new(crate::NFSections::EMPTY), NFConnectBreakTree::new(), next_context.clone(), Inst::InstSettings::create()?)?;
+    recordNode = Inst::instantiate(recordNode.clone(), crate::NFModifier::Modifier::interned_NOMOD(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), next_context.clone(), false)?;
+    Inst::instExpressions(recordNode.clone(), recordNode.clone(), crate::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), next_context.clone(), Inst::InstSettings::create()?)?;
     Ok(recordNode)
 }
 
@@ -155,10 +155,10 @@ pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode
     out_rec = InstNode::fromComponent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$out")); __mm_s.push_str(&*InstNode::name(ctor_node.clone())?); ArcStr::from(__mm_s) }).clone(), out_comp.clone(), ctor_node.clone());
     ctor_cls = Class::makeRecordConstructor(all_params.clone(), out_rec.clone())?;
     ctor_node = InstNode::replaceClass(ctor_cls.clone(), ctor_node.clone())?;
-    InstNode::classApply(ctor_node.clone(), (std::sync::Arc::new(Class::setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<Class::NFClass>) -> Result<Arc<Class::NFClass>> + 'static>), Arc::new(Type::NFType::COMPLEX { cls: ctor_node.clone(), complexTy: Arc::new(crate::NFComplexType::CLASS) }))?;
+    InstNode::classApply(ctor_node.clone(), (std::sync::Arc::new(Class::setType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>, Arc<Class::NFClass>) -> Result<Arc<Class::NFClass>> + 'static>), Arc::new(Type::NFType::COMPLEX { cls: ctor_node.clone(), complexTy: crate::NFComplexType::interned_CLASS() }))?;
     attr = DAE::FUNCTION_ATTRIBUTES_DEFAULT.clone();
     status = Pointer::create(FunctionStatus::INITIAL.clone());
-    InstNode::cacheAddFunc(node.clone(), Arc::new(Function::Function { path: path.clone(), node: ctor_node.clone(), inputs: inputs.clone(), outputs: list![out_rec.clone()], locals: locals.clone(), interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: Arc::new(crate::NFType::UNKNOWN), attributes: attr.clone(), derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: status.clone(), callCounter: Pointer::create(0) }), false)?;
+    InstNode::cacheAddFunc(node.clone(), Arc::new(Function::Function { path: path.clone(), node: ctor_node.clone(), inputs: inputs.clone(), outputs: list![out_rec.clone()], locals: locals.clone(), interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: crate::NFType::interned_UNKNOWN(), attributes: attr.clone(), derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: status.clone(), callCounter: Pointer::create(0) }), false)?;
     Ok(node)
 }
 

@@ -1583,7 +1583,7 @@ fn renameComponentInElementArg(mut inElementArg1: Arc<Absyn::ElementArg>, mut in
             let mut element_args_1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             p_1 = AbsynUtil::crefToPath(replaceStartInComponentRef(AbsynUtil::pathToCref(p.clone())?, old_comp.clone(), new_comp.clone())?)?;
             element_args_1 = renameComponentInElementArgList(element_args.clone(), old_comp.clone(), new_comp.clone())?;
-            Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: b.clone(), eachPrefix: each_.clone(), path: p_1.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: element_args_1.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: r#str.clone(), info: mod_info.clone() })
+            Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: b.clone(), eachPrefix: each_.clone(), path: p_1.clone(), modification: Some(Arc::new(Absyn::Modification { elementArgLst: element_args_1.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: r#str.clone(), info: mod_info.clone() })
         },
         (Deref @ Absyn::ElementArg::MODIFICATION { info: mod_info, comment: r#str, modification: None, path: p, eachPrefix: each_, finalPrefix: b }, old_comp, new_comp) => {
             let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -1648,7 +1648,7 @@ fn renameComponentInCode(mut inCode1: Arc<Absyn::CodeNode>, mut inComponentRef2:
         (Deref @ Absyn::CodeNode::C_MODIFICATION { modification: Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::NOMOD { .. }, elementArgLst: element_args } }, old_comp, new_comp) => {
             let mut element_args_1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             element_args_1 = renameComponentInElementArgList(element_args.clone(), old_comp.clone(), new_comp.clone())?;
-            Arc::new(Absyn::CodeNode::C_MODIFICATION { modification: Arc::new(Absyn::Modification { elementArgLst: element_args_1.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }) })
+            Arc::new(Absyn::CodeNode::C_MODIFICATION { modification: Arc::new(Absyn::Modification { elementArgLst: element_args_1.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }) })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1844,7 +1844,7 @@ fn renameComponentInExp(mut inExp1: Arc<Absyn::Exp>, mut oldPrefix: Arc<Absyn::C
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::END { .. }, _, _) => {
-                    Ok(Arc::new(openmodelica_ast::Absyn::Exp::END))
+                    Ok(openmodelica_ast::Absyn::Exp::interned_END())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3076,7 +3076,7 @@ fn getClassEnv_dispatch(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) ->
                     let mut env_2: FCore::Graph = env_2.clone();
                     env2 = FGraph::openScope(env_1.clone(), encflag.clone(), (id.clone()).clone(), FGraph::restrictionToScopeType(restr.clone()))?;
                     ci_state = ClassInfUtil::start(restr.clone(), FGraph::getGraphName(env2.clone())?)?;
-                    (cache, env_2, _, _, _) = Inst::partialInstClassIn(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0)?;
+                    (cache, env_2, _, _, _) = Inst::partialInstClassIn(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0)?;
                     Ok((env_2.clone(), cache.clone(), env_2.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -6221,7 +6221,7 @@ fn getInheritedClassesHelper(mut inClass1: Arc<SCode::Element>, mut inClass2: Ar
                     } else {
                         env2 = FGraph::openScope(env.clone(), encflag.clone(), (id.clone()).clone(), FGraph::restrictionToScopeType(restr.clone()))?;
                         ci_state = ClassInfUtil::start(restr.clone(), FGraph::getGraphName(env2.clone())?)?;
-                        (_, env_2, _, _, _) = Inst::partialInstClassIn(FCore::emptyCache(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), c.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0)?;
+                        (_, env_2, _, _, _) = Inst::partialInstClassIn(FCore::emptyCache(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), c.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0)?;
                     }
                     lst = getBaseClasses(cdef.clone(), env_2.clone())?;
                     ErrorExt::rollBack((literal!("getInheritedClassesHelper")).clone());
@@ -9852,7 +9852,7 @@ fn transformFlatSubscript(mut s: Arc<Absyn::Subscript>) -> Result<Arc<Absyn::Sub
     let mut outS: Arc<Absyn::Subscript> = Arc::new(Absyn::Subscript::NOSUB);
     outS = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ Absyn::Subscript::NOSUB { .. } => {
-            Arc::new(openmodelica_ast::Absyn::Subscript::NOSUB)
+            openmodelica_ast::Absyn::Subscript::interned_NOSUB()
         },
         Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e } => {
             let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -9893,7 +9893,7 @@ fn transformFlatModificationOption(mut r#mod: Option<Arc<Absyn::Modification>>) 
         Some(Deref @ Absyn::Modification { elementArgLst: eltArgs, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }) => {
             let mut eltArgs1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             eltArgs1 = List::map(eltArgs.clone(), (std::sync::Arc::new(transformFlatElementArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<Arc<Absyn::ElementArg>> + 'static>))?;
-            Some(Arc::new(Absyn::Modification { elementArgLst: eltArgs1.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))
+            Some(Arc::new(Absyn::Modification { elementArgLst: eltArgs1.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))
         },
         None => {
             None
@@ -10148,10 +10148,10 @@ fn transformFlatAlgorithm(mut alg: Arc<Absyn::Algorithm>) -> Result<Arc<Absyn::A
             Arc::new(Absyn::Algorithm::ALG_NORETCALL { functionCall: cr1.clone(), functionArgs: fargs1.clone() })
         },
         Deref @ Absyn::Algorithm::ALG_BREAK { .. } => {
-            Arc::new(openmodelica_ast::Absyn::Algorithm::ALG_BREAK)
+            openmodelica_ast::Absyn::Algorithm::interned_ALG_BREAK()
         },
         Deref @ Absyn::Algorithm::ALG_RETURN { .. } => {
-            Arc::new(openmodelica_ast::Absyn::Algorithm::ALG_RETURN)
+            openmodelica_ast::Absyn::Algorithm::interned_ALG_RETURN()
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -10719,14 +10719,14 @@ fn getClassEnvNoElaboration(mut inProgram: Absyn::Program, mut inClassPath: Arc<
     env = FGraph::openScope(env.clone(), encflag.clone(), (id.clone()).clone(), FGraph::restrictionToScopeType(restr.clone()))?;
     ci_state = ClassInfUtil::start(restr.clone(), FGraph::getGraphName(env.clone())?)?;
     match '__try6: {
-        (_, outEnv, _, _, _) = unwrap_break_err!(Inst::partialInstClassIn(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0), '__try6);
+        (_, outEnv, _, _, _) = unwrap_break_err!(Inst::partialInstClassIn(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), 0), '__try6);
         Ok::<_, anyhow::Error>((outEnv.clone(),))
     } {
         Ok((__try6_o0,)) => {
             outEnv = __try6_o0;
         }
         Err(_) => {
-            (_, outEnv, _, _, _, _, _, _, _, _, _, _) = Inst::instClassIn(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), None)?;
+            (_, outEnv, _, _, _, _, _, _, _, _, _, _) = Inst::instClassIn(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state.clone(), cl.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), None)?;
         }
     }
     Ok(outEnv)

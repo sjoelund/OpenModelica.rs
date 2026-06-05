@@ -273,7 +273,7 @@ fn resolveGeneralDer(mut exp: Arc<Expression::NFExpression>, mut acc_states: Poi
             let mut oDiffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments> = Arc::new(<Differentiate::DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
             if Expression::fold(arg.clone(), (std::sync::Arc::new(checkAlgebraic) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, i32) -> Result<i32> + 'static>), 0)? > 1 {
                 (state_var, state_cref, der_var, der_cref) = BVariable::makeAuxStateVar(Pointer::access(uniqueIndex.clone()), Some(arg.clone()))?;
-                aux_equation = BEquation::Equation::makeAssignment(Expression::fromCref(state_cref.clone(), false)?, arg.clone(), uniqueIndex.clone(), (arcstr::literal!(BVariable::AUXILIARY_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None))?;
+                aux_equation = BEquation::Equation::makeAssignment(Expression::fromCref(state_cref.clone(), false)?, arg.clone(), uniqueIndex.clone(), (arcstr::literal!(BVariable::AUXILIARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None))?;
                 returnExp = Expression::fromCref(der_cref.clone(), false)?;
                 Pointer::update(acc_states.clone(), metamodelica::cons(state_var.clone(), Pointer::access(acc_states.clone())));
                 Pointer::update(acc_derivatives.clone(), metamodelica::cons(der_var.clone(), Pointer::access(acc_derivatives.clone())));

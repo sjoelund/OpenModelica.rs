@@ -458,7 +458,7 @@ fn makeIterVariable(mut iter: Arc<DAE::ReductionIterator>) -> Result<BackendDAE:
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     name = (Expression::reductionIterName(iter.clone())?).clone();
     cr = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-    backendVar = BackendDAE::Var { varName: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_INTEGER_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+    backendVar = BackendDAE::Var { varName: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_INTEGER_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
     Ok(backendVar)
 }
 
@@ -624,7 +624,7 @@ pub fn copyMatching(mut inMatching: Arc<BackendDAE::Matching>) -> Result<Arc<Bac
     let mut outMatching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
     outMatching = (::match_deref::match_deref! { match &(inMatching.clone()) {
         Deref @ BackendDAE::Matching::NO_MATCHING { .. } => {
-            Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
+            openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING()
         },
         Deref @ BackendDAE::Matching::MATCHING { comps, ass2, ass1 } => {
             let mut cass1: metamodelica::Array<i32> = Default::default();
@@ -2196,7 +2196,7 @@ fn removediscreteAssingmentsElse(mut inElse: Arc<DAE::Else>, mut inVars: Backend
     let mut outElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
     outElse = (::match_deref::match_deref! { match &((inElse.clone(), inVars.clone())) {
         (Deref @ DAE::Else::NOELSE { .. }, _) => {
-            Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE)
+            openmodelica_frontend_types::DAE::Else::interned_NOELSE()
         },
         (Deref @ DAE::Else::ELSEIF { exp: e, statementLst: st, else_: el }, vars) => {
             let mut st = (*st).clone();
@@ -2618,7 +2618,7 @@ fn applyIndexType(mut inLst: Arc<AvlSetInt::Tree>, mut inIndexType: BackendDAE::
     let mut outLst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     outLst = (match inIndexType.clone() {
         BackendDAE::IndexType::ABSOLUTE { .. } if (!(AvlSetInt::isEmpty(inLst.clone())) && AvlSetInt::smallestKey(inLst.clone())? < 0) => {
-            outLst = Arc::new(crate::AvlSetInt::Tree::EMPTY);
+            outLst = crate::AvlSetInt::Tree::interned_EMPTY();
             for mut key in &*AvlSetInt::listKeys(inLst.clone(), metamodelica::nil()) {
                 let mut key = key.clone();
                 outLst = AvlSetInt::add(outLst.clone(), intAbs(key.clone()))?;
@@ -2699,7 +2699,7 @@ pub fn adjacencyMatrixDispatch(mut inVars: BackendDAE::Variables, mut inEqns: Ar
     outAdjacencyArrayT = arrayCreate(num_vars.clone(), metamodelica::nil());
     for mut idx in 1..=num_eqs.clone() {
         eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-        (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+        (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
         row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
         {let _arr = outAdjacencyArray.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = row.clone(); _arr};
         outAdjacencyArrayT = filladjacencyMatrixT(row.clone(), list![idx.clone()], outAdjacencyArrayT.clone())?;
@@ -2722,7 +2722,7 @@ pub fn adjacencyMatrixDispatchMasked(mut inVars: BackendDAE::Variables, mut inEq
     for mut idx in 1..=num_eqs.clone() {
         if ({let __elt = inMask.borrow()[(idx.clone()-1) as usize].clone(); __elt}) {
             eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-            (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+            (rowTree, _) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
             row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
             {let _arr = outAdjacencyArray.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = row.clone(); _arr};
             outAdjacencyArrayT = filladjacencyMatrixT(row.clone(), list![idx.clone()], outAdjacencyArrayT.clone())?;
@@ -2752,7 +2752,7 @@ fn adjacencyMatrixDispatchScalar(mut inVars: BackendDAE::Variables, mut inEqns: 
     omapEqnIncRow = arrayCreate(num_eqs.clone(), metamodelica::nil());
     for mut idx in 1..=num_eqs.clone() {
         eq = BackendEquation::get(inEqns.clone(), idx.clone())?;
-        (rowTree, size) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+        (rowTree, size) = adjacencyRow(eq.clone(), inVars.clone(), inIndexType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
         row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
         row_indices = List::intRange2(num_rows.clone() + 1, num_rows.clone() + size.clone());
         num_rows = num_rows.clone() + size.clone();
@@ -3166,7 +3166,7 @@ pub fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Va
         },
         BackendDAE::IndexType::SOLVABLE { .. } => {
             let mut vallst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-            let (_, (_, __pa0, _, _, _)) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), (inVariables.clone(), inIntegerLst.clone(), Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY), isInitial.clone(), functionTree.clone()))?;
+            let (_, (_, __pa0, _, _, _)) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), (inVariables.clone(), inIntegerLst.clone(), openmodelica_ast_collections::AvlSetPath::Tree::interned_EMPTY(), isInitial.clone(), functionTree.clone()))?;
             vallst = __pa0.clone();
             vallst.clone()
         },
@@ -3411,7 +3411,7 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
                     if !((!(AvlSetPath::hasKey(visitedPaths.clone(), var_field!((*inExp).path, DAE::Exp::CALL).clone())?))) { bail!("guard") }
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
-                    (e1, _) = Inline::forceInlineCall(inExp.clone(), metamodelica::nil(), (Some(functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY))?;
+                    (e1, _) = Inline::forceInlineCall(inExp.clone(), metamodelica::nil(), (Some(functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), openmodelica_ast_collections::AvlSetPath::Tree::interned_EMPTY())?;
                     let false = (referenceEq(&*(inExp.clone()),&*(e1.clone()))) else { bail!("pattern mismatch") };
                     (_, tpl) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), (vars.clone(), pa.clone(), AvlSetPath::add(visitedPaths.clone(), var_field!((*inExp).path, DAE::Exp::CALL).clone())?, isInitial.clone(), ofunctionTree.clone()))?;
                     Ok((inExp.clone(), false, tpl.clone()))
@@ -4349,10 +4349,10 @@ fn updateAdjacencyMatrix1(mut vars: BackendDAE::Variables, mut daeeqns: Arc<Expa
             let mut oldvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             abse = intAbs(e.clone());
             eqn = BackendEquation::get(daeeqns.clone(), abse.clone())?;
-            (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+            (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
             oldvars = getOldVars(m.clone(), abse.clone());
             m_1 = Array::replaceAtWithFill(abse.clone(), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), metamodelica::nil(), m.clone())?;
-            (_, outvars, invars) = AvlSetInt::intersection(AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), oldvars.clone())?, row.clone())?;
+            (_, outvars, invars) = AvlSetInt::intersection(AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), oldvars.clone())?, row.clone())?;
             mt_1 = removeValuefromMatrix(abse.clone(), AvlSetInt::listKeys(outvars.clone(), metamodelica::nil()), mt.clone())?;
             mt_2 = addValuetoMatrix(abse.clone(), AvlSetInt::listKeys(invars.clone(), metamodelica::nil()), mt_1.clone())?;
             (m_2, mt_3) = updateAdjacencyMatrix1(vars.clone(), daeeqns.clone(), inIndxType.clone(), functionTree.clone(), m_1.clone(), mt_2.clone(), eqns.clone(), isInitial.clone())?;
@@ -4441,10 +4441,10 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
             abse = intAbs(e.clone());
             eqn = BackendEquation::get(daeeqns.clone(), abse.clone())?;
-            (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+            (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
             scalarindxs = ({let __elt = iMapEqnIncRow.borrow()[(abse.clone()-1) as usize].clone(); __elt});
             oldvars = getOldVars(m.clone(), listHead(scalarindxs.clone())?);
-            (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), oldvars.clone())?, row.clone())?;
+            (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), oldvars.clone())?, row.clone())?;
             outvars = AvlSetInt::listKeys(outvarsTree.clone(), metamodelica::nil());
             invars = AvlSetInt::listKeys(invarsTree.clone(), metamodelica::nil());
             m_1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone())?;
@@ -4470,10 +4470,10 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
             abse = intAbs(e.clone());
-            row = Arc::new(crate::AvlSetInt::Tree::EMPTY);
+            row = crate::AvlSetInt::Tree::interned_EMPTY();
             scalarindxs = ({let __elt = iMapEqnIncRow.borrow()[(abse.clone()-1) as usize].clone(); __elt});
             oldvars = getOldVars(m.clone(), listHead(scalarindxs.clone())?);
-            (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), oldvars.clone())?, row.clone())?;
+            (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), oldvars.clone())?, row.clone())?;
             outvars = AvlSetInt::listKeys(outvarsTree.clone(), metamodelica::nil());
             invars = AvlSetInt::listKeys(invarsTree.clone(), metamodelica::nil());
             m_1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone())?;
@@ -4512,7 +4512,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     abse = intAbs(index.clone());
                     eqn = BackendEquation::get(daeeqns.clone(), abse.clone())?;
                     rowsize = BackendEquation::equationSize(eqn.clone())?;
-                    (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+                    (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
                     new_size = size.clone() + rowsize.clone();
                     scalarindxs = List::intRange2(size.clone() + 1, new_size.clone());
                     mapEqnIncRow = {let _arr = iMapEqnIncRow.clone(); _arr.borrow_mut()[(abse.clone()-1) as usize] = scalarindxs.clone(); _arr};
@@ -4549,7 +4549,7 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     abse = intAbs(index.clone());
                     rowsize = 1;
-                    row = Arc::new(crate::AvlSetInt::Tree::EMPTY);
+                    row = crate::AvlSetInt::Tree::interned_EMPTY();
                     new_size = size.clone() + rowsize.clone();
                     scalarindxs = List::intRange2(size.clone() + 1, new_size.clone());
                     mapEqnIncRow = {let _arr = iMapEqnIncRow.clone(); _arr.borrow_mut()[(abse.clone()-1) as usize] = scalarindxs.clone(); _arr};
@@ -9823,7 +9823,7 @@ pub fn expInt(mut inExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE::Variables
 
 pub fn createEqSystem(mut inVars: BackendDAE::Variables, mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inStateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut inPartitionKind: BackendDAE::BaseClockPartitionKind, mut removedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Arc<BackendDAE::EqSystem> {
     let mut outSyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    outSyst = Arc::new(BackendDAE::EqSystem { orderedVars: inVars.clone(), orderedEqs: inEqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING), stateSets: inStateSets.clone(), partitionKind: inPartitionKind.clone(), removedEqs: removedEqs.clone() });
+    outSyst = Arc::new(BackendDAE::EqSystem { orderedVars: inVars.clone(), orderedEqs: inEqs.clone(), m: None, mT: None, mapping: None, matching: openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING(), stateSets: inStateSets.clone(), partitionKind: inPartitionKind.clone(), removedEqs: removedEqs.clone() });
     outSyst
 }
 
@@ -9837,7 +9837,7 @@ pub fn emptyPartitionsInfo() -> BackendDAE::PartitionsInfo {
     let mut partitionsInfo: BackendDAE::PartitionsInfo = <BackendDAE::PartitionsInfo as ::std::default::Default>::default();
     let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition> = Default::default();
     let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition> = Default::default();
-    basePartitions = arrayCreate(0, BackendDAE::BasePartition { clock: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK), nSubClocks: 0 });
+    basePartitions = arrayCreate(0, BackendDAE::BasePartition { clock: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK(), nSubClocks: 0 });
     subPartitions = arrayCreate(0, BackendDAE::SubPartition { clock: BackendDAE::DEFAULT_SUBCLOCK.clone(), holdEvents: false, prevVars: metamodelica::nil() });
     partitionsInfo = BackendDAE::PartitionsInfo { basePartitions: basePartitions.clone(), subPartitions: subPartitions.clone() };
     partitionsInfo
@@ -10000,7 +10000,7 @@ pub fn clearEqSyst(mut inSyst: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendD
     stateSets = __pa2.clone();
     eqs = __pa3.clone();
     vars = __pa4.clone();
-    outSyst = Arc::new(BackendDAE::EqSystem { partitionKind: partitionKind.clone(), stateSets: stateSets.clone(), matching: Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING), removedEqs: removedEqs.clone(), mapping: None, mT: None, m: None, orderedEqs: eqs.clone(), orderedVars: vars.clone() });
+    outSyst = Arc::new(BackendDAE::EqSystem { partitionKind: partitionKind.clone(), stateSets: stateSets.clone(), matching: openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING(), removedEqs: removedEqs.clone(), mapping: None, mT: None, m: None, orderedEqs: eqs.clone(), orderedVars: vars.clone() });
     Ok(outSyst)
 }
 

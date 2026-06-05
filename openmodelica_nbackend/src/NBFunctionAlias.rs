@@ -326,7 +326,7 @@ fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDa
                 debug_lst_sim = UnorderedMap::toList(map.clone());
             }
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = true; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
-            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; parameters = BVariable::VariablePointers::mapPtr(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b4 = true; move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); let __pe_b2 = (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BVariable::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?);
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; parameters = BVariable::VariablePointers::mapPtr(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = crate::NBEquation::Iterator::interned_EMPTY(); let __pe_b4 = true; move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); let __pe_b2 = (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BVariable::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?);
             (new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd, new_eqns_disc, new_eqns_cont, new_eqns_init) = resolveAux(map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), true, new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), new_eqns_disc.clone(), new_eqns_cont.clone(), new_eqns_init.clone())?;
             (new_eqns_clck, new_eqns_infr, new_vars_clck, new_vars_infr, clock_map, infer_map) = addClockedAlias(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone())?;
             ()
@@ -453,22 +453,22 @@ fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
     let mut depth: Depth = Depth::FULL;
-    (eqn, _) = Inline::inlineArrayConstructorSingle(eqn.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), variables.clone(), set.clone(), eqn_index.clone(), Pointer::create(metamodelica::nil()))?;
+    (eqn, _) = Inline::inlineArrayConstructorSingle(eqn.clone(), crate::NBEquation::Iterator::interned_EMPTY(), variables.clone(), set.clone(), eqn_index.clone(), Pointer::create(metamodelica::nil()))?;
     (iter, depth) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
             (var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), if (BEquation::Equation::isWhenEquation(Pointer::create(body.clone()))? || BEquation::Equation::isIfEquation(Pointer::create(body.clone()))) {Depth::CONDITION.clone()} else {Depth::FULL.clone()})
         },
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::CONDITION.clone())
+            (crate::NBEquation::Iterator::interned_EMPTY(), Depth::CONDITION.clone())
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::CONDITION.clone())
+            (crate::NBEquation::Iterator::interned_EMPTY(), Depth::CONDITION.clone())
         },
         Deref @ BEquation::Equation::ALGORITHM { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::STOP.clone())
+            (crate::NBEquation::Iterator::interned_EMPTY(), Depth::STOP.clone())
         },
         _ => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::FULL.clone())
+            (crate::NBEquation::Iterator::interned_EMPTY(), Depth::FULL.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -650,7 +650,7 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
             tpl_lst = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut cref in (names.clone()).into_iter().cloned() {
-            let __x = if (ComponentRef::size(cref.clone(), true, false)? == 0) {Expression::fromCref(Arc::new(openmodelica_nf_frontend::NFComponentRef::WILD), false)?} else {Expression::fromCref(cref.clone(), false)?};
+            let __x = if (ComponentRef::size(cref.clone(), true, false)? == 0) {Expression::fromCref(openmodelica_nf_frontend::NFComponentRef::interned_WILD(), false)?} else {Expression::fromCref(cref.clone(), false)?};
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -796,13 +796,13 @@ fn addClockedAlias(mut equations: Arc<EquationPointers::EquationPointers>, mut e
     for mut tpl in &*UnorderedMap::toList(clck_coll.clone()) {
         let mut tpl = tpl.clone();
         (clock, clock_name) = tpl.clone();
-        clock_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, clock_eqns.clone());
+        clock_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, clock_eqns.clone());
     }
     infer_vars = Pointer::access(new_infers.clone());
     for mut tpl in &*UnorderedMap::toList(infr_coll.clone()) {
         let mut tpl = tpl.clone();
         (clock, clock_name) = tpl.clone();
-        infer_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, infer_eqns.clone());
+        infer_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, infer_eqns.clone());
     }
     Ok((clock_eqns, infer_eqns, clock_vars, infer_vars, clck_coll, infr_coll))
 }

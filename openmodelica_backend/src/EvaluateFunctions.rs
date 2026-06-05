@@ -3675,7 +3675,7 @@ fn updateStatementsInElse(mut stmtLstIn: Arc<metamodelica::List<Arc<metamodelica
             Arc::new(DAE::Else::ELSE { statementLst: stmts.clone() })
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: _ }, Deref @ DAE::Else::NOELSE { .. }) => {
-            Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE)
+            openmodelica_frontend_types::DAE::Else::interned_NOELSE()
         },
         _ => bail!("match: no arm matched"),
     } });

@@ -164,12 +164,12 @@ pub mod DifferentiationArguments {
     pub type DIFFERENTIATION_ARGUMENTS = DifferentiationArguments;
 
     pub fn default(mut ty: DifferentiationType, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
-        let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(openmodelica_nf_frontend::NFType::REAL) }), adjoint_map: None, scalarized: false, funcMap: funcMap.clone(), diffType: ty.clone(), diff_map: None, new_vars: metamodelica::nil(), diffCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+        let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), adjoint_map: None, scalarized: false, funcMap: funcMap.clone(), diffType: ty.clone(), diff_map: None, new_vars: metamodelica::nil(), diffCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
         diffArgs
     }
 
     pub fn simpleCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Arc<DifferentiationArguments> {
-        let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(openmodelica_nf_frontend::NFType::REAL) }), adjoint_map: None, scalarized: false, funcMap: funcMap.clone(), diffType: DifferentiationType::SIMPLE.clone(), diff_map: None, new_vars: metamodelica::nil(), diffCref: cref.clone() });
+        let mut diffArgs: Arc<DifferentiationArguments> = Arc::new(DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), adjoint_map: None, scalarized: false, funcMap: funcMap.clone(), diffType: DifferentiationType::SIMPLE.clone(), diff_map: None, new_vars: metamodelica::nil(), diffCref: cref.clone() });
         diffArgs
     }
 
@@ -440,7 +440,7 @@ pub fn differentiateEquation(mut eq: Arc<Equation::Equation>, mut diffArguments:
     }
     (eq, diffArguments) = ({
         let mut forBody: Arc<metamodelica::List<Arc<Equation::Equation>>> = metamodelica::nil();
-        let mut lhs_base: Arc<ComponentRef::NFComponentRef> = Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY);
+        let mut lhs_base: Arc<ComponentRef::NFComponentRef> = openmodelica_nf_frontend::NFComponentRef::interned_EMPTY();
         let mut n: i32 = 0;
         (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::SCALAR_EQUATION { .. } => {
@@ -1138,8 +1138,8 @@ pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExp
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = diffArguments;
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
-    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
-    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
+    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
     exp = ({
         let mut isReverse: bool = isSome(diffArguments.adjoint_map.clone());
         (::match_deref::match_deref! { match &(exp.clone()) {
@@ -1642,9 +1642,9 @@ pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExp
 pub fn differentiateBuiltinCall1Arg(mut name: ArcStr, mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut derFuncCall: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
-    let mut powOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::POWER.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
-    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
-    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+    let mut powOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::POWER.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
+    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
+    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
     derFuncCall = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "sign" => {
             Arc::new(Expression::NFExpression::INTEGER { value: 0 })
@@ -1764,9 +1764,9 @@ pub fn differentiateBuiltinCall2Arg(mut name: ArcStr, mut arg1: Arc<Expression::
     let mut derFuncCall1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut derFuncCall2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut sizeClass: Operator::SizeClassification = Operator::SizeClassification::SCALAR.clone();
-    let mut powOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::POWER.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
-    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
-    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+    let mut powOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::POWER.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
+    let mut addOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::ADDITION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
+    let mut mulOp: Arc<Operator::NFOperator> = Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), sizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
     (derFuncCall1, derFuncCall2) = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "div" => {
             (Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))
@@ -2418,7 +2418,7 @@ pub fn differentiateBinary(mut exp: Arc<Expression::NFExpression>, mut diffArgum
             let mut denom2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut numUF: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             powSizeClass = Operator::SizeClassification::SCALAR.clone();
-            powOp = Operator::fromClassification((Operator::MathClassification::POWER.clone(), powSizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+            powOp = Operator::fromClassification((Operator::MathClassification::POWER.clone(), powSizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
             if isReverse.clone() {
                 current_grad = diffArguments.current_grad.clone();
                 assign_field!(diffArguments.current_grad = Arc::new(Expression::NFExpression::MULTARY { arguments: list![current_grad.clone()], inv_arguments: list![exp2.clone()], operator: Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), if (Type::isArray(Expression::typeOf(current_grad.clone()))) {Operator::SizeClassification::ARRAY_SCALAR.clone()} else {Operator::SizeClassification::SCALAR.clone()}), operator.ty.clone())? }));
@@ -2426,8 +2426,8 @@ pub fn differentiateBinary(mut exp: Arc<Expression::NFExpression>, mut diffArgum
             (diffExp1, diffArguments) = differentiateExpression(exp1.clone(), diffArguments.clone())?;
             if isReverse.clone() {
                 denom2 = Arc::new(Expression::NFExpression::BINARY { exp1: exp2.clone(), operator: powOp.clone(), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(2.0_f64) }) });
-                numUF = Arc::new(Expression::NFExpression::BINARY { exp1: current_grad.clone(), operator: if (Type::isArray(Expression::typeOf(exp1.clone()))) {Operator::makeScalarProduct(operator.ty.clone())} else {Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?}, exp2: exp1.clone() });
-                divOp = Operator::fromClassification((Operator::MathClassification::DIVISION.clone(), Operator::SizeClassification::SCALAR.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+                numUF = Arc::new(Expression::NFExpression::BINARY { exp1: current_grad.clone(), operator: if (Type::isArray(Expression::typeOf(exp1.clone()))) {Operator::makeScalarProduct(operator.ty.clone())} else {Operator::fromClassification((Operator::MathClassification::MULTIPLICATION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?}, exp2: exp1.clone() });
+                divOp = Operator::fromClassification((Operator::MathClassification::DIVISION.clone(), Operator::SizeClassification::SCALAR.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
                 assign_field!(diffArguments.current_grad = Expression::negate(Arc::new(Expression::NFExpression::BINARY { exp1: numUF.clone(), operator: divOp.clone(), exp2: denom2.clone() })));
             }
             (diffExp2, diffArguments) = differentiateExpression(exp2.clone(), diffArguments.clone())?;
@@ -2592,7 +2592,7 @@ pub fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArgu
             }
             i = 1;
             powSizeClass = if (Expression::hasArrayType(listHead(inv_arguments.clone())?)) {Operator::SizeClassification::ARRAY_SCALAR.clone()} else {Operator::SizeClassification::SCALAR.clone()};
-            Operator::fromClassification((Operator::MathClassification::POWER.clone(), powSizeClass.clone()), Arc::new(openmodelica_nf_frontend::NFType::REAL))?;
+            Operator::fromClassification((Operator::MathClassification::POWER.clone(), powSizeClass.clone()), openmodelica_nf_frontend::NFType::interned_REAL())?;
             for mut g in &*inv_arguments.clone() {
                 let mut g = g.clone();
                 listDelete(inv_arguments.clone(), i.clone())?;
@@ -2607,7 +2607,7 @@ pub fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArgu
                 i = i.clone() + 1;
             }
             assign_field!(diffArguments.current_grad = upstream.clone());
-            Arc::new(openmodelica_nf_frontend::NFExpression::END)
+            openmodelica_nf_frontend::NFExpression::interned_END()
         },
         Deref @ Expression::MULTARY { operator, inv_arguments, arguments } if (Operator::getMathClassification(operator.clone())? == Operator::MathClassification::MULTIPLICATION.clone() && !(inv_arguments.clone().is_empty())) => {
             let mut divisor: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2625,7 +2625,7 @@ pub fn differentiateMultary(mut exp: Arc<Expression::NFExpression>, mut diffArgu
                 powTy = operator.ty.clone();
             } else {
                 powSizeClass = Operator::SizeClassification::SCALAR.clone();
-                powTy = Arc::new(openmodelica_nf_frontend::NFType::REAL);
+                powTy = openmodelica_nf_frontend::NFType::interned_REAL();
             }
             if !(arguments.clone().is_empty()) && Type::isArray(Expression::typeOf(listHead(arguments.clone())?)) {
                 sizeClass = Operator::SizeClassification::ELEMENT_WISE.clone();
@@ -2881,7 +2881,7 @@ fn dropLastDimIndex1(mut arr: Arc<Expression::NFExpression>) -> Result<Arc<Expre
         return Ok(res.clone());
     }
     for mut i in 1..=m.clone() - 1 {
-        subs = metamodelica::cons(Arc::new(openmodelica_nf_frontend::NFSubscript::WHOLE), subs.clone());
+        subs = metamodelica::cons(openmodelica_nf_frontend::NFSubscript::interned_WHOLE(), subs.clone());
     }
     subs = metamodelica::cons(Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::INTEGER { value: 1 }) }), subs.clone());
     subs = subs.clone().reverse();

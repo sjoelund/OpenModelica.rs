@@ -236,6 +236,15 @@ pub enum Modifier {
     },
     NOMOD,
 }
+impl Modifier {
+    pub fn interned_NOMOD() -> Arc<Modifier> {
+        thread_local! {
+            static INTERNED: Arc<Modifier> = Arc::new(Modifier::NOMOD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOMOD() -> Arc<Modifier> { Modifier::interned_NOMOD() }
 pub use self::Modifier::{MODIFIER,REDECLARE,NOMOD};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -287,7 +296,7 @@ pub enum DaePrefixes {
 }
 pub use self::DaePrefixes::{NO_DAE_PREFIXES,DAE_PREFIXES};
 
-thread_local! { static __DEFAULT_CONST_DAE_PREFIXES_TLS: DaePrefixes = DaePrefixes::DAE_PREFIXES { visibility: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, variability: openmodelica_frontend_types::DAE::VarKind::CONST, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR) }; }
+thread_local! { static __DEFAULT_CONST_DAE_PREFIXES_TLS: DaePrefixes = DaePrefixes::DAE_PREFIXES { visibility: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, variability: openmodelica_frontend_types::DAE::VarKind::CONST, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR() }; }
 pub fn DEFAULT_CONST_DAE_PREFIXES() -> DaePrefixes { __DEFAULT_CONST_DAE_PREFIXES_TLS.with(|__t| __t.clone()) }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -485,6 +494,22 @@ pub enum EntryOrigin {
         originEnv: Env,
     },
 }
+impl EntryOrigin {
+    pub fn interned_LOCAL_ORIGIN() -> Arc<EntryOrigin> {
+        thread_local! {
+            static INTERNED: Arc<EntryOrigin> = Arc::new(EntryOrigin::LOCAL_ORIGIN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_BUILTIN_ORIGIN() -> Arc<EntryOrigin> {
+        thread_local! {
+            static INTERNED: Arc<EntryOrigin> = Arc::new(EntryOrigin::BUILTIN_ORIGIN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_LOCAL_ORIGIN() -> Arc<EntryOrigin> { EntryOrigin::interned_LOCAL_ORIGIN() }
+pub fn interned_BUILTIN_ORIGIN() -> Arc<EntryOrigin> { EntryOrigin::interned_BUILTIN_ORIGIN() }
 pub use self::EntryOrigin::{LOCAL_ORIGIN,BUILTIN_ORIGIN,INHERITED_ORIGIN,REDECLARED_ORIGIN,IMPORTED_ORIGIN};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

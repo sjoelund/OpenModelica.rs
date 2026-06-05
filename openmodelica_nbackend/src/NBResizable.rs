@@ -284,7 +284,7 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
             order.clone()
         },
         _ => {
-            order = UnorderedMap::fromLists(list![Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY)], list![EvalOrder::FAILED.clone()], (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+            order = UnorderedMap::fromLists(list![openmodelica_nf_frontend::NFComponentRef::interned_EMPTY()], list![EvalOrder::FAILED.clone()], (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
             order.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -314,7 +314,7 @@ pub type ConstraintList = Arc<metamodelica::List<Arc<Expression::NFExpression>>>
 
 pub type Occurences = Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>>;
 
-thread_local! { static __END_TPL_TLS: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) = (Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY), Arc::new(openmodelica_nf_frontend::NFExpression::END)); }
+thread_local! { static __END_TPL_TLS: (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) = (openmodelica_nf_frontend::NFComponentRef::interned_EMPTY(), openmodelica_nf_frontend::NFExpression::interned_END()); }
 pub fn END_TPL() -> (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>) { __END_TPL_TLS.with(|__t| __t.clone()) }
 
 fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut min_parameters: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut c2pi: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>, mut c2pe: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<Arc<Equation::Equation>> {
@@ -354,7 +354,7 @@ fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: 
                 let mut tpl = tpl.clone();
                 (lhs_dim, rhs_dim) = tpl.clone();
                 if Dimension::isResizable(lhs_dim.clone()) || Dimension::isResizable(rhs_dim.clone()) {
-                    r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Dimension::sizeExp(lhs_dim.clone())?], inv_arguments: list![Dimension::sizeExp(rhs_dim.clone())?], operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) });
+                    r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Dimension::sizeExp(lhs_dim.clone())?], inv_arguments: list![Dimension::sizeExp(rhs_dim.clone())?], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
                     match '__try0: {
                         unwrap_break_err!(addConstraint(r#const.clone(), None, c2pe.clone(), (std::sync::Arc::new(Expression::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), (literal!("array dimension")).clone(), (literal!("=")).clone()), '__try0);
                         unwrap_break_err!(Expression::map(r#const.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); move |__pe_a0| collectResizables(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
@@ -526,7 +526,7 @@ fn findOptimalValue(mut eqn: Arc<Equation::Equation>, mut occs: Arc<UnorderedMap
         Expression::map(range.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); move |__pe_a0| collectResizables(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         let () = (::match_deref::match_deref! { match &(range.clone()) {
         Deref @ Expression::RANGE { .. } => {
-            target = Arc::new(Expression::NFExpression::MULTARY { arguments: list![var_field!((*range).stop, Expression::NFExpression::RANGE).clone()], inv_arguments: list![var_field!((*range).start, Expression::NFExpression::RANGE).clone()], operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) });
+            target = Arc::new(Expression::NFExpression::MULTARY { arguments: list![var_field!((*range).stop, Expression::NFExpression::RANGE).clone()], inv_arguments: list![var_field!((*range).start, Expression::NFExpression::RANGE).clone()], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
             target = SimplifyExp::simplify(target.clone(), false)?;
             local_parameters = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
             Expression::map(range.clone(), (std::sync::Arc::new({ let __pe_b1 = local_parameters.clone(); move |__pe_a0| collectResizables(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -548,8 +548,8 @@ fn getRangeConstraint(mut start: Arc<Expression::NFExpression>, mut step_opt: Op
     let mut target: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut distance_const: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     step = Util::getOptionOrDefault(step_opt.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 }));
-    target = Arc::new(Expression::NFExpression::MULTARY { arguments: list![stop.clone()], inv_arguments: list![start.clone()], operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) });
-    distance_const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::INTEGER { value: 2 })], inv_arguments: list![Arc::new(Expression::NFExpression::MULTARY { arguments: list![target.clone()], inv_arguments: list![step.clone()], operator: Operator::makeMul(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) })], operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) });
+    target = Arc::new(Expression::NFExpression::MULTARY { arguments: list![stop.clone()], inv_arguments: list![start.clone()], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
+    distance_const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::INTEGER { value: 2 })], inv_arguments: list![Arc::new(Expression::NFExpression::MULTARY { arguments: list![target.clone()], inv_arguments: list![step.clone()], operator: Operator::makeMul(openmodelica_nf_frontend::NFType::interned_INTEGER()) })], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) });
     distance_const = SimplifyExp::simplify(distance_const.clone(), false)?;
     distance_const = SimplifyExp::combineBinaries(distance_const.clone())?;
     distance_const = SimplifyExp::simplify(distance_const.clone(), false)?;
@@ -574,7 +574,7 @@ fn getFactor(mut exp: Arc<Expression::NFExpression>, mut args: Arc<Differentiati
 
 fn getShift(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Expression::NFExpression>> {
     let mut shift: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    shift = Replacements::single(exp.clone(), Arc::new(Expression::NFExpression::CREF { ty: Arc::new(openmodelica_nf_frontend::NFType::INTEGER), cref: cref.clone() }), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?;
+    shift = Replacements::single(exp.clone(), Arc::new(Expression::NFExpression::CREF { ty: openmodelica_nf_frontend::NFType::interned_INTEGER(), cref: cref.clone() }), Arc::new(Expression::NFExpression::INTEGER { value: 0 }))?;
     shift = SimplifyExp::simplify(shift.clone(), false)?;
     Ok(shift)
 }
@@ -634,7 +634,7 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
     let mut sub: Arc<Subscript::NFSubscript> = Arc::new(Subscript::WHOLE);
     let mut sub_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut r#const: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut op: Arc<Operator::NFOperator> = Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER));
+    let mut op: Arc<Operator::NFOperator> = Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER());
     for mut tpl in &*List::zip(dims.clone(), subs.clone()) {
         let mut tpl = tpl.clone();
         (dim, sub) = tpl.clone();
@@ -852,7 +852,7 @@ fn fixConstraints(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<Compone
             if debug.clone() {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is violated by ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            eqn = Equation::makeAssignmentEqn(constraint.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(EquationKind::DISCRETE.clone(), false, None, None))?;
+            eqn = Equation::makeAssignmentEqn(constraint.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), crate::NBEquation::Iterator::interned_EMPTY(), NBEquation::default(EquationKind::DISCRETE.clone(), false, None, None))?;
             for mut cref in &*crefs.clone() {
                 let mut cref = cref.clone();
                 failed = false;

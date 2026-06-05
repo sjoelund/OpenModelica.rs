@@ -166,7 +166,7 @@ pub fn functionInlineable(mut r#fn: Arc<Function::Function>) -> Result<bool> {
 pub fn inlineRecordSliceEquation(mut slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut index: Pointer::Pointer<i32>, mut inlineSimple: bool) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
     let mut slices: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
     let mut record_eqns: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
-    inlineRecordTupleArrayEquation(Pointer::access(Slice::getT(slice.clone())), Arc::new(crate::NBEquation::Iterator::EMPTY), variables.clone(), record_eqns.clone(), set.clone(), index.clone(), inlineSimple.clone())?;
+    inlineRecordTupleArrayEquation(Pointer::access(Slice::getT(slice.clone())), crate::NBEquation::Iterator::interned_EMPTY(), variables.clone(), record_eqns.clone(), set.clone(), index.clone(), inlineSimple.clone())?;
     slices = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
         for mut eqn in (Pointer::access(record_eqns.clone())).into_iter().cloned() {
@@ -258,7 +258,7 @@ fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc
     if init.clone() {
         eqData = (::match_deref::match_deref! { match &(eqData.clone()) {
         Deref @ BEquation::EqData::EQ_DATA_SIM { .. } => {
-            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = crate::NBEquation::Iterator::interned_EMPTY(); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::addList(Pointer::access(new_eqns.clone()), var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?);
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::compress(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone())?);
             eqData.clone()
@@ -267,7 +267,7 @@ fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     } else {
-        eqData = BEquation::EqData::map(eqData.clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
+        eqData = BEquation::EqData::map(eqData.clone(), (std::sync::Arc::new({ let __pe_b1 = crate::NBEquation::Iterator::interned_EMPTY(); let __pe_b2 = variables.clone(); let __pe_b3 = new_eqns.clone(); let __pe_b4 = set.clone(); let __pe_b5 = index.clone(); let __pe_b6 = false; move |__pe_a0| inlineRecordTupleArrayEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
         eqData = BEquation::EqData::addUntypedList(eqData.clone(), Pointer::access(new_eqns.clone()), false)?;
         eqData = BEquation::EqData::compress(eqData.clone())?;
     }
@@ -381,7 +381,7 @@ fn inlineRecordTupleArrayIfEquation(mut eqn: Arc<Equation::Equation>, mut body: 
         eqns = metamodelica::cons(new_eqn.clone(), eqns.clone());
     }
     Pointer::update(new_eqns.clone(), eqns.clone());
-    eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+    eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     Ok(eqn)
 }
 
@@ -425,7 +425,7 @@ fn inlineRecordEquation(mut eqn: Arc<Equation::Equation>, mut lhs: Arc<Expressio
         eqns = createInlinedEquation(eqns.clone(), new_lhs.clone(), new_rhs.clone(), attr.clone(), iter.clone(), variables.clone(), set.clone(), index.clone())?;
     }
     Pointer::update(new_eqns.clone(), eqns.clone());
-    eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+    eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     Ok(eqn)
 }
 
@@ -455,7 +455,7 @@ fn inlineTupleEquation(mut eqn: Arc<Equation::Equation>, mut LHS: Arc<Expression
             }
         }
         Pointer::update(new_eqns.clone(), eqns.clone());
-        eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+        eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     }
     Ok(eqn)
 }
@@ -475,7 +475,7 @@ fn inlineArrayEquation(mut eqn: Arc<Equation::Equation>, mut lhs_elements: metam
         eqns = createInlinedEquation(eqns.clone(), ({let __elt = lhs_elements.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = rhs_elements.borrow()[(i.clone()-1) as usize].clone(); __elt}), attr.clone(), iter.clone(), variables.clone(), set.clone(), index.clone())?;
     }
     Pointer::update(new_eqns.clone(), eqns.clone());
-    eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+    eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     Ok(eqn)
 }
 
@@ -512,7 +512,7 @@ fn inlineArrayConstructor(mut eqn: Arc<Equation::Equation>, mut cref: Arc<Compon
     new_rhs = Expression::map(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = local_it.clone(); let __pe_b2 = false; move |__pe_a0| BackendDAE::lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     eqns = createInlinedEquation(eqns.clone(), cref_exp.clone(), new_rhs.clone(), attr.clone(), BEquation::Iterator::addFrames(iter.clone(), frames.clone())?, variables.clone(), set.clone(), index.clone())?;
     Pointer::update(new_eqns.clone(), eqns.clone());
-    eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+    eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     Ok(eqn)
 }
 
@@ -595,7 +595,7 @@ fn inlineCatCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
     } };
     n = __pa0.clone();
     rest = __pa1.clone();
-    iterator_name = ComponentRef::makeIterator(InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER)), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
+    iterator_name = ComponentRef::makeIterator(InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), openmodelica_nf_frontend::NFType::interned_INTEGER()), openmodelica_nf_frontend::NFType::interned_INTEGER())?;
     iterator_var = BackendDAE::lowerIterator(iterator_name.clone())?;
     iterator_name = BVariable::getVarName(iterator_var.clone());
     update_vars = BVariable::VariablePointers::fromList(list![iterator_var.clone()], false)?;
@@ -615,7 +615,7 @@ fn inlineCatCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
                     new_size = Dimension::sizeExp(dim.clone())?;
                     range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 1 }), None, new_size.clone())?;
                     local_iter = BEquation::Iterator::addFrames(iter.clone(), list![(iterator_name.clone(), range.clone(), None)])?;
-                    lhs_sub = if (Expression::isZero(shift.clone())?) {subscript_exp.clone()} else {Arc::new(Expression::NFExpression::MULTARY { arguments: list![shift.clone(), subscript_exp.clone()], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) })};
+                    lhs_sub = if (Expression::isZero(shift.clone())?) {subscript_exp.clone()} else {Arc::new(Expression::NFExpression::MULTARY { arguments: list![shift.clone(), subscript_exp.clone()], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) })};
                     lhs = ComponentRef::mergeSubscripts(Subscript::fillWithWholeLeft(list![Arc::new(Subscript::NFSubscript::INDEX { index: lhs_sub.clone() })], n.clone()), cref.clone(), false, false, false)?;
                     rhs = ComponentRef::mergeSubscripts(Subscript::fillWithWholeLeft(list![Arc::new(Subscript::NFSubscript::INDEX { index: subscript_exp.clone() })], n.clone()), rhs.clone(), false, false, false)?;
                     lhs_exp = Expression::map(Expression::fromCref(lhs.clone(), false)?, (std::sync::Arc::new({ let __pe_b1 = update_vars.clone(); let __pe_b2 = false; move |__pe_a0| BackendDAE::lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -655,7 +655,7 @@ fn inlineCatCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
     }
     if !(failed.clone()) {
         Pointer::update(new_eqns.clone(), eqns.clone());
-        eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
+        eqn = crate::NBEquation::Equation::interned_DUMMY_EQUATION();
     }
     Ok(eqn)
 }
@@ -714,7 +714,7 @@ fn bumpShift(mut shift: Arc<Expression::NFExpression>, mut new_size: Arc<Express
             shift.clone()
         },
         _ => {
-            Arc::new(Expression::NFExpression::MULTARY { arguments: list![shift.clone(), new_size.clone()], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) })
+            Arc::new(Expression::NFExpression::MULTARY { arguments: list![shift.clone(), new_size.clone()], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_INTEGER()) })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

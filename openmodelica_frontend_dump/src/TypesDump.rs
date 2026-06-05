@@ -1332,7 +1332,7 @@ pub fn getDimensions(mut inType: Arc<DAE::Type>) -> Arc<metamodelica::List<Arc<D
     let mut outDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     outDimensions = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { .. } => listAppend(var_field!((*inType).dims, DAE::Type::T_ARRAY).clone(), getDimensions(var_field!((*inType).ty, DAE::Type::T_ARRAY).clone())),
-        Deref @ DAE::Type::T_METAARRAY { .. } => metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN), getDimensions(var_field!((*inType).ty, DAE::Type::T_METAARRAY).clone())),
+        Deref @ DAE::Type::T_METAARRAY { .. } => metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), getDimensions(var_field!((*inType).ty, DAE::Type::T_METAARRAY).clone())),
         Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => getDimensions(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
         Deref @ DAE::Type::T_METATYPE { .. } => getDimensions(var_field!((*inType).ty, DAE::Type::T_METATYPE).clone()),
         _ => metamodelica::nil(),

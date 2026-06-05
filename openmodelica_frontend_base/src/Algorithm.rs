@@ -567,7 +567,7 @@ fn makeElseFromBranches(mut inTpl: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<me
     let mut outElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
     outElse = (::match_deref::match_deref! { match &(inTpl.clone()) {
         Deref @ metamodelica::List::Nil => {
-            Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE)
+            openmodelica_frontend_types::DAE::Else::interned_NOELSE()
         },
         Deref @ metamodelica::List::Cons { head: (Deref @ DAE::Exp::BCONST { bool: true }, b), tail: Deref @ metamodelica::List::Nil } => {
             Arc::new(DAE::Else::ELSE { statementLst: b.clone() })
@@ -627,7 +627,7 @@ fn makeElse(mut inTuple: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-                    Ok(Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE))
+                    Ok(openmodelica_frontend_types::DAE::Else::interned_NOELSE())
                 }
                 _ => bail!("nomatch"),
             }}

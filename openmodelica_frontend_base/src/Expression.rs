@@ -449,7 +449,7 @@ pub fn unelabDimension(mut inDim: Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subs
             Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: ae.clone() })
         },
         Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
-            Arc::new(openmodelica_ast::Absyn::Subscript::NOSUB)
+            openmodelica_ast::Absyn::Subscript::interned_NOSUB()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -666,7 +666,7 @@ pub fn dimensionSubscript(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Subsc
             Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: 2 }) })
         },
         Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)
+            openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM()
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2015,7 +2015,7 @@ pub fn subscriptDimension(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DA
             Arc::new(DAE::Dimension::DIM_EXP { exp: e.clone() })
         },
         Deref @ DAE::Subscript::WHOLEDIM { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)
+            openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()
         },
         Deref @ DAE::Subscript::WHOLE_NONEXP { exp: Deref @ DAE::Exp::ICONST { integer: x } } if (!(Config::splitArrays()?)) => {
             Arc::new(DAE::Dimension::DIM_INTEGER { integer: x.clone() })
@@ -2187,7 +2187,7 @@ pub fn addDimensions(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))
+                    Ok(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2525,7 +2525,7 @@ pub fn r#typeof(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Type>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { exp: _, sz: None } => {
-                    Ok(Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }))
+                    Ok(Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3966,7 +3966,7 @@ pub fn crefExp(mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> {
     let mut cref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     cref = (::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
-            Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: Arc::new(openmodelica_frontend_types::DAE::Type::T_UNKNOWN) })
+            Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: openmodelica_frontend_types::DAE::Type::interned_T_UNKNOWN() })
         },
         _ => {
             let mut ty1: Type = Arc::new(DAE::Type::T_NORETCALL);
@@ -5321,7 +5321,7 @@ pub fn makeIndexSubscript(mut exp: Arc<DAE::Exp>) -> Arc<DAE::Subscript> {
 
 pub fn makeVar(mut name: ArcStr, mut tp: Arc<DAE::Type>) -> Arc<DAE::Var> {
     let mut v: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-    v = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
+    v = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
     v
 }
 
@@ -5335,7 +5335,7 @@ pub fn dimensionsAdd(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension
             res = __try0_o0;
         }
         Err(_) => {
-            res = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
+            res = openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN();
         }
     }
     res
@@ -7608,7 +7608,7 @@ fn traverseExpSubs<Type_a: Clone + 'static>(mut inSubscript: Arc<metamodelica::L
             let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
             let mut arg = (*arg).clone();
             (res, arg) = traverseExpSubs(rest.clone(), rel.clone(), arg.clone())?;
-            res = if (referenceEq(&*(rest.clone()),&*(res.clone()))) {inSubscript.clone()} else {metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), res.clone())};
+            res = if (referenceEq(&*(rest.clone()),&*(res.clone()))) {inSubscript.clone()} else {metamodelica::cons(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), res.clone())};
             (res.clone(), arg.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: sub_exp }, tail: rest }, arg) => {
@@ -11774,7 +11774,7 @@ pub fn emptyToWild(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = r#typeof(exp.clone())?;
-    outExp = if (Types::isZeroLengthArray(ty.clone())?) {Arc::new(DAE::Exp::CREF { componentRef: Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), ty: ty.clone() })} else {exp.clone()};
+    outExp = if (Types::isZeroLengthArray(ty.clone())?) {Arc::new(DAE::Exp::CREF { componentRef: openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), ty: ty.clone() })} else {exp.clone()};
     Ok(outExp)
 }
 

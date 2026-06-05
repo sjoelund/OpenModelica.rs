@@ -108,7 +108,7 @@ pub fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
                 (eqn, solved) = solveSimpleEquation(eqn.clone(), var.clone(), dae.shared.clone())?;
                 assign_field!(syst.orderedEqs = BackendEquation::setAtIndex(syst.orderedEqs.clone(), eindex.clone(), eqn.clone())?);
                 if !(solved.clone()) {
-                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex.clone()], vars: list![vindx.clone()], jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN), jacType: openmodelica_backend_types::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
+                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex.clone()], vars: list![vindx.clone()], jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN(), jacType: openmodelica_backend_types::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
                 }
             }
             tmpComp.clone()

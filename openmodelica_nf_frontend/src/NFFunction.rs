@@ -245,6 +245,36 @@ pub mod FunctionMatchKind {
         },
         NOT_COMPATIBLE,
     }
+    impl FunctionMatchKind {
+        pub fn interned_EXACT() -> Arc<FunctionMatchKind> {
+            thread_local! {
+                static INTERNED: Arc<FunctionMatchKind> = Arc::new(FunctionMatchKind::EXACT);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_CAST() -> Arc<FunctionMatchKind> {
+            thread_local! {
+                static INTERNED: Arc<FunctionMatchKind> = Arc::new(FunctionMatchKind::CAST);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_GENERIC() -> Arc<FunctionMatchKind> {
+            thread_local! {
+                static INTERNED: Arc<FunctionMatchKind> = Arc::new(FunctionMatchKind::GENERIC);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_NOT_COMPATIBLE() -> Arc<FunctionMatchKind> {
+            thread_local! {
+                static INTERNED: Arc<FunctionMatchKind> = Arc::new(FunctionMatchKind::NOT_COMPATIBLE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EXACT() -> Arc<FunctionMatchKind> { FunctionMatchKind::interned_EXACT() }
+    pub fn interned_CAST() -> Arc<FunctionMatchKind> { FunctionMatchKind::interned_CAST() }
+    pub fn interned_GENERIC() -> Arc<FunctionMatchKind> { FunctionMatchKind::interned_GENERIC() }
+    pub fn interned_NOT_COMPATIBLE() -> Arc<FunctionMatchKind> { FunctionMatchKind::interned_NOT_COMPATIBLE() }
     impl Default for FunctionMatchKind {
         fn default() -> Self { Self::EXACT }
     }
@@ -291,16 +321,16 @@ pub mod FunctionMatchKind {
 
 }
 
-thread_local! { static __EXACT_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = Arc::new(crate::NFFunction::FunctionMatchKind::EXACT); }
+thread_local! { static __EXACT_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_EXACT(); }
 pub fn EXACT_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __EXACT_MATCH_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __CAST_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = Arc::new(crate::NFFunction::FunctionMatchKind::CAST); }
+thread_local! { static __CAST_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_CAST(); }
 pub fn CAST_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __CAST_MATCH_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __GENERIC_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = Arc::new(crate::NFFunction::FunctionMatchKind::GENERIC); }
+thread_local! { static __GENERIC_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_GENERIC(); }
 pub fn GENERIC_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __GENERIC_MATCH_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __NO_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = Arc::new(crate::NFFunction::FunctionMatchKind::NOT_COMPATIBLE); }
+thread_local! { static __NO_MATCH_TLS: Arc<FunctionMatchKind::FunctionMatchKind> = crate::NFFunction::FunctionMatchKind::interned_NOT_COMPATIBLE(); }
 pub fn NO_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __NO_MATCH_TLS.with(|__t| __t.clone()) }
 
 pub mod MatchedFunction {
@@ -435,7 +465,7 @@ pub mod Function {
         (inputs, outputs, locals) = collectParams(node.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
         attr = makeAttributes(node.clone(), inputs.clone(), outputs.clone(), comments.clone())?;
         status = if (isBuiltinAttr(attr.clone())) {FunctionStatus::COLLECTED.clone()} else {FunctionStatus::INITIAL.clone()};
-        r#fn = Arc::new(Function { path: path.clone(), node: node.clone(), inputs: inputs.clone(), outputs: outputs.clone(), locals: locals.clone(), interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: Arc::new(crate::NFType::UNKNOWN), attributes: attr.clone(), derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: Pointer::create(status.clone()), callCounter: Pointer::create(0) });
+        r#fn = Arc::new(Function { path: path.clone(), node: node.clone(), inputs: inputs.clone(), outputs: outputs.clone(), locals: locals.clone(), interfaceDiffInfo: None, slots: metamodelica::nil(), returnType: crate::NFType::interned_UNKNOWN(), attributes: attr.clone(), derivatives: metamodelica::nil(), derivedInputs: metamodelica::nil(), inverses: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), status: Pointer::create(status.clone()), callCounter: Pointer::create(0) });
         Ok(r#fn)
     }
 
@@ -488,9 +518,9 @@ pub mod Function {
         (fn_node, specialBuiltin) = (::match_deref::match_deref! { match &(cache.clone()) {
         Deref @ CachedData::FUNCTION { .. } => (fn_node.clone(), var_field!((*cache).specialBuiltin, CachedData::CachedData::FUNCTION).clone()),
         _ => {
-            parent = if (InstNode::isRedeclare(ComponentRef::node(fn_ref.clone())?)? || ComponentRef::isSimple(fn_ref.clone())) {Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE)} else {ComponentRef::node(ComponentRef::rest(fn_ref.clone())?)?};
+            parent = if (InstNode::isRedeclare(ComponentRef::node(fn_ref.clone())?)? || ComponentRef::isSimple(fn_ref.clone())) {crate::NFInstNode::InstNode::interned_EMPTY_NODE()} else {ComponentRef::node(ComponentRef::rest(fn_ref.clone())?)?};
             if !(InstNode::isComponent(parent.clone())?) {
-                parent = Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE);
+                parent = crate::NFInstNode::InstNode::interned_EMPTY_NODE();
             }
             instFunction2(ComponentRef::toPath(fn_ref.clone())?, fn_node.clone(), context.clone(), info.clone(), parent.clone())?
         },
@@ -506,7 +536,7 @@ pub mod Function {
         let () = (::match_deref::match_deref! { match &(cache.clone()) {
         Deref @ CachedData::FUNCTION { .. } => (),
         _ => {
-            (node, _) = instFunction2(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), info.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?;
+            (node, _) = instFunction2(InstNode::fullPath(node.clone(), false)?, node.clone(), context.clone(), info.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -586,7 +616,7 @@ pub mod Function {
         let mut def: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         let mut numError: i32 = Error::getNumErrorMessages();
         let mut fn_context: i32 = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
-        if let Ok(__iflet0) = Inst::instantiate(fnNode.clone(), Arc::new(crate::NFModifier::Modifier::NOMOD), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), fn_context.clone(), true) {
+        if let Ok(__iflet0) = Inst::instantiate(fnNode.clone(), crate::NFModifier::Modifier::interned_NOMOD(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), fn_context.clone(), true) {
             fnNode = __iflet0;
         } else {
             let true = (Error::getNumErrorMessages() == numError.clone()) else { bail!("pattern mismatch") };
@@ -596,7 +626,7 @@ pub mod Function {
         }
         cmts = InstNode::getComments(fnNode.clone(), metamodelica::nil());
         InstNode::cacheInitFunc(fnNode.clone())?;
-        Inst::instExpressions(fnNode.clone(), fnNode.clone(), Arc::new(crate::NFSections::EMPTY), NFConnectBreakTree::new(), context.clone(), Inst::InstSettings::create()?)?;
+        Inst::instExpressions(fnNode.clone(), fnNode.clone(), crate::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context.clone(), Inst::InstSettings::create()?)?;
         Ok((fnNode, cmts))
     }
 
@@ -613,7 +643,7 @@ pub mod Function {
         elem = InstNode::definition(InstNode::resolveInner(Class::lastBaseClass(enumNode.clone())?))?;
         fn_def = (::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ SCode::Element::CLASS { classDef: def @ Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
-            params = list![Arc::new(SCode::Element::COMPONENT { name: (literal!("index")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), Arc::new(SCode::Element::COMPONENT { name: (literal!("value")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (enum_name.clone()).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: info.clone() })];
+            params = list![Arc::new(SCode::Element::COMPONENT { name: (literal!("index")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), Arc::new(SCode::Element::COMPONENT { name: (literal!("value")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (enum_name.clone()).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() })];
             stmts = list![Arc::new(SCode::Statement::ALG_ASSERT { condition: Arc::new(Absyn::Exp::LBINARY { exp1: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::GREATEREQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: 1 }) }), op: openmodelica_ast::Absyn::Operator::AND, exp2: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::LESSEQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: (var_field!((**def).enumLst, SCode::ClassDef::ENUMERATION).clone().len() as i32) }) }) }), message: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::STRING { value: (literal!("Enumeration index '")).clone() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("String")).clone(), subscripts: metamodelica::nil() }), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: list![Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) })], argNames: metamodelica::nil() }), typeVars: metamodelica::nil() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("' out of bounds in call to ")); __mm_s.push_str(&*enum_name.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }) }) }), level: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("AssertionLevel")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("error")).clone(), subscripts: metamodelica::nil() }) }) }), comment: SCode::noComment.clone(), info: info.clone() }), Arc::new(SCode::Statement::ALG_ASSIGN { assignComponent: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("value")).clone(), subscripts: metamodelica::nil() }) }), value: Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
         for mut e in (var_field!((**def).enumLst, SCode::ClassDef::ENUMERATION).clone()).into_iter().cloned() {
@@ -969,7 +999,7 @@ pub mod Function {
                 } };
                 annMod = __pa0.clone();
             } else {
-                annMod = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+                annMod = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
             }
             annMod = SCodeUtil::filterSubMods(annMod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("derivative")).clone(), (literal!("inverse")).clone()]; move |__pe_a0| Ok(SCodeUtil::removeGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
             for mut derivative in &*r#fn.derivatives.clone().reverse() {
@@ -2239,7 +2269,7 @@ pub mod Function {
     fn mergeFunctionAnnotations(mut comments: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Arc<SCode::Comment>> {
         let mut outComment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
         let mut comment: Option<ArcStr> = None;
-        let mut r#mod: Arc<SCode::Mod> = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+        let mut r#mod: Arc<SCode::Mod> = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
         let mut mod2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         for mut cmt in &*comments.clone() {
             let mut cmt = cmt.clone();
@@ -2453,7 +2483,7 @@ pub mod Function {
         __acc.reverse()
     });
         returnType = (::match_deref::match_deref! { match &(ret_tyl.clone()) {
-        Deref @ metamodelica::List::Nil => Arc::new(crate::NFType::NORETCALL),
+        Deref @ metamodelica::List::Nil => crate::NFType::interned_NORETCALL(),
         Deref @ metamodelica::List::Cons { head: __esc_returnType, tail: Deref @ metamodelica::List::Nil } => {
             returnType = (*__esc_returnType).clone();
             returnType.clone()
@@ -2674,7 +2704,7 @@ pub mod Function {
         for mut var in &*variables.clone() {
             let mut var = var.clone();
             ty = InstNode::getType(var.clone())?;
-            if Type::isScalarBuiltin(ty.clone())? && !(Component::hasBinding(InstNode::component(var.clone())?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?) {
+            if Type::isScalarBuiltin(ty.clone())? && !(Component::hasBinding(InstNode::component(var.clone())?, crate::NFInstNode::InstNode::interned_EMPTY_NODE())?) {
                 Vector::push(unassigned.clone(), var.clone());
             }
         }

@@ -2595,6 +2595,9 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
             };
             let type_params = if type_vars.is_empty() { String::new() } else { format!("<{}>", type_vars.join(", ")) };
             let mut emitted_variants: Vec<String> = Vec::new();
+            // Fieldless variants of Arc-wrapped enums get an interned
+            // singleton getter (see below after the enum body).
+            let mut fieldless_variants: Vec<String> = Vec::new();
             emit_doc_comment(out, &inner, class_doc(c));
             writeln!(out, "{inner}{}", ctx.derives_for(qname)).unwrap();
             writeln!(out, "{inner}pub enum {ename}{type_params} {{").unwrap();
@@ -2607,12 +2610,14 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
                         emit_doc_comment(out, &variant_indent, class_doc(rc));
                         writeln!(out, "{inner}    {rec_name},").unwrap();
                         emitted_variants.push(rec_name.clone());
+                        fieldless_variants.push(rec_name.clone());
                     }
                     Ty::RustStruct(_) => {
                         let fields = component_fields_with_spec(rc, &rec_node.children);
                         emit_doc_comment(out, &variant_indent, class_doc(rc));
                         if fields.is_empty() {
                             writeln!(out, "{inner}    {rec_name},").unwrap();
+                            fieldless_variants.push(rec_name.clone());
                         } else {
                             // Look up the enclosing-package scope so a field whose
                             // declared type is a bare alias name (e.g. `Value value`)
@@ -2641,6 +2646,64 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
                 }
             }
             writeln!(out, "{inner}}}").unwrap();
+            // Interned singletons for fieldless constructors of Arc-wrapped
+            // enums. MMC compiles a fieldless record constructor to a static
+            // immediate shared by every use, so `referenceEq(NOELSE(),
+            // NOELSE())` is *true* in the C runtime. Compiler code relies on
+            // that for identity-based change detection — e.g.
+            // ExpressionSimplify's fixpoint loop checks
+            // `referenceEq(expAfterSimplify, exp)`, and
+            // DAEUtil.traverseDAEEquationsStmtsElse rebuilds `DAE.NOELSE()`
+            // on every visit. Allocating a fresh `Arc` per construction made
+            // those loops never converge. Emit one `interned_<VARIANT>()`
+            // getter per fieldless variant; construction sites of recursive
+            // (Arc-wrapped) enums call it instead of `Arc::new(...)`.
+            // Generic enums are skipped (a singleton per instantiation would
+            // need a different mechanism); their constructions keep the
+            // `Arc::new` fallback.
+            if type_params.is_empty()
+                && ctx.recursive_types.contains(qname.as_str())
+                && !fieldless_variants.is_empty()
+            {
+                let is_sync = ty_is_sync(&node.ty, ctx);
+                writeln!(out, "{inner}impl {ename} {{").unwrap();
+                for v in &fieldless_variants {
+                    let vesc = escape_ident(v);
+                    if is_sync {
+                        writeln!(out, "{inner}    pub fn interned_{v}() -> Arc<{ename}> {{").unwrap();
+                        writeln!(out, "{inner}        static INTERNED: std::sync::LazyLock<Arc<{ename}>> = std::sync::LazyLock::new(|| Arc::new({ename}::{vesc}));").unwrap();
+                        writeln!(out, "{inner}        (*INTERNED).clone()").unwrap();
+                        writeln!(out, "{inner}    }}").unwrap();
+                    } else {
+                        // Non-`Sync` enum (transitively embeds `Array<T>` or a
+                        // `dyn Fn`): a `static` would not compile; intern
+                        // per-thread instead. referenceEq still holds within a
+                        // thread, which is where all traversals run.
+                        writeln!(out, "{inner}    pub fn interned_{v}() -> Arc<{ename}> {{").unwrap();
+                        writeln!(out, "{inner}        thread_local! {{").unwrap();
+                        writeln!(out, "{inner}            static INTERNED: Arc<{ename}> = Arc::new({ename}::{vesc});").unwrap();
+                        writeln!(out, "{inner}        }}").unwrap();
+                        writeln!(out, "{inner}        INTERNED.with(|i| i.clone())").unwrap();
+                        writeln!(out, "{inner}    }}").unwrap();
+                    }
+                }
+                writeln!(out, "{inner}}}").unwrap();
+                // Module-level delegating wrappers. Construction sites reach
+                // the variant either through the enum (`DAE::Else::NOELSE`)
+                // or through the enclosing module's variant re-exports
+                // (`crate::JSON::TRUE` where `JSON` is the file module and
+                // the enum lives one level below) — the spliced
+                // `interned_<V>()` path has the same container, so the getter
+                // must be reachable both ways. Associated fns can't be
+                // `pub use`d, hence the free-fn wrappers; they delegate to
+                // the impl fn so both paths share one interned allocation.
+                // (A module and an enum can never share a scope, so the two
+                // spellings are never ambiguous; variant re-export uniqueness
+                // guarantees the free-fn names don't collide.)
+                for v in &fieldless_variants {
+                    writeln!(out, "{inner}pub fn interned_{v}() -> Arc<{ename}> {{ {ename}::interned_{v}() }}").unwrap();
+                }
+            }
             // Hand-rolled trait impls for enums that *directly* embed an
             // `Arc<dyn Fn(...)>` field. `derives_for` dropped everything
             // but `Clone` for these — supply Debug/PartialEq/Eq/
@@ -8219,7 +8282,20 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // Wrap in Arc::new when constructing a variant of a recursive type;
                 // all usages of such types in fields are already Arc<T>.
                 if !is_const && constructor_needs_arc(ty, ctx) {
-                    format!("Arc::new({ctor_expr})")
+                    // Fieldless variant of an Arc-wrapped enum: call the
+                    // interned singleton getter instead of allocating — MMC
+                    // fieldless constructors are static immediates and
+                    // compiler code relies on `referenceEq` between two
+                    // constructions (see `emit_uniontype`).
+                    if arg_strs.is_empty()
+                        && parent_is_enum && !last_is_nested_uniontype
+                        && parent_qname.is_some_and(|p| enum_eligible_for_interning(p, top_level))
+                        && let Some((enum_path, variant)) = ctor_expr.rsplit_once("::")
+                    {
+                        format!("{enum_path}::interned_{variant}()")
+                    } else {
+                        format!("Arc::new({ctor_expr})")
+                    }
                 } else {
                     ctor_expr
                 }
@@ -8242,15 +8318,28 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // (e.g. `"Pkg.Tree.EMPTY"` → parent `"Pkg.Tree"`) or from
                 // `Ty::UnionTypeVariant(parent, _)` if available.
                 let path = ctx.dotted_to_rust_path(name);
-                let parent_recursive = match ty {
-                    Ty::UnionTypeVariant(parent, _) => ctx.recursive_types.contains(parent.as_str()),
-                    _ => name
-                        .rsplit_once('.')
-                        .map(|(parent, _)| ctx.recursive_types.contains(parent))
-                        .unwrap_or(false),
+                let parent_qname: Option<&str> = match ty {
+                    Ty::UnionTypeVariant(parent, _) => Some(parent.as_str()),
+                    _ => name.rsplit_once('.').map(|(parent, _)| parent),
                 };
+                let parent_recursive = parent_qname
+                    .map(|parent| ctx.recursive_types.contains(parent))
+                    .unwrap_or(false);
                 if !is_const && parent_recursive {
-                    format!("Arc::new({path})")
+                    // Prefer the interned singleton over a fresh allocation:
+                    // MMC fieldless constructors are static immediates, so
+                    // `referenceEq` between two constructions must hold (see
+                    // the getter emission in `emit_uniontype`). Fall back to
+                    // `Arc::new` for generic enums (no getter is generated)
+                    // or when the emitted path has no `EnumPath::VARIANT`
+                    // shape to splice the getter into.
+                    if let Some((enum_path, variant)) = path.rsplit_once("::")
+                        && parent_qname.is_some_and(|p| enum_eligible_for_interning(p, top_level))
+                    {
+                        format!("{enum_path}::interned_{variant}()")
+                    } else {
+                        format!("Arc::new({path})")
+                    }
                 } else {
                     path
                 }
@@ -15665,6 +15754,25 @@ fn value_emitted_as_arc(arg: &TypedExp, ctx: &GenCtx) -> bool {
 /// For a variant record `Ty::RustStruct("Pkg.Tree.NODE")` the parent type is
 /// `"Pkg.Tree"`. For a uniontype itself `Ty::RustEnum("Pkg.Tree")` the type is
 /// its own parent.
+/// Whether `parent_qname` names a *non-generic* uniontype enum, i.e. one for
+/// which `emit_uniontype` generates `interned_<VARIANT>()` singleton getters
+/// for its fieldless variants. Generic enums get no getters (a singleton per
+/// type instantiation would need a different mechanism), so their
+/// construction sites must keep the `Arc::new(...)` fallback.
+fn enum_eligible_for_interning(parent_qname: &str, top_level: &BTreeMap<String, NameNode>) -> bool {
+    let Some(node) = lookup_node(parent_qname, top_level) else { return false };
+    if !matches!(node.ty, Ty::RustEnum(_)) {
+        return false;
+    }
+    match &node.kind {
+        NodeKind::Class(c) => match &c.body {
+            MM::ClassDef::Parts { type_vars, .. } => type_vars.is_empty(),
+            _ => true,
+        },
+        _ => false,
+    }
+}
+
 fn constructor_needs_arc(ty: &Ty, ctx: &GenCtx) -> bool {
     // The parent-qname check below only makes sense when this struct is
     // actually a *variant of a multi-record uniontype enum* (its parent

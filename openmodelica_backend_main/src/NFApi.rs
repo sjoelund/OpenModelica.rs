@@ -237,11 +237,11 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                         (program, name, inst_cls) = frontEndFront(absynProgram.clone(), classPath.clone())?;
                     }
                     (stripped_mod, graphics_mod) = AbsynUtil::stripGraphicsAndInteractionModification(r#mod.clone())?;
-                    smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: stripped_mod.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
+                    smod = AbsynToSCode::translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: stripped_mod.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
                     anncls = Lookup::lookupClassName(Arc::new(Path::IDENT { name: (annName.clone()).clone() }), inst_cls.clone(), ANNOTATION_CONTEXT.clone(), Absyn::dummyInfo.clone(), false)?;
                     inst_anncls = Inst::expand(anncls.clone(), ANNOTATION_CONTEXT.clone())?;
                     (inst_anncls, _) = Inst::instClass(inst_anncls.clone(), Modifier::create(smod.clone(), (annName.clone()).clone(), Arc::new(ModifierScope::ModifierScope::CLASS { name: (annName.clone()).clone() }), inst_cls.clone(), 0)?, NFAttributes::DEFAULT_ATTR().clone(), true, 0, inst_cls.clone(), ANNOTATION_CONTEXT.clone())?;
-                    Inst::instExpressions(inst_anncls.clone(), inst_anncls.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), ANNOTATION_CONTEXT.clone(), Inst::DEFAULT_SETTINGS.clone())?;
+                    Inst::instExpressions(inst_anncls.clone(), inst_anncls.clone(), openmodelica_nf_frontend::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), ANNOTATION_CONTEXT.clone(), Inst::DEFAULT_SETTINGS.clone())?;
                     Inst::updateImplicitVariability(inst_anncls.clone(), Flags::isSet(Flags::EVAL_PARAM.clone())?, ANNOTATION_CONTEXT.clone())?;
                     dae = frontEndBack(inst_anncls.clone(), (annName.clone()).clone(), false)?;
                     r#str = (DAEUtil::getVariableBindingsStr(DAEUtil::daeElements(dae.clone())?)?).clone();
@@ -290,8 +290,8 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                     (program, top) = mkTop(absynProgram.clone(), (annName.clone()).clone())?;
                     inst_cls = top.clone();
                     anncls = Lookup::lookupClassName(Arc::new(Path::IDENT { name: (annName.clone()).clone() }), inst_cls.clone(), ANNOTATION_CONTEXT.clone(), Absyn::dummyInfo.clone(), false)?;
-                    inst_anncls = Inst::instantiate(anncls.clone(), Arc::new(openmodelica_nf_frontend::NFModifier::Modifier::NOMOD), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), ANNOTATION_CONTEXT.clone(), false)?;
-                    Inst::instExpressions(inst_anncls.clone(), inst_anncls.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), ANNOTATION_CONTEXT.clone(), Inst::DEFAULT_SETTINGS.clone())?;
+                    inst_anncls = Inst::instantiate(anncls.clone(), openmodelica_nf_frontend::NFModifier::Modifier::interned_NOMOD(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), ANNOTATION_CONTEXT.clone(), false)?;
+                    Inst::instExpressions(inst_anncls.clone(), inst_anncls.clone(), openmodelica_nf_frontend::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), ANNOTATION_CONTEXT.clone(), Inst::DEFAULT_SETTINGS.clone())?;
                     Inst::updateImplicitVariability(inst_anncls.clone(), Flags::isSet(Flags::EVAL_PARAM.clone())?, ANNOTATION_CONTEXT.clone())?;
                     dae = frontEndBack(inst_anncls.clone(), (annName.clone()).clone(), false)?;
                     r#str = (DAEUtil::getVariableBindingsStr(DAEUtil::daeElements(dae.clone())?)?).clone();
@@ -579,10 +579,10 @@ fn frontEndFront_dispatch(mut absynProgram: Absyn::Program, mut classPath: Arc<P
     name = (AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false)?).clone();
     (program, top) = mkTop(absynProgram.clone(), (name.clone()).clone())?;
     cls = Lookup::lookupClassName(classPath.clone(), top.clone(), InstContext::RELAXED.clone(), Absyn::dummyInfo.clone(), false)?;
-    cls = InstNode::makeRootClass(cls.clone(), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), None);
-    inst_cls = Inst::instantiate(cls.clone(), Arc::new(openmodelica_nf_frontend::NFModifier::Modifier::NOMOD), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), InstContext::RELAXED.clone(), false)?;
+    cls = InstNode::makeRootClass(cls.clone(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), None);
+    inst_cls = Inst::instantiate(cls.clone(), openmodelica_nf_frontend::NFModifier::Modifier::interned_NOMOD(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), InstContext::RELAXED.clone(), false)?;
     Inst::insertGeneratedInners(inst_cls.clone(), top.clone(), InstContext::RELAXED.clone())?;
-    Inst::instExpressions(inst_cls.clone(), inst_cls.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), InstContext::RELAXED.clone(), Inst::DEFAULT_SETTINGS.clone())?;
+    Inst::instExpressions(inst_cls.clone(), inst_cls.clone(), openmodelica_nf_frontend::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), InstContext::RELAXED.clone(), Inst::DEFAULT_SETTINGS.clone())?;
     Inst::updateImplicitVariability(inst_cls.clone(), Flags::isSet(Flags::EVAL_PARAM.clone())?, InstContext::RELAXED.clone())?;
     if Flags::isSet(Flags::EXEC_STAT.clone())? {
         execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.frontEndFront_dispatch(")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
@@ -767,6 +767,15 @@ pub enum InstanceTree {
     },
     EMPTY,
 }
+impl InstanceTree {
+    pub fn interned_EMPTY() -> Arc<InstanceTree> {
+        thread_local! {
+            static INTERNED: Arc<InstanceTree> = Arc::new(InstanceTree::EMPTY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_EMPTY() -> Arc<InstanceTree> { InstanceTree::interned_EMPTY() }
 impl Default for InstanceTree {
     fn default() -> Self { Self::EMPTY }
 }
@@ -796,13 +805,13 @@ pub fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mu
             context = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
         }
         if unwrap_break_err!(AbsynUtil::pathFirstIdent(contextPath.clone()), '__try0) != literal!("__NoContext") {
-            cls_node = InstNode::setNodeType(Arc::new(InstNodeType::ROOT_CLASS { parent: Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), context: Some(contextPath.clone()) }), cls_node.clone());
+            cls_node = InstNode::setNodeType(Arc::new(InstNodeType::ROOT_CLASS { parent: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), context: Some(contextPath.clone()) }), cls_node.clone());
         }
         cls_node = unwrap_break_err!(Inst::instantiateRootClass(cls_node.clone(), context.clone(), r#mod.clone()), '__try0);
         unwrap_break_err!(execStat((literal!("Inst.instantiateRootClass")).clone()), '__try0);
         inst_tree = unwrap_break_err!(buildInstanceTree(cls_node.clone(), false), '__try0);
         unwrap_break_err!(execStat((literal!("NFApi.buildInstanceTree")).clone()), '__try0);
-        unwrap_break_err!(Inst::instExpressions(cls_node.clone(), cls_node.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), context.clone(), inst_settings.clone()), '__try0);
+        unwrap_break_err!(Inst::instExpressions(cls_node.clone(), cls_node.clone(), openmodelica_nf_frontend::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context.clone(), inst_settings.clone()), '__try0);
         unwrap_break_err!(Inst::updateImplicitVariability(cls_node.clone(), unwrap_break_err!(Flags::isSet(Flags::EVAL_PARAM.clone()), '__try0), context.clone()), '__try0);
         unwrap_break_err!(execStat((literal!("Inst.instExpressions")).clone()), '__try0);
         unwrap_break_err!(Typing::typeClassType(cls_node.clone(), Binding::EMPTY_BINDING().clone(), context.clone(), cls_node.clone()), '__try0);
@@ -885,7 +894,7 @@ pub fn parseModifier(mut modifierValue: ArcStr, mut scope: Arc<InstNode::InstNod
             outMod = __try0_o0;
         }
         Err(_) => {
-            outMod = Arc::new(openmodelica_nf_frontend::NFModifier::Modifier::NOMOD);
+            outMod = openmodelica_nf_frontend::NFModifier::Modifier::interned_NOMOD();
         }
     }
     outMod
@@ -900,7 +909,7 @@ pub fn buildInstanceTree(mut node: Arc<InstNode::InstNode>, mut isDerived: bool)
     cls_node = InstNode::resolveInner(node.clone());
     cls = InstNode::getClass(cls_node.clone())?;
     if !(isDerived.clone()) && Class::isOnlyBuiltin(cls.clone()) && !(Class::isEnumeration(cls.clone())?) {
-        tree = Arc::new(crate::NFApi::InstanceTree::EMPTY);
+        tree = crate::NFApi::InstanceTree::interned_EMPTY();
         return Ok(tree.clone());
     }
     cls_tree = Class::classTree(cls.clone())?;
@@ -1038,7 +1047,7 @@ pub fn buildInstanceTreeComponent(mut node: Arc<InstNode::InstNode>) -> Result<A
     inner_node = InstNode::resolveOuter(node.clone());
     cls_node = InstNode::classScope(inner_node.clone());
     if InstNode::isEmpty(cls_node.clone()) {
-        cls = Arc::new(crate::NFApi::InstanceTree::EMPTY);
+        cls = crate::NFApi::InstanceTree::interned_EMPTY();
     } else {
         cls = buildInstanceTree(cls_node.clone(), false)?;
     }
@@ -1124,10 +1133,10 @@ pub fn dumpJSONInstanceAnnotation(mut node: Arc<InstNode::InstNode>, mut filter:
         ErrorExt::setCheckpoint(literal!("NFApi.dumpJSONInstanceAnnotation"));
         if '__try1: {
             context = InstContext::set(InstContext::CLASS.clone(), InstContext::RELAXED.clone());
-            scope = InstNode::makeRootClass(scope.clone(), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), None);
-            scope = unwrap_break_err!(Inst::instantiate(scope.clone(), Arc::new(openmodelica_nf_frontend::NFModifier::Modifier::NOMOD), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), context.clone(), true), '__try1);
+            scope = InstNode::makeRootClass(scope.clone(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), None);
+            scope = unwrap_break_err!(Inst::instantiate(scope.clone(), openmodelica_nf_frontend::NFModifier::Modifier::interned_NOMOD(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), context.clone(), true), '__try1);
             unwrap_break_err!(Inst::insertGeneratedInners(scope.clone(), unwrap_break_err!(InstNode::topScope(scope.clone()), '__try1), context.clone()), '__try1);
-            unwrap_break_err!(Inst::instExpressions(scope.clone(), scope.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), context.clone(), Inst::DEFAULT_SETTINGS.clone()), '__try1);
+            unwrap_break_err!(Inst::instExpressions(scope.clone(), scope.clone(), openmodelica_nf_frontend::NFSections::interned_EMPTY(), NFConnectBreakTree::new(), context.clone(), Inst::DEFAULT_SETTINGS.clone()), '__try1);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
         }
@@ -1230,7 +1239,7 @@ pub fn getExtendsModifier(mut definition: Arc<SCode::Element>, mut node: Arc<Ins
     r#mod = (::match_deref::match_deref! { match &(definition.clone()) {
         Deref @ SCode::Element::EXTENDS { .. } => var_field!((*definition).modifications, SCode::Element::EXTENDS).clone(),
         Deref @ SCode::Element::CLASS { .. } => SCodeUtil::elementMod(InstNode::definition(InstNode::getDerivedNode(node.clone(), false))?),
-        _ => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        _ => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(r#mod)
@@ -2078,7 +2087,7 @@ pub fn dumpJSONSCodeElement(mut element: Arc<SCode::Element>, mut scope: Arc<Ins
             json = dumpJSONComment(var_field!((*element).comment, SCode::Element::COMPONENT).clone(), scope.clone(), json.clone(), true, true, false)?;
             json.clone()
         },
-        Deref @ SCode::Element::CLASS { .. } => dumpJSONSCodeClass(element.clone(), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), scope.clone(), false, json.clone())?,
+        Deref @ SCode::Element::CLASS { .. } => dumpJSONSCodeClass(element.clone(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), scope.clone(), false, json.clone())?,
         _ => json.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2247,7 +2256,7 @@ pub fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Result<Arc
     } };
     amod = __pa0.clone();
     smod = AbsynToSCode::translateMod(Some(amod.clone()), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
-    json = dumpJSONSCodeMod_impl(smod.clone(), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), false)?;
+    json = dumpJSONSCodeMod_impl(smod.clone(), openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), false)?;
     jsonString = Arc::new(Values::Value::STRING { string: (JSON::toString(json.clone(), prettyPrint.clone())?).clone() });
     Ok(jsonString)
 }

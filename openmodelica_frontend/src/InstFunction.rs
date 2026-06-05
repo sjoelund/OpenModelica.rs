@@ -188,7 +188,7 @@ fn instantiateExternalObjectDestructor(mut inCache: FCore::Cache, mut env: FCore
                 (cache, ih) => {
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
-                    (cache, _, ih) = implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
+                    (cache, _, ih) = implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
                     Ok((cache.clone(), ih.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -222,7 +222,7 @@ fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCor
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
-                    (cache, env1, ih) = implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
+                    (cache, env1, ih) = implicitFunctionInstantiation(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
                     (cache, ty, _) = Lookup::lookupType(cache.clone(), env1.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("constructor")).clone() }), None)?;
                     Ok((cache.clone(), ih.clone(), ty.clone()))
                 }
@@ -491,7 +491,7 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     let mut funcs: Arc<metamodelica::List<DAE::Function>>;
                     let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih.clone();
                     cache = FCore::addCachedInstFuncGuard(cache.clone(), p.clone())?;
-                    (cache, _, ih, funcs) = implicitFunctionInstantiation2(cache.clone(), cenv.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cdef.clone(), metamodelica::nil(), false)?;
+                    (cache, _, ih, funcs) = implicitFunctionInstantiation2(cache.clone(), cenv.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cdef.clone(), metamodelica::nil(), false)?;
                     funcs = InstUtil::addNameToDerivativeMapping(funcs.clone(), path.clone());
                     cache = FCore::addDaeFunction(cache.clone(), funcs.clone())?;
                     Ok(())
@@ -540,7 +540,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
                     let mut funs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
-                    (cache, env_1, ih, funs) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, inClass.clone(), metamodelica::nil(), true)?;
+                    (cache, env_1, ih, funs) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, inClass.clone(), metamodelica::nil(), true)?;
                     cache = FCore::addDaeExtFunction(cache.clone(), funs.clone())?;
                     Ok((cache.clone(), env_1.clone(), ih.clone()))
                 }
@@ -557,7 +557,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
                     let mut elts = (*elts).clone();
                     elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(isElementImportantForFunction, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
                     stripped_class = Arc::new(SCode::Element::CLASS { name: (id.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: e.clone(), partialPrefix: p.clone(), restriction: r.clone(), classDef: Arc::new(SCode::ClassDef::PARTS { elementLst: elts.clone(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: extDecl.clone() }), cmt: cmt.clone(), info: info.clone() });
-                    (cache, env_1, ih, _) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, stripped_class.clone(), metamodelica::nil(), true)?;
+                    (cache, env_1, ih, _) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, stripped_class.clone(), metamodelica::nil(), true)?;
                     Ok((cache.clone(), env_1.clone(), ih.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -599,7 +599,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
                     let mut ih = (*ih).clone();
-                    (cache, env, ih, _) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, inClass.clone(), metamodelica::nil(), true)?;
+                    (cache, env, ih, _) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, inClass.clone(), metamodelica::nil(), true)?;
                     Ok((cache.clone(), env.clone(), ih.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -655,7 +655,7 @@ fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     c = __pa2.clone();
                     cenv = __pa3.clone();
                     let true = (SCodeUtil::isFunctionRestriction(rest.clone())) else { bail!("pattern mismatch") };
-                    (cache, env, ih, resfns1) = implicitFunctionInstantiation2(inCache.clone(), cenv.clone(), inIH.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), c.clone(), metamodelica::nil(), false)?;
+                    (cache, env, ih, resfns1) = implicitFunctionInstantiation2(inCache.clone(), cenv.clone(), inIH.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), c.clone(), metamodelica::nil(), false)?;
                     (cache, env, ih, resfns2) = instOverloadedFunctions(cache.clone(), env.clone(), ih.clone(), pre.clone(), fns.clone(), inInfo.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), listAppend(resfns1.clone(), resfns2.clone())))
                 }
@@ -790,7 +790,7 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     name = (SCodeUtil::getElementName(recordCl.clone())?).clone();
                     newName = (FGraph::getInstanceOriginalName(recordEnv.clone(), (name.clone()).clone())?).clone();
                     recordCl = SCodeUtil::setClassName((newName.clone()).clone(), recordCl.clone())?;
-                    (cache, _, _, _, _, _, recType, _, _, _) = Inst::instClass(inCache.clone(), recordEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsynBuilder::emptyInstStore(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, recordCl.clone(), metamodelica::nil(), true, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
+                    (cache, _, _, _, _, _, recType, _, _, _) = Inst::instClass(inCache.clone(), recordEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsynBuilder::emptyInstStore(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, recordCl.clone(), metamodelica::nil(), true, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(recType.clone()) {
                         Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __pa0 }, varLst: __pa1, equalityConstraint: __pa2, usedExternally: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),

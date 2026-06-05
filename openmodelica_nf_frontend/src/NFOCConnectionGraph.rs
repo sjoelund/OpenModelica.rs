@@ -603,7 +603,7 @@ fn generateEqualityConstraintEquation(mut lhs: Arc<ComponentRef::NFComponentRef>
         __acc.reverse()
     })), named_args: metamodelica::nil(), call_scope: fn_node_lhs.clone() }) });
     (exp_lhs, ty, _, _) = Typing::typeExp(exp_lhs.clone(), context.clone(), info.clone(), false)?;
-    equalityConstraintEq = Equation::makeEquality(exp_rhs.clone(), exp_lhs.clone(), ty.clone(), source.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+    equalityConstraintEq = Equation::makeEquality(exp_rhs.clone(), exp_lhs.clone(), ty.clone(), source.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
     Ok(equalityConstraintEq)
 }
 

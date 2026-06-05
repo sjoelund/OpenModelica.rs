@@ -1221,7 +1221,7 @@ pub fn valuesToVars(mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Val
                     let mut rest: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     tp = typeOfValue(v.clone())?;
                     rest = valuesToVars(vs.clone(), ids.clone())?;
-                    Ok(metamodelica::cons(Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), rest.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), rest.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1546,7 +1546,7 @@ pub fn setVarDefaultInput(mut var: Arc<DAE::Var>) -> Arc<DAE::Var> {
     outV = var.clone();
     attrs = outV.attributes.clone();
     assign_field!(
-        attrs.connectorType = Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR),
+        attrs.connectorType = openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(),
         attrs.variability = openmodelica_frontend_types::SCode::Variability::VAR,
         attrs.direction = openmodelica_ast::Absyn::Direction::INPUT,
         attrs.innerOuter = openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER,
@@ -2226,16 +2226,16 @@ fn lookupInBuiltin(mut inType: Arc<DAE::Type>, mut inIdent: ArcStr) -> Result<Ar
             Arc::new(DAE::Var { name: (literal!("quantity")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_STRING_DEFAULT().clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: Arc::new(Values::Value::STRING { string: (literal!("")).clone() }), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None })
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "min") => {
-            Arc::new(DAE::Var { name: (literal!("min")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: Some(1), path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: list![(literal!("min,max")).clone()], literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None })
+            Arc::new(DAE::Var { name: (literal!("min")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: Some(1), path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: list![(literal!("min,max")).clone()], literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "max") => {
-            Arc::new(DAE::Var { name: (literal!("max")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: Some(2), path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: list![(literal!("min,max")).clone()], literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None })
+            Arc::new(DAE::Var { name: (literal!("max")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: Arc::new(DAE::Type::T_ENUMERATION { index: Some(2), path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), names: list![(literal!("min,max")).clone()], literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "start") => {
-            Arc::new(DAE::Var { name: (literal!("start")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_BOOL_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None })
+            Arc::new(DAE::Var { name: (literal!("start")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_BOOL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "fixed") => {
-            Arc::new(DAE::Var { name: (literal!("fixed")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_BOOL_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None })
+            Arc::new(DAE::Var { name: (literal!("fixed")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_BOOL_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })
         },
         (Deref @ DAE::Type::T_ENUMERATION { index: Some(_), .. }, Deref @ "enable") => {
             Arc::new(DAE::Var { name: (literal!("enable")).clone(), attributes: DAE::dummyAttrParam().clone(), ty: DAE::T_BOOL_DEFAULT().clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: Arc::new(Values::Value::BOOL { boolean: true }), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None })
@@ -2320,7 +2320,7 @@ pub fn makeArraySubscripts(mut inType: Arc<DAE::Type>, mut lst: Arc<metamodelica
             ::match_deref::match_deref! { match &__mc_input {
                 (t, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest }) => {
                     let mut t = (*t).clone();
-                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }), rest.clone())?;
+                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }), rest.clone())?;
                     Ok(t.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2330,7 +2330,7 @@ pub fn makeArraySubscripts(mut inType: Arc<DAE::Type>, mut lst: Arc<metamodelica
             ::match_deref::match_deref! { match &__mc_input {
                 (t, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: _ }, tail: rest }) => {
                     let mut t = (*t).clone();
-                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }), rest.clone())?;
+                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }), rest.clone())?;
                     Ok(t.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2340,7 +2340,7 @@ pub fn makeArraySubscripts(mut inType: Arc<DAE::Type>, mut lst: Arc<metamodelica
             ::match_deref::match_deref! { match &__mc_input {
                 (t, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLE_NONEXP { exp: _ }, tail: rest }) => {
                     let mut t = (*t).clone();
-                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }), rest.clone())?;
+                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }), rest.clone())?;
                     Ok(t.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2360,7 +2360,7 @@ pub fn makeArraySubscripts(mut inType: Arc<DAE::Type>, mut lst: Arc<metamodelica
             ::match_deref::match_deref! { match &__mc_input {
                 (t, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: _ }, tail: rest }) => {
                     let mut t = (*t).clone();
-                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }), rest.clone())?;
+                    t = makeArraySubscripts(Arc::new(DAE::Type::T_ARRAY { ty: t.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] }), rest.clone())?;
                     Ok(t.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2499,10 +2499,10 @@ pub fn unliftArrayOrList(mut inType: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, 
     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     (outType, dim) = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_METALIST { ty } => {
-            (boxIfUnboxedType(ty.clone())?, Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))
+            (boxIfUnboxedType(ty.clone())?, openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())
         },
         Deref @ DAE::Type::T_METAARRAY { ty } => {
-            (boxIfUnboxedType(ty.clone())?, Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))
+            (boxIfUnboxedType(ty.clone())?, openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())
         },
         Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: __esc_dim, tail: Deref @ metamodelica::List::Nil } } => {
             dim = (*__esc_dim).clone();
@@ -2592,7 +2592,7 @@ fn makeElementReturnType(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Eleme
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = (::match_deref::match_deref! { match &(inElementLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            Arc::new(openmodelica_frontend_types::DAE::Type::T_NORETCALL)
+            openmodelica_frontend_types::DAE::Type::interned_T_NORETCALL()
         },
         Deref @ metamodelica::List::Cons { head: element, tail: Deref @ metamodelica::List::Nil } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
@@ -3055,7 +3055,7 @@ fn makeReturnType(mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    Ok(Arc::new(openmodelica_frontend_types::DAE::Type::T_NORETCALL))
+                    Ok(openmodelica_frontend_types::DAE::Type::interned_T_NORETCALL())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4413,8 +4413,8 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (e_1, t_1) = typeConvert(e.clone(), ty1.clone(), ty2.clone(), printFailtrace.clone())?;
-                    e_1 = liftExpType(e_1.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))?;
-                    Ok((e_1.clone(), Arc::new(DAE::Type::T_ARRAY { ty: t_1.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] })))
+                    e_1 = liftExpType(e_1.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())?;
+                    Ok((e_1.clone(), Arc::new(DAE::Type::T_ARRAY { ty: t_1.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] })))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4439,8 +4439,8 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
                     let false = (Expression::dimensionKnown(dim1.clone())) else { bail!("pattern mismatch") };
                     let false = (Expression::dimensionKnown(dim2.clone())) else { bail!("pattern mismatch") };
                     (e_1, t_1) = typeConvert(e.clone(), ty1.clone(), ty2.clone(), printFailtrace.clone())?;
-                    e_1 = liftExpType(e_1.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))?;
-                    Ok((e_1.clone(), Arc::new(DAE::Type::T_ARRAY { ty: t_1.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] })))
+                    e_1 = liftExpType(e_1.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())?;
+                    Ok((e_1.clone(), Arc::new(DAE::Type::T_ARRAY { ty: t_1.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] })))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6022,7 +6022,7 @@ pub fn superType(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>) -> Re
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_METARECORD { utPath: path1, knownSingleton: false, .. }, Deref @ DAE::Type::T_METARECORD { utPath: path2, knownSingleton: false, .. }) => {
                     let true = (AbsynUtil::pathEqual(path1.clone(), path2.clone())) else { bail!("pattern mismatch") };
-                    Ok(Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inType1).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: false, singletonType: Arc::new(openmodelica_frontend_types::DAE::EvaluateSingletonType::NOT_SINGLETON), path: path1.clone() }))
+                    Ok(Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inType1).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: false, singletonType: openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON(), path: path1.clone() }))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7513,7 +7513,7 @@ pub fn makeExpDimensionsUnknown(mut ty: Arc<DAE::Type>, mut dummy: i32) -> (Arc<
     let mut odummy: i32 = dummy.clone();
     oty = (::match_deref::match_deref! { match &(oty.clone()) {
         Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            assign_variant_field!(oty => DAE::Type::T_ARRAY; dims = list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)]);
+            assign_variant_field!(oty => DAE::Type::T_ARRAY; dims = list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()]);
             oty.clone()
         },
         _ => oty.clone(),
@@ -7952,7 +7952,7 @@ pub fn typeToValue(mut inType: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_UNKNOWN { .. } => {
-                    Ok(Arc::new(openmodelica_frontend_types::Values::Value::META_FAIL))
+                    Ok(openmodelica_frontend_types::Values::Value::interned_META_FAIL())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -8020,7 +8020,7 @@ pub fn makeNthDimUnknown(mut ty: Arc<DAE::Type>, mut dim: i32) -> Result<Arc<DAE
     let mut oty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     oty = (::match_deref::match_deref! { match &((ty.clone(), dim.clone())) {
         (Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, 1) => {
-            Arc::new(DAE::Type::T_ARRAY { ty: ty1.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] })
+            Arc::new(DAE::Type::T_ARRAY { ty: ty1.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] })
         },
         (Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: ad, tail: Deref @ metamodelica::List::Nil } }, _) => {
             let mut ty1 = (*ty1).clone();
@@ -8285,11 +8285,11 @@ pub fn ifExpMakeDimsUnknown(mut ty1: Arc<DAE::Type>, mut ty2: Arc<DAE::Type>) ->
     (oty1, oty2) = (::match_deref::match_deref! { match &((ty1.clone(), ty2.clone())) {
         (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
-            (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN), metamodelica::nil()) }))
+            (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }))
         },
         (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
-            (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN), metamodelica::nil()) }))
+            (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }))
         },
         (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d1, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d2, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
@@ -8568,7 +8568,7 @@ pub fn getUniontypeIfMetarecord(mut inTy: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = (::match_deref::match_deref! { match &(inTy.clone()) {
         Deref @ DAE::Type::T_METARECORD { knownSingleton: b, utPath: p, .. } => {
-            Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inTy).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: b.clone(), singletonType: if (b.clone()) {Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: inTy.clone() })} else {Arc::new(openmodelica_frontend_types::DAE::EvaluateSingletonType::NOT_SINGLETON)}, path: p.clone() })
+            Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inTy).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: b.clone(), singletonType: if (b.clone()) {Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: inTy.clone() })} else {openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON()}, path: p.clone() })
         },
         _ => {
             inTy.clone()
@@ -8588,7 +8588,7 @@ fn getUniontypeIfMetarecordTraverse(mut ty: Arc<DAE::Type>, mut dummy: i32) -> (
     let mut oty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut odummy: i32 = dummy.clone();
     oty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_METARECORD { .. } => Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*ty).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: var_field!((*ty).knownSingleton, DAE::Type::T_METARECORD).clone(), singletonType: if (var_field!((*ty).knownSingleton, DAE::Type::T_METARECORD).clone()) {Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: ty.clone() })} else {Arc::new(openmodelica_frontend_types::DAE::EvaluateSingletonType::NOT_SINGLETON)}, path: var_field!((*ty).utPath, DAE::Type::T_METARECORD).clone() }),
+        Deref @ DAE::Type::T_METARECORD { .. } => Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*ty).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: var_field!((*ty).knownSingleton, DAE::Type::T_METARECORD).clone(), singletonType: if (var_field!((*ty).knownSingleton, DAE::Type::T_METARECORD).clone()) {Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: ty.clone() })} else {openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON()}, path: var_field!((*ty).utPath, DAE::Type::T_METARECORD).clone() }),
         _ => ty.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -8935,7 +8935,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {
                 (Some(dim1), Some(dim2)) => {
-                    let __x = if (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) {dim1.clone()} else {Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)};
+                    let __x = if (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) {dim1.clone()} else {openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()};
                     __acc = cons(__x, __acc);
                 }
                 (None, None) => break,

@@ -1849,7 +1849,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                     tp1 = Expression::unliftArray(Expression::unliftArray(tp1.clone())?)?;
                     sc = !(Expression::isArrayType(tp1.clone()));
                     tp1 = if (sc.clone()) {Expression::unliftArray(tp1.clone())?} else {tp1.clone()};
-                    tp1 = if (sc.clone()) {Expression::liftArrayLeft(tp1.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))} else {tp1.clone()};
+                    tp1 = if (sc.clone()) {Expression::liftArrayLeft(tp1.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())} else {tp1.clone()};
                     dim = (es.clone().len() as i32);
                     tp1 = Expression::liftArrayLeft(tp1.clone(), Arc::new(DAE::Dimension::DIM_INTEGER { integer: dim.clone() }));
                     e = Arc::new(DAE::Exp::ARRAY { ty: tp1.clone(), scalar: sc.clone(), array: es.clone() });
@@ -1871,7 +1871,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                     tp1 = Expression::unliftArray(tp1.clone())?;
                     sc = !(Expression::isArrayType(tp1.clone()));
                     tp1 = if (sc.clone()) {Expression::unliftArray(tp1.clone())?} else {tp1.clone()};
-                    tp1 = if (sc.clone()) {Expression::liftArrayLeft(tp1.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))} else {tp1.clone()};
+                    tp1 = if (sc.clone()) {Expression::liftArrayLeft(tp1.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())} else {tp1.clone()};
                     dim = (es.clone().len() as i32);
                     tp1 = Expression::liftArrayLeft(tp1.clone(), Arc::new(DAE::Dimension::DIM_INTEGER { integer: dim.clone() }));
                     e = Arc::new(DAE::Exp::ARRAY { ty: tp1.clone(), scalar: sc.clone(), array: es.clone() });
@@ -2086,7 +2086,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Nil, path: Deref @ Absyn::Path::IDENT { name: Deref @ "inferredClock" }, .. } => {
-                    Ok(Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) }))
+                    Ok(Arc::new(DAE::Exp::CLKCONST { clk: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK() }))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6648,7 +6648,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                 Deref @ DAE::Exp::REDUCTION { iterators, .. } => {
                     let mut expr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let true = (hasZeroLengthIterator(iterators.clone())) else { bail!("pattern mismatch") };
-                    expr = ValuesUtil::valueExp(Arc::new(openmodelica_frontend_types::Values::Value::META_FAIL), None)?;
+                    expr = ValuesUtil::valueExp(openmodelica_frontend_types::Values::Value::interned_META_FAIL(), None)?;
                     Ok(expr.clone())
                 }
                 _ => bail!("nomatch"),

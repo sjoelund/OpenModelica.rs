@@ -347,6 +347,15 @@ pub mod RefTree {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            thread_local! {
+                static INTERNED: Arc<Tree> = Arc::new(Tree::EMPTY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -382,9 +391,9 @@ pub mod RefTree {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: Arc::new(crate::FCore::RefTree::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::FCore::RefTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::FCore::RefTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::FCore::RefTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -451,9 +460,9 @@ pub mod RefTree {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: Arc::new(crate::FCore::RefTree::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::FCore::RefTree::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::FCore::RefTree::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::FCore::RefTree::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -600,7 +609,7 @@ pub mod RefTree {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, metamodelica::Array<Node>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(metamodelica::Array<Node>, metamodelica::Array<Node>, ArcStr) -> Result<metamodelica::Array<Node>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::FCore::RefTree::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::FCore::RefTree::Tree::interned_EMPTY();
         let mut key: Key = arcstr::literal!("");
         let mut value: Value = Default::default();
         for mut t in &*inValues.clone() {
@@ -844,7 +853,7 @@ pub mod RefTree {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::FCore::RefTree::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::FCore::RefTree::Tree::interned_EMPTY();
         outTree
     }
 
@@ -904,8 +913,8 @@ pub mod RefTree {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::FCore::RefTree::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::FCore::RefTree::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::FCore::RefTree::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::FCore::RefTree::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -925,8 +934,8 @@ pub mod RefTree {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::FCore::RefTree::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::FCore::RefTree::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::FCore::RefTree::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::FCore::RefTree::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -1267,8 +1276,8 @@ pub fn emptyCache() -> Cache {
     let mut cache: Cache = Cache::NO_CACHE;
     let mut instFuncs: Mutable::Mutable<Arc<AvlTreePathFunction::Tree>>;
     let mut ht: StructuralParameters = (Arc::new(AvlSetCR::Tree::EMPTY), metamodelica::nil());
-    instFuncs = Mutable::create(Arc::new(crate::AvlTreePathFunction::Tree::EMPTY));
-    ht = (Arc::new(crate::AvlSetCR::Tree::EMPTY), metamodelica::nil());
+    instFuncs = Mutable::create(crate::AvlTreePathFunction::Tree::interned_EMPTY());
+    ht = (crate::AvlSetCR::Tree::interned_EMPTY(), metamodelica::nil());
     cache = Cache::CACHE { initialGraph: None, functions: instFuncs.clone(), evaluatedParams: ht.clone(), modelName: Arc::new(Absyn::Path::IDENT { name: (literal!("##UNDEFINED##")).clone() }) };
     cache
 }
@@ -1378,7 +1387,7 @@ pub fn getFunctionTree(mut cache: Cache) -> Arc<AvlTreePathFunction::Tree> {
             Mutable::access(ef.clone())
         },
         _ => {
-            Arc::new(crate::AvlTreePathFunction::Tree::EMPTY)
+            crate::AvlTreePathFunction::Tree::interned_EMPTY()
         },
     });
     ft

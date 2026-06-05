@@ -454,7 +454,7 @@ pub mod TimeEvent {
             let mut trigger: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut timeEvent: Arc<TimeEvent> = Arc::new(<TimeEvent as ::std::default::Default>::default());
-            tmpEqn = Pointer::access(BEquation::Equation::makeAssignment(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), Pointer::create(0), (arcstr::literal!(BVariable::TEMPORARY_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?);
+            tmpEqn = Pointer::access(BEquation::Equation::makeAssignment(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), Pointer::create(0), (arcstr::literal!(BVariable::TEMPORARY_STR)).clone(), crate::NBEquation::Iterator::interned_EMPTY(), BEquation::default(EquationKind::UNKNOWN.clone(), false, None, None))?);
             BEquation::Equation::map(tmpEqn.clone(), (std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), Some((std::sync::Arc::new({ let __pe_b1 = containsTime.clone(); move |__pe_a0| containsTimeTraverseCref(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>)), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if Pointer::access(containsTime.clone()) {
                 (tmpEqn, status, invert) = Solve::solveBody(tmpEqn.clone(), Builtin::TIME_CREF().clone(), funcMap.clone())?;
@@ -471,7 +471,7 @@ pub mod TimeEvent {
         Operator::Op::GREATEREQ => true,
         _ => false,
     });
-                        new_exp = if (can_trigger.clone()) {Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: UnorderedSet::size(bucket.time_set.clone()) + 1 }), trigger.clone(), Expression::makeMaxValue(Arc::new(openmodelica_nf_frontend::NFType::REAL))?], Prefixes::Variability::DISCRETE.clone(), Prefixes::Purity::PURE.clone(), NFBuiltinFuncs::SAMPLE().returnType.clone()) })} else {Arc::new(Expression::NFExpression::BOOLEAN { value: false })};
+                        new_exp = if (can_trigger.clone()) {Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::SAMPLE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: UnorderedSet::size(bucket.time_set.clone()) + 1 }), trigger.clone(), Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?], Prefixes::Variability::DISCRETE.clone(), Prefixes::Purity::PURE.clone(), NFBuiltinFuncs::SAMPLE().returnType.clone()) })} else {Arc::new(Expression::NFExpression::BOOLEAN { value: false })};
                     } else {
                         can_trigger = true;
                         new_exp = exp.clone();
@@ -584,7 +584,7 @@ pub mod TimeEvent {
     pub fn convert(mut timeEvent: Arc<TimeEvent>) -> Result<OldBackendDAE::TimeEvent> {
         let mut oldTimeEvent: OldBackendDAE::TimeEvent = OldBackendDAE::TimeEvent::SIMPLE_TIME_EVENT;
         oldTimeEvent = (::match_deref::match_deref! { match &(timeEvent.clone()) {
-        Deref @ SINGLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SINGLE).clone())?, intervalExp: Expression::toDAE(Expression::makeMaxValue(Arc::new(openmodelica_nf_frontend::NFType::REAL))?, false)?, startExp: Expression::toDAE(var_field!((*timeEvent).trigger, TimeEvent::SINGLE).clone(), false)?, index: var_field!((*timeEvent).index, TimeEvent::SINGLE).clone() },
+        Deref @ SINGLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SINGLE).clone())?, intervalExp: Expression::toDAE(Expression::makeMaxValue(openmodelica_nf_frontend::NFType::interned_REAL())?, false)?, startExp: Expression::toDAE(var_field!((*timeEvent).trigger, TimeEvent::SINGLE).clone(), false)?, index: var_field!((*timeEvent).index, TimeEvent::SINGLE).clone() },
         Deref @ SAMPLE { .. } => OldBackendDAE::TimeEvent::SAMPLE_TIME_EVENT { iter: convertEventIterator(var_field!((*timeEvent).iter, TimeEvent::SAMPLE).clone())?, intervalExp: Expression::toDAE(var_field!((*timeEvent).interval, TimeEvent::SAMPLE).clone(), false)?, startExp: Expression::toDAE(var_field!((*timeEvent).start, TimeEvent::SAMPLE).clone(), false)?, index: var_field!((*timeEvent).index, TimeEvent::SAMPLE).clone() },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEvents.TimeEvent.convert")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -666,7 +666,7 @@ pub mod StateEvent {
             let mut new_stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
             let mut new_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
             new_stmts = metamodelica::nil();
-            name = ComponentRef::fromNode(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
+            name = ComponentRef::fromNode(var_field!((*stmt).iterator, Statement::NFStatement::FOR).clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
             name = BackendDAE::lowerComponentReference(name.clone(), variables.clone(), true)?;
             new_frames = metamodelica::cons((name.clone(), range.clone(), None), frames.clone());
             for mut elem in &*var_field!((*stmt).body, Statement::NFStatement::FOR).clone() {
@@ -1168,7 +1168,7 @@ fn collectEventsTraverse(mut exp: Arc<Expression::NFExpression>, mut bucket_ptr:
             new_frames = ({
         let mut __acc: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<_>)>> = metamodelica::nil();
         for mut tpl in (var_field!((*call).iters, Call::NFCall::TYPED_REDUCTION).clone()).into_iter().cloned() {
-            let __x = (ComponentRef::fromNode(Util::tuple21(tpl.clone()), Arc::new(openmodelica_nf_frontend::NFType::INTEGER), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), Util::tuple22(tpl.clone()), None);
+            let __x = (ComponentRef::fromNode(Util::tuple21(tpl.clone()), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), Util::tuple22(tpl.clone()), None);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

@@ -102,6 +102,15 @@ pub enum NFComponent {
     /// needed for new crefs in the backend
     WILD,
 }
+impl NFComponent {
+    pub fn interned_WILD() -> Arc<NFComponent> {
+        thread_local! {
+            static INTERNED: Arc<NFComponent> = Arc::new(NFComponent::WILD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_WILD() -> Arc<NFComponent> { NFComponent::interned_WILD() }
 impl Default for NFComponent {
     fn default() -> Self { Self::WILD }
 }
@@ -127,7 +136,7 @@ impl Ord for ComponentState {
 
 pub fn new(mut definition: Arc<Element>) -> Arc<NFComponent> {
     let mut component: Arc<NFComponent> = Arc::new(NFComponent::WILD);
-    component = Arc::new(NFComponent::COMPONENT_DEF { definition: definition.clone(), modifier: Arc::new(crate::NFModifier::Modifier::NOMOD) });
+    component = Arc::new(NFComponent::COMPONENT_DEF { definition: definition.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD() });
     component
 }
 
@@ -184,7 +193,7 @@ pub fn classInstance(mut component: Arc<NFComponent>) -> Arc<InstNode::InstNode>
             classInst.clone()
         },
         Deref @ ITERATOR { .. } => Arc::new(InstNode::InstNode::ITERATOR_NODE { exp: Arc::new(Expression::NFExpression::EMPTY { ty: var_field!((*component).ty, NFComponent::ITERATOR).clone() }) }),
-        _ => Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE),
+        _ => crate::NFInstNode::InstNode::interned_EMPTY_NODE(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     classInst
@@ -207,7 +216,7 @@ pub fn getModifier(mut component: Arc<NFComponent>) -> Arc<Modifier::Modifier> {
     modifier = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT_DEF { .. } => var_field!((*component).modifier, NFComponent::COMPONENT_DEF).clone(),
         Deref @ TYPE_ATTRIBUTE { .. } => var_field!((*component).modifier, NFComponent::TYPE_ATTRIBUTE).clone(),
-        _ => Arc::new(crate::NFModifier::Modifier::NOMOD),
+        _ => crate::NFModifier::Modifier::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     modifier
@@ -252,7 +261,7 @@ pub fn getType(mut component: Arc<NFComponent>) -> Result<Arc<Type::NFType>> {
         Deref @ ITERATOR { .. } => var_field!((*component).ty, NFComponent::ITERATOR).clone(),
         Deref @ TYPE_ATTRIBUTE { .. } => var_field!((*component).ty, NFComponent::TYPE_ATTRIBUTE).clone(),
         Deref @ INVALID_COMPONENT { .. } => getType(var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone())?,
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(ty)
@@ -345,7 +354,7 @@ pub fn getBinding(mut component: Arc<NFComponent>) -> Arc<Binding::NFBinding> {
     b = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT { .. } => var_field!((*component).binding, NFComponent::COMPONENT).clone(),
         Deref @ TYPE_ATTRIBUTE { .. } => Modifier::binding(var_field!((*component).modifier, NFComponent::TYPE_ATTRIBUTE).clone()),
-        Deref @ WILD { .. } => Arc::new(crate::NFBinding::WILD),
+        Deref @ WILD { .. } => crate::NFBinding::interned_WILD(),
         _ => Binding::EMPTY_BINDING().clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -416,7 +425,7 @@ pub fn setBinding(mut binding: Arc<Binding::NFBinding>, mut component: Arc<NFCom
 pub fn hasBinding(mut component: Arc<NFComponent>, mut parent: Arc<InstNode::InstNode>) -> Result<bool> {
     fn has_missing_binding(mut component: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut noBinding: bool = false;
-        noBinding = InstNode::isComponent(component.clone())? && !(hasBinding(InstNode::component(component.clone())?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?);
+        noBinding = InstNode::isComponent(component.clone())? && !(hasBinding(InstNode::component(component.clone())?, crate::NFInstNode::InstNode::interned_EMPTY_NODE())?);
         Ok(noBinding)
     }
 

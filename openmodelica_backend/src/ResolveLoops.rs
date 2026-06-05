@@ -341,7 +341,7 @@ pub fn resolveLoops_findLoops(mut partitionsIn: Arc<metamodelica::List<Arc<metam
         let mut partition = partition.clone();
         match '__try0: {
             eqVars = unwrap_break_err!(List::map1(partition.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), mIn.clone()), '__try0);
-            set = Arc::new(crate::AvlSetInt::Tree::EMPTY);
+            set = crate::AvlSetInt::Tree::interned_EMPTY();
             for mut vars in &*eqVars.clone() {
                 let mut vars = vars.clone();
                 set = unwrap_break_err!(AvlSetInt::addList(set.clone(), vars.clone()), '__try0);
@@ -478,7 +478,7 @@ fn resolveLoops_findLoops2(mut eqsIn: Arc<metamodelica::List<i32>>, mut eqCrossL
             for mut i in 1..=metamodelica::arrayLength(mTIn.clone()) {
                 {let _arr = mTIn.clone(); let _idx = i.clone(); let _val = List::heapSortIntList(({let __elt = mTIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
-            eqCrossSet = AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), eqCrossLstIn.clone())?;
+            eqCrossSet = AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), eqCrossLstIn.clone())?;
             paths = getShortPathsBetweenEqCrossNodes(AvlSetInt::listKeysReverse(eqCrossSet.clone(), metamodelica::nil()), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), metamodelica::nil(), findExactlyOneLoop.clone())?;
             (paths.clone(), None)
         },

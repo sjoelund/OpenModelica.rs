@@ -160,6 +160,13 @@ pub enum Mod {
     },
     NOMOD,
 }
+impl Mod {
+    pub fn interned_NOMOD() -> Arc<Mod> {
+        static INTERNED: std::sync::LazyLock<Arc<Mod>> = std::sync::LazyLock::new(|| Arc::new(Mod::NOMOD));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NOMOD() -> Arc<Mod> { Mod::interned_NOMOD() }
 impl Default for Mod {
     fn default() -> Self { Self::NOMOD }
 }
@@ -672,6 +679,13 @@ pub enum Replaceable {
     /// a non replaceable prefix
     NOT_REPLACEABLE,
 }
+impl Replaceable {
+    pub fn interned_NOT_REPLACEABLE() -> Arc<Replaceable> {
+        static INTERNED: std::sync::LazyLock<Arc<Replaceable>> = std::sync::LazyLock::new(|| Arc::new(Replaceable::NOT_REPLACEABLE));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NOT_REPLACEABLE() -> Arc<Replaceable> { Replaceable::interned_NOT_REPLACEABLE() }
 impl Default for Replaceable {
     fn default() -> Self { Self::NOT_REPLACEABLE }
 }
@@ -946,9 +960,9 @@ pub enum Initial {
 }
 pub use self::Initial::{INITIAL,NON_INITIAL};
 
-pub static defaultPrefixes: std::sync::LazyLock<Arc<Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes { visibility: crate::SCode::Visibility::PUBLIC, redeclarePrefix: crate::SCode::Redeclare::NOT_REDECLARE, finalPrefix: crate::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(crate::SCode::Replaceable::NOT_REPLACEABLE) }) });
+pub static defaultPrefixes: std::sync::LazyLock<Arc<Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes { visibility: crate::SCode::Visibility::PUBLIC, redeclarePrefix: crate::SCode::Redeclare::NOT_REDECLARE, finalPrefix: crate::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: crate::SCode::Replaceable::interned_NOT_REPLACEABLE() }) });
 
-pub static defaultProtectedPrefixes: std::sync::LazyLock<Arc<Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes { visibility: crate::SCode::Visibility::PROTECTED, redeclarePrefix: crate::SCode::Redeclare::NOT_REDECLARE, finalPrefix: crate::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(crate::SCode::Replaceable::NOT_REPLACEABLE) }) });
+pub static defaultProtectedPrefixes: std::sync::LazyLock<Arc<Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes { visibility: crate::SCode::Visibility::PROTECTED, redeclarePrefix: crate::SCode::Redeclare::NOT_REDECLARE, finalPrefix: crate::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: crate::SCode::Replaceable::interned_NOT_REPLACEABLE() }) });
 
 pub static defaultVarAttr: std::sync::LazyLock<Attributes> = std::sync::LazyLock::new(|| { Attributes { arrayDims: metamodelica::nil(), connectorType: crate::SCode::ConnectorType::POTENTIAL, parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD } });
 

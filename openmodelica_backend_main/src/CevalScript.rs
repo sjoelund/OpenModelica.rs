@@ -1130,7 +1130,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "getCommandLineOptions", _) => {
-                    Ok(Arc::new(openmodelica_frontend_types::Values::Value::META_FAIL))
+                    Ok(openmodelica_frontend_types::Values::Value::interned_META_FAIL())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1341,7 +1341,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "timerClear", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil }) => {
                     System::realtimeClear(i.clone())?;
-                    Ok(Arc::new(openmodelica_frontend_types::Values::Value::NORETCALL))
+                    Ok(openmodelica_frontend_types::Values::Value::interned_NORETCALL())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1350,7 +1350,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "timerTick", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil }) => {
                     System::realtimeTick(i.clone())?;
-                    Ok(Arc::new(openmodelica_frontend_types::Values::Value::NORETCALL))
+                    Ok(openmodelica_frontend_types::Values::Value::interned_NORETCALL())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2913,7 +2913,7 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                             sc = __pa3.clone();
                             env = __pa4.clone();
                             isCevaluableFunction(sc.clone())?;
-                            (cache, env, _) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, sc.clone(), metamodelica::nil())?;
+                            (cache, env, _) = InstFunction::implicitFunctionInstantiation(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, sc.clone(), metamodelica::nil())?;
                             func = FCore::getCachedInstFunc(cache.clone(), funcpath.clone())?;
                         }
                     }
@@ -4094,7 +4094,7 @@ fn generateSeparateCodeDependencies(mut args: Arc<metamodelica::List<Arc<Values:
             res = __try0_o0;
         }
         Err(_) => {
-            res = Arc::new(openmodelica_frontend_types::Values::Value::META_FAIL);
+            res = openmodelica_frontend_types::Values::Value::interned_META_FAIL();
         }
     }
     res

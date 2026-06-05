@@ -400,7 +400,7 @@ fn statementOutputs(mut inStatement: Arc<DAE::Statement>, mut inCrefExpansion: D
                     cr = Expression::expCref(exp1.clone())?;
                     subs = ComponentReference::crefLastSubs(cr.clone())?;
                     if !(subs.clone().is_empty()) {
-                        subs = List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), (subs.clone().len() as i32));
+                        subs = List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), (subs.clone().len() as i32));
                         cr = ComponentReference::crefSetLastSubs(cr.clone(), subs.clone())?;
                     }
                     crlst = ComponentReference::expandCref(cr.clone(), true)?;

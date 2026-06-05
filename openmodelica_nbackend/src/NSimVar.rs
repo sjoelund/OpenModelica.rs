@@ -230,13 +230,13 @@ pub mod SimVar {
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
         let () = (match varType.clone() {
         VarType::SIMULATION => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.realVarIndex = simCodeIndices.realVarIndex.clone() + 1;
             ()
         },
         VarType::PARAMETER { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.realParamIndex = simCodeIndices.realParamIndex.clone() + 1;
             ()
@@ -248,13 +248,13 @@ pub mod SimVar {
             ()
         },
         VarType::RESIDUAL { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.residualIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.residualIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.residualIndex = simCodeIndices.residualIndex.clone() + 1;
             ()
         },
         VarType::EXTERNAL_OBJECT { .. } => {
-            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.extObjIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(acc.clone())));
+            Pointer::update(acc.clone(), metamodelica::cons(create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.extObjIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(acc.clone())));
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             simCodeIndices.extObjIndex = simCodeIndices.extObjIndex.clone() + 1;
             ()
@@ -593,6 +593,15 @@ pub mod Alias {
             offset: metamodelica::Real,
         },
     }
+    impl Alias {
+        pub fn interned_NO_ALIAS() -> Arc<Alias> {
+            thread_local! {
+                static INTERNED: Arc<Alias> = Arc::new(Alias::NO_ALIAS);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_NO_ALIAS() -> Arc<Alias> { Alias::interned_NO_ALIAS() }
     impl Default for Alias {
         fn default() -> Self { Self::NO_ALIAS }
     }
@@ -602,7 +611,7 @@ pub mod Alias {
         alias = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { .. } => getAlias(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone())?,
         Deref @ Binding::FLAT_BINDING { .. } => getAlias(var_field!((*binding).bindingExp, Binding::NFBinding::FLAT_BINDING).clone())?,
-        _ => Arc::new(crate::NSimVar::Alias::NO_ALIAS),
+        _ => crate::NSimVar::Alias::interned_NO_ALIAS(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(alias)
@@ -654,7 +663,7 @@ pub mod Alias {
             Arc::new(Alias::ALIAS { alias: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), gain: metamodelica::OrderedFloat(-1.0_f64), offset: metamodelica::OrderedFloat(0.0_f64) })
         },
         _ => {
-            Arc::new(crate::NSimVar::Alias::NO_ALIAS)
+            crate::NSimVar::Alias::interned_NO_ALIAS()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1143,70 +1152,70 @@ pub mod SimVars {
         let mut simCodeIndices: SimCodeIndices = Pointer::access(indices_ptr.clone());
         let () = (::match_deref::match_deref! { match &((Type::arrayElementType(var.ty.clone()), varType.clone())) {
         (Deref @ Type::REAL, VarType::SIMULATION) => {
-            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(real_lst.clone())));
+            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst.clone())));
             simCodeIndices.realVarIndex = simCodeIndices.realVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::INTEGER, VarType::SIMULATION) => {
-            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(int_lst.clone())));
+            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst.clone())));
             simCodeIndices.integerVarIndex = simCodeIndices.integerVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::BOOLEAN, VarType::SIMULATION) => {
-            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(bool_lst.clone())));
+            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst.clone())));
             simCodeIndices.booleanVarIndex = simCodeIndices.booleanVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::STRING, VarType::SIMULATION) => {
-            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(string_lst.clone())));
+            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst.clone())));
             simCodeIndices.stringVarIndex = simCodeIndices.stringVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::ENUMERATION { .. }, VarType::SIMULATION) => {
-            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationVarIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(enum_lst.clone())));
+            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationVarIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst.clone())));
             simCodeIndices.enumerationVarIndex = simCodeIndices.enumerationVarIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::REAL, VarType::PARAMETER { .. }) => {
-            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(real_lst.clone())));
+            Pointer::update(real_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.realParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(real_lst.clone())));
             simCodeIndices.realParamIndex = simCodeIndices.realParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::INTEGER, VarType::PARAMETER { .. }) => {
-            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(int_lst.clone())));
+            Pointer::update(int_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.integerParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(int_lst.clone())));
             simCodeIndices.integerParamIndex = simCodeIndices.integerParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::BOOLEAN, VarType::PARAMETER { .. }) => {
-            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(bool_lst.clone())));
+            Pointer::update(bool_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.booleanParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(bool_lst.clone())));
             simCodeIndices.booleanParamIndex = simCodeIndices.booleanParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::STRING, VarType::PARAMETER { .. }) => {
-            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(string_lst.clone())));
+            Pointer::update(string_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.stringParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(string_lst.clone())));
             simCodeIndices.stringParamIndex = simCodeIndices.stringParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());
             ()
         },
         (Deref @ Type::ENUMERATION { .. }, VarType::PARAMETER { .. }) => {
-            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationParamIndex.clone(), Arc::new(crate::NSimVar::Alias::NO_ALIAS))?, Pointer::access(enum_lst.clone())));
+            Pointer::update(enum_lst.clone(), metamodelica::cons(SimVar::create(var.clone(), simCodeIndices.uniqueIndex.clone(), simCodeIndices.enumerationParamIndex.clone(), crate::NSimVar::Alias::interned_NO_ALIAS())?, Pointer::access(enum_lst.clone())));
             simCodeIndices.enumerationParamIndex = simCodeIndices.enumerationParamIndex.clone() + 1;
             simCodeIndices.uniqueIndex = simCodeIndices.uniqueIndex.clone() + 1;
             Pointer::update(indices_ptr.clone(), simCodeIndices.clone());

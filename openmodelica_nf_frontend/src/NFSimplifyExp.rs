@@ -853,7 +853,7 @@ pub fn simplifySize(mut sizeExp: Arc<Expression::NFExpression>) -> Result<Arc<Ex
             let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
             dims = Type::arrayDims(Expression::typeOf(var_field!((*sizeExp).exp, Expression::NFExpression::SIZE).clone()));
             if List::all(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))? {
-                exp = Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![Dimension::fromInteger((dims.clone().len() as i32), Variability::CONSTANT.clone())] }), metamodelica::arrayFromVec(({
+                exp = Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![Dimension::fromInteger((dims.clone().len() as i32), Variability::CONSTANT.clone())] }), metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut d in (dims.clone()).into_iter().cloned() {
             let __x = Dimension::sizeExp(d.clone())?;

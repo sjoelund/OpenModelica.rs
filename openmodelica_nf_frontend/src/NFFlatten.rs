@@ -172,6 +172,15 @@ pub mod FunctionTreeImpl {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            thread_local! {
+                static INTERNED: Arc<Tree> = Arc::new(Tree::EMPTY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -207,9 +216,9 @@ pub mod FunctionTreeImpl {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare(inKey.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }), right: crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -274,9 +283,9 @@ pub mod FunctionTreeImpl {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare(key.clone(), var_field!((*tree).key, Tree::LEAF).clone())?;
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }), right: crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: key.clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -423,7 +432,7 @@ pub mod FunctionTreeImpl {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(Arc<Path>, Arc<Function::Function>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Function::Function>, Arc<Function::Function>, Arc<Path>) -> Result<Arc<Function::Function>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY();
         let mut key: Key = Arc::new(<Path as ::std::default::Default>::default());
         let mut value: Value = Arc::new(<Function::Function as ::std::default::Default>::default());
         for mut t in &*inValues.clone() {
@@ -667,7 +676,7 @@ pub mod FunctionTreeImpl {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY();
         outTree
     }
 
@@ -727,8 +736,8 @@ pub mod FunctionTreeImpl {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -748,8 +757,8 @@ pub mod FunctionTreeImpl {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::NFFlatten::FunctionTreeImpl::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::NFFlatten::FunctionTreeImpl::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -866,7 +875,7 @@ pub mod Prefix {
     pub use self::Prefix::{PREFIX,INDEXED_PREFIX};
     pub fn new(mut root: Arc<InstNode::InstNode>, mut indexed: bool) -> Arc<Prefix> {
         let mut prefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
-        prefix = if (indexed.clone()) {Arc::new(Prefix::INDEXED_PREFIX { root: root.clone(), prefix: Arc::new(crate::NFComponentRef::EMPTY), indexedPrefix: Arc::new(crate::NFComponentRef::EMPTY) })} else {Arc::new(Prefix::PREFIX { root: root.clone(), prefix: Arc::new(crate::NFComponentRef::EMPTY) })};
+        prefix = if (indexed.clone()) {Arc::new(Prefix::INDEXED_PREFIX { root: root.clone(), prefix: crate::NFComponentRef::interned_EMPTY(), indexedPrefix: crate::NFComponentRef::interned_EMPTY() })} else {Arc::new(Prefix::PREFIX { root: root.clone(), prefix: crate::NFComponentRef::interned_EMPTY() })};
         prefix
     }
 
@@ -1007,10 +1016,10 @@ pub mod Prefix {
 
 }
 
-thread_local! { static __EMPTY_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: Arc::new(crate::NFComponentRef::EMPTY) }); }
+thread_local! { static __EMPTY_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: crate::NFComponentRef::interned_EMPTY() }); }
 pub fn EMPTY_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_PREFIX_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __EMPTY_INDEXED_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::INDEXED_PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: Arc::new(crate::NFComponentRef::EMPTY), indexedPrefix: Arc::new(crate::NFComponentRef::EMPTY) }); }
+thread_local! { static __EMPTY_INDEXED_PREFIX_TLS: Arc<Prefix::Prefix> = Arc::new(Prefix::Prefix::INDEXED_PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: crate::NFComponentRef::interned_EMPTY(), indexedPrefix: crate::NFComponentRef::interned_EMPTY() }); }
 pub fn EMPTY_INDEXED_PREFIX() -> Arc<Prefix::Prefix> { __EMPTY_INDEXED_PREFIX_TLS.with(|__t| __t.clone()) }
 
 pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>, mut getConnectionResolved: bool) -> Result<Arc<FlatModel::NFFlatModel>> {
@@ -1027,7 +1036,7 @@ pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>,
     let mut prefix: Arc<Prefix::Prefix> = Arc::new(<Prefix::Prefix as ::std::default::Default>::default());
     settings = FlattenSettings { scalarize: Flags::isSet(Flags::NF_SCALARIZE.clone())?, arrayConnect: Flags::isSet(Flags::ARRAY_CONNECT.clone())?, nfAPI: Flags::isSet(Flags::NF_API.clone())?, relaxedErrorChecking: Flags::isSet(Flags::NF_API.clone())? || Flags::getConfigBool(Flags::CHECK_MODEL.clone())?, newBackend: Flags::getConfigBool(Flags::NEW_BACKEND.clone())?, vectorizeBindings: Flags::isSet(Flags::VECTORIZE_BINDINGS.clone())?, implicitStartAttribute: Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("implicitParameterStartAttribute")).clone())?, minimalEval: Flags::getConfigString(Flags::EVALUATE_STRUCTURAL_PARAMETERS.clone())? != literal!("all") };
     prefix = Prefix::new(classInst.clone(), settings.vectorizeBindings.clone());
-    sections = Arc::new(crate::NFSections::EMPTY);
+    sections = crate::NFSections::interned_EMPTY();
     src = ElementSource::createElementSource(InstNode::info(classInst.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
     src = ElementSource::addCommentToSource(src.clone(), SCodeUtil::getElementComment(InstNode::definition(classInst.clone())?));
     deleted_vars = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -1261,7 +1270,7 @@ fn isDeletedComponent(mut condition: Arc<Binding::NFBinding>, mut prefix: Arc<Pr
 
 fn deleteComponent(mut node: Arc<InstNode::InstNode>, mut prefix: Arc<Prefix::Prefix>, mut deletedVars: DeletedVariables) -> Result<()> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    cref = ComponentRef::prefixCref(node.clone(), Arc::new(crate::NFType::UNKNOWN), metamodelica::nil(), Prefix::prefix(prefix.clone())?);
+    cref = ComponentRef::prefixCref(node.clone(), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), Prefix::prefix(prefix.clone())?);
     UnorderedSet::add(cref.clone(), deletedVars.clone())?;
     Ok(())
 }
@@ -1340,7 +1349,7 @@ fn flattenSimpleComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Compo
     if !(settings.nfAPI.clone()) && settings.scalarize.clone() || fillVectorizedBindingFails.clone() {
         if var.clone() >= Variability::DISCRETE.clone() && Type::isArray(ty.clone()) && !(Type::isExternalObject(Type::arrayElementType(ty.clone()))) && Binding::isBound(binding.clone()) || fillVectorizedBindingFails.clone() {
             name = ComponentRef::prefixCref(comp_node.clone(), ty.clone(), metamodelica::nil(), Prefix::prefix(prefix.clone())?);
-            eq = Equation::makeEquality(Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: name.clone() }), Binding::getTypedExp(binding.clone())?, ty.clone(), ElementSource::createElementSource(info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::DONT_SCALARIZE.clone());
+            eq = Equation::makeEquality(Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: name.clone() }), Binding::getTypedExp(binding.clone())?, ty.clone(), ElementSource::createElementSource(info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::DONT_SCALARIZE.clone());
             sections = Sections::prependEquation(eq.clone(), sections.clone(), false)?;
             binding = Binding::EMPTY_BINDING().clone();
             if comp_attr.direction.clone() == Direction::INPUT.clone() && Prefix::isEmpty(prefix.clone())? {
@@ -1557,7 +1566,7 @@ fn flattenComplexComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Comp
         if !(Expression::isRecordOrRecordArray(binding_exp.clone())?) {
             if !(settings.newBackend.clone()) {
                 name = ComponentRef::prefixCref(node.clone(), ty.clone(), metamodelica::nil(), Prefix::prefix(prefix.clone())?);
-                eq = Equation::makeEquality(Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: name.clone() }), binding_exp.clone(), ty.clone(), ElementSource::createElementSource(info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+                eq = Equation::makeEquality(Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: name.clone() }), binding_exp.clone(), ty.clone(), ElementSource::createElementSource(info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
                 sections = Sections::prependEquation(eq.clone(), sections.clone(), comp_var.clone() <= Variability::PARAMETER.clone())?;
             }
             opt_binding = Some(Binding::EMPTY_BINDING().clone());
@@ -1605,7 +1614,7 @@ fn splitRecordCref(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Express
             for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 ty = InstNode::getType(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
                 field_cr = ComponentRef::prefixCref(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), ty.clone(), metamodelica::nil(), cr.clone());
-                field_cr = flattenCref(field_cr.clone(), Arc::new(Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cr.clone() }), Absyn::dummyInfo.clone())?;
+                field_cr = flattenCref(field_cr.clone(), Arc::new(Prefix::Prefix::PREFIX { root: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), prefix: cr.clone() }), Absyn::dummyInfo.clone())?;
                 fields = metamodelica::cons(Expression::fromCref(field_cr.clone(), false)?, fields.clone());
             }
             Expression::makeRecord(InstNode::scopePath(cls.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, var_field!((*outExp).ty, Expression::NFExpression::CREF).clone(), fields.clone())
@@ -1704,7 +1713,7 @@ fn makeBindingIterators(mut prefix: Arc<ComponentRef::NFComponentRef>, mut dimen
     for mut d in &*dimensions.clone() {
         let mut d = d.clone();
         index = index.clone() + 1;
-        iter = ComponentRef::makeIterator(InstNode::newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), Arc::new(crate::NFType::INTEGER), Absyn::dummyInfo.clone()), InstNode::getType(InstNode::newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), Arc::new(crate::NFType::INTEGER), Absyn::dummyInfo.clone()))?)?;
+        iter = ComponentRef::makeIterator(InstNode::newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), crate::NFType::interned_INTEGER(), Absyn::dummyInfo.clone()), InstNode::getType(InstNode::newIterator(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); ArcStr::from(__mm_s) }).clone(), crate::NFType::interned_INTEGER(), Absyn::dummyInfo.clone()))?)?;
         subs = metamodelica::cons(Subscript::makeIndex(Expression::fromCref(iter.clone(), false)?)?, subs.clone());
     }
     subs = metamodelica::Dangerous::listReverseInPlace(subs.clone());
@@ -1942,7 +1951,7 @@ fn vectorizeAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut dimensions: Arc<
                 } };
                 range = __pa2.clone();
                 ranges = __pa3.clone();
-                body = list![Arc::new(Statement::NFStatement::FOR { iterator: iter.clone(), range: Some(range.clone()), body: body.clone(), forType: Arc::new(crate::NFStatement::ForType::NORMAL), source: alg.source.clone() })];
+                body = list![Arc::new(Statement::NFStatement::FOR { iterator: iter.clone(), range: Some(range.clone()), body: body.clone(), forType: crate::NFStatement::ForType::interned_NORMAL(), source: alg.source.clone() })];
             }
             Arc::new(Algorithm::NFAlgorithm { statements: body.clone(), inputs: alg.inputs.clone(), outputs: alg.outputs.clone(), stmtDiffInfo: None, scope: alg.scope.clone(), source: alg.source.clone() })
         },
@@ -1962,11 +1971,11 @@ pub fn makeIterators(mut prefix: Arc<ComponentRef::NFComponentRef>, mut dimensio
     prefix_node = ComponentRef::node(prefix.clone())?;
     for mut dim in &*dimensions.clone() {
         let mut dim = dim.clone();
-        iter = InstNode::newUniqueIterator(InstNode::info(prefix_node.clone())?, Arc::new(crate::NFType::INTEGER));
+        iter = InstNode::newUniqueIterator(InstNode::info(prefix_node.clone())?, crate::NFType::interned_INTEGER());
         iterators = metamodelica::cons(iter.clone(), iterators.clone());
         range = Expression::makeRange(Arc::new(Expression::NFExpression::INTEGER { value: 1 }), None, Dimension::sizeExp(dim.clone())?)?;
         ranges = metamodelica::cons(range.clone(), ranges.clone());
-        sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::INTEGER), cref: ComponentRef::makeIterator(iter.clone(), Arc::new(crate::NFType::INTEGER))? }) });
+        sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_INTEGER(), cref: ComponentRef::makeIterator(iter.clone(), crate::NFType::interned_INTEGER())? }) });
         subscripts = metamodelica::cons(sub.clone(), subscripts.clone());
     }
     Ok((iterators, ranges, subscripts))
@@ -2193,7 +2202,7 @@ pub fn flattenCrefSplitSubscripts2(mut sub: Arc<Subscript::NFSubscript>, mut sub
         Deref @ Subscript::SPLIT_INDEX { .. } => {
             let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
             subs = UnorderedMap::getOrDefault(var_field!((*sub).node, Subscript::NFSubscript::SPLIT_INDEX).clone(), subMap.clone(), metamodelica::nil())?;
-            if (var_field!((*sub).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone() > (subs.clone().len() as i32)) {Arc::new(crate::NFSubscript::WHOLE)} else {(subs.clone()).get(var_field!((*sub).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?}
+            if (var_field!((*sub).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone() > (subs.clone().len() as i32)) {crate::NFSubscript::interned_WHOLE()} else {(subs.clone()).get(var_field!((*sub).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?}
         },
         _ => {
             sub.clone()
@@ -2804,7 +2813,7 @@ pub fn flattenStmtBranch(mut branch: (Arc<Expression::NFExpression>, Arc<metamod
 pub fn addElementSourceArrayPrefix(mut source: Arc<DAE::ElementSource>, mut prefix: Arc<Prefix::Prefix>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = source;
     let mut comp_pre: Arc<DAE::ComponentPrefix> = Arc::new(DAE::ComponentPrefix::NOCOMPPRE);
-    comp_pre = Arc::new(DAE::ComponentPrefix::PRE { prefix: (ComponentRef::firstName(Prefix::prefix(prefix.clone())?, false)?).clone(), dimensions: metamodelica::nil(), subscripts: list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: -1 }) })], next: Arc::new(openmodelica_frontend_types::DAE::ComponentPrefix::NOCOMPPRE), ci_state: ClassInf::State::UNKNOWN { path: Arc::new(Path::IDENT { name: (literal!("?")).clone() }) }, info: Absyn::dummyInfo.clone() });
+    comp_pre = Arc::new(DAE::ComponentPrefix::PRE { prefix: (ComponentRef::firstName(Prefix::prefix(prefix.clone())?, false)?).clone(), dimensions: metamodelica::nil(), subscripts: list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: -1 }) })], next: openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(), ci_state: ClassInf::State::UNKNOWN { path: Arc::new(Path::IDENT { name: (literal!("?")).clone() }) }, info: Absyn::dummyInfo.clone() });
     source = ElementSource::addElementSourceInstanceOpt(source.clone(), comp_pre.clone())?;
     Ok(source)
 }
@@ -2920,19 +2929,19 @@ pub fn generateTopLevelIOs(mut variables: Arc<UnorderedMap::UnorderedMap<Arc<Com
             attributes = tlio_var.attributes.clone();
             if attributes.direction.clone() == Direction::NONE.clone() {
                 tlio_var = variable.clone();
-                assign_field!(tlio_var.binding = Arc::new(crate::NFBinding::UNBOUND));
+                assign_field!(tlio_var.binding = crate::NFBinding::interned_UNBOUND());
                 cref = tlio_var.name.clone();
                 name = stringDelimitList(ComponentRef::toString_impl(cref.clone(), metamodelica::nil())?, (literal!(".")).clone());
                 while UnorderedMap::contains(tlio_var.name.clone(), variables.clone())? {
                     tlio_node = Arc::new(InstNode::InstNode::NAME_NODE { name: (Util::makeQuotedIdentifier((name.clone()).clone())?).clone() });
                     assign_field!(tlio_var.name = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ ComponentRef::CREF { .. } => Arc::new(ComponentRef::NFComponentRef::CREF { node: tlio_node.clone(), subscripts: var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone(), ty: var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, ComponentRef::NFComponentRef::CREF).clone(), restCref: Arc::new(crate::NFComponentRef::EMPTY) }),
+        Deref @ ComponentRef::CREF { .. } => Arc::new(ComponentRef::NFComponentRef::CREF { node: tlio_node.clone(), subscripts: var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone(), ty: var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, ComponentRef::NFComponentRef::CREF).clone(), restCref: crate::NFComponentRef::interned_EMPTY() }),
         _ => bail!("match: no arm matched"),
     } }));
                     name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); ArcStr::from(__mm_s) }).clone();
                 }
                 tlio_vars = metamodelica::cons(tlio_var.clone(), tlio_vars.clone());
-                tlio_eql = metamodelica::cons(Equation::makeCrefEquality(variable.name.clone(), tlio_var.name.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), ElementSource::createElementSource(variable.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?)?, tlio_eql.clone());
+                tlio_eql = metamodelica::cons(Equation::makeCrefEquality(variable.name.clone(), tlio_var.name.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), ElementSource::createElementSource(variable.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?)?, tlio_eql.clone());
             }
         }
     }

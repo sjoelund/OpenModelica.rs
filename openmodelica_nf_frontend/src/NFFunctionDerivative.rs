@@ -128,7 +128,7 @@ pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
     Function::typeNodeCache(fnDer.derivativeFn.clone(), InstContext::FUNCTION.clone())?;
     info = InstNode::info(fnDer.derivedFn.clone())?;
     (order, order_ty, var, _) = Typing::typeExp(fnDer.order.clone(), InstContext::FUNCTION.clone(), info.clone(), false)?;
-    (order, _, mk) = TypeCheck::matchTypes(order_ty.clone(), Arc::new(crate::NFType::INTEGER), order.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
+    (order, _, mk) = TypeCheck::matchTypes(order_ty.clone(), crate::NFType::interned_INTEGER(), order.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
     if TypeCheck::isIncompatibleMatch(mk.clone()) {
         Error::addSourceMessage(Error::VARIABLE_BINDING_TYPE_MISMATCH.clone(), list![(literal!("order")).clone(), (Expression::toString(order.clone())?).clone(), (literal!("Integer")).clone(), (Type::toString(order_ty.clone())?).clone()], info.clone())?;
         bail!("fail");
@@ -293,7 +293,7 @@ fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstN
 }
 
 fn getDerivativeAttributes(mut attrs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut r#fn: Arc<Function::Function>, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<metamodelica::List<(i32, ArcStr, Condition)>>)> {
-    let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(crate::NFType::UNKNOWN) });
+    let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::NFExpression::EMPTY { ty: crate::NFType::interned_UNKNOWN() });
     let mut conditions: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
     let mut id: ArcStr = arcstr::literal!("");
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);

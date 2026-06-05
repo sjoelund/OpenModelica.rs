@@ -170,13 +170,13 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     let mut graph = (*graph).clone();
                     let mut csets = (*csets).clone();
                     let true = (AbsynUtil::isOnlyOuter(io.clone())) else { bail!("pattern mismatch") };
-                    let false = (Mod::modEqual(r#mod.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) else { bail!("pattern mismatch") };
+                    let false = (Mod::modEqual(r#mod.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) else { bail!("pattern mismatch") };
                     (cache, cref) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), pre.clone(), ComponentReferenceBasics::makeCrefIdent((n.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
                     s1 = (ComponentReferenceBasics::printComponentRefStr(cref.clone())?).clone();
                     s2 = (Mod::prettyPrintMod(r#mod.clone(), 0)?).clone();
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::OUTER_MODIFICATION.clone(), list![(s.clone()).clone()], info.clone())?;
-                    (cache, compenv, ih, store, dae, csets, ty, graph) = instVar(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone(), componentDefinitionParentEnv.clone())?;
+                    (cache, compenv, ih, store, dae, csets, ty, graph) = instVar(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone(), componentDefinitionParentEnv.clone())?;
                     Ok((cache.clone(), compenv.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ty.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -197,7 +197,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     let mut graph = (*graph).clone();
                     let mut csets = (*csets).clone();
                     let true = (AbsynUtil::isOnlyOuter(io.clone())) else { bail!("pattern mismatch") };
-                    let true = (Mod::modEqual(r#mod.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) else { bail!("pattern mismatch") };
+                    let true = (Mod::modEqual(r#mod.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(InnerOuter::lookupInnerVar(cache.clone(), env.clone(), ih.clone(), pre.clone(), (n.clone()).clone(), io.clone())?) {
                         InnerOuter::InstInner { innerPrefix: _, name: _, io: _, fullName: _, typePath: _, scope: _, instResult: Some(InnerOuter::InstResult { outCache: __pa0, outEnv: __pa1, outStore: __pa2, outDae: _, outSets: _, outType: __pa3, outGraph: __pa4 }), outers: _, innerElement: _ } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
@@ -240,7 +240,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     let mut store = (*store).clone();
                     let mut graph = (*graph).clone();
                     let true = (AbsynUtil::isOnlyOuter(io.clone())) else { bail!("pattern mismatch") };
-                    let true = (Mod::modEqual(r#mod.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) else { bail!("pattern mismatch") };
+                    let true = (Mod::modEqual(r#mod.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa12, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa13) = ::match_deref::match_deref! { match &(InnerOuter::lookupInnerVar(cache.clone(), env.clone(), ih.clone(), pre.clone(), (n.clone()).clone(), io.clone())?) {
                         InnerOuter::InstInner { innerPrefix: __pa0, name: __pa1, io: __pa2, fullName: __pa3, typePath: __pa4, scope: __pa5, instResult: __pa12 @ Some(InnerOuter::InstResult { outCache: __pa6, outEnv: __pa7, outStore: __pa8, outDae: __pa9, outSets: _, outType: __pa10, outGraph: __pa11 }), outers: __pa13, innerElement: _ } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa12.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa13.clone()),
                         _ => bail!("pattern mismatch"),
@@ -287,7 +287,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     let mut store = (*store).clone();
                     let mut graph = (*graph).clone();
                     let true = (AbsynUtil::isOnlyOuter(io.clone())) else { bail!("pattern mismatch") };
-                    let true = (Mod::modEqual(r#mod.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) else { bail!("pattern mismatch") };
+                    let true = (Mod::modEqual(r#mod.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) else { bail!("pattern mismatch") };
                     let __pa0 = ::match_deref::match_deref! { match &(InnerOuter::lookupInnerVar(cache.clone(), env.clone(), ih.clone(), pre.clone(), (n.clone()).clone(), io.clone())?) {
                         InnerOuter::InstInner { innerPrefix: _, name: _, io: _, fullName: _, typePath: __pa0, scope: _, instResult: None, outers: _, innerElement: _ } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -326,7 +326,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     let mut store = (*store).clone();
                     let mut graph = (*graph).clone();
                     let true = (AbsynUtil::isOnlyOuter(io.clone())) else { bail!("pattern mismatch") };
-                    let true = (Mod::modEqual(r#mod.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) else { bail!("pattern mismatch") };
+                    let true = (Mod::modEqual(r#mod.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) else { bail!("pattern mismatch") };
                     if '__try0: {
                         unwrap_break_err!(InnerOuter::lookupInnerVar(cache.clone(), env.clone(), ih.clone(), pre.clone(), (n.clone()).clone(), io.clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -382,7 +382,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     innerDAE = dae.clone();
                     innerScope = (FGraph::printGraphPathStr(componentDefinitionParentEnv.clone())?).clone();
                     ih = InnerOuter::updateInstHierarchy(ih.clone(), pre.clone(), io.clone(), InnerOuter::InstInner { innerPrefix: pre.clone(), name: (n.clone()).clone(), io: io.clone(), fullName: (fullName.clone()).clone(), typePath: typePath.clone(), scope: (innerScope.clone()).clone(), instResult: Some(InnerOuter::InstResult { outCache: cache.clone(), outEnv: outerCompEnv.clone(), outStore: store.clone(), outDae: innerDAE.clone(), outSets: csetsInner.clone(), outType: ty.clone(), outGraph: graph.clone() }), outers: metamodelica::nil(), innerElement: None })?;
-                    (cache, compenv, ih, store, dae, _, ty, graph) = instVar_dispatch(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone())?;
+                    (cache, compenv, ih, store, dae, _, ty, graph) = instVar_dispatch(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone())?;
                     Ok((cache.clone(), compenv.clone(), ih.clone(), store.clone(), dae.clone(), csetsInner.clone(), ty.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -418,7 +418,7 @@ pub fn instVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                     innerScope = (FGraph::printGraphPathStr(componentDefinitionParentEnv.clone())?).clone();
                     ih = InnerOuter::updateInstHierarchy(ih.clone(), pre.clone(), io.clone(), InnerOuter::InstInner { innerPrefix: pre.clone(), name: (n.clone()).clone(), io: io.clone(), fullName: (fullName.clone()).clone(), typePath: typePath.clone(), scope: (innerScope.clone()).clone(), instResult: Some(InnerOuter::InstResult { outCache: cache.clone(), outEnv: outerCompEnv.clone(), outStore: store.clone(), outDae: innerDAE.clone(), outSets: csetsInner.clone(), outType: ty.clone(), outGraph: graph.clone() }), outers: metamodelica::nil(), innerElement: None })?;
                     pf = SCodeUtil::prefixesSetInnerOuter(pf.clone(), openmodelica_ast::Absyn::InnerOuter::OUTER);
-                    (cache, compenv, ih, store, dae, _, ty, graph) = instVar(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone(), componentDefinitionParentEnv.clone())?;
+                    (cache, compenv, ih, store, dae, _, ty, graph) = instVar(cache.clone(), env.clone(), ih.clone(), store.clone(), ci_state.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), (n.clone()).clone(), cl.clone(), attr.clone(), pf.clone(), dims.clone(), idxs.clone(), inst_dims.clone(), r#impl.clone(), comment.clone(), info.clone(), graph.clone(), csets.clone(), componentDefinitionParentEnv.clone())?;
                     outerDAE = dae.clone();
                     dae = DAEUtil::joinDaes(outerDAE.clone(), innerDAE.clone())?;
                     Ok((cache.clone(), compenv.clone(), ih.clone(), store.clone(), dae.clone(), csetsInner.clone(), ty.clone(), graph.clone()))
@@ -689,7 +689,7 @@ fn instVar2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<me
                     let mut csets = (*csets).clone();
                     let true = (ClassInfUtil::isFunction(ci_state.clone())) else { bail!("pattern mismatch") };
                     InstUtil::checkFunctionVar((n.clone()).clone(), attr.clone(), pf.clone(), info.clone())?;
-                    (cache, env_1, ih, store, _, csets, ty, _, _, graph) = Inst::instClass(cache.clone(), env.clone(), ih.clone(), store.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), cl.clone(), inst_dims.clone(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, graph.clone(), csets.clone())?;
+                    (cache, env_1, ih, store, _, csets, ty, _, _, graph) = Inst::instClass(cache.clone(), env.clone(), ih.clone(), store.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), cl.clone(), inst_dims.clone(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, graph.clone(), csets.clone())?;
                     ty_1 = InstUtil::makeArrayType(dims.clone(), ty.clone())?;
                     InstUtil::checkFunctionVarType(ty_1.clone(), ci_state.clone(), (n.clone()).clone(), info.clone())?;
                     (cache, dae_var_attr) = InstBinding::instDaeVariableAttributes(cache.clone(), env.clone(), r#mod.clone(), ty.clone(), metamodelica::nil())?;
@@ -746,7 +746,7 @@ fn instVar2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<me
                     } };
                     e = __pa0.clone();
                     p = __pa1.clone();
-                    (cache, env_1, ih, store, _, csets, ty, _, _, graph) = Inst::instClass(cache.clone(), env.clone(), ih.clone(), store.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), cl.clone(), inst_dims.clone(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, graph.clone(), csets.clone())?;
+                    (cache, env_1, ih, store, _, csets, ty, _, _, graph) = Inst::instClass(cache.clone(), env.clone(), ih.clone(), store.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), cl.clone(), inst_dims.clone(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, graph.clone(), csets.clone())?;
                     ty_1 = InstUtil::makeArrayType(dims.clone(), ty.clone())?;
                     InstUtil::checkFunctionVarType(ty_1.clone(), ci_state.clone(), (n.clone()).clone(), info.clone())?;
                     (cache, dae_var_attr) = InstBinding::instDaeVariableAttributes(cache.clone(), env.clone(), r#mod.clone(), ty.clone(), metamodelica::nil())?;
@@ -1014,7 +1014,7 @@ pub fn instScalar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
                     (cache, cr) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), cr.clone())?;
                     InstUtil::checkModificationOnOuter(cache.clone(), env_1.clone(), ih.clone(), inPrefix.clone(), (inName.clone()).clone(), cr.clone(), inMod.clone(), vt.clone(), io.clone(), inImpl.clone(), inInfo.clone())?;
                     source = ElementSource::createElementSource(inInfo.clone(), FGraph::getScopePath(env_1.clone())?, inPrefix.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
-                    r#mod = if (!(inSubscripts.clone().is_empty()) && !(SCodeUtil::isParameterOrConst(vt.clone())) && !(ClassInfUtil::isFunctionOrRecord(inState.clone())) && !(Types::isComplexType(Types::arrayElementType(ty.clone()))) && !(Types::isExternalObject(Types::arrayElementType(ty.clone()))) && !(Config::scalarizeBindings()?)) {Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)} else {inMod.clone()};
+                    r#mod = if (!(inSubscripts.clone().is_empty()) && !(SCodeUtil::isParameterOrConst(vt.clone())) && !(ClassInfUtil::isFunctionOrRecord(inState.clone())) && !(Types::isComplexType(Types::arrayElementType(ty.clone()))) && !(Types::isExternalObject(Types::arrayElementType(ty.clone()))) && !(Config::scalarizeBindings()?)) {openmodelica_frontend_types::DAE::Mod::interned_NOMOD()} else {inMod.clone()};
                     opt_binding = InstBinding::makeVariableBinding(ty.clone(), r#mod.clone(), Types::variabilityToConst(vt.clone())?, inPrefix.clone(), (inName.clone()).clone())?;
                     start = InstBinding::instStartBindingExp(inMod.clone(), ty.clone(), vt.clone())?;
                     if !(Flags::getConfigBool(Flags::USE_LOCAL_DIRECTION.clone())?) {

@@ -843,10 +843,10 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
         let mut children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &((variability.clone(), attributes.clone(), ty.clone())) {
         (_, _, Deref @ Type::CLOCK) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCK)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CLOCK()
         },
         (_, _, _) if (Binding::isClockOrSampleFunction(var.binding.clone())?) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCKED)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CLOCKED()
         },
         (Prefixes::Variability::CONTINUOUS, Deref @ VariableAttributes::VAR_ATTR_REAL { stateSelect: Some(NFBackendExtension::StateSelect::ALWAYS), .. }, _) if (variability.clone() == Prefixes::Variability::CONTINUOUS.clone()) => {
             Arc::new(VariableKind::VariableKind::STATE { index: 1, derivative: None, natural: false })
@@ -866,22 +866,22 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
             Arc::new(VariableKind::VariableKind::RECORD { children: metamodelica::nil(), min_var: min_var.clone(), max_var: max_var.clone() })
         },
         (Prefixes::Variability::CONTINUOUS, _, Deref @ Type::BOOLEAN) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()
         },
         (Prefixes::Variability::CONTINUOUS, _, Deref @ Type::INTEGER) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()
         },
         (Prefixes::Variability::CONTINUOUS, _, Deref @ Type::ENUMERATION { .. }) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()
         },
         (Prefixes::Variability::CONTINUOUS, _, _) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::ALGEBRAIC)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_ALGEBRAIC()
         },
         (Prefixes::Variability::DISCRETE, _, _) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()
         },
         (Prefixes::Variability::IMPLICITLY_DISCRETE, _, _) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()
         },
         (Prefixes::Variability::PARAMETER, _, _) => {
             Arc::new(VariableKind::VariableKind::PARAMETER { resize_value: None })
@@ -893,7 +893,7 @@ fn lowerVariableKind(mut var: Arc<Variable::NFVariable>, mut attributes: Arc<Var
             Arc::new(VariableKind::VariableKind::PARAMETER { resize_value: None })
         },
         (Prefixes::Variability::CONSTANT, _, _) => {
-            Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CONSTANT)
+            openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CONSTANT()
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerVariableKind")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -1039,7 +1039,7 @@ fn lowerEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: bo
             let mut stmt: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
             let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
             stmt = Arc::new(Statement::NFStatement::NORETCALL { exp: var_field!((*frontend_equation).exp, FEquation::NFEquation::NORETCALL).clone(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
-            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![stmt.clone()], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
+            alg = Arc::new(Algorithm::NFAlgorithm { statements: list![stmt.clone()], inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::NORETCALL).clone() });
             alg = Algorithm::setInputsOutputs(alg.clone())?;
             list![lowerAlgorithm(alg.clone(), init.clone())?]
         },
@@ -1074,7 +1074,7 @@ fn lowerForEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init:
     backend_equations = (::match_deref::match_deref! { match &(frontend_equation.clone()) {
         Deref @ FEquation::FOR { range: Some(range), .. } => {
             if Expression::rangeSize(range.clone(), false)? > 0 {
-                iterator = ComponentRef::fromNode(var_field!((*frontend_equation).iterator, FEquation::NFEquation::FOR).clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
+                iterator = ComponentRef::fromNode(var_field!((*frontend_equation).iterator, FEquation::NFEquation::FOR).clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
                 for mut eq in &*var_field!((*frontend_equation).body, FEquation::NFEquation::FOR).clone() {
                     let mut eq = eq.clone();
                     for mut body_elem_ptr in &*lowerEquation(eq.clone(), init.clone(), true)? {
@@ -1102,7 +1102,7 @@ fn lowerForEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init:
                     (body_elem, _) = BEquation::Equation::mergeIterators(body_elem.clone(), true)?;
                     body_elem = BEquation::Equation::simplify(body_elem.clone(), (literal!("")).clone(), (literal!("")).clone(), Pointer::create(metamodelica::nil()), Pointer::create(metamodelica::nil()), (std::sync::Arc::new({ let __pe_b1 = true; let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("")).clone(); move |__pe_a0| SimplifyExp::simplifyDump(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                     if isAlgorithm.clone() {
-                        alg = Arc::new(Algorithm::NFAlgorithm { statements: BEquation::Equation::toStatement(body_elem.clone())?, inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), source: var_field!((*frontend_equation).source, FEquation::NFEquation::FOR).clone() });
+                        alg = Arc::new(Algorithm::NFAlgorithm { statements: BEquation::Equation::toStatement(body_elem.clone())?, inputs: metamodelica::nil(), outputs: metamodelica::nil(), stmtDiffInfo: None, scope: openmodelica_nf_frontend::NFInstNode::InstNode::interned_EMPTY_NODE(), source: var_field!((*frontend_equation).source, FEquation::NFEquation::FOR).clone() });
                         alg = Algorithm::setInputsOutputs(alg.clone())?;
                         size = ({
         let mut __acc: i32 = 0;
@@ -1178,7 +1178,7 @@ fn lowerIfEquationBody(mut branches: Arc<metamodelica::List<Arc<FEquation::Branc
             let mut result: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
             (eqns, condition) = lowerIfBranch(branch.clone(), init.clone())?;
             if Expression::isTrue(condition.clone()) {
-                result = Arc::new(IfEquationBody::IfEquationBody { condition: Arc::new(openmodelica_nf_frontend::NFExpression::END), then_eqns: eqns.clone(), else_if: None });
+                result = Arc::new(IfEquationBody::IfEquationBody { condition: openmodelica_nf_frontend::NFExpression::interned_END(), then_eqns: eqns.clone(), else_if: None });
             } else if Expression::isFalse(condition.clone()) {
                 result = lowerIfEquationBody(rest.clone(), init.clone(), allow_imbalance.clone())?;
             } else {
@@ -1602,7 +1602,7 @@ fn collectIterator(mut iterator: Arc<InstNode::InstNode>, mut variables: Arc<Var
 
 fn lowerInstNode(mut node: Arc<InstNode::InstNode>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut cref: Arc<ComponentRef::NFComponentRef> = ComponentRef::fromNode(node.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
+    let mut cref: Arc<ComponentRef::NFComponentRef> = ComponentRef::fromNode(node.clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
     let mut var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     var = BVariable::VariablePointers::getVarSafe(variables.clone(), ComponentRef::stripSubscriptsAll(cref.clone()), Some(metamodelica::sourceInfo!("NBackEnd/Classes/NBackendDAE.mo")))?;
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: (InstNode::name(node.clone())?).clone(), varPointer: var.clone() });

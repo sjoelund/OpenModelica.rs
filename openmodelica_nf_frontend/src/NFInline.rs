@@ -317,9 +317,9 @@ fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<St
     let mut binding_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     binding = Component::getImplicitBinding(InstNode::component(outputNode.clone())?, InstNode::instanceParent(outputNode.clone())?);
     if Binding::isBound(binding.clone()) {
-        cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode.clone(), Arc::new(crate::NFType::UNKNOWN), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
+        cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode.clone(), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
         binding_exp = Binding::getExp(binding.clone())?;
-        stmt = Statement::makeAssignment(cref_exp.clone(), binding_exp.clone(), Arc::new(crate::NFType::UNKNOWN), DAE::emptyElementSource().clone());
+        stmt = Statement::makeAssignment(cref_exp.clone(), binding_exp.clone(), crate::NFType::interned_UNKNOWN(), DAE::emptyElementSource().clone());
     } else {
         stmt = Arc::new(Statement::NFStatement::FAILURE { body: metamodelica::nil(), source: DAE::emptyElementSource().clone() });
     }

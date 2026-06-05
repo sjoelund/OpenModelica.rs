@@ -114,7 +114,7 @@ fn findFieldExpInList(mut firstFieldName: ArcStr, mut namedArgList: Arc<metamode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil) => {
-                    Ok((Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD) }), metamodelica::nil()))
+                    Ok((Arc::new(Absyn::Exp::CREF { componentRef: openmodelica_ast::Absyn::ComponentRef::interned_WILD() }), metamodelica::nil()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -487,7 +487,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     }
                     Static::checkAssignmentToInput(inLhs.clone(), attr.clone(), env.clone(), false, info.clone())?;
                     et = validPatternType(ty2.clone(), ty1.clone(), inLhs.clone(), info.clone())?;
-                    pattern = if (Types::isFunctionType(ty2.clone())) {Arc::new(DAE::Pattern::PAT_AS_FUNC_PTR { id: (id.clone()).clone(), pat: Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD) })} else {Arc::new(DAE::Pattern::PAT_AS { id: (id.clone()).clone(), ty: et.clone(), attr: attr.clone(), pat: Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD) })};
+                    pattern = if (Types::isFunctionType(ty2.clone())) {Arc::new(DAE::Pattern::PAT_AS_FUNC_PTR { id: (id.clone()).clone(), pat: openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD() })} else {Arc::new(DAE::Pattern::PAT_AS { id: (id.clone()).clone(), ty: et.clone(), attr: attr.clone(), pat: openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD() })};
                     Ok(((cache.clone(), pattern.clone()), pattern.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -536,7 +536,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::WILD { .. } }, _) => {
-                    Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD)))
+                    Ok((cache.clone(), openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1450,7 +1450,7 @@ fn checkDefUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<AvlSetString::Tree>, Ar
                     name = (ComponentReferenceBasics::crefFirstIdent(cr.clone())?).clone();
                     if AvlSetString::hasKey(localsTree.clone(), (name.clone()).clone())? && !(AvlSetString::hasKey(useTree.clone(), (name.clone()).clone())?) {
                         Error::assertionOrAddSourceMessage(!(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?), Error::META_UNUSED_ASSIGNMENT.clone(), list![(name.clone()).clone()], info.clone())?;
-                        outExp = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), ty: ty.clone() });
+                        outExp = Arc::new(DAE::Exp::CREF { componentRef: openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), ty: ty.clone() });
                     } else {
                         outExp = inExp.clone();
                     }
@@ -1667,13 +1667,13 @@ fn simplifyPattern<A: Clone + 'static>(mut inPat: Arc<DAE::Pattern>, mut extra: 
         Deref @ DAE::Pattern::PAT_CALL_NAMED { name, patterns: namedPatterns } => {
             let mut namedPatterns = (*namedPatterns).clone();
             namedPatterns = List::filterOnTrue(namedPatterns.clone(), (std::sync::Arc::new(fnptr!(filterEmptyPattern, (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<bool> + 'static>))?;
-            if (namedPatterns.clone().is_empty()) {Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD)} else {Arc::new(DAE::Pattern::PAT_CALL_NAMED { name: name.clone(), patterns: namedPatterns.clone() })}
+            if (namedPatterns.clone().is_empty()) {openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD()} else {Arc::new(DAE::Pattern::PAT_CALL_NAMED { name: name.clone(), patterns: namedPatterns.clone() })}
         },
         Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns } => {
-            if (allPatternsWild(patterns.clone())) {Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD)} else {inPat.clone()}
+            if (allPatternsWild(patterns.clone())) {openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD()} else {inPat.clone()}
         },
         Deref @ DAE::Pattern::PAT_META_TUPLE { patterns } => {
-            if (allPatternsWild(patterns.clone())) {Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD)} else {inPat.clone()}
+            if (allPatternsWild(patterns.clone())) {openmodelica_frontend_types::DAE::Pattern::interned_PAT_WILD()} else {inPat.clone()}
         },
         _ => {
             inPat.clone()
@@ -2283,8 +2283,8 @@ fn elabMatchCase(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut acase: 
             let mut len: i32 = 0;
             let mut cache = (*cache).clone();
             len = (tys.clone().len() as i32);
-            patterns = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD) }), (tys.clone().len() as i32));
-            pattern = if (len.clone() == 1) {Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD) })} else {Arc::new(Absyn::Exp::TUPLE { expressions: patterns.clone() })};
+            patterns = List::fill(Arc::new(Absyn::Exp::CREF { componentRef: openmodelica_ast::Absyn::ComponentRef::interned_WILD() }), (tys.clone().len() as i32));
+            pattern = if (len.clone() == 1) {Arc::new(Absyn::Exp::CREF { componentRef: openmodelica_ast::Absyn::ComponentRef::interned_WILD() })} else {Arc::new(Absyn::Exp::TUPLE { expressions: patterns.clone() })};
             (cache, elabCase, elabResult, resType) = elabMatchCase(cache.clone(), env.clone(), Arc::new(Absyn::Case::CASE { pattern: pattern.clone(), patternGuard: None, patternInfo: info.clone(), localDecls: decls.clone(), classPart: cp.clone(), result: result.clone(), resultInfo: resultInfo.clone(), comment: None, info: info.clone() }), tys.clone(), inputAliases.clone(), matchExpLocalTree.clone(), r#impl.clone(), performVectorization.clone(), pre.clone())?;
             (cache.clone(), elabCase.clone(), elabResult.clone(), resType.clone())
         },
@@ -2625,8 +2625,8 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     ld2 = if (b.clone()) {metamodelica::nil()} else {ld2.clone()};
                     ld_mod = InstUtil::addNomod(ld2.clone());
                     dummyFunc = ClassInf::State::FUNCTION { path: Arc::new(Absyn::Path::IDENT { name: (literal!("dummieFunc")).clone() }), isImpure: false };
-                    (cache, env2, _) = InstUtil::addComponentsToEnv(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), r#impl.clone())?;
-                    (cache, env2, _, _, dae1, _, _, _, _, _) = Inst::instElementList(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), metamodelica::nil(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), true)?;
+                    (cache, env2, _) = InstUtil::addComponentsToEnv(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), r#impl.clone())?;
+                    (cache, env2, _, _, dae1, _, _, _, _, _) = Inst::instElementList(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), metamodelica::nil(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), true)?;
                     names = List::map(ld2.clone(), (std::sync::Arc::new(SCodeUtil::elementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?;
                     declsTree = AvlSetString::addList(AvlSetString::new(), names.clone())?;
                     res = if (b.clone()) {None} else {Some((env2.clone(), dae1.clone(), declsTree.clone()))};
@@ -3065,7 +3065,7 @@ fn addEnvKnownAsBindings2(mut inPat: Arc<DAE::Pattern>, mut inEnv: FCore::Graph,
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             path = AbsynUtil::stripLast(name.clone())?;
             ty = Arc::new(DAE::Type::T_METARECORD { path: name.clone(), utPath: path.clone(), typeVars: typeVars.clone(), index: index.clone(), fields: fields.clone(), knownSingleton: knownSingleton.clone() });
-            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: attr.clone(), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: name.clone(), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_DAE, FGraph::empty())?;
+            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: attr.clone(), ty: ty.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: name.clone(), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_DAE, FGraph::empty())?;
             env.clone()
         },
         _ => {
@@ -3162,7 +3162,7 @@ fn addAliasesToEnv(mut inEnv: FCore::Graph, mut inTypes: Arc<metamodelica::List<
             let mut attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
             let mut env = (*env).clone();
             attr = DAE::dummyAttrInput().clone();
-            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: attr.clone(), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_DAE, FGraph::empty())?;
+            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: attr.clone(), ty: ty.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$dummy")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_DAE, FGraph::empty())?;
             addAliasesToEnv(env.clone(), inTypes.clone(), metamodelica::cons(rest.clone(), aliases.clone()), info.clone())?
         },
         _ => bail!("match: no arm matched"),

@@ -74,6 +74,13 @@ pub enum ParseTree {
         token: Token,
     },
 }
+impl ParseTree {
+    pub fn interned_EMPTY() -> Arc<ParseTree> {
+        static INTERNED: std::sync::LazyLock<Arc<ParseTree>> = std::sync::LazyLock::new(|| Arc::new(ParseTree::EMPTY));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_EMPTY() -> Arc<ParseTree> { ParseTree::interned_EMPTY() }
 impl Default for ParseTree {
     fn default() -> Self { Self::EMPTY }
 }
@@ -170,7 +177,7 @@ pub fn stored_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
         (tokens, tree, _) = class_definition(tokens.clone(), tree.clone())?;
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::SEMICOLON.clone())?;
         (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), First::class_definition.clone(), false)?;
-        outTree = metamodelica::cons(makeNode(tree.clone().reverse(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)), outTree.clone());
+        outTree = metamodelica::cons(makeNode(tree.clone().reverse(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY()), outTree.clone());
         tree = metamodelica::nil();
     }
     (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
@@ -224,7 +231,7 @@ fn class_prefixes(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
             ()
         },
     });
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -317,7 +324,7 @@ fn short_class_specifier1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
         }
     }
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -327,7 +334,7 @@ fn enumeration_literal(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -377,7 +384,7 @@ fn composition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
             (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::SEMICOLON.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -393,7 +400,7 @@ fn external_function_call(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
     }
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     (tokens, tree) = output_expression_list(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -492,7 +499,7 @@ fn statement(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
         label = (literal!("$assign_expression")).clone();
     }
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, label))
 }
 
@@ -601,7 +608,7 @@ fn _equation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
         }
     }
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, label))
 }
 
@@ -696,7 +703,7 @@ fn element(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
             nodeName.clone()
         },
     });
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName, isAnnotation))
 }
 
@@ -711,7 +718,7 @@ fn constraining_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
     if b.clone() {
         (tokens, tree) = class_modification(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -773,7 +780,7 @@ fn import_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<m
         }
     }
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -788,7 +795,7 @@ fn type_prefix(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), list![TokenId::FLOW.clone(), TokenId::STREAM.clone()], true)?;
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), list![TokenId::DISCRETE.clone(), TokenId::PARAMETER.clone(), TokenId::CONSTANT.clone()], true)?;
     (tokens, tree, _) = LA1(tokens.clone(), tree.clone(), list![TokenId::INPUT.clone(), TokenId::OUTPUT.clone()], true)?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -807,7 +814,7 @@ fn array_subscripts(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Ar
         (tokens, tree) = subscript(tokens.clone(), tree.clone())?;
     }
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::RBRACK.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -820,7 +827,7 @@ fn subscript(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
     if !(b.clone()) {
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -841,7 +848,7 @@ fn component_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
         (tokens, tree, nodeName) = component_declaration(tokens.clone(), tree.clone())?;
         nodeNames = metamodelica::cons(nodeName.clone(), nodeNames.clone());
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeNames))
 }
 
@@ -882,7 +889,7 @@ fn declaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
     if b.clone() {
         (tokens, tree) = modification(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -894,7 +901,7 @@ fn component_clause1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
     (tokens, tree) = type_prefix(tokens.clone(), tree.clone())?;
     (tokens, tree) = type_specifier(tokens.clone(), tree.clone())?;
     (tokens, tree, nodeName) = component_declaration1(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -905,7 +912,7 @@ fn component_declaration1(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (tokens, tree, nodeName) = declaration(tokens.clone(), tree.clone())?;
     (tokens, tree) = comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -924,7 +931,7 @@ fn extends_clause(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
     if b.clone() {
         (tokens, tree) = _annotation(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -939,7 +946,7 @@ fn class_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
         (tokens, tree) = argument_list(tokens.clone(), tree.clone())?;
     }
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::RPAR.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -957,7 +964,7 @@ fn argument_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<m
             (tokens, tree, nodeName) = argument(tokens.clone(), tree.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -999,7 +1006,7 @@ fn element_redeclaration(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
             (tokens, tree, nodeName) = component_clause1(tokens.clone(), tree.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -1018,7 +1025,7 @@ fn short_class_definition(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
     nodeName = parseTreeFilterWhitespace(nodeName.clone());
     (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::EQUALS.clone())?;
     (tokens, tree) = short_class_specifier1(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -1036,7 +1043,7 @@ fn element_modification_or_replaceable(mut inTokens: Arc<metamodelica::List<Toke
     } else {
         (tokens, tree, nodeName) = element_modification(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -1058,7 +1065,7 @@ fn element_replaceable(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
         (tokens, tree) = constraining_clause(tokens.clone(), tree.clone())?;
         (tokens, tree) = comment(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -1080,7 +1087,7 @@ fn element_modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree
         (tokens, tree) = modification(tokens.clone(), tree.clone())?;
     }
     (tokens, tree) = string_comment(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree, nodeName))
 }
 
@@ -1104,7 +1111,7 @@ fn modification(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<me
         (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1120,7 +1127,7 @@ fn expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc
             break;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1154,11 +1161,11 @@ fn expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<meta
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
         ifTrees = listAppend(makeNodePrependTree(tree.clone().reverse(), metamodelica::nil(), Arc::new(ParseTree::LEAF { token: makeToken(TokenId::IDENT.clone(), (literal!("$else")).clone()) })), ifTrees.clone());
         tree = metamodelica::nil();
-        outTree = makeNodePrependTree(metamodelica::nil(), ifTrees.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+        outTree = makeNodePrependTree(metamodelica::nil(), ifTrees.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
         return Ok((tokens.clone(), outTree.clone()));
     }
     (tokens, tree) = simple_expression(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1176,7 +1183,7 @@ fn simple_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
             (tokens, tree) = logical_expression(tokens.clone(), tree.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1193,7 +1200,7 @@ fn logical_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
         }
         (tokens, tree) = logical_term(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1210,7 +1217,7 @@ fn logical_term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<me
         }
         (tokens, tree) = logical_factor(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1221,7 +1228,7 @@ fn logical_factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
     let mut b: bool = false;
     (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::NOT.clone())?;
     (tokens, tree) = relation(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1239,7 +1246,7 @@ fn relation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamo
         }
         (tokens, tree) = arithmetic_expression(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1258,7 +1265,7 @@ fn arithmetic_expression(mut inTokens: Arc<metamodelica::List<Token>>, mut inTre
         }
         (tokens, tree) = term(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1276,7 +1283,7 @@ fn term(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
         }
         (tokens, tree) = factor(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1294,7 +1301,7 @@ fn factor(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamode
         }
         (tokens, tree) = primary(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1308,7 +1315,7 @@ fn primary(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
     (tokens, tree, b) = LA1(tokens.clone(), tree.clone(), list![TokenId::UNSIGNED_INTEGER.clone(), TokenId::UNSIGNED_REAL.clone(), TokenId::FALSE.clone(), TokenId::TRUE.clone(), TokenId::END.clone(), TokenId::STRING.clone()], false)?;
     if b.clone() {
         (tokens, tree) = consume(tokens.clone(), tree.clone())?;
-        outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+        outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
         return Ok((tokens.clone(), outTree.clone()));
     }
     (tokens, tree, id) = peek(tokens.clone(), tree.clone())?;
@@ -1372,7 +1379,7 @@ fn function_call_args(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::RPAR.clone())?;
     }
     (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1398,7 +1405,7 @@ fn function_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: 
                 (tokens, tree2) = eatWhitespace(tokens.clone(), tree2.clone())?;
             }
             if b.clone() {
-                tree = metamodelica::cons(makeNode(tree2.clone().reverse(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)), tree.clone());
+                tree = metamodelica::cons(makeNode(tree2.clone().reverse(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY()), tree.clone());
             } else {
                 (tokens, tree, b) = scanOpt(tokens.clone(), tree.clone(), TokenId::FOR.clone())?;
                 if b.clone() {
@@ -1435,7 +1442,7 @@ fn function_argument(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: A
     } else {
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1452,7 +1459,7 @@ fn named_arguments(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc
         }
         (tokens, tree) = named_argument(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1482,7 +1489,7 @@ fn for_indices(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
         }
         (tokens, tree) = for_index(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1496,7 +1503,7 @@ fn for_index(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metam
     if b.clone() {
         (tokens, tree) = expression(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1512,7 +1519,7 @@ fn string_comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<
             (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::STRING.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1533,7 +1540,7 @@ fn output_expression_list(mut inTokens: Arc<metamodelica::List<Token>>, mut inTr
             (tokens, tree) = expression(tokens.clone(), tree.clone())?;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1552,7 +1559,7 @@ fn name(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::DOT.clone())?;
         (tokens, tree) = scan(tokens.clone(), tree.clone(), TokenId::IDENT.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1573,7 +1580,7 @@ fn component_reference(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree:
             break;
         }
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1587,7 +1594,7 @@ fn comment(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamod
     if b.clone() {
         (tokens, tree) = _annotation(tokens.clone(), tree.clone())?;
     }
-    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY));
+    outTree = makeNodePrependTree(tree.clone().reverse(), inTree.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY());
     Ok((tokens, outTree))
 }
 
@@ -1603,7 +1610,7 @@ fn _annotation(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<met
 }
 
 fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<ParseTree>> {
-    let mut w: Arc<ParseTree> = Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY);
+    let mut w: Arc<ParseTree> = crate::SimpleModelicaParser::ParseTree::interned_EMPTY();
     let mut tok: Token = <Token as ::std::default::Default>::default();
     let mut tok2: Token = <Token as ::std::default::Default>::default();
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
@@ -1615,7 +1622,7 @@ fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<P
             rest2 = (*__esc_rest2).clone();
             w.clone()
         },
-        _ => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
+        _ => crate::SimpleModelicaParser::ParseTree::interned_EMPTY(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(w)
@@ -1720,7 +1727,7 @@ fn moveCommentsAfterDiff(mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica
 }
 
 fn findAddedComments(mut tree: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<Arc<AvlSetString::Tree>> {
-    let mut comments: Arc<AvlSetString::Tree> = Arc::new(openmodelica_util::AvlSetString::Tree::EMPTY);
+    let mut comments: Arc<AvlSetString::Tree> = openmodelica_util::AvlSetString::Tree::interned_EMPTY();
     let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     (addedTrees, _) = extractAdditionsDeletions(tree.clone())?;
     for mut t in &*addedTrees.clone() {
@@ -1803,7 +1810,7 @@ fn removeAddedCommentFromDiff2(mut trees: Arc<metamodelica::List<Arc<ParseTree>>
         (removed, tree) = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ParseTree::LEAF { .. } if (parseTreeIsComment(tree.clone())) => {
             content = (tokenContent(var_field!((*tree).token, ParseTree::LEAF).clone())?).clone();
-            (content.clone() == comment.clone(), if (content.clone() == comment.clone()) {Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)} else {tree.clone()})
+            (content.clone() == comment.clone(), if (content.clone() == comment.clone()) {crate::SimpleModelicaParser::ParseTree::interned_EMPTY()} else {tree.clone()})
         },
         Deref @ ParseTree::NODE { nodes, .. } => {
             let mut nodes = (*nodes).clone();
@@ -1907,7 +1914,7 @@ fn addCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut 
         (Deref @ ParseTree::NODE { label: Deref @ ParseTree::EMPTY { .. }, .. }, _) => {
             (nodes, b) = addCommentAtLabelPath(var_field!((*n).nodes, ParseTree::NODE).clone(), tok.clone(), path.clone())?;
             if b.clone() {
-                n2 = Arc::new(ParseTree::NODE { label: Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY), nodes: nodes.clone() });
+                n2 = Arc::new(ParseTree::NODE { label: crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), nodes: nodes.clone() });
             } else {
                 n2 = n.clone();
             }
@@ -1969,7 +1976,7 @@ fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
         (Deref @ ParseTree::NODE { label: Deref @ ParseTree::EMPTY { .. }, .. }, _) => {
             (nodes, b) = removeCommentAtLabelPath(var_field!((*n).nodes, ParseTree::NODE).clone(), tok.clone(), path.clone())?;
             if b.clone() {
-                n2 = Arc::new(ParseTree::NODE { label: Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY), nodes: nodes.clone() });
+                n2 = Arc::new(ParseTree::NODE { label: crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), nodes: nodes.clone() });
             } else {
                 n2 = n.clone();
             }
@@ -2022,7 +2029,7 @@ fn removeCommentAtThisLabel(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
         Deref @ ParseTree::NODE { label: Deref @ ParseTree::EMPTY { .. }, .. } => {
             (nodes, success) = removeCommentAtThisLabel(var_field!((*n).nodes, ParseTree::NODE).clone(), tok.clone())?;
             if success.clone() {
-                DoubleEnded::push_back(delst.clone(), Arc::new(ParseTree::NODE { label: Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY), nodes: nodes.clone() }));
+                DoubleEnded::push_back(delst.clone(), Arc::new(ParseTree::NODE { label: crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), nodes: nodes.clone() }));
                 tree = DoubleEnded::toListAndClear(delst.clone(), rest.clone());
                 return Ok((tree.clone(), success.clone()));
             }
@@ -2119,7 +2126,7 @@ fn treeDiffWork1(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<me
     }
     diffSubtreeWorkArray1 = metamodelica::arrayCreate(nTokens.clone(), LexerModelicaDiff::noToken.clone());
     diffSubtreeWorkArray2 = metamodelica::arrayCreate(nTokens.clone(), LexerModelicaDiff::noToken.clone());
-    if parseTreeEq(makeNode(t1.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)), makeNode(t2.clone(), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)), diffSubtreeWorkArray1.clone(), diffSubtreeWorkArray2.clone())? {
+    if parseTreeEq(makeNode(t1.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY()), makeNode(t2.clone(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY()), diffSubtreeWorkArray1.clone(), diffSubtreeWorkArray2.clone())? {
         res = list![(Diff::Equal.clone(), t1.clone())];
         return Ok(res.clone());
     }
@@ -2429,8 +2436,8 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
     while !(diffLocal.clone().is_empty()) {
         (diffEnum, treeLast) = listHead(diffLocal.clone())?;
         (firstTreeSecondLast, firstTreeLast) = (::match_deref::match_deref! { match &(treeLast.clone()) {
-        Deref @ metamodelica::List::Nil => (Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY), Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)),
-        Deref @ metamodelica::List::Cons { head: firstTreeLast, tail: Deref @ metamodelica::List::Nil } => (Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY), firstTreeLast.clone()),
+        Deref @ metamodelica::List::Nil => (crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), crate::SimpleModelicaParser::ParseTree::interned_EMPTY()),
+        Deref @ metamodelica::List::Cons { head: firstTreeLast, tail: Deref @ metamodelica::List::Nil } => (crate::SimpleModelicaParser::ParseTree::interned_EMPTY(), firstTreeLast.clone()),
         _ => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::lastN(treeLast.clone(), 2)?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
@@ -2915,7 +2922,7 @@ fn nodeLabel(mut tree: Arc<ParseTree>) -> Arc<ParseTree> {
     let mut label: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     label = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ParseTree::NODE { .. } => var_field!((*tree).label, ParseTree::NODE).clone(),
-        _ => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
+        _ => crate::SimpleModelicaParser::ParseTree::interned_EMPTY(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     label
@@ -3060,7 +3067,7 @@ fn removeFirstTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
             bail!("fail")
         },
         Deref @ ParseTree::LEAF { .. } => {
-            Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)
+            crate::SimpleModelicaParser::ParseTree::interned_EMPTY()
         },
         Deref @ ParseTree::NODE { nodes: Deref @ metamodelica::List::Cons { head: node, tail: nodes }, label } => {
             makeNode(metamodelica::cons(removeFirstTokenInTree(node.clone())?, nodes.clone()), label.clone())
@@ -3077,7 +3084,7 @@ fn removeLastTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
             bail!("fail")
         },
         Deref @ ParseTree::LEAF { .. } => {
-            Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY)
+            crate::SimpleModelicaParser::ParseTree::interned_EMPTY()
         },
         Deref @ ParseTree::NODE { nodes, label } => {
             let mut node: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
@@ -3214,7 +3221,7 @@ fn makeNode(mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>, mut label: Arc<P
         }
         __acc.reverse()
     }), label.clone())) {
-        (Deref @ metamodelica::List::Nil, Deref @ ParseTree::EMPTY { .. }) => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
+        (Deref @ metamodelica::List::Nil, Deref @ ParseTree::EMPTY { .. }) => crate::SimpleModelicaParser::ParseTree::interned_EMPTY(),
         (Deref @ metamodelica::List::Cons { head: __esc_node, tail: Deref @ metamodelica::List::Nil }, Deref @ ParseTree::EMPTY { .. }) => {
             node = (*__esc_node).clone();
             node.clone()
@@ -3519,7 +3526,7 @@ fn parseTreeFilterWhitespace(mut t: Arc<ParseTree>) -> Arc<ParseTree> {
     let mut n2: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     t = (::match_deref::match_deref! { match &(t.clone()) {
-        Deref @ ParseTree::LEAF { .. } if (listMember(var_field!((*t).token, ParseTree::LEAF).id.clone(), whiteSpaceTokenIds.clone())) => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
+        Deref @ ParseTree::LEAF { .. } if (listMember(var_field!((*t).token, ParseTree::LEAF).id.clone(), whiteSpaceTokenIds.clone())) => crate::SimpleModelicaParser::ParseTree::interned_EMPTY(),
         Deref @ ParseTree::NODE { .. } => {
             changed = false;
             nodes = metamodelica::nil();

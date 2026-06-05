@@ -2414,7 +2414,7 @@ pub fn createSeedVars(mut indiffVar: Arc<DAE::ComponentRef>, mut inMatrixName: A
     let mut outSeedVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut derivedCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     derivedCref = Differentiate::createSeedCrefName(indiffVar.clone(), (inMatrixName.clone()).clone())?;
-    outSeedVar = BackendDAE::Var { varName: derivedCref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::STATE_DER, varDirection: openmodelica_frontend_types::DAE::VarDirection::INPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ComponentReference::crefLastType(derivedCref.clone())?, bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+    outSeedVar = BackendDAE::Var { varName: derivedCref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::STATE_DER, varDirection: openmodelica_frontend_types::DAE::VarDirection::INPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ComponentReference::crefLastType(derivedCref.clone())?, bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
     Ok(outSeedVar)
 }
 
@@ -2874,7 +2874,7 @@ fn calculateJacobianComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut 
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
                     let mut jacobian: Arc<BackendDAE::Jacobian> = Arc::new(BackendDAE::Jacobian::EMPTY_JACOBIAN);
                     let mut strictTearingset: BackendDAE::TearingSet = <BackendDAE::TearingSet as ::std::default::Default>::default();
-                    strictTearingset = BackendDAE::TearingSet { tearingvars: iterationvarsInts.clone(), residualequations: residualequations.clone(), innerEquations: metamodelica::nil(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
+                    strictTearingset = BackendDAE::TearingSet { tearingvars: iterationvarsInts.clone(), residualequations: residualequations.clone(), innerEquations: metamodelica::nil(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() };
                     (jacobian, shared) = calculateTearingSetJacobian(inVars.clone(), inEqns.clone(), strictTearingset.clone(), inShared.clone(), true)?;
                     strictTearingset.jac = jacobian.clone();
                     Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: strictTearingset.clone(), casualTearingSet: None, linear: true, mixedSystem: mixedSystem.clone() }), shared.clone()))
@@ -3286,7 +3286,7 @@ pub fn getSymbolicJacobian(mut inDiffVars: BackendDAE::Variables, mut inResEquat
             if Flags::isSet(Flags::JAC_DUMP.clone())? {
                 Error::addInternalError((literal!("function getSymbolicJacobian failed")).clone(), metamodelica::sourceInfo!("BackEnd/SymbolicJacobian.mo"))?;
             }
-            outJacobian = Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN);
+            outJacobian = openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN();
             outShared = inShared.clone();
         }
     }

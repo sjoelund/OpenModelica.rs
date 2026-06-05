@@ -1022,7 +1022,7 @@ fn extArgsToSimExtArgs(mut extArg: DAE::ExtArg) -> Result<Arc<SimCodeFunction::S
             Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARGSIZE { cref: componentRef.clone(), isInput: true, outputIndex: 0, type_: type_.clone(), exp: exp_.clone() })
         },
         DAE::ExtArg::NOEXTARG { .. } => {
-            Arc::new(openmodelica_simcode_types::SimCodeFunction::SimExtArg::SIMNOEXTARG)
+            openmodelica_simcode_types::SimCodeFunction::SimExtArg::interned_SIMNOEXTARG()
         },
     });
     Ok(simExtArg)

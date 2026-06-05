@@ -1201,7 +1201,7 @@ fn jacobianSymbolic(mut name: ArcStr, mut jacType: JacobianType, mut seedCandida
         makeVarTraverse(v.clone(), (name.clone()).clone(), pDer_vars_ptr.clone(), diff_map.clone(), (std::sync::Arc::new({ let __pe_b2 = true; move |__pe_a0, __pe_a1| NBVariable::makePDerVar(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, ArcStr) -> Result<(Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<Variable::NFVariable>>)> + 'static>), staticAsContinuous.clone())?;
     }
     tmp_vars = Pointer::access(pDer_vars_ptr.clone());
-    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(openmodelica_nf_frontend::NFType::REAL) }), adjoint_map: None, scalarized: seedCandidates.scalarized.clone(), funcMap: funcMap.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: false, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), adjoint_map: None, scalarized: seedCandidates.scalarized.clone(), funcMap: funcMap.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     (diffed_comps, diffArguments) = Differentiate::differentiateStrongComponentList(comps.clone(), diffArguments.clone(), idx.clone(), (name.clone()).clone(), literal!("NBJacobian.jacobianSymbolic"))?;
     unknown_vars = listAppend(res_vars.clone(), tmp_vars.clone());
     all_vars = unknown_vars.clone();
@@ -1257,7 +1257,7 @@ fn buildAdjointRhs(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut terms: Ar
 // accumulating into the provided adjoint_map. Returns updated DifferentiationArguments.
 fn accumulateAdjointForResidual(mut residual: Arc<Expression::NFExpression>, mut seed: Arc<Expression::NFExpression>, mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>, mut funcMapIn: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut scalarized: bool, mut adjoint_map_in: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<Expression::NFExpression>>>>>) -> Result<Arc<DifferentiationArguments::DifferentiationArguments>> {
     let mut diffArguments: Arc<DifferentiationArguments::DifferentiationArguments> = Arc::new(<DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
-    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: true, current_grad: seed.clone(), adjoint_map: Some(adjoint_map_in.clone()), scalarized: scalarized.clone(), funcMap: funcMapIn.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: true, current_grad: seed.clone(), adjoint_map: Some(adjoint_map_in.clone()), scalarized: scalarized.clone(), funcMap: funcMapIn.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     (_, diffArguments) = Differentiate::differentiateExpression(residual.clone(), diffArguments.clone())?;
     Ok(diffArguments)
 }
@@ -1272,7 +1272,7 @@ fn makeAdjointComponent(mut lhsKey: Arc<ComponentRef::NFComponentRef>, mut adjoi
     let mut lhsVarPtr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     terms = UnorderedMap::getOrFail(lhsKey.clone(), adjoint_map.clone())?;
     rhsExpr = buildAdjointRhs(lhsKey.clone(), terms.clone())?;
-    eqPtr = NBEquation::Equation::makeAssignment(Expression::fromCref(lhsKey.clone(), false)?, rhsExpr.clone(), Pointer::create(eqIndex.clone()), (contextName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
+    eqPtr = NBEquation::Equation::makeAssignment(Expression::fromCref(lhsKey.clone(), false)?, rhsExpr.clone(), Pointer::create(eqIndex.clone()), (contextName.clone()).clone(), crate::NBEquation::Iterator::interned_EMPTY(), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
     lhsVarPtr = NBVariable::getVarPointer(lhsKey.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBJacobian.mo"))?;
     eq = Pointer::access(eqPtr.clone());
     diffed_comp = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -1485,7 +1485,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
         __acc.reverse()
     });
             for mut iIdx in 1..=(residuals.clone().len() as i32) {
-                (lhsVarPtr, newC) = NBVariable::makeAuxVar((arcstr::literal!(NBVariable::TEMPORARY_STR)).clone(), Pointer::access(idx.clone()) + 1, Arc::new(openmodelica_nf_frontend::NFType::REAL), false)?;
+                (lhsVarPtr, newC) = NBVariable::makeAuxVar((arcstr::literal!(NBVariable::TEMPORARY_STR)).clone(), Pointer::access(idx.clone()) + 1, openmodelica_nf_frontend::NFType::interned_REAL(), false)?;
                 Pointer::update(idx.clone(), Pointer::access(idx.clone()) + 1);
                 (newC, lhsVarPtr) = NBVariable::makePDerVar(newC.clone(), (newName.clone()).clone(), true)?;
                 lambdaPtrs = metamodelica::cons(lhsVarPtr.clone(), lambdaPtrs.clone());
@@ -1530,7 +1530,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
                     terms_j = UnorderedMap::getOrDefault(ySeedCref.clone(), loop_product_adjoint_map.clone(), metamodelica::nil())?;
                     lhs_j = buildAdjointRhs(ySeedCref.clone(), terms_j.clone())?;
                     rhs_j = Expression::fromCref(ySeedCref.clone(), false)?;
-                    resid_j = NBEquation::Equation::makeAssignment(lhs_j.clone(), rhs_j.clone(), idx.clone(), (newName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
+                    resid_j = NBEquation::Equation::makeAssignment(lhs_j.clone(), rhs_j.clone(), idx.clone(), (newName.clone()).clone(), crate::NBEquation::Iterator::interned_EMPTY(), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
                     linResEqnPtrs = metamodelica::cons(NBEquation::Equation::createResidual(resid_j.clone(), None, false, false)?, linResEqnPtrs.clone());
                 } else {
                     continue;
@@ -1568,7 +1568,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after loop adding:\n")); __mm_s.push_str(&*adjointMapToString(Some(adjoint_map.clone()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: true, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(openmodelica_nf_frontend::NFType::REAL) }), adjoint_map: Some(adjoint_map.clone()), scalarized: seedCandidates.scalarized.clone(), funcMap: funcMap.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    diffArguments = Arc::new(DifferentiationArguments::DifferentiationArguments { collectAdjoints: true, current_grad: Arc::new(Expression::NFExpression::EMPTY { ty: openmodelica_nf_frontend::NFType::interned_REAL() }), adjoint_map: Some(adjoint_map.clone()), scalarized: seedCandidates.scalarized.clone(), funcMap: funcMap.clone(), diffType: Differentiate::DifferentiationType::JACOBIAN.clone(), diff_map: Some(diff_map.clone()), new_vars: metamodelica::nil(), diffCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     (_, diffArguments) = Differentiate::differentiateStrongComponentListAdjoint(comps.clone(), diffArguments.clone(), idx.clone(), (newName.clone()).clone(), literal!("NBJacobian.jacobianSymbolicAdjoint"))?;
     if Flags::isSet(Flags::DEBUG_ADJOINT.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Adjoint map after differentiation:\n")); __mm_s.push_str(&*adjointMapToString(diffArguments.adjoint_map.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());

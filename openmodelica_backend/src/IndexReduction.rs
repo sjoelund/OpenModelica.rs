@@ -1556,7 +1556,7 @@ fn generateStateSets(mut iTplLst: StateSets, mut iSetIndex: i32, mut iVars: Back
         (mulAdstates, _) = Expression::extendArrExp(mulAdstates.clone(), false)?;
         expset = if (b.clone()) {Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: rang.clone() })] }), scalar: true, array: expcrset.clone() })} else {listHead(expcrset.clone())?};
         expderset = if (b.clone()) {Arc::new(DAE::Exp::ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: rang.clone() })] }), scalar: true, array: expcrdset.clone() })} else {listHead(expcrdset.clone())?};
-        source = Arc::new(DAE::ElementSource { info: SourceInfo { fileName: (literal!("stateselection")).clone(), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) }, partOfLst: metamodelica::nil(), instance: Arc::new(openmodelica_frontend_types::DAE::ComponentPrefix::NOCOMPPRE), connectEquationOptLst: metamodelica::nil(), typeLst: metamodelica::nil(), operations: metamodelica::nil(), comment: metamodelica::nil() });
+        source = Arc::new(DAE::ElementSource { info: SourceInfo { fileName: (literal!("stateselection")).clone(), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) }, partOfLst: metamodelica::nil(), instance: openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(), connectEquationOptLst: metamodelica::nil(), typeLst: metamodelica::nil(), operations: metamodelica::nil(), comment: metamodelica::nil() });
         tp = ComponentReference::crefTypeFull(crA.clone())?;
         tp = DAEUtil::expTypeElementType(tp.clone());
         if DAEUtil::expTypeComplex(tp.clone()) {
@@ -1574,7 +1574,7 @@ fn generateStateSets(mut iTplLst: StateSets, mut iSetIndex: i32, mut iVars: Back
         oEqns = BackendEquation::add(deqn.clone(), oEqns.clone())?;
         stateCandidates = List::map1(stateCandidates.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?;
         otherVars = List::map1(otherVars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?;
-        oStateSets = metamodelica::cons(BackendDAE::StateSet { index: oSetIndex.clone(), rang: rang.clone(), state: crset.clone(), crA: crA.clone(), varA: aVars.clone(), statescandidates: stateCandidates.clone(), ovars: otherVars.clone(), eqns: cEqnsLst.clone(), oeqns: oEqnLst.clone(), crJ: crJ.clone(), varJ: varJ.clone(), jacobian: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, oStateSets.clone());
+        oStateSets = metamodelica::cons(BackendDAE::StateSet { index: oSetIndex.clone(), rang: rang.clone(), state: crset.clone(), crA: crA.clone(), varA: aVars.clone(), statescandidates: stateCandidates.clone(), ovars: otherVars.clone(), eqns: cEqnsLst.clone(), oeqns: oEqnLst.clone(), crJ: crJ.clone(), varJ: varJ.clone(), jacobian: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, oStateSets.clone());
         oSetIndex = oSetIndex.clone() + 1;
     }
     if Flags::isSet(Flags::BLT_DUMP.clone())? {
@@ -2270,7 +2270,7 @@ fn getAdjacencyMatrixLevelEquations(mut iEqns: Arc<metamodelica::List<Arc<Backen
             let mut i1: i32 = 0;
             let mut rowSize: i32 = 0;
             let mut size: i32 = 0;
-            (rowTree, size) = BackendDAEUtil::adjacencyRow(e.clone(), vars.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(functionTree.clone()), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+            (rowTree, size) = BackendDAEUtil::adjacencyRow(e.clone(), vars.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(functionTree.clone()), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone())?;
             row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
             rowSize = sindex.clone() + size.clone();
             i1 = index.clone() + 1;

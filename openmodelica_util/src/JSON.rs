@@ -84,6 +84,29 @@ pub enum JSON {
     FALSE,
     NULL,
 }
+impl JSON {
+    pub fn interned_TRUE() -> Arc<JSON> {
+        thread_local! {
+            static INTERNED: Arc<JSON> = Arc::new(JSON::TRUE);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_FALSE() -> Arc<JSON> {
+        thread_local! {
+            static INTERNED: Arc<JSON> = Arc::new(JSON::FALSE);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_NULL() -> Arc<JSON> {
+        thread_local! {
+            static INTERNED: Arc<JSON> = Arc::new(JSON::NULL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_TRUE() -> Arc<JSON> { JSON::interned_TRUE() }
+pub fn interned_FALSE() -> Arc<JSON> { JSON::interned_FALSE() }
+pub fn interned_NULL() -> Arc<JSON> { JSON::interned_NULL() }
 impl Default for JSON {
     fn default() -> Self { Self::TRUE }
 }
@@ -142,12 +165,12 @@ pub fn makeNumber(mut r: metamodelica::Real) -> Arc<JSON> {
 }
 
 pub fn makeBoolean(mut b: bool) -> Arc<JSON> {
-    let mut obj: Arc<JSON> = if (b.clone()) {Arc::new(crate::JSON::TRUE)} else {Arc::new(crate::JSON::FALSE)};
+    let mut obj: Arc<JSON> = if (b.clone()) {crate::JSON::interned_TRUE()} else {crate::JSON::interned_FALSE()};
     obj
 }
 
 pub fn makeNull() -> Arc<JSON> {
-    let mut obj: Arc<JSON> = Arc::new(crate::JSON::NULL);
+    let mut obj: Arc<JSON> = crate::JSON::interned_NULL();
     obj
 }
 
@@ -674,9 +697,9 @@ pub fn parse_value(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc<
             (value, tokens) = parse_array(inTokens.clone())?;
             (value.clone(), tokens.clone())
         },
-        LexerJSON::TokenId::TRUE => (Arc::new(crate::JSON::TRUE), tokens.clone()),
-        LexerJSON::TokenId::FALSE => (Arc::new(crate::JSON::FALSE), tokens.clone()),
-        LexerJSON::TokenId::NULL => (Arc::new(crate::JSON::NULL), tokens.clone()),
+        LexerJSON::TokenId::TRUE => (crate::JSON::interned_TRUE(), tokens.clone()),
+        LexerJSON::TokenId::FALSE => (crate::JSON::interned_FALSE(), tokens.clone()),
+        LexerJSON::TokenId::NULL => (crate::JSON::interned_NULL(), tokens.clone()),
         _ => {
             errorExpected((literal!("a value")).clone(), tok.clone())?;
             bail!("fail")

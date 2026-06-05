@@ -210,7 +210,7 @@ fn unelabSubscripts(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscrip
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: xs } => {
             let mut xs_1: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             xs_1 = unelabSubscripts(xs.clone())?;
-            metamodelica::cons(Arc::new(openmodelica_ast::Absyn::Subscript::NOSUB), xs_1.clone())
+            metamodelica::cons(openmodelica_ast::Absyn::Subscript::interned_NOSUB(), xs_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e }, tail: xs } => {
             let mut xs_1: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
@@ -246,8 +246,8 @@ pub fn toExpCref(mut absynCref: Arc<Absyn::ComponentRef>) -> Result<Arc<DAE::Com
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => ComponentReferenceBasics::makeCrefIdent((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone())?),
         Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => ComponentReferenceBasics::makeCrefQual((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone())?, toExpCref(var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?),
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => toExpCref(var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        Deref @ Absyn::ComponentRef::WILD { .. } => Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD),
-        Deref @ Absyn::ComponentRef::ALLWILD { .. } => Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD),
+        Deref @ Absyn::ComponentRef::WILD { .. } => openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(),
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(daeCref)
@@ -260,7 +260,7 @@ fn toExpCrefSubs(mut absynSubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) 
         for mut sub in (absynSubs.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => Arc::new(DAE::Subscript::INDEX { exp: Expression::fromAbsynExp(var_field!((*sub).subscript, Absyn::Subscript::SUBSCRIPT).clone())? }),
-        Deref @ Absyn::Subscript::NOSUB { .. } => Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM),
+        Deref @ Absyn::Subscript::NOSUB { .. } => openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             __acc = cons(__x, __acc);
@@ -2250,7 +2250,7 @@ pub fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: boo
                     basety = __pa1.clone();
                     dims = __pa2.clone();
                     correctTy = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
-                    subs = List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), (dims.clone().len() as i32));
+                    subs = List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), (dims.clone().len() as i32));
                     crefs = expandCref2((id.clone()).clone(), correctTy.clone(), subs.clone(), dims.clone())?;
                     Ok(expandCrefLst(crefs.clone(), varLst.clone(), metamodelica::nil())?)
                 }
@@ -2266,7 +2266,7 @@ pub fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: boo
                     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     (basety, dims) = TypesDump::flattenArrayType(ty.clone());
                     correctTy = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
-                    subs = List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), (dims.clone().len() as i32));
+                    subs = List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), (dims.clone().len() as i32));
                     Ok(expandCref2((id.clone()).clone(), correctTy.clone(), subs.clone(), dims.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -2292,7 +2292,7 @@ pub fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: boo
                     correctTy = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
                     missing_subs = (dims.clone().len() as i32) - (subs.clone().len() as i32);
                     if missing_subs.clone() > 0 {
-                        subs = listAppend(subs.clone(), List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), missing_subs.clone()));
+                        subs = listAppend(subs.clone(), List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), missing_subs.clone()));
                     }
                     crefs = expandCref2((id.clone()).clone(), correctTy.clone(), subs.clone(), dims.clone())?;
                     Ok(expandCrefLst(crefs.clone(), varLst.clone(), metamodelica::nil())?)
@@ -2312,7 +2312,7 @@ pub fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: boo
                     correctTy = Arc::new(DAE::Type::T_ARRAY { ty: basety.clone(), dims: dims.clone() });
                     missing_subs = (dims.clone().len() as i32) - (subs.clone().len() as i32);
                     if missing_subs.clone() > 0 {
-                        subs = listAppend(subs.clone(), List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), missing_subs.clone()));
+                        subs = listAppend(subs.clone(), List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), missing_subs.clone()));
                     }
                     Ok(expandCref2((id.clone()).clone(), correctTy.clone(), subs.clone(), dims.clone())?)
                 }

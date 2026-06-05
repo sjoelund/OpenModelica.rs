@@ -78,7 +78,7 @@ pub fn emptyEqns() -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equat
 }
 
 pub fn emptyEqnsSized(mut size: i32) -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> {
-    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::new(size.clone(), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
+    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::new(size.clone(), openmodelica_backend_types::BackendDAE::Equation::interned_DUMMY_EQUATION());
     outEquationArray
 }
 
@@ -122,7 +122,7 @@ pub fn merge(mut inEqns1: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::E
 
 pub fn listEquation(mut inEquationList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> {
     let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    outEquationArray = ExpandableArray::new((inEquationList.clone().len() as i32), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
+    outEquationArray = ExpandableArray::new((inEquationList.clone().len() as i32), openmodelica_backend_types::BackendDAE::Equation::interned_DUMMY_EQUATION());
     for mut eq in &*inEquationList.clone() {
         let mut eq = eq.clone();
         ExpandableArray::add(eq.clone(), outEquationArray.clone())?;
@@ -136,7 +136,7 @@ pub fn equationList(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<
 }
 
 pub fn copyEquationArray(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> {
-    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::copy(inEquationArray.clone(), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
+    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::copy(inEquationArray.clone(), openmodelica_backend_types::BackendDAE::Equation::interned_DUMMY_EQUATION());
     outEquationArray
 }
 
@@ -1198,7 +1198,7 @@ pub fn equationEqual(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<BackendDAE::
 pub fn equationAddDAE(mut inEquation: Arc<BackendDAE::Equation>, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     outEqSystem = BackendDAEUtil::setEqSystEqs(inEqSystem.clone(), add(inEquation.clone(), inEqSystem.orderedEqs.clone())?);
-    assign_field!(outEqSystem.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING));
+    assign_field!(outEqSystem.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING());
     Ok(outEqSystem)
 }
 
@@ -1206,7 +1206,7 @@ pub fn equationsAddDAE(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE::E
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = inEqSystem.clone();
     assign_field!(
         outEqSystem.orderedEqs = addList(inEquations.clone(), outEqSystem.orderedEqs.clone())?,
-        outEqSystem.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
+        outEqSystem.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING()
     );
     Ok(outEqSystem)
 }
@@ -2188,7 +2188,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
             let mut lhs: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut dummyVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             rhs = Expression::expSub(e1.clone(), e2.clone())?;
             (rhs, _) = ExpressionSimplify::simplify1(rhs.clone())?;
             expNull = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
@@ -2203,7 +2203,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
             let mut lhs: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut dummyVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             rhs = Expression::expSub(e1.clone(), e2.clone())?;
             (rhs, _) = ExpressionSimplify::simplify1(rhs.clone())?;
             expNull = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
@@ -2218,7 +2218,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
             let mut lhs: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut dummyVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             rhs = Expression::expSub(e2.clone(), e1.clone())?;
             (rhs, _) = ExpressionSimplify::simplify1(rhs.clone())?;
             expNull = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
@@ -2233,7 +2233,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
             let mut lhs: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut dummyVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             rhs = Expression::expSub(e2.clone(), e1.clone())?;
             (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
             expNull = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
@@ -2247,7 +2247,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
             let mut lhs: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut dummyVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             rhs = Expression::expSub(e2.clone(), e1.clone())?;
             (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
             expNull = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) });
@@ -2271,7 +2271,7 @@ pub fn generateResidualFromRelation(mut conCrefName: ArcStr, mut iRhs: Arc<DAE::
                 }
             }
             lhs = ComponentReferenceBasics::makeCrefIdent((conCrefName.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            dummyVar = BackendDAE::Var { varName: lhs.clone(), varKind: conKind.clone(), varDirection: openmodelica_frontend_types::DAE::VarDirection::OUTPUT, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             dummyVar = BackendVariable::mergeAliasVars(dummyVar.clone(), v.clone(), false, knvars.clone())?;
             eqn = Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: lhs.clone(), exp: e1.clone(), source: Source.clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_UNKNOWN.clone() });
             (list![eqn.clone()], dummyVar.clone())

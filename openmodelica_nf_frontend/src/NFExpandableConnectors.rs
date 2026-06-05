@@ -351,7 +351,7 @@ fn augmentExpandableConnector(mut conn: Arc<Connector::NFConnector>, mut expanda
                 comp_node = __try0_o0;
             }
             Err(_) => {
-                comp_node = Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE);
+                comp_node = crate::NFInstNode::InstNode::interned_EMPTY_NODE();
             }
         }
         if InstNode::isEmpty(comp_node.clone()) {

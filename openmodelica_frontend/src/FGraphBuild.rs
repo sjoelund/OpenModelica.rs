@@ -130,7 +130,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut i
             } };
             cdef = __pa0.clone();
             name = __pa1.clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED });
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             g = mkConstrainClass(cls.clone(), nr.clone(), inKind.clone(), g.clone())?;
@@ -401,7 +401,7 @@ pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, m
             let mut nr: Ref = Default::default();
             let mut g = (*g).clone();
             name = (FNode::mkExtendsName(p.clone())?).clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::EX { e: inElement.clone(), r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD) });
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::EX { e: inElement.clone(), r#mod: openmodelica_frontend_types::DAE::Mod::interned_NOMOD() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), FCore::ModScope::MS_EXTENDS { path: p.clone() }, nr.clone(), inKind.clone(), g.clone())?;
@@ -509,7 +509,7 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
             let mut name: Name = arcstr::literal!("");
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
-            g = mkExpressionNode((name.clone()).clone(), Arc::new(openmodelica_ast::Absyn::Exp::END), inParentRef.clone(), inKind.clone(), g.clone())?;
+            g = mkExpressionNode((name.clone()).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },

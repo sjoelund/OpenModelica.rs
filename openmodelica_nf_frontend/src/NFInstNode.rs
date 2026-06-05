@@ -124,6 +124,43 @@ pub enum InstNodeType {
     ///     implicitly implicit), but by e.g. the annotation scope.
     IMPLICIT_SCOPE,
 }
+impl InstNodeType {
+    pub fn interned_NORMAL_CLASS() -> Arc<InstNodeType> {
+        thread_local! {
+            static INTERNED: Arc<InstNodeType> = Arc::new(InstNodeType::NORMAL_CLASS);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_BUILTIN_CLASS() -> Arc<InstNodeType> {
+        thread_local! {
+            static INTERNED: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_NORMAL_COMP() -> Arc<InstNodeType> {
+        thread_local! {
+            static INTERNED: Arc<InstNodeType> = Arc::new(InstNodeType::NORMAL_COMP);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_GENERATED_INNER() -> Arc<InstNodeType> {
+        thread_local! {
+            static INTERNED: Arc<InstNodeType> = Arc::new(InstNodeType::GENERATED_INNER);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_IMPLICIT_SCOPE() -> Arc<InstNodeType> {
+        thread_local! {
+            static INTERNED: Arc<InstNodeType> = Arc::new(InstNodeType::IMPLICIT_SCOPE);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NORMAL_CLASS() -> Arc<InstNodeType> { InstNodeType::interned_NORMAL_CLASS() }
+pub fn interned_BUILTIN_CLASS() -> Arc<InstNodeType> { InstNodeType::interned_BUILTIN_CLASS() }
+pub fn interned_NORMAL_COMP() -> Arc<InstNodeType> { InstNodeType::interned_NORMAL_COMP() }
+pub fn interned_GENERATED_INNER() -> Arc<InstNodeType> { InstNodeType::interned_GENERATED_INNER() }
+pub fn interned_IMPLICIT_SCOPE() -> Arc<InstNodeType> { InstNodeType::interned_IMPLICIT_SCOPE() }
 impl Default for InstNodeType {
     fn default() -> Self { Self::NORMAL_CLASS }
 }
@@ -162,12 +199,21 @@ pub mod CachedData {
             specialBuiltin: bool,
         },
     }
+    impl CachedData {
+        pub fn interned_NO_CACHE() -> Arc<CachedData> {
+            thread_local! {
+                static INTERNED: Arc<CachedData> = Arc::new(CachedData::NO_CACHE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_NO_CACHE() -> Arc<CachedData> { CachedData::interned_NO_CACHE() }
     impl Default for CachedData {
         fn default() -> Self { Self::NO_CACHE }
     }
     pub use self::CachedData::{NO_CACHE,PACKAGE,FUNCTION};
     pub fn empty() -> metamodelica::Array<Arc<CachedData>> {
-        let mut cache: metamodelica::Array<Arc<CachedData>> = arrayCreate(NUMBER_OF_CACHES.clone(), Arc::new(crate::NFInstNode::CachedData::NO_CACHE));
+        let mut cache: metamodelica::Array<Arc<CachedData>> = arrayCreate(NUMBER_OF_CACHES.clone(), crate::NFInstNode::CachedData::interned_NO_CACHE());
         cache
     }
 
@@ -220,7 +266,7 @@ pub mod CachedData {
     }
 
     pub fn clearPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<metamodelica::Array<Arc<CachedData>>> {
-        let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); _arr.borrow_mut()[(2-1) as usize] = Arc::new(crate::NFInstNode::CachedData::NO_CACHE); _arr};
+        let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); _arr.borrow_mut()[(2-1) as usize] = crate::NFInstNode::CachedData::interned_NO_CACHE(); _arr};
         Ok(out_caches)
     }
 
@@ -275,6 +321,15 @@ pub mod InstNode {
         },
         EMPTY_NODE,
     }
+    impl InstNode {
+        pub fn interned_EMPTY_NODE() -> Arc<InstNode> {
+            thread_local! {
+                static INTERNED: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EMPTY_NODE() -> Arc<InstNode> { InstNode::interned_EMPTY_NODE() }
     impl Default for InstNode {
         fn default() -> Self { Self::EMPTY_NODE }
     }
@@ -282,7 +337,7 @@ pub mod InstNode {
     pub fn new(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         node = (::match_deref::match_deref! { match &(definition.clone()) {
-        Deref @ SCode::Element::CLASS { .. } => newClass(definition.clone(), parent.clone(), Arc::new(crate::NFInstNode::InstNodeType::NORMAL_CLASS))?,
+        Deref @ SCode::Element::CLASS { .. } => newClass(definition.clone(), parent.clone(), crate::NFInstNode::InstNodeType::interned_NORMAL_CLASS())?,
         Deref @ SCode::Element::COMPONENT { .. } => newComponent(definition.clone(), parent.clone())?,
         _ => bail!("match: no arm matched"),
     } });
@@ -299,7 +354,7 @@ pub mod InstNode {
         } };
         vis = __pa0.clone();
         name = __pa1.clone();
-        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(Arc::new(crate::NFClass::NOT_INSTANTIATED)), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: nodeType.clone() });
+        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: nodeType.clone() });
         Ok(node)
     }
 
@@ -313,7 +368,7 @@ pub mod InstNode {
         } };
         vis = __pa0.clone();
         name = __pa1.clone();
-        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: Some(definition.clone()), visibility: Prefixes::visibilityFromSCode(vis.clone()), component: Pointer::create(Component::new(definition.clone())), parent: parent.clone(), nodeType: Arc::new(crate::NFInstNode::InstNodeType::NORMAL_COMP) });
+        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: Some(definition.clone()), visibility: Prefixes::visibilityFromSCode(vis.clone()), component: Pointer::create(Component::new(definition.clone())), parent: parent.clone(), nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
         Ok(node)
     }
 
@@ -329,13 +384,13 @@ pub mod InstNode {
         vis = __pa0.clone();
         base_path = __pa1.clone();
         name = (AbsynUtil::pathLastIdent(base_path.clone())?).clone();
-        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(Arc::new(crate::NFClass::NOT_INSTANTIATED)), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: Arc::new(InstNodeType::BASE_CLASS { parent: parent.clone(), definition: definition.clone(), ty: nodeType(parent.clone())? }) });
+        node = Arc::new(InstNode::CLASS_NODE { name: (name.clone()).clone(), definition: definition.clone(), visibility: Prefixes::visibilityFromSCode(vis.clone()), cls: Pointer::create(crate::NFClass::interned_NOT_INSTANTIATED()), caches: CachedData::empty(), parentScope: parent.clone(), nodeType: Arc::new(InstNodeType::BASE_CLASS { parent: parent.clone(), definition: definition.clone(), ty: nodeType(parent.clone())? }) });
         Ok(node)
     }
 
     pub fn newIterator(mut name: ArcStr, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Arc<InstNode> {
         let mut iterator: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        iterator = fromComponent((name.clone()).clone(), Component::newIterator(ty.clone(), info.clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
+        iterator = fromComponent((name.clone()).clone(), Component::newIterator(ty.clone(), info.clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
         iterator
     }
 
@@ -353,7 +408,7 @@ pub mod InstNode {
 
     pub fn fromComponent(mut name: ArcStr, mut component: Arc<Component::NFComponent>, mut parent: Arc<InstNode>) -> Arc<InstNode> {
         let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: None, visibility: Visibility::PUBLIC.clone(), component: Pointer::create(component.clone()), parent: parent.clone(), nodeType: Arc::new(crate::NFInstNode::InstNodeType::NORMAL_COMP) });
+        node = Arc::new(InstNode::COMPONENT_NODE { name: (name.clone()).clone(), definition: None, visibility: Visibility::PUBLIC.clone(), component: Pointer::create(component.clone()), parent: parent.clone(), nodeType: crate::NFInstNode::InstNodeType::interned_NORMAL_COMP() });
         node
     }
 
@@ -649,7 +704,7 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { .. } => var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(),
         Deref @ IMPLICIT_SCOPE { .. } => var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(),
-        _ => Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE),
+        _ => crate::NFInstNode::InstNode::interned_EMPTY_NODE(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         parent
@@ -680,7 +735,7 @@ pub mod InstNode {
         },
         Deref @ COMPONENT_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
         Deref @ IMPLICIT_SCOPE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
-        _ => Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE),
+        _ => crate::NFInstNode::InstNode::interned_EMPTY_NODE(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(parent)
@@ -941,8 +996,8 @@ pub mod InstNode {
         let mut component: Arc<Component::NFComponent> = Arc::new(Component::WILD);
         component = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()),
-        Deref @ VAR_NODE { .. } => Arc::new(crate::NFComponent::WILD),
-        Deref @ NAME_NODE { .. } => Arc::new(crate::NFComponent::WILD),
+        Deref @ VAR_NODE { .. } => crate::NFComponent::interned_WILD(),
+        Deref @ NAME_NODE { .. } => crate::NFComponent::interned_WILD(),
         _ => bail!("match: no arm matched"),
     } });
         Ok(component)
@@ -1162,7 +1217,7 @@ pub mod InstNode {
             var = Pointer::access(var_field!((*node).varPointer, InstNode::VAR_NODE).clone());
             var.ty.clone()
         },
-        Deref @ NAME_NODE { .. } => Arc::new(crate::NFType::UNKNOWN),
+        Deref @ NAME_NODE { .. } => crate::NFType::interned_UNKNOWN(),
         _ => bail!("match: no arm matched"),
     } });
         Ok(ty)
@@ -1261,7 +1316,7 @@ pub mod InstNode {
             }
             scope = instanceParent(scope.clone())?;
         }
-        r#mod = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+        r#mod = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
         Ok((r#mod, scope))
     }
 
@@ -1876,7 +1931,7 @@ pub mod InstNode {
         r#mod = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Class::getModifier(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
         Deref @ COMPONENT_NODE { .. } => Component::getModifier(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
-        _ => Arc::new(crate::NFModifier::Modifier::NOMOD),
+        _ => crate::NFModifier::Modifier::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         r#mod
@@ -2113,7 +2168,7 @@ pub mod InstNode {
     pub fn hasBinding(mut node: Arc<InstNode>) -> Result<bool> {
         let mut hasBinding: bool = false;
         hasBinding = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))? || self::hasBinding(instanceParent(node.clone())?)?,
+        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE())? || self::hasBinding(instanceParent(node.clone())?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2209,7 +2264,7 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
         Deref @ COMPONENT_NODE { .. } => restriction(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))),
         Deref @ INNER_OUTER_NODE { .. } => restriction(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone()),
-        _ => Arc::new(crate::NFRestriction::UNKNOWN),
+        _ => crate::NFRestriction::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         res

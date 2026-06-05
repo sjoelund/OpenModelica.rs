@@ -107,7 +107,7 @@ pub fn newSet(mut prefix: DAE::Prefix, mut sets: Sets) -> Result<Sets> {
             pstr = __try1_o1;
         }
         Err(_) => {
-            cr = Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD);
+            cr = openmodelica_frontend_types::DAE::ComponentRef::interned_WILD();
             pstr = (literal!("")).clone();
         }
     }
@@ -1838,7 +1838,7 @@ fn evaluateConnectionOperators(mut sets: Sets, mut setArray: metamodelica::Array
     let mut has_cardinality: bool = System::getUsesCardinality();
     if System::getHasStreamConnectors() || has_cardinality.clone() {
         flow_threshold = Flags::getConfigReal(Flags::FLOW_THRESHOLD.clone())?;
-        (DAE, _, _) = DAEUtil::traverseDAE(DAE.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new({ let __pe_b2 = setArray.clone(); let __pe_b3 = has_cardinality.clone(); let __pe_b4 = flow_threshold.clone(); move |__pe_a0, __pe_a1| evaluateConnectionOperators2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Sets) -> Result<(Arc<DAE::Exp>, Sets)> + 'static>), sets.clone())?;
+        (DAE, _, _) = DAEUtil::traverseDAE(DAE.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new({ let __pe_b2 = setArray.clone(); let __pe_b3 = has_cardinality.clone(); let __pe_b4 = flow_threshold.clone(); move |__pe_a0, __pe_a1| evaluateConnectionOperators2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Sets) -> Result<(Arc<DAE::Exp>, Sets)> + 'static>), sets.clone())?;
         DAE = simplifyDAEElements(has_cardinality.clone(), DAE.clone())?;
     }
     Ok(DAE)

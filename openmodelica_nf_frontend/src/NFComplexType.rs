@@ -76,6 +76,15 @@ pub enum NFComplexType {
         destructor: Arc<InstNode::InstNode>,
     },
 }
+impl NFComplexType {
+    pub fn interned_CLASS() -> Arc<NFComplexType> {
+        thread_local! {
+            static INTERNED: Arc<NFComplexType> = Arc::new(NFComplexType::CLASS);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_CLASS() -> Arc<NFComplexType> { NFComplexType::interned_CLASS() }
 impl Default for NFComplexType {
     fn default() -> Self { Self::CLASS }
 }

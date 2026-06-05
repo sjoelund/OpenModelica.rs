@@ -115,6 +115,38 @@ pub enum TypeSignature {
         reason: ArcStr,
     },
 }
+impl TypeSignature {
+    pub fn interned_STRING_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::STRING_TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_TEXT_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::TEXT_TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_STRING_TOKEN_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::STRING_TOKEN_TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_INTEGER_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::INTEGER_TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_REAL_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::REAL_TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_BOOLEAN_TYPE() -> Arc<TypeSignature> {
+        static INTERNED: std::sync::LazyLock<Arc<TypeSignature>> = std::sync::LazyLock::new(|| Arc::new(TypeSignature::BOOLEAN_TYPE));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_STRING_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_STRING_TYPE() }
+pub fn interned_TEXT_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_TEXT_TYPE() }
+pub fn interned_STRING_TOKEN_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_STRING_TOKEN_TYPE() }
+pub fn interned_INTEGER_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_INTEGER_TYPE() }
+pub fn interned_REAL_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_REAL_TYPE() }
+pub fn interned_BOOLEAN_TYPE() -> Arc<TypeSignature> { TypeSignature::interned_BOOLEAN_TYPE() }
 impl Default for TypeSignature {
     fn default() -> Self { Self::STRING_TYPE }
 }
@@ -194,6 +226,18 @@ pub enum ExpressionBase {
     /// Parse error expression used when parser error occured.
     ERROR_EXP,
 }
+impl ExpressionBase {
+    pub fn interned_SOFT_NEW_LINE() -> Arc<ExpressionBase> {
+        static INTERNED: std::sync::LazyLock<Arc<ExpressionBase>> = std::sync::LazyLock::new(|| Arc::new(ExpressionBase::SOFT_NEW_LINE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_ERROR_EXP() -> Arc<ExpressionBase> {
+        static INTERNED: std::sync::LazyLock<Arc<ExpressionBase>> = std::sync::LazyLock::new(|| Arc::new(ExpressionBase::ERROR_EXP));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_SOFT_NEW_LINE() -> Arc<ExpressionBase> { ExpressionBase::interned_SOFT_NEW_LINE() }
+pub fn interned_ERROR_EXP() -> Arc<ExpressionBase> { ExpressionBase::interned_ERROR_EXP() }
 impl Default for ExpressionBase {
     fn default() -> Self { Self::SOFT_NEW_LINE }
 }
@@ -236,6 +280,18 @@ pub enum MatchingExp {
     },
     REST_MATCH,
 }
+impl MatchingExp {
+    pub fn interned_NONE_MATCH() -> Arc<MatchingExp> {
+        static INTERNED: std::sync::LazyLock<Arc<MatchingExp>> = std::sync::LazyLock::new(|| Arc::new(MatchingExp::NONE_MATCH));
+        (*INTERNED).clone()
+    }
+    pub fn interned_REST_MATCH() -> Arc<MatchingExp> {
+        static INTERNED: std::sync::LazyLock<Arc<MatchingExp>> = std::sync::LazyLock::new(|| Arc::new(MatchingExp::REST_MATCH));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NONE_MATCH() -> Arc<MatchingExp> { MatchingExp::interned_NONE_MATCH() }
+pub fn interned_REST_MATCH() -> Arc<MatchingExp> { MatchingExp::interned_REST_MATCH() }
 impl Default for MatchingExp {
     fn default() -> Self { Self::NONE_MATCH }
 }
@@ -484,7 +540,7 @@ pub const matchDefaultArgName: &'static str = "mArg";
 
 pub const impossibleIdent: &'static str = "*none*";
 
-pub static imlicitTxtArg: std::sync::LazyLock<(ArcStr, Arc<TypeSignature>)> = std::sync::LazyLock::new(|| { (arcstr::literal!(imlicitTxt), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE)) });
+pub static imlicitTxtArg: std::sync::LazyLock<(ArcStr, Arc<TypeSignature>)> = std::sync::LazyLock::new(|| { (arcstr::literal!(imlicitTxt), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE()) });
 
 //constant tuple<Ident,TypeSignature> imlicitTxtInputArg = (implicitTxtInArgName, TEXT_TYPE());
 /* internal types */
@@ -496,7 +552,7 @@ pub const emptyTxt: &'static str = "Tpl.emptyTxt";
 
 pub const errorIdent: &'static str = "!error!";
 
-pub static defaultIterOptions: std::sync::LazyLock<Arc<Tpl::IterOptions>> = std::sync::LazyLock::new(|| { Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }) });
+pub static defaultIterOptions: std::sync::LazyLock<Arc<Tpl::IterOptions>> = std::sync::LazyLock::new(|| { Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: None, alignNum: 0, alignOfset: 0, alignSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: crate::Tpl::StringToken::interned_ST_NEW_LINE() }) });
 
 //only achievable by the 'from' clause
 pub const indexOffsetOptionId: &'static str = "$indexOffset";
@@ -524,9 +580,9 @@ pub const relIndentOptionId: &'static str = "relIndent";
 pub const anchorOptionId: &'static str = "anchor";
 
 //constant defaultMMOptions
-pub static defaultEscOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (literal!("SOME")).clone() }), args: list![Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) })] }), Arc::new(TypeSignature::OPTION_TYPE { ofType: Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("10")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE))), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("100")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE))), (arcstr::literal!(indentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(absIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(relIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(anchorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE)))] });
+pub static defaultEscOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (literal!("SOME")).clone() }), args: list![Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() }) })] }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("10")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("100")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(indentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(absIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(relIndentOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(anchorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE()))] });
 
-pub static nonSpecifiedIterOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE))), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE))), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE)))] });
+pub static nonSpecifiedIterOptions: std::sync::LazyLock<Arc<metamodelica::List<(ArcStr, (Arc<MMExp>, Arc<TypeSignature>))>>> = std::sync::LazyLock::new(|| { list![(arcstr::literal!(indexOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(emptyOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(separatorOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("NONE()")).clone() }), Arc::new(TypeSignature::OPTION_TYPE { ofType: crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE() }))), (arcstr::literal!(alignNumOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignNumOffsetOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(alignSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE())), (arcstr::literal!(wrapWidthOptionId), (Arc::new(MMExp::MM_LITERAL { value: (literal!("0")).clone() }), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE())), (arcstr::literal!(wrapSeparatorOptionId), (Arc::new(MMExp::MM_STR_TOKEN { value: crate::Tpl::StringToken::interned_ST_NEW_LINE() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE()))] });
 
 pub type MMEscOption = (ArcStr, (Arc<MMExp>, Arc<TypeSignature>));
 
@@ -1269,7 +1325,7 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n TEXT_CREATE ident = ")); __mm_s.push_str(&*ident.clone()); ArcStr::from(__mm_s) }).clone())?;
                     }
                     encIdent = (encodeIdent((ident.clone()).clone(), (arcstr::literal!(letValueNamePrefix)).clone())?).clone();
-                    (freshIdent, locals) = updateLocalsForLetExp((ident.clone()).clone(), (encIdent.clone()).clone(), 0, Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), locals.clone(), scEnv.clone())?;
+                    (freshIdent, locals) = updateLocalsForLetExp((ident.clone()).clone(), (encIdent.clone()).clone(), 0, crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), locals.clone(), scEnv.clone())?;
                     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(statementsFromExp(txtexp.clone(), metamodelica::nil(), stmts.clone(), (arcstr::literal!(emptyTxt)).clone(), (freshIdent.clone()).clone(), locals.clone(), metamodelica::cons(Scope::RECURSIVE_SCOPE { recIdent: (ident.clone()).clone(), freshIdent: (freshIdent.clone()).clone() }, scEnv.clone()), tplPackage.clone(), accMMDecls.clone())?) {
                         (__pa0, __pa1, Deref @ metamodelica::List::Cons { head: _, tail: __pa2 }, __pa3, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1280,7 +1336,7 @@ pub fn statementsFromExp(mut inExp: Expression, mut inMMEscOptions: Arc<metamode
                     accMMDecls = __pa3.clone();
                     letOuttxt = __pa4.clone();
                     stmts = if (letOuttxt.clone() == arcstr::literal!(emptyTxt)) {metamodelica::cons(Arc::new(MMExp::MM_ASSIGN { lhsArgs: list![(freshIdent.clone()).clone()], rhs: Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (arcstr::literal!(emptyTxt)).clone() }) }) }), stmts.clone())} else {stmts.clone()};
-                    scEnv = metamodelica::cons(Scope::LET_SCOPE { ident: (ident.clone()).clone(), idType: Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), freshIdent: (freshIdent.clone()).clone(), isUsed: false }, scEnv.clone());
+                    scEnv = metamodelica::cons(Scope::LET_SCOPE { ident: (ident.clone()).clone(), idType: crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), freshIdent: (freshIdent.clone()).clone(), isUsed: false }, scEnv.clone());
                     (stmts, locals, scEnv, accMMDecls, intxt) = statementsFromExp(exp.clone(), metamodelica::nil(), stmts.clone(), (intxt.clone()).clone(), (outtxt.clone()).clone(), locals.clone(), scEnv.clone(), tplPackage.clone(), accMMDecls.clone())?;
                     let __pa5 = ::match_deref::match_deref! { match &(scEnv.clone()) {
                         Deref @ metamodelica::List::Cons { head: Scope::LET_SCOPE { .. }, tail: __pa5 } => __pa5.clone(),
@@ -1729,7 +1785,7 @@ pub fn statementsFromArg(mut inExp: Expression, mut inStmts: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 ((Deref @ ExpressionBase::STR_TOKEN { value: st }, sinfo), stmts, locals, scEnv, _, accMMDecls) => {
-                    Ok(((Arc::new(MMExp::MM_STR_TOKEN { value: st.clone() }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE), sinfo.clone()), stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone()))
+                    Ok(((Arc::new(MMExp::MM_STR_TOKEN { value: st.clone() }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE(), sinfo.clone()), stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1791,7 +1847,7 @@ pub fn statementsFromArg(mut inExp: Expression, mut inStmts: Arc<metamodelica::L
                     if Flags::isSet(Flags::FAILTRACE.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" arg FUN_CALL stmt =\n")); __mm_s.push_str(&*stmtsString(list![stmt.clone()])?); ArcStr::from(__mm_s) }).clone())?;
                     }
-                    locals = addLocalValue((outtxt.clone()).clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), locals.clone())?;
+                    locals = addLocalValue((outtxt.clone()).clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), locals.clone())?;
                     Ok(((mmexp.clone(), rettype.clone(), sinfo.clone()), metamodelica::cons(stmt.clone(), stmts.clone()), locals.clone(), scEnv.clone(), accMMDecls.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1808,9 +1864,9 @@ pub fn statementsFromArg(mut inExp: Expression, mut inStmts: Arc<metamodelica::L
                     let mut accMMDecls = (*accMMDecls).clone();
                     outtxt = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(textTempVarNamePrefix)); __mm_s.push_str(&*intString((locals.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
                     (stmts, locals, scEnv, accMMDecls, outtxt) = statementsFromExp(exp.clone(), metamodelica::nil(), stmts.clone(), (arcstr::literal!(emptyTxt)).clone(), (outtxt.clone()).clone(), locals.clone(), scEnv.clone(), tplPackage.clone(), accMMDecls.clone())?;
-                    locals = addLocalValue((outtxt.clone()).clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), locals.clone())?;
+                    locals = addLocalValue((outtxt.clone()).clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), locals.clone())?;
                     mmexp = Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (outtxt.clone()).clone() }) });
-                    Ok(((mmexp.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), sinfo.clone()), stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone()))
+                    Ok(((mmexp.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), sinfo.clone()), stmts.clone(), locals.clone(), scEnv.clone(), accMMDecls.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2122,7 +2178,7 @@ pub fn statementFromFun(mut inArgValues: Arc<metamodelica::List<(Arc<MMExp>, Arc
                     (mmargs, _) = typeAdaptMMArgsForFun(argvals.clone(), iargs.clone(), tyVars.clone(), metamodelica::nil(), astDefs.clone())?;
                     mmtxt = Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (outtxt.clone()).clone() }) });
                     mmexp = Arc::new(MMExp::MM_FN_CALL { fnName: fname.clone(), args: metamodelica::cons(Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (intxt.clone()).clone() }) }), mmargs.clone()) });
-                    Ok((false, Arc::new(MMExp::MM_ASSIGN { lhsArgs: list![(outtxt.clone()).clone()], rhs: mmexp.clone() }), mmtxt.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), locals.clone(), outtxt.clone()))
+                    Ok((false, Arc::new(MMExp::MM_ASSIGN { lhsArgs: list![(outtxt.clone()).clone()], rhs: mmexp.clone() }), mmtxt.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), locals.clone(), outtxt.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2140,7 +2196,7 @@ pub fn statementFromFun(mut inArgValues: Arc<metamodelica::List<(Arc<MMExp>, Arc
                     lhsArgs = metamodelica::cons((outtxt.clone()).clone(), lhsArgs.clone());
                     mmtxt = Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (outtxt.clone()).clone() }) });
                     mmexp = Arc::new(MMExp::MM_FN_CALL { fnName: fname.clone(), args: metamodelica::cons(Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (intxt.clone()).clone() }) }), mmargs.clone()) });
-                    Ok((false, Arc::new(MMExp::MM_ASSIGN { lhsArgs: lhsArgs.clone(), rhs: mmexp.clone() }), mmtxt.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), locals.clone(), outtxt.clone()))
+                    Ok((false, Arc::new(MMExp::MM_ASSIGN { lhsArgs: lhsArgs.clone(), rhs: mmexp.clone() }), mmtxt.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), locals.clone(), outtxt.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2321,7 +2377,7 @@ pub fn typeAdaptMMArg(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignature>
                 (mmexp, argtype @ Deref @ TypeSignature::STRING_TOKEN_TYPE { .. }, sinfo, _, targettype, tyVars, setTyVars, astdefs) => {
                     let mut mmarg: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
                     let mut setTyVars = (*setTyVars).clone();
-                    setTyVars = typesEqual(targettype.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
+                    setTyVars = typesEqual(targettype.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     mmarg = mmExpToString(mmexp.clone(), argtype.clone(), sinfo.clone())?;
                     Ok((mmarg.clone(), setTyVars.clone()))
                 }
@@ -2333,7 +2389,7 @@ pub fn typeAdaptMMArg(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignature>
                 (mmexp, argtype @ Deref @ TypeSignature::TEXT_TYPE { .. }, sinfo, _, targettype, tyVars, setTyVars, astdefs) => {
                     let mut mmarg: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
                     let mut setTyVars = (*setTyVars).clone();
-                    setTyVars = typesEqual(targettype.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
+                    setTyVars = typesEqual(targettype.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     mmarg = mmExpToString(mmexp.clone(), argtype.clone(), sinfo.clone())?;
                     Ok((mmarg.clone(), setTyVars.clone()))
                 }
@@ -2355,7 +2411,7 @@ pub fn typeAdaptMMArg(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignature>
                 (mmexp, argtype, sinfo, _, targettype, tyVars, setTyVars, astdefs) => {
                     let mut mmarg: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
                     let mut setTyVars = (*setTyVars).clone();
-                    setTyVars = typesEqual(targettype.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
+                    setTyVars = typesEqual(targettype.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     mmarg = mmExpToString(mmexp.clone(), argtype.clone(), sinfo.clone())?;
                     Ok((mmarg.clone(), setTyVars.clone()))
                 }
@@ -2366,7 +2422,7 @@ pub fn typeAdaptMMArg(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignature>
             ::match_deref::match_deref! { match &__mc_input {
                 (mmarg, Deref @ TypeSignature::STRING_TOKEN_TYPE { .. }, _, _, targettype, tyVars, setTyVars, astdefs) => {
                     let mut setTyVars = (*setTyVars).clone();
-                    setTyVars = typesEqual(targettype.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
+                    setTyVars = typesEqual(targettype.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     Ok((Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::PATH_IDENT { ident: (literal!("Tpl")).clone(), path: Arc::new(PathIdent::IDENT { ident: (literal!("strTokText")).clone() }) }), args: list![mmarg.clone()] }), setTyVars.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2377,7 +2433,7 @@ pub fn typeAdaptMMArg(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignature>
                 (mmarg, argtype, sinfo, _, targettype, tyVars, setTyVars, astdefs) => {
                     let mut mmarg = (*mmarg).clone();
                     let mut setTyVars = (*setTyVars).clone();
-                    setTyVars = typesEqual(targettype.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
+                    setTyVars = typesEqual(targettype.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), tyVars.clone(), setTyVars.clone(), astdefs.clone())?;
                     mmarg = mmExpToString(mmarg.clone(), argtype.clone(), sinfo.clone())?;
                     Ok((Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::PATH_IDENT { ident: (literal!("Tpl")).clone(), path: Arc::new(PathIdent::IDENT { ident: (literal!("stringText")).clone() }) }), args: list![mmarg.clone()] }), setTyVars.clone()))
                 }
@@ -2454,7 +2510,7 @@ pub fn typeAdaptMMOption(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignatu
                     let mut stmts = (*stmts).clone();
                     let mut locals = (*locals).clone();
                     mmarg = Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::PATH_IDENT { ident: (literal!("Tpl")).clone(), path: Arc::new(PathIdent::IDENT { ident: (literal!("textStrTok")).clone() }) }), args: list![mmarg.clone()] });
-                    (mmarg, stmts, locals) = mmEnsureNonFunctionArg(mmarg.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE), stmts.clone(), locals.clone())?;
+                    (mmarg, stmts, locals) = mmEnsureNonFunctionArg(mmarg.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE(), stmts.clone(), locals.clone())?;
                     Ok((mmarg.clone(), stmts.clone(), locals.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2467,7 +2523,7 @@ pub fn typeAdaptMMOption(mut inMMArg: Arc<MMExp>, mut inArgType: Arc<TypeSignatu
                     let mut stmts = (*stmts).clone();
                     let mut locals = (*locals).clone();
                     mmarg = mmExpToString(mmarg.clone(), argtype.clone(), sinfo.clone())?;
-                    (mmarg, stmts, locals) = mmEnsureNonFunctionArg(mmarg.clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), stmts.clone(), locals.clone())?;
+                    (mmarg, stmts, locals) = mmEnsureNonFunctionArg(mmarg.clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), stmts.clone(), locals.clone())?;
                     mmarg = Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::PATH_IDENT { ident: (literal!("Tpl")).clone(), path: Arc::new(PathIdent::IDENT { ident: (literal!("ST_STRING")).clone() }) }), args: list![mmarg.clone()] });
                     Ok((mmarg.clone(), stmts.clone(), locals.clone()))
                 }
@@ -2684,7 +2740,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     ofbindEnc = typeCheckMatchingExp(ofbind.clone(), oftype.clone(), astDefs.clone())?;
                     idxName = (Util::getOptionOrDefault(hasIndexIdentOpt.clone(), (arcstr::literal!(impossibleIdent)).clone())).clone();
                     freshIdxName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(indexNamePrefix)); __mm_s.push_str(&*idxName.clone()); ArcStr::from(__mm_s) }).clone();
-                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: oftype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
+                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: oftype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
                     let (__pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(scEnv.clone()) {
                         Deref @ metamodelica::List::Cons { head: Scope::LET_SCOPE { ident: _, idType: _, freshIdent: _, isUsed: __pa1 }, tail: Deref @ metamodelica::List::Cons { head: Scope::CASE_SCOPE { mExp: __pa2, mType: _, localNames: __pa3, accLocals: __pa4, extArgs: __pa5, matchArgName: _, hasImplicitScope: _ }, tail: Deref @ metamodelica::List::Cons { head: Scope::FUN_SCOPE { args: _, localArgs: __pa6 }, tail: __pa7 } } } => (__pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
@@ -2714,7 +2770,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     (mapstmts, maplocals) = addGetIndex(isUsed.clone(), (freshIdxName.clone()).clone(), mapstmts.clone(), (arcstr::literal!(imlicitTxt)).clone(), maplocals.clone())?;
                     mmmcEmptyList = makeMMMatchCase((Arc::new(MatchingExp::LIST_MATCH { listElts: metamodelica::nil() }), metamodelica::nil(), metamodelica::nil()), encodedExtargs.clone(), oargs.clone())?;
                     mmmcCons = makeMMMatchCase((Arc::new(MatchingExp::LIST_CONS_MATCH { head: mexp.clone(), rest: Arc::new(MatchingExp::BIND_MATCH { bindIdent: (literal!("rest")).clone() }) }), encodedExtargs.clone(), mapstmts.clone()), encodedExtargs.clone(), oargs.clone())?;
-                    mmFailCons = makeMMMatchCase((Arc::new(MatchingExp::LIST_CONS_MATCH { head: Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), rest: Arc::new(MatchingExp::BIND_MATCH { bindIdent: (literal!("rest")).clone() }) }), encodedExtargs.clone(), list![mmRecCall.clone()]), encodedExtargs.clone(), oargs.clone())?;
+                    mmFailCons = makeMMMatchCase((Arc::new(MatchingExp::LIST_CONS_MATCH { head: crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), rest: Arc::new(MatchingExp::BIND_MATCH { bindIdent: (literal!("rest")).clone() }) }), encodedExtargs.clone(), list![mmRecCall.clone()]), encodedExtargs.clone(), oargs.clone())?;
                     mmmcases = if (isAlwaysMatchedBool(mexp.clone())?) {list![mmmcEmptyList.clone(), mmmcCons.clone()]} else {list![mmmcEmptyList.clone(), mmmcCons.clone(), mmFailCons.clone()]};
                     mapctx = MapContext { ofBinding: ofbind.clone(), mapExp: mapexp.clone(), iterMMExpOptions: iopts.clone(), hasIndexIdentOpt: hasIndexIdentOpt.clone(), useIter: useiter.clone() };
                     maplocals = listAppend(encodedExtargs.clone(), maplocals.clone());
@@ -2768,7 +2824,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     ofbindEnc = typeCheckMatchingExp(ofbind.clone(), oftype.clone(), astDefs.clone())?;
                     idxName = (Util::getOptionOrDefault(hasIndexIdentOpt.clone(), (arcstr::literal!(impossibleIdent)).clone())).clone();
                     freshIdxName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(indexNamePrefix)); __mm_s.push_str(&*idxName.clone()); ArcStr::from(__mm_s) }).clone();
-                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: oftype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
+                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: oftype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
                     let (__pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(scEnv.clone()) {
                         Deref @ metamodelica::List::Cons { head: Scope::LET_SCOPE { ident: _, idType: _, freshIdent: _, isUsed: __pa1 }, tail: Deref @ metamodelica::List::Cons { head: Scope::CASE_SCOPE { mExp: __pa2, mType: _, localNames: __pa3, accLocals: __pa4, extArgs: __pa5, matchArgName: _, hasImplicitScope: _ }, tail: Deref @ metamodelica::List::Cons { head: Scope::FUN_SCOPE { args: _, localArgs: __pa6 }, tail: __pa7 } } } => (__pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
@@ -2857,7 +2913,7 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     ofbindEnc = typeCheckMatchingExp(ofbind.clone(), argtype.clone(), astDefs.clone())?;
                     idxName = (Util::getOptionOrDefault(hasIndexIdentOpt.clone(), (arcstr::literal!(impossibleIdent)).clone())).clone();
                     freshIdxName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(indexNamePrefix)); __mm_s.push_str(&*idxName.clone()); ArcStr::from(__mm_s) }).clone();
-                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: argtype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
+                    (mapstmts, maplocals, scEnv, accMMDecls, _) = statementsFromExp(mapexp.clone(), metamodelica::nil(), metamodelica::nil(), (arcstr::literal!(imlicitTxt)).clone(), (arcstr::literal!(imlicitTxt)).clone(), metamodelica::nil(), metamodelica::cons(Scope::LET_SCOPE { ident: (idxName.clone()).clone(), idType: crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(), freshIdent: (freshIdxName.clone()).clone(), isUsed: false }, metamodelica::cons(Scope::CASE_SCOPE { mExp: ofbindEnc.clone(), mType: argtype.clone(), localNames: metamodelica::nil(), accLocals: metamodelica::nil(), extArgs: metamodelica::nil(), matchArgName: (arcstr::literal!(impossibleIdent)).clone(), hasImplicitScope: true }, metamodelica::cons(Scope::FUN_SCOPE { args: metamodelica::nil(), localArgs: metamodelica::nil() }, scEnv.clone()))), tplPackage.clone(), accMMDecls.clone())?;
                     let (__pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8) = ::match_deref::match_deref! { match &(scEnv.clone()) {
                         Deref @ metamodelica::List::Cons { head: Scope::LET_SCOPE { ident: _, idType: _, freshIdent: _, isUsed: __pa2 }, tail: Deref @ metamodelica::List::Cons { head: Scope::CASE_SCOPE { mExp: __pa3, mType: _, localNames: __pa4, accLocals: __pa5, extArgs: __pa6, matchArgName: _, hasImplicitScope: _ }, tail: Deref @ metamodelica::List::Cons { head: Scope::FUN_SCOPE { args: _, localArgs: __pa7 }, tail: __pa8 } } } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone()),
                         _ => bail!("pattern mismatch"),
@@ -3053,7 +3109,7 @@ pub fn addGetIndex(mut wasIndexUsed: bool, mut inLocalIdxValIdent: Ident, mut in
                     let mut stmt: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
                     let mut locals = (*locals).clone();
                     stmt = tplStatement((literal!("getIteri_i0")).clone(), metamodelica::nil(), (intxt.clone()).clone(), (localidxid.clone()).clone());
-                    locals = addLocalValue((localidxid.clone()).clone(), Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE), locals.clone())?;
+                    locals = addLocalValue((localidxid.clone()).clone(), crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE(), locals.clone())?;
                     Ok((metamodelica::cons(stmt.clone(), stmts.clone()), locals.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3827,7 +3883,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                         unwrap_break_err!(lookupTupleList(inLocalNames.clone(), (bid.clone()).clone()), '__try0);
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
-                    Ok((Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), usedLocals.clone()))
+                    Ok((crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), usedLocals.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3845,7 +3901,7 @@ pub fn rewriteMatchExpByLocalNames(mut inMatchingExp: Arc<MatchingExp>, mut inMT
                     } };
                     fldId = __pa0.clone();
                     tagpath = __pa1.clone();
-                    Ok((Arc::new(MatchingExp::RECORD_MATCH { tagName: tagpath.clone(), fieldMatchings: list![(fldId.clone(), Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH))] }), usedLocals.clone()))
+                    Ok((Arc::new(MatchingExp::RECORD_MATCH { tagName: tagpath.clone(), fieldMatchings: list![(fldId.clone(), crate::TplAbsyn::MatchingExp::interned_REST_MATCH())] }), usedLocals.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4153,7 +4209,7 @@ pub fn makeExtraArgBinding(mut inExtraArg: (ArcStr, Arc<TypeSignature>), mut inC
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _) => {
-                    Ok(Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH))
+                    Ok(crate::TplAbsyn::MatchingExp::interned_REST_MATCH())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4180,7 +4236,7 @@ pub fn addRestElabCase(mut inElabCases: Arc<metamodelica::List<(Arc<MatchingExp>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    Ok(list![(Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), metamodelica::nil(), metamodelica::nil())])
+                    Ok(list![(crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), metamodelica::nil(), metamodelica::nil())])
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4285,10 +4341,10 @@ pub fn adaptTextToString(mut inArgValue: (Arc<MMExp>, Arc<TypeSignature>, Source
                         _ => bail!("pattern mismatch"),
                     } };
                     strid = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(textToStringNamePrefix)); __mm_s.push_str(&*intString((locals.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
-                    locals = addLocalValue((strid.clone()).clone(), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), locals.clone())?;
-                    mmexp = mmExpToString(mmexp.clone(), Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE), sinfo.clone())?;
+                    locals = addLocalValue((strid.clone()).clone(), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), locals.clone())?;
+                    mmexp = mmExpToString(mmexp.clone(), crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(), sinfo.clone())?;
                     stmt = Arc::new(MMExp::MM_ASSIGN { lhsArgs: list![(strid.clone()).clone()], rhs: mmexp.clone() });
-                    Ok(((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (strid.clone()).clone() }) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TYPE), sinfo.clone()), emptyExpression.clone(), metamodelica::cons(stmt.clone(), stmts.clone()), locals.clone()))
+                    Ok(((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (strid.clone()).clone() }) }), crate::TplAbsyn::TypeSignature::interned_STRING_TYPE(), sinfo.clone()), emptyExpression.clone(), metamodelica::cons(stmt.clone(), stmts.clone()), locals.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4331,7 +4387,7 @@ pub fn elabCasesFromCondition(mut inArgType: Arc<TypeSignature>, mut inIsNot: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::OPTION_TYPE { .. }, isnot, None, tbranch, ebranchOpt) => {
-                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(crate::TplAbsyn::MatchingExp::NONE_MATCH), tbranch.clone(), ebranchOpt.clone())?)
+                    Ok(casesForTrueFalseCondition(isnot.clone(), crate::TplAbsyn::MatchingExp::interned_NONE_MATCH(), tbranch.clone(), ebranchOpt.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4347,7 +4403,7 @@ pub fn elabCasesFromCondition(mut inArgType: Arc<TypeSignature>, mut inIsNot: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::INTEGER_TYPE { .. }, isnot, None, tbranch, ebranchOpt) => {
-                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("0")).clone(), litType: Arc::new(crate::TplAbsyn::TypeSignature::INTEGER_TYPE) }), tbranch.clone(), ebranchOpt.clone())?)
+                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("0")).clone(), litType: crate::TplAbsyn::TypeSignature::interned_INTEGER_TYPE() }), tbranch.clone(), ebranchOpt.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4355,7 +4411,7 @@ pub fn elabCasesFromCondition(mut inArgType: Arc<TypeSignature>, mut inIsNot: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::REAL_TYPE { .. }, isnot, None, tbranch, ebranchOpt) => {
-                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("0.0")).clone(), litType: Arc::new(crate::TplAbsyn::TypeSignature::REAL_TYPE) }), tbranch.clone(), ebranchOpt.clone())?)
+                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("0.0")).clone(), litType: crate::TplAbsyn::TypeSignature::interned_REAL_TYPE() }), tbranch.clone(), ebranchOpt.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4363,7 +4419,7 @@ pub fn elabCasesFromCondition(mut inArgType: Arc<TypeSignature>, mut inIsNot: bo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::BOOLEAN_TYPE { .. }, isnot, None, tbranch, ebranchOpt) => {
-                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("false")).clone(), litType: Arc::new(crate::TplAbsyn::TypeSignature::BOOLEAN_TYPE) }), tbranch.clone(), ebranchOpt.clone())?)
+                    Ok(casesForTrueFalseCondition(isnot.clone(), Arc::new(MatchingExp::LITERAL_MATCH { value: (literal!("false")).clone(), litType: crate::TplAbsyn::TypeSignature::interned_BOOLEAN_TYPE() }), tbranch.clone(), ebranchOpt.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4400,7 +4456,7 @@ pub fn casesForTrueFalseCondition(mut inIsNot: bool, mut inNotMatchingExp: Arc<M
                 (false, notmexp, tbranch, ebranchOpt) => {
                     let mut ebranch: Expression = (Arc::new(ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     ebranch = getElseBranch(ebranchOpt.clone())?;
-                    Ok(list![(notmexp.clone(), ebranch.clone()), (Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), tbranch.clone())])
+                    Ok(list![(notmexp.clone(), ebranch.clone()), (crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), tbranch.clone())])
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4410,7 +4466,7 @@ pub fn casesForTrueFalseCondition(mut inIsNot: bool, mut inNotMatchingExp: Arc<M
                 (true, notmexp, tbranch, ebranchOpt) => {
                     let mut ebranch: Expression = (Arc::new(ExpressionBase::ERROR_EXP), <SourceInfo as ::std::default::Default>::default());
                     ebranch = getElseBranch(ebranchOpt.clone())?;
-                    Ok(list![(notmexp.clone(), tbranch.clone()), (Arc::new(crate::TplAbsyn::MatchingExp::REST_MATCH), ebranch.clone())])
+                    Ok(list![(notmexp.clone(), tbranch.clone()), (crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), ebranch.clone())])
                 }
                 _ => bail!("nomatch"),
             }}
@@ -4620,7 +4676,7 @@ pub fn makeMMExpFromTemplateConstant(mut inTplDef: TemplateDef, mut inTemplIdent
         if let Ok(__v) = (|| -> Result<_> {
             let (TemplateDef::STR_TOKEN_DEF { .. }, mut ident) = __mc_input.clone() else { bail!("nomatch") };
             ident = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*ident.clone()); ArcStr::from(__mm_s) }).clone();
-            Ok((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), Arc::new(crate::TplAbsyn::TypeSignature::STRING_TOKEN_TYPE)))
+            Ok((Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }), crate::TplAbsyn::TypeSignature::interned_STRING_TOKEN_TYPE()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (TemplateDef::LITERAL_DEF { litType: ref lt, value: mut litstr }, _) = __mc_input.clone() else { bail!("nomatch") };
@@ -6520,7 +6576,7 @@ pub fn fullyQualifyAstTypeSignature(mut inASTDefTypeSignature: Arc<TypeSignature
 pub fn convertNameTypeIfIntrinsic(mut inNameOfType: Arc<PathIdent>) -> Arc<TypeSignature> {
     let mut outTypeSignature: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
     outTypeSignature = (::match_deref::match_deref! { match &(inNameOfType.clone()) {
-        Deref @ PathIdent::PATH_IDENT { path: Deref @ PathIdent::IDENT { ident: Deref @ "Text" }, ident: Deref @ "Tpl" } => Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE),
+        Deref @ PathIdent::PATH_IDENT { path: Deref @ PathIdent::IDENT { ident: Deref @ "Text" }, ident: Deref @ "Tpl" } => crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE(),
         _ => Arc::new(TypeSignature::NAMED_TYPE { name: inNameOfType.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6621,7 +6677,7 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ TypeSignature::NAMED_TYPE { name: Deref @ PathIdent::IDENT { ident: Deref @ "Text" } }, _) => {
-                    Ok(Arc::new(crate::TplAbsyn::TypeSignature::TEXT_TYPE))
+                    Ok(crate::TplAbsyn::TypeSignature::interned_TEXT_TYPE())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6967,7 +7023,7 @@ pub fn removeUnusedImports(mut pkg: MMPackage) -> Result<MMPackage> {
     let mut set: Arc<AvlSetString::Tree> = Arc::new(AvlSetString::Tree::EMPTY);
     let mut name: Arc<PathIdent> = Arc::new(<PathIdent as ::std::default::Default>::default());
     let mut b: bool = false;
-    set = Arc::new(openmodelica_util::AvlSetString::Tree::EMPTY);
+    set = openmodelica_util::AvlSetString::Tree::interned_EMPTY();
     for mut e in &*pkg.mmDeclarations.clone() {
         let mut e = e.clone();
         let () = (match e.clone() {

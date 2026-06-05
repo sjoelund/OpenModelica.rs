@@ -215,7 +215,7 @@ pub fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<E
     full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
     adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), st.clone(), iter.clone())?;
     matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;
-    adj = Adjacency::Matrix::upgrade(adj.clone(), full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), Adjacency::MatrixStrictness::SORTING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+    adj = Adjacency::Matrix::upgrade(adj.clone(), full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), Adjacency::MatrixStrictness::SORTING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
     comps = Sorting::tarjan(adj.clone(), matching.clone(), vars.clone(), eqns.clone())?;
     Ok((matching, comps))
 }
@@ -283,7 +283,7 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
         }
         __acc.reverse()
     }))?;
-            adj_matching = Adjacency::Matrix::fullToFinal(full.clone(), vn.clone(), en.clone(), partition.equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            adj_matching = Adjacency::Matrix::fullToFinal(full.clone(), vn.clone(), en.clone(), partition.equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj_matching.clone(), true, true, true)?;
             vo = vn.clone();
             eo = en.clone();
@@ -311,7 +311,7 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
             en = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             (adj_matching, full) = Adjacency::Matrix::expand(adj_matching.clone(), full.clone(), vo.clone(), vn.clone(), eo.clone(), en.clone(), partition.unknowns.clone(), partition.equations.clone(), BPartition::Partition::getKind(partition.clone()))?;
             (matching, adj_matching, full, variables, equations, varData, eqData) = Matching::singular(matching.clone(), adj_matching.clone(), full.clone(), partition.unknowns.clone(), partition.equations.clone(), funcMap.clone(), varData.clone(), eqData.clone(), kind.clone(), false, false)?;
-            adj_sorting = Adjacency::Matrix::upgrade(adj_matching.clone(), full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            adj_sorting = Adjacency::Matrix::upgrade(adj_matching.clone(), full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             comps = Sorting::tarjan(adj_sorting.clone(), matching.clone(), variables.clone(), equations.clone())?;
             (variables.clone(), equations.clone(), full.clone(), matching.clone(), comps.clone())
         },
@@ -320,9 +320,9 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
             equations = BEquation::EquationPointers::compress(partition.equations.clone())?;
             ASSC::main(equations.clone(), variables.clone());
             full = Adjacency::Matrix::createFull(variables.clone(), equations.clone(), kind.clone())?;
-            adj_matching = Adjacency::Matrix::fullToFinal(full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            adj_matching = Adjacency::Matrix::fullToFinal(full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             (matching, adj_matching, full, variables, equations, varData, eqData) = Matching::singular(Matching::EMPTY_MATCHING().clone(), adj_matching.clone(), full.clone(), variables.clone(), equations.clone(), funcMap.clone(), varData.clone(), eqData.clone(), kind.clone(), false, true)?;
-            adj_sorting = Adjacency::Matrix::upgrade(adj_matching.clone(), full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+            adj_sorting = Adjacency::Matrix::upgrade(adj_matching.clone(), full.clone(), variables.map.clone(), equations.map.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), crate::NBEquation::Iterator::interned_EMPTY())?;
             comps = Sorting::tarjan(adj_sorting.clone(), matching.clone(), variables.clone(), equations.clone())?;
             (variables.clone(), equations.clone(), full.clone(), matching.clone(), comps.clone())
         },

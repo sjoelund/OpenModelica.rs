@@ -455,7 +455,7 @@ pub fn removeEmptyTupleElements(mut exp: Arc<Expression::NFExpression>) -> Resul
         loop {
             match (__thr_it0.next(), __thr_it1.next()) {
                 (Some(e), Some(t)) => {
-                    let __x = if (Type::isEmptyArray(t.clone())?) {Arc::new(Expression::NFExpression::CREF { ty: t.clone(), cref: Arc::new(crate::NFComponentRef::WILD) })} else {e.clone()};
+                    let __x = if (Type::isEmptyArray(t.clone())?) {Arc::new(Expression::NFExpression::CREF { ty: t.clone(), cref: crate::NFComponentRef::interned_WILD() })} else {e.clone()};
                     __acc = cons(__x, __acc);
                 }
                 (None, None) => break,

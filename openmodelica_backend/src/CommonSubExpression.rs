@@ -217,7 +217,7 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
             assign_field!(
                 syst.m = None,
                 syst.mT = None,
-                syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
+                syst.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING()
             );
             if Flags::isSet(Flags::DUMP_CSE.clone())? || Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nFinal Results\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -805,11 +805,11 @@ fn createCrefForTsub(mut length: i32, mut ix: i32, mut cref: Arc<DAE::Exp>) -> A
     let mut outCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut expList: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     for mut i in 1..=ix.clone() - 1 {
-        expList = metamodelica::cons(Arc::new(DAE::Exp::CREF { componentRef: Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), expList.clone());
+        expList = metamodelica::cons(Arc::new(DAE::Exp::CREF { componentRef: openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), expList.clone());
     }
     expList = metamodelica::cons(cref.clone(), expList.clone());
     for mut i in ix.clone() + 1..=length.clone() {
-        expList = metamodelica::cons(Arc::new(DAE::Exp::CREF { componentRef: Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), expList.clone());
+        expList = metamodelica::cons(Arc::new(DAE::Exp::CREF { componentRef: openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), ty: DAE::T_UNKNOWN_DEFAULT().clone() }), expList.clone());
     }
     outCref = Arc::new(DAE::Exp::TUPLE { PR: expList.clone().reverse() });
     outCref
@@ -2140,7 +2140,7 @@ fn commonSubExpressionFind(mut mIn: metamodelica::Array<Arc<metamodelica::List<i
         (_, eqIdcs) = unwrap_break_err!(List::filter1OnTrueSync(lengthLst.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 3, range.clone()), '__try0);
         (eqLst, eqIdcs) = unwrap_break_err!(List::filterOnTrueSync(unwrap_break_err!(BackendEquation::getList(eqIdcs.clone(), eqsIn.clone()), '__try0), (std::sync::Arc::new(fnptr!(BackendEquation::isNotAlgorithm, Arc<BackendDAE::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<bool> + 'static>), eqIdcs.clone()), '__try0);
         eqs = unwrap_break_err!(BackendEquation::listEquation(eqLst.clone()), '__try0);
-        varIdcsSet = Arc::new(crate::AvlSetInt::Tree::EMPTY);
+        varIdcsSet = crate::AvlSetInt::Tree::interned_EMPTY();
         for mut eq in &*eqIdcs.clone() {
             let mut eq = eq.clone();
             varIdcsSet = unwrap_break_err!(AvlSetInt::addList(varIdcsSet.clone(), unwrap_break_err!(metamodelica::arrayGet(mIn.clone(), eq.clone()), '__try0)), '__try0);

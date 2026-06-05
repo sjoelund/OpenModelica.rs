@@ -407,10 +407,10 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
     let mut iter_expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     vc_dom = SBPWLinearMap::wholeDom(pw.clone())?;
     vc_im = SBPWLinearMap::image(pw.clone(), vc_dom.clone())?;
-    iterators = arrayCreate(Vector::size(vCount.clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
+    iterators = arrayCreate(Vector::size(vCount.clone()), crate::NFInstNode::InstNode::interned_EMPTY_NODE());
     for mut i in 1..=metamodelica::arrayLength(iterators.clone()) {
         {
-            let __cell0 = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
+            let __cell0 = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), crate::NFType::interned_INTEGER());
             let __idx0 = i.clone();
             iterators.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
@@ -418,7 +418,7 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
     iter_expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut i in (iterators.clone()).borrow().iter() {
-            let __x = Expression::fromCref(ComponentRef::makeIterator(i.clone(), Arc::new(crate::NFType::INTEGER))?, false)?;
+            let __x = Expression::fromCref(ComponentRef::makeIterator(i.clone(), crate::NFType::interned_INTEGER())?, false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -493,7 +493,7 @@ fn generatePotentialEquations2(mut vars1: Arc<metamodelica::List<Arc<ComponentRe
                 l = generateConnector(var1.clone(), inds1.clone())?;
                 r = generateConnector(var2.clone(), inds2.clone())?;
                 ty = Expression::typeOf(l.clone());
-                eq = Equation::makeEquality(l.clone(), r.clone(), ty.clone(), DAE::emptyElementSource().clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::DONT_SCALARIZE.clone());
+                eq = Equation::makeEquality(l.clone(), r.clone(), ty.clone(), DAE::emptyElementSource().clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::DONT_SCALARIZE.clone());
                 equations = metamodelica::cons(eq.clone(), equations.clone());
             }
         }
@@ -557,7 +557,7 @@ fn generateFlowEquation(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut dom: Arc<SB
             sum_exp = Arc::new(Expression::NFExpression::BINARY { exp1: e.clone(), operator: Operator::makeAdd(Expression::typeOf(e.clone())), exp2: sum_exp.clone() });
         }
         ty = Expression::typeOf(sum_exp.clone());
-        eq = Equation::makeEquality(sum_exp.clone(), Expression::makeZero(ty.clone())?, ty.clone(), DAE::emptyElementSource().clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+        eq = Equation::makeEquality(sum_exp.clone(), Expression::makeZero(ty.clone())?, ty.clone(), DAE::emptyElementSource().clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
         equations = generateForLoop(list![eq.clone()], iterators.clone(), ranges.clone(), equations.clone())?;
     }
     Ok(equations)
@@ -589,7 +589,7 @@ fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation
         if Expression::isInteger(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             body = Equation::replaceIteratorList(body.clone(), ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
         } else {
-            body = list![Arc::new(Equation::NFEquation::FOR { iterator: ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), range: Some(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})), body: body.clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: DAE::emptyElementSource().clone() })];
+            body = list![Arc::new(Equation::NFEquation::FOR { iterator: ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), range: Some(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})), body: body.clone(), scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: DAE::emptyElementSource().clone() })];
         }
     }
     equations = List::append_reverse(body.clone(), equations.clone());
@@ -695,12 +695,12 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
         i2 = ({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt});
         i1_sz = SBInterval::size(i1.clone());
         i2_sz = SBInterval::size(i2.clone());
-        x = Expression::fromCref(ComponentRef::makeIterator(({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), Arc::new(crate::NFType::INTEGER))?, false)?;
+        x = Expression::fromCref(ComponentRef::makeIterator(({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), crate::NFType::interned_INTEGER())?, false)?;
         if i1_sz.clone() == i2_sz.clone() {
             m_int = intDiv(SBInterval::stepValue(i2.clone()), SBInterval::stepValue(i1.clone()));
             m = Arc::new(Expression::NFExpression::INTEGER { value: m_int.clone() });
             h = Arc::new(Expression::NFExpression::INTEGER { value: -(m_int.clone() * SBInterval::lowerBound(i1.clone())) + SBInterval::lowerBound(i2.clone()) });
-            e = Arc::new(Expression::NFExpression::BINARY { exp1: Arc::new(Expression::NFExpression::BINARY { exp1: m.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::INTEGER)), exp2: x.clone() }), operator: Operator::makeAdd(Arc::new(crate::NFType::INTEGER)), exp2: h.clone() });
+            e = Arc::new(Expression::NFExpression::BINARY { exp1: Arc::new(Expression::NFExpression::BINARY { exp1: m.clone(), operator: Operator::makeMul(crate::NFType::interned_INTEGER()), exp2: x.clone() }), operator: Operator::makeAdd(crate::NFType::interned_INTEGER()), exp2: h.clone() });
             outExpl = metamodelica::cons(e.clone(), outExpl.clone());
         } else if i2_sz.clone() == 1 && !(forFlow.clone()) {
             outExpl = metamodelica::cons(Arc::new(Expression::NFExpression::INTEGER { value: SBInterval::lowerBound(i2.clone()) }), outExpl.clone());

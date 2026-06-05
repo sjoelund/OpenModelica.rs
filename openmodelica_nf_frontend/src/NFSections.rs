@@ -78,6 +78,15 @@ pub enum NFSections {
     },
     EMPTY,
 }
+impl NFSections {
+    pub fn interned_EMPTY() -> Arc<NFSections> {
+        thread_local! {
+            static INTERNED: Arc<NFSections> = Arc::new(NFSections::EMPTY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_EMPTY() -> Arc<NFSections> { NFSections::interned_EMPTY() }
 impl Default for NFSections {
     fn default() -> Self { Self::EMPTY }
 }
@@ -85,7 +94,7 @@ pub use self::NFSections::{SECTIONS,EXTERNAL,EMPTY};
 pub fn new(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut initialEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut algorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>, mut initialAlgorithms: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>) -> Arc<NFSections> {
     let mut sections: Arc<NFSections> = Arc::new(NFSections::EMPTY);
     if equations.clone().is_empty() && initialEquations.clone().is_empty() && algorithms.clone().is_empty() && initialAlgorithms.clone().is_empty() {
-        sections = Arc::new(crate::NFSections::EMPTY);
+        sections = crate::NFSections::interned_EMPTY();
     } else {
         sections = Arc::new(NFSections::SECTIONS { equations: equations.clone(), initialEquations: initialEquations.clone(), algorithms: algorithms.clone(), initialAlgorithms: initialAlgorithms.clone() });
     }
@@ -484,7 +493,7 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                 modLib = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Library")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                 modInc = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Include")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                 if SCodeUtil::isEmptyMod(modLib.clone()) {
-                    modLibDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+                    modLibDir = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
                 } else {
                     modLibDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("LibraryDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
@@ -492,7 +501,7 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                     }
                 }
                 if SCodeUtil::isEmptyMod(modInc.clone()) {
-                    modIncDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+                    modIncDir = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
                 } else {
                     modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {

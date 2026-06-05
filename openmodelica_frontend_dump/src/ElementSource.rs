@@ -101,7 +101,7 @@ pub fn createElementSource(mut fileInfo: SourceInfo, mut partOf: Option<Arc<Absy
         Some(path) => list![Absyn::Within::WITHIN { path: path.clone() }],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }), instance: (match prefix.clone() {
-        DAE::Prefix::NOPRE { .. } => Arc::new(openmodelica_frontend_types::DAE::ComponentPrefix::NOCOMPPRE),
+        DAE::Prefix::NOPRE { .. } => openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(),
         DAE::Prefix::PREFIX { .. } => var_field!(prefix.compPre, DAE::Prefix::PREFIX).clone(),
     }), connectEquationOptLst: (::match_deref::match_deref! { match &(connectEquation.clone()) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "", .. }, _) => metamodelica::nil(),

@@ -137,7 +137,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
     info = InstNode::info(node.clone())?;
     if ComponentRef::isIterator(cref.clone()) {
         binding = Binding::EMPTY_BINDING().clone();
-        assign_field!(binfo.varKind = Arc::new(crate::NFBackendExtension::VariableKind::ITERATOR));
+        assign_field!(binfo.varKind = crate::NFBackendExtension::VariableKind::interned_ITERATOR());
     } else {
         binding = Component::getImplicitBinding(comp.clone(), InstNode::instanceParent(node.clone())?);
     }
@@ -715,7 +715,7 @@ pub fn moveBinding(mut var: Arc<NFVariable>, mut equations: Arc<metamodelica::Li
     let mut var: Arc<NFVariable> = var;
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     if variability(var.clone()) >= Variability::DISCRETE.clone() && Binding::isBound(var.binding.clone()) {
-        equations = metamodelica::cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
+        equations = metamodelica::cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
         assign_field!(var.binding = Binding::EMPTY_BINDING().clone());
     }
     Ok((var, equations))

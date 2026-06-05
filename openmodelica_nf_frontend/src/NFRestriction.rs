@@ -74,6 +74,68 @@ pub enum NFRestriction {
     TYPE,
     UNKNOWN,
 }
+impl NFRestriction {
+    pub fn interned_BLOCK() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::BLOCK));
+        (*INTERNED).clone()
+    }
+    pub fn interned_CLASS() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::CLASS));
+        (*INTERNED).clone()
+    }
+    pub fn interned_CLOCK() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::CLOCK));
+        (*INTERNED).clone()
+    }
+    pub fn interned_ENUMERATION() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::ENUMERATION));
+        (*INTERNED).clone()
+    }
+    pub fn interned_EXTERNAL_OBJECT() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::EXTERNAL_OBJECT));
+        (*INTERNED).clone()
+    }
+    pub fn interned_FUNCTION() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::FUNCTION));
+        (*INTERNED).clone()
+    }
+    pub fn interned_MODEL() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::MODEL));
+        (*INTERNED).clone()
+    }
+    pub fn interned_PACKAGE() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::PACKAGE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_OPERATOR() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::OPERATOR));
+        (*INTERNED).clone()
+    }
+    pub fn interned_RECORD_CONSTRUCTOR() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::RECORD_CONSTRUCTOR));
+        (*INTERNED).clone()
+    }
+    pub fn interned_TYPE() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::TYPE));
+        (*INTERNED).clone()
+    }
+    pub fn interned_UNKNOWN() -> Arc<NFRestriction> {
+        static INTERNED: std::sync::LazyLock<Arc<NFRestriction>> = std::sync::LazyLock::new(|| Arc::new(NFRestriction::UNKNOWN));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_BLOCK() -> Arc<NFRestriction> { NFRestriction::interned_BLOCK() }
+pub fn interned_CLASS() -> Arc<NFRestriction> { NFRestriction::interned_CLASS() }
+pub fn interned_CLOCK() -> Arc<NFRestriction> { NFRestriction::interned_CLOCK() }
+pub fn interned_ENUMERATION() -> Arc<NFRestriction> { NFRestriction::interned_ENUMERATION() }
+pub fn interned_EXTERNAL_OBJECT() -> Arc<NFRestriction> { NFRestriction::interned_EXTERNAL_OBJECT() }
+pub fn interned_FUNCTION() -> Arc<NFRestriction> { NFRestriction::interned_FUNCTION() }
+pub fn interned_MODEL() -> Arc<NFRestriction> { NFRestriction::interned_MODEL() }
+pub fn interned_PACKAGE() -> Arc<NFRestriction> { NFRestriction::interned_PACKAGE() }
+pub fn interned_OPERATOR() -> Arc<NFRestriction> { NFRestriction::interned_OPERATOR() }
+pub fn interned_RECORD_CONSTRUCTOR() -> Arc<NFRestriction> { NFRestriction::interned_RECORD_CONSTRUCTOR() }
+pub fn interned_TYPE() -> Arc<NFRestriction> { NFRestriction::interned_TYPE() }
+pub fn interned_UNKNOWN() -> Arc<NFRestriction> { NFRestriction::interned_UNKNOWN() }
 impl Default for NFRestriction {
     fn default() -> Self { Self::BLOCK }
 }
@@ -81,18 +143,18 @@ pub use self::NFRestriction::{BLOCK,CLASS,CLOCK,CONNECTOR,ENUMERATION,EXTERNAL_O
 pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
     let mut res: Arc<NFRestriction> = Arc::new(NFRestriction::BLOCK);
     res = (match sres.clone() {
-        SCode::Restriction::R_BLOCK { .. } => Arc::new(crate::NFRestriction::BLOCK),
-        SCode::Restriction::R_CLASS { .. } => Arc::new(crate::NFRestriction::CLASS),
-        SCode::Restriction::R_PREDEFINED_CLOCK { .. } => Arc::new(crate::NFRestriction::CLOCK),
+        SCode::Restriction::R_BLOCK { .. } => crate::NFRestriction::interned_BLOCK(),
+        SCode::Restriction::R_CLASS { .. } => crate::NFRestriction::interned_CLASS(),
+        SCode::Restriction::R_PREDEFINED_CLOCK { .. } => crate::NFRestriction::interned_CLOCK(),
         SCode::Restriction::R_CONNECTOR { .. } => Arc::new(NFRestriction::CONNECTOR { isExpandable: var_field!(sres.isExpandable, SCode::Restriction::R_CONNECTOR).clone() }),
-        SCode::Restriction::R_ENUMERATION { .. } => Arc::new(crate::NFRestriction::ENUMERATION),
-        SCode::Restriction::R_FUNCTION { .. } => Arc::new(crate::NFRestriction::FUNCTION),
-        SCode::Restriction::R_MODEL { .. } => Arc::new(crate::NFRestriction::MODEL),
-        SCode::Restriction::R_OPERATOR { .. } => Arc::new(crate::NFRestriction::OPERATOR),
-        SCode::Restriction::R_PACKAGE { .. } => Arc::new(crate::NFRestriction::PACKAGE),
+        SCode::Restriction::R_ENUMERATION { .. } => crate::NFRestriction::interned_ENUMERATION(),
+        SCode::Restriction::R_FUNCTION { .. } => crate::NFRestriction::interned_FUNCTION(),
+        SCode::Restriction::R_MODEL { .. } => crate::NFRestriction::interned_MODEL(),
+        SCode::Restriction::R_OPERATOR { .. } => crate::NFRestriction::interned_OPERATOR(),
+        SCode::Restriction::R_PACKAGE { .. } => crate::NFRestriction::interned_PACKAGE(),
         SCode::Restriction::R_RECORD { .. } => Arc::new(NFRestriction::RECORD { isOperator: var_field!(sres.isOperator, SCode::Restriction::R_RECORD).clone(), usedExternally: false }),
-        SCode::Restriction::R_TYPE { .. } => Arc::new(crate::NFRestriction::TYPE),
-        _ => Arc::new(crate::NFRestriction::MODEL),
+        SCode::Restriction::R_TYPE { .. } => crate::NFRestriction::interned_TYPE(),
+        _ => crate::NFRestriction::interned_MODEL(),
     });
     res
 }

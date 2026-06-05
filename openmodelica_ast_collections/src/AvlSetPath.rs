@@ -80,6 +80,13 @@ pub enum Tree {
     },
     EMPTY,
 }
+impl Tree {
+    pub fn interned_EMPTY() -> Arc<Tree> {
+        static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
 impl Default for Tree {
     fn default() -> Self { Self::EMPTY }
 }
@@ -108,9 +115,9 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<Arc<Tree>> {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare(inKey.clone(), key.clone())?;
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone() }), right: Arc::new(crate::AvlSetPath::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: inKey.clone() }), right: crate::AvlSetPath::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::AvlSetPath::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: inKey.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: var_field!((*tree).key, Tree::LEAF).clone(), height: 2, left: crate::AvlSetPath::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: inKey.clone() }) });
             } else {
                 outTree = tree.clone();
             }
@@ -211,9 +218,9 @@ fn height(mut inNode: Arc<Tree>) -> i32 {
 }
 
 pub fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<Tree>, Arc<Tree>, Arc<Tree>)> {
-    let mut intersect: Arc<Tree> = Arc::new(crate::AvlSetPath::Tree::EMPTY);
-    let mut rest1: Arc<Tree> = Arc::new(crate::AvlSetPath::Tree::EMPTY);
-    let mut rest2: Arc<Tree> = Arc::new(crate::AvlSetPath::Tree::EMPTY);
+    let mut intersect: Arc<Tree> = crate::AvlSetPath::Tree::interned_EMPTY();
+    let mut rest1: Arc<Tree> = crate::AvlSetPath::Tree::interned_EMPTY();
+    let mut rest2: Arc<Tree> = crate::AvlSetPath::Tree::interned_EMPTY();
     let mut keylist1: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut keylist2: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut k1: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -360,7 +367,7 @@ pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Ar
 }
 
 pub fn new() -> Arc<Tree> {
-    let mut outTree: Arc<Tree> = Arc::new(crate::AvlSetPath::Tree::EMPTY);
+    let mut outTree: Arc<Tree> = crate::AvlSetPath::Tree::interned_EMPTY();
     outTree
 }
 
@@ -420,8 +427,8 @@ fn rotateLeft(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::AvlSetPath::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::AvlSetPath::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::AvlSetPath::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::AvlSetPath::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -441,8 +448,8 @@ fn rotateRight(mut inNode: Arc<Tree>) -> Result<Arc<Tree>> {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::AvlSetPath::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::AvlSetPath::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::AvlSetPath::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::AvlSetPath::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()

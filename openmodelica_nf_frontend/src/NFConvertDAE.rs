@@ -172,7 +172,7 @@ fn makeDAEVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFT
     }
     var = (::match_deref::match_deref! { match &(attr.clone()) {
         Deref @ Attributes::ATTRIBUTES { .. } => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: Prefixes::variabilityToDAE(attr.variability.clone()), direction: Prefixes::directionToDAE(attr.direction.clone()), parallelism: Prefixes::parallelismToDAE(attr.parallelism.clone())?, protection: Prefixes::visibilityToDAE(vis.clone()), ty: dty.clone(), binding: binding.clone(), dims: ComponentReferenceBasics::crefDims(dcref.clone())?, connectorType: Prefixes::ConnectorType::toDAE(attr.connectorType.clone()), source: source.clone(), variableAttributesOption: vattr.clone(), comment: Some(comment.clone()), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted.clone() }),
-        _ => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: Prefixes::visibilityToDAE(vis.clone()), ty: dty.clone(), binding: binding.clone(), dims: metamodelica::nil(), connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), source: source.clone(), variableAttributesOption: vattr.clone(), comment: Some(comment.clone()), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted.clone() }),
+        _ => Arc::new(DAE::Element::VAR { componentRef: dcref.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: Prefixes::visibilityToDAE(vis.clone()), ty: dty.clone(), binding: binding.clone(), dims: metamodelica::nil(), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), source: source.clone(), variableAttributesOption: vattr.clone(), comment: Some(comment.clone()), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: encrypted.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(var)
@@ -988,7 +988,7 @@ fn convertIfStatement(mut ifBranches: Arc<metamodelica::List<(Arc<Expression::NF
     let mut dstmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     let mut first: bool = true;
     let mut single: bool = (ifBranches.clone().len() as i32) == 1;
-    let mut else_stmt: Arc<DAE::Else> = Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE);
+    let mut else_stmt: Arc<DAE::Else> = openmodelica_frontend_types::DAE::Else::interned_NOELSE();
     for mut b in &*ifBranches.clone().reverse() {
         let mut b = b.clone();
         (cond, stmts) = b.clone();
@@ -1087,7 +1087,7 @@ pub fn convertFunctionTree(mut funcs: Arc<Flatten::FunctionTreeImpl::Tree>) -> R
             Arc::new(AvlTreePathFunction::Tree::LEAF { key: var_field!((*funcs).key, Flatten::FunctionTreeImpl::Tree::LEAF).clone(), value: Some(r#fn.clone()) })
         },
         Deref @ Flatten::FunctionTreeImpl::Tree::EMPTY => {
-            Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY)
+            openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1341,7 +1341,7 @@ fn stripScopePrefixCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Arc<Comp
             if ComponentRef::isFromCref(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone()) {
                 assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = stripScopePrefixCref(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone()));
             } else {
-                assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = Arc::new(crate::NFComponentRef::EMPTY));
+                assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = crate::NFComponentRef::interned_EMPTY());
             }
             ()
         },

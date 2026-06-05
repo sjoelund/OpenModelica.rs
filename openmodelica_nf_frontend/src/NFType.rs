@@ -116,6 +116,71 @@ pub enum NFType {
         dimensions: metamodelica::Array<Arc<Dimension::NFDimension>>,
     },
 }
+impl NFType {
+    pub fn interned_INTEGER() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::INTEGER);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_REAL() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::REAL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_STRING() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::STRING);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_BOOLEAN() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::BOOLEAN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_CLOCK() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::CLOCK);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned___ENUMERATION_ANY_NOT_USED__() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::__ENUMERATION_ANY_NOT_USED__);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_NORETCALL() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::NORETCALL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_UNKNOWN() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::UNKNOWN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_ANY() -> Arc<NFType> {
+        thread_local! {
+            static INTERNED: Arc<NFType> = Arc::new(NFType::ANY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_INTEGER() -> Arc<NFType> { NFType::interned_INTEGER() }
+pub fn interned_REAL() -> Arc<NFType> { NFType::interned_REAL() }
+pub fn interned_STRING() -> Arc<NFType> { NFType::interned_STRING() }
+pub fn interned_BOOLEAN() -> Arc<NFType> { NFType::interned_BOOLEAN() }
+pub fn interned_CLOCK() -> Arc<NFType> { NFType::interned_CLOCK() }
+pub fn interned___ENUMERATION_ANY_NOT_USED__() -> Arc<NFType> { NFType::interned___ENUMERATION_ANY_NOT_USED__() }
+pub fn interned_NORETCALL() -> Arc<NFType> { NFType::interned_NORETCALL() }
+pub fn interned_UNKNOWN() -> Arc<NFType> { NFType::interned_UNKNOWN() }
+pub fn interned_ANY() -> Arc<NFType> { NFType::interned_ANY() }
 impl Default for NFType {
     fn default() -> Self { Self::INTEGER }
 }
@@ -817,7 +882,7 @@ pub fn arrayDims(mut ty: Arc<NFType>) -> Arc<metamodelica::List<Arc<Dimension::N
         Deref @ ARRAY { .. } => var_field!((*ty).dimensions, NFType::ARRAY).clone(),
         Deref @ FUNCTION { .. } => arrayDims(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
         Deref @ METABOXED { .. } => arrayDims(var_field!((*ty).ty, NFType::METABOXED).clone()),
-        Deref @ CONDITIONAL_ARRAY { .. } => List::fill(Arc::new(crate::NFDimension::UNKNOWN), dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())),
+        Deref @ CONDITIONAL_ARRAY { .. } => List::fill(crate::NFDimension::interned_UNKNOWN(), dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())),
         Deref @ UNTYPED { .. } => Arc::new(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()),
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1216,7 +1281,7 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
         return Ok(ty.clone());
     }
     ty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { dimensions: dims, .. } if (!(failOnError.clone()) && (subs.clone().len() as i32) > (dims.clone().len() as i32)) => Arc::new(crate::NFType::UNKNOWN),
+        Deref @ ARRAY { dimensions: dims, .. } if (!(failOnError.clone()) && (subs.clone().len() as i32) > (dims.clone().len() as i32)) => crate::NFType::interned_UNKNOWN(),
         Deref @ ARRAY { dimensions: dims, .. } => {
             let mut dims = (*dims).clone();
             for mut sub in &*subs.clone() {
@@ -1250,7 +1315,7 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.subscript")); __mm_s.push_str(&*literal!(" got unsubscriptable type ")); __mm_s.push_str(&*toString(ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFType.mo"))?;
                 bail!("fail");
             }
-            Arc::new(crate::NFType::UNKNOWN)
+            crate::NFType::interned_UNKNOWN()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1533,9 +1598,9 @@ pub fn isBoxed(mut ty: Arc<NFType>) -> bool {
 pub fn sizeType(mut arrayTy: Arc<NFType>) -> Arc<NFType> {
     let mut sizeTy: Arc<NFType> = Arc::new(NFType::ANY);
     if isUnknown(arrayTy.clone()) {
-        sizeTy = Arc::new(crate::NFType::UNKNOWN);
+        sizeTy = crate::NFType::interned_UNKNOWN();
     } else {
-        sizeTy = Arc::new(NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![Dimension::fromInteger(dimensionCount(arrayTy.clone()), NFPrefixes::Variability::CONSTANT.clone())] });
+        sizeTy = Arc::new(NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![Dimension::fromInteger(dimensionCount(arrayTy.clone()), NFPrefixes::Variability::CONSTANT.clone())] });
     }
     sizeTy
 }

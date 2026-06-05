@@ -125,6 +125,13 @@ pub enum StringToken {
         blockType: Arc<BlockType>,
     },
 }
+impl StringToken {
+    pub fn interned_ST_NEW_LINE() -> Arc<StringToken> {
+        static INTERNED: std::sync::LazyLock<Arc<StringToken>> = std::sync::LazyLock::new(|| Arc::new(StringToken::ST_NEW_LINE));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_ST_NEW_LINE() -> Arc<StringToken> { StringToken::interned_ST_NEW_LINE() }
 impl Default for StringToken {
     fn default() -> Self { Self::ST_NEW_LINE }
 }
@@ -152,6 +159,13 @@ pub enum BlockType {
         index0: Mutable::Mutable<i32>,
     },
 }
+impl BlockType {
+    pub fn interned_BT_TEXT() -> Arc<BlockType> {
+        static INTERNED: std::sync::LazyLock<Arc<BlockType>> = std::sync::LazyLock::new(|| Arc::new(BlockType::BT_TEXT));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_BT_TEXT() -> Arc<BlockType> { BlockType::interned_BT_TEXT() }
 impl Default for BlockType {
     fn default() -> Self { Self::BT_TEXT }
 }
@@ -224,7 +238,7 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
             txt.clone()
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
-            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
             for mut tok in &*txttoks.clone().reverse() {
@@ -336,7 +350,7 @@ pub fn softNewLine(mut inText: Text) -> Result<Text> {
         txt @ Text::MEM_TEXT { tokens: toks, .. } => {
             let mut txt = (*txt).clone();
             if !(isAtStartOfLine(txt.clone())?) {
-                let __owned_variant_tokens_0 = metamodelica::cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone());
+                let __owned_variant_tokens_0 = metamodelica::cons(crate::Tpl::StringToken::interned_ST_NEW_LINE(), toks.clone());
                 if let Text::MEM_TEXT { tokens, .. } = &mut txt {
                     *tokens = __owned_variant_tokens_0;
                 } else { panic!("owned-variant field-assign: value held a different variant than Text::MEM_TEXT"); }
@@ -402,7 +416,7 @@ pub fn newLine(mut inText: Text) -> Result<Text> {
     let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (match inText.clone() {
         Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
-            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(crate::Tpl::StringToken::interned_ST_NEW_LINE(), toks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
             newlineFile(inText.clone())?;
@@ -532,7 +546,7 @@ pub fn pushIter(mut txt: Text, mut inIterOptions: Arc<IterOptions>) -> Result<Te
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &((txt.clone(), inIterOptions.clone())) {
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::nil(), Arc::new(BlockType::BT_ITER { options: iopts.clone(), index0: Mutable::create(i0.clone()) })), metamodelica::cons((toks.clone(), Arc::new(crate::Tpl::BlockType::BT_TEXT)), blstack.clone())) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::nil(), Arc::new(BlockType::BT_ITER { options: iopts.clone(), index0: Mutable::create(i0.clone()) })), metamodelica::cons((toks.clone(), crate::Tpl::BlockType::interned_BT_TEXT()), blstack.clone())) }
         },
         (Text::FILE_TEXT { .. }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
             let () = (::match_deref::match_deref! { match &(iopts.clone()) {
@@ -596,7 +610,7 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack }, tokens: toks } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), itertoks.clone()), bt.clone()), blstack.clone()) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() }), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
         Text::FILE_TEXT { .. } => {
             let mut emptok: Arc<StringToken> = Arc::new(StringToken::ST_NEW_LINE);
@@ -1472,7 +1486,7 @@ pub fn textStrTok(mut inText: Text) -> Result<Arc<StringToken>> {
             Arc::new(StringToken::ST_STRING { value: (literal!("")).clone() })
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks } => {
-            Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) })
+            Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() })
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };

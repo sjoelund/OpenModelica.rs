@@ -81,7 +81,7 @@ pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops:
         __acc.reverse()
     }));
             (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Nil, .. } => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        Deref @ SCode::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Nil, .. } => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -1411,7 +1411,7 @@ pub fn makeEnumType(mut inEnum: Arc<SCode::Enum>, mut inInfo: SourceInfo) -> Res
     comment = __pa0.clone();
     literal = __pa1.clone();
     checkValidEnumLiteral((literal.clone()).clone(), inInfo.clone())?;
-    outEnumType = Arc::new(SCode::Element::COMPONENT { name: (literal.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultConstAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("EnumType")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: comment.clone(), condition: None, info: inInfo.clone() });
+    outEnumType = Arc::new(SCode::Element::COMPONENT { name: (literal.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultConstAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("EnumType")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: comment.clone(), condition: None, info: inInfo.clone() });
     Ok(outEnumType)
 }
 
@@ -1501,13 +1501,13 @@ pub fn statementToAlgorithmItem(mut stmt: Arc<SCode::Statement>) -> Result<Arc<A
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_NORETCALL { functionCall: functionCall.clone(), functionArgs: functionArgs.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_RETURN { comment: _, info } => {
-            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(openmodelica_ast::Absyn::Algorithm::ALG_RETURN), comment: None, info: info.clone() })
+            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: openmodelica_ast::Absyn::Algorithm::interned_ALG_RETURN(), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_BREAK { comment: _, info } => {
-            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(openmodelica_ast::Absyn::Algorithm::ALG_BREAK), comment: None, info: info.clone() })
+            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: openmodelica_ast::Absyn::Algorithm::interned_ALG_BREAK(), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_CONTINUE { comment: _, info } => {
-            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(openmodelica_ast::Absyn::Algorithm::ALG_CONTINUE), comment: None, info: info.clone() })
+            Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: openmodelica_ast::Absyn::Algorithm::interned_ALG_CONTINUE(), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_FAILURE { stmts: body, comment: _, info } => {
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
@@ -2504,9 +2504,9 @@ pub fn boolReplaceable(mut inBoolReplaceable: bool, mut inOptConstrainClass: Opt
         (true, _) => Arc::new(SCode::Replaceable::REPLACEABLE { cc: inOptConstrainClass.clone() }),
         (false, Some(_)) => {
             metamodelica::print((literal!("Ignoring constraint class because replaceable prefix is not present!\n")).clone());
-            Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE)
+            openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE()
         },
-        (false, _) => Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE),
+        (false, _) => openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE(),
         _ => bail!("match: no arm matched"),
     } });
     Ok(outReplaceable)
@@ -2921,9 +2921,9 @@ pub fn lookupAnnotation(mut ann: Arc<SCode::Annotation>, mut name: ArcStr) -> Re
                     return Ok(r#mod.clone());
                 }
             }
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
-        _ => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        _ => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(r#mod)
@@ -2992,7 +2992,7 @@ pub fn lookupElementAnnotation(mut element: Arc<SCode::Element>, mut name: ArcSt
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut ann: Option<Arc<SCode::Annotation>> = None;
     ann = getElementAnnotation(element.clone(), (name.clone()).clone());
-    r#mod = if (isSome(ann.clone())) {lookupAnnotation(Util::getOption(ann.clone())?, (name.clone()).clone())?} else {Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)};
+    r#mod = if (isSome(ann.clone())) {lookupAnnotation(Util::getOption(ann.clone())?, (name.clone()).clone())?} else {openmodelica_frontend_types::SCode::Mod::interned_NOMOD()};
     Ok(r#mod)
 }
 
@@ -3719,7 +3719,7 @@ pub fn componentMod(mut inElement: Arc<SCode::Element>) -> Arc<SCode::Mod> {
             r#mod.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3742,7 +3742,7 @@ pub fn elementMod(mut inElement: Arc<SCode::Element>) -> Arc<SCode::Mod> {
             r#mod.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3992,7 +3992,7 @@ pub fn getConstrainedByModifiers(mut inPrefixes: Arc<SCode::Prefixes>) -> Arc<SC
             m.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4530,7 +4530,7 @@ pub fn getConstrainingMod(mut element: Arc<SCode::Element>) -> Arc<SCode::Mod> {
             r#mod = (*__esc_mod).clone();
             r#mod.clone()
         },
-        _ => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        _ => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     r#mod
@@ -5515,9 +5515,9 @@ pub fn lookupModInMod(mut name: ArcStr, mut r#mod: Arc<SCode::Mod>) -> Arc<SCode
                     return outMod.clone();
                 }
             }
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
-        _ => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        _ => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outMod

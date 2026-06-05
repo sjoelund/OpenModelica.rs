@@ -96,13 +96,13 @@ pub type VarSlice = Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable
 // ==========================================================================
 //               Single Variable constants and functions
 // ==========================================================================
-thread_local! { static __DUMMY_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY), ty: Arc::new(openmodelica_nf_frontend::NFType::ANY), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
+thread_local! { static __DUMMY_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY(), ty: openmodelica_nf_frontend::NFType::interned_ANY(), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
 pub fn DUMMY_VARIABLE() -> Arc<Variable::NFVariable> { __DUMMY_VARIABLE_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __SUBST_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::SUBST_CREF().clone(), ty: Arc::new(openmodelica_nf_frontend::NFType::ANY), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
+thread_local! { static __SUBST_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::SUBST_CREF().clone(), ty: openmodelica_nf_frontend::NFType::interned_ANY(), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
 pub fn SUBST_VARIABLE() -> Arc<Variable::NFVariable> { __SUBST_VARIABLE_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __TIME_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::TIME_CREF().clone(), ty: Arc::new(openmodelica_nf_frontend::NFType::REAL), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::TIME), attributes: BackendExtension::EMPTY_VAR_ATTR_REAL().clone(), annotations: BackendExtension::EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }) }); }
+thread_local! { static __TIME_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::TIME_CREF().clone(), ty: openmodelica_nf_frontend::NFType::interned_REAL(), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: Arc::new(BackendInfo::BackendInfo { varKind: openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_TIME(), attributes: BackendExtension::EMPTY_VAR_ATTR_REAL().clone(), annotations: BackendExtension::EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }) }); }
 pub fn TIME_VARIABLE() -> Arc<Variable::NFVariable> { __TIME_VARIABLE_TLS.with(|__t| __t.clone()) }
 
 pub const DERIVATIVE_STR: &'static str = "$DER";
@@ -1263,7 +1263,7 @@ pub fn makeAlgStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     if isAlgebraic(varPointer.clone()) {
         var = Pointer::access(varPointer.clone());
-        assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::ALG_STATE)));
+        assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_ALG_STATE()));
         Pointer::update(varPointer.clone(), var.clone());
     }
     ()
@@ -1416,7 +1416,7 @@ pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>
 
 pub fn makeDiscreteStateVar(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> () {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(varPointer.clone());
-    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE_STATE)));
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE_STATE()));
     Pointer::update(varPointer.clone(), var.clone());
     ()
 }
@@ -1433,7 +1433,7 @@ pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Co
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(PREVIOUS_STR));
             pre_cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
             pre = fromCref(pre_cref.clone(), Variable::attributes(Pointer::access(var_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
-            assign_field!(pre.backendinfo = BackendExtension::BackendInfo::setVarKind(pre.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::PREVIOUS)));
+            assign_field!(pre.backendinfo = BackendExtension::BackendInfo::setVarKind(pre.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_PREVIOUS()));
             (pre_ptr, pre_cref) = makeVarPtrCyclic(pre.clone(), pre_cref.clone())?;
             connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             ()
@@ -1472,7 +1472,7 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
             assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = metamodelica::nil());
             varKind.clone()
         },
-        _ => Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::SEED_VAR),
+        _ => openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_SEED_VAR(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
@@ -1515,7 +1515,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
             assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = metamodelica::nil());
             varKind.clone()
         },
-        _ => if (isTmp.clone()) {Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::JAC_TMP_VAR)} else {Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::JAC_VAR)},
+        _ => if (isTmp.clone()) {openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_JAC_TMP_VAR()} else {openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_JAC_VAR()},
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
@@ -1613,9 +1613,9 @@ pub fn makeResidualVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type:
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(RESIDUAL_STR)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
-    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     var = fromCref(cref.clone(), Attributes::DEFAULT_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
-    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::RESIDUAL_VAR)));
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_RESIDUAL_VAR()));
     (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
     Ok((var_ptr, cref))
 }
@@ -1635,10 +1635,10 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
         ty = Type::liftArrayLeftList(var_ty.clone(), BEquation::Iterator::dimensions(iterator.clone())?);
     }
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
-    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: iter_subs.clone(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
-    var_cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: iter_subs.clone(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
+    var_cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     var = fromCref(var_cref.clone(), Attributes::IMPL_DISCRETE_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
-    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::DISCRETE)));
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_DISCRETE()));
     assign_field!(var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true));
     (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
     Ok((var_ptr, cref))
@@ -1657,7 +1657,7 @@ pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFTy
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
-    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     var = fromCref(cref.clone(), Attributes::DEFAULT_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
     var = updateBackendInfo(var.clone(), makeParam.clone())?;
     assign_field!(var.children = ({
@@ -1681,7 +1681,7 @@ pub fn makeAuxStateVar(mut uniqueIndex: i32, mut binding: Option<Arc<Expression:
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut bnd: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(AUXILIARY_STR)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
-    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: Arc::new(openmodelica_nf_frontend::NFType::REAL), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: openmodelica_nf_frontend::NFType::interned_REAL(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     if isSome(binding.clone()) {
         bnd = Util::getOption(binding.clone())?;
         var = fromCref(cref.clone(), Attributes::DEFAULT_ATTR().clone(), Binding::makeFlat(bnd.clone(), Expression::variability(bnd.clone())?, Binding::Source::BINDING.clone(), Binding::NO_CONFIDENCE.clone()))?;
@@ -1726,9 +1726,9 @@ pub fn makeClockVar(mut uniqueIndex: i32, mut ty: Arc<Type::NFType>) -> Result<(
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(CLOCK_STR)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
-    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
+    cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: openmodelica_nf_frontend::NFComponentRef::interned_EMPTY() });
     var = fromCref(cref.clone(), Attributes::DEFAULT_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
-    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::CLOCK)));
+    assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), openmodelica_nf_frontend::NFBackendExtension::VariableKind::interned_CLOCK()));
     (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
     Ok((var_ptr, cref))
 }
@@ -2532,6 +2532,15 @@ pub mod VarData {
         },
         VAR_DATA_EMPTY,
     }
+    impl VarData {
+        pub fn interned_VAR_DATA_EMPTY() -> Arc<VarData> {
+            thread_local! {
+                static INTERNED: Arc<VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_VAR_DATA_EMPTY() -> Arc<VarData> { VarData::interned_VAR_DATA_EMPTY() }
     impl Default for VarData {
         fn default() -> Self { Self::VAR_DATA_EMPTY }
     }

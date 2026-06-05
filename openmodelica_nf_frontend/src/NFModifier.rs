@@ -58,7 +58,7 @@ use openmodelica_util::Error;
 use openmodelica_util::IOStream;
 use openmodelica_util_datatypes_basic::List;
 
-thread_local! { static __EMPTY_MOD_TLS: Arc<Modifier::Modifier> = Arc::new(crate::NFModifier::Modifier::NOMOD); }
+thread_local! { static __EMPTY_MOD_TLS: Arc<Modifier::Modifier> = crate::NFModifier::Modifier::interned_NOMOD(); }
 pub fn EMPTY_MOD() -> Arc<Modifier::Modifier> { __EMPTY_MOD_TLS.with(|__t| __t.clone()) }
 
 pub mod ModTable {
@@ -106,6 +106,15 @@ pub mod ModTable {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            thread_local! {
+                static INTERNED: Arc<Tree> = Arc::new(Tree::EMPTY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -143,9 +152,9 @@ pub mod ModTable {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: Arc::new(crate::NFModifier::ModTable::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::NFModifier::ModTable::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFModifier::ModTable::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFModifier::ModTable::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&*(var_field!((*tree).value, Tree::LEAF).clone()),&*(value.clone()))) {
@@ -212,9 +221,9 @@ pub mod ModTable {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: Arc::new(crate::NFModifier::ModTable::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::NFModifier::ModTable::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::NFModifier::ModTable::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::NFModifier::ModTable::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -361,7 +370,7 @@ pub mod ModTable {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Modifier::Modifier>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Modifier::Modifier>, ArcStr) -> Result<Arc<Modifier::Modifier>> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::NFModifier::ModTable::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::NFModifier::ModTable::Tree::interned_EMPTY();
         let mut key: Key = arcstr::literal!("");
         let mut value: Value = Arc::new(Modifier::NOMOD);
         for mut t in &*inValues.clone() {
@@ -605,7 +614,7 @@ pub mod ModTable {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::NFModifier::ModTable::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::NFModifier::ModTable::Tree::interned_EMPTY();
         outTree
     }
 
@@ -665,8 +674,8 @@ pub mod ModTable {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::NFModifier::ModTable::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::NFModifier::ModTable::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::NFModifier::ModTable::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::NFModifier::ModTable::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -686,8 +695,8 @@ pub mod ModTable {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::NFModifier::ModTable::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::NFModifier::ModTable::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::NFModifier::ModTable::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::NFModifier::ModTable::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -840,6 +849,15 @@ pub mod Modifier {
         },
         NOMOD,
     }
+    impl Modifier {
+        pub fn interned_NOMOD() -> Arc<Modifier> {
+            thread_local! {
+                static INTERNED: Arc<Modifier> = Arc::new(Modifier::NOMOD);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_NOMOD() -> Arc<Modifier> { Modifier::interned_NOMOD() }
     impl Default for Modifier {
         fn default() -> Self { Self::NOMOD }
     }
@@ -848,7 +866,7 @@ pub mod Modifier {
         let mut newMod: Arc<Modifier> = Arc::new(Modifier::NOMOD);
         newMod = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ SCode::Mod::NOMOD { .. } => {
-            Arc::new(crate::NFModifier::Modifier::NOMOD)
+            crate::NFModifier::Modifier::interned_NOMOD()
         },
         Deref @ SCode::Mod::MOD { .. } => {
             let mut submod_lst: Arc<metamodelica::List<(ArcStr, Arc<Modifier>)>> = metamodelica::nil();
@@ -877,7 +895,7 @@ pub mod Modifier {
                 Inst::partialInstClass(node.clone())?;
             }
             cc_mod = createConstrainingMod(elem.clone(), scope.clone(), confidence.clone())?;
-            Arc::new(Modifier::REDECLARE { finalPrefix: var_field!((*r#mod).finalPrefix, SCode::Mod::REDECL).clone(), eachPrefix: var_field!((*r#mod).eachPrefix, SCode::Mod::REDECL).clone(), element: node.clone(), innerMod: Arc::new(crate::NFModifier::Modifier::NOMOD), outerMod: Arc::new(crate::NFModifier::Modifier::NOMOD), constrainingMod: cc_mod.clone(), propagatedSubs: metamodelica::nil() })
+            Arc::new(Modifier::REDECLARE { finalPrefix: var_field!((*r#mod).finalPrefix, SCode::Mod::REDECL).clone(), eachPrefix: var_field!((*r#mod).eachPrefix, SCode::Mod::REDECL).clone(), element: node.clone(), innerMod: crate::NFModifier::Modifier::interned_NOMOD(), outerMod: crate::NFModifier::Modifier::interned_NOMOD(), constrainingMod: cc_mod.clone(), propagatedSubs: metamodelica::nil() })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -890,7 +908,7 @@ pub mod Modifier {
         r#mod = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: smod, .. }) }, .. }, .. } => create(smod.clone(), (var_field!((*element).name, SCode::Element::CLASS).clone()).clone(), Arc::new(ModifierScope::ModifierScope::CLASS { name: (var_field!((*element).name, SCode::Element::CLASS).clone()).clone() }), scope.clone(), confidence.clone())?,
         Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: smod, .. }) }, .. }, .. } => create(smod.clone(), (var_field!((*element).name, SCode::Element::COMPONENT).clone()).clone(), Arc::new(ModifierScope::ModifierScope::COMPONENT { name: (var_field!((*element).name, SCode::Element::COMPONENT).clone()).clone() }), scope.clone(), confidence.clone())?,
-        _ => Arc::new(crate::NFModifier::Modifier::NOMOD),
+        _ => crate::NFModifier::Modifier::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(r#mod)
@@ -904,7 +922,7 @@ pub mod Modifier {
             r#mod = (*__esc_mod).clone();
             let mut cdef = (*cdef).clone();
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
-                assign_variant_field!(cdef => SCode::ClassDef::DERIVED; modifications = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD));
+                assign_variant_field!(cdef => SCode::ClassDef::DERIVED; modifications = openmodelica_frontend_types::SCode::Mod::interned_NOMOD());
                 assign_variant_field!(elem => SCode::Element::CLASS; classDef = cdef.clone());
             }
             r#mod.clone()
@@ -912,12 +930,12 @@ pub mod Modifier {
         Deref @ SCode::Element::COMPONENT { modifications: __esc_mod, .. } => {
             r#mod = (*__esc_mod).clone();
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
-                assign_variant_field!(elem => SCode::Element::COMPONENT; modifications = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD));
+                assign_variant_field!(elem => SCode::Element::COMPONENT; modifications = openmodelica_frontend_types::SCode::Mod::interned_NOMOD());
             }
             r#mod.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)
+            openmodelica_frontend_types::SCode::Mod::interned_NOMOD()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -942,7 +960,7 @@ pub mod Modifier {
             create(var_field!((**def).modifications, SCode::ClassDef::CLASS_EXTENDS).clone(), (var_field!((*element).name, SCode::Element::CLASS).clone()).clone(), Arc::new(ModifierScope::ModifierScope::CLASS { name: (var_field!((*element).name, SCode::Element::CLASS).clone()).clone() }), scope.clone(), confidence.clone())?
         },
         _ => {
-            Arc::new(crate::NFModifier::Modifier::NOMOD)
+            crate::NFModifier::Modifier::interned_NOMOD()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

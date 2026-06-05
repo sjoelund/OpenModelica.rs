@@ -119,7 +119,7 @@ pub enum Token {
 }
 pub use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
 
-thread_local! { static __UPDATECREF_TLS: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::NFComponentRef::CREF { node: Arc::new(InstNode::InstNode::NAME_NODE { name: (literal!("jhagemann")).clone() }), subscripts: metamodelica::nil(), ty: Arc::new(crate::NFType::UNKNOWN), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(crate::NFComponentRef::EMPTY) }); }
+thread_local! { static __UPDATECREF_TLS: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::NFComponentRef::CREF { node: Arc::new(InstNode::InstNode::NAME_NODE { name: (literal!("jhagemann")).clone() }), subscripts: metamodelica::nil(), ty: crate::NFType::interned_UNKNOWN(), origin: ComponentRef::Origin::CREF.clone(), restCref: crate::NFComponentRef::interned_EMPTY() }); }
 pub fn UPDATECREF() -> Arc<ComponentRef::NFComponentRef> { __UPDATECREF_TLS.with(|__t| __t.clone()) }
 
 /* from https://www.bipm.org/documents/d/guest/si-brochure-9-en-pdf */

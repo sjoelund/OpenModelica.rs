@@ -327,7 +327,7 @@ pub fn fromAbsyn(mut inOperator: Absyn::Operator) -> Result<Arc<NFOperator>> {
         Absyn::Operator::EQUAL { .. } => Op::EQUAL.clone(),
         Absyn::Operator::NEQUAL { .. } => Op::NEQUAL.clone(),
     });
-    outOperator = Arc::new(NFOperator { ty: Arc::new(crate::NFType::UNKNOWN), op: op.clone() });
+    outOperator = Arc::new(NFOperator { ty: crate::NFType::interned_UNKNOWN(), op: op.clone() });
     Ok(outOperator)
 }
 

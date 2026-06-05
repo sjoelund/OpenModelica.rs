@@ -255,7 +255,7 @@ fn makeEqualityEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsS
     let mut equalityEq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     source = ElementSource::mergeSources(lhsSource.clone(), rhsSource.clone())?;
-    equalityEq = Equation::makeCrefEquality(lhsCref.clone(), rhsCref.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source.clone())?;
+    equalityEq = Equation::makeCrefEquality(lhsCref.clone(), rhsCref.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source.clone())?;
     Ok(equalityEq)
 }
 
@@ -289,9 +289,9 @@ fn makeEqualityAssert(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSou
     } else {
         exp = Arc::new(Expression::NFExpression::RELATION { exp1: lhs_exp.clone(), operator: Operator::makeEqual(elem_ty.clone()), exp2: rhs_exp.clone(), index: -1 });
     }
-    equalityAssert = Arc::new(Equation::NFEquation::ASSERT { condition: exp.clone(), message: EQ_ASSERT_STR().clone(), level: NFBuiltin::ASSERTIONLEVEL_ERROR().clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: source.clone() });
+    equalityAssert = Arc::new(Equation::NFEquation::ASSERT { condition: exp.clone(), message: EQ_ASSERT_STR().clone(), level: NFBuiltin::ASSERTIONLEVEL_ERROR().clone(), scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: source.clone() });
     while !(iterators.clone().is_empty()) {
-        equalityAssert = Arc::new(Equation::NFEquation::FOR { iterator: listHead(iterators.clone())?, range: Some(listHead(ranges.clone())?), body: list![equalityAssert.clone()], scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: source.clone() });
+        equalityAssert = Arc::new(Equation::NFEquation::FOR { iterator: listHead(iterators.clone())?, range: Some(listHead(ranges.clone())?), body: list![equalityAssert.clone()], scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: source.clone() });
         iterators = listRest(iterators.clone())?;
         ranges = listRest(ranges.clone())?;
     }
@@ -357,13 +357,13 @@ fn generateFlowEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFC
         sum = makeFlowExp(c.clone())?;
         for mut e in &*c_rest.clone() {
             let mut e = e.clone();
-            sum = Arc::new(Expression::NFExpression::BINARY { exp1: sum.clone(), operator: Operator::makeAdd(Arc::new(crate::NFType::REAL)), exp2: makeFlowExp(e.clone())? });
+            sum = Arc::new(Expression::NFExpression::BINARY { exp1: sum.clone(), operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: makeFlowExp(e.clone())? });
             src = ElementSource::mergeSources(src.clone(), e.source.clone())?;
         }
     }
-    equations = list![Equation::makeEquality(sum.clone(), Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), Type::arrayElementType(c.ty.clone()), src.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone())];
+    equations = list![Equation::makeEquality(sum.clone(), Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), Type::arrayElementType(c.ty.clone()), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone())];
     while !(iterators.clone().is_empty()) {
-        equations = list![Arc::new(Equation::NFEquation::FOR { iterator: listHead(iterators.clone())?, range: Some(listHead(ranges.clone())?), body: equations.clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: src.clone() })];
+        equations = list![Arc::new(Equation::NFEquation::FOR { iterator: listHead(iterators.clone())?, range: Some(listHead(ranges.clone())?), body: equations.clone(), scope: crate::NFInstNode::InstNode::interned_EMPTY_NODE(), source: src.clone() })];
         iterators = listRest(iterators.clone())?;
         ranges = listRest(ranges.clone())?;
     }
@@ -376,7 +376,7 @@ fn makeFlowExp(mut element: Arc<Connector::NFConnector>) -> Result<Arc<Expressio
     exp = Expression::fromCref(element.name.clone(), false)?;
     face = element.face.clone();
     if face.clone() == Face::OUTSIDE.clone() {
-        exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(Arc::new(crate::NFType::REAL)), exp: exp.clone() });
+        exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_REAL()), exp: exp.clone() });
     }
     Ok(exp)
 }
@@ -413,11 +413,11 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
             e1 = makeInStreamCall(cref2.clone())?;
             e2 = makeInStreamCall(cref1.clone())?;
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
-            list![Equation::makeEquality(cref1.clone(), e1.clone(), Arc::new(crate::NFType::REAL), src.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone()), Equation::makeEquality(cref2.clone(), e2.clone(), Arc::new(crate::NFType::REAL), src.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone())]
+            list![Equation::makeEquality(cref1.clone(), e1.clone(), crate::NFType::interned_REAL(), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), Equation::makeEquality(cref2.clone(), e2.clone(), crate::NFType::interned_REAL(), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone())]
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src1, name: cr1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src2, name: cr2, .. }, tail: Deref @ metamodelica::List::Nil }) => {
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
-            list![Equation::makeCrefEquality(cr1.clone(), cr2.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), src.clone())?]
+            list![Equation::makeCrefEquality(cr1.clone(), cr2.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), src.clone())?]
         },
         _ => streamEquationGeneral(outside.clone(), inside.clone(), flowThreshold.clone(), variables.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -447,7 +447,7 @@ fn streamEquationGeneral(mut outsideElements: Arc<metamodelica::List<Arc<Connect
         outside = removeStreamSetElement(e.name.clone(), reduced_outside.clone())?;
         res = streamSumEquationExp(outside.clone(), insideElements.clone(), flowThreshold.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), variables.clone())?;
         src = ElementSource::addAdditionalComment(e.source.clone(), (literal!(" equation generated from stream connection")).clone())?;
-        equations = metamodelica::cons(Equation::makeEquality(cref_exp.clone(), res.clone(), Arc::new(crate::NFType::REAL), src.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
+        equations = metamodelica::cons(Equation::makeEquality(cref_exp.clone(), res.clone(), crate::NFType::interned_REAL(), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
     }
     Ok(equations)
 }
@@ -463,13 +463,13 @@ fn streamSumEquationExp(mut outsideElements: Arc<metamodelica::List<Arc<Connecto
         (true, false) => {
             inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
             inside_sum2 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
-            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: inside_sum1.clone(), operator: Operator::makeDiv(Arc::new(crate::NFType::REAL)), exp2: inside_sum2.clone() });
+            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: inside_sum1.clone(), operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: inside_sum2.clone() });
             makeInStreamDivCall(sumExp.clone(), fallback.clone())?
         },
         (false, true) => {
             outside_sum1 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
             outside_sum2 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
-            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum1.clone(), operator: Operator::makeDiv(Arc::new(crate::NFType::REAL)), exp2: outside_sum2.clone() });
+            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum1.clone(), operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: outside_sum2.clone() });
             makeInStreamDivCall(sumExp.clone(), fallback.clone())?
         },
         (false, false) => {
@@ -477,7 +477,7 @@ fn streamSumEquationExp(mut outsideElements: Arc<metamodelica::List<Arc<Connecto
             outside_sum2 = sumMap(outsideElements.clone(), (std::sync::Arc::new(sumOutside2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
             inside_sum1 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
             inside_sum2 = sumMap(insideElements.clone(), (std::sync::Arc::new(sumInside2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Expression::NFExpression>, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Arc<Expression::NFExpression>> + 'static>), flowThreshold.clone(), variables.clone())?;
-            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum1.clone(), operator: Operator::makeAdd(Arc::new(crate::NFType::REAL)), exp2: inside_sum1.clone() }), operator: Operator::makeDiv(Arc::new(crate::NFType::REAL)), exp2: Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum2.clone(), operator: Operator::makeAdd(Arc::new(crate::NFType::REAL)), exp2: inside_sum2.clone() }) });
+            sumExp = Arc::new(Expression::NFExpression::BINARY { exp1: Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum1.clone(), operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: inside_sum1.clone() }), operator: Operator::makeDiv(crate::NFType::interned_REAL()), exp2: Arc::new(Expression::NFExpression::BINARY { exp1: outside_sum2.clone(), operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: inside_sum2.clone() }) });
             makeInStreamDivCall(sumExp.clone(), fallback.clone())?
         },
         _ => bail!("match: no arm matched"),
@@ -492,7 +492,7 @@ fn sumMap(mut elements: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mu
     exp = func(listHead(elements.clone())?, flowThreshold.clone(), variables.clone())?;
     for mut e in &*listRest(elements.clone())? {
         let mut e = e.clone();
-        exp = Arc::new(Expression::NFExpression::BINARY { exp1: func(e.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeAdd(Arc::new(crate::NFType::REAL)), exp2: exp.clone() });
+        exp = Arc::new(Expression::NFExpression::BINARY { exp1: func(e.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeAdd(crate::NFType::interned_REAL()), exp2: exp.clone() });
     }
     Ok(exp)
 }
@@ -520,7 +520,7 @@ fn sumOutside1(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<
     let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
-    exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(Arc::new(crate::NFType::REAL)), exp2: makeInStreamCall(stream_exp.clone())? });
+    exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(crate::NFType::interned_REAL()), exp2: makeInStreamCall(stream_exp.clone())? });
     Ok(exp)
 }
 
@@ -529,8 +529,8 @@ fn sumInside1(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<E
     let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
-    flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(Arc::new(crate::NFType::REAL)), exp: flow_exp.clone() });
-    exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(Arc::new(crate::NFType::REAL)), exp2: stream_exp.clone() });
+    flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_REAL()), exp: flow_exp.clone() });
+    exp = Arc::new(Expression::NFExpression::BINARY { exp1: makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?, operator: Operator::makeMul(crate::NFType::interned_REAL()), exp2: stream_exp.clone() });
     Ok(exp)
 }
 
@@ -548,7 +548,7 @@ fn sumInside2(mut element: Arc<Connector::NFConnector>, mut flowThreshold: Arc<E
     let mut flow_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut stream_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (stream_exp, flow_exp) = streamFlowExp(element.clone())?;
-    flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(Arc::new(crate::NFType::REAL)), exp: flow_exp.clone() });
+    flow_exp = Arc::new(Expression::NFExpression::UNARY { operator: Operator::makeUMinus(crate::NFType::interned_REAL()), exp: flow_exp.clone() });
     exp = makePositiveMaxCall(flow_exp.clone(), stream_exp.clone(), element.clone(), flowThreshold.clone(), variables.clone())?;
     Ok(exp)
 }
@@ -575,7 +575,7 @@ fn makePositiveMaxCall(mut flowExp: Arc<Expression::NFExpression>, mut streamExp
             _ => bail!("pattern mismatch"),
         } };
         nominal_exp = __pa0.clone();
-        flow_threshold = Arc::new(Expression::NFExpression::BINARY { exp1: flowThreshold.clone(), operator: Operator::makeMul(Arc::new(crate::NFType::REAL)), exp2: nominal_exp.clone() });
+        flow_threshold = Arc::new(Expression::NFExpression::BINARY { exp1: flowThreshold.clone(), operator: Operator::makeMul(crate::NFType::interned_REAL()), exp2: nominal_exp.clone() });
     } else {
         flow_threshold = flowThreshold.clone();
     }
@@ -675,7 +675,7 @@ fn evaluateInStream(mut cref: Arc<ComponentRef::NFComponentRef>, mut sets: Conne
     let mut set: i32 = 0;
     let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     cr = ComponentRef::evaluateSubscripts(cref.clone())?;
-    c = Arc::new(Connector::NFConnector { name: cr.clone(), ty: Arc::new(crate::NFType::UNKNOWN), face: Face::INSIDE.clone(), cty: ConnectorType::STREAM.clone(), source: DAE::emptyElementSource().clone() });
+    c = Arc::new(Connector::NFConnector { name: cr.clone(), ty: crate::NFType::interned_UNKNOWN(), face: Face::INSIDE.clone(), cty: ConnectorType::STREAM.clone(), source: DAE::emptyElementSource().clone() });
     match '__try0: {
         set = unwrap_break_err!(ConnectionSets::findSetArrayIndex(c.clone(), sets.clone()), '__try0);
         sl = unwrap_break_err!(metamodelica::arrayGet(setsArray.clone(), set.clone()), '__try0);
@@ -815,7 +815,7 @@ fn evaluateActualStream(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut s
         stream_exp = Expression::fromCref(stream_cref.clone(), false)?;
         instream_exp = evaluateInStream(stream_cref.clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?;
         op = Operator::makeGreater(ComponentRef::nodeType(flowCref.clone())?);
-        exp = Arc::new(Expression::NFExpression::IF { ty: Arc::new(crate::NFType::REAL), condition: Arc::new(Expression::NFExpression::RELATION { exp1: flow_exp.clone(), operator: op.clone(), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), index: -1 }), trueBranch: instream_exp.clone(), falseBranch: stream_exp.clone() });
+        exp = Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_REAL(), condition: Arc::new(Expression::NFExpression::RELATION { exp1: flow_exp.clone(), operator: op.clone(), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), index: -1 }), trueBranch: instream_exp.clone(), falseBranch: stream_exp.clone() });
     }
     Ok((exp, flowCref))
 }

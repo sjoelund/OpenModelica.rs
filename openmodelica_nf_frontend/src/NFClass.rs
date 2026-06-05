@@ -124,11 +124,20 @@ pub enum NFClass {
         ty: Arc<DAE::Type>,
     },
 }
+impl NFClass {
+    pub fn interned_NOT_INSTANTIATED() -> Arc<NFClass> {
+        thread_local! {
+            static INTERNED: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOT_INSTANTIATED() -> Arc<NFClass> { NFClass::interned_NOT_INSTANTIATED() }
 impl Default for NFClass {
     fn default() -> Self { Self::NOT_INSTANTIATED }
 }
 pub use self::NFClass::{NOT_INSTANTIATED,PARTIAL_CLASS,PARTIAL_BUILTIN,EXPANDED_CLASS,EXPANDED_DERIVED,INSTANCED_CLASS,INSTANCED_BUILTIN,TYPED_DERIVED,DAE_TYPE};
-pub static DEFAULT_PREFIXES: std::sync::LazyLock<Arc<Prefixes::Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes::Prefixes { encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE) }) });
+pub static DEFAULT_PREFIXES: std::sync::LazyLock<Arc<Prefixes::Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes::Prefixes { encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE() }) });
 
 pub mod Prefixes {
     use super::*;
@@ -176,7 +185,7 @@ pub fn fromSCode(mut elements: Arc<metamodelica::List<Arc<Element>>>, mut isClas
     let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = ClassTree::fromSCode(elements.clone(), isClassExtends.clone(), scope.clone())?;
-    cls = Arc::new(NFClass::PARTIAL_CLASS { elements: tree.clone(), modifier: Arc::new(crate::NFModifier::Modifier::NOMOD), ccMod: Arc::new(crate::NFModifier::Modifier::NOMOD), prefixes: prefixes.clone() });
+    cls = Arc::new(NFClass::PARTIAL_CLASS { elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), ccMod: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone() });
     Ok(cls)
 }
 
@@ -197,7 +206,7 @@ pub fn fromEnumeration(mut literals: Arc<metamodelica::List<Arc<SCode::Enum>>>, 
     let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = ClassTree::fromEnumeration(literals.clone(), enumType.clone(), enumClass.clone())?;
-    cls = Arc::new(NFClass::PARTIAL_BUILTIN { ty: enumType.clone(), elements: tree.clone(), modifier: Arc::new(crate::NFModifier::Modifier::NOMOD), prefixes: prefixes.clone(), restriction: Arc::new(crate::NFRestriction::ENUMERATION) });
+    cls = Arc::new(NFClass::PARTIAL_BUILTIN { ty: enumType.clone(), elements: tree.clone(), modifier: crate::NFModifier::Modifier::interned_NOMOD(), prefixes: prefixes.clone(), restriction: crate::NFRestriction::interned_ENUMERATION() });
     Ok(cls)
 }
 
@@ -205,14 +214,14 @@ pub fn makeRecordConstructor(mut fields: Arc<metamodelica::List<Arc<InstNode::In
     let mut cls: Arc<NFClass> = Arc::new(NFClass::NOT_INSTANTIATED);
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = ClassTree::fromRecordConstructor(fields.clone(), out.clone())?;
-    cls = Arc::new(NFClass::INSTANCED_CLASS { ty: Arc::new(crate::NFType::UNKNOWN), elements: tree.clone(), sections: Arc::new(crate::NFSections::EMPTY), prefixes: DEFAULT_PREFIXES.clone(), restriction: Arc::new(crate::NFRestriction::RECORD_CONSTRUCTOR) });
+    cls = Arc::new(NFClass::INSTANCED_CLASS { ty: crate::NFType::interned_UNKNOWN(), elements: tree.clone(), sections: crate::NFSections::interned_EMPTY(), prefixes: DEFAULT_PREFIXES.clone(), restriction: crate::NFRestriction::interned_RECORD_CONSTRUCTOR() });
     Ok(cls)
 }
 
 pub fn initExpandedClass(mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     let mut cls: Arc<NFClass> = cls;
     cls = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_CLASS { .. } => Arc::new(NFClass::EXPANDED_CLASS { elements: var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(), modifier: var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(), ccMod: var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(), prefixes: var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone(), restriction: Arc::new(crate::NFRestriction::UNKNOWN) }),
+        Deref @ PARTIAL_CLASS { .. } => Arc::new(NFClass::EXPANDED_CLASS { elements: var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(), modifier: var_field!((*cls).modifier, NFClass::PARTIAL_CLASS).clone(), ccMod: var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(), prefixes: var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone(), restriction: crate::NFRestriction::interned_UNKNOWN() }),
         _ => bail!("match: no arm matched"),
     } });
     Ok(cls)
@@ -225,7 +234,7 @@ pub fn getSections(mut cls: Arc<NFClass>) -> Result<Arc<Sections::NFSections>> {
     sections = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).sections, NFClass::INSTANCED_CLASS).clone(),
         Deref @ TYPED_DERIVED { .. } => getSections(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => Arc::new(crate::NFSections::EMPTY),
+        _ => crate::NFSections::interned_EMPTY(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(sections)
@@ -350,7 +359,7 @@ pub fn classTree(mut cls: Arc<NFClass>) -> Result<Arc<ClassTree::ClassTree>> {
         Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone(),
         Deref @ INSTANCED_BUILTIN { .. } => var_field!((*cls).elements, NFClass::INSTANCED_BUILTIN).clone(),
         Deref @ TYPED_DERIVED { .. } => classTree(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => Arc::new(crate::NFClassTree::ClassTree::EMPTY_TREE),
+        _ => crate::NFClassTree::ClassTree::interned_EMPTY_TREE(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tree)
@@ -422,7 +431,7 @@ pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
         Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).modifier, NFClass::EXPANDED_CLASS).clone(),
         Deref @ EXPANDED_DERIVED { .. } => var_field!((*cls).modifier, NFClass::EXPANDED_DERIVED).clone(),
         Deref @ PARTIAL_BUILTIN { .. } => var_field!((*cls).modifier, NFClass::PARTIAL_BUILTIN).clone(),
-        _ => Arc::new(crate::NFModifier::Modifier::NOMOD),
+        _ => crate::NFModifier::Modifier::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     modifier
@@ -434,7 +443,7 @@ pub fn getCCModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
         Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).ccMod, NFClass::PARTIAL_CLASS).clone(),
         Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).ccMod, NFClass::EXPANDED_CLASS).clone(),
         Deref @ EXPANDED_DERIVED { .. } => var_field!((*cls).ccMod, NFClass::EXPANDED_DERIVED).clone(),
-        _ => Arc::new(crate::NFModifier::Modifier::NOMOD),
+        _ => crate::NFModifier::Modifier::interned_NOMOD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     modifier
@@ -591,7 +600,7 @@ pub fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> R
         Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone(),
         Deref @ INSTANCED_BUILTIN { .. } => var_field!((*cls).ty, NFClass::INSTANCED_BUILTIN).clone(),
         Deref @ TYPED_DERIVED { .. } => var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone(),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(ty)
@@ -635,7 +644,7 @@ pub fn restriction(mut cls: Arc<NFClass>) -> Arc<Restriction::NFRestriction> {
         Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).restriction, NFClass::INSTANCED_CLASS).clone(),
         Deref @ INSTANCED_BUILTIN { .. } => var_field!((*cls).restriction, NFClass::INSTANCED_BUILTIN).clone(),
         Deref @ TYPED_DERIVED { .. } => var_field!((*cls).restriction, NFClass::TYPED_DERIVED).clone(),
-        _ => Arc::new(crate::NFRestriction::UNKNOWN),
+        _ => crate::NFRestriction::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     res

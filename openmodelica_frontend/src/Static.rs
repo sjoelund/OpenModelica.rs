@@ -1604,8 +1604,8 @@ fn elabCallReductionIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
         c = if (FGraph::inFunctionScope(inEnv.clone())?) {iter_const.clone()} else {openmodelica_frontend_types::DAE::Const::C_CONST};
         (outCache, iter_exp, _) = Ceval::cevalIfConstant(outCache.clone(), inEnv.clone(), iter_exp.clone(), DAE::Properties::PROP { type_: full_iter_ty.clone(), constFlag: c.clone() }, inImpl.clone(), inInfo.clone())?;
         (iter_ty, dim) = Types::unliftArrayOrList(full_iter_ty.clone())?;
-        env = FGraph::addForIterator(inEnv.clone(), (iter_name.clone()).clone(), iter_ty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::CONST, Some(iter_const.clone()))?;
-        outIteratorsEnv = FGraph::addForIterator(outIteratorsEnv.clone(), (iter_name.clone()).clone(), iter_ty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::CONST, Some(iter_const.clone()))?;
+        env = FGraph::addForIterator(inEnv.clone(), (iter_name.clone()).clone(), iter_ty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::CONST, Some(iter_const.clone()))?;
+        outIteratorsEnv = FGraph::addForIterator(outIteratorsEnv.clone(), (iter_name.clone()).clone(), iter_ty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::CONST, Some(iter_const.clone()))?;
         let (__pa12, __pa13, __pa14) = ::match_deref::match_deref! { match &(elabExpOptAndMatchType(outCache.clone(), env.clone(), oaguard_exp.clone(), DAE::T_BOOL_DEFAULT().clone(), inImpl.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?) {
             (__pa12, __pa13, DAE::Properties::PROP { type_: _, constFlag: __pa14 }) => (__pa12.clone(), __pa13.clone(), __pa14.clone()),
             _ => bail!("pattern mismatch"),
@@ -1615,7 +1615,7 @@ fn elabCallReductionIterators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
         guard_const = __pa14.clone();
         if isSome(guard_exp.clone()) {
             outHasGuard = true;
-            dim = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
+            dim = openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN();
         }
         outConst = Types::constAnd(outConst.clone(), Types::constAnd(guard_const.clone(), iter_const.clone()));
         outIterators = metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iter_name.clone()).clone(), exp: iter_exp.clone(), guardExp: guard_exp.clone(), ty: iter_ty.clone() }), outIterators.clone());
@@ -1833,8 +1833,8 @@ fn makeReductionFoldExp(mut inEnv: FCore::Graph, mut path: Arc<Absyn::Path>, mut
             let mut cr1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut cr2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
-            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), expty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), expty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
             cr1 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (foldId.clone()).clone(), subscripts: metamodelica::nil() });
             cr2 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (resultId.clone()).clone(), subscripts: metamodelica::nil() });
             exp = Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::CREF { componentRef: cr2.clone() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::CREF { componentRef: cr1.clone() }) });
@@ -1845,8 +1845,8 @@ fn makeReductionFoldExp(mut inEnv: FCore::Graph, mut path: Arc<Absyn::Path>, mut
             let mut cr1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut cr2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
-            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), expty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), expty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
             cr1 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (foldId.clone()).clone(), subscripts: metamodelica::nil() });
             cr2 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (resultId.clone()).clone(), subscripts: metamodelica::nil() });
             exp = Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::CREF { componentRef: cr2.clone() }), op: openmodelica_ast::Absyn::Operator::MUL, exp2: Arc::new(Absyn::Exp::CREF { componentRef: cr1.clone() }) });
@@ -1859,8 +1859,8 @@ fn makeReductionFoldExp(mut inEnv: FCore::Graph, mut path: Arc<Absyn::Path>, mut
             let mut cr2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             cr = AbsynUtil::pathToCref(path.clone())?;
-            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
-            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), resultTy.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(inEnv.clone(), (foldId.clone()).clone(), expty.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
+            env = FGraph::addForIterator(env.clone(), (resultId.clone()).clone(), resultTy.clone(), openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_VAR))?;
             cr1 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (foldId.clone()).clone(), subscripts: metamodelica::nil() });
             cr2 = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (resultId.clone()).clone(), subscripts: metamodelica::nil() });
             exp = Arc::new(Absyn::Exp::CALL { function_: cr.clone(), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: list![Arc::new(Absyn::Exp::CREF { componentRef: cr1.clone() }), Arc::new(Absyn::Exp::CREF { componentRef: cr2.clone() })], argNames: metamodelica::nil() }), typeVars: metamodelica::nil() });
@@ -2691,7 +2691,7 @@ fn elabRangeType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inStart
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, DAE::Const::C_VAR { .. }) => {
-                    Ok((inCache.clone(), Arc::new(DAE::Type::T_ARRAY { ty: inType.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] })))
+                    Ok((inCache.clone(), Arc::new(DAE::Type::T_ARRAY { ty: inType.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] })))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2731,7 +2731,7 @@ fn elabRangeType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inStart
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Ok((inCache.clone(), Arc::new(DAE::Type::T_ARRAY { ty: inType.clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] })))
+                    Ok((inCache.clone(), Arc::new(DAE::Type::T_ARRAY { ty: inType.clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] })))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3683,7 +3683,7 @@ fn elabBuiltinSizeNoIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayExpType: Arc
                     b = Types::dimensionsKnown(inArrayType.clone())?;
                     cnst = Types::boolConstSize(b.clone());
                     exp = Arc::new(DAE::Exp::SIZE { exp: inArrayExp.clone(), sz: None });
-                    ty = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] });
+                    ty = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()] });
                     prop = DAE::Properties::PROP { type_: ty.clone(), constFlag: cnst.clone() };
                     Ok((exp.clone(), prop.clone()))
                 }
@@ -4824,7 +4824,7 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, _) => {
                     let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    call = Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) });
+                    call = Arc::new(DAE::Exp::CLKCONST { clk: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK() });
                     Ok((cache.clone(), call.clone(), DAE::Properties::PROP { type_: DAE::T_CLOCK_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
                 }
                 _ => bail!("nomatch"),
@@ -5075,7 +5075,7 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
                     ty2 = Types::arrayElementType(Types::getPropType(prop2.clone())?);
                     variability = Types::getPropConst(prop1.clone())?;
                     (c, _) = Types::matchType(c.clone(), ty2.clone(), DAE::T_CLOCK_DEFAULT().clone(), true)?;
-                    ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("u")).clone(), ty: ty1.clone(), r#const: variability.clone(), par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), Arc::new(DAE::FuncArg { name: (literal!("c")).clone(), ty: ty2.clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: Some(Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) })) })], funcResultType: ty1.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }) });
+                    ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("u")).clone(), ty: ty1.clone(), r#const: variability.clone(), par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), Arc::new(DAE::FuncArg { name: (literal!("c")).clone(), ty: ty2.clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: Some(Arc::new(DAE::Exp::CLKCONST { clk: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK() })) })], funcResultType: ty1.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }) });
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
                         (__pa0, Some((__pa1, __pa2))) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
@@ -5101,7 +5101,7 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
                     (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
                     variability = Types::getPropConst(prop1.clone())?;
-                    ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("u")).clone(), ty: ty1.clone(), r#const: variability.clone(), par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), Arc::new(DAE::FuncArg { name: (literal!("c")).clone(), ty: DAE::T_CLOCK_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: Some(Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) })) })], funcResultType: ty1.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }) });
+                    ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: list![Arc::new(DAE::FuncArg { name: (literal!("u")).clone(), ty: ty1.clone(), r#const: variability.clone(), par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: None }), Arc::new(DAE::FuncArg { name: (literal!("c")).clone(), ty: DAE::T_CLOCK_DEFAULT().clone(), r#const: openmodelica_frontend_types::DAE::Const::C_VAR, par: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, defaultBinding: Some(Arc::new(DAE::Exp::CLKCONST { clk: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK() })) })], funcResultType: ty1.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }) });
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("sample")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
                         (__pa0, Some((__pa1, __pa2))) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
@@ -5925,14 +5925,14 @@ fn elabBuiltinIdentity(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             }
             Err(_) => {
                 if check_model.clone() {
-                    dim_size = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
+                    dim_size = openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN();
                 } else {
                     bail!("fail");
                 }
             }
         }
     } else {
-        dim_size = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
+        dim_size = openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN();
     }
     ty = Types::liftArrayListDims(DAE::T_INTEGER_DEFAULT().clone(), list![dim_size.clone(), dim_size.clone()]);
     exp_ty = Types::simplifyType(ty.clone())?;
@@ -6277,7 +6277,7 @@ fn elabBuiltinVector(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
             outProperties = DAE::Properties::PROP { type_: arr_ty.clone(), constFlag: c.clone() };
         }
     } else {
-        ty = Types::liftArray(Types::arrayElementType(ty.clone()), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN));
+        ty = Types::liftArray(Types::arrayElementType(ty.clone()), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN());
         exp_ty = Types::simplifyType(ty.clone())?;
         outExp = Expression::makePureBuiltinCall((literal!("vector")).clone(), list![outExp.clone()], exp_ty.clone());
         outProperties = DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() };
@@ -8020,7 +8020,7 @@ fn instantiateDaeFunction2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, env, cl, name) = lookupAndFullyQualify(inCache.clone(), inEnv.clone(), inName.clone())?;
                     outCache = FCore::addCachedInstFuncGuard(outCache.clone(), name.clone())?;
-                    (outCache, _, _) = InstFunction::implicitFunctionInstantiation(outCache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
+                    (outCache, _, _) = InstFunction::implicitFunctionInstantiation(outCache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
                     Ok(((outCache.clone(), openmodelica_util::Util::Status::SUCCESS), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -8031,7 +8031,7 @@ fn instantiateDaeFunction2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                 (_, Some(cl), _, _) => {
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, _) = Inst::makeFullyQualified(inCache.clone(), inEnv.clone(), inName.clone())?;
-                    (outCache, _, _) = InstFunction::implicitFunctionInstantiation(outCache.clone(), inEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
+                    (outCache, _, _) = InstFunction::implicitFunctionInstantiation(outCache.clone(), inEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil())?;
                     Ok(((outCache.clone(), openmodelica_util::Util::Status::SUCCESS), outCache.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -8768,7 +8768,7 @@ fn applyArgTypesToFuncType(mut inSlots: Arc<metamodelica::List<Slot>>, mut inPar
         }
         __acc.reverse()
     });
-    dummy_var = Arc::new(SCode::Element::COMPONENT { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
+    dummy_var = Arc::new(SCode::Element::COMPONENT { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultVarAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     env = FGraph::openScope(inEnv.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (arcstr::literal!(FCore::forScopeName)).clone(), None)?;
     env = makeDummyFuncEnv(env.clone(), vars.clone(), dummy_var.clone())?;
     outParameters = ({
@@ -8894,7 +8894,7 @@ fn makeVarFromSlot(mut inSlot: Slot, mut inEnv: FCore::Graph, mut inCache: FCore
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Slot { defaultArg: Deref @ DAE::FuncArg { ty, name, .. }, .. } => {
-                    Ok(Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrParam().clone(), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }))
+                    Ok(Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrParam().clone(), ty: ty.clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -8998,7 +8998,7 @@ fn makeDummyFuncEnv(mut inEnv: FCore::Graph, mut inVars: Arc<metamodelica::List<
     for mut var in &*inVars.clone() {
         let mut var = var.clone();
         dummy_var = SCodeUtil::setComponentName(inDummyVar.clone(), (DAEUtil::typeVarIdent(var.clone())?).clone())?;
-        outEnv = FGraph::mkComponentNode(outEnv.clone(), var.clone(), dummy_var.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
+        outEnv = FGraph::mkComponentNode(outEnv.clone(), var.clone(), dummy_var.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
     }
     Ok(outEnv)
 }
@@ -10120,7 +10120,7 @@ fn elabCref1(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponent
                     let mut et: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     t = DAE::T_ANYTYPE_DEFAULT().clone();
                     et = Types::simplifyType(t.clone())?;
-                    crefExp = Expression::makeCrefExp(Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD), et.clone())?;
+                    crefExp = Expression::makeCrefExp(openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(), et.clone())?;
                     Ok((cache.clone(), Some((crefExp.clone(), DAE::Properties::PROP { type_: t.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, DAE::dummyAttrVar().clone()))))
                 }
                 _ => bail!("nomatch"),
@@ -10612,7 +10612,7 @@ fn fillSubscripts(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscri
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_ARRAY { .. } => {
                     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-                    subs = List::fill(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), (TypesDump::getDimensions(inType.clone()).len() as i32));
+                    subs = List::fill(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), (TypesDump::getDimensions(inType.clone()).len() as i32));
                     subs = List::stripN(subs.clone(), (inExpSubscriptLst.clone().len() as i32))?;
                     subs = listAppend(inExpSubscriptLst.clone(), subs.clone());
                     Ok(subs.clone())
@@ -11784,7 +11784,7 @@ fn elabSubscriptsDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     if nrsubs.clone() > 0 {
         nrdims = (inDimensions.clone().len() as i32);
         while nrsubs.clone() < nrdims.clone() {
-            outSubs = metamodelica::cons(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), outSubs.clone());
+            outSubs = metamodelica::cons(openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), outSubs.clone());
             nrsubs = nrsubs.clone() + 1;
         }
     }
@@ -11917,7 +11917,7 @@ fn elabSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSubsc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ Absyn::Subscript::NOSUB { .. }, _, _) => {
-                    Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), openmodelica_frontend_types::DAE::Const::C_CONST, None))
+                    Ok((cache.clone(), openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM(), openmodelica_frontend_types::DAE::Const::C_CONST, None))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -12237,7 +12237,7 @@ pub fn canonCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCompo
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ DAE::ComponentRef::WILD { .. }, _) => {
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
-                    Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD)))
+                    Ok((cache.clone(), openmodelica_frontend_types::DAE::ComponentRef::interned_WILD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -12559,7 +12559,7 @@ fn elabArrayDim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ Absyn::Subscript::NOSUB { .. }) => {
-                    Ok((inCache.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)))
+                    Ok((inCache.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -12583,7 +12583,7 @@ fn elabArrayDim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ Absyn::Subscript::SUBSCRIPT { subscript: Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "Boolean", .. } } }) => {
-                    Ok((inCache.clone(), Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_BOOLEAN)))
+                    Ok((inCache.clone(), openmodelica_frontend_types::DAE::Dimension::interned_DIM_BOOLEAN()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -12600,7 +12600,7 @@ fn elabArrayDim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: 
                     (cache, t, _) = Lookup::lookupType(cache.clone(), inEnv.clone(), type_path.clone(), None)?;
                     dim = (::match_deref::match_deref! { match &(t.clone()) {
         Deref @ DAE::Type::T_ENUMERATION { index: None, .. } => Arc::new(DAE::Dimension::DIM_ENUM { enumTypeName: var_field!((*t).path, DAE::Type::T_ENUMERATION).clone(), literals: var_field!((*t).names, DAE::Type::T_ENUMERATION).clone(), size: (var_field!((*t).names, DAE::Type::T_ENUMERATION).clone().len() as i32) }),
-        Deref @ DAE::Type::T_BOOL { .. } => Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_BOOLEAN),
+        Deref @ DAE::Type::T_BOOL { .. } => openmodelica_frontend_types::DAE::Dimension::interned_DIM_BOOLEAN(),
         _ => bail!("match: no arm matched"),
     } });
                     Ok((cache.clone(), dim.clone()))
@@ -12726,7 +12726,7 @@ fn elabArrayDim2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref:
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
                     let true = (Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) else { bail!("pattern mismatch") };
-                    Ok((inCache.clone(), Some(Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))))
+                    Ok((inCache.clone(), Some(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())))
                 }
                 _ => bail!("nomatch"),
             }}

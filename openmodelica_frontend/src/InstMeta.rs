@@ -96,7 +96,7 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
                 p2 = (paths.clone()).get(1)?;
                 singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv.clone(), p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
             } else {
-                singletonType = Arc::new(openmodelica_frontend_types::DAE::EvaluateSingletonType::NOT_SINGLETON);
+                singletonType = openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON();
             }
             typeVarsTypes = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();

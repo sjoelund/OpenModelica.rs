@@ -86,6 +86,22 @@ pub enum NFComponentRef {
     EMPTY,
     WILD,
 }
+impl NFComponentRef {
+    pub fn interned_EMPTY() -> Arc<NFComponentRef> {
+        thread_local! {
+            static INTERNED: Arc<NFComponentRef> = Arc::new(NFComponentRef::EMPTY);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_WILD() -> Arc<NFComponentRef> {
+        thread_local! {
+            static INTERNED: Arc<NFComponentRef> = Arc::new(NFComponentRef::WILD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_EMPTY() -> Arc<NFComponentRef> { NFComponentRef::interned_EMPTY() }
+pub fn interned_WILD() -> Arc<NFComponentRef> { NFComponentRef::interned_WILD() }
 impl Default for NFComponentRef {
     fn default() -> Self { Self::EMPTY }
 }
@@ -108,7 +124,7 @@ impl Ord for Origin {
 }
 
 pub fn fromNode(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut origin: Origin) -> Arc<NFComponentRef> {
-    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: subs.clone(), ty: ty.clone(), origin: origin.clone(), restCref: Arc::new(crate::NFComponentRef::EMPTY) });
+    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: subs.clone(), ty: ty.clone(), origin: origin.clone(), restCref: crate::NFComponentRef::interned_EMPTY() });
     cref
 }
 
@@ -133,7 +149,7 @@ pub fn fromAbsyn(mut node: Arc<InstNode::InstNode>, mut subs: Arc<metamodelica::
         }
         __acc.reverse()
     });
-    cref = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: sl.clone(), ty: Arc::new(crate::NFType::UNKNOWN), origin: Origin::CREF.clone(), restCref: restCref.clone() });
+    cref = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: sl.clone(), ty: crate::NFType::interned_UNKNOWN(), origin: Origin::CREF.clone(), restCref: restCref.clone() });
     cref
 }
 
@@ -144,21 +160,21 @@ pub fn fromAbsynCref(mut acref: Arc<Absyn::ComponentRef>, mut restCref: Arc<NFCo
     cref = (::match_deref::match_deref! { match &(acref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => fromAbsyn(Arc::new(InstNode::InstNode::NAME_NODE { name: (var_field!((*acref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone() }), var_field!((*acref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), restCref.clone()),
         Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => fromAbsynCref(var_field!((*acref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), fromAbsyn(Arc::new(InstNode::InstNode::NAME_NODE { name: (var_field!((*acref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone() }), var_field!((*acref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), restCref.clone()))?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => fromAbsynCref(var_field!((*acref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), Arc::new(crate::NFComponentRef::EMPTY))?,
-        Deref @ Absyn::ComponentRef::WILD { .. } => Arc::new(crate::NFComponentRef::WILD),
-        Deref @ Absyn::ComponentRef::ALLWILD { .. } => Arc::new(crate::NFComponentRef::WILD),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => fromAbsynCref(var_field!((*acref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), crate::NFComponentRef::interned_EMPTY())?,
+        Deref @ Absyn::ComponentRef::WILD { .. } => crate::NFComponentRef::interned_WILD(),
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => crate::NFComponentRef::interned_WILD(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(cref)
 }
 
 pub fn fromBuiltin(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>) -> Arc<NFComponentRef> {
-    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: Origin::SCOPE.clone(), restCref: Arc::new(crate::NFComponentRef::EMPTY) });
+    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: Origin::SCOPE.clone(), restCref: crate::NFComponentRef::interned_EMPTY() });
     cref
 }
 
 pub fn makeIterator(mut node: Arc<InstNode::InstNode>, mut ty: Arc<Type::NFType>) -> Result<Arc<NFComponentRef>> {
-    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: Origin::ITERATOR.clone(), restCref: Arc::new(crate::NFComponentRef::EMPTY) });
+    let mut cref: Arc<NFComponentRef> = Arc::new(NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: Origin::ITERATOR.clone(), restCref: crate::NFComponentRef::interned_EMPTY() });
     Ok(cref)
 }
 
@@ -428,7 +444,7 @@ pub fn first(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
     let mut cref: Arc<NFComponentRef> = cref;
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
-            assign_variant_field!(cref => NFComponentRef::CREF; restCref = Arc::new(crate::NFComponentRef::EMPTY));
+            assign_variant_field!(cref => NFComponentRef::CREF; restCref = crate::NFComponentRef::interned_EMPTY());
             ()
         },
         _ => (),
@@ -514,7 +530,7 @@ pub fn getComponentType(mut cref: Arc<NFComponentRef>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => var_field!((*cref).ty, NFComponentRef::CREF).clone(),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty
@@ -524,7 +540,7 @@ pub fn getSubscriptedType(mut cref: Arc<NFComponentRef>, mut includeScope: bool)
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => getSubscriptedType2(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), Type::subscript(var_field!((*cref).ty, NFComponentRef::CREF).clone(), var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), true)?, includeScope.clone())?,
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(ty)
@@ -1057,7 +1073,7 @@ pub fn fillSubscripts(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRef> {
             dim_count = (dims.clone().len() as i32);
             sub_count = (var_field!((*cref).subscripts, NFComponentRef::CREF).clone().len() as i32);
             if sub_count.clone() < dim_count.clone() {
-                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = listAppend(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), List::fill(Arc::new(crate::NFSubscript::WHOLE), dim_count.clone() - sub_count.clone())));
+                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = listAppend(var_field!((*cref).subscripts, NFComponentRef::CREF).clone(), List::fill(crate::NFSubscript::interned_WHOLE(), dim_count.clone() - sub_count.clone())));
             }
             assign_variant_field!(cref => NFComponentRef::CREF; restCref = fillSubscripts(var_field!((*cref).restCref, NFComponentRef::CREF).clone()));
             ()
@@ -1211,7 +1227,7 @@ pub fn toAbsyn(mut cref: Arc<NFComponentRef>) -> Result<Arc<Absyn::ComponentRef>
     }) });
             toAbsyn_impl(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), acref.clone())?
         },
-        Deref @ WILD { .. } => Arc::new(openmodelica_ast::Absyn::ComponentRef::WILD),
+        Deref @ WILD { .. } => openmodelica_ast::Absyn::ComponentRef::interned_WILD(),
         _ => bail!("match: no arm matched"),
     } });
     Ok(acref)
@@ -1251,7 +1267,7 @@ pub fn toDAE(mut cref: Arc<NFComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     }) });
             toDAE_impl(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), dcref.clone())?
         },
-        Deref @ WILD { .. } => Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD),
+        Deref @ WILD { .. } => openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(),
         _ => bail!("match: no arm matched"),
     } });
     Ok(dcref)
@@ -1493,7 +1509,7 @@ pub fn toPath_impl(mut cref: Arc<NFComponentRef>, mut accumPath: Arc<Absyn::Path
 }
 
 pub fn fromNodeList(mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<NFComponentRef>> {
-    let mut cref: Arc<NFComponentRef> = Arc::new(crate::NFComponentRef::EMPTY);
+    let mut cref: Arc<NFComponentRef> = crate::NFComponentRef::interned_EMPTY();
     for mut n in &*nodes.clone() {
         let mut n = n.clone();
         cref = Arc::new(NFComponentRef::CREF { node: n.clone(), subscripts: metamodelica::nil(), ty: InstNode::getType(n.clone())?, origin: Origin::SCOPE.clone(), restCref: cref.clone() });
@@ -1539,7 +1555,7 @@ pub fn scalarizeAll(mut cref: Arc<NFComponentRef>, mut resize: bool) -> Result<A
         } };
         next = __pa0.clone();
     }
-    crefs = scalarizeAll_Nesting(nested_crefs.clone(), Arc::new(crate::NFComponentRef::EMPTY), metamodelica::nil())?;
+    crefs = scalarizeAll_Nesting(nested_crefs.clone(), crate::NFComponentRef::interned_EMPTY(), metamodelica::nil())?;
     Ok(crefs)
 }
 
@@ -1583,7 +1599,7 @@ pub fn scalarizeSlice(mut cref: Arc<NFComponentRef>, mut slice: Arc<metamodelica
         } };
         next = __pa0.clone();
     }
-    crefs = scalarizeAll_Nesting(nested_crefs.clone(), Arc::new(crate::NFComponentRef::EMPTY), metamodelica::nil())?;
+    crefs = scalarizeAll_Nesting(nested_crefs.clone(), crate::NFComponentRef::interned_EMPTY(), metamodelica::nil())?;
     if !(slice.clone().is_empty()) {
         crefs = List::getAtIndexLst(crefs.clone(), slice.clone(), true);
     }
@@ -2121,7 +2137,7 @@ pub fn removeOuterCrefPrefix(mut cref: Arc<NFComponentRef>) -> Arc<NFComponentRe
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ CREF { .. } => {
             if InstNode::isGeneratedInner(var_field!((*cref).node, NFComponentRef::CREF).clone()) {
-                assign_variant_field!(cref => NFComponentRef::CREF; restCref = Arc::new(crate::NFComponentRef::EMPTY));
+                assign_variant_field!(cref => NFComponentRef::CREF; restCref = crate::NFComponentRef::interned_EMPTY());
             } else {
                 assign_variant_field!(cref => NFComponentRef::CREF; restCref = removeOuterCrefPrefix(var_field!((*cref).restCref, NFComponentRef::CREF).clone()));
             }
@@ -2243,7 +2259,7 @@ pub fn iterate(mut cref: Arc<NFComponentRef>) -> Result<(Arc<NFComponentRef>, Ar
             dims = Type::arrayDims(var_field!((*cref).ty, NFComponentRef::CREF).clone()).reverse();
             dim_count = (dims.clone().len() as i32);
             sub_count = (var_field!((*cref).subscripts, NFComponentRef::CREF).clone().len() as i32);
-            subs = List::consN(dim_count.clone() - sub_count.clone(), Arc::new(crate::NFSubscript::WHOLE), var_field!((*cref).subscripts, NFComponentRef::CREF).clone());
+            subs = List::consN(dim_count.clone() - sub_count.clone(), crate::NFSubscript::interned_WHOLE(), var_field!((*cref).subscripts, NFComponentRef::CREF).clone());
             isubs = metamodelica::nil();
             dim_index = dim_count.clone();
             for mut s in &*subs.clone().reverse() {
@@ -2260,10 +2276,10 @@ pub fn iterate(mut cref: Arc<NFComponentRef>) -> Result<(Arc<NFComponentRef>, Ar
         Deref @ Subscript::WHOLE => Expression::makeRange(Dimension::lowerBoundExp(dim.clone())?, None, Dimension::endExp(dim.clone(), Arc::new(Expression::NFExpression::CREF { ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), cref: cref.clone() }), dim_index.clone())?)?,
         _ => bail!("match: no arm matched"),
     } });
-                    iterator = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
+                    iterator = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), crate::NFType::interned_INTEGER());
                     iterators = metamodelica::cons((iterator.clone(), range.clone()), iterators.clone());
                     dim_index = dim_index.clone() - 1;
-                    s = Arc::new(Subscript::NFSubscript::INDEX { index: Expression::fromCref(makeIterator(iterator.clone(), Arc::new(crate::NFType::INTEGER))?, false)? });
+                    s = Arc::new(Subscript::NFSubscript::INDEX { index: Expression::fromCref(makeIterator(iterator.clone(), crate::NFType::interned_INTEGER())?, false)? });
                 }
                 isubs = metamodelica::cons(s.clone(), isubs.clone());
             }

@@ -113,7 +113,7 @@ fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Re
                     sFin = SCodeUtil::boolFinal(f.clone());
                     sEnc = SCodeUtil::boolEncapsulated(e.clone());
                     sPar = SCodeUtil::boolPartial(p.clone());
-                    scodeClass = Arc::new(SCode::Element::CLASS { name: (n.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: sFin.clone(), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE) }), encapsulatedPrefix: sEnc.clone(), partialPrefix: sPar.clone(), restriction: r_1.clone(), classDef: d_1.clone(), cmt: cmt.clone(), info: file_info.clone() });
+                    scodeClass = Arc::new(SCode::Element::CLASS { name: (n.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: sFin.clone(), innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE() }), encapsulatedPrefix: sEnc.clone(), partialPrefix: sPar.clone(), restriction: r_1.clone(), classDef: d_1.clone(), cmt: cmt.clone(), info: file_info.clone() });
                     Ok(scodeClass.clone())
                 }
                 _ => bail!("nomatch"),
@@ -341,7 +341,7 @@ fn translateClassdef(mut inClassDef: Arc<Absyn::ClassDef>, mut info: SourceInfo,
             let mut scodeCmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
             let mut scodeAttr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
             checkTypeSpec(t.clone(), info.clone())?;
-            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: a.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
+            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: a.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, info.clone(), false)?;
             scodeAttr = translateAttributes(attr.clone(), metamodelica::nil())?;
             scodeCmt = translateComment(cmt.clone())?;
             (Arc::new(SCode::ClassDef::DERIVED { typeSpec: t.clone(), modifications: r#mod.clone(), attributes: scodeAttr.clone() }), scodeCmt.clone())
@@ -408,7 +408,7 @@ fn translateClassdef(mut inClassDef: Arc<Absyn::ClassDef>, mut info: SourceInfo,
             als = translateClassdefAlgorithms(parts.clone())?;
             initals = translateClassdefInitialalgorithms(parts.clone())?;
             cos = translateClassdefConstraints(parts.clone())?;
-            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: cmod.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
+            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: cmod.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
             scodeCmt = translateCommentList(ann.clone(), cmtString.clone())?;
             decl = translateClassdefExternaldecls(parts.clone())?;
             decl = translateAlternativeExternalAnnotation(decl.clone(), scodeCmt.clone(), info.clone())?;
@@ -854,7 +854,7 @@ pub fn translateAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<O
         },
         Deref @ Absyn::Annotation { elementArgs: args } => {
             let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            m = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), true)?;
+            m = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), true)?;
             if (SCodeUtil::isEmptyMod(m.clone())) {None} else {Some(Arc::new(SCode::Annotation { modification: m.clone() }))}
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -955,7 +955,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             sRed = SCodeUtil::boolRedeclare(redecl.clone());
             sFin = SCodeUtil::boolFinal(finalPrefix.clone());
             scc = translateConstrainClass(cc.clone())?;
-            sRep = if (rp.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE)};
+            sRep = if (rp.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE()};
             sEnc = SCodeUtil::boolEncapsulated(e.clone());
             sPar = SCodeUtil::boolPartial(pa.clone());
             cls = Arc::new(SCode::Element::CLASS { name: (n.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed.clone(), finalPrefix: sFin.clone(), innerOuter: io.clone(), replaceablePrefix: sRep.clone() }), encapsulatedPrefix: sEnc.clone(), partialPrefix: sPar.clone(), restriction: openmodelica_frontend_types::SCode::Restriction::R_OPERATOR, classDef: de_1.clone(), cmt: cmt.clone(), info: i.clone() });
@@ -979,7 +979,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             sRed = SCodeUtil::boolRedeclare(redecl.clone());
             sFin = SCodeUtil::boolFinal(finalPrefix.clone());
             scc = translateConstrainClass(cc.clone())?;
-            sRep = if (rp.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE)};
+            sRep = if (rp.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE()};
             sEnc = SCodeUtil::boolEncapsulated(e.clone());
             sPar = SCodeUtil::boolPartial(pa.clone());
             cls = Arc::new(SCode::Element::CLASS { name: (n.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed.clone(), finalPrefix: sFin.clone(), innerOuter: io.clone(), replaceablePrefix: sRep.clone() }), encapsulatedPrefix: sEnc.clone(), partialPrefix: sPar.clone(), restriction: re_1.clone(), classDef: de_1.clone(), cmt: cmt.clone(), info: i.clone() });
@@ -987,13 +987,13 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
         },
         (_, vis, Deref @ Absyn::ElementSpec::EXTENDS { annotationOpt: None, elementArg: args, path }, info) => {
             let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
+            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
             list![Arc::new(SCode::Element::EXTENDS { baseClassPath: path.clone(), visibility: vis.clone(), modifications: r#mod.clone(), ann: None, info: info.clone() })]
         },
         (_, vis, Deref @ Absyn::ElementSpec::EXTENDS { annotationOpt: Some(absann), elementArg: args, path }, info) => {
             let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
             let mut ann: Option<Arc<SCode::Annotation>> = None;
-            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
+            r#mod = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
             ann = translateAnnotation(absann.clone())?;
             list![Arc::new(SCode::Element::EXTENDS { baseClassPath: path.clone(), visibility: vis.clone(), modifications: r#mod.clone(), ann: ann.clone(), info: info.clone() })]
         },
@@ -1045,7 +1045,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
                 sFin = SCodeUtil::boolFinal(finalPrefix.clone());
                 sRed = SCodeUtil::boolRedeclare(redecl.clone());
                 scc = translateConstrainClass(cc.clone())?;
-                sRep = if (repl_1.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE)};
+                sRep = if (repl_1.clone()) {Arc::new(SCode::Replaceable::REPLACEABLE { cc: scc.clone() })} else {openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE()};
                 ct = translateConnectorType(fl.clone(), st.clone())?;
                 prefixes = Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed.clone(), finalPrefix: sFin.clone(), innerOuter: io.clone(), replaceablePrefix: sRep.clone() });
                 xs_1 = (match di.clone() {
@@ -1166,7 +1166,7 @@ fn translateConstrainClass(mut inConstrainClass: Option<Arc<Absyn::ConstrainClas
             let mut cc_cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
             let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
             let mut cc_mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-            r#mod = Arc::new(Absyn::Modification { elementArgLst: eltargs.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) });
+            r#mod = Arc::new(Absyn::Modification { elementArgLst: eltargs.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() });
             cc_mod = translateMod(Some(r#mod.clone()), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), false)?;
             cc_cmt = translateComment(cmt.clone())?;
             Some(Arc::new(SCode::ConstrainClass { constrainingClass: cc_path.clone(), modifier: cc_mod.clone(), comment: cc_cmt.clone() }))
@@ -1475,7 +1475,7 @@ pub fn translateMod(mut inMod: Option<Arc<Absyn::Modification>>, mut finalPrefix
     let mut binding: Option<Arc<Absyn::Exp>> = None;
     (args, eqmod) = (::match_deref::match_deref! { match &(inMod.clone()) {
         Some(Deref @ Absyn::Modification { eqMod: eqmod, elementArgLst: args }) => (args.clone(), eqmod.clone()),
-        _ => (metamodelica::nil(), Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD)),
+        _ => (metamodelica::nil(), openmodelica_ast::Absyn::EqMod::interned_NOMOD()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     subs = if (args.clone().is_empty()) {metamodelica::nil()} else {translateArgs(args.clone(), keepEmpty.clone())?};
@@ -1485,7 +1485,7 @@ pub fn translateMod(mut inMod: Option<Arc<Absyn::Modification>>, mut finalPrefix
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outMod = (::match_deref::match_deref! { match &((subs.clone(), binding.clone(), finalPrefix.clone(), eachPrefix.clone())) {
-        (Deref @ metamodelica::List::Nil, None, SCode::Final::NOT_FINAL { .. }, SCode::Each::NOT_EACH { .. }) => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        (Deref @ metamodelica::List::Nil, None, SCode::Final::NOT_FINAL { .. }, SCode::Each::NOT_EACH { .. }) => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => Arc::new(SCode::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: eachPrefix.clone(), subModLst: subs.clone(), binding: binding.clone(), comment: comment.clone(), info: info.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1553,8 +1553,8 @@ fn makeTypeVarElement(mut r#str: ArcStr, mut info: SourceInfo) -> Arc<SCode::Ele
     let mut cd: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut ts: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     ts = Arc::new(Absyn::TypeSpec::TCOMPLEX { path: Arc::new(Absyn::Path::IDENT { name: (literal!("polymorphic")).clone() }), typeSpecs: list![Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Any")).clone() }), arrayDim: None })], arrayDim: None });
-    cd = Arc::new(SCode::ClassDef::DERIVED { typeSpec: ts.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD } });
-    elt = Arc::new(SCode::Element::CLASS { name: (r#str.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE) }), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: openmodelica_frontend_types::SCode::Restriction::R_TYPE, classDef: cd.clone(), cmt: SCode::noComment.clone(), info: info.clone() });
+    cd = Arc::new(SCode::ClassDef::DERIVED { typeSpec: ts.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD } });
+    elt = Arc::new(SCode::Element::CLASS { name: (r#str.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE() }), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: openmodelica_frontend_types::SCode::Restriction::R_TYPE, classDef: cd.clone(), cmt: SCode::noComment.clone(), info: info.clone() });
     elt
 }
 

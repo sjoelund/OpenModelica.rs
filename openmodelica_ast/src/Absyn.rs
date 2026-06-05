@@ -278,6 +278,13 @@ pub enum EnumDef {
     },
     ENUM_COLON,
 }
+impl EnumDef {
+    pub fn interned_ENUM_COLON() -> Arc<EnumDef> {
+        static INTERNED: std::sync::LazyLock<Arc<EnumDef>> = std::sync::LazyLock::new(|| Arc::new(EnumDef::ENUM_COLON));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_ENUM_COLON() -> Arc<EnumDef> { EnumDef::interned_ENUM_COLON() }
 impl Default for EnumDef {
     fn default() -> Self { Self::ENUM_COLON }
 }
@@ -770,12 +777,29 @@ pub enum Algorithm {
     },
     ALG_CONTINUE,
 }
+impl Algorithm {
+    pub fn interned_ALG_RETURN() -> Arc<Algorithm> {
+        static INTERNED: std::sync::LazyLock<Arc<Algorithm>> = std::sync::LazyLock::new(|| Arc::new(Algorithm::ALG_RETURN));
+        (*INTERNED).clone()
+    }
+    pub fn interned_ALG_BREAK() -> Arc<Algorithm> {
+        static INTERNED: std::sync::LazyLock<Arc<Algorithm>> = std::sync::LazyLock::new(|| Arc::new(Algorithm::ALG_BREAK));
+        (*INTERNED).clone()
+    }
+    pub fn interned_ALG_CONTINUE() -> Arc<Algorithm> {
+        static INTERNED: std::sync::LazyLock<Arc<Algorithm>> = std::sync::LazyLock::new(|| Arc::new(Algorithm::ALG_CONTINUE));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_ALG_RETURN() -> Arc<Algorithm> { Algorithm::interned_ALG_RETURN() }
+pub fn interned_ALG_BREAK() -> Arc<Algorithm> { Algorithm::interned_ALG_BREAK() }
+pub fn interned_ALG_CONTINUE() -> Arc<Algorithm> { Algorithm::interned_ALG_CONTINUE() }
 impl Default for Algorithm {
     fn default() -> Self { Self::ALG_RETURN }
 }
 pub use self::Algorithm::{ALG_ASSIGN,ALG_IF,ALG_FOR,ALG_PARFOR,ALG_WHILE,ALG_WHEN_A,ALG_NORETCALL,ALG_RETURN,ALG_BREAK,ALG_FAILURE,ALG_TRY,ALG_CONTINUE};
 
-pub static emptyMod: std::sync::LazyLock<Arc<Modification>> = std::sync::LazyLock::new(|| { Arc::new(Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(crate::Absyn::EqMod::NOMOD) }) });
+pub static emptyMod: std::sync::LazyLock<Arc<Modification>> = std::sync::LazyLock::new(|| { Arc::new(Modification { elementArgLst: metamodelica::nil(), eqMod: crate::Absyn::EqMod::interned_NOMOD() }) });
 
 /// Modifications are described by the `Modification\' type.  There
 ///  are two forms of modifications: redeclarations and component
@@ -807,6 +831,13 @@ pub enum EqMod {
         info: Info,
     },
 }
+impl EqMod {
+    pub fn interned_NOMOD() -> Arc<EqMod> {
+        static INTERNED: std::sync::LazyLock<Arc<EqMod>> = std::sync::LazyLock::new(|| Arc::new(EqMod::NOMOD));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NOMOD() -> Arc<EqMod> { EqMod::interned_NOMOD() }
 impl Default for EqMod {
     fn default() -> Self { Self::NOMOD }
 }
@@ -1139,6 +1170,18 @@ pub enum Exp {
     },
     BREAK,
 }
+impl Exp {
+    pub fn interned_END() -> Arc<Exp> {
+        static INTERNED: std::sync::LazyLock<Arc<Exp>> = std::sync::LazyLock::new(|| Arc::new(Exp::END));
+        (*INTERNED).clone()
+    }
+    pub fn interned_BREAK() -> Arc<Exp> {
+        static INTERNED: std::sync::LazyLock<Arc<Exp>> = std::sync::LazyLock::new(|| Arc::new(Exp::BREAK));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_END() -> Arc<Exp> { Exp::interned_END() }
+pub fn interned_BREAK() -> Arc<Exp> { Exp::interned_BREAK() }
 impl Default for Exp {
     fn default() -> Self { Self::END }
 }
@@ -1380,6 +1423,13 @@ pub enum Subscript {
         subscript: Arc<Exp>,
     },
 }
+impl Subscript {
+    pub fn interned_NOSUB() -> Arc<Subscript> {
+        static INTERNED: std::sync::LazyLock<Arc<Subscript>> = std::sync::LazyLock::new(|| Arc::new(Subscript::NOSUB));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NOSUB() -> Arc<Subscript> { Subscript::interned_NOSUB() }
 impl Default for Subscript {
     fn default() -> Self { Self::NOSUB }
 }
@@ -1411,6 +1461,18 @@ pub enum ComponentRef {
     WILD,
     ALLWILD,
 }
+impl ComponentRef {
+    pub fn interned_WILD() -> Arc<ComponentRef> {
+        static INTERNED: std::sync::LazyLock<Arc<ComponentRef>> = std::sync::LazyLock::new(|| Arc::new(ComponentRef::WILD));
+        (*INTERNED).clone()
+    }
+    pub fn interned_ALLWILD() -> Arc<ComponentRef> {
+        static INTERNED: std::sync::LazyLock<Arc<ComponentRef>> = std::sync::LazyLock::new(|| Arc::new(ComponentRef::ALLWILD));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_WILD() -> Arc<ComponentRef> { ComponentRef::interned_WILD() }
+pub fn interned_ALLWILD() -> Arc<ComponentRef> { ComponentRef::interned_ALLWILD() }
 impl Default for ComponentRef {
     fn default() -> Self { Self::WILD }
 }

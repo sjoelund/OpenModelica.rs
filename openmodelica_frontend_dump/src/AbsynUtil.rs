@@ -4241,7 +4241,7 @@ pub fn transformAnnotationInArgs(mut args: Arc<metamodelica::List<Arc<Absyn::Ele
                 } };
                 r#mod = __pa0.clone();
             } else if insert.clone() {
-                r#mod = Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) });
+                r#mod = Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() });
             } else {
                 bail!("fail");
             }
@@ -6033,7 +6033,7 @@ pub fn createChoiceArray(mut inChoices: Arc<Absyn::ElementArg>) -> Result<Arc<Ab
             } else {
                 args = acc.clone().reverse();
             }
-            choices = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fp1.clone(), eachPrefix: ep1.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("choices")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: cmt1.clone(), info: info1.clone() });
+            choices = Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fp1.clone(), eachPrefix: ep1.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("choices")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })), comment: cmt1.clone(), info: info1.clone() });
             choices.clone()
         },
         _ => inChoices.clone(),

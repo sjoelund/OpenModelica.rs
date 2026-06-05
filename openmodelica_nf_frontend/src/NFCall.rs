@@ -368,7 +368,7 @@ pub fn matchTypedNormalCall(mut call: Arc<NFCall>, mut context: i32, mut info: S
     } else if Type::isDiscrete(ty.clone())? && var.clone() == Variability::CONTINUOUS.clone() {
         var = Variability::IMPLICITLY_DISCRETE.clone();
     }
-    (ty, _) = evaluateCallType(ty.clone(), func.clone(), args.clone(), 1, Arc::new(crate::NFCallParameterTree::Tree::EMPTY))?;
+    (ty, _) = evaluateCallType(ty.clone(), func.clone(), args.clone(), 1, crate::NFCallParameterTree::Tree::interned_EMPTY())?;
     call = makeTypedCall(func.clone(), args.clone(), var.clone(), pur.clone(), ty.clone());
     if MatchedFunction::isVectorized(matchedFunc.clone()) {
         call = vectorizeCall(call.clone(), matchedFunc.mk.clone(), scope.clone(), info.clone())?;
@@ -400,7 +400,7 @@ pub fn retypeCall(mut call: Arc<NFCall>, mut context: i32, mut info: SourceInfo)
             }
             ty = Function::returnType(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone());
             ty = resolvePolymorphicReturnType(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), typed_args.clone(), ty.clone())?;
-            (ty, _) = evaluateCallType(ty.clone(), var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), args.clone(), 1, Arc::new(crate::NFCallParameterTree::Tree::EMPTY))?;
+            (ty, _) = evaluateCallType(ty.clone(), var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), args.clone(), 1, crate::NFCallParameterTree::Tree::interned_EMPTY())?;
             ty_call = makeTypedCall(var_field!((*call).r#fn, NFCall::TYPED_CALL).clone(), args.clone(), var_field!((*call).var, NFCall::TYPED_CALL).clone(), var_field!((*call).purity, NFCall::TYPED_CALL).clone(), ty.clone());
             ty_call.clone()
         },
@@ -419,7 +419,7 @@ pub fn typeOf(mut call: Arc<NFCall>) -> Arc<Type::NFType> {
         Deref @ TYPED_CALL { .. } => var_field!((*call).ty, NFCall::TYPED_CALL).clone(),
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => var_field!((*call).ty, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(),
         Deref @ TYPED_REDUCTION { .. } => var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty
@@ -2218,7 +2218,7 @@ pub fn toArrayConstructor(mut iCall: Arc<NFCall>, mut index_ptr: Pointer::Pointe
             step = None;
             for mut stop in &*rest.clone().reverse() {
                 let mut stop = stop.clone();
-                iter_name = InstNode::newIndexedIterator(index.clone(), (literal!("f")).clone(), Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
+                iter_name = InstNode::newIndexedIterator(index.clone(), (literal!("f")).clone(), Absyn::dummyInfo.clone(), crate::NFType::interned_INTEGER());
                 iter_range = Expression::makeRange(start.clone(), step.clone(), stop.clone())?;
                 iterators = metamodelica::cons((iter_name.clone(), iter_range.clone()), iterators.clone());
                 index = index.clone() + 1;
@@ -2419,11 +2419,11 @@ fn instIterators(mut inIters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, 
         if isSome(i.range.clone()) {
             range = Inst::instExp(Util::getOption(i.range.clone())?, outScope.clone(), context.clone(), info.clone())?;
         } else {
-            range = Arc::new(Expression::NFExpression::EMPTY { ty: Arc::new(crate::NFType::UNKNOWN) });
+            range = Arc::new(Expression::NFExpression::EMPTY { ty: crate::NFType::interned_UNKNOWN() });
         }
         ty = (::match_deref::match_deref! { match &(range.clone()) {
-        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: range_node, .. }, .. } if (InstNode::isComponent(range_node.clone())?) => Arc::new(Type::NFType::COMPLEX { cls: Component::classInstance(InstNode::component(range_node.clone())?), complexTy: Arc::new(crate::NFComplexType::CLASS) }),
-        _ => Arc::new(crate::NFType::UNKNOWN),
+        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: range_node, .. }, .. } if (InstNode::isComponent(range_node.clone())?) => Arc::new(Type::NFType::COMPLEX { cls: Component::classInstance(InstNode::component(range_node.clone())?), complexTy: crate::NFComplexType::interned_CLASS() }),
+        _ => crate::NFType::interned_UNKNOWN(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         (outScope, iter) = Inst::addIteratorToScope((i.name.clone()).clone(), outScope.clone(), info.clone(), ty.clone())?;
@@ -2755,11 +2755,11 @@ fn vectorizeCall(mut base_call: Arc<NFCall>, mut mk: Arc<FunctionMatchKind::Func
             for mut dim in &*var_field!((*mk).vectDims, FunctionMatchKind::FunctionMatchKind::VECTORIZED).clone() {
                 let mut dim = dim.clone();
                 Error::assertion(Dimension::isKnown(dim.clone(), true), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCall.vectorizeCall")); __mm_s.push_str(&*literal!(" got unknown dimension for vectorized call")); ArcStr::from(__mm_s) }).clone(), info.clone())?;
-                ty = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![dim.clone()] });
+                ty = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: list![dim.clone()] });
                 exp = Arc::new(Expression::NFExpression::RANGE { ty: ty.clone(), start: Arc::new(Expression::NFExpression::INTEGER { value: 1 }), step: None, stop: Dimension::sizeExp(dim.clone())? });
-                iter = InstNode::newUniqueIterator(info.clone(), Arc::new(crate::NFType::INTEGER));
+                iter = InstNode::newUniqueIterator(info.clone(), crate::NFType::interned_INTEGER());
                 iters = metamodelica::cons((iter.clone(), exp.clone()), iters.clone());
-                exp = Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::INTEGER), cref: ComponentRef::makeIterator(iter.clone(), Arc::new(crate::NFType::INTEGER))? });
+                exp = Arc::new(Expression::NFExpression::CREF { ty: crate::NFType::interned_INTEGER(), cref: ComponentRef::makeIterator(iter.clone(), crate::NFType::interned_INTEGER())? });
                 sub = Arc::new(Subscript::NFSubscript::INDEX { index: exp.clone() });
                 call_args = List::mapIndices(call_args.clone(), var_field!((*mk).vectorizedArgs, FunctionMatchKind::FunctionMatchKind::VECTORIZED).clone(), (std::sync::Arc::new({ let __pe_b0 = sub.clone(); let __pe_b2 = metamodelica::nil(); let __pe_b3 = false; move |__pe_a1| Expression::applySubscript(__pe_b0.clone(), __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 i = i.clone() + 1;

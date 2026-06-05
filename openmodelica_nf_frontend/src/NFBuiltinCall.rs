@@ -195,7 +195,7 @@ pub fn makeArrayExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpres
         Error::addSourceMessage(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("array")); __mm_s.push_str(&*List::toString(posArgs.clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("(")).clone(), (literal!(", ")).clone(), (literal!(")")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), (literal!("array(Any, Any, ...) => Any[:]")).clone()], info.clone())?;
         bail!("fail");
     }
-    arrayExp = Expression::makeArray(Arc::new(crate::NFType::UNKNOWN), metamodelica::arrayFromVec(posArgs.clone().into_iter().cloned().collect()), false);
+    arrayExp = Expression::makeArray(crate::NFType::interned_UNKNOWN(), metamodelica::arrayFromVec(posArgs.clone().into_iter().cloned().collect()), false);
     Ok(arrayExp)
 }
 
@@ -209,7 +209,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
     let mut tys3: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
     let mut dimsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>>> = metamodelica::nil();
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut resTy: Arc<Type::NFType> = Arc::new(crate::NFType::UNKNOWN);
+    let mut resTy: Arc<Type::NFType> = crate::NFType::interned_UNKNOWN();
     let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut resTyToMatch: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -227,7 +227,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
         ty = __pa0.clone();
         tys2 = __pa1.clone();
         dimsLst = metamodelica::cons(Type::arrayDims(ty.clone()), dimsLst.clone());
-        if Type::isEqual(resTy.clone(), Arc::new(crate::NFType::UNKNOWN))? {
+        if Type::isEqual(resTy.clone(), crate::NFType::interned_UNKNOWN())? {
             resTy = Type::arrayElementType(ty.clone());
         } else {
             (_, _, ty1, mk) = TypeCheck::matchExpressions(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Type::arrayElementType(ty.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), resTy.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
@@ -288,7 +288,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
         args2 = metamodelica::cons(arg2.clone(), args2.clone());
         tys3 = metamodelica::cons(ty1.clone(), tys3.clone());
     }
-    resTy = Arc::new(crate::NFType::UNKNOWN);
+    resTy = crate::NFType::interned_UNKNOWN();
     tys2 = tys3.clone();
     for mut arg in &*args2.clone() {
         let mut arg = arg.clone();
@@ -298,7 +298,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
         } };
         ty = __pa4.clone();
         tys2 = __pa5.clone();
-        if Type::isEqual(resTy.clone(), Arc::new(crate::NFType::UNKNOWN))? {
+        if Type::isEqual(resTy.clone(), crate::NFType::interned_UNKNOWN())? {
             resTy = ty.clone();
         } else {
             (_, _, ty1, mk) = TypeCheck::matchExpressions(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), ty.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), resTy.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
@@ -308,7 +308,7 @@ pub fn makeCatExp(mut n: i32, mut args: Arc<metamodelica::List<Arc<Expression::N
         }
     }
     dims = Type::arrayDims(resTy.clone());
-    resTyToMatch = Arc::new(Type::NFType::ARRAY { elementType: Type::arrayElementType(resTy.clone()), dimensions: List::set(dims.clone(), n.clone(), Arc::new(crate::NFDimension::UNKNOWN))? });
+    resTyToMatch = Arc::new(Type::NFType::ARRAY { elementType: Type::arrayElementType(resTy.clone()), dimensions: List::set(dims.clone(), n.clone(), crate::NFDimension::interned_UNKNOWN())? });
     dims = ({
         let mut __acc: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         for mut lst in (dimsLst.clone()).into_iter().cloned() {
@@ -478,7 +478,7 @@ fn typeDiscreteCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sou
 
 fn typeNdimsCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut callExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(crate::NFType::INTEGER);
+    let mut ty: Arc<Type::NFType> = crate::NFType::interned_INTEGER();
     let mut variability: Variability = Variability::PARAMETER.clone();
     let mut purity: Purity = Purity::PURE.clone();
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -515,7 +515,7 @@ fn typeChangeCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut variability: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::PURE;
     (callExp, ty, variability, purity) = typePreChangeCall((literal!("change")).clone(), call.clone(), context.clone(), info.clone())?;
-    ty = Type::setArrayElementType(ty.clone(), Arc::new(crate::NFType::BOOLEAN));
+    ty = Type::setArrayElementType(ty.clone(), crate::NFType::interned_BOOLEAN());
     Ok((callExp, ty, variability, purity))
 }
 
@@ -600,8 +600,8 @@ fn typeDerCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceIn
     ety = Type::arrayElementType(ty.clone());
     if Type::isInteger(ety.clone())? {
         if variability.clone() < Variability::DISCRETE.clone() {
-            ty = Type::setArrayElementType(ty.clone(), Arc::new(crate::NFType::REAL));
-            arg = Expression::typeCast(arg.clone(), Arc::new(crate::NFType::REAL))?;
+            ty = Type::setArrayElementType(ty.clone(), crate::NFType::interned_REAL());
+            arg = Expression::typeCast(arg.clone(), crate::NFType::interned_REAL())?;
         } else {
             Error::addSourceMessageAndFail(Error::DER_OF_NONDIFFERENTIABLE_EXP.clone(), list![(Expression::toString(arg.clone())?).clone()], info.clone())?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
@@ -842,7 +842,7 @@ fn typeSmoothCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
         Error::addSourceMessageAndFail(Error::INVALID_ARGUMENT_VARIABILITY.clone(), list![(literal!("1")).clone(), (ComponentRef::toString(fn_ref.clone())?).clone(), (Prefixes::variabilityString(Variability::PARAMETER.clone())?).clone(), (Expression::toString(arg1.clone())?).clone(), (Prefixes::variabilityString(variability.clone())?).clone()], info.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     }
-    (arg2, ty, mk) = TypeCheck::matchTypes(ty2.clone(), Type::setArrayElementType(ty2.clone(), Arc::new(crate::NFType::REAL)), arg2.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
+    (arg2, ty, mk) = TypeCheck::matchTypes(ty2.clone(), Type::setArrayElementType(ty2.clone(), crate::NFType::interned_REAL()), arg2.clone(), TypeCheck::ALLOW_UNKNOWN.clone())?;
     if !(TypeCheck::isValidArgumentMatch(mk.clone())) {
         Error::addSourceMessageAndFail(Error::ARG_TYPE_MISMATCH.clone(), list![(literal!("2")).clone(), (ComponentRef::toString(fn_ref.clone())?).clone(), (literal!("")).clone(), (Expression::toString(arg2.clone())?).clone(), (Type::toString(ty2.clone())?).clone(), (literal!("Real\n  Real[:, ...]\n  Real record\n  Real record[:, ...]")).clone()], info.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
@@ -960,7 +960,7 @@ fn typeZerosOnesCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut context:
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     }
     fill_arg = Arc::new(Expression::NFExpression::INTEGER { value: if (name.clone() == literal!("ones")) {1} else {0} });
-    (callExp, ty, variability, purity) = typeFillCall2(fn_ref.clone(), Arc::new(crate::NFType::INTEGER), fill_arg.clone(), Variability::CONSTANT.clone(), Purity::PURE.clone(), args.clone(), context.clone(), info.clone())?;
+    (callExp, ty, variability, purity) = typeFillCall2(fn_ref.clone(), crate::NFType::interned_INTEGER(), fill_arg.clone(), Variability::CONSTANT.clone(), Purity::PURE.clone(), args.clone(), context.clone(), info.clone())?;
     Ok((callExp, ty, variability, purity))
 }
 
@@ -1160,7 +1160,7 @@ fn typeCatCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceIn
     arg = __pa3.clone();
     args = __pa4.clone();
     (arg, ty, variability, purity) = Typing::typeExp(arg.clone(), context.clone(), info.clone(), false)?;
-    (arg, ty, mk) = TypeCheck::matchTypes(ty.clone(), Arc::new(crate::NFType::INTEGER), arg.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
+    (arg, ty, mk) = TypeCheck::matchTypes(ty.clone(), crate::NFType::interned_INTEGER(), arg.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
     if variability.clone() > Variability::PARAMETER.clone() || purity.clone() != Purity::PURE.clone() {
         Error::addSourceMessageAndFail(Error::NF_CAT_FIRST_ARG_EVAL.clone(), list![(Expression::toString(arg.clone())?).clone(), (Prefixes::variabilityString(variability.clone())?).clone()], info.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
@@ -1332,7 +1332,7 @@ fn typeBranchCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa3.clone();
-    ty = Arc::new(crate::NFType::NORETCALL);
+    ty = crate::NFType::interned_NORETCALL();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), args.clone(), var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1368,7 +1368,7 @@ fn typeIsRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa3.clone();
-    ty = Arc::new(crate::NFType::BOOLEAN);
+    ty = crate::NFType::interned_BOOLEAN();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), args.clone(), var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1440,7 +1440,7 @@ fn typePotentialRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa5.clone();
-    ty = Arc::new(crate::NFType::NORETCALL);
+    ty = crate::NFType::interned_NORETCALL();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), list![arg1.clone(), arg2.clone()], var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1476,7 +1476,7 @@ fn typeRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa3.clone();
-    ty = Arc::new(crate::NFType::NORETCALL);
+    ty = crate::NFType::interned_NORETCALL();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), args.clone(), var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1515,7 +1515,7 @@ fn typeRootedCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa3.clone();
-    ty = Arc::new(crate::NFType::BOOLEAN);
+    ty = crate::NFType::interned_BOOLEAN();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), args.clone(), var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1582,7 +1582,7 @@ fn typeUniqueRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: S
         _ => bail!("pattern mismatch"),
     } };
     r#fn = __pa5.clone();
-    ty = Arc::new(crate::NFType::NORETCALL);
+    ty = crate::NFType::interned_NORETCALL();
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), list![arg1.clone(), arg2.clone()], var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1664,7 +1664,7 @@ fn typeUniqueRootIndicesCall(mut call: Arc<Call::NFCall>, mut context: i32, mut 
     } };
     r#fn = __pa7.clone();
     assert!((Type::arrayDims(ty1.clone()).len() as i32) == (Type::arrayDims(ty2.clone()).len() as i32), "{}", &*(literal!("the first two parameters need to have the same size")).clone());
-    ty = Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: Type::arrayDims(ty1.clone()) });
+    ty = Arc::new(Type::NFType::ARRAY { elementType: crate::NFType::interned_INTEGER(), dimensions: Type::arrayDims(ty1.clone()) });
     callExp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), list![arg1.clone(), arg2.clone(), arg3.clone()], var.clone(), purity.clone(), ty.clone()) });
     Ok((callExp, ty, var, purity))
 }
@@ -1756,7 +1756,7 @@ fn typeNoEventCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sour
 
 fn typeGetInstanceName(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut ty: Arc<Type::NFType> = Arc::new(crate::NFType::STRING);
+    let mut ty: Arc<Type::NFType> = crate::NFType::interned_STRING();
     let mut var: Variability = Variability::CONSTANT.clone();
     let mut purity: Purity = Purity::PURE.clone();
     let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -1772,7 +1772,7 @@ fn typeGetInstanceName(mut call: Arc<Call::NFCall>, mut context: i32, mut info: 
 
 fn typeClockCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<Type::NFType>, Variability, Purity)> {
     let mut callExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut outType: Arc<Type::NFType> = Arc::new(crate::NFType::CLOCK);
+    let mut outType: Arc<Type::NFType> = crate::NFType::interned_CLOCK();
     let mut var: Variability = Variability::PARAMETER.clone();
     let mut purity: Purity = Purity::IMPURE.clone();
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -1842,26 +1842,26 @@ fn typeSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
         (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::INTEGER, value: e2, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
             let mut e1 = (*e1).clone();
             if Type::isInteger(t1.clone())? {
-                e1 = Arc::new(Expression::NFExpression::CAST { ty: Arc::new(crate::NFType::REAL), exp: e1.clone() });
+                e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
-            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), Arc::new(Expression::NFExpression::CAST { ty: Arc::new(crate::NFType::REAL), exp: e2.clone() })], Variability::PARAMETER.clone(), purity.clone(), Arc::new(crate::NFType::BOOLEAN));
-            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), Arc::new(crate::NFType::BOOLEAN), Variability::PARAMETER.clone())
+            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e2.clone() })], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
+            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::REAL, value: e2, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
             let mut e1 = (*e1).clone();
             if Type::isInteger(t1.clone())? {
-                e1 = Arc::new(Expression::NFExpression::CAST { ty: Arc::new(crate::NFType::REAL), exp: e1.clone() });
+                e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
-            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), Arc::new(crate::NFType::BOOLEAN));
-            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), Arc::new(crate::NFType::BOOLEAN), Variability::PARAMETER.clone())
+            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
+            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::REAL, value: e2, name: Some(Deref @ "interval"), .. }, tail: Deref @ metamodelica::List::Nil }) => {
             let mut e1 = (*e1).clone();
             if Type::isInteger(t1.clone())? {
-                e1 = Arc::new(Expression::NFExpression::CAST { ty: Arc::new(crate::NFType::REAL), exp: e1.clone() });
+                e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
-            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), Arc::new(crate::NFType::BOOLEAN));
-            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), Arc::new(crate::NFType::BOOLEAN), Variability::PARAMETER.clone())
+            ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
+            (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { var: v1, ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => {
             ty_call = Call::makeTypedCall(clockedSample.clone(), list![e1.clone(), Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(ClockKind::NFClockKind::INFERRED_CLOCK { idx: System::tmpTickIndex(Global::inferredClock_index.clone()) }) })], v1.clone(), purity.clone(), t1.clone());

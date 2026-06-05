@@ -95,6 +95,29 @@ pub enum ConnectorType {
     },
     NON_CONNECTOR,
 }
+impl ConnectorType {
+    pub fn interned_POTENTIAL() -> Arc<ConnectorType> {
+        thread_local! {
+            static INTERNED: Arc<ConnectorType> = Arc::new(ConnectorType::POTENTIAL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_FLOW() -> Arc<ConnectorType> {
+        thread_local! {
+            static INTERNED: Arc<ConnectorType> = Arc::new(ConnectorType::FLOW);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_NON_CONNECTOR() -> Arc<ConnectorType> {
+        thread_local! {
+            static INTERNED: Arc<ConnectorType> = Arc::new(ConnectorType::NON_CONNECTOR);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_POTENTIAL() -> Arc<ConnectorType> { ConnectorType::interned_POTENTIAL() }
+pub fn interned_FLOW() -> Arc<ConnectorType> { ConnectorType::interned_FLOW() }
+pub fn interned_NON_CONNECTOR() -> Arc<ConnectorType> { ConnectorType::interned_NON_CONNECTOR() }
 impl Default for ConnectorType {
     fn default() -> Self { Self::POTENTIAL }
 }
@@ -191,7 +214,7 @@ impl Default for ElementSource {
 pub type SOURCE = ElementSource;
 
 
-thread_local! { static __emptyElementSource_TLS: Arc<ElementSource> = Arc::new(ElementSource { info: Absyn::dummyInfo.clone(), partOfLst: metamodelica::nil(), instance: Arc::new(crate::DAE::ComponentPrefix::NOCOMPPRE), connectEquationOptLst: metamodelica::nil(), typeLst: metamodelica::nil(), operations: metamodelica::nil(), comment: metamodelica::nil() }); }
+thread_local! { static __emptyElementSource_TLS: Arc<ElementSource> = Arc::new(ElementSource { info: Absyn::dummyInfo.clone(), partOfLst: metamodelica::nil(), instance: crate::DAE::ComponentPrefix::interned_NOCOMPPRE(), connectEquationOptLst: metamodelica::nil(), typeLst: metamodelica::nil(), operations: metamodelica::nil(), comment: metamodelica::nil() }); }
 pub fn emptyElementSource() -> Arc<ElementSource> { __emptyElementSource_TLS.with(|__t| __t.clone()) }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1158,6 +1181,15 @@ pub enum Else {
         statementLst: Arc<metamodelica::List<Arc<Statement>>>,
     },
 }
+impl Else {
+    pub fn interned_NOELSE() -> Arc<Else> {
+        thread_local! {
+            static INTERNED: Arc<Else> = Arc::new(Else::NOELSE);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOELSE() -> Arc<Else> { Else::interned_NOELSE() }
 impl Default for Else {
     fn default() -> Self { Self::NOELSE }
 }
@@ -1234,16 +1266,16 @@ impl Default for Attributes {
 pub type ATTR = Attributes;
 
 
-thread_local! { static __dummyAttrVar_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: Arc::new(crate::DAE::ConnectorType::NON_CONNECTOR), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
+thread_local! { static __dummyAttrVar_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: crate::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
 pub fn dummyAttrVar() -> Arc<Attributes> { __dummyAttrVar_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __dummyAttrParam_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: Arc::new(crate::DAE::ConnectorType::NON_CONNECTOR), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::PARAM, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
+thread_local! { static __dummyAttrParam_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: crate::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::PARAM, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
 pub fn dummyAttrParam() -> Arc<Attributes> { __dummyAttrParam_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __dummyAttrConst_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: Arc::new(crate::DAE::ConnectorType::NON_CONNECTOR), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
+thread_local! { static __dummyAttrConst_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: crate::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
 pub fn dummyAttrConst() -> Arc<Attributes> { __dummyAttrConst_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __dummyAttrInput_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: Arc::new(crate::DAE::ConnectorType::NON_CONNECTOR), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::INPUT, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
+thread_local! { static __dummyAttrInput_TLS: Arc<Attributes> = Arc::new(Attributes { connectorType: crate::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: crate::SCode::Parallelism::NON_PARALLEL, variability: crate::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::INPUT, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: crate::SCode::Visibility::PUBLIC }); }
 pub fn dummyAttrInput() -> Arc<Attributes> { __dummyAttrInput_TLS.with(|__t| __t.clone()) }
 
 /// where this binding came from: either default binding or start value
@@ -1274,6 +1306,15 @@ pub enum Binding {
         source: BindingSource,
     },
 }
+impl Binding {
+    pub fn interned_UNBOUND() -> Arc<Binding> {
+        thread_local! {
+            static INTERNED: Arc<Binding> = Arc::new(Binding::UNBOUND);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_UNBOUND() -> Arc<Binding> { Binding::interned_UNBOUND() }
 impl Default for Binding {
     fn default() -> Self { Self::UNBOUND }
 }
@@ -1326,10 +1367,10 @@ pub fn T_NONE_DEFAULT() -> Arc<Type> { __T_NONE_DEFAULT_TLS.with(|__t| __t.clone
 thread_local! { static __T_ANYTYPE_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T_ANYTYPE { anyClassType: None }); }
 pub fn T_ANYTYPE_DEFAULT() -> Arc<Type> { __T_ANYTYPE_DEFAULT_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_UNKNOWN_DEFAULT_TLS: Arc<Type> = Arc::new(crate::DAE::Type::T_UNKNOWN); }
+thread_local! { static __T_UNKNOWN_DEFAULT_TLS: Arc<Type> = crate::DAE::Type::interned_T_UNKNOWN(); }
 pub fn T_UNKNOWN_DEFAULT() -> Arc<Type> { __T_UNKNOWN_DEFAULT_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_NORETCALL_DEFAULT_TLS: Arc<Type> = Arc::new(crate::DAE::Type::T_NORETCALL); }
+thread_local! { static __T_NORETCALL_DEFAULT_TLS: Arc<Type> = crate::DAE::Type::interned_T_NORETCALL(); }
 pub fn T_NORETCALL_DEFAULT() -> Arc<Type> { __T_NORETCALL_DEFAULT_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_METATYPE_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T_METATYPE { ty: T_UNKNOWN_DEFAULT().clone() }); }
@@ -1341,23 +1382,23 @@ pub fn T_COMPLEX_DEFAULT() -> Arc<Type> { __T_COMPLEX_DEFAULT_TLS.with(|__t| __t
 thread_local! { static __T_COMPLEX_DEFAULT_RECORD_TLS: Arc<Type> = Arc::new(Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }); }
 pub fn T_COMPLEX_DEFAULT_RECORD() -> Arc<Type> { __T_COMPLEX_DEFAULT_RECORD_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_SOURCEINFO_DEFAULT_METARECORD_TLS: Arc<Type> = Arc::new(Type::T_METARECORD { path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("SourceInfo")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SOURCEINFO")).clone() }) }), utPath: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }), typeVars: metamodelica::nil(), index: 1, fields: list![Arc::new(Var { name: (literal!("fileName")).clone(), attributes: dummyAttrVar().clone(), ty: T_STRING_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("isReadOnly")).clone(), attributes: dummyAttrVar().clone(), ty: T_BOOL_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lastModification")).clone(), attributes: dummyAttrVar().clone(), ty: T_REAL_DEFAULT().clone(), binding: Arc::new(crate::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None })], knownSingleton: true }); }
+thread_local! { static __T_SOURCEINFO_DEFAULT_METARECORD_TLS: Arc<Type> = Arc::new(Type::T_METARECORD { path: Arc::new(Absyn::Path::QUALIFIED { name: (literal!("SourceInfo")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SOURCEINFO")).clone() }) }), utPath: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }), typeVars: metamodelica::nil(), index: 1, fields: list![Arc::new(Var { name: (literal!("fileName")).clone(), attributes: dummyAttrVar().clone(), ty: T_STRING_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("isReadOnly")).clone(), attributes: dummyAttrVar().clone(), ty: T_BOOL_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberStart")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lineNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("columnNumberEnd")).clone(), attributes: dummyAttrVar().clone(), ty: T_INTEGER_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(Var { name: (literal!("lastModification")).clone(), attributes: dummyAttrVar().clone(), ty: T_REAL_DEFAULT().clone(), binding: crate::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], knownSingleton: true }); }
 pub fn T_SOURCEINFO_DEFAULT_METARECORD() -> Arc<Type> { __T_SOURCEINFO_DEFAULT_METARECORD_TLS.with(|__t| __t.clone()) }
 
 thread_local! { static __T_SOURCEINFO_DEFAULT_TLS: Arc<Type> = Arc::new(Type::T_METAUNIONTYPE { paths: list![Arc::new(Absyn::Path::QUALIFIED { name: (literal!("SourceInfo")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SOURCEINFO")).clone() }) })], typeVars: metamodelica::nil(), knownSingleton: true, singletonType: Arc::new(EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: T_SOURCEINFO_DEFAULT_METARECORD().clone() }), path: Arc::new(Absyn::Path::IDENT { name: (literal!("SourceInfo")).clone() }) }); }
 pub fn T_SOURCEINFO_DEFAULT() -> Arc<Type> { __T_SOURCEINFO_DEFAULT_TLS.with(|__t| __t.clone()) }
 
 // Arrays of unknown dimension, eg. Real[:]
-thread_local! { static __T_ARRAY_REAL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_REAL_DEFAULT().clone(), dims: list![Arc::new(crate::DAE::Dimension::DIM_UNKNOWN)] }); }
+thread_local! { static __T_ARRAY_REAL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_REAL_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
 pub fn T_ARRAY_REAL_NODIM() -> Arc<Type> { __T_ARRAY_REAL_NODIM_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_ARRAY_INT_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(crate::DAE::Dimension::DIM_UNKNOWN)] }); }
+thread_local! { static __T_ARRAY_INT_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_INTEGER_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
 pub fn T_ARRAY_INT_NODIM() -> Arc<Type> { __T_ARRAY_INT_NODIM_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_ARRAY_BOOL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_BOOL_DEFAULT().clone(), dims: list![Arc::new(crate::DAE::Dimension::DIM_UNKNOWN)] }); }
+thread_local! { static __T_ARRAY_BOOL_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_BOOL_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
 pub fn T_ARRAY_BOOL_NODIM() -> Arc<Type> { __T_ARRAY_BOOL_NODIM_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __T_ARRAY_STRING_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_STRING_DEFAULT().clone(), dims: list![Arc::new(crate::DAE::Dimension::DIM_UNKNOWN)] }); }
+thread_local! { static __T_ARRAY_STRING_NODIM_TLS: Arc<Type> = Arc::new(Type::T_ARRAY { ty: T_STRING_DEFAULT().clone(), dims: list![crate::DAE::Dimension::interned_DIM_UNKNOWN()] }); }
 pub fn T_ARRAY_STRING_NODIM() -> Arc<Type> { __T_ARRAY_STRING_NODIM_TLS.with(|__t| __t.clone()) }
 
 /// models the different front-end and back-end types
@@ -1502,6 +1543,22 @@ pub enum Type {
         ty: Arc<Type>,
     },
 }
+impl Type {
+    pub fn interned_T_NORETCALL() -> Arc<Type> {
+        thread_local! {
+            static INTERNED: Arc<Type> = Arc::new(Type::T_NORETCALL);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_T_UNKNOWN() -> Arc<Type> {
+        thread_local! {
+            static INTERNED: Arc<Type> = Arc::new(Type::T_UNKNOWN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_T_NORETCALL() -> Arc<Type> { Type::interned_T_NORETCALL() }
+pub fn interned_T_UNKNOWN() -> Arc<Type> { Type::interned_T_UNKNOWN() }
 impl Default for Type {
     fn default() -> Self { Self::T_NORETCALL }
 }
@@ -1530,6 +1587,15 @@ pub enum EvaluateSingletonType {
     },
     NOT_SINGLETON,
 }
+impl EvaluateSingletonType {
+    pub fn interned_NOT_SINGLETON() -> Arc<EvaluateSingletonType> {
+        thread_local! {
+            static INTERNED: Arc<EvaluateSingletonType> = Arc::new(EvaluateSingletonType::NOT_SINGLETON);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOT_SINGLETON() -> Arc<EvaluateSingletonType> { EvaluateSingletonType::interned_NOT_SINGLETON() }
 impl PartialEq for EvaluateSingletonType {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
@@ -1718,6 +1784,22 @@ pub enum Dimension {
     /// Dimension with unknown size.
     DIM_UNKNOWN,
 }
+impl Dimension {
+    pub fn interned_DIM_BOOLEAN() -> Arc<Dimension> {
+        thread_local! {
+            static INTERNED: Arc<Dimension> = Arc::new(Dimension::DIM_BOOLEAN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+    pub fn interned_DIM_UNKNOWN() -> Arc<Dimension> {
+        thread_local! {
+            static INTERNED: Arc<Dimension> = Arc::new(Dimension::DIM_UNKNOWN);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_DIM_BOOLEAN() -> Arc<Dimension> { Dimension::interned_DIM_BOOLEAN() }
+pub fn interned_DIM_UNKNOWN() -> Arc<Dimension> { Dimension::interned_DIM_UNKNOWN() }
 impl Default for Dimension {
     fn default() -> Self { Self::DIM_BOOLEAN }
 }
@@ -1920,6 +2002,15 @@ pub enum Mod {
     },
     NOMOD,
 }
+impl Mod {
+    pub fn interned_NOMOD() -> Arc<Mod> {
+        thread_local! {
+            static INTERNED: Arc<Mod> = Arc::new(Mod::NOMOD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOMOD() -> Arc<Mod> { Mod::interned_NOMOD() }
 impl Default for Mod {
     fn default() -> Self { Self::NOMOD }
 }
@@ -1950,6 +2041,15 @@ pub enum ClockKind {
         solverMethod: Arc<Exp>,
     },
 }
+impl ClockKind {
+    pub fn interned_INFERRED_CLOCK() -> Arc<ClockKind> {
+        thread_local! {
+            static INTERNED: Arc<ClockKind> = Arc::new(ClockKind::INFERRED_CLOCK);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_INFERRED_CLOCK() -> Arc<ClockKind> { ClockKind::interned_INFERRED_CLOCK() }
 impl Default for ClockKind {
     fn default() -> Self { Self::INFERRED_CLOCK }
 }
@@ -2438,6 +2538,15 @@ pub enum Pattern {
         pat: Arc<Pattern>,
     },
 }
+impl Pattern {
+    pub fn interned_PAT_WILD() -> Arc<Pattern> {
+        thread_local! {
+            static INTERNED: Arc<Pattern> = Arc::new(Pattern::PAT_WILD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_PAT_WILD() -> Arc<Pattern> { Pattern::interned_PAT_WILD() }
 impl Default for Pattern {
     fn default() -> Self { Self::PAT_WILD }
 }
@@ -2603,6 +2712,15 @@ pub enum ComponentRef {
     },
     WILD,
 }
+impl ComponentRef {
+    pub fn interned_WILD() -> Arc<ComponentRef> {
+        thread_local! {
+            static INTERNED: Arc<ComponentRef> = Arc::new(ComponentRef::WILD);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_WILD() -> Arc<ComponentRef> { ComponentRef::interned_WILD() }
 impl Default for ComponentRef {
     fn default() -> Self { Self::WILD }
 }
@@ -2637,6 +2755,15 @@ pub enum Subscript {
         exp: Arc<Exp>,
     },
 }
+impl Subscript {
+    pub fn interned_WHOLEDIM() -> Arc<Subscript> {
+        thread_local! {
+            static INTERNED: Arc<Subscript> = Arc::new(Subscript::WHOLEDIM);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_WHOLEDIM() -> Arc<Subscript> { Subscript::interned_WHOLEDIM() }
 impl Default for Subscript {
     fn default() -> Self { Self::WHOLEDIM }
 }
@@ -2700,6 +2827,15 @@ pub enum ComponentPrefix {
     },
     NOCOMPPRE,
 }
+impl ComponentPrefix {
+    pub fn interned_NOCOMPPRE() -> Arc<ComponentPrefix> {
+        thread_local! {
+            static INTERNED: Arc<ComponentPrefix> = Arc::new(ComponentPrefix::NOCOMPPRE);
+        }
+        INTERNED.with(|i| i.clone())
+    }
+}
+pub fn interned_NOCOMPPRE() -> Arc<ComponentPrefix> { ComponentPrefix::interned_NOCOMPPRE() }
 impl Default for ComponentPrefix {
     fn default() -> Self { Self::NOCOMPPRE }
 }
@@ -2905,7 +3041,7 @@ pub mod Connect {
     }
     pub use self::Set::{SET,SET_POINTER};
 
-    thread_local! { static __emptySet_TLS: Sets = Sets { sets: Arc::new(SetTrieNode::SET_TRIE_NODE { name: (literal!("")).clone(), cref: Arc::new(crate::DAE::ComponentRef::WILD), nodes: metamodelica::nil(), connectCount: 0 }), setCount: 0, connections: metamodelica::nil(), outerConnects: metamodelica::nil() }; }
+    thread_local! { static __emptySet_TLS: Sets = Sets { sets: Arc::new(SetTrieNode::SET_TRIE_NODE { name: (literal!("")).clone(), cref: crate::DAE::ComponentRef::interned_WILD(), nodes: metamodelica::nil(), connectCount: 0 }), setCount: 0, connections: metamodelica::nil(), outerConnects: metamodelica::nil() }; }
     pub fn emptySet() -> Sets { __emptySet_TLS.with(|__t| __t.clone()) }
 
 }

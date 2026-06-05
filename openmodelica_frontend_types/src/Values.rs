@@ -122,6 +122,18 @@ pub enum Value {
         tyStr: ArcStr,
     },
 }
+impl Value {
+    pub fn interned_NORETCALL() -> Arc<Value> {
+        static INTERNED: std::sync::LazyLock<Arc<Value>> = std::sync::LazyLock::new(|| Arc::new(Value::NORETCALL));
+        (*INTERNED).clone()
+    }
+    pub fn interned_META_FAIL() -> Arc<Value> {
+        static INTERNED: std::sync::LazyLock<Arc<Value>> = std::sync::LazyLock::new(|| Arc::new(Value::META_FAIL));
+        (*INTERNED).clone()
+    }
+}
+pub fn interned_NORETCALL() -> Arc<Value> { Value::interned_NORETCALL() }
+pub fn interned_META_FAIL() -> Arc<Value> { Value::interned_META_FAIL() }
 impl Default for Value {
     fn default() -> Self { Self::NORETCALL }
 }

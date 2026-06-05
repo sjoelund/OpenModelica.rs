@@ -318,7 +318,7 @@ pub fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: S
             (l_libFolder, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(Tpl::emptyTxt.clone(), (ret_18.clone()).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             ret_20 = (Config::simulationCodeTarget()?).clone();
             l_binFolder = CodegenCppOMSI::simulationBinDir(Tpl::emptyTxt.clone(), (ret_20.clone()).clone(), i_simCode.clone())?;
-            l_libPaths = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
+            l_libPaths = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_libPaths = lm_54(l_libPaths.clone(), i_makefileParams_libPaths.clone())?;
             l_libPaths = Tpl::popIter(l_libPaths.clone())?;
             ret_23 = Flags::getConfigBool(Flags::USE_ZEROMQ_IN_SIM.clone())?;

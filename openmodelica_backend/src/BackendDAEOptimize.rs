@@ -1043,7 +1043,7 @@ fn removeEqualFunctionCallsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishare
             assign_field!(
                 syst.m = Some(m.clone()),
                 syst.mT = Some(mT.clone()),
-                syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
+                syst.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING()
             );
             syst = BackendDAEUtil::updateAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, changed.clone(), isInitial.clone())?;
             (syst.clone(), ishared.clone())
@@ -1082,7 +1082,7 @@ fn removeEqualFunctionCallFinder(mut elem: Arc<metamodelica::List<i32>>, mut pos
                     e2 = __pa0.clone();
                     e1 = __pa1.clone();
                     (ecr, exp) = functionCallEqn(e1.clone(), e2.clone(), vars.clone())?;
-                    expvars = BackendDAEUtil::adjacencyRowExp(exp.clone(), vars.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), None, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, isInitial.clone())?;
+                    expvars = BackendDAEUtil::adjacencyRowExp(exp.clone(), vars.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), None, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, isInitial.clone())?;
                     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(List::map2(AvlSetInt::listKeys(expvars.clone(), metamodelica::nil()), (std::sync::Arc::new(varEqns) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), pos.clone(), mT.clone())?) {
                         Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1587,7 +1587,7 @@ pub fn removeUnusedFunctions(mut inEqs: Arc<metamodelica::List<Arc<BackendDAE::E
 pub fn copyRecordConstructorAndExternalObjConstructorDestructor(mut inAllFunctionTree: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<AvlTreePathFunction::Tree>> {
     let mut outUsedFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut allfuncs_list: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
-    outUsedFunctionTree = Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY);
+    outUsedFunctionTree = openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY();
     allfuncs_list = DAEUtil::getFunctionList(inAllFunctionTree.clone(), false)?;
     for mut func in &*allfuncs_list.clone() {
         let mut func = func.clone();
@@ -3183,7 +3183,7 @@ fn simplifyIfEquationAsserts1(mut brancheqns: Arc<metamodelica::List<Arc<Backend
             let mut beqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut eqns = (*eqns).clone();
             e = List::fold(conditions.clone(), (std::sync::Arc::new(fnptr!(makeIfExp, Arc<DAE::Exp>, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), Arc::new(DAE::Exp::BCONST { bool: true }))?;
-            (beqns, eqns) = simplifyIfEquationAsserts1(eqns.clone(), condition.clone(), conditions.clone(), brancheqns1.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source1.clone() })], else_: Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE), source: source1.clone() })] }), source: source.clone(), expand: crefExpand.clone(), attr: eqAttr.clone() }), inEqns.clone()))?;
+            (beqns, eqns) = simplifyIfEquationAsserts1(eqns.clone(), condition.clone(), conditions.clone(), brancheqns1.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source1.clone() })], else_: openmodelica_frontend_types::DAE::Else::interned_NOELSE(), source: source1.clone() })] }), source: source.clone(), expand: crefExpand.clone(), attr: eqAttr.clone() }), inEqns.clone()))?;
             (beqns.clone(), eqns.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { attr: eqAttr, expand: crefExpand, source, alg: Deref @ DAE::Algorithm { statementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TERMINATE { source: source1, msg }, tail: Deref @ metamodelica::List::Nil } }, size }, tail: eqns }, Some(e)) => {
@@ -3191,7 +3191,7 @@ fn simplifyIfEquationAsserts1(mut brancheqns: Arc<metamodelica::List<Arc<Backend
             let mut eqns = (*eqns).clone();
             let mut e = (*e).clone();
             e = List::fold(conditions.clone(), (std::sync::Arc::new(fnptr!(makeIfExp, Arc<DAE::Exp>, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e.clone())?;
-            (beqns, eqns) = simplifyIfEquationAsserts1(eqns.clone(), condition.clone(), conditions.clone(), brancheqns1.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source1.clone() })], else_: Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE), source: source1.clone() })] }), source: source.clone(), expand: crefExpand.clone(), attr: eqAttr.clone() }), inEqns.clone()))?;
+            (beqns, eqns) = simplifyIfEquationAsserts1(eqns.clone(), condition.clone(), conditions.clone(), brancheqns1.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: list![Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: list![Arc::new(DAE::Statement::STMT_TERMINATE { msg: msg.clone(), source: source1.clone() })], else_: openmodelica_frontend_types::DAE::Else::interned_NOELSE(), source: source1.clone() })] }), source: source.clone(), expand: crefExpand.clone(), attr: eqAttr.clone() }), inEqns.clone()))?;
             (beqns.clone(), eqns.clone())
         },
         (Deref @ metamodelica::List::Cons { head: eqn, tail: eqns }, _) => {
@@ -4337,7 +4337,7 @@ pub fn removeLocalKnownVars2(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Ar
     assign_field!(
         syst.m = None,
         syst.mT = None,
-        syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING),
+        syst.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING(),
         syst.orderedVars = BackendVariable::listVar(BackendVariable::varList(orderedVars.clone())?)?,
         syst.orderedEqs = orderedEqs.clone()
     );
@@ -6501,7 +6501,7 @@ pub fn addTimeAsState(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Back
     eqs = __pa0.clone();
     shared = __pa1.clone();
     orderedVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
-    var = BackendDAE::Var { varName: DAE::crefTimeState().clone(), varKind: BackendDAE::VarKind::STATE { index: 1, derName: None, natural: true }, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+    var = BackendDAE::Var { varName: DAE::crefTimeState().clone(), varKind: BackendDAE::VarKind::STATE { index: 1, derName: None, natural: true }, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
     var = BackendVariable::setVarFixed(var.clone(), true)?;
     var = BackendVariable::setVarStartValue(var.clone(), Arc::new(DAE::Exp::CREF { componentRef: DAE::crefTime().clone(), ty: DAE::T_REAL_DEFAULT().clone() }))?;
     orderedVars = BackendVariable::addVar(var.clone(), orderedVars.clone())?;
@@ -6734,7 +6734,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                 syst.orderedEqs = BackendEquation::listEquation(eqLstNew.clone().reverse())?,
                 syst.m = None,
                 syst.mT = None,
-                syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
+                syst.matching = openmodelica_backend_types::BackendDAE::Matching::interned_NO_MATCHING()
             );
             (m, mT) = BackendDAEUtil::adjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             assign_field!(
@@ -7025,7 +7025,7 @@ fn traverseStrongComponentsForHomotopyLoop(mut comps: Arc<metamodelica::List<Arc
     } });
     }
     if homotopyLoopBeginning.clone() > 0 {
-        lambda = BackendDAE::Var { varName: ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::homotopyLambda)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+        lambda = BackendDAE::Var { varName: ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::homotopyLambda)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
         assign_field!(system.orderedVars = BackendVariable::addVar(lambda.clone(), system.orderedVars.clone())?);
         lambdaIdx = BackendVariable::varsSize(system.orderedVars.clone());
         (preHomotopyComponents, homotopyComponents, postHomotopyComponents) = getHomotopyComponents(List::intRange(nComps.clone()), comps.clone(), homotopyLoopBeginning.clone(), homotopyLoopEnd.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
@@ -7124,7 +7124,7 @@ fn createOneHomotopyComponent(mut homotopyComponents: Arc<metamodelica::List<Arc
         _ => bail!("match: no arm matched"),
     } });
     }
-    outHomotopyComponent = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: listAppend(newIterationVars.clone(), list![lambdaIdx.clone()]), residualequations: newResEquations.clone(), innerEquations: newInnerEquations.clone().reverse(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: false, mixedSystem: isMixed.clone() });
+    outHomotopyComponent = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: listAppend(newIterationVars.clone(), list![lambdaIdx.clone()]), residualequations: newResEquations.clone(), innerEquations: newInnerEquations.clone().reverse(), jac: openmodelica_backend_types::BackendDAE::Jacobian::interned_EMPTY_JACOBIAN() }, casualTearingSet: None, linear: false, mixedSystem: isMixed.clone() });
     Ok(outHomotopyComponent)
 }
 
@@ -7175,7 +7175,7 @@ fn traverseStrongComponentsAddLambda(mut comps: Arc<metamodelica::List<Arc<Backe
         newComps = metamodelica::cons(comp.clone(), newComps.clone());
     }
     if hasAnyHomotopy.clone() {
-        lambda = BackendDAE::Var { varName: ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::homotopyLambda)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
+        lambda = BackendDAE::Var { varName: ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::homotopyLambda)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: true, initNonlinear: false, encrypted: false };
         assign_field!(system.orderedVars = BackendVariable::addVar(lambda.clone(), system.orderedVars.clone())?);
     }
     comps = newComps.clone().reverse();

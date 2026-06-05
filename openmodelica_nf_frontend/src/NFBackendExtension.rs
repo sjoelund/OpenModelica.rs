@@ -236,7 +236,7 @@ pub mod BackendInfo {
 
 }
 
-thread_local! { static __DUMMY_BACKEND_INFO_TLS: Arc<BackendInfo::BackendInfo> = Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(crate::NFBackendExtension::VariableKind::FRONTEND_DUMMY), attributes: EMPTY_VAR_ATTR_REAL().clone(), annotations: EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }); }
+thread_local! { static __DUMMY_BACKEND_INFO_TLS: Arc<BackendInfo::BackendInfo> = Arc::new(BackendInfo::BackendInfo { varKind: crate::NFBackendExtension::VariableKind::interned_FRONTEND_DUMMY(), attributes: EMPTY_VAR_ATTR_REAL().clone(), annotations: EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }); }
 pub fn DUMMY_BACKEND_INFO() -> Arc<BackendInfo::BackendInfo> { __DUMMY_BACKEND_INFO_TLS.with(|__t| __t.clone()) }
 
 pub mod VariableKind {
@@ -315,6 +315,176 @@ pub mod VariableKind {
         /// Undefined variable type. Only to be used during frontend phase.
         FRONTEND_DUMMY,
     }
+    impl VariableKind {
+        pub fn interned_TIME() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::TIME);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_ALGEBRAIC() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::ALGEBRAIC);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_DISCRETE() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::DISCRETE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_DISCRETE_STATE() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::DISCRETE_STATE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_PREVIOUS() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::PREVIOUS);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_CLOCK() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::CLOCK);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_CLOCKED() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::CLOCKED);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_CONSTANT() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::CONSTANT);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_ITERATOR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::ITERATOR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_JAC_VAR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::JAC_VAR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_JAC_TMP_VAR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::JAC_TMP_VAR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_SEED_VAR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::SEED_VAR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_OPT_CONSTR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::OPT_CONSTR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_OPT_FCONSTR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::OPT_FCONSTR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_OPT_INPUT_WITH_DER() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::OPT_INPUT_WITH_DER);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_OPT_INPUT_DER() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::OPT_INPUT_DER);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_OPT_TGRID() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::OPT_TGRID);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_ALG_STATE() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::ALG_STATE);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_ALG_STATE_OLD() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::ALG_STATE_OLD);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_RESIDUAL_VAR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::RESIDUAL_VAR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_DAE_AUX_VAR() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::DAE_AUX_VAR);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_LOOP_ITERATION() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::LOOP_ITERATION);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_LOOP_SOLVED() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::LOOP_SOLVED);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+        pub fn interned_FRONTEND_DUMMY() -> Arc<VariableKind> {
+            thread_local! {
+                static INTERNED: Arc<VariableKind> = Arc::new(VariableKind::FRONTEND_DUMMY);
+            }
+            INTERNED.with(|i| i.clone())
+        }
+    }
+    pub fn interned_TIME() -> Arc<VariableKind> { VariableKind::interned_TIME() }
+    pub fn interned_ALGEBRAIC() -> Arc<VariableKind> { VariableKind::interned_ALGEBRAIC() }
+    pub fn interned_DISCRETE() -> Arc<VariableKind> { VariableKind::interned_DISCRETE() }
+    pub fn interned_DISCRETE_STATE() -> Arc<VariableKind> { VariableKind::interned_DISCRETE_STATE() }
+    pub fn interned_PREVIOUS() -> Arc<VariableKind> { VariableKind::interned_PREVIOUS() }
+    pub fn interned_CLOCK() -> Arc<VariableKind> { VariableKind::interned_CLOCK() }
+    pub fn interned_CLOCKED() -> Arc<VariableKind> { VariableKind::interned_CLOCKED() }
+    pub fn interned_CONSTANT() -> Arc<VariableKind> { VariableKind::interned_CONSTANT() }
+    pub fn interned_ITERATOR() -> Arc<VariableKind> { VariableKind::interned_ITERATOR() }
+    pub fn interned_JAC_VAR() -> Arc<VariableKind> { VariableKind::interned_JAC_VAR() }
+    pub fn interned_JAC_TMP_VAR() -> Arc<VariableKind> { VariableKind::interned_JAC_TMP_VAR() }
+    pub fn interned_SEED_VAR() -> Arc<VariableKind> { VariableKind::interned_SEED_VAR() }
+    pub fn interned_OPT_CONSTR() -> Arc<VariableKind> { VariableKind::interned_OPT_CONSTR() }
+    pub fn interned_OPT_FCONSTR() -> Arc<VariableKind> { VariableKind::interned_OPT_FCONSTR() }
+    pub fn interned_OPT_INPUT_WITH_DER() -> Arc<VariableKind> { VariableKind::interned_OPT_INPUT_WITH_DER() }
+    pub fn interned_OPT_INPUT_DER() -> Arc<VariableKind> { VariableKind::interned_OPT_INPUT_DER() }
+    pub fn interned_OPT_TGRID() -> Arc<VariableKind> { VariableKind::interned_OPT_TGRID() }
+    pub fn interned_ALG_STATE() -> Arc<VariableKind> { VariableKind::interned_ALG_STATE() }
+    pub fn interned_ALG_STATE_OLD() -> Arc<VariableKind> { VariableKind::interned_ALG_STATE_OLD() }
+    pub fn interned_RESIDUAL_VAR() -> Arc<VariableKind> { VariableKind::interned_RESIDUAL_VAR() }
+    pub fn interned_DAE_AUX_VAR() -> Arc<VariableKind> { VariableKind::interned_DAE_AUX_VAR() }
+    pub fn interned_LOOP_ITERATION() -> Arc<VariableKind> { VariableKind::interned_LOOP_ITERATION() }
+    pub fn interned_LOOP_SOLVED() -> Arc<VariableKind> { VariableKind::interned_LOOP_SOLVED() }
+    pub fn interned_FRONTEND_DUMMY() -> Arc<VariableKind> { VariableKind::interned_FRONTEND_DUMMY() }
     impl Default for VariableKind {
         fn default() -> Self { Self::TIME }
     }
@@ -382,9 +552,9 @@ pub mod VariableKind {
         } else if makeParam.clone() {
             varKind = Arc::new(VariableKind::PARAMETER { resize_value: None });
         } else if Type::isDiscrete(ty.clone())? {
-            varKind = Arc::new(crate::NFBackendExtension::VariableKind::DISCRETE);
+            varKind = crate::NFBackendExtension::VariableKind::interned_DISCRETE();
         } else {
-            varKind = Arc::new(crate::NFBackendExtension::VariableKind::ALGEBRAIC);
+            varKind = crate::NFBackendExtension::VariableKind::interned_ALGEBRAIC();
         }
         Ok(varKind)
     }
@@ -688,8 +858,8 @@ pub mod VariableAttributes {
             step = None;
             for mut stop in &*sizes.clone() {
                 let mut stop = stop.clone();
-                iter_name = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
-                iter_range = Arc::new(Expression::NFExpression::RANGE { ty: Arc::new(crate::NFType::INTEGER), start: start.clone(), step: step.clone(), stop: Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }) });
+                iter_name = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), crate::NFType::interned_INTEGER());
+                iter_range = Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_INTEGER(), start: start.clone(), step: step.clone(), stop: Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }) });
                 iterators = metamodelica::cons((iter_name.clone(), iter_range.clone()), iterators.clone());
             }
             binding = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: Expression::variability(binding.clone())?, purity: NFPrefixes::Purity::PURE.clone(), exp: binding.clone(), iters: iterators.clone().reverse() }) });
@@ -1056,11 +1226,11 @@ pub mod VariableAttributes {
     pub fn elemType(mut attr: Arc<VariableAttributes>) -> Result<Arc<Type::NFType>> {
         let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
         ty = (::match_deref::match_deref! { match &(attr.clone()) {
-        Deref @ VAR_ATTR_REAL { .. } => Arc::new(crate::NFType::REAL),
-        Deref @ VAR_ATTR_INT { .. } => Arc::new(crate::NFType::INTEGER),
-        Deref @ VAR_ATTR_BOOL { .. } => Arc::new(crate::NFType::BOOLEAN),
-        Deref @ VAR_ATTR_CLOCK { .. } => Arc::new(crate::NFType::CLOCK),
-        Deref @ VAR_ATTR_STRING { .. } => Arc::new(crate::NFType::STRING),
+        Deref @ VAR_ATTR_REAL { .. } => crate::NFType::interned_REAL(),
+        Deref @ VAR_ATTR_INT { .. } => crate::NFType::interned_INTEGER(),
+        Deref @ VAR_ATTR_BOOL { .. } => crate::NFType::interned_BOOLEAN(),
+        Deref @ VAR_ATTR_CLOCK { .. } => crate::NFType::interned_CLOCK(),
+        Deref @ VAR_ATTR_STRING { .. } => crate::NFType::interned_STRING(),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.elemType")); __mm_s.push_str(&*literal!(" cannot create type from attributes: ")); __mm_s.push_str(&*toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
             bail!("fail")

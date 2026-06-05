@@ -598,7 +598,7 @@ pub fn mergeMods(mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>>) -> Result<A
     let mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>> = metamodelica::nil();
     let mut binding_map: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> as ::std::default::Default>::default();
     if mods.clone().is_empty() {
-        r#mod = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
+        r#mod = openmodelica_frontend_types::SCode::Mod::interned_NOMOD();
         return Ok(r#mod.clone());
     }
     r#mod = listHead(mods.clone())?;
@@ -967,7 +967,7 @@ pub fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List<Arc<Va
     cdef = Arc::new(SCode::ClassDef::PARTS { elementLst: params.clone(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None });
     cmt = Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: SCodeUtil::makeMod(false, false, list![Arc::new(SCode::SubMod { ident: (literal!("Inline")).clone(), r#mod: SCodeUtil::makeMod(false, false, metamodelica::nil(), Some(Arc::new(Absyn::Exp::BOOL { value: false })), None, Absyn::dummyInfo.clone()) })], None, None, Absyn::dummyInfo.clone()) })), comment: None });
     elem = Arc::new(SCode::Element::CLASS { name: (literal!("dummy")).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::PURE } }, classDef: cdef.clone(), cmt: cmt.clone(), info: Absyn::dummyInfo.clone() });
-    fn_node = InstNode::new(elem.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?;
+    fn_node = InstNode::new(elem.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
     fn_node = Function::instFunctionNode(fn_node.clone(), NFInstContext::FUNCTION.clone(), Absyn::dummyInfo.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(fn_node.clone(), NFInstContext::FUNCTION.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -979,7 +979,7 @@ pub fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List<Arc<Va
 
 pub fn createExtractorModelDummyFnInput(mut var: Arc<Variable::NFVariable>) -> Result<Arc<SCode::Element>> {
     let mut inputElem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    inputElem = Arc::new(SCode::Element::COMPONENT { name: (ComponentRef::toFlatString(var.name.clone(), BaseModelica::defaultFormat.clone())?).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
+    inputElem = Arc::new(SCode::Element::COMPONENT { name: (ComponentRef::toFlatString(var.name.clone(), BaseModelica::defaultFormat.clone())?).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: REAL_TYPE_SPEC.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
     Ok(inputElem)
 }
 
@@ -1001,7 +1001,7 @@ pub fn createExtractorModelDummyEq(mut var: Arc<Variable::NFVariable>, mut varTy
     indexed_fn = Function::setName(fn_name.clone(), r#fn.clone());
     var_name = (ComponentRef::toString(Variable::name(var.clone()))?).clone();
     src = ElementSource::addCommentToSource(src.clone(), Some(Arc::new(SCode::Comment { annotation_: None, comment: Some(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Dummy equation for ")); __mm_s.push_str(&*var_name.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*varType.clone()); __mm_s.push_str(&*literal!(" variable")); ArcStr::from(__mm_s) }).clone()) })));
-    eq = Equation::makeEquality(Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((0) as f64) }), Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(indexed_fn.clone(), args.clone(), Variability::CONTINUOUS.clone(), Purity::PURE.clone(), indexed_fn.returnType.clone()) }), Arc::new(crate::NFType::REAL), src.clone(), r#fn.node.clone(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
+    eq = Equation::makeEquality(Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((0) as f64) }), Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(indexed_fn.clone(), args.clone(), Variability::CONTINUOUS.clone(), Purity::PURE.clone(), indexed_fn.returnType.clone()) }), crate::NFType::interned_REAL(), src.clone(), r#fn.node.clone(), Equation::ScalarizeMode::NO_PREFERENCE.clone());
     funcs = NFFlatten::FunctionTreeImpl::add(funcs.clone(), fn_name.clone(), indexed_fn.clone(), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
     Ok((eq, funcs, index))
 }

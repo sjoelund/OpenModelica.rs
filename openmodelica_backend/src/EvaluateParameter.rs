@@ -273,7 +273,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     let mut selectedParameters = (*selectedParameters).clone();
                     let mut m = (*m).clone();
                     let mut mt = (*mt).clone();
-                    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone()))?;
+                    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone()))?;
                     tree = __pa0.clone();
                     ilst = AvlSetInt::listKeys(tree.clone(), metamodelica::nil());
                     cref = BackendVariable::varCref(v.clone())?;
@@ -298,7 +298,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     let mut m = (*m).clone();
                     let mut mt = (*mt).clone();
                     e = DAEUtil::getStartAttrFail(attr.clone())?;
-                    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone()))?;
+                    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone()))?;
                     tree = __pa0.clone();
                     ilst = AvlSetInt::listKeys(tree.clone(), metamodelica::nil());
                     cref = BackendVariable::varCref(v.clone())?;
@@ -660,7 +660,7 @@ fn evaluateFixedAttribute1(mut cr: Arc<DAE::ComponentRef>, mut e: Arc<DAE::Exp>,
     let mut ilst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     let mut attr1: Option<Arc<DAE::VariableAttributes>> = None;
     (e1, _) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)?;
-    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone()))?;
+    let (_, (_, __pa0, _)) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(BackendDAEUtil::traversingadjacencyRowExpFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), (globalKnownVars.clone(), crate::AvlSetInt::Tree::interned_EMPTY(), isInitial.clone()))?;
     ilst = __pa0.clone();
     (globalKnownVars, cache, mark, repl, _) = evaluateSelectedParameters1(AvlSetInt::listKeys(ilst.clone(), metamodelica::nil()), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), BackendVarTransform::emptyReplacements())?;
     (e1, _) = BackendVarTransform::replaceExp(e1.clone(), repl.clone(), None)?;

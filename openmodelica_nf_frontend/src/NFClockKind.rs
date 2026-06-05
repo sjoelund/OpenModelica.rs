@@ -420,7 +420,7 @@ pub fn toDAE(mut ick: Arc<NFClockKind>) -> Result<Arc<DAE::ClockKind>> {
     let mut ock: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
     ock = (::match_deref::match_deref! { match &(ick.clone()) {
         Deref @ INFERRED_CLOCK { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK)
+            openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK()
         },
         Deref @ RATIONAL_CLOCK { intervalCounter: i, resolution: r } => {
             Arc::new(DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: Expression::toDAE(i.clone(), false)?, resolution: Expression::toDAE(r.clone(), false)? })

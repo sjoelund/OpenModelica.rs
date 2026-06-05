@@ -261,7 +261,7 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
             for mut derVar in &*derVars.clone() {
                 let mut derVar = derVar.clone();
                 var = ((BackendVariable::getVar(derVar.clone(), syst.orderedVars.clone())?).0).get(1)?;
-                var = BackendDAE::Var { varName: ComponentReference::crefPrefixDer(derVar.clone()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: var.varType.clone(), bindExp: None, tplExp: None, arryDim: var.arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                var = BackendDAE::Var { varName: ComponentReference::crefPrefixDer(derVar.clone()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: var.varType.clone(), bindExp: None, tplExp: None, arryDim: var.arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                 assign_field!(syst.orderedVars = BackendVariable::addVar(var.clone(), syst.orderedVars.clone())?);
             }
             for mut derVar in &*derVars.clone() {
@@ -533,7 +533,7 @@ fn subClockPartitioning1(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqS
     let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition> = Default::default();
     let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition> = Default::default();
     nBaseClocks = (inSysts.clone().len() as i32);
-    basePartitions = arrayCreate(nBaseClocks.clone(), BackendDAE::BasePartition { clock: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK), nSubClocks: 0 });
+    basePartitions = arrayCreate(nBaseClocks.clone(), BackendDAE::BasePartition { clock: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK(), nSubClocks: 0 });
     varsPartition = HashTable::emptyHashTable();
     i = 0;
     j = 1;
@@ -1083,7 +1083,7 @@ fn getConnectedSubPartitions(mut eq: Arc<BackendDAE::Equation>, mut varPartMap: 
 }
 
 fn chooseBaseClock(mut clockEqs: Arc<metamodelica::List<i32>>, mut numPartitions: i32, mut eqPartMap: metamodelica::Array<i32>, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<(Arc<DAE::ClockKind>, i32)> {
-    let mut outBaseClock: Arc<DAE::ClockKind> = Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK);
+    let mut outBaseClock: Arc<DAE::ClockKind> = openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK();
     let mut baseClockEqIdx: i32 = -1;
     let mut subClkPartMap: metamodelica::Array<BackendDAE::SubClock> = Default::default();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1120,13 +1120,13 @@ fn getBaseClock(mut eq: Arc<BackendDAE::Equation>) -> Arc<DAE::ClockKind> {
     let mut baseClk: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
     baseClk = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } }, exp: Deref @ DAE::Exp::CREF { .. }, .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK)
+            openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK()
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk }, exp: Deref @ DAE::Exp::CREF { .. }, .. } => {
             clk.clone()
         },
         _ => {
-            Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK)
+            openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1806,7 +1806,7 @@ fn collectSubclkInfo(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<Backend
             {let _arr = oClksCnt.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = cnt.clone() + 1; _arr};
         }
         if metamodelica::arrayGet(oClksCnt.clone(), i.clone())? == 1 {
-            (var, eq) = createSubClock(i.clone(), 1, Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) }))?;
+            (var, eq) = createSubClock(i.clone(), 1, Arc::new(DAE::Exp::CLKCONST { clk: openmodelica_frontend_types::DAE::ClockKind::interned_INFERRED_CLOCK() }))?;
             outNewEqs = metamodelica::cons(eq.clone(), outNewEqs.clone());
             outNewVars = metamodelica::cons(var.clone(), outNewVars.clone());
             {let _arr = oClksCnt.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = 2; _arr};
@@ -2074,7 +2074,7 @@ fn substituteExpsCall(mut inPath: Arc<Absyn::Path>, mut inExps: Arc<metamodelica
 
 fn createVar(mut inComp: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    outVar = BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: false, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), comment: None, hideResult: None, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::DEFAULT), values: DAEUtil::setProtectedAttr(DAEUtil::getEmptyVarAttr(inType.clone()), true)?, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: inType.clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varName: inComp.clone() };
+    outVar = BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: false, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), comment: None, hideResult: None, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::DEFAULT), values: DAEUtil::setProtectedAttr(DAEUtil::getEmptyVarAttr(inType.clone()), true)?, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: inType.clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varName: inComp.clone() };
     Ok(outVar)
 }
 

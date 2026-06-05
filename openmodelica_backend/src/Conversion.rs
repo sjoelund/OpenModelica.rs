@@ -231,6 +231,13 @@ pub mod ImportTreeImpl {
         },
         EMPTY,
     }
+    impl Tree {
+        pub fn interned_EMPTY() -> Arc<Tree> {
+            static INTERNED: std::sync::LazyLock<Arc<Tree>> = std::sync::LazyLock::new(|| Arc::new(Tree::EMPTY));
+            (*INTERNED).clone()
+        }
+    }
+    pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
@@ -266,9 +273,9 @@ pub mod ImportTreeImpl {
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }), right: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
+                outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
                 if !(referenceEq(&var_field!((*tree).value, Tree::LEAF).clone(),&value.clone())) {
@@ -333,9 +340,9 @@ pub mod ImportTreeImpl {
         Deref @ Tree::LEAF { .. } => {
             key_comp = keyCompare((key.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
             if key_comp.clone() == -1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }), right: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY() });
             } else if key_comp.clone() == 1 {
-                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
+                new_tree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (key.clone()).clone(), value: r#fn(None)? }) });
             } else {
                 assign_variant_field!(tree => Tree::LEAF; value = r#fn(Some(var_field!((*tree).value, Tree::LEAF).clone()))?);
                 new_tree = tree.clone();
@@ -482,7 +489,7 @@ pub mod ImportTreeImpl {
     }
 
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, ImportData)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(ImportData, ImportData, ArcStr) -> Result<ImportData> + 'static>) -> Result<Arc<Tree>> {
-        let mut tree: Arc<Tree> = Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY);
+        let mut tree: Arc<Tree> = crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY();
         let mut key: Key = arcstr::literal!("");
         let mut value: Value = <ImportData as ::std::default::Default>::default();
         for mut t in &*inValues.clone() {
@@ -726,7 +733,7 @@ pub mod ImportTreeImpl {
     }
 
     pub fn new() -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY);
+        let mut outTree: Arc<Tree> = crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY();
         outTree
     }
 
@@ -786,8 +793,8 @@ pub mod ImportTreeImpl {
         },
         Deref @ Tree::NODE { right: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY))?;
-            setTreeLeftRight(child.clone(), node.clone(), Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY))?
+            node = setTreeLeftRight(outNode.clone(), var_field!((*outNode).left, Tree::NODE).clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY())?;
+            setTreeLeftRight(child.clone(), node.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY())?
         },
         _ => {
             inNode.clone()
@@ -807,8 +814,8 @@ pub mod ImportTreeImpl {
         },
         Deref @ Tree::NODE { left: child @ Deref @ Tree::LEAF { .. }, .. } => {
             let mut node: Arc<Tree> = Arc::new(Tree::EMPTY);
-            node = setTreeLeftRight(outNode.clone(), Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY), var_field!((*outNode).right, Tree::NODE).clone())?;
-            setTreeLeftRight(child.clone(), Arc::new(crate::Conversion::ImportTreeImpl::Tree::EMPTY), node.clone())?
+            node = setTreeLeftRight(outNode.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), var_field!((*outNode).right, Tree::NODE).clone())?;
+            setTreeLeftRight(child.clone(), crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), node.clone())?
         },
         _ => {
             inNode.clone()
@@ -1670,7 +1677,7 @@ fn convertModification(mut r#mod: Option<Arc<Absyn::Modification>>, mut modifier
         eq_mod = __pa1.clone();
     } else {
         elem_args = metamodelica::nil();
-        eq_mod = Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD);
+        eq_mod = openmodelica_ast::Absyn::EqMod::interned_NOMOD();
     }
     elem_args = convertModification2(modifierRules.clone(), elem_args.clone())?;
     r#mod = (::match_deref::match_deref! { match &((elem_args.clone(), eq_mod.clone())) {

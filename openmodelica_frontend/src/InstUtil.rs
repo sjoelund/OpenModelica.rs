@@ -1328,7 +1328,7 @@ fn removeBindings(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) ->
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::COMPONENT { name, prefixes, attributes, typeSpec, modifications: _, comment, condition, info }, tail: els } => {
             let mut els1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             els1 = removeBindings(els.clone());
-            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attributes.clone(), typeSpec: typeSpec.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: comment.clone(), condition: condition.clone(), info: info.clone() }), els1.clone())
+            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attributes.clone(), typeSpec: typeSpec.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: comment.clone(), condition: condition.clone(), info: info.clone() }), els1.clone())
         },
         Deref @ metamodelica::List::Cons { head: el, tail: els } => {
             let mut els1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1349,7 +1349,7 @@ fn removeExtBindings(mut elements: Arc<metamodelica::List<(Arc<SCode::Element>, 
         Deref @ metamodelica::List::Cons { head: (Deref @ SCode::Element::COMPONENT { name, prefixes, attributes, typeSpec, modifications: _, comment, condition, info }, _), tail: els } => {
             let mut els1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
             els1 = removeExtBindings(els.clone());
-            metamodelica::cons((Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attributes.clone(), typeSpec: typeSpec.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: comment.clone(), condition: condition.clone(), info: info.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)), els1.clone())
+            metamodelica::cons((Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attributes.clone(), typeSpec: typeSpec.clone(), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: comment.clone(), condition: condition.clone(), info: info.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()), els1.clone())
         },
         Deref @ metamodelica::List::Cons { head: el, tail: els } => {
             let mut els1: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
@@ -1370,7 +1370,7 @@ pub fn getModsForDep(mut inDepCref: Arc<Absyn::ComponentRef>, mut inElems: Arc<m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Nil) => {
-                    Ok(Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
+                    Ok(openmodelica_frontend_types::DAE::Mod::interned_NOMOD())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1430,7 +1430,7 @@ pub fn addNomod(mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) ->
     outElements = ({
         let mut __acc: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
         for mut x in (inElements.clone()).into_iter().cloned() {
-            let __x = (x.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD));
+            let __x = (x.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2260,7 +2260,7 @@ fn addClassdefToEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
                     let mut ih = (*ih).clone();
                     let mut m = (*m).clone();
                     m = Mod::lookupCompModification(m.clone(), (var_field!((**sel1).name, SCode::Element::CLASS).clone()).clone())?;
-                    let false = (m.clone() == Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)) else { bail!("pattern mismatch") };
+                    let false = (m.clone() == openmodelica_frontend_types::DAE::Mod::interned_NOMOD()) else { bail!("pattern mismatch") };
                     env_1 = FGraph::mkClassNode(env.clone(), sel1.clone(), pre.clone(), m.clone(), false)?;
                     (cache, env_1, ih, cl2) = addClassdefsToEnv3(cache.clone(), env_1.clone(), ih.clone(), pre.clone(), redeclareMod.clone(), sel1.clone())?;
                     ih = InnerOuter::addClassIfInner(cl2.clone(), pre.clone(), env_1.clone(), ih.clone())?;
@@ -2274,7 +2274,7 @@ fn addClassdefToEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
                 (cache, env, ih, pre, sel1 @ Deref @ SCode::Element::CLASS { .. }, _) => {
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ih = (*ih).clone();
-                    env_1 = FGraph::mkClassNode(env.clone(), sel1.clone(), pre.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), checkDuplicates.clone())?;
+                    env_1 = FGraph::mkClassNode(env.clone(), sel1.clone(), pre.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), checkDuplicates.clone())?;
                     ih = InnerOuter::addClassIfInner(sel1.clone(), pre.clone(), env_1.clone(), ih.clone())?;
                     Ok((cache.clone(), env_1.clone(), ih.clone()))
                 }
@@ -2389,7 +2389,7 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
                     comp_mod = Mod::lookupCompModification(r#mod.clone(), (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone())?;
                     cmod = Mod::merge(comp_mod.clone(), cmod.clone(), (literal!("")).clone(), true)?;
                     dattr = DAEUtil::translateSCodeAttrToDAEAttr(attr.clone(), prefs.clone())?;
-                    env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone(), attributes: dattr.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), comp.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+                    env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone(), attributes: dattr.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), comp.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
                     Ok((false, cache.clone(), env.clone(), ih.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2929,7 +2929,7 @@ pub fn keepConstrainingTypeModifersOnly(mut inMod: Arc<DAE::Mod>, mut elems: Arc
             inMod.clone()
         },
         (Deref @ DAE::Mod::NOMOD { .. }, _) => {
-            Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)
+            openmodelica_frontend_types::DAE::Mod::interned_NOMOD()
         },
         (Deref @ DAE::Mod::REDECL { finalPrefix: _, eachPrefix: _, element: _, .. }, _) => {
             inMod.clone()
@@ -3000,7 +3000,7 @@ pub fn extractConstrainingComps(mut cc: Option<Arc<SCode::ConstrainClass>>, mut 
                     selems = __pa0.clone();
                     name = __pa1.clone();
                     (classes, classextendselts, extendselts, compelts) = splitElts(selems.clone())?;
-                    (_, _, _, _, extcomps, _, _, _, _, _) = InstExtends::instExtendsAndClassExtendsList(FCore::emptyCache(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), pre.clone(), extendselts.clone(), classextendselts.clone(), selems.clone(), ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, (name.clone()).clone(), true, false)?;
+                    (_, _, _, _, extcomps, _, _, _, _, _) = InstExtends::instExtendsAndClassExtendsList(FCore::emptyCache(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), pre.clone(), extendselts.clone(), classextendselts.clone(), selems.clone(), ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, (name.clone()).clone(), true, false)?;
                     extcompelts = List::map(extcomps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
                     compelts = listAppend(classes.clone(), listAppend(compelts.clone(), extcompelts.clone()));
                     Ok(compelts.clone())
@@ -3288,7 +3288,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { name: id, .. }, _, _) => {
                     if !((id.clone() == literal!("Real") || id.clone() == literal!("Integer") || id.clone() == literal!("String") || id.clone() == literal!("Boolean"))) { bail!("guard") }
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3297,7 +3297,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { name: Deref @ "Clock", .. }, _, _) => {
                     let true = (Config::synchronousFeaturesAllowed()?) else { bail!("pattern mismatch") };
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3305,7 +3305,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, .. }, _, _) => {
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3321,7 +3321,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
                     owncref = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (id.clone()).clone(), subscripts: metamodelica::nil() });
                     ad_1 = getOptionArraydim(ad.clone());
                     (cache, dim1) = elabArraydim(cache.clone(), env.clone(), owncref.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }), ad_1.clone(), None, r#impl.clone(), true, false, pre.clone(), info.clone(), dims.clone())?;
-                    Ok((cache.clone(), dim1.clone(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), dim1.clone(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3329,7 +3329,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL { .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: _ } }, .. }, _, _) => {
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3346,7 +3346,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_UNIONTYPE { .. }, .. }, _, _) => {
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3412,7 +3412,7 @@ pub fn getUsertypeDimensions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, cl @ Deref @ SCode::Element::CLASS { .. }, _, _) => {
-                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
+                    Ok((cache.clone(), metamodelica::nil(), cl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3469,7 +3469,7 @@ fn addEnumerationLiteralToEnv(mut inEnum: Arc<SCode::Element>, mut inEnv: FCore:
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { name: lit, .. } => {
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    env = FGraph::mkComponentNode(inEnv.clone(), Arc::new(DAE::Var { name: (lit.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), inEnum.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+                    env = FGraph::mkComponentNode(inEnv.clone(), Arc::new(DAE::Var { name: (lit.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), inEnum.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
                     Ok(env.clone())
                 }
                 _ => bail!("nomatch"),
@@ -3540,7 +3540,7 @@ pub fn instDimExpNonSplit(mut inDimension: Arc<DAE::Dimension>, mut inBoolean: b
     let mut outSubscript: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
     outSubscript = (::match_deref::match_deref! { match &(inDimension.clone()) {
         Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
-            Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)
+            openmodelica_frontend_types::DAE::Subscript::interned_WHOLEDIM()
         },
         Deref @ DAE::Dimension::DIM_INTEGER { integer: i } => {
             Arc::new(DAE::Subscript::WHOLE_NONEXP { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })
@@ -3761,10 +3761,10 @@ fn propagateConnectorType(mut inVarConnectorType: Arc<DAE::ConnectorType>, mut i
             inVarConnectorType.clone()
         },
         (Deref @ DAE::ConnectorType::POTENTIAL { .. }, SCode::ConnectorType::FLOW { .. }) => {
-            Arc::new(openmodelica_frontend_types::DAE::ConnectorType::FLOW)
+            openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW()
         },
         (Deref @ DAE::ConnectorType::NON_CONNECTOR { .. }, SCode::ConnectorType::FLOW { .. }) => {
-            Arc::new(openmodelica_frontend_types::DAE::ConnectorType::FLOW)
+            openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW()
         },
         (Deref @ DAE::ConnectorType::POTENTIAL { .. }, SCode::ConnectorType::STREAM { .. }) => {
             Arc::new(DAE::ConnectorType::STREAM { associatedFlow: None })
@@ -4032,7 +4032,7 @@ pub fn elabArraydim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCo
 fn compatibleArraydim(mut inDimension1: Arc<DAE::Dimension>, mut inDimension2: Arc<DAE::Dimension>) -> Result<Arc<DAE::Dimension>> {
     let mut outDimension: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     outDimension = (::match_deref::match_deref! { match &((inDimension1.clone(), inDimension2.clone())) {
-        (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN),
+        (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(),
         (_, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => inDimension1.clone(),
         (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, _) => inDimension2.clone(),
         (_, Deref @ DAE::Dimension::DIM_EXP { .. }) => inDimension1.clone(),
@@ -6070,7 +6070,7 @@ fn addClassdefsToEnv3(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inIH
             let mut cache = (*cache).clone();
             let mut ih = (*ih).clone();
             (mo2, _) = extractCorrectClassMod2(lsm.clone(), (r#str.clone()).clone(), metamodelica::nil());
-            let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Inst::redeclareType(cache.clone(), env.clone(), ih.clone(), mo2.clone(), sele.clone(), pre.clone(), ClassInf::State::MODEL { path: Arc::new(Absyn::Path::IDENT { name: (r#str.clone()).clone() }) }, true, Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?) {
+            let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Inst::redeclareType(cache.clone(), env.clone(), ih.clone(), mo2.clone(), sele.clone(), pre.clone(), ClassInf::State::MODEL { path: Arc::new(Absyn::Path::IDENT { name: (r#str.clone()).clone() }) }, true, openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) {
                 (__pa0, __pa1, __pa2, __pa3 @ Deref @ SCode::Element::CLASS { .. }, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -6090,7 +6090,7 @@ fn extractCorrectClassMod2(mut smod: Arc<metamodelica::List<Arc<DAE::SubMod>>>, 
     let mut restmods: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
     (omod, restmods) = (::match_deref::match_deref! { match &(smod.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), premod.clone())
+            (openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), premod.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod }, tail: rest } if (stringEq((id.clone()).clone(), (name.clone()).clone())) => {
             let mut rest2: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
@@ -7996,7 +7996,7 @@ pub fn noModForUpdatedComponents(mut variability: SCode::Variability, mut update
                 _ => {
                     if !((BaseHashTable::hasKey(cref.clone(), updatedComps.clone())?)) { bail!("guard") }
                     checkVariabilityOfUpdatedComponent(variability.clone(), cref.clone())?;
-                    Ok((Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD)))
+                    Ok((openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::SCode::Mod::interned_NOMOD()))
                 }
                 _ => bail!("nomatch"),
             }}

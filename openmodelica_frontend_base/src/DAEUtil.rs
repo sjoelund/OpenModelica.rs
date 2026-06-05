@@ -686,7 +686,7 @@ pub fn unNameInnerouterUniqueCref(mut cr: Arc<DAE::ComponentRef>, mut removalStr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::ComponentRef::WILD { .. } => {
-                    Ok(Arc::new(openmodelica_frontend_types::DAE::ComponentRef::WILD))
+                    Ok(openmodelica_frontend_types::DAE::ComponentRef::interned_WILD())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2051,10 +2051,10 @@ pub fn getBindings(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>)
 pub fn toConnectorType(mut inConnectorType: SCode::ConnectorType, mut inState: ClassInf::State) -> Arc<DAE::ConnectorType> {
     let mut outConnectorType: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
     outConnectorType = (match (inConnectorType.clone(), inState.clone()) {
-        (SCode::ConnectorType::FLOW { .. }, _) => Arc::new(openmodelica_frontend_types::DAE::ConnectorType::FLOW),
+        (SCode::ConnectorType::FLOW { .. }, _) => openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW(),
         (SCode::ConnectorType::STREAM { .. }, _) => Arc::new(DAE::ConnectorType::STREAM { associatedFlow: None }),
-        (_, ClassInf::State::CONNECTOR { .. }) => Arc::new(openmodelica_frontend_types::DAE::ConnectorType::POTENTIAL),
-        _ => Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR),
+        (_, ClassInf::State::CONNECTOR { .. }) => openmodelica_frontend_types::DAE::ConnectorType::interned_POTENTIAL(),
+        _ => openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(),
     });
     outConnectorType
 }
@@ -2062,9 +2062,9 @@ pub fn toConnectorType(mut inConnectorType: SCode::ConnectorType, mut inState: C
 pub fn toConnectorTypeNoState(mut scodeConnectorType: SCode::ConnectorType, mut flowName: Option<Arc<DAE::ComponentRef>>) -> Arc<DAE::ConnectorType> {
     let mut daeConnectorType: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
     daeConnectorType = (match scodeConnectorType.clone() {
-        SCode::ConnectorType::FLOW { .. } => Arc::new(openmodelica_frontend_types::DAE::ConnectorType::FLOW),
+        SCode::ConnectorType::FLOW { .. } => openmodelica_frontend_types::DAE::ConnectorType::interned_FLOW(),
         SCode::ConnectorType::STREAM { .. } => Arc::new(DAE::ConnectorType::STREAM { associatedFlow: flowName.clone() }),
-        _ => Arc::new(openmodelica_frontend_types::DAE::ConnectorType::POTENTIAL),
+        _ => openmodelica_frontend_types::DAE::ConnectorType::interned_POTENTIAL(),
     });
     daeConnectorType
 }
@@ -3294,7 +3294,7 @@ fn compareCrefList(mut inCrefs: Arc<metamodelica::List<Arc<metamodelica::List<Ar
 
 pub fn renameUniqueOuterVars(mut dae: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut odae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    (odae, _, _) = traverseDAE(dae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(removeUniqieIdentifierFromCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), 0))?;
+    (odae, _, _) = traverseDAE(dae.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(removeUniqieIdentifierFromCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), 0))?;
     Ok(odae)
 }
 
@@ -3330,7 +3330,7 @@ fn removeUniqieIdentifierFromCref<Type_a: Clone + 'static>(mut inExp: Arc<DAE::E
 
 pub fn nameUniqueOuterVars(mut dae: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut odae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    (odae, _, _) = traverseDAE(dae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(addUniqueIdentifierToCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), 0))?;
+    (odae, _, _) = traverseDAE(dae.clone(), openmodelica_frontend_dump::AvlTreePathFunction::Tree::interned_EMPTY(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(addUniqueIdentifierToCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), 0))?;
     Ok(odae)
 }
 
@@ -4382,7 +4382,7 @@ fn traverseDAEEquationsStmtsElse<Type_a: Clone + 'static>(mut inElse: Arc<DAE::E
     let mut oextraArg: Type_a;
     (outElse, oextraArg) = (::match_deref::match_deref! { match &((inElse.clone(), iextraArg.clone())) {
         (Deref @ DAE::Else::NOELSE { .. }, extraArg) => {
-            (Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE), extraArg.clone())
+            (openmodelica_frontend_types::DAE::Else::interned_NOELSE(), extraArg.clone())
         },
         (Deref @ DAE::Else::ELSEIF { exp: e, statementLst: st, else_: el }, extraArg) => {
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4698,7 +4698,7 @@ fn traverseDAEStmtsElse<Type_a: Clone + 'static>(mut inElse: Arc<DAE::Else>, mut
     let mut oextraArg: Type_a;
     (outElse, oextraArg) = (::match_deref::match_deref! { match &((inElse.clone(), iextraArg.clone())) {
         (Deref @ DAE::Else::NOELSE { .. }, extraArg) => {
-            (Arc::new(openmodelica_frontend_types::DAE::Else::NOELSE), extraArg.clone())
+            (openmodelica_frontend_types::DAE::Else::interned_NOELSE(), extraArg.clone())
         },
         (Deref @ DAE::Else::ELSEIF { exp: e, statementLst: st, else_: el }, extraArg) => {
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -5774,7 +5774,7 @@ pub fn getElements(mut inDAE: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc
 
 pub fn mkEmptyVar(mut name: ArcStr) -> Arc<DAE::Var> {
     let mut outVar: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-    outVar = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
+    outVar = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None });
     outVar
 }
 
@@ -6558,7 +6558,7 @@ fn optMRFABuildMerged(mut group: Arc<metamodelica::List<(ArcStr, Arc<DAE::Exp>, 
         tcref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (tname.clone()).clone(), identType: gty.clone(), subscriptLst: metamodelica::nil() });
         tref = Arc::new(DAE::Exp::CREF { componentRef: tcref.clone(), ty: gty.clone() });
         tempAssigns = metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: gty.clone(), exp1: tref.clone(), exp: grhs.clone(), source: src.clone() }), tempAssigns.clone());
-        tvar = Arc::new(DAE::Element::VAR { componentRef: tcref.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: openmodelica_frontend_types::DAE::VarVisibility::PROTECTED, ty: gty.clone(), binding: None, dims: metamodelica::nil(), connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), source: src.clone(), variableAttributesOption: None, comment: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: false });
+        tvar = Arc::new(DAE::Element::VAR { componentRef: tcref.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: openmodelica_frontend_types::DAE::VarVisibility::PROTECTED, ty: gty.clone(), binding: None, dims: metamodelica::nil(), connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), source: src.clone(), variableAttributesOption: None, comment: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: false });
         tempVars = metamodelica::cons(tvar.clone(), tempVars.clone());
         fieldRefs = metamodelica::cons((gname.clone(), tref.clone()), fieldRefs.clone());
     }
