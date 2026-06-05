@@ -644,14 +644,34 @@ pub fn intStringChar(i: i32) -> ArcStr {
 }
 
 /// Parses an integer from a string. Fails if the string is not a valid integer.
+///
+/// Mirrors `nobox_stringInt` (meta_modelica_builtin.c): `strtol` skips
+/// leading whitespace, and the conversion fails unless everything after the
+/// number has been consumed (so trailing whitespace is an error).
 pub fn stringInt(str: ArcStr) -> Result<i32> {
-    str.parse::<i32>().map_err(|_| anyhow::anyhow!("Failed to parse integer from string: {}", str))
+    str.trim_start_matches(c_isspace)
+        .parse::<i32>()
+        .map_err(|_| anyhow::anyhow!("Failed to parse integer from string: {}", str))
+}
+
+/// The C-locale `isspace` set that `strtol`/`strtod` skip before a number.
+fn c_isspace(c: char) -> bool {
+    matches!(c, ' ' | '\t' | '\n' | '\x0b' | '\x0c' | '\r')
 }
 
 /// Parses a real from a string.
 /// Fails unless the whole string can be consumed.
+///
+/// Mirrors `nobox_stringReal` (meta_modelica_builtin.c): `strtod` skips
+/// leading whitespace — e.g. `" 2.10"` from a CSV column parses — and the
+/// conversion fails unless everything after the number has been consumed.
+/// (C99 hex-float syntax, which strtod would also accept, is not supported
+/// by Rust's parser; no caller is known to rely on it.)
 pub fn stringReal(str: ArcStr) -> Result<Real> {
-    str.parse::<f64>().map(OrderedFloat).map_err(|_| anyhow::anyhow!("Failed to parse real from string: {}", str))
+    str.trim_start_matches(c_isspace)
+        .parse::<f64>()
+        .map(OrderedFloat)
+        .map_err(|_| anyhow::anyhow!("Failed to parse real from string: {}", str))
 }
 
 /// Converts a string to a list of single-character strings.
@@ -2693,6 +2713,10 @@ mod tests {
             assert_eq!(stringInt(literal!("42")).unwrap(), 42);
             assert_eq!(stringInt(literal!("-7")).unwrap(), -7);
             assert!(stringInt(literal!("not_a_number")).is_err());
+            // strtol semantics: leading whitespace is skipped, trailing
+            // junk (including whitespace) is an error.
+            assert_eq!(stringInt(literal!("  42")).unwrap(), 42);
+            assert!(stringInt(literal!("42 ")).is_err());
         }
 
         #[test]
@@ -2700,6 +2724,10 @@ mod tests {
             assert_eq!(stringReal(literal!("3.14")).unwrap(), OrderedFloat(3.14));
             assert_eq!(stringReal(literal!("-2.5")).unwrap(), OrderedFloat(-2.5));
             assert!(stringReal(literal!("not_a_number")).is_err());
+            // strtod semantics: leading whitespace is skipped (e.g. a CSV
+            // column " 2.10"), trailing junk is an error.
+            assert_eq!(stringReal(literal!(" 2.10")).unwrap(), OrderedFloat(2.10));
+            assert!(stringReal(literal!("2.10 x")).is_err());
         }
 
         #[test]
