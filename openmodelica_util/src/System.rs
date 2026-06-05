@@ -1323,6 +1323,7 @@ pub fn unescapedString(escapedString: ArcStr) -> ArcStr {
             Some('\\') => out.push('\\'),
             Some('"') => out.push('"'),
             Some('\'') => out.push('\''),
+            Some('?') => out.push('?'),
             Some('0') => out.push('\0'),
             Some(other) => { out.push('\\'); out.push(other); }
             None => out.push('\\'),
