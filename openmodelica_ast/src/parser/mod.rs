@@ -1595,8 +1595,12 @@ fn argument(input: &mut TokenInput) -> ModalResult<ElementArg> {
     let eachPrefix_  = opt(t(TK::Each)).parse_next(input)?.is_some();
     let finalPrefix_ = opt(t(TK::Final)).parse_next(input)?.is_some();
     let mut res = alt((element_replaceable, element_modification)).parse_next(input)?;
+    // `element_modification_or_replaceable` (Modelica.g) applies the leading
+    // `each`/`final` prefixes to whichever branch matched: `element_modification`
+    // yields a MODIFICATION, the bare-`replaceable` branch a REDECLARATION.
     match res {
-        ElementArg::MODIFICATION { ref mut eachPrefix, ref mut finalPrefix, .. } => {
+        ElementArg::MODIFICATION { ref mut eachPrefix, ref mut finalPrefix, .. }
+        | ElementArg::REDECLARATION { ref mut eachPrefix, ref mut finalPrefix, .. } => {
             *eachPrefix  = if eachPrefix_  { Each::EACH } else { Each::NON_EACH };
             *finalPrefix = finalPrefix_;
         }
