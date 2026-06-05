@@ -823,7 +823,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     } };
                     unit1 = __pa0.clone();
                     icu1 = __pa1.clone();
-                    i = ((var_field!((**exp2).value, Expression::NFExpression::REAL).clone()).0 as i32);
+                    i = ((var_field!((**exp2).value, Expression::NFExpression::REAL).clone()).0.floor() as i32);
                     let true = (realEq(var_field!((**exp2).value, Expression::NFExpression::REAL).clone(), metamodelica::OrderedFloat((i.clone()) as f64))) else { bail!("pattern mismatch") };
                     op_unit = Unit::unitPow(unit1.clone(), i.clone())?;
                     insertUnitString(op_unit.clone(), htS2U.clone(), htU2S.clone())?;

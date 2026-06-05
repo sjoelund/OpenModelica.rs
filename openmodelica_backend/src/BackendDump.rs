@@ -3889,7 +3889,7 @@ fn printCompInfo(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<ArcStr> {
                     } else {
                         s = (literal!("NLSYS")).clone();
                     }
-                    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*printComponent(comp.clone(), None)?); __mm_s.push_str(&*literal!("\tsize|")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\tdens|")); __mm_s.push_str(&*intString(((dens.clone() * metamodelica::OrderedFloat(100.0_f64)).0 as i32))); __mm_s.push_str(&*printCompInfo(allOps.clone())?); ArcStr::from(__mm_s) }).clone();
+                    s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*printComponent(comp.clone(), None)?); __mm_s.push_str(&*literal!("\tsize|")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\tdens|")); __mm_s.push_str(&*intString(((dens.clone() * metamodelica::OrderedFloat(100.0_f64)).0.floor() as i32))); __mm_s.push_str(&*printCompInfo(allOps.clone())?); ArcStr::from(__mm_s) }).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),

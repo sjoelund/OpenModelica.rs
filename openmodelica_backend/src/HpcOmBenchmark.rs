@@ -147,8 +147,8 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
                     let mut intEqIdx: i32 = intEqIdx.clone();
                     let mut intNumOfCalcs: i32 = intNumOfCalcs.clone();
                     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpTuples.clone();
-                    intNumOfCalcs = ((numOfCalcs.clone()).0 as i32);
-                    intEqIdx = ((eqIdx.clone()).0 as i32);
+                    intNumOfCalcs = ((numOfCalcs.clone()).0.floor() as i32);
+                    intEqIdx = ((eqIdx.clone()).0.floor() as i32);
                     tmpTuples = expandCalcTimes(rest.clone(), metamodelica::cons((intEqIdx.clone(), intNumOfCalcs.clone(), calcTimeSum.clone()), iTuples.clone()))?;
                     Ok(tmpTuples.clone())
                 }

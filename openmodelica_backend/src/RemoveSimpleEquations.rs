@@ -484,7 +484,7 @@ pub fn fastAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backend
     let mut size: i32 = 0;
     let mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     size = BackendDAEUtil::daeSize(inDAE.clone())?;
-    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
@@ -646,7 +646,7 @@ pub fn allAcausal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendD
     let mut size: i32 = 0;
     let mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     size = BackendDAEUtil::daeSize(inDAE.clone())?;
-    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
@@ -713,7 +713,7 @@ pub fn causal(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::
     let mut size: i32 = 0;
     let mut unReplaceable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     size = BackendDAEUtil::daeSize(inDAE.clone())?;
-    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
     unReplaceable = HashSet::emptyHashSet();
     unReplaceable = BackendDAEUtil::foldEqSystem(inDAE.clone(), (std::sync::Arc::new(addUnreplaceable) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), unReplaceable.clone())?;
@@ -4578,7 +4578,7 @@ fn eliminateTrivialEquations(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                     let mut aliasVars = (*aliasVars).clone();
                     let mut globalKnownVars = (*globalKnownVars).clone();
                     size = BackendVariable::varsSize(orderedVars.clone());
-                    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+                    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
                     HTCrToExp = HashTableCrToExp::emptyHashTableSized(size.clone());
                     HTCrToCrEqLst = HashTableCrToCrEqLst::emptyHashTableSized(size.clone());
                     repl = BackendVarTransform::emptyReplacementsSized(size.clone());
@@ -5385,7 +5385,7 @@ fn getAliasAttributes(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
     } };
     aliasVars = __pa1.clone();
     size = BackendVariable::varsSize(orderedVars.clone());
-    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+    size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
     HTAliasLst = HashTableCrToCrEqLst::emptyHashTableSized(size.clone());
     HTAliasLst = determineAliasLst(aliasVars.clone(), orderedVars.clone(), HTAliasLst.clone())?;
     tplAliasLst = BaseHashTable::hashTableList(HTAliasLst.clone())?;

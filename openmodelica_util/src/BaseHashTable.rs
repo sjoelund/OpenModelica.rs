@@ -100,7 +100,7 @@ pub type FuncValString<Value: Clone + 'static> = std::sync::Arc<dyn ::std::ops::
 
 pub fn bucketToValuesSize(mut szBucket: i32) -> i32 {
     let mut szArr: i32 = 0;
-    szArr = (((intReal(szBucket.clone())) * (metamodelica::OrderedFloat(0.6_f64))).0 as i32);
+    szArr = (((intReal(szBucket.clone())) * (metamodelica::OrderedFloat(0.6_f64))).0.floor() as i32);
     szArr
 }
 
@@ -507,7 +507,7 @@ fn valueArrayAdd<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray: V
     if n.clone() >= size.clone() {
         rsize = intReal(size.clone());
         rexpandsize = rsize.clone() * metamodelica::OrderedFloat(0.4_f64);
-        expandsize = ((rexpandsize.clone()).0 as i32);
+        expandsize = ((rexpandsize.clone()).0.floor() as i32);
         expandsize_1 = intMax(expandsize.clone(), 1);
         size = expandsize_1.clone() + size.clone();
         arr = Array::expand(expandsize_1.clone(), arr.clone(), None)?;

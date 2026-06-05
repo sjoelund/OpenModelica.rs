@@ -824,7 +824,7 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
                 UnorderedMap::add(name2.clone(), linMap.clone(), replacements.clone())?;
                 status = FrameOrderingStatus::CHANGED.clone();
             } else {
-                m = (((metamodelica::OrderedFloat((({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone(); __elt})) as f64)) / (metamodelica::OrderedFloat((({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone(); __elt})) as f64))).0 as i32);
+                m = (((metamodelica::OrderedFloat((({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone(); __elt})) as f64)) / (metamodelica::OrderedFloat((({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt}) - ({let __elt = loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone(); __elt})) as f64))).0.floor() as i32);
                 b = ({let __elt = loc2.borrow()[(1-1) as usize].clone(); __elt}) - m.clone() * ({let __elt = loc1.borrow()[(1-1) as usize].clone(); __elt});
                 for mut i in 2..=metamodelica::arrayLength(loc1.clone()) {
                     if ({let __elt = loc2.borrow()[(i.clone()-1) as usize].clone(); __elt}) != m.clone() * ({let __elt = loc1.borrow()[(i.clone()-1) as usize].clone(); __elt}) + b.clone() {

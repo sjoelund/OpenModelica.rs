@@ -79,7 +79,7 @@ pub fn typeConvert(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut
             let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut ival: i32 = 0;
             vallst = typeConvert(from.clone(), to.clone(), vrest.clone())?;
-            ival = ((r.clone()).0 as i32);
+            ival = ((r.clone()).0.floor() as i32);
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: ival.clone() }), vallst.clone())
         },
         (from, to, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: vals }, tail: vrest }) => {
@@ -374,7 +374,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
                     let mut iv2: i32 = 0;
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut outv: Arc<Values::Value> = outv.clone();
-                    iv2 = ((rv2.clone()).0 as i32);
+                    iv2 = ((rv2.clone()).0.floor() as i32);
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
                     outv = expValue(e.clone())?;
                     Ok((outv.clone(), outv.clone()))

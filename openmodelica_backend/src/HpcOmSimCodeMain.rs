@@ -327,7 +327,7 @@ fn setNumProc(mut numProcFlag: i32, mut cpCosts: metamodelica::Real, mut taskGra
             serCosts = HpcOmScheduler::getSerialExecutionTime(taskGraphMetaIn.clone())?;
             if realNe(serCosts.clone(), metamodelica::OrderedFloat(0.0_f64)) {
                 maxSpeedUp = realDiv(serCosts.clone(), cpCosts.clone());
-                numProcSched = (((maxSpeedUp.clone()) + (metamodelica::OrderedFloat(1.0_f64))).0 as i32);
+                numProcSched = (((maxSpeedUp.clone()) + (metamodelica::OrderedFloat(1.0_f64))).0.floor() as i32);
                 numProcSys = System::numProcessors();
                 numProc = intMin(numProcSched.clone(), numProcSys.clone());
                 string1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Your system provides only ")); __mm_s.push_str(&*intString(numProcSys.clone())); __mm_s.push_str(&*literal!(" processors!\n")); ArcStr::from(__mm_s) }).clone();
@@ -1042,7 +1042,7 @@ fn outputTimeBenchmark2(mut compsIn: Arc<metamodelica::List<Arc<BackendDAE::Stro
                     compInfo = __pa0.clone();
                     (_, estimate) = HpcOmTaskGraph::calculateCosts(compInfo.clone())?;
                     BackendDump::dumpCompInfo(compInfo.clone())?;
-                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("task")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!("-> measured: ")); __mm_s.push_str(&*intString(((exeCost.clone()).0 as i32))); __mm_s.push_str(&*literal!(" and estimated: ")); __mm_s.push_str(&*intString(((estimate.clone()).0 as i32))); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+                    metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("task")); __mm_s.push_str(&*intString(compIdx.clone())); __mm_s.push_str(&*literal!("-> measured: ")); __mm_s.push_str(&*intString(((exeCost.clone()).0.floor() as i32))); __mm_s.push_str(&*literal!(" and estimated: ")); __mm_s.push_str(&*intString(((estimate.clone()).0.floor() as i32))); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     outputTimeBenchmark2(comps.clone(), restCosts.clone(), eqSystemsIn.clone(), shared.clone(), compIdx.clone() + 1)?;
                     Ok(())
                 }

@@ -179,7 +179,7 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
             var_field!((*exp).value, Expression::NFExpression::INTEGER).clone()
         },
         Deref @ Expression::REAL { .. } => {
-            ((var_field!((*exp).value, Expression::NFExpression::REAL).clone()).0 as i32)
+            ((var_field!((*exp).value, Expression::NFExpression::REAL).clone()).0.floor() as i32)
         },
         Deref @ Expression::STRING { .. } => {
             stringHashDjb2Mod((var_field!((*exp).value, Expression::NFExpression::STRING).clone()).clone(), r#mod.clone())
@@ -260,8 +260,8 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
         (Operator::MathClassification::ADDITION, _) => hash1.clone() + hash2.clone(),
         (Operator::MathClassification::SUBTRACTION, _) => hash1.clone() - hash2.clone(),
         (Operator::MathClassification::MULTIPLICATION, _) => hash1.clone() * hash2.clone(),
-        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1.clone()) as f64) / metamodelica::OrderedFloat((hash2.clone()) as f64)).0 as i32),
-        (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0 as i32),
+        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1.clone()) as f64) / metamodelica::OrderedFloat((hash2.clone()) as f64)).0.floor() as i32),
+        (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0.floor() as i32),
         (Operator::MathClassification::LOGICAL, _) => -(hash1.clone() + hash2.clone()),
         (Operator::MathClassification::RELATION, _) => hash2.clone() - hash1.clone(),
         _ => hash2.clone() - hash1.clone(),
@@ -297,7 +297,7 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
         Operator::Op::GREATER => hash1.clone() - hash2.clone(),
         Operator::Op::GREATEREQ => hash2.clone() - hash1.clone(),
         Operator::Op::EQUAL => hash1.clone() * hash2.clone(),
-        Operator::Op::NEQUAL => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0 as i32),
+        Operator::Op::NEQUAL => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0.floor() as i32),
         _ => hash2.clone() - hash1.clone(),
     });
             hash.clone()

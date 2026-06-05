@@ -327,7 +327,7 @@ pub fn expandOnDemand<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metam
     if inNewSize.clone() <= len.clone() {
         outArray = inArray.clone();
     } else {
-        new_size = ((intReal(len.clone()) * inExpansionFactor.clone()).0 as i32);
+        new_size = ((intReal(len.clone()) * inExpansionFactor.clone()).0.floor() as i32);
         outArray = metamodelica::arrayCreate(new_size.clone(), inFillValue.clone());
         copy(inArray.clone(), outArray.clone())?;
         setRange(len.clone() + 1, new_size.clone(), outArray.clone(), inFillValue.clone())?;

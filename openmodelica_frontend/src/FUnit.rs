@@ -452,7 +452,7 @@ pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<
     let mut i5: i32 = 0;
     let mut i6: i32 = 0;
     let mut i7: i32 = 0;
-    i = ((inExponent.clone()).0 as i32);
+    i = ((inExponent.clone()).0.floor() as i32);
     r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent.clone());
     let Unit::UNIT { factor: __pa0, mol: __pa1, cd: __pa2, m: __pa3, s: __pa4, A: __pa5, K: __pa6, g: __pa7 } = (inUnit.clone()) else { bail!("pattern mismatch") };
     factor = __pa0.clone();

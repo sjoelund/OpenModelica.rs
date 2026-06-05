@@ -95,15 +95,15 @@ pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SB
             lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i.clone())) as f64) * gain.clone() + offset.clone();
             step = metamodelica::OrderedFloat((SBInterval::stepValue(i.clone())) as f64) * gain.clone();
             hi = metamodelica::OrderedFloat((SBInterval::upperBound(i.clone())) as f64) * gain.clone() + offset.clone();
-            if lo.clone() != metamodelica::OrderedFloat((((lo.clone()).0 as i32)) as f64) && SBInterval::lowerBound(i.clone()) > 0 {
+            if lo.clone() != metamodelica::OrderedFloat((((lo.clone()).0.floor() as i32)) as f64) && SBInterval::lowerBound(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
-            if step.clone() != metamodelica::OrderedFloat((((step.clone()).0 as i32)) as f64) && SBInterval::stepValue(i.clone()) > 0 {
+            if step.clone() != metamodelica::OrderedFloat((((step.clone()).0.floor() as i32)) as f64) && SBInterval::stepValue(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
-            if hi.clone() != metamodelica::OrderedFloat((((hi.clone()).0 as i32)) as f64) && SBInterval::upperBound(i.clone()) > 0 {
+            if hi.clone() != metamodelica::OrderedFloat((((hi.clone()).0.floor() as i32)) as f64) && SBInterval::upperBound(i.clone()) > 0 {
                 compatible = false;
                 break;
             }
@@ -142,7 +142,7 @@ pub fn isEmpty(mut map: Arc<SBPWAtomicLinearMap>) -> bool {
 pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> {
     fn crop_inf(mut v: metamodelica::Real) -> i32 {
         let mut i: i32 = 0;
-        i = if (v.clone() >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v.clone()).0 as i32)};
+        i = if (v.clone() >= intReal(System::intMaxLit())) {System::intMaxLit()} else {((v.clone()).0.floor() as i32)};
         i
     }
 

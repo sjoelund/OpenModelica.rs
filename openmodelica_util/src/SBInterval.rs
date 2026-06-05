@@ -265,7 +265,7 @@ pub fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut offset
 }
 
 pub fn cardinality(mut int: Arc<SBInterval>) -> i32 {
-    let mut card: i32 = ((intReal(int.hi.clone() - int.lo.clone()) / intReal(int.step.clone())).0 as i32);
+    let mut card: i32 = ((intReal(int.hi.clone() - int.lo.clone()) / intReal(int.step.clone())).0.floor() as i32);
     card
 }
 

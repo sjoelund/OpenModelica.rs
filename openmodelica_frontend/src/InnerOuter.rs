@@ -1488,7 +1488,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
             size = metamodelica::arrayLength(arr.clone());
             rsize = intReal(size.clone());
             rexpandsize = rsize.clone() * metamodelica::OrderedFloat(0.4_f64);
-            expandsize = ((rexpandsize.clone()).0 as i32);
+            expandsize = ((rexpandsize.clone()).0.floor() as i32);
             expandsize_1 = intMax(expandsize.clone(), 1);
             arr_1 = Array::expand(expandsize_1.clone(), arr.clone(), None)?;
             n_1 = n.clone() + 1;

@@ -166,7 +166,7 @@ pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: Ar
     }
     lines = System::strtok((inString.clone()).clone(), (literal!("\n")).clone());
     line_len = inWrapLength.clone() - ((inDelimiter.clone()).clone().len() as i32) - 1;
-    gap_size = std::cmp::max((((metamodelica::OrderedFloat((line_len.clone()) as f64)) * (inRaggedness.clone())).0 as i32), 0);
+    gap_size = std::cmp::max((((metamodelica::OrderedFloat((line_len.clone()) as f64)) * (inRaggedness.clone())).0.floor() as i32), 0);
     for mut line in &*lines.clone() {
         let mut line = line.clone();
         while end_pos.clone() < ((line.clone()).clone().len() as i32) {

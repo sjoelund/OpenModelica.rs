@@ -9183,11 +9183,11 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             };
             Ok(format!("({arg1}) {op} ({arg2})"))
         },
-        "realInt" => {
-            // metamodelica::Real wraps f64; access via `.0` then truncate to i32.
-            let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("(({arg}).0 as i32)"))
-        },
+        // `realInt(r)` is defined in MetaModelicaBuiltin.mo as `i := integer(r)`
+        // (with `__OpenModelica_EarlyInline`), so it shares `integer`'s
+        // floor-toward-minus-infinity semantics — the bootstrap C inlines it to
+        // `((modelica_integer)floor(_r))`, NOT a truncating `(int)` cast. It is
+        // handled together with `integer` below.
         // Integer(x) is a Modelica/MetaModelica built-in type cast.
         // For Real → Integer: floor to i32.
         // For Enumeration → Integer: the discriminant (as i32).
@@ -9320,9 +9320,10 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // i32::abs returns i32. Same syntax either way.
             Ok(format!("{arg}.abs()"))
         },
-        "integer" => {
-            // Modelica `integer(Real)` truncates toward -inf. `metamodelica::Real`
-            // wraps `f64`; reach the inner value via `.0`.
+        "integer" | "realInt" => {
+            // Modelica `integer(Real)` rounds toward -inf (floor).
+            // `metamodelica::Real` wraps `f64`; reach the inner value via `.0`.
+            // `realInt` is the MetaModelica alias defined as `integer(r)`.
             //
             // The argument is usually a `Real`, but it can already be an
             // `Integer` — e.g. `integer(intVar)` or any expression whose static

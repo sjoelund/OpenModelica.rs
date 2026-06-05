@@ -1224,7 +1224,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     } };
                     cache = __pa0.clone();
                     r = __pa1.clone();
-                    i = ((r.clone()).0 as i32);
+                    i = ((r.clone()).0.floor() as i32);
                     Ok((cache.clone(), Arc::new(Values::Value::INTEGER { integer: i.clone() })))
                 }
                 _ => bail!("nomatch"),
@@ -3442,7 +3442,7 @@ fn cevalBuiltinCeil(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
             cache = __pa0.clone();
             rv = __pa1.clone();
             rv_1 = (rv.clone()).floor();
-            ri = ((rv_1.clone()).0 as i32);
+            ri = ((rv_1.clone()).0.floor() as i32);
             rvt = intReal(ri.clone());
             ri_1 = ri.clone() + 1;
             realRet = intReal(ri_1.clone());
@@ -4394,7 +4394,7 @@ fn cevalBuiltinInteger(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             } };
             cache = __pa0.clone();
             rv = __pa1.clone();
-            ri = ((rv.clone()).0 as i32);
+            ri = ((rv.clone()).0.floor() as i32);
             (cache.clone(), Arc::new(Values::Value::INTEGER { integer: ri.clone() }))
         },
         _ => bail!("match: no arm matched"),

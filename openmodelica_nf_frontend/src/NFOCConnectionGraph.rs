@@ -233,7 +233,7 @@ pub mod CrefSets {
         node_count = __pa2.clone();
         index = node_count.clone() + 1;
         if index.clone() > metamodelica::arrayLength(nodes.clone()) {
-            nodes = Array::expand(((intReal(index.clone()) * metamodelica::OrderedFloat(1.4_f64)).0 as i32), nodes.clone(), -1)?;
+            nodes = Array::expand(((intReal(index.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
         }
         UnorderedMap::addNew(entry.clone(), index.clone(), elements.clone())?;
         sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: index.clone() };
@@ -255,7 +255,7 @@ pub mod CrefSets {
         index = node_count.clone() + 1;
         node_count = node_count.clone() + sz.clone();
         if node_count.clone() > metamodelica::arrayLength(nodes.clone()) {
-            nodes = Array::expand(((intReal(node_count.clone()) * metamodelica::OrderedFloat(1.4_f64)).0 as i32), nodes.clone(), -1)?;
+            nodes = Array::expand(((intReal(node_count.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32), nodes.clone(), -1)?;
         }
         for mut e in &*entries.clone() {
             let mut e = e.clone();

@@ -164,7 +164,7 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
             BackendDump::dumpAdjacencyMatrixT(mt.clone())?;
         }
         markarr = arrayCreate(size.clone(), -1);
-        size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0 as i32));
+        size = intMax(BaseHashTable::defaultBucketSize.clone(), (((intReal(size.clone())) * (metamodelica::OrderedFloat(0.7_f64))).0.floor() as i32));
         nselect = intMax(BaseHashTable::defaultBucketSize.clone(), nselect.clone() * 2);
         repl = BackendVarTransform::emptyReplacementsSized(size.clone());
         oRepl = BackendVarTransform::emptyReplacementsSized(nselect.clone());

@@ -150,7 +150,7 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
     let mut globalKnownVarHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     size = BackendDAEUtil::maxSizeOfEqSystems(inDAE.eqs.clone())? + 42;
     exarray = ExpandableArray::new(size.clone(), dummy_equation().clone());
-    size = Util::nextPrime(((metamodelica::OrderedFloat(2.4_f64) * metamodelica::OrderedFloat((size.clone()) as f64)).0 as i32));
+    size = Util::nextPrime(((metamodelica::OrderedFloat(2.4_f64) * metamodelica::OrderedFloat((size.clone()) as f64)).0.floor() as i32));
     HT = HashTableExpToIndex::emptyHashTableSized(size.clone());
     shared = inDAE.shared.clone();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(shared.clone()) {
@@ -159,7 +159,7 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
     } };
     functionTree = __pa0.clone();
     globalKnownVars = __pa1.clone();
-    globalKnownVarHT = HashSet::emptyHashSetSized(Util::nextPrime(((metamodelica::OrderedFloat(2.4_f64) * (metamodelica::OrderedFloat((globalKnownVars.numberOfVars.clone() + 42) as f64))).0 as i32)));
+    globalKnownVarHT = HashSet::emptyHashSetSized(Util::nextPrime(((metamodelica::OrderedFloat(2.4_f64) * (metamodelica::OrderedFloat((globalKnownVars.numberOfVars.clone() + 42) as f64))).0.floor() as i32)));
     if isSimulationDAE.clone() {
         globalKnownVarHT = BackendVariable::traverseBackendDAEVars(globalKnownVars.clone(), (std::sync::Arc::new(VarToGlobalKnownVarHT) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(BackendDAE::Var, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), globalKnownVarHT.clone())?;
     }

@@ -3736,7 +3736,7 @@ fn nextGreaterPowerOf2_impl(mut n: metamodelica::Real, mut pow: i32) -> Result<i
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (n.clone() <= realPow(metamodelica::OrderedFloat(2.0_f64), intReal(pow.clone()))) else { bail!("pattern mismatch") };
-            Ok(((realPow(metamodelica::OrderedFloat(2.0_f64), intReal(pow.clone()))).0 as i32))
+            Ok(((realPow(metamodelica::OrderedFloat(2.0_f64), intReal(pow.clone()))).0.floor() as i32))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };

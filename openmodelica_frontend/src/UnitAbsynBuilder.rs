@@ -364,7 +364,7 @@ fn expandStore(mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
     outSt = (match st.clone() {
         UnitAbsyn::Store { storeVector: mut vector, numElts: mut indx } => {
             let mut incr: i32 = 0;
-            incr = intMin(1, ((intReal(indx.clone()) * metamodelica::OrderedFloat(0.4_f64)).0 as i32));
+            incr = intMin(1, ((intReal(indx.clone()) * metamodelica::OrderedFloat(0.4_f64)).0.floor() as i32));
             vector = Array::expand(incr.clone(), vector.clone(), None)?;
             UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() }
         },
@@ -1216,7 +1216,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
                     (ut1, terms1, store) = buildTermExp(env.clone(), e1.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
                     (_, terms2, store) = buildTermExp(env.clone(), e2.clone(), divOrMul.clone(), ht.clone(), store.clone())?;
                     terms = listAppend(terms1.clone(), terms2.clone());
-                    i = ((r.clone()).0 as i32);
+                    i = ((r.clone()).0.floor() as i32);
                     let true = (intReal(i.clone()) - r.clone() == metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     ut = Arc::new(UnitAbsyn::UnitTerm::POW { ut1: ut1.clone(), exponent: MMath::Rational { nom: i.clone(), denom: 1 }, origExp: e.clone() });
                     Ok(((ut.clone(), terms.clone(), store.clone()), ut.clone()))

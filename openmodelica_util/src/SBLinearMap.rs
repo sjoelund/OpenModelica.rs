@@ -216,9 +216,9 @@ pub fn applyMultiInterval(mut multiInt: Arc<SBMultiInterval::SBMultiInterval>, m
 pub fn applyInterval(mut interval: Arc<SBInterval::SBInterval>, mut gain: metamodelica::Real, mut offset: metamodelica::Real) -> Arc<SBInterval::SBInterval> {
     let mut interval: Arc<SBInterval::SBInterval> = interval;
     assign_field!(
-        interval.lo = ((intReal(interval.lo.clone()) * gain.clone() + offset.clone()).0 as i32),
-        interval.step = ((intReal(interval.step.clone()) * gain.clone()).0 as i32),
-        interval.hi = ((intReal(interval.hi.clone()) * gain.clone() + offset.clone()).0 as i32)
+        interval.lo = ((intReal(interval.lo.clone()) * gain.clone() + offset.clone()).0.floor() as i32),
+        interval.step = ((intReal(interval.step.clone()) * gain.clone()).0.floor() as i32),
+        interval.hi = ((intReal(interval.hi.clone()) * gain.clone() + offset.clone()).0.floor() as i32)
     );
     interval
 }

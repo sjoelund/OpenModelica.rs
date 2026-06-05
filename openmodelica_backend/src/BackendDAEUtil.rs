@@ -1981,7 +1981,7 @@ pub fn introduceOutputAliases(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Ar
         eqs = system.orderedEqs.clone();
         vars = system.orderedVars.clone();
         removedEqs = system.removedEqs.clone();
-        newVars = BackendVariable::emptyVarsSized(((intReal(BackendVariable::varsSize(vars.clone())) * metamodelica::OrderedFloat(1.4_f64)).0 as i32));
+        newVars = BackendVariable::emptyVarsSized(((intReal(BackendVariable::varsSize(vars.clone())) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32));
         newEqns = metamodelica::nil();
         newRemovedEqs = metamodelica::nil();
         for mut v in &*BackendVariable::varList(vars.clone())? {

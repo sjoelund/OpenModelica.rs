@@ -316,7 +316,7 @@ pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<
             let mut K: i32 = 0;
             let mut mol: i32 = 0;
             let mut cd: i32 = 0;
-            i = ((inExponent.clone()).0 as i32);
+            i = ((inExponent.clone()).0.floor() as i32);
             r = realDiv(metamodelica::OrderedFloat(1.0_f64), inExponent.clone());
             factor = realPow(var_field!(inUnit.factor, Unit::UNIT).clone(), r.clone());
             r = realDiv(intReal(var_field!(inUnit.s, Unit::UNIT).clone()), inExponent.clone());

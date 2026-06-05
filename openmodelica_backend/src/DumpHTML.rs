@@ -343,7 +343,7 @@ pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut
     eqs = __pa0.clone();
     doc = emptyDocumentWithToggleFunktion()?;
     doc = addHeading(1, (inHeader.clone()).clone(), doc.clone())?;
-    r#str = (intString(((System::time()).0 as i32))).clone();
+    r#str = (intString(((System::time()).0.floor() as i32))).clone();
     (doc, _) = List::fold1(eqs.clone(), (std::sync::Arc::new(dumpEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, ArcStr, (Document, i32)) -> Result<(Document, i32)> + 'static>), (r#str.clone()).clone(), (doc.clone(), 1))?;
     dumpDocument(doc.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*inFilename.clone()); ArcStr::from(__mm_s) }).clone())?;
     Ok(())

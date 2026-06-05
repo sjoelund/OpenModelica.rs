@@ -188,7 +188,7 @@ pub fn intervalFromExp(mut e: Arc<Expression::NFExpression>) -> Result<Arc<SBInt
     i = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::INTEGER { .. } => SBInterval::new(var_field!((*e).value, Expression::NFExpression::INTEGER).clone(), 1, var_field!((*e).value, Expression::NFExpression::INTEGER).clone()),
         Deref @ Expression::BOOLEAN { .. } => SBInterval::new(Util::boolInt(var_field!((*e).value, Expression::NFExpression::BOOLEAN).clone()), 1, Util::boolInt(var_field!((*e).value, Expression::NFExpression::BOOLEAN).clone())),
-        Deref @ Expression::REAL { .. } => SBInterval::new(((var_field!((*e).value, Expression::NFExpression::REAL).clone()).0 as i32), 1, ((var_field!((*e).value, Expression::NFExpression::REAL).clone()).0 as i32)),
+        Deref @ Expression::REAL { .. } => SBInterval::new(((var_field!((*e).value, Expression::NFExpression::REAL).clone()).0.floor() as i32), 1, ((var_field!((*e).value, Expression::NFExpression::REAL).clone()).0.floor() as i32)),
         Deref @ Expression::BINARY { .. } => intervalFromBinaryExp(var_field!((*e).exp1, Expression::NFExpression::BINARY).clone(), var_field!((*e).operator, Expression::NFExpression::BINARY).clone(), var_field!((*e).exp2, Expression::NFExpression::BINARY).clone())?,
         Deref @ Expression::UNARY { .. } => intervalFromUnaryExp(var_field!((*e).exp, Expression::NFExpression::UNARY).clone())?,
         Deref @ Expression::RANGE { .. } => intervalFromRange(e.clone())?,

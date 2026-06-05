@@ -192,9 +192,9 @@ fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mu
                 Deref @ DAE::Exp::RCONST { real: x } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut x2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    x2 = intReal(((x.clone()).0 as i32));
+                    x2 = intReal(((x.clone()).0.floor() as i32));
                     let true = (realEq(x2.clone(), x.clone())) else { bail!("pattern mismatch") };
-                    s = (intString(((x.clone()).0 as i32))).clone();
+                    s = (intString(((x.clone()).0.floor() as i32))).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),

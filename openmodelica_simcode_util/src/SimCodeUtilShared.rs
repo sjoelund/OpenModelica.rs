@@ -124,7 +124,7 @@ pub fn createVarToArrayIndexMapping(mut iModelInfo: SimCode::ModelInfo) -> Resul
         (var_lst, _) = vl.clone();
         table_size = table_size.clone() + (var_lst.clone().len() as i32);
     }
-    table_size = Util::nextPrime(((metamodelica::OrderedFloat((table_size.clone()) as f64) * metamodelica::OrderedFloat(1.4_f64)).0 as i32));
+    table_size = Util::nextPrime(((metamodelica::OrderedFloat((table_size.clone()) as f64) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32));
     oVarToArrayIndexMapping = HashTableCrIListArray::emptyHashTableSized(table_size.clone());
     oVarToIndexMapping = HashTableCrILst::emptyHashTableSized(table_size.clone());
     currentVarIndices = arrayCreate(4, 1);

@@ -1284,7 +1284,7 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
                     HtS2U = __pa2.clone();
                     HtU2S = __pa3.clone();
                     expListList = __pa4.clone();
-                    i = ((r.clone()).0 as i32);
+                    i = ((r.clone()).0.floor() as i32);
                     let true = (realEq(r.clone(), intReal(i.clone()))) else { bail!("pattern mismatch") };
                     ut = Unit::unitPow(ut.clone(), i.clone())?;
                     s1 = (Unit::unitString(ut.clone(), HtU2S.clone())?).clone();

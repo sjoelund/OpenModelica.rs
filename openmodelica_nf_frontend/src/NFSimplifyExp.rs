@@ -1475,7 +1475,7 @@ pub fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Expression
                 tmp = getConstantValue(exp.clone())?;
                 result = result.clone() - tmp.clone();
             }
-            res = if (Type::isInteger(ty.clone())?) {Arc::new(Expression::NFExpression::INTEGER { value: ((result.clone()).0 as i32) })} else {Arc::new(Expression::NFExpression::REAL { value: result.clone() })};
+            res = if (Type::isInteger(ty.clone())?) {Arc::new(Expression::NFExpression::INTEGER { value: ((result.clone()).0.floor() as i32) })} else {Arc::new(Expression::NFExpression::REAL { value: result.clone() })};
             res.clone()
         },
         Operator::MathClassification::MULTIPLICATION => {
@@ -1497,7 +1497,7 @@ pub fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Expression
                     tmp = getConstantValue(exp.clone())?;
                     result = result.clone() / tmp.clone();
                 }
-                res = if (Type::isInteger(ty.clone())?) {Arc::new(Expression::NFExpression::INTEGER { value: ((result.clone()).0 as i32) })} else {Arc::new(Expression::NFExpression::REAL { value: result.clone() })};
+                res = if (Type::isInteger(ty.clone())?) {Arc::new(Expression::NFExpression::INTEGER { value: ((result.clone()).0.floor() as i32) })} else {Arc::new(Expression::NFExpression::REAL { value: result.clone() })};
             }
             res.clone()
         },

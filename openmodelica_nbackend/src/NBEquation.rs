@@ -4997,7 +4997,7 @@ pub mod EquationPointers {
         let mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Equation::Equation>>)>>> = Pointer::create(metamodelica::nil());
         let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
         size = ExpandableArray::getNumberOfElements(equations.eqArr.clone());
-        mapPtr(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0 as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>))?;
+        mapPtr(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0.floor() as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>))?;
         hash_lst = List::sort(Pointer::access(hash_lst_ptr.clone()), std::sync::Arc::new(fnptr!(BackendUtil::indexTplGt, _, _)))?;
         equations = empty(size.clone());
         for mut tpl in &*hash_lst.clone() {

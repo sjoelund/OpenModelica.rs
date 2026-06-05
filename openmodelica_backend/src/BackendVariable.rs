@@ -2136,7 +2136,7 @@ pub fn emptyVars(mut inSize: i32) -> BackendDAE::Variables {
     let mut arr_size: i32 = 0;
     let mut arr: BackendDAE::VariableArray = <BackendDAE::VariableArray as ::std::default::Default>::default();
     arr_size = std::cmp::max(inSize.clone(), BaseHashTable::lowBucketSize.clone());
-    buckets = ((intReal(arr_size.clone()) * metamodelica::OrderedFloat(1.4_f64)).0 as i32);
+    buckets = ((intReal(arr_size.clone()) * metamodelica::OrderedFloat(1.4_f64)).0.floor() as i32);
     indices = arrayCreate(buckets.clone(), metamodelica::nil());
     arr = vararrayEmpty(arr_size.clone());
     outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr.clone(), bucketSize: buckets.clone(), numberOfVars: 0 };

@@ -116,7 +116,7 @@ pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMa
                 }
                 outMap = make_result(as_aux.clone(), lm_aux.clone())?;
             } else {
-                i1 = SBInterval::new(SBInterval::lowerBound(inti.clone()), SBInterval::stepValue(inti.clone()), (((xinter.clone()).floor()).0 as i32));
+                i1 = SBInterval::new(SBInterval::lowerBound(inti.clone()), SBInterval::stepValue(inti.clone()), (((xinter.clone()).floor()).0.floor() as i32));
                 i2 = SBInterval::new(SBInterval::upperBound(i1.clone()) + SBInterval::stepValue(i1.clone()), SBInterval::stepValue(inti.clone()), SBInterval::upperBound(inti.clone()));
                 d1 = SBSet::addAtomicSet(SBAtomicSet::replace(i1.clone(), i.clone(), as_aux.clone())?, SBSet::newEmpty())?;
                 d2 = SBSet::addAtomicSet(SBAtomicSet::replace(i2.clone(), i.clone(), as_aux.clone())?, SBSet::newEmpty())?;
@@ -268,7 +268,7 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
         gdim = metamodelica::arrayGet(SBLinearMap::gain(li.clone()), dim.clone())?;
         odim = metamodelica::arrayGet(SBLinearMap::offset(li.clone()), dim.clone())?;
         if gdim.clone() == metamodelica::OrderedFloat((1) as f64) && odim.clone() < metamodelica::OrderedFloat((0) as f64) {
-            off = ((-(odim.clone())).0 as i32);
+            off = ((-(odim.clone())).0.floor() as i32);
             asets = UnorderedSet::toArray(SBSet::asets(di.clone()));
             let __range0 = asets.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut adom in __range0 {
@@ -386,7 +386,7 @@ pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinea
                     its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = off.borrow()[(dim.clone()-1) as usize].clone(); __elt}); let __pe_b2 = dim.clone(); move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its.clone())?;
                 }
             }
-            max_it = max_it.clone() + ((its.clone()).0 as i32);
+            max_it = max_it.clone() + ((its.clone()).0.floor() as i32);
         } else if b.clone() == metamodelica::OrderedFloat((0) as f64) {
             max_it = max_it.clone() + 1;
         }

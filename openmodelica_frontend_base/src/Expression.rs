@@ -571,7 +571,7 @@ pub fn traversingstringifyCrefFinder(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE
 pub fn realToIntIfPossible(mut inVal: metamodelica::Real) -> Arc<DAE::Exp> {
     let mut outVal: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     match '__try0: {
-        outVal = Arc::new(DAE::Exp::ICONST { integer: ((inVal.clone()).0 as i32) });
+        outVal = Arc::new(DAE::Exp::ICONST { integer: ((inVal.clone()).0.floor() as i32) });
         Ok::<_, anyhow::Error>((outVal.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -1399,7 +1399,7 @@ pub fn realExpIntLit(mut exp: Arc<DAE::Exp>) -> Option<i32> {
         Deref @ DAE::Exp::RCONST { real: r } => {
             let mut i: i32 = 0;
             let mut op: Option<i32> = None;
-            i = ((r.clone()).0 as i32);
+            i = ((r.clone()).0.floor() as i32);
             op = if (realEq(r.clone(), intReal(i.clone()))) {Some(i.clone())} else {None};
             op.clone()
         },
@@ -12721,7 +12721,7 @@ pub fn rangeSize(mut inRange: Arc<DAE::Exp>) -> Result<i32> {
         },
         Deref @ DAE::Exp::RANGE { stop: Deref @ DAE::Exp::ICONST { integer: stop }, step: Some(Deref @ DAE::Exp::ICONST { integer: step }), start: Deref @ DAE::Exp::ICONST { integer: start }, .. } => {
             if step.clone() != 0 {
-                outSize = std::cmp::max((((realDiv(metamodelica::OrderedFloat((stop.clone() - start.clone()) as f64), metamodelica::OrderedFloat((step.clone()) as f64))).floor()).0 as i32) + 1, 0);
+                outSize = std::cmp::max((((realDiv(metamodelica::OrderedFloat((stop.clone() - start.clone()) as f64), metamodelica::OrderedFloat((step.clone()) as f64))).floor()).0.floor() as i32) + 1, 0);
             } else {
                 bail!("fail");
             }

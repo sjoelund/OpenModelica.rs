@@ -2527,7 +2527,7 @@ fn getSingleRelations(mut edge: i32, mut n: i32, mut iTaskGraphMeta: HpcOmTaskGr
     let mut costs: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut costsInt: i32 = 0;
     costs = HpcOmTaskGraph::getCommCostTimeBetweenNodes(n.clone(), edge.clone(), iTaskGraphMeta.clone())?;
-    costsInt = ((costs.clone()).0 as i32);
+    costsInt = ((costs.clone()).0.floor() as i32);
     orelations = List::appendElt((edge.clone(), n.clone(), costsInt.clone()), irelations.clone());
     orelations = List::appendElt((n.clone(), edge.clone(), costsInt.clone()), orelations.clone());
     Ok(orelations)
@@ -2576,7 +2576,7 @@ fn setVwgt(mut node: i32, mut vwgt: metamodelica::Array<i32>, mut iTaskGraphMeta
     let mut rv: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     value = HpcOmTaskGraph::getExeCost(node.clone(), iTaskGraphMeta.clone())?;
     (_, rv) = value.clone();
-    {let _arr = vwgt.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = ((rv.clone()).0 as i32); _arr};
+    {let _arr = vwgt.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = ((rv.clone()).0.floor() as i32); _arr};
     Ok(())
 }
 
@@ -5722,7 +5722,7 @@ fn analyseScheduledTaskGraphLevel(mut iLevelTasks: Arc<metamodelica::List<HpcOmS
         i = 1;
         for mut levelCost in &*levelCosts.clone() {
             let mut levelCost = levelCost.clone();
-            costShare = intDiv(((levelCost.clone()).0 as i32) * 100, ((parTime.clone()).0 as i32));
+            costShare = intDiv(((levelCost.clone()).0.floor() as i32) * 100, ((parTime.clone()).0.floor() as i32));
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\tcosts for level ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*realString(levelCost.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*System::snprintff((literal!("%.0f")).clone(), 5, metamodelica::OrderedFloat((costShare.clone()) as f64))?); __mm_s.push_str(&*literal!("%)\n")); ArcStr::from(__mm_s) }).clone());
             i = i.clone() + 1;
         }

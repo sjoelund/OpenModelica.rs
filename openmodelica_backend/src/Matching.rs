@@ -4286,7 +4286,7 @@ fn ks_rand_cheapmatching2(mut b: bool, mut c: i32, mut col_degrees: metamodelica
             let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut e_id: i32 = 0;
             let mut r: i32 = 0;
-            e_id = ((realMod(System::realRand(), intReal(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt})))).0 as i32);
+            e_id = ((realMod(System::realRand(), intReal(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt})))).0.floor() as i32);
             lst = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (rlst, r) = ks_rand_cheapmatching3(e_id.clone(), lst.clone(), row_degrees.clone(), c.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), 0)?;
             lst = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
@@ -4434,7 +4434,7 @@ fn setrandArray(mut n: i32, mut randarr: metamodelica::Array<i32>) -> Result<()>
         _ => {
             let mut z: i32 = 0;
             let mut tmp: i32 = 0;
-            z = ((realMod(System::realRand(), intReal(n.clone()))).0 as i32) + 1;
+            z = ((realMod(System::realRand(), intReal(n.clone()))).0.floor() as i32) + 1;
             tmp = ({let __elt = randarr.borrow()[(n.clone()-1) as usize].clone(); __elt});
             {let _arr = randarr.clone(); let _val = ({let __elt = randarr.borrow()[(z.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(n.clone()-1) as usize] = _val; _arr};
             {let _arr = randarr.clone(); _arr.borrow_mut()[(z.clone()-1) as usize] = tmp.clone(); _arr};

@@ -554,7 +554,7 @@ fn setSimulationOptionsInterval(mut options: InteractiveTypes::SimulationOptions
     start_time = Expression::toReal(options.startTime.clone())?;
     stop_time = Expression::toReal(options.stopTime.clone())?;
     options.stepSize = Arc::new(DAE::Exp::RCONST { real: interval.clone() });
-    options.numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: (((stop_time.clone() - start_time.clone()) / interval.clone()).0 as i32) });
+    options.numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: (((stop_time.clone() - start_time.clone()) / interval.clone()).0.floor() as i32) });
     Ok(options)
 }
 

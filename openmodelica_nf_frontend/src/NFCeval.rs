@@ -1069,7 +1069,7 @@ pub fn evalMultaryMulDiv(mut arguments: Arc<metamodelica::List<Arc<Expression::N
 pub fn evalBinaryPow(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
-        (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) if (var_field!((*exp1).value, Expression::NFExpression::REAL).clone() < metamodelica::OrderedFloat((0) as f64) && metamodelica::OrderedFloat((((var_field!((*exp2).value, Expression::NFExpression::REAL).clone()).0 as i32)) as f64) != var_field!((*exp2).value, Expression::NFExpression::REAL).clone()) => {
+        (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) if (var_field!((*exp1).value, Expression::NFExpression::REAL).clone() < metamodelica::OrderedFloat((0) as f64) && metamodelica::OrderedFloat((((var_field!((*exp2).value, Expression::NFExpression::REAL).clone()).0.floor() as i32)) as f64) != var_field!((*exp2).value, Expression::NFExpression::REAL).clone()) => {
             if EvalTarget::hasInfo(target.clone()) {
                 Error::addSourceMessage(Error::INVALID_NEGATIVE_POW.clone(), list![(Expression::toString(exp1.clone())?).clone(), (Expression::toString(exp2.clone())?).clone()], EvalTarget::getInfo(target.clone()))?;
                 bail!("fail");
@@ -2118,7 +2118,7 @@ fn evalBuiltinInteger(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expr
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     result = (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::INTEGER { .. } => arg.clone(),
-        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::INTEGER { value: (((var_field!((*arg).value, Expression::NFExpression::REAL).clone()).floor()).0 as i32) }),
+        Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::INTEGER { value: ((var_field!((*arg).value, Expression::NFExpression::REAL).clone()).0.floor() as i32) }),
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinInteger"), list![arg.clone()], metamodelica::sourceInfo!("NFFrontEnd/NFCeval.mo"))?;
             bail!("fail")

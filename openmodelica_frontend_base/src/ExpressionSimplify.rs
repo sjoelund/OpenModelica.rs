@@ -717,7 +717,7 @@ fn simplifyCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::RCONST { real: r1 }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "integer" }, .. } => {
-                    Ok(Arc::new(DAE::Exp::ICONST { integer: ((r1.clone()).0 as i32) }))
+                    Ok(Arc::new(DAE::Exp::ICONST { integer: ((r1.clone()).0.floor() as i32) }))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3866,7 +3866,7 @@ fn simplifyAddMakeMul(mut inTplExpRealLst: Arc<metamodelica::List<(Arc<DAE::Exp>
         },
         (e, r) => {
             (::match_deref::match_deref! { match &(Expression::r#typeof(e.clone())?) {
-        Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::ICONST { integer: ((r.clone()).0 as i32) }), operator: DAE::Operator::MUL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: e.clone() }),
+        Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::ICONST { integer: ((r.clone()).0.floor() as i32) }), operator: DAE::Operator::MUL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: e.clone() }),
         _ => Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: r.clone() }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -5781,7 +5781,7 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::Operator::POW { .. }, e1, e2 @ Deref @ DAE::Exp::RCONST { real: r }, _, true) => {
-                    if !((r.clone() != intReal(((r.clone()).0 as i32)))) { bail!("guard") }
+                    if !((r.clone() != intReal(((r.clone()).0.floor() as i32)))) { bail!("guard") }
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp_lst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut exp_lst_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
