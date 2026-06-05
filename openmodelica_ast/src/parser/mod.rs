@@ -3079,14 +3079,6 @@ fn code_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
                     .context(StrContext::Label("'(' after $Code"))
                     .parse_next(input)?;
 
-                // Check for Code((expr)) — double parenthesis means wrap expression
-                if let Some(e) = opt(expression).parse_next(input)? {
-                    cut_err(t(TK::RParen))
-                        .context(StrContext::Label("')' closing $Code"))
-                        .parse_next(input)?;
-                    return Ok(Exp::CODE { code: Arc::new(CodeNode::C_EXPRESSION { exp: Arc::new(e) }) });
-                }
-
                 // Optional 'initial' keyword before equation/constraint/algorithm sections
                 let initial = matches!(opt(t(TK::Initial)).parse_next(input)?, Some(TK::Initial));
 
@@ -3132,12 +3124,35 @@ fn code_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
                     });
                 }
 
-                // Try modification
-                if let Ok(elementArgLst) = class_modification.parse_next(input) {
-                    return Ok(Exp::CODE { code: Arc::new(CodeNode::C_MODIFICATION { modification: Arc::new(Modification { elementArgLst, eqMod: Arc::new(EqMod::NOMOD) }) }) });
+                // Try `modification`, BEFORE the expression alternatives like
+                // the ANTLR rule does: `$Code(())` is an *empty class
+                // modification* `()` (elabCodeType maps C_MODIFICATION to
+                // C_EXPRESSION_OR_MODIFICATION, which the
+                // `input ExpressionOrModification m = $Code(());` defaults in
+                // ModelicaBuiltin.mo rely on), and `$Code((x))` is the
+                // one-element modification list `(x)`. Only `$Code(((x)))`
+                // and non-parenthesised contents reach the expression branch
+                // — that is what the grammar's "Allow Code((<expr>))"
+                // predicate is about. The ANTLR `modification` rule requires
+                // a class modification or an (`=`|`:=`) binding (it has no
+                // empty derivation, unlike our [`modification`] helper), and
+                // the surrounding rule requires the closing `)`; backtrack
+                // to the expression branch when either is missing.
+                if matches!(peek_kind(input), Some(TK::LParen | TK::Equal | TK::Assign)) {
+                    let checkpoint = input.checkpoint();
+                    if let Ok(m) = modification.parse_next(input)
+                        && matches!(peek_kind(input), Some(TK::RParen))
+                    {
+                        next_tok(input)?;
+                        return Ok(Exp::CODE { code: Arc::new(CodeNode::C_MODIFICATION { modification: Arc::new(m) }) });
+                    }
+                    input.reset(&checkpoint);
                 }
 
-                // Try expression followed by ')'
+                // Try expression followed by ')'. Reset before the element
+                // fallback: a failed expression parse may have consumed
+                // tokens.
+                let checkpoint = input.checkpoint();
                 if let Ok(e) = expression.parse_next(input)
                     && matches!(peek_kind(input), Some(TK::RParen)) {
                         cut_err(t(TK::RParen))
@@ -3147,10 +3162,15 @@ fn code_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
                             code: Arc::new(CodeNode::C_EXPRESSION { exp: Arc::new(e) }),
                         });
                     }
+                input.reset(&checkpoint);
 
-                // Try element (SEMICOLON)?
+                // Try element (SEMICOLON)? — the grammar requires the
+                // closing ')' here like for every other alternative.
                 if let Ok(element) = element.parse_next(input) {
                     opt(t(TK::Semi)).parse_next(input)?;
+                    cut_err(t(TK::RParen))
+                        .context(StrContext::Label("')' closing $Code element"))
+                        .parse_next(input)?;
                     return Ok(Exp::CODE {
                         code: Arc::new(CodeNode::C_ELEMENT { element: Arc::new(element) }),
                     });
