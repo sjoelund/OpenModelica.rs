@@ -624,13 +624,20 @@ fn split_annotations(items: Arc<List<ClassBodyItem>>) -> (Arc<List<ClassBodyItem
                 // Annotations that appear directly in a section's element list are
                 // class-level annotations (function-level ones are nested inside element bodies).
                 let (inner_parts, inner_anns) = split_annotations(Arc::clone(sec_items));
-                for ann in &*inner_anns { anns = cons(Arc::clone(ann), anns); }
+                // inner_anns is already reversed; re-consing restores the
+                // inner source order relative to this level's accumulator.
+                for ann in &*inner_anns.reverse() { anns = cons(Arc::clone(ann), anns); }
                 parts = cons(ClassBodyItem::Section { section: *section, items: inner_parts }, parts);
             }
             other => parts = cons(other.clone(), parts),
         }
     }
-    (parts.reverse(), anns.reverse())
+    // `anns` is deliberately NOT restored to source order: the C parser
+    // accumulates class-level annotations by prepending, so `PARTS.ann` /
+    // `CLASS_EXTENDS.ann` hold them in *reverse* source order, and the dump
+    // compensates (`listReverse(ann)` in AbsynDumpTpl.tpl `dumpClassDef`).
+    // The cons-accumulation above already yields that reversed order.
+    (parts.reverse(), anns)
 }
 
 fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<ClassPart>>> {
@@ -948,7 +955,9 @@ fn class_specifier(input: &mut TokenInput) -> ModalResult<ClassSpecifier> {
         let ann = match opt(annotation).parse_next(input)? {
             Some(ann) => {
                 t(TK::Semi).parse_next(input)?;
-                body_ann.append(&List::new(Arc::new(ann)))
+                // body_ann is in reverse source order (see split_annotations); the
+                // `end Name annotation(...)` is the latest, so it goes in front.
+                cons(Arc::new(ann), body_ann)
             },
             None => body_ann,
         };
@@ -1064,7 +1073,9 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
     let ann = match opt(annotation).parse_next(input)? {
         Some(ann) => {
             cut_err(t(TK::Semi)).context(StrContext::Label("';' after annotation")).parse_next(input)?;
-            body_ann.append(&List::new(Arc::new(ann)))
+            // body_ann is in reverse source order (see split_annotations); the
+                // `end Name annotation(...)` is the latest, so it goes in front.
+                cons(Arc::new(ann), body_ann)
         },
         None => body_ann
     };
@@ -1078,9 +1089,15 @@ fn composition(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>> 
     let el_items = element_list(input)?;
     let c2_items = composition2(input)?;
     let mut result = el_items.append(&c2_items);
+    // Trailing class annotations go at the *end* of the body item list so
+    // `split_annotations` sees every annotation in source order.
+    let mut trailing: Arc<List<ClassBodyItem>> = Arc::new(List::Nil);
     while let Some(ann) = opt(annotation).parse_next(input)? {
         cut_err(t(TK::Semi)).context(StrContext::Label("';' after annotation")).parse_next(input)?;
-        result = cons(ClassBodyItem::Annotation(ann), result);
+        trailing = cons(ClassBodyItem::Annotation(ann), trailing);
+    }
+    if !trailing.is_empty() {
+        result = result.append(&trailing.reverse());
     }
     Ok(result)
 }
@@ -3779,6 +3796,43 @@ mod tests {
         if let Err(e) = parse(&code, "Absyn.mo", "Absyn.mo", Grammar::MetaModelica) {
             panic!("expected Absyn.mo to parse: {e}");
         }
+    }
+
+    #[test]
+    fn class_annotations_stored_in_reverse_source_order() {
+        // Annotations inside an equation section are class-level annotations
+        // (equation_annotation_list in Modelica.g). The C parser accumulates
+        // `PARTS.ann` by *prepending*, so the stored list is in reverse
+        // source order and AbsynDumpTpl's dumpClassDef compensates with
+        // listReverse(ann) — the port matches that storage convention
+        // (flattening/modelica/declarations/Annotations.mo pins the printed
+        // order).
+        let code = "\
+model c\n\
+  Real x;\n\
+equation\n\
+  x = 1;\n\
+  annotation(key = value);\n\
+  annotation(key2 = value2);\n\
+end c;\n\
+";
+        let prog = parse(code, "t.mo", "t.mo", Grammar::Modelica3).expect("parse");
+        let Program { classes, .. } = prog;
+        let first = match &*classes { List::Cons { head, .. } => head.clone(), _ => panic!("no classes") };
+        let Class { body, .. } = &*first;
+        let ClassDef::PARTS { ann, .. } = &**body else { panic!("expected PARTS") };
+        let keys: Vec<String> = (&**ann).into_iter().map(|a| {
+            let Annotation { elementArgs } = &**a;
+            match &**elementArgs {
+                List::Cons { head, .. } => match &**head {
+                    ElementArg::MODIFICATION { path, .. } => format!("{path:?}"),
+                    other => format!("{other:?}"),
+                },
+                List::Nil => "<empty>".to_owned(),
+            }
+        }).collect();
+        assert!(keys.len() == 2 && keys[0].contains("key2") && keys[1].contains("key\""),
+                "annotation order wrong (expected reverse source order): {keys:?}");
     }
 
     #[test]
