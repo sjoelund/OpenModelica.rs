@@ -2520,10 +2520,10 @@ fn setClockedPartition(mut inNewPartitionType: Option<bool>, mut inOldPartitionT
 
 pub fn partitionIndependentBlocks0(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut vars: metamodelica::Array<bool>, mut rvars: metamodelica::Array<bool>) -> Result<i32> {
     let mut on: i32 = 0;
-    for mut i in (1..=metamodelica::arrayLength(m.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(m.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         on = if (partitionIndependentBlocksWork(i.clone(), false, on.clone() + 1, m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), rixs.clone(), vars.clone(), rvars.clone())?) {on.clone() + 1} else {on.clone()};
     }
-    for mut i in (1..=metamodelica::arrayLength(rm.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(rm.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         on = if (partitionIndependentBlocksWork(i.clone(), true, on.clone() + 1, m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), rixs.clone(), vars.clone(), rvars.clone())?) {on.clone() + 1} else {on.clone()};
     }
     Ok(on)
@@ -2531,7 +2531,7 @@ pub fn partitionIndependentBlocks0(mut m: metamodelica::Array<Arc<metamodelica::
 
 fn partitionIndependentBlocks(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>) -> Result<i32> {
     let mut on: i32 = 0;
-    for mut eq in (1..=metamodelica::arrayLength(m.clone())).rev() {
+    for mut eq in ({let __s=metamodelica::arrayLength(m.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("check eq ")); __mm_s.push_str(&*intString(eq.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         if !(intEq(metamodelica::arrayGet(eqPartMap.clone(), eq.clone())?, -2)) {
             on = if (partitionIndependentBlocks2(eq.clone(), on.clone() + 1, m.clone(), mT.clone(), eqPartMap.clone(), varPartMap.clone())?) {on.clone() + 1} else {on.clone()};
@@ -2562,14 +2562,14 @@ fn partitionIndependentBlocks2(mut eqIdx: i32, mut partIdx: i32, mut m: metamode
 fn partitionIndependentBlocksMasked(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mask: metamodelica::Array<bool>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut remEqPartMap: metamodelica::Array<i32>, mut vars: metamodelica::Array<bool>, mut rvars: metamodelica::Array<bool>) -> Result<i32> {
     let mut on: i32 = 0;
     on = 0;
-    for mut i in (1..=metamodelica::arrayLength(m.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(m.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if ({let __elt = mask.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
             if partitionIndependentBlocksWork(i.clone(), false, on.clone() + 1, m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), remEqPartMap.clone(), vars.clone(), rvars.clone())? {
                 on = on.clone() + 1;
             }
         }
     }
-    for mut i in (1..=metamodelica::arrayLength(rm.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(rm.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if partitionIndependentBlocksWork(i.clone(), true, on.clone() + 1, m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), remEqPartMap.clone(), vars.clone(), rvars.clone())? {
             on = on.clone() + 1;
         }
@@ -2693,7 +2693,7 @@ pub fn partitionIndependentBlocksSplitBlocks(mut n: i32, mut inSyst: Arc<Backend
         setVarPartition(varsPartition.clone(), i.clone(), ({let __elt = mT.borrow()[(i.clone()-1) as usize].clone(); __elt}), ixs.clone())?;
         setVarPartition(varsPartition.clone(), i.clone(), ({let __elt = rmT.borrow()[(i.clone()-1) as usize].clone(); __elt}), rixs.clone())?;
     }
-    for mut i in (1..=metamodelica::arrayLength(varsPartition.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(varsPartition.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if ({let __elt = varsPartition.borrow()[(i.clone()-1) as usize].clone(); __elt}) != 0 {
             lstVars = ({let __elt = va.borrow()[(({let __elt = varsPartition.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             {let _arr = va.clone(); let _idx = ({let __elt = varsPartition.borrow()[(i.clone()-1) as usize].clone(); __elt}); let _val = metamodelica::cons(BackendVariable::getVarAt(inSyst.orderedVars.clone(), i.clone())?, lstVars.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
@@ -2765,7 +2765,7 @@ fn partitionEquations(mut arr: Arc<ExpandableArray::ExpandableArray<Arc<BackendD
     let mut ix: i32 = 0;
     let mut lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    for mut i in (1..=BackendEquation::getNumberOfEquations(arr.clone())).rev() {
+    for mut i in ({let __s=BackendEquation::getNumberOfEquations(arr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         ix = ({let __elt = ixs.borrow()[(i.clone()-1) as usize].clone(); __elt});
         eq = BackendEquation::get(arr.clone(), i.clone())?;
         if ix.clone() == 0 {

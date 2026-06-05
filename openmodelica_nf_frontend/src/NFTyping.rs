@@ -682,7 +682,7 @@ pub fn subscriptDimExp(mut dimExp: Arc<Expression::NFExpression>, mut component:
     parent = InstNode::instanceParent(component.clone())?;
     while exp_dims.clone() > 0 && !(InstNode::isEmpty(parent.clone())) {
         parent_dims = InstNode::dimensionCount(parent.clone());
-        for mut i in (1..=parent_dims.clone()).rev() {
+        for mut i in ({let __s=parent_dims.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             subs = metamodelica::cons(Subscript::makeSplitIndex(parent.clone(), i.clone())?, subs.clone());
             exp_dims = exp_dims.clone() - 1;
             if exp_dims.clone() == 0 {

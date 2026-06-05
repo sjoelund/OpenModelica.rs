@@ -225,7 +225,7 @@ pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
     g = SBLinearMap::gain(map.lmap.clone());
     o = SBLinearMap::offset(map.lmap.clone());
     ints = SBMultiInterval::intervals(SBAtomicSet::aset(map.dom.clone()));
-    for mut i in (1..=metamodelica::arrayLength(ints.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(ints.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*SBInterval::toString(({let __elt = ints.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = g.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = o.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         strl = metamodelica::cons((r#str.clone()).clone(), strl.clone());
     }

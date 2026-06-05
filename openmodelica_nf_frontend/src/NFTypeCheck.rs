@@ -1413,7 +1413,7 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
         _ => {
             elem_arr = metamodelica::arrayCreate(metamodelica::arrayLength(comps1.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
             dims = Type::arrayDims(Expression::typeOf(expression.clone()));
-            for mut i in (1..=metamodelica::arrayLength(comps1.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(comps1.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 ty = Component::getType(InstNode::component(({let __elt = comps1.borrow()[(i.clone()-1) as usize].clone(); __elt}))?)?;
                 ty = Type::liftArrayRightList(ty.clone(), dims.clone());
                 {

@@ -1606,7 +1606,7 @@ fn makeASUBsForDimension(mut eIn: Arc<DAE::Exp>) -> Result<Arc<metamodelica::Lis
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         size = __pa1.clone();
-        for mut i in (1..=size.clone()).rev() {
+        for mut i in ({let __s=size.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             eLstOut = metamodelica::cons(unwrap_break_err!(makeASUBSingleSub(eIn.clone(), Arc::new(DAE::Exp::ICONST { integer: i.clone() })), '__try0), eLstOut.clone());
         }
         Ok::<(), anyhow::Error>(())

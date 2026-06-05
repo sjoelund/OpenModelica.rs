@@ -178,7 +178,7 @@ pub fn failIfIndexReduction(mut inEqns: Arc<metamodelica::List<Arc<metamodelica:
 fn getChangedEqnsAndLowest(mut index: i32, mut ass2: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>, mut iLowest: i32) -> (Arc<metamodelica::List<i32>>, i32) {
     let mut oAcc: Arc<metamodelica::List<i32>> = iAcc.clone();
     let mut oLowest: i32 = iLowest.clone();
-    for mut i in (1..=index.clone()).rev() {
+    for mut i in ({let __s=index.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         oAcc = List::consOnTrue(intLt(({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}), 1), i.clone(), oAcc.clone());
         oLowest = i.clone();
     }
@@ -2230,7 +2230,7 @@ fn getStateIndexes(mut inVar: BackendDAE::Var, mut inTpl: (metamodelica::Array<i
 fn getAdjacencyMatrixSelectStates(mut nEqns: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mo: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut stateindexs: metamodelica::Array<i32>) -> Result<()> {
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut negrow: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    for mut i in (1..=nEqns.clone()).rev() {
+    for mut i in ({let __s=nEqns.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         row = ({let __elt = mo.borrow()[(i.clone()-1) as usize].clone(); __elt});
         row = List::map1(row.clone(), (std::sync::Arc::new(fnptr!(replaceStateIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), stateindexs.clone())?;
         {let _arr = m.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = row.clone(); _arr};
@@ -2707,7 +2707,7 @@ fn sortStateCandidatesVars(mut inVars: BackendDAE::Variables, mut allVars: Backe
     }
     prioTuples = ({
         let mut __acc: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
-        for mut idx in ((1..=varsize.clone()).rev()).into_iter() {
+        for mut idx in (({let __s=varsize.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)})).into_iter() {
             let __x = (({let __elt = index.borrow()[(idx.clone()-1) as usize].clone(); __elt}), ({let __elt = prio.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
             __acc = cons(__x, __acc);
         }

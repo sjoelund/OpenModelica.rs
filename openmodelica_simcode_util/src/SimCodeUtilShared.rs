@@ -300,7 +300,7 @@ pub fn getScalarElementIndex(mut arraySubscripts: Arc<metamodelica::List<Arc<DAE
     let mut fac: i32 = 0;
     arrayIndex = 1;
     fac = 1;
-    for mut i in (1..=(arraySubscripts.clone().len() as i32)).rev() {
+    for mut i in ({let __s=(arraySubscripts.clone().len() as i32); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         idx = DAEUtil::getSubscriptIndex((arraySubscripts.clone()).get(i.clone()).unwrap());
         arrayIndex = arrayIndex.clone() + (idx.clone() - 1) * fac.clone();
         fac = fac.clone() * (arrayDimensions.clone()).get(i.clone()).unwrap();

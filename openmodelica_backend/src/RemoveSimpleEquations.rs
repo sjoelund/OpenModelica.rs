@@ -1962,7 +1962,7 @@ fn handleSets(mut containerIdx: i32, mut inMark: i32, mut containerArr: metamode
     let mut r#const: Option<i32> = None;
     let mut mark: i32 = inMark.clone();
     let mut b: bool = false;
-    for mut idx in (1..=containerIdx.clone()).rev() {
+    for mut idx in ({let __s=containerIdx.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if !(intGt(getVisited(({let __elt = containerArr.borrow()[(idx.clone()-1) as usize].clone(); __elt}))?, 0)) {
             (rmax, smax, unremovable, r#const, _) = getAlias(list![idx.clone()], None, mark.clone(), containerArr.clone(), iMT.clone(), vars.clone(), unReplaceable.clone(), false, metamodelica::nil(), None, None, None, None)?;
             (vars, eqnslst, shared, repl, b) = handleSet(rmax.clone(), smax.clone(), unremovable.clone(), r#const.clone(), mark.clone() + 1, containerArr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone())?;

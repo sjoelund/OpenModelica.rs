@@ -305,7 +305,7 @@ pub mod CrefSets {
         }
         setsArray = arrayCreate(set_idx.clone(), metamodelica::nil());
         entries = UnorderedMap::toArray(sets.elements.clone());
-        for mut i in (1..=metamodelica::arrayLength(entries.clone())).rev() {
+        for mut i in ({let __s=metamodelica::arrayLength(entries.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             (e, idx) = metamodelica::Dangerous::arrayGetNoBoundsChecking(entries.clone(), i.clone());
             set_idx = ({let __elt = nodes.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             while set_idx.clone() > 0 {

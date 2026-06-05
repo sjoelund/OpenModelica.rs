@@ -976,7 +976,7 @@ pub mod Function {
                 let mut derivative = derivative.clone();
                 annMod = SCodeUtil::prependSubModToMod(FunctionDerivative::toSubMod(derivative.clone())?, annMod.clone())?;
             }
-            for mut i in (1..=metamodelica::arrayLength(r#fn.inverses.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(r#fn.inverses.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 annMod = SCodeUtil::prependSubModToMod(FunctionInverse::toSubMod(({let __elt = r#fn.inverses.borrow()[(i.clone()-1) as usize].clone(); __elt}))?, annMod.clone())?;
             }
             if !(SCodeUtil::emptyModOrEquality(annMod.clone())) {
@@ -1068,7 +1068,7 @@ pub mod Function {
         let mut matching: bool = true;
         let mut s: Arc<Slot::Slot> = Arc::new(<Slot::Slot as ::std::default::Default>::default());
         let mut arg_name: ArcStr = arcstr::literal!("");
-        for mut i in (1..=metamodelica::arrayLength(slots.clone())).rev() {
+        for mut i in ({let __s=metamodelica::arrayLength(slots.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             s = ({let __elt = slots.borrow()[(i.clone()-1) as usize].clone(); __elt});
             let __pa0 = ::match_deref::match_deref! { match &(arg.name.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -2122,7 +2122,7 @@ pub mod Function {
         cls = InstNode::getClass(node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
-            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 n = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 check_vis = !(Flags::getConfigBool(Flags::BASE_MODELICA.clone())?);
                 let () = (match paramDirection(n.clone(), check_vis.clone())? {

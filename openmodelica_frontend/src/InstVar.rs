@@ -1498,7 +1498,7 @@ fn instArrayDimInteger(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         (cls, attr) => (cls.clone(), inMod.clone(), attr.clone(), inInstDims.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    for mut i in (1..=inDimensionSize.clone()).rev() {
+    for mut i in ({let __s=inDimensionSize.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         e = Arc::new(DAE::Exp::ICONST { integer: i.clone() });
         imod = Mod::lookupIdxModification(r#mod.clone(), e.clone())?;
         s = Arc::new(DAE::Subscript::INDEX { exp: e.clone() });

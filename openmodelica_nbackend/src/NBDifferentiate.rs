@@ -2704,7 +2704,7 @@ pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::L
         idx = idx.clone() + 1;
     }
     if !(isReverse.clone()) {
-        for mut i in (1..=metamodelica::arrayLength(diff_lists.clone())).rev() {
+        for mut i in ({let __s=metamodelica::arrayLength(diff_lists.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             new_arguments = metamodelica::cons(Arc::new(Expression::NFExpression::MULTARY { arguments: ({let __elt = diff_lists.borrow()[(i.clone()-1) as usize].clone(); __elt}).reverse(), inv_arguments: metamodelica::nil(), operator: operator.clone() }), new_arguments.clone());
         }
     }

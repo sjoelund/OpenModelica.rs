@@ -784,7 +784,7 @@ pub mod SparsityColoring {
             }
         }
         groups_lst = metamodelica::nil();
-        for mut i in (1..=metamodelica::arrayLength(color_exists.clone())).rev() {
+        for mut i in ({let __s=metamodelica::arrayLength(color_exists.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if ({let __elt = color_exists.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
                 groups_lst = metamodelica::cons(({let __elt = groups.borrow()[(i.clone()-1) as usize].clone(); __elt}), groups_lst.clone());
             }
@@ -857,7 +857,7 @@ pub mod SparsityColoring {
                 col_coloring.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
             }
         }
-        for mut i in (1..=metamodelica::arrayLength(color_exists.clone())).rev() {
+        for mut i in ({let __s=metamodelica::arrayLength(color_exists.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if ({let __elt = color_exists.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
                 cols_lst = metamodelica::cons(({let __elt = col_coloring.borrow()[(i.clone()-1) as usize].clone(); __elt}), cols_lst.clone());
                 rows_lst = metamodelica::cons(({let __elt = row_coloring.borrow()[(i.clone()-1) as usize].clone(); __elt}), rows_lst.clone());

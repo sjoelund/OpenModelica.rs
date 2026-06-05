@@ -6203,7 +6203,7 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
                     let (_, (__pa4, _)) = unwrap_break_err!(Expression::traverseExpTopDown(tmpEqn.clone(), (std::sync::Arc::new(getConstraints) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables))> + 'static>), (constraints.clone(), vars.clone())), '__try0);
                     constraints = __pa4.clone();
                 }
-                for mut i in (1..=(constraints.clone().len() as i32)).rev() {
+                for mut i in ({let __s=(constraints.clone().len() as i32); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                     constraint = unwrap_break_err!((constraints.clone()).get(i.clone()), '__try0);
                     let (__pa5, __pa6) = ::match_deref::match_deref! { match &(constraint.clone()) {
                         Deref @ DAE::Constraint::CONSTRAINT_DT { localCon: __pa5, constraint: __pa6 } => (__pa5.clone(), __pa6.clone()),

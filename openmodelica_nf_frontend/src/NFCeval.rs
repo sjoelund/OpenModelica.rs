@@ -708,7 +708,7 @@ pub fn makeRecordBindingExp(mut typeNode: Arc<InstNode::InstNode>, mut recordNod
     comps = ClassTree::getComponents(tree.clone())?;
     args = metamodelica::nil();
     ErrorExt::setCheckpoint(literal!("NFCeval.makeRecordBindingExp"));
-    for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         c = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
         ty = InstNode::getType(c.clone())?;
         cr = Arc::new(ComponentRef::NFComponentRef::CREF { node: c.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: cref.clone() });
@@ -787,7 +787,7 @@ pub fn evalRangeExp(mut rangeExp: Arc<Expression::NFExpression>) -> Result<Arc<E
         (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { value: istep }, Deref @ Expression::INTEGER { .. }) => {
             expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut i in (({let __s=var_field!((*start).value, Expression::NFExpression::INTEGER).clone(); let __e=var_field!((*stop).value, Expression::NFExpression::INTEGER).clone(); let __step=istep.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if istep.clone()>0 {istep.clone()} else {-(istep.clone())}) as usize)).into_iter() {
+        for mut i in (({let __s=var_field!((*start).value, Expression::NFExpression::INTEGER).clone(); let __e=var_field!((*stop).value, Expression::NFExpression::INTEGER).clone(); let __step=istep.clone(); (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 { __v <= __e } else { __v >= __e }))})).into_iter() {
             let __x = Arc::new(Expression::NFExpression::INTEGER { value: i.clone() });
             __acc = cons(__x, __acc);
         }
@@ -865,7 +865,7 @@ pub fn evalRangeReal(mut start: metamodelica::Real, mut step: metamodelica::Real
         result = list![Arc::new(Expression::NFExpression::REAL { value: start.clone() })];
     } else {
         result = list![Arc::new(Expression::NFExpression::REAL { value: stop.clone() })];
-        for mut i in (1..=steps.clone() - 2).rev() {
+        for mut i in ({let __s=steps.clone() - 2; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             result = metamodelica::cons(Arc::new(Expression::NFExpression::REAL { value: start.clone() + metamodelica::OrderedFloat((i.clone()) as f64) * step.clone() }), result.clone());
         }
         result = metamodelica::cons(Arc::new(Expression::NFExpression::REAL { value: start.clone() }), result.clone());

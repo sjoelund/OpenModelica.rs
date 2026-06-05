@@ -1376,7 +1376,7 @@ pub mod Matrix {
         }
         __acc.reverse()
     }).into_iter().cloned().collect());
-            for mut i in (1..=metamodelica::arrayLength(names.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(names.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 (XX, II, NM, NP, LV, LP, LC, QQ) = Solvability::categorize(UnorderedSet::toList(({let __elt = var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*adj).solvabilities, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
                 xx = metamodelica::cons((List::toString(XX.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("XX ")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), xx.clone());
                 ii = metamodelica::cons((List::toString(II.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("II ")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), ii.clone());
@@ -1539,7 +1539,7 @@ pub mod Matrix {
         }
         __acc.reverse()
     }).into_iter().cloned().collect());
-            for mut i in (1..=metamodelica::arrayLength(names.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(names.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 (F, R, E, A, S, K) = Dependency::categorize(UnorderedSet::toList(({let __elt = var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*adj).dependencies, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*adj).repetitions, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
                 f = metamodelica::cons((List::toString(F.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("[!]")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), f.clone());
                 r = metamodelica::cons((List::toString(R.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("[-]")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), r.clone());

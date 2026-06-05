@@ -1036,7 +1036,7 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
         missing_dims = metamodelica::nil();
         pos = start.clone();
         if fail_.clone() {
-            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize) {
+            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 { __v <= __e } else { __v >= __e }))}) {
                 while ({let __elt = dim.borrow()[(i.clone()-1) as usize].clone(); __elt}) != pos.clone() {
                     missing_dims = metamodelica::cons(pos.clone(), missing_dims.clone());
                     pos = pos.clone() + step.clone();
@@ -1055,7 +1055,7 @@ pub fn reconstructDiagonal(mut frame_locations_transposed: Arc<metamodelica::Lis
                 pos = pos.clone() + step.clone();
             }
         } else {
-            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if shift.clone()>0 {shift.clone()} else {-(shift.clone())}) as usize) {
+            for mut i in ({let __s=1; let __e=metamodelica::arrayLength(dim.clone()); let __step=shift.clone(); (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 { __v <= __e } else { __v >= __e }))}) {
                 missing_dims = metamodelica::cons(({let __elt = dim.borrow()[(i.clone()-1) as usize].clone(); __elt}), missing_dims.clone());
             }
         }
@@ -1497,7 +1497,7 @@ fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
     if repeated.clone() {
         mode = Mode::create(eqn_name.clone(), list![original_cref.clone()], false)?;
     }
-    for mut i in ({let __s=skip_idx.clone(); let __e=skip_idx.clone() + size.clone() - iter_size.clone(); let __step=iter_size.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if iter_size.clone()>0 {iter_size.clone()} else {-(iter_size.clone())}) as usize) {
+    for mut i in ({let __s=skip_idx.clone(); let __e=skip_idx.clone() + size.clone() - iter_size.clone(); let __step=iter_size.clone(); (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 { __v <= __e } else { __v >= __e }))}) {
         shift = 0;
         for mut scal in &*scalarized.clone() {
             let mut scal = scal.clone();
@@ -1719,7 +1719,7 @@ pub fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComp
     scal_lst = (match Type::complexSize(ty.clone(), false)? {
         Some(mut complex_size) => {
             scal_lst = metamodelica::nil();
-            for mut i in (1..=complex_size.clone()).rev() {
+            for mut i in ({let __s=complex_size.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 scal_lst = listAppend(combineFrames2Indices(var_start.clone(), metamodelica::cons(complex_size.clone(), sizes.clone()), metamodelica::cons(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }), subs.clone()), frames.clone(), UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), resize.clone(), metamodelica::nil())?.reverse(), scal_lst.clone());
             }
             scal_lst.clone()

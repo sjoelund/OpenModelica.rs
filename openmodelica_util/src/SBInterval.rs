@@ -199,16 +199,16 @@ pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Resul
         count_s = if (i2.hi.clone() < System::intMaxLit()) {intDiv(i2.hi.clone() - i2.lo.clone(), i2.step.clone())} else {System::intMaxLit()};
         if count_r.clone() < count_s.clone() {
             if count_s.clone() < System::intMaxLit() {
-                for mut i in (1..=count_r.clone()).rev() {
+                for mut i in ({let __s=count_r.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                     UnorderedSet::add(new(i2.lo.clone() + i.clone() * int1.step.clone(), i2.step.clone(), i2.hi.clone() - i2.step.clone() + i.clone() * int1.step.clone()), ints.clone())?;
                 }
             } else {
-                for mut i in (1..=count_r.clone()).rev() {
+                for mut i in ({let __s=count_r.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                     UnorderedSet::add(new(i2.lo.clone() + i.clone() * int1.step.clone(), i2.step.clone(), System::intMaxLit()), ints.clone())?;
                 }
             }
         } else {
-            for mut i in (1..=count_s.clone()).rev() {
+            for mut i in ({let __s=count_s.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 UnorderedSet::add(new(i2.lo.clone() + int1.step.clone() + (i.clone() - 1) * i2.step.clone(), int1.step.clone(), i2.lo.clone() - int1.step.clone() + i.clone() * i2.step.clone()), ints.clone())?;
             }
         }

@@ -585,7 +585,7 @@ fn generateConnector(mut cr: Arc<ComponentRef::NFComponentRef>, mut indices: Arc
 fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut iterators: metamodelica::Array<Arc<InstNode::InstNode>>, mut ranges: metamodelica::Array<Arc<Expression::NFExpression>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = connects.clone();
-    for mut i in (1..=metamodelica::arrayLength(iterators.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(iterators.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if Expression::isInteger(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             body = Equation::replaceIteratorList(body.clone(), ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
         } else {

@@ -106,7 +106,7 @@ pub fn intRange3(mut inStart: i32, mut inStep: i32, mut inStop: i32) -> Result<A
     }
     outRange = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (({let __s=inStart.clone(); let __e=inStop.clone(); let __step=inStep.clone(); if __step>0 {__s..=__e} else {__e..=__s}}).step_by((if inStep.clone()>0 {inStep.clone()} else {-(inStep.clone())}) as usize)).into_iter() {
+        for mut i in (({let __s=inStart.clone(); let __e=inStop.clone(); let __step=inStep.clone(); (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 { __v <= __e } else { __v >= __e }))})).into_iter() {
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -800,7 +800,7 @@ pub fn countingSort(mut inList: Arc<metamodelica::List<i32>>, mut N: i32) -> Arc
             a1.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
-    for mut v in (1..=N.clone()).rev() {
+    for mut v in ({let __s=N.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         let __range1 = 1..=({let __elt = a1.borrow()[(v.clone()-1) as usize].clone(); __elt});
         for mut c in __range1 {
             outSorted = metamodelica::cons(v.clone(), outSorted.clone());
@@ -1116,9 +1116,9 @@ pub fn transposeList<T: Clone + 'static>(mut inList: Arc<metamodelica::List<Arc<
     }).into_iter().cloned().collect());
     c_len = metamodelica::arrayLength(arr.clone());
     r_len = metamodelica::arrayLength(metamodelica::arrayGet(arr.clone(), 1)?);
-    for mut i in (1..=r_len.clone()).rev() {
+    for mut i in ({let __s=r_len.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         new_row = metamodelica::nil();
-        for mut j in (1..=c_len.clone()).rev() {
+        for mut j in ({let __s=c_len.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             new_row = metamodelica::cons(metamodelica::Dangerous::arrayGetNoBoundsChecking(metamodelica::arrayGet(arr.clone(), j.clone())?, i.clone()), new_row.clone());
         }
         outList = metamodelica::cons(new_row.clone(), outList.clone());
@@ -1229,7 +1229,7 @@ pub fn setDifferenceIntN(mut inList1: Arc<metamodelica::List<i32>>, mut inList2:
         a = arrayCreate(inN.clone(), 0);
         a = addPos(inList1.clone(), a.clone(), 1)?;
         a = addPos(inList2.clone(), a.clone(), 1)?;
-        for mut i in (1..=inN.clone()).rev() {
+        for mut i in ({let __s=inN.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if metamodelica::arrayGet(a.clone(), i.clone())? == 1 {
                 outDifference = metamodelica::cons(i.clone(), outDifference.clone());
             }
@@ -1272,7 +1272,7 @@ pub fn unionIntN(mut inList1: Arc<metamodelica::List<i32>>, mut inList2: Arc<met
         a = arrayCreate(inN.clone(), 0);
         a = addPos(inList1.clone(), a.clone(), 1)?;
         a = addPos(inList2.clone(), a.clone(), 1)?;
-        for mut i in (1..=inN.clone()).rev() {
+        for mut i in ({let __s=inN.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if metamodelica::arrayGet(a.clone(), i.clone())? > 0 {
                 outUnion = metamodelica::cons(i.clone(), outUnion.clone());
             }

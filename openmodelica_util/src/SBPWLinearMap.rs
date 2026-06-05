@@ -376,7 +376,7 @@ pub fn toString(mut map: Arc<SBPWLinearMap>) -> Result<ArcStr> {
     let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = map.dom.clone();
     let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = map.lmap.clone();
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    for mut i in (1..=metamodelica::arrayLength(dom.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(dom.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         strl = metamodelica::cons((UnorderedSet::toString(SBSet::asets(({let __elt = dom.borrow()[(i.clone()-1) as usize].clone(); __elt})), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = lmap.borrow()[(i.clone()-1) as usize].clone(); __elt}); move |__pe_a0| Ok(helper(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<ArcStr> + 'static>), (literal!("U")).clone())?).clone(), strl.clone());
     }
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(strl.clone(), (literal!(",")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();

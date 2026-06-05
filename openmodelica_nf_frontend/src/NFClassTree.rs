@@ -223,7 +223,7 @@ pub mod ClassTree {
     } });
             }
             imports = metamodelica::arrayFromVec(init_imports.clone().into_iter().cloned().collect());
-            for mut i in (1..=metamodelica::arrayLength(imports.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(imports.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 ltree = addImport(({let __elt = imports.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), ltree.clone(), imports.clone())?;
             }
             assign_variant_field!(tree => ClassTree::PARTIAL_TREE;

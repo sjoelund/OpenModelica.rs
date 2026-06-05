@@ -6327,7 +6327,7 @@ pub fn getRecordElements(mut exp: Arc<NFExpression>) -> Result<Arc<metamodelica:
     let mut ty: Arc<Type::NFType> = Type::arrayElementType(typeOf(exp.clone()));
     elements = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::COMPLEX { complexTy: complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => {
-            for mut i in (1..=metamodelica::arrayLength(var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 elements = metamodelica::cons(recordElement((Record::Field::name(({let __elt = var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).borrow()[(i.clone()-1) as usize].clone(); __elt}))?).clone(), exp.clone())?, elements.clone());
             }
             elements.clone()
@@ -7260,7 +7260,7 @@ pub fn productOfListExceptSelf(mut arguments: Arc<metamodelica::List<Arc<NFExpre
         }
     }
     rightProd = makeOne(elTy.clone())?;
-    for mut i in (1..=n.clone()).rev() {
+    for mut i in ({let __s=n.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         {
             let __cell2 = mmul(({let __elt = pref.borrow()[(i.clone()-1) as usize].clone(); __elt}), rightProd.clone(), mulOp.clone())?;
             let __idx2 = i.clone();
@@ -7269,7 +7269,7 @@ pub fn productOfListExceptSelf(mut arguments: Arc<metamodelica::List<Arc<NFExpre
         rightProd = mmul(rightProd.clone(), ({let __elt = argsArr.borrow()[(i.clone()-1) as usize].clone(); __elt}), mulOp.clone())?;
     }
     products = metamodelica::nil();
-    for mut i in (1..=n.clone()).rev() {
+    for mut i in ({let __s=n.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         products = metamodelica::cons(SimplifyExp::simplify(({let __elt = res.borrow()[(i.clone()-1) as usize].clone(); __elt}), false)?, products.clone());
     }
     Ok(products)

@@ -1770,7 +1770,7 @@ fn appendSccIdx(mut iCurrentIdx: i32, mut iSccIdx: i32, mut iSccIdc: Arc<metamod
 
 fn appendSccIdxRange(mut iCurrentIdxStart: i32, mut iCurrentIdxStop: i32, mut iSccIdx: i32, mut iSccIdc: Arc<metamodelica::List<(i32, i32)>>) -> Arc<metamodelica::List<(i32, i32)>> {
     let mut oSccIdc: Arc<metamodelica::List<(i32, i32)>> = iSccIdc.clone();
-    for mut i in (iCurrentIdxStart.clone()..=iCurrentIdxStop.clone()).rev() {
+    for mut i in ({let __s=iCurrentIdxStop.clone(); let __e=iCurrentIdxStart.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         oSccIdc = metamodelica::cons((i.clone(), iSccIdx.clone()), iSccIdc.clone());
     }
     oSccIdc
@@ -14469,7 +14469,7 @@ fn fillScalarElements(mut eltIn: SimCodeVar::SimVar, mut dims: Arc<metamodelica:
     let mut elts: Arc<metamodelica::List<SimCodeVar::SimVar>> = elts;
     let mut elt: SimCodeVar::SimVar = eltIn.clone();
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-    for mut i in (1..=(dims.clone()).get(dimIdx.clone())?).rev() {
+    for mut i in ({let __s=(dims.clone()).get(dimIdx.clone())?; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         subs = metamodelica::cons(Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) }), subsIn.clone());
         if dimIdx.clone() < (dims.clone().len() as i32) {
             elts = fillScalarElements(eltIn.clone(), dims.clone(), dimIdx.clone() + 1, subs.clone(), elts.clone())?;

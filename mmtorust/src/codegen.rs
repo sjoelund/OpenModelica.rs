@@ -12142,22 +12142,29 @@ fn emit_range<'a>(start: &TypedExp, step: Option<&TypedExp>, stop: &TypedExp, is
                         format!("({s}..={e}).step_by(({n}) as usize)")
                     };
                 }
-                // Negative step: reverse the range, negate the step.
+                // Negative literal step: emit `start, start+n, ...` while `>= stop`.
+                // A reversed range with `step_by(|n|)` (the previous form) is only
+                // correct when `|n|` evenly divides `start - stop`: e.g. `1:-2:-4`
+                // should be {1,-1,-3}, but `(-4..=1).step_by(2).rev()` gives
+                // {-4,-2,0}. The explicit generator below is correct for any `n`.
                 if *n < 0 {
-                    return if *n == -1 {
-                        format!("({e}..={s}).rev()")
-                    } else {
-                        format!("({e}..={s}).step_by(({}) as usize).rev()", -n)
-                    };
+                    return format!(
+                        "({{let __s={s}; let __e={e}; (0i32..).map(move |__k| __s + __k * ({n})).take_while(move |&__v| __v >= __e)}})"
+                    );
                 }
+                // n == 0 falls through to the dynamic form, which yields an empty
+                // range (Modelica forbids a zero step).
             }
 
             let step_val = emit_exp(step_exp, is_const, ctx, top_level);
 
-            // Dynamic step: positive path for the common case,
-            // with a runtime branch that reverses for negative steps.
+            // Dynamic step: generate `start + k*step` while within bounds, for
+            // either sign. `step_by` on a reversed range can't express a negative
+            // Modelica range correctly (see the literal case above), so use the
+            // explicit stepped generator. A zero step yields an empty range
+            // instead of looping forever.
             format!(
-                "({{let __s={s}; let __e={e}; let __step={step_val}; if __step>0 {{__s..=__e}} else {{__e..=__s}}}}).step_by((if {step_val}>0 {{{step_val}}} else {{-({step_val})}}) as usize)"
+                "({{let __s={s}; let __e={e}; let __step={step_val}; (0i32..).map(move |__k| __s + __k * __step).take_while(move |&__v| __step != 0 && (if __step > 0 {{ __v <= __e }} else {{ __v >= __e }}))}})"
             )
         }
     }

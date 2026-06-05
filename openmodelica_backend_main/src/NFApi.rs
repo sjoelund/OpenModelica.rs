@@ -1013,7 +1013,7 @@ pub fn buildInstanceTreeGeneratedInners(mut classTree: Arc<ClassTree::ClassTree>
         _ => bail!("pattern mismatch"),
     } };
     comps = __pa0.clone();
-    for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if InstNode::isGeneratedInner(Mutable::access(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))) {
             elems = metamodelica::cons(buildInstanceTreeComponent(Mutable::access(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt})))?, elems.clone());
         } else {

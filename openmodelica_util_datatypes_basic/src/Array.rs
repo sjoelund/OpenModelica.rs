@@ -103,10 +103,10 @@ pub fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::Array<i3
     let mut inArray: metamodelica::Array<i32> = inArray;
     let mut n: i32 = metamodelica::arrayLength(inArray.clone());
     let mut tmp: i32 = 0;
-    for mut v in (0..=intDiv(n.clone(), 2) - 1).rev() {
+    for mut v in ({let __s=intDiv(n.clone(), 2) - 1; let __e=0; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         inArray = downheap(inArray.clone(), n.clone(), v.clone());
     }
-    for mut v in (2..=n.clone()).rev() {
+    for mut v in ({let __s=n.clone(); let __e=2; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         tmp = ({let __elt = inArray.borrow()[(1-1) as usize].clone(); __elt});
         {
             let __cell0 = ({let __elt = inArray.borrow()[(v.clone()-1) as usize].clone(); __elt});

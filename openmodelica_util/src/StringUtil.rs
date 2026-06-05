@@ -102,7 +102,7 @@ pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut
     let mut end_pos: i32 = 0;
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
-    for mut i in (end_pos.clone()..=start_pos.clone()).rev() {
+    for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) == inChar.clone() {
             outIndex = i.clone();
             break;
@@ -134,7 +134,7 @@ pub fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, 
     let mut end_pos: i32 = 0;
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
-    for mut i in (end_pos.clone()..=start_pos.clone()).rev() {
+    for mut i in ({let __s=start_pos.clone(); let __e=end_pos.clone(); (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()) != inChar.clone() {
             outIndex = i.clone();
             break;

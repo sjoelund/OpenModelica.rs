@@ -617,7 +617,7 @@ pub mod Block {
             let mut index: i32 = 0;
             let mut alias_index: i32 = 0;
             kind = Partition::Partition::getKind(partition.clone());
-            for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 (tmp, simCodeIndices, index) = fromStrongComponent(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
                 alias_index = (::match_deref::match_deref! { match &(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
         Deref @ StrongComponent::ALIAS { aliasInfo, .. } => {

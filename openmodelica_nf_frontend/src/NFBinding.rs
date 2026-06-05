@@ -929,7 +929,7 @@ pub fn expandEach(mut binding: Arc<NFBinding>, mut node: Arc<InstNode::InstNode>
         Deref @ RAW_BINDING { eachType: EachType::EACH, .. } => {
             node_exp = Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (InstNode::name(node.clone())?).clone(), subscripts: metamodelica::nil() }) });
             args = metamodelica::nil();
-            for mut i in (1..=InstNode::dimensionCount(node.clone())).rev() {
+            for mut i in ({let __s=InstNode::dimensionCount(node.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 args = metamodelica::cons(AbsynUtil::makeCall(size_name.clone(), list![node_exp.clone(), Arc::new(Absyn::Exp::INTEGER { value: i.clone() })], metamodelica::nil()), args.clone());
             }
             args = metamodelica::cons(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone(), args.clone());

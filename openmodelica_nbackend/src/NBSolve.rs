@@ -461,7 +461,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             let mut tmp: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
             let mut err_str: ArcStr = arcstr::literal!("");
             let mut strict = (*strict).clone();
-            for mut index in (1..=metamodelica::arrayLength(strict.innerEquations.clone())).rev() {
+            for mut index in ({let __s=metamodelica::arrayLength(strict.innerEquations.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 (tmp, implicit_index) = unwrap_break_err!(solveStrongComponent(({let __elt = strict.innerEquations.borrow()[(index.clone()-1) as usize].clone(); __elt}), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
                 inner_comps = listAppend(tmp.clone(), inner_comps.clone());
                 for mut elem in &*tmp.clone() {

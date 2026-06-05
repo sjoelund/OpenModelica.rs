@@ -4973,7 +4973,7 @@ pub mod EquationPointers {
         let mut equations: Arc<EquationPointers> = equations;
         let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
         let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        for mut i in (1..=ExpandableArray::getLastUsedIndex(equations.eqArr.clone())).rev() {
+        for mut i in ({let __s=ExpandableArray::getLastUsedIndex(equations.eqArr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if ExpandableArray::occupied(i.clone(), equations.eqArr.clone()) {
                 eqn = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
                 let () = (::match_deref::match_deref! { match &(Pointer::access(eqn.clone())) {

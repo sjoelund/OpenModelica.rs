@@ -127,7 +127,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut source: Arc<DAE::Elem
     conns = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => metamodelica::cons(fromCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), source.clone())?, conns.clone()),
         Deref @ Expression::ARRAY { .. } => {
-            for mut i in (1..=metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone())).rev() {
+            for mut i in ({let __s=metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 conns = fromExp(metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), i.clone()), source.clone(), conns.clone())?;
             }
             conns.clone()

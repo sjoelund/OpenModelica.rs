@@ -479,7 +479,7 @@ fn createCseEquations(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equa
         BaseHashSet::dumpHashSet(globalKnownVarHT.clone())?;
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTraverse expandable array\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
-    for mut i in (1..=ExpandableArray::getNumberOfElements(exarray.clone())).rev() {
+    for mut i in ({let __s=ExpandableArray::getNumberOfElements(exarray.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         add = true;
         let CSE_Equation { call: __pa0, cse: __pa1, .. } = (ExpandableArray::get(i.clone(), exarray.clone())?) else { bail!("pattern mismatch") };
         call = __pa0.clone();

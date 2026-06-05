@@ -4004,7 +4004,7 @@ fn totalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nDiscrete Vars:\n")); __mm_s.push_str(&*stringDelimitList(List::map(discreteVars.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
-    for mut i in (1..=Util::intPow(2, size.clone())? - 1).rev() {
+    for mut i in ({let __s=Util::intPow(2, size.clone())? - 1; let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         powerSet = metamodelica::cons(getPowerSetElement(i.clone()), powerSet.clone());
     }
     if Flags::isSet(Flags::TOTAL_TEARING_DUMP.clone())? || Flags::isSet(Flags::TOTAL_TEARING_DUMPVERBOSE.clone())? {

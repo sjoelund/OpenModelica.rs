@@ -227,7 +227,7 @@ pub fn applyInterval(mut interval: Arc<SBInterval::SBInterval>, mut gain: metamo
 pub fn toString(mut map: Arc<SBLinearMap>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    for mut i in (1..=metamodelica::arrayLength(map.gain.clone())).rev() {
+    for mut i in ({let __s=metamodelica::arrayLength(map.gain.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone())))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone())))); ArcStr::from(__mm_s) }).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());

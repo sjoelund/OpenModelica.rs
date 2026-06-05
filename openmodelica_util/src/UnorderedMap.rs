@@ -571,7 +571,7 @@ pub fn toString<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMa
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();
-    for mut i in (1..=Vector::size(keys.clone())).rev() {
+    for mut i in ({let __s=Vector::size(keys.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*keyStringFn(Vector::get(keys.clone(), i.clone())?)?); __mm_s.push_str(&*concatinator.clone()); __mm_s.push_str(&*valueStringFn(Vector::get(values.clone(), i.clone())?)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (delimiter.clone()).clone());

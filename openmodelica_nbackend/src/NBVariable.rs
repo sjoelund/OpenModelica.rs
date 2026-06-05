@@ -2274,7 +2274,7 @@ pub mod VariablePointers {
     pub fn compress(mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
         let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        for mut i in (1..=ExpandableArray::getLastUsedIndex(variables.varArr.clone())).rev() {
+        for mut i in ({let __s=ExpandableArray::getLastUsedIndex(variables.varArr.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
             if ExpandableArray::occupied(i.clone(), variables.varArr.clone()) {
                 vars = metamodelica::cons(ExpandableArray::get(i.clone(), variables.varArr.clone())?, vars.clone());
             }

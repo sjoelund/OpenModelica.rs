@@ -8514,7 +8514,7 @@ fn vectorizeCallScalar(mut exp: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>, mut dim: 
 fn vectorizeCallScalar2(mut r#fn: Arc<Absyn::Path>, mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut attr: Arc<DAE::CallAttributes>, mut slots: Arc<metamodelica::List<Slot>>, mut dim: i32) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut callargs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    for mut cur_dim in (1..=dim.clone()).rev() {
+    for mut cur_dim in ({let __s=dim.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         callargs = vectorizeCallScalar3(exps.clone(), slots.clone(), cur_dim.clone())?;
         res = metamodelica::cons(Arc::new(DAE::Exp::CALL { path: r#fn.clone(), expLst: callargs.clone(), attr: attr.clone() }), res.clone());
     }

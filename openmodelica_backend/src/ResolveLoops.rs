@@ -2866,7 +2866,7 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
         {let _arr = scaled_x.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = a.clone(); _arr};
     }
     (R, Qb, oeqns, ovars, oshared) = qrDecompositionHouseholder(A.clone(), n.clone(), b.clone(), oeqns.clone(), ovars.clone(), offset.clone(), oshared.clone())?;
-    for mut i in (1..=n.clone()).rev() {
+    for mut i in ({let __s=n.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         m = (i.clone() - 1) * n.clone();
         a = Expression::makeSum1(({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
