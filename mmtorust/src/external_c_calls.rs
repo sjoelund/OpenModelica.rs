@@ -741,6 +741,11 @@ pub fn external_c_impl_path(c_name: &str) -> Option<&'static str> {
     match c_name {
         "System_stringFind" => Some("metamodelica::ext::System_stringFind"),
         "System_stringFindString" => Some("metamodelica::ext::System_stringFindString"),
+        // NBASSC matrix store (runtime/ASSCEXT_omc.cpp): an upstream stub —
+        // setMatrix stores a CSR matrix that nothing reads back yet.
+        "ASSC_setMatrix" => Some("metamodelica::ext::ASSC_setMatrix"),
+        "ASSC_freeMatrix" => Some("metamodelica::ext::ASSC_freeMatrix"),
+        "ASSC_printMatrix" => Some("metamodelica::ext::ASSC_printMatrix"),
         // `-d=gen` dynamic-load pipeline: marshal the argument/result `Values`
         // through the dynamically loaded `in_*` entry point. Only called from
         // `DynLoad.executeFunction` (same crate), hence the `crate::` path.
