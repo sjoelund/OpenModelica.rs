@@ -435,6 +435,26 @@ fn add_generic_syntax_error(tokens: &[LexToken], failed_at: usize, src: &str) {
     }
 }
 
+/// Match a required closing `)`. When it is absent, ANTLR's single-token
+/// recovery reports `"Missing token: ')'"` at the offending token rather than
+/// the generic "No viable alternative"; record that diagnostic and cut so the
+/// reported error matches the C parser (e.g. `M(redeclare Real A.c = 2.0)`,
+/// `extends A(break a[2])`).
+fn expect_rparen(input: &mut TokenInput) -> ModalResult<()> {
+    if opt(t(TK::RParen)).parse_next(input)?.is_some() {
+        return Ok(());
+    }
+    let (line, col) = match input.first() {
+        Some(tok) => (tok.line, tok.col),
+        // At end of input ANTLR puts the synthetic EOF on the line after the
+        // last newline; `add_generic_syntax_error` would handle that, but here
+        // we still name the missing token.
+        None => input.last().map(|t| (t.line, t.col)).unwrap_or((0, 0)),
+    };
+    add_syntax_message(SyntaxSeverity::Error, "Missing token: ')'".to_owned(), line, col, line, col);
+    Err(ErrMode::Cut(ContextError::new()))
+}
+
 /// Lex then parse `src`.  Returns the AST or the first error encountered.
 pub fn parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
     run_entry(src, filename, info_filename, grammar, false, stored_definition)
@@ -1545,9 +1565,7 @@ fn class_modification_impl(input: &mut TokenInput, can_have_break: bool) -> Moda
     let arguments = opt(|i: &mut TokenInput| argument_list(i, can_have_break))
         .parse_next(input)?
         .unwrap_or_else(|| Arc::new(List::Nil));
-    cut_err(t(TK::RParen))
-        .context(StrContext::Label("')' closing modification list"))
-        .parse_next(input)?;
+    expect_rparen(input)?;
     Ok(arguments)
 }
 
@@ -1638,12 +1656,17 @@ fn element_redeclaration(input: &mut TokenInput) -> ModalResult<ElementArg> {
     let each_  = opt(t(TK::Each)).parse_next(input)?.is_some();
     let final_ = opt(t(TK::Final)).parse_next(input)?.is_some();
 
-    let (redeclareKeywords, elementSpec, constrainClass) =
+    // Position at the `replaceable` keyword (after redeclare/each/final). The
+    // `redeclare replaceable` form is built by `element_replaceable`, whose
+    // `PARSER_INFO($start)` starts at `replaceable`, not at `redeclare`; the
+    // other forms use `element_redeclaration`'s own start (the `redeclare`).
+    let repl_start = *input;
+    let (redeclareKeywords, elementSpec, constrainClass, info) =
         if opt(t(TK::Replaceable)).parse_next(input)?.is_some() {
             let (es, cc) = parse_replaceable_spec(input)?;
-            (RedeclareKeywords::REDECLARE_REPLACEABLE {}, es, cc)
+            (RedeclareKeywords::REDECLARE_REPLACEABLE {}, es, cc, parser_info(&repl_start, input))
         } else if let Some(cls) = opt(class_definition).parse_next(input)? {
-            (RedeclareKeywords::REDECLARE, ElementSpec::CLASSDEF { replaceable_: false, class_: Arc::new(cls) }, None)
+            (RedeclareKeywords::REDECLARE, ElementSpec::CLASSDEF { replaceable_: false, class_: Arc::new(cls) }, None, parser_info(&start, input))
         } else {
             let typePrefix = type_prefix(input)?;
             let typeSpec   = cut_err(type_specifier)
@@ -1654,13 +1677,13 @@ fn element_redeclaration(input: &mut TokenInput) -> ModalResult<ElementArg> {
                 .parse_next(input)?;
             (RedeclareKeywords::REDECLARE, ElementSpec::COMPONENTS {
                 attributes: typePrefix, typeSpec: Arc::new(typeSpec), components: List::new(Arc::new(comp)),
-            }, None)
+            }, None, parser_info(&start, input))
         };
 
     Ok(ElementArg::REDECLARATION {
         finalPrefix: final_,
         eachPrefix: if each_ { Each::EACH } else { Each::NON_EACH },
-        redeclareKeywords, elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info: parser_info(&start, input),
+        redeclareKeywords, elementSpec: Arc::new(elementSpec), constrainClass: constrainClass.map(Arc::new), info,
     })
 }
 
