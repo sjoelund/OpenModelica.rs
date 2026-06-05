@@ -93,6 +93,57 @@ static ERROR_COULD_NOT_READ_VAR: ErrorTypes::Message = ErrorTypes::Message {
     severity: ErrorTypes::Severity::ERROR,
     message: Gettext::TranslatableContent::gettext { msgid: literal!("Could not read variable %s in file %s.") },
 };
+// Result-comparison messages, mirroring SimulationResultsCmp.c.
+static ERROR_OPEN_FILE: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error opening file: %s") },
+};
+static ERROR_OPEN_REFFILE: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error opening reference file: %s") },
+};
+static ERROR_GET_VARS: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error getting variables") },
+};
+static ERROR_GET_TIME: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error getting time") },
+};
+static ERROR_GET_TIME_REF: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Error getting time from reference file") },
+};
+// NB: the token order mirrors the C call (msg[0]=file, msg[1]=var), which the C
+// code passes in that order even though the format reads "variable %s ... file %s".
+static ERROR_GET_DATA_FAILED: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::WARNING,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Get data of variable %s from file %s failed!\n") },
+};
+static ERROR_FILE_STARTS_BEFORE: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("The result file starts before the reference file.") },
+};
+static ERROR_FILE_ENDS_BEFORE: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("The result file ends before the reference file.") },
+};
 
 /// The process-global reader cache mirroring the C `simresglob` "super cache":
 /// repeated `val()`/`readDataset()` calls on the same unchanged file reuse the
@@ -308,14 +359,671 @@ fn format_g(x: f64) -> String {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Result comparison (port of SimulationResultsCmp.c)
+//
+// `cmpSimulationResults` is the `isResultCmp=1` path of the C
+// `SimulationResultsCmp_compareResults`; it uses `cmpData` (event-aware
+// point-by-point comparison with reference interpolation). `deltaSimulationResults`
+// is `SimulationResultsCmp_deltaResults` (norm of the difference). Both open
+// two independent readers (not the shared `READER_CACHE`, which only holds one
+// file) since they compare a result file against a reference simultaneously.
+// ---------------------------------------------------------------------------
+
+// almostEqualRelativeAndAbs default tolerances (SimulationResultsCmp.c).
+const DOUBLEEQUAL_TOTAL: f64 = 0.0000000001;
+const DOUBLEEQUAL_REL: f64 = 0.00001;
+
+/// C `almostEqualRelativeAndAbs`.
+fn almost_equal_rel_abs(a: f64, b: f64, reltol: f64, abstol: f64) -> bool {
+    let diff = (a - b).abs();
+    diff <= abstol || diff <= a.abs().max(b.abs()) * reltol
+}
+
+/// C `almostEqualWithDefaultTolerance`.
+fn almost_equal_default(a: f64, b: f64) -> bool {
+    almost_equal_rel_abs(a, b, DOUBLEEQUAL_REL, DOUBLEEQUAL_TOTAL)
+}
+
+/// One row of the diff log, mirroring C `DiffData`.
+struct DiffData {
+    name: ArcStr,
+    data: f64,
+    dataref: f64,
+    time: f64,
+    timeref: f64,
+    interpolate: bool,
+}
+
+/// C `getData`: full trajectory of `varname` over all `nrows` sample points
+/// (a constant vector for parameters), or `None` if the variable is missing.
+fn get_data(reader: &mut MatReader, varname: &str) -> Option<Vec<f64>> {
+    let idx = reader.find_var(varname)?;
+    let (is_param, index) = {
+        let info = &reader.allInfo[idx];
+        (info.isParam, info.index)
+    };
+    if is_param {
+        let absp = index.unsigned_abs() as usize;
+        if absp == 0 || absp > reader.params.len() {
+            return None;
+        }
+        let p = reader.params[absp - 1];
+        Some(vec![if index < 0 { -p } else { p }; reader.nrows])
+    } else {
+        reader.read_vals(index)
+    }
+}
+
+/// C `SimulationResultsImpl__readVarsFilterAliases` (MATLAB4 branch): the names
+/// of all real (non-negated-alias) variables and parameters, one per storage
+/// index, in `allInfo` order.
+fn read_vars_filter_aliases(reader: &MatReader) -> Vec<ArcStr> {
+    let mut seen_param = std::collections::HashSet::new();
+    let mut seen_var = std::collections::HashSet::new();
+    let mut out = Vec::new();
+    for info in reader.allInfo.iter().rev() {
+        if info.index <= 0 {
+            continue; // negated aliases always have a real variable
+        }
+        let seen = if info.isParam { &mut seen_param } else { &mut seen_var };
+        if !seen.insert(info.index) {
+            continue;
+        }
+        out.push(ArcStr::from(info.name.as_str()));
+    }
+    out.reverse();
+    out
+}
+
+/// C `getTimeVarName`: `"time"` unless only `"Time"` is present.
+fn get_time_var_name(allvars: &[ArcStr]) -> &'static str {
+    for v in allvars {
+        if v == "time" {
+            return "time";
+        }
+        if v == "Time" {
+            return "Time";
+        }
+    }
+    "time"
+}
+
+/// Strip `"` from a variable name (C does this into `var1` before lookups).
+fn strip_quotes(var: &str) -> ArcStr {
+    if var.contains('"') {
+        ArcStr::from(var.replace('"', ""))
+    } else {
+        ArcStr::from(var)
+    }
+}
+
+/// Count of leading equal timestamps (C `offset`/`offsetRef`): duplicated
+/// initial points that get overwritten with the next value before comparing.
+fn leading_dup_count(time: &[f64]) -> usize {
+    let mut o = 0;
+    while o + 1 < time.len() && time[o] == time[o + 1] {
+        o += 1;
+    }
+    o
+}
+
+/// C `cmpData` for the `isResultCmp=1` path: compares one variable's trajectory
+/// against the reference (event-aware, with reference interpolation), appends
+/// differing points to `ddf`, and returns whether the variable differed.
+fn cmp_data(
+    varname: &ArcStr,
+    time: &[f64],
+    reftime: &[f64],
+    data: &[f64],
+    refdata: &[f64],
+    reltol: f64,
+    abstol: f64,
+    ddf: &mut Vec<DiffData>,
+) -> bool {
+    let reftime_n = reftime.len() as isize;
+    let data_n = data.len();
+    let time_n = time.len();
+
+    let mut average = 0.0;
+    for &x in refdata {
+        average += x.abs();
+    }
+    average /= refdata.len() as f64;
+    average = reltol * average.abs() + abstol;
+
+    let mut isdifferent = false;
+    let mut j: isize = 0;
+    let mut tr = reftime[0];
+    let mut i: usize = 0;
+    'outer: while i < data_n {
+        let mut t = time[i];
+        let d = data[i];
+        let mut increased = false;
+        while tr < t {
+            if j + 1 < reftime_n {
+                j += 1;
+                tr = reftime[j as usize];
+                increased = true;
+                if tr == t {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        if increased
+            && (((t - tr) / tr).abs() > reltol
+                || (t - tr).abs() > (t - reftime[(j - 1) as usize]).abs())
+        {
+            j -= 1;
+            tr = reftime[j as usize];
+        }
+
+        // Events: at a discontinuity (two equal successive times) compare only
+        // the left and right values of the event range.
+        if i + 1 < time_n && almost_equal_default(t, time[i + 1]) {
+            let d_left = d;
+            if i + 1 < data_n {
+                while almost_equal_default(t, time[i + 1]) {
+                    i += 1;
+                    if i + 1 >= data_n {
+                        break;
+                    }
+                }
+            }
+            t = time[i];
+            let d_right = data[i];
+
+            // search event in reference forwards
+            let mut refevent = false;
+            let mut t_event = t + t * reltol * 0.1;
+            if i + 1 <= data_n {
+                t_event = if t_event > time[i] { time[i] } else { t_event };
+            } else {
+                t_event = if t_event > time[i + 1] { time[i + 1] } else { t_event };
+            }
+            let j_event = j;
+            let mut dr_left = 0.0;
+            while tr < t_event {
+                if j + 1 < reftime_n && almost_equal_default(tr, reftime[(j + 1) as usize]) {
+                    dr_left = refdata[j as usize];
+                    refevent = true;
+                    loop {
+                        j += 1;
+                        if j + 1 >= reftime_n {
+                            break;
+                        }
+                        if !almost_equal_default(tr, reftime[(j + 1) as usize]) {
+                            break;
+                        }
+                    }
+                }
+                if !refevent {
+                    j += 1;
+                    if j >= reftime_n {
+                        break;
+                    }
+                    tr = reftime[j as usize];
+                } else {
+                    tr = reftime[j as usize];
+                    break;
+                }
+            }
+            if refevent {
+                tr = reftime[j as usize];
+                let dr_right = refdata[j as usize];
+                if (d_left - dr_left).abs() < average && (d_right - dr_right).abs() < average {
+                    i += 1;
+                    continue 'outer;
+                }
+            } else {
+                // search event in reference backwards
+                j = j_event;
+                tr = reftime[j as usize];
+                refevent = false;
+                t_event = t - t * reltol * 0.1;
+                let mut dr_right = 0.0;
+                while tr > t_event {
+                    if j > 1 && almost_equal_default(tr, reftime[(j - 1) as usize]) {
+                        dr_right = refdata[j as usize];
+                        refevent = true;
+                        loop {
+                            j -= 1;
+                            if j <= 1 {
+                                break;
+                            }
+                            if !almost_equal_default(tr, reftime[(j - 1) as usize]) {
+                                break;
+                            }
+                        }
+                    }
+                    if !refevent {
+                        j -= 1;
+                        if j == 0 {
+                            break;
+                        }
+                        tr = reftime[j as usize];
+                    } else {
+                        tr = reftime[j as usize];
+                        break;
+                    }
+                }
+                if refevent {
+                    tr = reftime[j as usize];
+                    dr_left = refdata[j as usize];
+                    if (d_left - dr_left).abs() < average && (d_right - dr_right).abs() < average {
+                        j = j_event;
+                        tr = reftime[j as usize];
+                        i += 1;
+                        continue 'outer;
+                    }
+                }
+                j = j_event;
+                tr = reftime[j as usize];
+            }
+        }
+
+        // Interpolate the reference to the result time when they don't coincide.
+        let interpolate = (t - tr).abs() > 0.00001;
+        let mut dr = refdata[j as usize];
+        if interpolate {
+            if tr > t {
+                let mut jj = j;
+                if j > 1 {
+                    jj = j - 1;
+                    if reftime[jj as usize] == tr {
+                        loop {
+                            jj -= 1;
+                            if jj <= 0 {
+                                break;
+                            }
+                            if reftime[jj as usize] != tr {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if reftime[jj as usize] != tr {
+                    dr = refdata[jj as usize]
+                        + ((dr - refdata[jj as usize]) / (tr - reftime[jj as usize]))
+                            * (t - reftime[jj as usize]);
+                }
+            } else {
+                let mut jj = j;
+                if j + 1 < reftime_n {
+                    jj = j + 1;
+                    if reftime[jj as usize] == tr {
+                        loop {
+                            jj += 1;
+                            if jj >= reftime_n {
+                                break;
+                            }
+                            if reftime[jj as usize] != tr {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if reftime[jj as usize] != tr {
+                    dr = dr
+                        + ((refdata[jj as usize] - dr) / (reftime[jj as usize] - tr)) * (t - tr);
+                }
+            }
+        }
+
+        let mut err = (d - dr).abs();
+        if err > average {
+            if j + 1 < reftime_n && reftime[(j + 1) as usize] == tr {
+                dr = refdata[(j + 1) as usize];
+                err = (d - dr).abs();
+            }
+            if err < average {
+                i += 1;
+                continue 'outer;
+            }
+            isdifferent = true;
+            ddf.push(DiffData {
+                name: varname.clone(),
+                data: d,
+                dataref: dr,
+                time: t,
+                timeref: tr,
+                interpolate,
+            });
+        }
+        i += 1;
+    }
+    isdifferent
+}
+
+/// C `%.15g` rendering for the diff log file (delegates to the runtime's
+/// printf-compatible float formatter).
+fn g15(x: f64) -> String {
+    openmodelica_util::System::sprintff(literal!("%.15g"), OrderedFloat(x))
+        .map(|s| s.to_string())
+        .unwrap_or_else(|_| format!("{x}"))
+}
+
+/// C `writeLogFile`: dump the differing data points as a semicolon-separated CSV.
+fn write_log_file(
+    filename: &str,
+    ddf: &[DiffData],
+    f: &str,
+    reff: &str,
+    reltol: f64,
+    abstol: f64,
+) -> std::io::Result<()> {
+    use std::fmt::Write as _;
+    let mut s = String::new();
+    let _ = writeln!(s, "\"Generated by OpenModelica\";;;;;");
+    let _ = writeln!(
+        s,
+        "\"Compared Files\";;;\"absolute tolerance\";{};relative tolerance;{}",
+        g15(abstol),
+        g15(reltol)
+    );
+    let _ = writeln!(s, "\"{f}\";;;;;;");
+    let _ = writeln!(s, "\"{reff}\";;;;;;");
+    let _ = writeln!(
+        s,
+        "\"Name\";\"Time\";\"DataPoint\";\"RefTime\";\"RefDataPoint\";\"absolute error\";\"relative error\";interpolate;"
+    );
+    for dd in ddf {
+        let _ = writeln!(
+            s,
+            "{};{};{};{};{};{};{};{};",
+            dd.name,
+            g15(dd.time),
+            g15(dd.data),
+            g15(dd.timeref),
+            g15(dd.dataref),
+            g15((dd.data - dd.dataref).abs()),
+            g15(((dd.data - dd.dataref) / dd.dataref).abs()),
+            if dd.interpolate { '1' } else { '0' }
+        );
+    }
+    std::fs::write(filename, s)
+}
+
 pub fn cmpSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, mut reffilename: ArcStr, mut logfilename: ArcStr, mut refTol: metamodelica::Real, mut absTol: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    // C: SimulationResults_cmpSimulationResults (SimulationResultsCmp.c).
-    todo!("SimulationResults.cmpSimulationResults: result comparison not yet ported")
+    // C: SimulationResults_cmpSimulationResults ->
+    //    SimulationResultsCmp_compareResults(isResultCmp=1, isHtml=0).
+    let reltol = refTol.into_inner();
+    let abstol = absTol.into_inner();
+
+    let mut reader_c = match MatReader::open(filename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_FILE, [filename.clone()])?;
+            return Ok(Arc::new(List::Nil));
+        }
+    };
+    let mut reader_ref = match MatReader::open(reffilename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_REFFILE, [reffilename.clone()])?;
+            return Ok(Arc::new(List::Nil));
+        }
+    };
+
+    let allvars = read_vars_filter_aliases(&reader_c);
+    let allvarsref = read_vars_filter_aliases(&reader_ref);
+
+    // Compare-list: the supplied vars, or every reference variable when empty.
+    let mut cmpvars: Vec<ArcStr> = vars.as_ref().into_iter().cloned().collect();
+    if cmpvars.is_empty() {
+        cmpvars = allvarsref.clone();
+        if cmpvars.is_empty() {
+            err(&ERROR_GET_VARS, [])?;
+            return Ok(Arc::new(List::Nil));
+        }
+    }
+
+    let time_name = get_time_var_name(&allvars);
+    let timeref_name = get_time_var_name(&allvarsref);
+    let time = match get_data(&mut reader_c, time_name) {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME, [])?;
+            return Ok(Arc::new(List::Nil));
+        }
+    };
+    let timeref = match get_data(&mut reader_ref, timeref_name) {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME_REF, [])?;
+            return Ok(Arc::new(List::Nil));
+        }
+    };
+
+    // Warn (but continue) when the end times differ by more than the tolerance.
+    let last = *time.last().unwrap();
+    let last_ref = *timeref.last().unwrap();
+    if (last - last_ref).abs() > reltol * last_ref.abs() {
+        let buf = format!(
+            "Resultfile and Reference have different end time points!\nReffile[{}]={}\nFile[{}]={}\n",
+            timeref.len(),
+            format_g(last_ref),
+            time.len(),
+            format_g(last)
+        );
+        Error::addMessage(
+            ErrorTypes::Message {
+                id: -1,
+                ty: ErrorTypes::MessageType::SCRIPTING,
+                severity: ErrorTypes::Severity::WARNING,
+                message: Gettext::TranslatableContent::notrans { r#str: ArcStr::from(buf) },
+            },
+            Arc::new(List::Nil),
+        )?;
+    }
+
+    let offset = leading_dup_count(&time);
+    let offset_ref = leading_dup_count(&timeref);
+
+    let mut ddf: Vec<DiffData> = Vec::new();
+    let mut diff_vars: Vec<ArcStr> = Vec::new();
+    let mut nfailed = 0u32;
+    for var in &cmpvars {
+        let var1 = strip_quotes(var.as_str());
+        let mut dataref = match get_data(&mut reader_ref, var1.as_str()) {
+            Some(d) if !d.is_empty() => d,
+            _ => {
+                let file = if runningTestsuite { openmodelica_util::System::basename(reffilename.clone()) } else { reffilename.clone() };
+                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                nfailed += 1;
+                continue;
+            }
+        };
+        let mut data = match get_data(&mut reader_c, var1.as_str()) {
+            Some(d) if !d.is_empty() => d,
+            _ => {
+                let file = if runningTestsuite { openmodelica_util::System::basename(filename.clone()) } else { filename.clone() };
+                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                nfailed += 1;
+                continue;
+            }
+        };
+        // Adjust the duplicated initial data points (C shifts data[offset..0]).
+        for j in (1..=offset).rev() {
+            data[j - 1] = data[j];
+        }
+        for j in (1..=offset_ref).rev() {
+            dataref[j - 1] = dataref[j];
+        }
+        if cmp_data(var, &time, &timeref, &data, &dataref, reltol, abstol, &mut ddf) {
+            diff_vars.push(var.clone());
+        }
+    }
+
+    if let Err(e) = write_log_file(logfilename.as_str(), &ddf, filename.as_str(), reffilename.as_str(), reltol, abstol) {
+        let _ = e;
+        Error::addMessage(
+            ErrorTypes::Message {
+                id: -1,
+                ty: ErrorTypes::MessageType::SCRIPTING,
+                severity: ErrorTypes::Severity::WARNING,
+                message: Gettext::TranslatableContent::gettext { msgid: literal!("Cannot write to the difference (.csv) file!\n") },
+            },
+            Arc::new(List::Nil),
+        )?;
+    }
+
+    if !ddf.is_empty() || nfailed > 0 || !diff_vars.is_empty() {
+        Error::addMessage(
+            ErrorTypes::Message {
+                id: -1,
+                ty: ErrorTypes::MessageType::SCRIPTING,
+                severity: ErrorTypes::Severity::WARNING,
+                message: Gettext::TranslatableContent::gettext { msgid: literal!("Files not Equal\n") },
+            },
+            Arc::new(List::Nil),
+        )?;
+        let mut items = vec![literal!("Files not Equal!")];
+        items.extend(diff_vars.into_iter().rev());
+        Ok(Arc::new(List::from_iter(items)))
+    } else {
+        Ok(Arc::new(List::from_iter([literal!("Files Equal!")])))
+    }
+}
+
+/// Error norms for `deltaSimulationResults` (C `ErrorMethod`).
+enum ErrorMethod {
+    Norm1,
+    Norm2,
+    MaxErr,
+}
+
+/// C `deltaData`: accumulate the error norm of `data` vs `refdata` sampled at
+/// the reference times (with linear interpolation of the result trajectory).
+fn delta_data(method: &ErrorMethod, time: &[f64], reftime: &[f64], data: &[f64], refdata: &[f64]) -> f64 {
+    let mut res0 = 0.0;
+    let mut i = 0usize;
+    let tn = time.len();
+    // C uses `0.0001*time->data[time->n]` (one past the end) as the "coincides"
+    // threshold; mirror the intended "largest time" with the last element.
+    let thr = (0.0001 * time[tn - 1]).max(1e-12);
+    for iref in 0..reftime.len() {
+        let valref = refdata[iref];
+        let t = reftime[iref];
+        while i < tn && time[i] < t {
+            i += 1;
+        }
+        if i >= tn {
+            break;
+        }
+        let i2 = i + 1;
+        let val = if (time[i] - t).abs() <= thr || i2 >= tn {
+            data[i]
+        } else {
+            (data[i2] - data[i]) / (time[i2] - time[i]) * (t - time[i]) + data[i]
+        };
+        match method {
+            ErrorMethod::Norm1 => res0 += (valref - val).abs(),
+            ErrorMethod::Norm2 => res0 += (valref - val).powi(2),
+            ErrorMethod::MaxErr => res0 = (valref - val).abs().max(res0),
+        }
+    }
+    match method {
+        ErrorMethod::Norm2 => res0.sqrt(),
+        _ => res0,
+    }
 }
 
 pub fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut method: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>) -> Result<metamodelica::Real> {
-    // C: SimulationResults_deltaSimulationResults (SimulationResultsCmp.c).
-    todo!("SimulationResults.deltaSimulationResults: result comparison not yet ported")
+    // C: SimulationResults_deltaSimulationResults -> SimulationResultsCmp_deltaResults.
+    let errmethod = match method.as_str() {
+        "1norm" => ErrorMethod::Norm1,
+        "2norm" => ErrorMethod::Norm2,
+        "maxerr" => ErrorMethod::MaxErr,
+        _ => {
+            Error::addMessage(
+                ErrorTypes::Message {
+                    id: -1,
+                    ty: ErrorTypes::MessageType::SCRIPTING,
+                    severity: ErrorTypes::Severity::WARNING,
+                    message: Gettext::TranslatableContent::gettext { msgid: literal!("Unknown method string: %s. 1-Norm is chosen.") },
+                },
+                Arc::new(List::from_iter([method.clone()])),
+            )?;
+            ErrorMethod::Norm1
+        }
+    };
+
+    let mut reader_c = match MatReader::open(filename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_FILE, [filename.clone()])?;
+            return Ok(OrderedFloat(-1.0));
+        }
+    };
+    let mut reader_ref = match MatReader::open(reffilename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_REFFILE, [filename.clone()])?;
+            return Ok(OrderedFloat(-1.0));
+        }
+    };
+
+    let allvars = read_vars_filter_aliases(&reader_c);
+    let allvarsref = read_vars_filter_aliases(&reader_ref);
+    let mut cmpvars: Vec<ArcStr> = vars.as_ref().into_iter().cloned().collect();
+    if cmpvars.is_empty() {
+        cmpvars = allvarsref.clone();
+        if cmpvars.is_empty() {
+            err(&ERROR_GET_VARS, [])?;
+            return Ok(OrderedFloat(-1.0));
+        }
+    }
+
+    let time_name = get_time_var_name(&allvars);
+    let timeref_name = get_time_var_name(&allvarsref);
+    let time = match get_data(&mut reader_c, time_name) {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME, [])?;
+            return Ok(OrderedFloat(-1.0));
+        }
+    };
+    let timeref = match get_data(&mut reader_ref, timeref_name) {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME_REF, [])?;
+            return Ok(OrderedFloat(-1.0));
+        }
+    };
+    if time[0] > timeref[0] {
+        err(&ERROR_FILE_STARTS_BEFORE, [])?;
+        return Ok(OrderedFloat(-1.0));
+    }
+    if *time.last().unwrap() < *timeref.last().unwrap() {
+        err(&ERROR_FILE_ENDS_BEFORE, [])?;
+        return Ok(OrderedFloat(-1.0));
+    }
+
+    let offset = leading_dup_count(&time);
+    let offset_ref = leading_dup_count(&timeref);
+    let mut res = 0.0;
+    for var in &cmpvars {
+        let var1 = strip_quotes(var.as_str());
+        let mut dataref = match get_data(&mut reader_ref, var1.as_str()) {
+            Some(d) if !d.is_empty() => d,
+            _ => continue,
+        };
+        let mut data = match get_data(&mut reader_c, var1.as_str()) {
+            Some(d) if !d.is_empty() => d,
+            _ => continue,
+        };
+        for j in (1..=offset).rev() {
+            data[j - 1] = data[j];
+        }
+        for j in (1..=offset_ref).rev() {
+            dataref[j - 1] = dataref[j];
+        }
+        res += delta_data(&errmethod, &time, &timeref, &data, &dataref);
+    }
+    Ok(OrderedFloat(res))
 }
 
 pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, mut reffilename: ArcStr, mut prefix: ArcStr, mut refTol: metamodelica::Real, mut relTolDiffMaxMin: metamodelica::Real, mut rangeDelta: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>, mut keepEqualResults: bool) -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> {
