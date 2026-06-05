@@ -756,7 +756,8 @@ pub mod Partition {
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 {
                     let __cell1 = func(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
-                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __idx1 = i.clone();
+                    comps.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             assign_field!(partition.strongComponents = Some(comps.clone()));
@@ -836,7 +837,8 @@ pub mod Partition {
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
                 {
                     let __cell0 = StrongComponent::removeAlias(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                    comps.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    comps.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
         }

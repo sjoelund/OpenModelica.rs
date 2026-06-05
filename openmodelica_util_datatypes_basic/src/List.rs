@@ -796,7 +796,8 @@ pub fn countingSort(mut inList: Arc<metamodelica::List<i32>>, mut N: i32) -> Arc
         let mut v = v.clone();
         {
             let __cell0 = intAdd(({let __elt = a1.borrow()[(v.clone()-1) as usize].clone(); __elt}), 1);
-            a1.clone().borrow_mut()[(v.clone()-1) as usize] = __cell0;
+            let __idx0 = v.clone();
+            a1.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     for mut v in (1..=N.clone()).rev() {

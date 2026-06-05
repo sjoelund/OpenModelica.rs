@@ -362,19 +362,22 @@ fn myersGreedyDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr
             y = x.clone() - k.clone();
             {
                 let __cell0 = metamodelica::cons((x.clone(), y.clone()), prevPath.clone());
-                paths.clone().borrow_mut()[(k.clone() + middle.clone()-1) as usize] = __cell0;
+                let __idx0 = k.clone() + middle.clone();
+                paths.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             while if (x.clone() < len1.clone() && y.clone() < len2.clone()) {equals(({let __elt = arr1.borrow()[(start1.clone() + x.clone()-1) as usize].clone(); __elt}), ({let __elt = arr2.borrow()[(start2.clone() + y.clone()-1) as usize].clone(); __elt}))?} else {false} {
                 x = x.clone() + 1;
                 y = y.clone() + 1;
                 {
                     let __cell1 = metamodelica::cons((x.clone(), y.clone()), ({let __elt = paths.borrow()[(k.clone() + middle.clone()-1) as usize].clone(); __elt}));
-                    paths.clone().borrow_mut()[(k.clone() + middle.clone()-1) as usize] = __cell1;
+                    let __idx1 = k.clone() + middle.clone();
+                    paths.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             {
                 let __cell2 = x.clone();
-                V.clone().borrow_mut()[(k.clone() + middle.clone()-1) as usize] = __cell2;
+                let __idx2 = k.clone() + middle.clone();
+                V.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
             }
             if x.clone() >= len1.clone() && y.clone() >= len2.clone() {
                 out = myersGreedyPathToDiff(arr1.clone(), arr2.clone(), start1.clone(), start2.clone(), ({let __elt = paths.borrow()[(k.clone() + middle.clone()-1) as usize].clone(); __elt}))?;

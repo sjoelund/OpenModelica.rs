@@ -1082,7 +1082,8 @@ pub mod Function {
                     assign_field!(s.arg = Some(arg.clone()));
                     {
                         let __cell1 = s.clone();
-                        slots.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                        let __idx1 = i.clone();
+                        slots.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                     }
                 } else {
                     Error::addSourceMessage(Error::FUNCTION_SLOT_ALREADY_FILLED.clone(), list![(arg_name.clone()).clone(), (literal!("")).clone()], info.clone())?;

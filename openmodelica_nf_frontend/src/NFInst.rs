@@ -1981,7 +1981,8 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
                     let __cell0 = instDimension(({let __elt = dims.borrow()[(i.clone()-1) as usize].clone(); __elt}), context.clone(), settings.clone(), info.clone())?;
-                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    dims.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             if Restriction::isRecord(var_field!((*cls).restriction, Class::NFClass::EXPANDED_DERIVED).clone()) {
@@ -2103,7 +2104,8 @@ pub fn instComponentExpressions(mut component: Arc<InstNode::InstNode>, mut cont
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
                     let __cell0 = instDimension(({let __elt = dims.borrow()[(i.clone()-1) as usize].clone(); __elt}), context.clone(), settings.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
-                    dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    dims.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             InstNode::updateComponent(c.clone(), node.clone())?;

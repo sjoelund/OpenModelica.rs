@@ -4973,7 +4973,8 @@ fn sortEqnsVarsWeights(mut inW: metamodelica::Array<i32>, mut n: i32, mut m: met
     for mut i in 1..=n.clone() {
         {
             let __cell0 = (({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
-            outW.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            outW.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     outW
@@ -5688,7 +5689,8 @@ fn simplifyLoopsUpdateAss(mut inAss: metamodelica::Array<i32>, mut new_ass: Arc<
         let mut a = a.clone();
         {
             let __cell0 = a.clone();
-            outAss.clone().borrow_mut()[(i.clone() + n.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone() + n.clone();
+            outAss.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         i = i.clone() + 1;
     }

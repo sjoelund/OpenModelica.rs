@@ -4478,12 +4478,14 @@ pub mod LinearJacobian {
                     if !(realEq(row_value.clone(), metamodelica::OrderedFloat(0.0_f64))) {
                         {
                             let __cell1 = true;
-                            linJac.eq_marks.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;
+                            let __idx1 = j.clone();
+                            linJac.eq_marks.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                         }
                         unwrap_break_err!(solveRow(({let __elt = linJac.rows.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = linJac.rows.borrow()[(j.clone()-1) as usize].clone(); __elt}), piv_value.clone(), row_value.clone()), '__try0);
                         {
                             let __cell2 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: ({let __elt = linJac.rhs.borrow()[(j.clone()-1) as usize].clone(); __elt}), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: piv_value.clone() }) }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: ({let __elt = linJac.rhs.borrow()[(i.clone()-1) as usize].clone(); __elt}), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: row_value.clone() }) }) });
-                            linJac.rhs.clone().borrow_mut()[(j.clone()-1) as usize] = __cell2;
+                            let __idx2 = j.clone();
+                            linJac.rhs.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                         }
                     }
                 }
@@ -4577,11 +4579,13 @@ pub mod LinearJacobian {
                 (i_arr, i_scal) = ({let __elt = linJac.ind.borrow()[(r.clone()-1) as usize].clone(); __elt});
                 {
                     let __cell0 = -1;
-                    ass2.clone().borrow_mut()[(({let __elt = ass1.borrow()[(i_scal.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
+                    let __idx0 = ({let __elt = ass1.borrow()[(i_scal.clone()-1) as usize].clone(); __elt});
+                    ass2.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
                 {
                     let __cell1 = -1;
-                    ass1.clone().borrow_mut()[(i_scal.clone()-1) as usize] = __cell1;
+                    let __idx1 = i_scal.clone();
+                    ass1.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
                 (rhs, _) = ExpressionSimplify::simplify(({let __elt = linJac.rhs.borrow()[(r.clone()-1) as usize].clone(); __elt}))?;
                 lhs = generateLHSfromList(UnorderedMap::keyArray(({let __elt = linJac.rows.borrow()[(r.clone()-1) as usize].clone(); __elt})), UnorderedMap::valueArray(({let __elt = linJac.rows.borrow()[(r.clone()-1) as usize].clone(); __elt})), syst.orderedVars.clone())?;

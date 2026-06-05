@@ -1067,8 +1067,8 @@ fn addEqnWeights(mut e: i32, mut m: metamodelica::Array<Arc<metamodelica::List<(
             } };
             v1 = __pa0.clone();
             v2 = __pa1.clone();
-            points = {let _arr = iPoints.clone(); let _val = ({let __elt = iPoints.borrow()[(v1.clone()-1) as usize].clone(); __elt}) + 5; _arr.borrow_mut()[(v1.clone()-1) as usize] = _val; _arr};
-            points = {let _arr = iPoints.clone(); let _val = ({let __elt = points.borrow()[(v2.clone()-1) as usize].clone(); __elt}) + 5; _arr.borrow_mut()[(v2.clone()-1) as usize] = _val; _arr};
+            points = {let _arr = iPoints.clone(); let _idx = v1.clone(); let _val = ({let __elt = iPoints.borrow()[(v1.clone()-1) as usize].clone(); __elt}) + 5; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            points = {let _arr = iPoints.clone(); let _idx = v2.clone(); let _val = ({let __elt = points.borrow()[(v2.clone()-1) as usize].clone(); __elt}) + 5; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             Ok(points.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1451,7 +1451,8 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             if BackendEquation::isAlgorithm(eqn.clone()) {
                 {
                     let __cell1 = false;
-                    eqArray.clone().borrow_mut()[(qidx.clone()-1) as usize] = __cell1;
+                    let __idx1 = qidx.clone();
+                    eqArray.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
                 algSolvedVars = metamodelica::nil();
                 let __range2 = &*({let __elt = adjEnh.borrow()[(qidx.clone()-1) as usize].clone(); __elt});
@@ -1463,7 +1464,8 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
                         (unsolvedCombined, _) = unwrap_break_err!(List::deleteMemberOnTrue(vidx.clone(), unsolvedCombined.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)), '__try0);
                         {
                             let __cell3 = false;
-                            varArray.clone().borrow_mut()[(vidx.clone()-1) as usize] = __cell3;
+                            let __idx3 = vidx.clone();
+                            varArray.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                         }
                     }
                 }
@@ -1582,11 +1584,13 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
                 if ({let __elt = eqArray.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}) && ({let __elt = nV.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}) == -1 {
                     {
                         let __cell2 = varIdx.clone();
-                        nV.clone().borrow_mut()[(eqIdx.clone()-1) as usize] = __cell2;
+                        let __idx2 = eqIdx.clone();
+                        nV.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                     }
                     {
                         let __cell3 = eqIdx.clone();
-                        nE.clone().borrow_mut()[(varIdx.clone()-1) as usize] = __cell3;
+                        let __idx3 = varIdx.clone();
+                        nE.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                     }
                     success = true;
                     return Ok((eqMarker.clone(), nE.clone(), nV.clone(), success.clone()));
@@ -1601,7 +1605,8 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
                 if ({let __elt = eqMarker.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}) {
                     {
                         let __cell5 = false;
-                        eqMarker.clone().borrow_mut()[(eqIdx.clone()-1) as usize] = __cell5;
+                        let __idx5 = eqIdx.clone();
+                        eqMarker.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
                     }
                     (eqMarker, nE, nV, success) = unwrap_break_err!(pathFound(({let __elt = nV.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}), adjEnhT.clone(), varArray.clone(), eqArray.clone(), eqMarker.clone(), nE.clone(), nV.clone()), '__try0);
                 }
@@ -1609,11 +1614,13 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
             if success.clone() {
                 {
                     let __cell6 = varIdx.clone();
-                    nV.clone().borrow_mut()[(eqIdx.clone()-1) as usize] = __cell6;
+                    let __idx6 = eqIdx.clone();
+                    nV.clone().borrow_mut()[(__idx6-1) as usize] = __cell6;
                 }
                 {
                     let __cell7 = eqIdx.clone();
-                    nE.clone().borrow_mut()[(varIdx.clone()-1) as usize] = __cell7;
+                    let __idx7 = varIdx.clone();
+                    nE.clone().borrow_mut()[(__idx7-1) as usize] = __cell7;
                 }
                 return Ok((eqMarker.clone(), nE.clone(), nV.clone(), success.clone()));
             }
@@ -2061,7 +2068,8 @@ fn getEquationNonlinearityPoints(mut eqnNonlinPoints: metamodelica::Array<i32>, 
         }
         {
             let __cell0 = sum.clone();
-            eqnNonlinPoints.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            eqnNonlinPoints.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     eqnNonlinPoints
@@ -3433,7 +3441,8 @@ fn getVarsOfEqnsWithMostVars(mut inVars: Arc<metamodelica::List<i32>>, mut mIn: 
         size = (({let __elt = mIn.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
         {
             let __cell0 = size.clone();
-            eqn_size_arr.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            eqn_size_arr.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         if size.clone() > maxSize.clone() {
             maxSize = size.clone();

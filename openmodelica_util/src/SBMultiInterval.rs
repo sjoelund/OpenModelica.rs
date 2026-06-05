@@ -144,7 +144,8 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
             Array::copyN(ints1.clone(), resi.clone(), count.clone(), 0, 0)?;
             {
                 let __cell0 = i.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(resi.clone().clone(), count.clone() + 1, __cell0); }
+                let __idx0 = count.clone() + 1;
+                unsafe { metamodelica::Dangerous::arrayInitSlot(resi.clone().clone(), __idx0, __cell0); }
             }
             Array::copyN(ints2.clone(), resi.clone(), metamodelica::arrayLength(ints2.clone()) - count.clone() - 1, count.clone() + 1, count.clone() + 1)?;
             UnorderedSet::add(fromArray(resi.clone())?, res.clone())?;
@@ -176,7 +177,8 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
     for mut i in 1..=mi1_size.clone() {
         {
             let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), metamodelica::arrayGet(tmp_mi.intervals.clone(), i.clone())?)?;
-            unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), i.clone(), __cell0); }
+            let __idx0 = i.clone();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), __idx0, __cell0); }
         }
     }
     count = 0;
@@ -233,7 +235,8 @@ pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut mi: Arc<SBM
     ints = metamodelica::arrayFromVec(mi.intervals.clone().borrow().clone());
     {
         let __cell0 = i.clone();
-        ints.clone().borrow_mut()[(dim.clone()-1) as usize] = __cell0;
+        let __idx0 = dim.clone();
+        ints.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     res = fromArray(ints.clone())?;
     Ok(res)

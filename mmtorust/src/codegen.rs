@@ -9507,13 +9507,15 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             if arr_is_uninit {
                 Ok(format!("unsafe {{ metamodelica::Dangerous::arrayInitSlot({arg1}, {arg2}, {arg3}) }}"))
             } else {
-                // If the value expression reads from any RefCell (`.borrow(`) it may
-                // alias the array we're about to `borrow_mut()` — hoist to a temp first
-                // so the read finishes before the mutable borrow is acquired. Otherwise
-                // emit the compact form without a temp.
-                let rhs_may_alias = arg3.contains(".borrow(") || arg3.contains(".borrow_mut(");
-                if rhs_may_alias {
-                    Ok(format!("{{let _arr = {}; let _val = {}; _arr.borrow_mut()[({}-1) as usize] = _val; _arr}}", arg1, arg3, arg2))
+                // If the index or value expression reads from any RefCell (`.borrow(`)
+                // it may alias the array we're about to `borrow_mut()` — e.g.
+                // `arrayUpdate(parent, find(dsf,i), v)` where `find` reads `parent`.
+                // Hoist them to temps (index first, matching arg order) so every read
+                // finishes before the mutable borrow is acquired. Otherwise emit the
+                // compact form without temps.
+                let may_alias = |s: &str| s.contains(".borrow(") || s.contains(".borrow_mut(");
+                if may_alias(&arg2) || may_alias(&arg3) {
+                    Ok(format!("{{let _arr = {}; let _idx = {}; let _val = {}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr}}", arg1, arg2, arg3))
                 } else {
                     Ok(format!("{{let _arr = {}; _arr.borrow_mut()[({}-1) as usize] = {}; _arr}}", arg1, arg2, arg3))
                 }
@@ -17645,14 +17647,19 @@ fn emit_stmt<'a>(
                 match base.ty() {
                     Ty::Array(_) => {
                         // Modelica `arr[i] := rhs;` on an Array<T> (= Rc<RefCell<Vec<T>>>).
-                        // Two hazards to avoid:
+                        // Three hazards to avoid:
                         //   1. The cell needs `borrow_mut()` for writing; plain indexing
                         //      on the Rc handle gives no IndexMut impl.
                         //   2. The rhs may itself borrow the same array (e.g. swap), so
                         //      we hoist it into a local temp first to drop any Ref before
                         //      acquiring the RefMut — otherwise RefCell would panic at runtime.
+                        //   3. The subscript may also borrow the same array (e.g.
+                        //      `parent[find(dsf, r)] := root`, where `find` reads `parent`),
+                        //      so it is hoisted into a temp too: it must be fully evaluated
+                        //      before the `borrow_mut()` guard exists.
                         let n = *fresh; *fresh += 1;
                         let tmp = format!("__cell{n}");
+                        let idx_tmp = format!("__idx{n}");
                         let base_str = emit_exp(base, /*is_const=*/false, ctx, top_level);
                         // Check if the base array is uninitialised (from arrayCreateNoInit).
                         // If so, use ptr::write via arrayInitSlot to avoid dropping garbage bytes.
@@ -17662,10 +17669,11 @@ fn emit_stmt<'a>(
                         );
                         writeln!(out, "{indent}{{").unwrap();
                         writeln!(out, "{indent}    let {tmp} = {scrut_expr};").unwrap();
+                        writeln!(out, "{indent}    let {idx_tmp} = {idx_str};").unwrap();
                         if base_is_uninit {
-                            writeln!(out, "{indent}    unsafe {{ metamodelica::Dangerous::arrayInitSlot({base_str}.clone(), {idx_str}, {tmp}); }}").unwrap();
+                            writeln!(out, "{indent}    unsafe {{ metamodelica::Dangerous::arrayInitSlot({base_str}.clone(), {idx_tmp}, {tmp}); }}").unwrap();
                         } else {
-                            writeln!(out, "{indent}    {base_str}.borrow_mut()[({idx_str}-1) as usize] = {tmp};").unwrap();
+                            writeln!(out, "{indent}    {base_str}.borrow_mut()[({idx_tmp}-1) as usize] = {tmp};").unwrap();
                         }
                         writeln!(out, "{indent}}}").unwrap();
                     }

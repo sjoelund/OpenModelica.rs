@@ -1418,7 +1418,8 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
                 ty = Type::liftArrayRightList(ty.clone(), dims.clone());
                 {
                     let __cell0 = Arc::new(Expression::NFExpression::RECORD_ELEMENT { recordExp: expression.clone(), index: i.clone(), fieldName: (InstNode::name(({let __elt = comps1.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).clone(), ty: ty.clone() });
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(elem_arr.clone().clone(), i.clone(), __cell0); }
+                    let __idx0 = i.clone();
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(elem_arr.clone().clone(), __idx0, __cell0); }
                 }
             }
             elem_arr.clone()

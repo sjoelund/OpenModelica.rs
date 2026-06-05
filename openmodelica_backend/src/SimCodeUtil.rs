@@ -1039,7 +1039,7 @@ fn addTempVars(mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVa
         _ => ((SimVarsIndex::alg.clone()) as i32),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        {let _arr = simVars.clone(); let _val = metamodelica::cons(e.clone(), ({let __elt = simVars.borrow()[(ix.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(ix.clone()-1) as usize] = _val; _arr};
+        {let _arr = simVars.clone(); let _idx = ix.clone(); let _val = metamodelica::cons(e.clone(), ({let __elt = simVars.borrow()[(ix.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     Ok(())
 }
@@ -12714,7 +12714,7 @@ fn setUpEqTree(mut beq: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
     depVars = metamodelica::arrayGet(m.clone(), beq.clone())?;
     depVars = List::filter1OnTrue(depVars.clone(), (std::sync::Arc::new(fnptr!(setUpEqTree_Help, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), assVar.clone())?;
     preEqs = List::map1(depVars.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varMatch.clone())?;
-    {let _arr = treeIn.clone(); let _val = listAppend(({let __elt = treeIn.borrow()[(beq.clone()-1) as usize].clone(); __elt}), preEqs.clone()); _arr.borrow_mut()[(beq.clone()-1) as usize] = _val; _arr};
+    {let _arr = treeIn.clone(); let _idx = beq.clone(); let _val = listAppend(({let __elt = treeIn.borrow()[(beq.clone()-1) as usize].clone(); __elt}), preEqs.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     treeOut = treeIn.clone();
     Ok(treeOut)
 }

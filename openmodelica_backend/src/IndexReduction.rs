@@ -2094,17 +2094,20 @@ fn forceStateSelectNever(mut vec_old1: metamodelica::Array<i32>, mut vec_old2: m
                     (never_i, eq_i) = tpl.clone();
                     {
                         let __cell1 = ({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt});
-                        vec1.clone().borrow_mut()[(never_i.clone()-1) as usize] = __cell1;
+                        let __idx1 = never_i.clone();
+                        vec1.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                     }
                     old_i = ({let __elt = vec2.borrow()[(({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
                     {
                         let __cell2 = never_i.clone();
-                        vec2.clone().borrow_mut()[(({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell2;
+                        let __idx2 = ({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt});
+                        vec2.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                     }
                     if !(intEq(old_i.clone(), -1)) {
                         {
                             let __cell3 = -1;
-                            vec1.clone().borrow_mut()[(old_i.clone()-1) as usize] = __cell3;
+                            let __idx3 = old_i.clone();
+                            vec1.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                         }
                     }
                 }
@@ -2590,7 +2593,7 @@ fn getEqnsforDynamicStateSelectionPhase(mut elst: Arc<metamodelica::List<i32>>, 
             rows = List::removeOnTrue(({let __elt = ass1.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rows.clone())?;
             (set, found) = getEqnsforDynamicStateSelectionRows(rows.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             set = List::consOnTrue(found.clone(), e.clone(), set.clone());
-            {let _arr = colummarks.clone(); let _val = if (found.clone()) {mark.clone()} else {({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt})}; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
+            {let _arr = colummarks.clone(); let _idx = e.clone(); let _val = if (found.clone()) {mark.clone()} else {({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt})}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (set, found) = getEqnsforDynamicStateSelectionPhase(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone(), found.clone() || iFound.clone())?;
             (set.clone(), found.clone())
         },
@@ -2689,11 +2692,13 @@ fn sortStateCandidatesVars(mut inVars: BackendDAE::Variables, mut allVars: Backe
         (prio1, prio2) = varStateSelectPrio(v.clone(), allVars.clone(), idx.clone(), m.clone())?;
         {
             let __cell0 = prio1.clone() + prio2.clone();
-            prio.clone().borrow_mut()[(idx.clone()-1) as usize] = __cell0;
+            let __idx0 = idx.clone();
+            prio.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         {
             let __cell1 = idx.clone();
-            index.clone().borrow_mut()[(idx.clone()-1) as usize] = __cell1;
+            let __idx1 = idx.clone();
+            index.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
         if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
             varCref = BackendVariable::varCref(v.clone())?;

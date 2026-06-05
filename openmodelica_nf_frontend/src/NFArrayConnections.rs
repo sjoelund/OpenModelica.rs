@@ -411,7 +411,8 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
     for mut i in 1..=metamodelica::arrayLength(iterators.clone()) {
         {
             let __cell0 = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
-            iterators.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            iterators.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     iter_expl = ({
@@ -642,7 +643,8 @@ fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodel
             o = ({let __elt = off.borrow()[(j.clone()-1) as usize].clone(); __elt});
             {
                 let __cell0 = SBInterval::new(SBInterval::lowerBound(i.clone()) - o.clone() + 1, SBInterval::stepValue(i.clone()), SBInterval::upperBound(i.clone()) - o.clone() + 1);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), j.clone(), __cell0); }
+                let __idx0 = j.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), __idx0, __cell0); }
             }
         }
         outMI = SBMultiInterval::fromArray(res.clone())?;

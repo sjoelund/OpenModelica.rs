@@ -53,27 +53,33 @@ pub fn main(mut eqns: Arc<EquationPointers::EquationPointers>, mut vars: Arc<Var
     values = arrayCreate(3, metamodelica::nil());
     {
         let __cell0 = list![1, 2];
-        indices.clone().borrow_mut()[(1-1) as usize] = __cell0;
+        let __idx0 = 1;
+        indices.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     {
         let __cell1 = list![10, 2];
-        values.clone().borrow_mut()[(1-1) as usize] = __cell1;
+        let __idx1 = 1;
+        values.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
     }
     {
         let __cell2 = list![1];
-        indices.clone().borrow_mut()[(2-1) as usize] = __cell2;
+        let __idx2 = 2;
+        indices.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
     }
     {
         let __cell3 = list![5];
-        values.clone().borrow_mut()[(2-1) as usize] = __cell3;
+        let __idx3 = 2;
+        values.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
     }
     {
         let __cell4 = list![1, 3];
-        indices.clone().borrow_mut()[(3-1) as usize] = __cell4;
+        let __idx4 = 3;
+        indices.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
     }
     {
         let __cell5 = list![8, -2];
-        values.clone().borrow_mut()[(3-1) as usize] = __cell5;
+        let __idx5 = 3;
+        values.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
     }
     setMatrix(3, 3, 5, indices.clone(), values.clone());
     freeMatrix();

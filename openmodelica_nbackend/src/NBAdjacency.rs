@@ -338,12 +338,14 @@ pub mod Mapping {
             size = BEquation::Equation::size(eqn_ptr.clone(), true)?;
             {
                 let __cell0 = (eqn_idx_scal.clone(), size.clone());
-                eqn_AtS.clone().borrow_mut()[(eqn_idx_arr.clone()-1) as usize] = __cell0;
+                let __idx0 = eqn_idx_arr.clone();
+                eqn_AtS.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             for mut i in eqn_idx_scal.clone()..=eqn_idx_scal.clone() + size.clone() - 1 {
                 {
                     let __cell1 = eqn_idx_arr.clone();
-                    eqn_StA.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __idx1 = i.clone();
+                    eqn_StA.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             eqn_idx_scal = eqn_idx_scal.clone() + size.clone();
@@ -354,12 +356,14 @@ pub mod Mapping {
             size = BVariable::size(var_ptr.clone(), true)?;
             {
                 let __cell2 = (var_idx_scal.clone(), size.clone());
-                var_AtS.clone().borrow_mut()[(var_idx_arr.clone()-1) as usize] = __cell2;
+                let __idx2 = var_idx_arr.clone();
+                var_AtS.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
             }
             for mut i in var_idx_scal.clone()..=var_idx_scal.clone() + size.clone() - 1 {
                 {
                     let __cell3 = var_idx_arr.clone();
-                    var_StA.clone().borrow_mut()[(i.clone()-1) as usize] = __cell3;
+                    let __idx3 = i.clone();
+                    var_StA.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                 }
             }
             var_idx_scal = var_idx_scal.clone() + size.clone();
@@ -547,23 +551,28 @@ pub mod Matrix {
                 addInitialStartOccurrences(occ_set.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone(), kind.clone())?;
                 {
                     let __cell0 = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
-                    equation_names.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                    let __idx0 = index.clone();
+                    equation_names.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
                 {
                     let __cell1 = occ_set.clone();
-                    occurrences.clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
+                    let __idx1 = index.clone();
+                    occurrences.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
                 {
                     let __cell2 = dep_map.clone();
-                    dependencies.clone().borrow_mut()[(index.clone()-1) as usize] = __cell2;
+                    let __idx2 = index.clone();
+                    dependencies.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                 }
                 {
                     let __cell3 = sol_map.clone();
-                    solvabilities.clone().borrow_mut()[(index.clone()-1) as usize] = __cell3;
+                    let __idx3 = index.clone();
+                    solvabilities.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                 }
                 {
                     let __cell4 = rep_set.clone();
-                    repetitions.clone().borrow_mut()[(index.clone()-1) as usize] = __cell4;
+                    let __idx4 = index.clone();
+                    repetitions.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
                 }
             }
             mapping = Mapping::create(eqns.clone(), vars.clone())?;
@@ -921,7 +930,8 @@ pub mod Matrix {
                     occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vn.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
                         let __cell0 = UnorderedSet::union(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), occ_set.clone())?;
-                        var_field!((*full).occurrences, Matrix::FULL).clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                        let __idx0 = index.clone();
+                        var_field!((*full).occurrences, Matrix::FULL).clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                     }
                 }
             }
@@ -933,11 +943,13 @@ pub mod Matrix {
                     occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vars.map.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
                         let __cell1 = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
-                        var_field!((*full).equation_names, Matrix::FULL).clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
+                        let __idx1 = index.clone();
+                        var_field!((*full).equation_names, Matrix::FULL).clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                     }
                     {
                         let __cell2 = occ_set.clone();
-                        var_field!((*full).occurrences, Matrix::FULL).clone().borrow_mut()[(index.clone()-1) as usize] = __cell2;
+                        let __idx2 = index.clone();
+                        var_field!((*full).occurrences, Matrix::FULL).clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                     }
                 }
             }
@@ -1068,7 +1080,8 @@ pub mod Matrix {
                     for mut i in 0..=old_size.clone() - 1 {
                         {
                             let __cell0 = ({let __elt = var_field!((*adj).m, Matrix::FINAL).borrow()[(old_start.clone() + i.clone()-1) as usize].clone(); __elt});
-                            m.clone().borrow_mut()[(new_start.clone() + i.clone()-1) as usize] = __cell0;
+                            let __idx0 = new_start.clone() + i.clone();
+                            m.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                         }
                     }
                 } else {
@@ -1077,23 +1090,28 @@ pub mod Matrix {
                 }
                 {
                     let __cell1 = name.clone();
-                    equation_names.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell1;
+                    let __idx1 = index_new.clone();
+                    equation_names.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
                 {
                     let __cell2 = ({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
-                    occurrences.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell2;
+                    let __idx2 = index_new.clone();
+                    occurrences.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                 }
                 {
                     let __cell3 = ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
-                    dependencies.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell3;
+                    let __idx3 = index_new.clone();
+                    dependencies.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                 }
                 {
                     let __cell4 = ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
-                    solvabilities.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell4;
+                    let __idx4 = index_new.clone();
+                    solvabilities.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
                 }
                 {
                     let __cell5 = ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
-                    repetitions.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell5;
+                    let __idx5 = index_new.clone();
+                    repetitions.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
                 }
             }
             new_adj = Arc::new(Matrix::FINAL { m: m.clone(), mT: transposeScalar(m.clone(), BVariable::VariablePointers::scalarSize(vars.clone(), true)?)?, mapping: mapping.clone(), modes: var_field!((*adj).modes, Matrix::FINAL).clone(), st: var_field!((*adj).st, Matrix::FINAL).clone() });
@@ -1680,12 +1698,14 @@ pub mod Matrix {
                     if idx.clone() > 0 {
                         {
                             let __cell2 = metamodelica::cons(row.clone(), ({let __elt = mT.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
-                            mT.clone().borrow_mut()[(idx.clone()-1) as usize] = __cell2;
+                            let __idx2 = idx.clone();
+                            mT.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                         }
                     } else {
                         {
                             let __cell3 = metamodelica::cons(-(row.clone()), ({let __elt = mT.borrow()[(intAbs(idx.clone())-1) as usize].clone(); __elt}));
-                            mT.clone().borrow_mut()[(intAbs(idx.clone())-1) as usize] = __cell3;
+                            let __idx3 = intAbs(idx.clone());
+                            mT.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
                         }
                     }
                     Ok::<(), anyhow::Error>(())
@@ -1697,7 +1717,8 @@ pub mod Matrix {
         for mut row in 1..=metamodelica::arrayLength(mT.clone()) {
             {
                 let __cell4 = List::sort(({let __elt = mT.borrow()[(row.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-                mT.clone().borrow_mut()[(row.clone()-1) as usize] = __cell4;
+                let __idx4 = row.clone();
+                mT.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
             }
         }
         Ok(mT)
@@ -1805,7 +1826,7 @@ pub mod Matrix {
     }
 
     fn updateIntegerRow(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut idx: i32, mut row: Arc<metamodelica::List<i32>>) -> Result<()> {
-        {let _arr = m.clone(); let _val = listAppend(row.clone(), ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
+        {let _arr = m.clone(); let _idx = idx.clone(); let _val = listAppend(row.clone(), ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         Ok(())
     }
 
@@ -1952,7 +1973,7 @@ pub mod Dependency {
             } };
             dep = __pa0.clone();
             if metamodelica::arrayLength(dep.skips.clone()) >= depth.clone() {
-                {let _arr = dep.skips.clone(); let _val = UnorderedSet::unique_list(metamodelica::cons(sk.clone(), ({let __elt = dep.skips.borrow()[(depth.clone()-1) as usize].clone(); __elt})), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(depth.clone()-1) as usize] = _val; _arr};
+                {let _arr = dep.skips.clone(); let _idx = depth.clone(); let _val = UnorderedSet::unique_list(metamodelica::cons(sk.clone(), ({let __elt = dep.skips.borrow()[(depth.clone()-1) as usize].clone(); __elt})), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             } else {
                 if Flags::isSet(Flags::FAILTRACE.clone())? {
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Dependency.skip")); __mm_s.push_str(&*literal!(": Cref ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" was saved with depth ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(dep.skips.clone()))); __mm_s.push_str(&*literal!(" but depth ")); __mm_s.push_str(&*intString(depth.clone())); __mm_s.push_str(&*literal!(" was requested.")); ArcStr::from(__mm_s) }).clone())?;
@@ -1990,9 +2011,9 @@ pub mod Dependency {
                         {let _arr = dep.skips.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
                     } else if len.clone() > 0 {
                         if reverse.clone() {
-                            {let _arr = dep.skips.clone(); let _val = List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                            {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                         } else {
-                            {let _arr = dep.skips.clone(); let _val = List::lastN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                            {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = List::lastN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                         }
                     }
                     rest = rest.clone() - len.clone();

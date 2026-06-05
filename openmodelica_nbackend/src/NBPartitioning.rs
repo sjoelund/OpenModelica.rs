@@ -878,7 +878,8 @@ pub mod DisjointSetForest {
         while index.clone() != ({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt}) {
             {
                 let __cell0 = ({let __elt = parent.borrow()[(({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
-                parent.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                let __idx0 = index.clone();
+                parent.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             index = ({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt});
         }
@@ -918,13 +919,15 @@ pub mod DisjointSetForest {
             let mut r = r.clone();
             {
                 let __cell0 = root.clone();
-                parent.clone().borrow_mut()[(find(dsf.clone(), r.clone())-1) as usize] = __cell0;
+                let __idx0 = find(dsf.clone(), r.clone());
+                parent.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
         if tied.clone() {
             {
                 let __cell1 = ({let __elt = rank.borrow()[(root.clone()-1) as usize].clone(); __elt}) + 1;
-                rank.clone().borrow_mut()[(root.clone()-1) as usize] = __cell1;
+                let __idx1 = root.clone();
+                rank.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
             }
         }
         Pointer::update(dsf.parent.clone(), parent.clone());
@@ -1005,7 +1008,8 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
                 let mut i = i.clone();
                 {
                     let __cell0 = part_idx.clone();
-                    var_map.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    var_map.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
         }
@@ -1188,7 +1192,8 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
             j = UnorderedMap::getSafe(clock.clone(), index_map.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/1_Main/NBPartitioning.mo"))?;
             {
                 let __cell1 = metamodelica::cons(j.clone(), ({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                m.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                let __idx1 = i.clone();
+                m.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
             }
         }
     }

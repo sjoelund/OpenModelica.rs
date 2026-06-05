@@ -579,7 +579,8 @@ pub mod SuperNode {
             for mut i in index.clone() + 1..=index.clone() + shift.clone() {
                 {
                     let __cell0 = i.clone();
-                    phase2_matching.eqn_to_var.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    phase2_matching.eqn_to_var.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             index = metamodelica::arrayLength(phase2_matching.var_to_eqn.clone());
@@ -587,7 +588,8 @@ pub mod SuperNode {
             for mut i in index.clone() + 1..=index.clone() + shift.clone() {
                 {
                     let __cell1 = i.clone();
-                    phase2_matching.var_to_eqn.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __idx1 = i.clone();
+                    phase2_matching.var_to_eqn.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             index = metamodelica::arrayLength(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone()) + 1;
@@ -759,14 +761,14 @@ pub mod SuperNode {
 
     fn mergeRows(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: metamodelica::Array<i32>, mut super_nodes: metamodelica::Array<Arc<SuperNode>>, mut rows_to_merge: Arc<metamodelica::List<i32>>, mut new_idx: i32) -> Result<i32> {
         let mut new_idx: i32 = new_idx;
-        {let _arr = m.clone(); let _val = UnorderedSet::unique_list(List::flatten(({
+        {let _arr = m.clone(); let _idx = new_idx.clone(); let _val = UnorderedSet::unique_list(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut idx in (rows_to_merge.clone()).into_iter().cloned() {
             let __x = ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?, std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(new_idx.clone()-1) as usize] = _val; _arr};
+    }))?, std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         for mut idx in &*rows_to_merge.clone() {
             let mut idx = idx.clone();
             {let _arr = m.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = metamodelica::nil(); _arr};
@@ -820,9 +822,9 @@ fn strongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut v
         let mut eqn2 = eqn2.clone();
         if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
             (stack, index, comps) = strongConnect(m.clone(), var_to_eqn.clone(), eqn2.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), comps.clone())?;
-            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
-            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
     }
     if ({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) {

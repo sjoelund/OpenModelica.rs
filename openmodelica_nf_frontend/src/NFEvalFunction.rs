@@ -1323,11 +1323,13 @@ fn mapExternalArgs(mut r#fn: Arc<Function::Function>, mut inputArgs: Arc<metamod
         (marg, arg_spec) = mapExternalArg(ext_arg.clone(), arg_map.clone(), r#fn.clone())?;
         {
             let __cell0 = marg.clone();
-            unsafe { metamodelica::Dangerous::arrayInitSlot(mappedArgs.clone().clone(), i.clone(), __cell0); }
+            let __idx0 = i.clone();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(mappedArgs.clone().clone(), __idx0, __cell0); }
         }
         {
             let __cell1 = arg_spec.clone();
-            unsafe { metamodelica::Dangerous::arrayInitSlot(argSpecs.clone().clone(), i.clone(), __cell1); }
+            let __idx1 = i.clone();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(argSpecs.clone().clone(), __idx1, __cell1); }
         }
         i = i.clone() + 1;
     }

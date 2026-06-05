@@ -264,20 +264,24 @@ pub fn minInvCompact(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> 
         if ({let __elt = g.borrow()[(i.clone()-1) as usize].clone(); __elt}) == intReal(System::intMaxLit()) {
             {
                 let __cell0 = metamodelica::OrderedFloat((0) as f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell0); }
+                let __idx0 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx0, __cell0); }
             }
             {
                 let __cell1 = intReal(({let __elt = min.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell1); }
+                let __idx1 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx1, __cell1); }
             }
         } else {
             {
                 let __cell2 = ({let __elt = g.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell2); }
+                let __idx2 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx2, __cell2); }
             }
             {
                 let __cell3 = ({let __elt = o.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell3); }
+                let __idx3 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx3, __cell3); }
             }
         }
     }

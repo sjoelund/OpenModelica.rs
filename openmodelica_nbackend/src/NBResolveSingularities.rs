@@ -441,7 +441,8 @@ fn getMSSS(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: met
             color = ({let __elt = color_clustering.borrow()[(({let __elt = eqn_coloring.borrow()[(eqn.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             {
                 let __cell0 = metamodelica::cons(eqn.clone(), ({let __elt = msss.borrow()[(color.clone()-1) as usize].clone(); __elt}));
-                msss.clone().borrow_mut()[(color.clone()-1) as usize] = __cell0;
+                let __idx0 = color.clone();
+                msss.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
     }
@@ -516,7 +517,8 @@ fn getConstraintsAndCandidates(mut equations: Arc<EquationPointers::EquationPoin
         UnorderedSet::add(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), eqn_indices.clone())?;
         {
             let __cell0 = metamodelica::cons(eqn.clone(), ({let __elt = eqn_slices.borrow()[(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt}));
-            eqn_slices.clone().borrow_mut()[(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
+            let __idx0 = ({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            eqn_slices.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     for mut eqn in &*UnorderedSet::toList(eqn_indices.clone()) {

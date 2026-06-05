@@ -87,9 +87,9 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
         let mut eqn2 = eqn2.clone();
         if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
             (outStack, outIndex, outComponents) = StrongConnect(m.clone(), ass1.clone(), eqn2.clone(), outStack.clone(), outIndex.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
-            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
-            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
         }
     }
     if ({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) {
@@ -155,9 +155,9 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
             if eqn2.clone() > 0 && eqn2.clone() != eqn.clone() {
                 if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
                     (outStack, outIndex, outComponents) = StrongConnectTransposed(mT.clone(), ass2.clone(), eqn2.clone(), outStack.clone(), outIndex.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
-                    {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+                    {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
-                    {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+                    {let _arr = lowlink.clone(); let _idx = eqn.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 }
             }
         }

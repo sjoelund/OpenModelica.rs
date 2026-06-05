@@ -280,7 +280,8 @@ pub fn invertMatching(mut inAss: metamodelica::Array<i32>) -> metamodelica::Arra
         if j.clone() > 0 {
             {
                 let __cell0 = i.clone();
-                outAss.clone().borrow_mut()[(({let __elt = inAss.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
+                let __idx0 = ({let __elt = inAss.borrow()[(i.clone()-1) as usize].clone(); __elt});
+                outAss.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
     }
@@ -3499,7 +3500,7 @@ fn ABMPDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut counter
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    {let _arr = level.clone(); let _val = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 2; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
+                    {let _arr = level.clone(); let _idx = r.clone(); let _val = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 2; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     {let _arr = colptrs.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = 0; _arr};
                     Ok((i.clone() + 1, false))
                 }
@@ -3886,11 +3887,11 @@ fn PR_Global_Relabel_traverseCollums(mut collums: Arc<metamodelica::List<i32>>, 
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut rc: i32 = 0;
                     let true = (intEq(({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}), max.clone())) else { bail!("pattern mismatch") };
-                    {let _arr = l_label.clone(); let _val = ({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
+                    {let _arr = l_label.clone(); let _idx = c.clone(); let _val = ({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     rc = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
                     let true = (intGt(rc.clone(), -1)) else { bail!("pattern mismatch") };
                     let true = (intEq(({let __elt = r_label.borrow()[(rc.clone()-1) as usize].clone(); __elt}), max.clone())) else { bail!("pattern mismatch") };
-                    {let _arr = r_label.clone(); let _val = ({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(rc.clone()-1) as usize] = _val; _arr};
+                    {let _arr = r_label.clone(); let _idx = rc.clone(); let _val = ({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     Ok(PR_Global_Relabel_traverseCollums(rest.clone(), max.clone(), r.clone(), l_label.clone(), r_label.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone(), metamodelica::cons(rc.clone(), nextqueue.clone()))?)
                 }
                 _ => bail!("nomatch"),
@@ -4334,7 +4335,7 @@ fn ks_rand_cheapmatching3(mut e_id: i32, mut rows: Arc<metamodelica::List<i32>>,
                     let mut statck1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut r_1: i32 = 0;
                     let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = row_degrees.clone(); let _val = ({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
+                    {let _arr = row_degrees.clone(); let _idx = r.clone(); let _val = ({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     stack = List::consOnTrue(intEq(({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}), 1), r.clone(), onerows.clone());
                     (statck1, r_1) = ks_rand_cheapmatching3(e_id.clone() - 1, rest.clone(), row_degrees.clone(), c.clone(), ass1.clone(), ass2.clone(), stack.clone(), r.clone())?;
                     Ok((statck1.clone(), r_1.clone()))
@@ -4386,7 +4387,7 @@ fn ks_rand_cheapmatching4(mut cols: Arc<metamodelica::List<i32>>, mut count: i32
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let true = (intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = col_degrees.clone(); let _val = ({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
+                    {let _arr = col_degrees.clone(); let _idx = c.clone(); let _val = ({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     stack = List::consOnTrue(intEq(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}), 1), c.clone(), inStack.clone());
                     Ok(ks_rand_cheapmatching4(rest.clone(), count.clone() - 1, col_degrees.clone(), ass1.clone(), stack.clone())?)
                 }
@@ -4436,7 +4437,7 @@ fn setrandArray(mut n: i32, mut randarr: metamodelica::Array<i32>) -> Result<()>
             let mut tmp: i32 = 0;
             z = ((realMod(System::realRand(), intReal(n.clone()))).0.floor() as i32) + 1;
             tmp = ({let __elt = randarr.borrow()[(n.clone()-1) as usize].clone(); __elt});
-            {let _arr = randarr.clone(); let _val = ({let __elt = randarr.borrow()[(z.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(n.clone()-1) as usize] = _val; _arr};
+            {let _arr = randarr.clone(); let _idx = n.clone(); let _val = ({let __elt = randarr.borrow()[(z.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = randarr.clone(); _arr.borrow_mut()[(z.clone()-1) as usize] = tmp.clone(); _arr};
             setrandArray(n.clone() - 1, randarr.clone())?;
             ()
@@ -4592,7 +4593,7 @@ fn ks_rand_match_degree(mut entries: Arc<metamodelica::List<i32>>, mut degrees: 
                 Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let true = (intLt(({let __elt = ass.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = degrees.clone(); let _val = ({let __elt = degrees.borrow()[(e.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
+                    {let _arr = degrees.clone(); let _idx = e.clone(); let _val = ({let __elt = degrees.borrow()[(e.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     stack = List::consOnTrue(intEq(({let __elt = degrees.borrow()[(e.clone()-1) as usize].clone(); __elt}), 1), e.clone(), inStack.clone());
                     Ok(ks_rand_match_degree(rest.clone(), degrees.clone(), ass.clone(), stack.clone())?)
                 }

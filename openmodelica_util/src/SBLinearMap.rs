@@ -207,7 +207,8 @@ pub fn applyMultiInterval(mut multiInt: Arc<SBMultiInterval::SBMultiInterval>, m
     for mut i in 1..=multiInt.ndim.clone() {
         {
             let __cell0 = applyInterval(({let __elt = multiInt.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = map.gain.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = map.offset.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-            multiInt.intervals.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            multiInt.intervals.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
     }
     multiInt

@@ -284,21 +284,25 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
                         reso = metamodelica::arrayFromVec(SBLinearMap::offset(li.clone()).borrow().clone());
                         {
                             let __cell1 = metamodelica::OrderedFloat((0) as f64);
-                            resg.clone().borrow_mut()[(dim.clone()-1) as usize] = __cell1;
+                            let __idx1 = dim.clone();
+                            resg.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                         }
                         {
                             let __cell2 = metamodelica::OrderedFloat((loint.clone() + k.clone() - off.clone() - 1) as f64);
-                            reso.clone().borrow_mut()[(dim.clone()-1) as usize] = __cell2;
+                            let __idx2 = dim.clone();
+                            reso.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                         }
                         {
                             let __cell3 = SBLinearMap::new(resg.clone(), reso.clone())?;
-                            unsafe { metamodelica::Dangerous::arrayInitSlot(new_l.clone().clone(), k.clone(), __cell3); }
+                            let __idx3 = k.clone();
+                            unsafe { metamodelica::Dangerous::arrayInitSlot(new_l.clone().clone(), __idx3, __cell3); }
                         }
                         new_inter = SBInterval::new(loint.clone() + k.clone() - 1, off.clone(), hiint.clone());
                         aux_as = SBAtomicSet::replace(new_inter.clone(), dim.clone(), adom.clone())?;
                         {
                             let __cell4 = SBSet::addAtomicSet(aux_as.clone(), SBSet::newEmpty())?;
-                            unsafe { metamodelica::Dangerous::arrayInitSlot(new_s.clone().clone(), k.clone(), __cell4); }
+                            let __idx4 = k.clone();
+                            unsafe { metamodelica::Dangerous::arrayInitSlot(new_s.clone().clone(), __idx4, __cell4); }
                         }
                     }
                     new_map = SBPWLinearMap::new(new_s.clone(), new_l.clone())?;
@@ -456,20 +460,24 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
             if g.clone() == inf.clone() {
                 {
                     let __cell0 = metamodelica::OrderedFloat(0.0_f64);
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell0); }
+                    let __idx0 = i.clone();
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx0, __cell0); }
                 }
                 {
                     let __cell1 = intReal(({let __elt = min_aux.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell1); }
+                    let __idx1 = i.clone();
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx1, __cell1); }
                 }
             } else {
                 {
                     let __cell2 = g.clone();
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell2); }
+                    let __idx2 = i.clone();
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx2, __cell2); }
                 }
                 {
                     let __cell3 = ({let __elt = off.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell3); }
+                    let __idx3 = i.clone();
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx3, __cell3); }
                 }
             }
         }
@@ -490,20 +498,24 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
                 if g.clone() == inf.clone() {
                     {
                         let __cell4 = metamodelica::OrderedFloat(0.0_f64);
-                        unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell4); }
+                        let __idx4 = i.clone();
+                        unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx4, __cell4); }
                     }
                     {
                         let __cell5 = intReal(({let __elt = min_aux.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                        unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell5); }
+                        let __idx5 = i.clone();
+                        unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx5, __cell5); }
                     }
                 } else {
                     {
                         let __cell6 = ({let __elt = gres.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                        unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), i.clone(), __cell6); }
+                        let __idx6 = i.clone();
+                        unsafe { metamodelica::Dangerous::arrayInitSlot(resg.clone().clone(), __idx6, __cell6); }
                     }
                     {
                         let __cell7 = ({let __elt = oi.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                        unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), i.clone(), __cell7); }
+                        let __idx7 = i.clone();
+                        unsafe { metamodelica::Dangerous::arrayInitSlot(reso.clone().clone(), __idx7, __cell7); }
                     }
                 }
             }

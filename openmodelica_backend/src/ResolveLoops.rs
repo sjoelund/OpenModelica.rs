@@ -473,10 +473,10 @@ fn resolveLoops_findLoops2(mut eqsIn: Arc<metamodelica::List<i32>>, mut eqCrossL
             let mut paths: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut eqCrossSet: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             for mut i in 1..=metamodelica::arrayLength(mIn.clone()) {
-                {let _arr = mIn.clone(); let _val = List::heapSortIntList(({let __elt = mIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                {let _arr = mIn.clone(); let _idx = i.clone(); let _val = List::heapSortIntList(({let __elt = mIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
             for mut i in 1..=metamodelica::arrayLength(mTIn.clone()) {
-                {let _arr = mTIn.clone(); let _val = List::heapSortIntList(({let __elt = mTIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                {let _arr = mTIn.clone(); let _idx = i.clone(); let _val = List::heapSortIntList(({let __elt = mTIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             }
             eqCrossSet = AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), eqCrossLstIn.clone())?;
             paths = getShortPathsBetweenEqCrossNodes(AvlSetInt::listKeysReverse(eqCrossSet.clone(), metamodelica::nil()), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), metamodelica::nil(), findExactlyOneLoop.clone())?;

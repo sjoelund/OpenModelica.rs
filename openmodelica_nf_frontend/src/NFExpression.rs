@@ -7245,7 +7245,8 @@ pub fn productOfListExceptSelf(mut arguments: Arc<metamodelica::List<Arc<NFExpre
         let mut a = a.clone();
         {
             let __cell0 = a.clone();
-            argsArr.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            argsArr.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         i = i.clone() + 1;
     }
@@ -7254,14 +7255,16 @@ pub fn productOfListExceptSelf(mut arguments: Arc<metamodelica::List<Arc<NFExpre
     for mut i in 2..=n.clone() {
         {
             let __cell1 = mmul(({let __elt = pref.borrow()[(i.clone() - 1-1) as usize].clone(); __elt}), ({let __elt = argsArr.borrow()[(i.clone() - 1-1) as usize].clone(); __elt}), mulOp.clone())?;
-            pref.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+            let __idx1 = i.clone();
+            pref.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
     }
     rightProd = makeOne(elTy.clone())?;
     for mut i in (1..=n.clone()).rev() {
         {
             let __cell2 = mmul(({let __elt = pref.borrow()[(i.clone()-1) as usize].clone(); __elt}), rightProd.clone(), mulOp.clone())?;
-            res.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
+            let __idx2 = i.clone();
+            res.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
         }
         rightProd = mmul(rightProd.clone(), ({let __elt = argsArr.borrow()[(i.clone()-1) as usize].clone(); __elt}), mulOp.clone())?;
     }

@@ -859,7 +859,8 @@ pub mod InlineRating {
             for mut i in 1..=metamodelica::arrayLength(dst.input_rating.clone()) {
                 {
                     let __cell0 = ({let __elt = dst.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt}) + ({let __elt = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    dst.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    dst.input_rating.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             assign_field!(dst.constant_rating = dst.constant_rating.clone() + src.constant_rating.clone());
@@ -875,7 +876,8 @@ pub mod InlineRating {
         for mut i in 1..=metamodelica::arrayLength(ir.input_rating.clone()) {
             {
                 let __cell0 = i.clone() * ({let __elt = ir.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                ir.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                let __idx0 = i.clone();
+                ir.input_rating.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
         assign_field!(ir.constant_rating = i.clone() * ir.constant_rating.clone());
@@ -937,7 +939,8 @@ pub mod InlineRating {
             tmp = Arc::new(InlineRating { input_rating: arrayCreate(num_inp.clone(), 0), constant_rating: 0 });
             {
                 let __cell0 = 1;
-                tmp.input_rating.clone().borrow_mut()[(idx.clone()-1) as usize] = __cell0;
+                let __idx0 = idx.clone();
+                tmp.input_rating.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             idx = idx.clone() + 1;
             UnorderedMap::add(ComponentRef::fromNode(inp.clone(), InstNode::getType(inp.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()), tmp.clone(), local_map.clone())?;

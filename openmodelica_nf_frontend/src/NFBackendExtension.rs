@@ -1421,7 +1421,8 @@ pub mod VariableAttributes {
             index = __esc_index.clone();
             {
                 let __cell0 = create(var.typeAttributes.clone(), var.ty.clone(), var.attributes.clone(), var.children.clone(), var.comment.clone())?;
-                childrenAttr.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                let __idx0 = index.clone();
+                childrenAttr.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             ()
         },

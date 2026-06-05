@@ -340,7 +340,8 @@ fn scalarMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
         if ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
             {
                 let __cell0 = var.clone();
-                eqn_to_var.clone().borrow_mut()[(({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
+                let __idx0 = ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt});
+                eqn_to_var.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
     }
@@ -359,7 +360,8 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
     let mut pathFound: bool = false;
     {
         let __cell0 = true;
-        eqn_marks.clone().borrow_mut()[(eqn.clone()-1) as usize] = __cell0;
+        let __idx0 = eqn.clone();
+        eqn_marks.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     let __range1 = &*({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
     for mut var in __range1 {
@@ -368,7 +370,8 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
             pathFound = true;
             {
                 let __cell2 = eqn.clone();
-                var_to_eqn.clone().borrow_mut()[(var.clone()-1) as usize] = __cell2;
+                let __idx2 = var.clone();
+                var_to_eqn.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
             }
             return (var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone(), pathFound.clone());
         }
@@ -379,13 +382,15 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
         if !(({let __elt = var_marks.borrow()[(var.clone()-1) as usize].clone(); __elt})) {
             {
                 let __cell4 = true;
-                var_marks.clone().borrow_mut()[(var.clone()-1) as usize] = __cell4;
+                let __idx4 = var.clone();
+                var_marks.clone().borrow_mut()[(__idx4-1) as usize] = __cell4;
             }
             (var_to_eqn, var_marks, eqn_marks, pathFound) = augmentPath(({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}), m.clone(), mT.clone(), var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone());
             if pathFound.clone() {
                 {
                     let __cell5 = eqn.clone();
-                    var_to_eqn.clone().borrow_mut()[(var.clone()-1) as usize] = __cell5;
+                    let __idx5 = var.clone();
+                    var_to_eqn.clone().borrow_mut()[(__idx5-1) as usize] = __cell5;
                 }
                 return (var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone(), pathFound.clone());
             }

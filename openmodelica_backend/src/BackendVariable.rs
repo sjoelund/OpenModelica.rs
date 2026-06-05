@@ -3558,12 +3558,13 @@ fn traversingisXXXFinder(mut inVar: BackendDAE::Var, mut v_lst: metamodelica::Ar
     let mut inVar: BackendDAE::Var = inVar;
     let mut i: metamodelica::Array<i32> = i;
     if isFunc(inVar.clone())? {
-        {let _arr = v_lst.clone(); let _val = metamodelica::cons(inVar.clone(), ({let __elt = v_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(1-1) as usize] = _val; _arr};
-        {let _arr = i_lst.clone(); let _val = metamodelica::cons(({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}), ({let __elt = i_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(1-1) as usize] = _val; _arr};
+        {let _arr = v_lst.clone(); let _idx = 1; let _val = metamodelica::cons(inVar.clone(), ({let __elt = v_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        {let _arr = i_lst.clone(); let _idx = 1; let _val = metamodelica::cons(({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}), ({let __elt = i_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     {
         let __cell0 = ({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}) + 1;
-        i.clone().borrow_mut()[(1-1) as usize] = __cell0;
+        let __idx0 = 1;
+        i.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     Ok((inVar, i))
 }

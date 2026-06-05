@@ -4737,11 +4737,13 @@ pub fn getArrayAdjacencyMatrixMapping(mut size: i32, mut indexType: BackendDAE::
     for mut i in 1..=size.clone() {
         {
             let __cell0 = list![i.clone()];
-            mapEqnIncRow.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+            let __idx0 = i.clone();
+            mapEqnIncRow.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         {
             let __cell1 = i.clone();
-            mapIncRowEqn.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+            let __idx1 = i.clone();
+            mapIncRowEqn.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
     }
     mapping = (mapEqnIncRow.clone(), mapIncRowEqn.clone(), indexType.clone(), scalar.clone(), false);
@@ -9305,7 +9307,8 @@ fn selectOptModules(mut inStrOptModules: Arc<metamodelica::List<ArcStr>>, mut in
                 }
                 {
                     let __cell0 = true;
-                    activeModules.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                    let __idx0 = index.clone();
+                    activeModules.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
         }
@@ -9315,7 +9318,8 @@ fn selectOptModules(mut inStrOptModules: Arc<metamodelica::List<ArcStr>>, mut in
                 let mut index = index.clone();
                 {
                     let __cell1 = true;
-                    activeModules.clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
+                    let __idx1 = index.clone();
+                    activeModules.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
         }
@@ -9325,7 +9329,8 @@ fn selectOptModules(mut inStrOptModules: Arc<metamodelica::List<ArcStr>>, mut in
                 let mut index = index.clone();
                 {
                     let __cell2 = false;
-                    activeModules.clone().borrow_mut()[(index.clone()-1) as usize] = __cell2;
+                    let __idx2 = index.clone();
+                    activeModules.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
                 }
             }
         }

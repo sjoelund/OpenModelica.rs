@@ -156,11 +156,13 @@ pub mod ClassTree {
         if isClassExtends.clone() {
             {
                 let __cell0 = Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(exts.clone().clone(), 1, __cell0); }
+                let __idx0 = 1;
+                unsafe { metamodelica::Dangerous::arrayInitSlot(exts.clone().clone(), __idx0, __cell0); }
             }
             {
                 let __cell1 = Arc::new(InstNode::InstNode::REF_NODE { index: 1 });
-                unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), 1, __cell1); }
+                let __idx1 = 1;
+                unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx1, __cell1); }
             }
             ext_idx = ext_idx.clone() + 1;
             comp_idx = comp_idx.clone() + 1;
@@ -437,7 +439,8 @@ pub mod ClassTree {
                 (node, _, cls_count, comp_count) = instantiate(node.clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), inst_scope.clone())?;
                 {
                     let __cell8 = node.clone();
-                    exts.clone().borrow_mut()[(i.clone()-1) as usize] = __cell8;
+                    let __idx8 = i.clone();
+                    exts.clone().borrow_mut()[(__idx8-1) as usize] = __cell8;
                 }
                 classCount = cls_count.clone() + classCount.clone();
                 compCount = comp_count.clone() + compCount.clone();
@@ -563,14 +566,16 @@ pub mod ClassTree {
             let mut ci = ci.clone();
             {
                 let __cell0 = ci.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), i.clone(), __cell0); }
+                let __idx0 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx0, __cell0); }
             }
             ltree = addLocalElement((InstNode::name(ci.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() }), tree.clone(), ltree.clone())?;
             i = i.clone() + 1;
         }
         {
             let __cell1 = out.clone();
-            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), i.clone(), __cell1); }
+            let __idx1 = i.clone();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(comps.clone().clone(), __idx1, __cell1); }
         }
         ltree = addLocalElement((InstNode::name(out.clone())?).clone(), Arc::new(LookupTree::Entry::Entry::COMPONENT { index: i.clone() }), tree.clone(), ltree.clone())?;
         tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), components: comps.clone(), imports: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), duplicates: DuplicateTree::new() });
@@ -1336,7 +1341,7 @@ pub mod ClassTree {
             comp_count = metamodelica::arrayLength(ext_comps.clone());
             if comp_count.clone() > 0 {
                 for mut i in index.clone()..=index.clone() + comp_count.clone() - 1 {
-                    {let _arr = comps.clone(); let _val = Mutable::create(({let __elt = ext_comps.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                    {let _arr = comps.clone(); let _idx = i.clone(); let _val = Mutable::create(({let __elt = ext_comps.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 }
                 index = index.clone() + comp_count.clone();
             }

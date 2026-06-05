@@ -6802,7 +6802,7 @@ fn multirate_assignTasksToStates(mut tasksPerLevel: Arc<metamodelica::List<Arc<m
 
 fn appendToElementUnique<T: Clone + 'static + PartialEq>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
-    outArray = {let _arr = inArray.clone(); let _val = List::unique(listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone())); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = _val; _arr};
+    outArray = {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = List::unique(listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone())); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     Ok(outArray)
 }
 

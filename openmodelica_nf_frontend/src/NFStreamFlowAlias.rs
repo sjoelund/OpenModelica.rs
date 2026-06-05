@@ -730,7 +730,8 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
             set_idx = set_idx.clone() + 1;
             {
                 let __cell0 = -(set_idx.clone());
-                nodes.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                let __idx0 = i.clone();
+                nodes.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
         }
     }
@@ -745,7 +746,8 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
         set_idx = -(set_idx.clone());
         {
             let __cell1 = metamodelica::cons(e.clone(), ({let __elt = setsArray.borrow()[(set_idx.clone()-1) as usize].clone(); __elt}));
-            setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell1;
+            let __idx1 = set_idx.clone();
+            setsArray.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
     }
     assignedSets = Sets { nodes: nodes.clone(), elements: sets.elements.clone(), nodeCount: sets.nodeCount.clone() };
@@ -860,7 +862,7 @@ pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
         } else if rank1.clone() < rank2.clone() {
             {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set1.clone()-1) as usize] = set2.clone(); _arr};
         } else {
-            {let _arr = sets.nodes.clone(); let _val = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(set1.clone()-1) as usize] = _val; _arr};
+            {let _arr = sets.nodes.clone(); let _idx = set1.clone(); let _val = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = set1.clone(); _arr};
         }
     }

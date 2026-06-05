@@ -342,7 +342,8 @@ pub mod Iterator {
                 UnorderedMap::add(({let __elt = var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), Expression::fromCref(replacor.clone(), false)?, replacements.clone())?;
                 {
                     let __cell0 = replacor.clone();
-                    var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             iter.clone()
@@ -1103,7 +1104,8 @@ pub mod Iterator {
             for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                 {
                     let __cell0 = applySingleOrder(({let __elt = var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), order.clone())?;
-                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                    let __idx0 = i.clone();
+                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             }
             iter.clone()
@@ -1164,14 +1166,16 @@ pub mod Iterator {
                 for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).names, Iterator::NESTED).clone()) {
                     {
                         let __cell0 = funcCref(({let __elt = var_field!((*iter).names, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
-                        var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                        let __idx0 = i.clone();
+                        var_field!((*iter).names, Iterator::NESTED).clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                     }
                 }
             }
             for mut i in 1..=metamodelica::arrayLength(var_field!((*iter).ranges, Iterator::NESTED).clone()) {
                 {
                     let __cell1 = mapFunc(({let __elt = var_field!((*iter).ranges, Iterator::NESTED).borrow()[(i.clone()-1) as usize].clone(); __elt}), funcExp.clone())?;
-                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                    let __idx1 = i.clone();
+                    var_field!((*iter).ranges, Iterator::NESTED).clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
                 }
             }
             iter.clone()
@@ -3672,7 +3676,8 @@ pub mod IfEquationBody {
             let mut eqn = eqn.clone();
             {
                 let __cell0 = metamodelica::cons(eqn.clone(), ({let __elt = then_eqns.borrow()[(i.clone()-1) as usize].clone(); __elt}));
-                then_eqns.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
+                let __idx0 = i.clone();
+                then_eqns.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             i = i.clone() + 1;
         }

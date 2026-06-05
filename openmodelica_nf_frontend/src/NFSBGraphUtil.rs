@@ -96,7 +96,8 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
             } else {
                 {
                     let __cell0 = int.clone();
-                    ints.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                    let __idx0 = index.clone();
+                    ints.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
                 Vector::update(new_vCount.clone(), index.clone(), vc.clone() + dim_size.clone())?;
             }
@@ -106,7 +107,8 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
             vc = Vector::get(vCount.clone(), 1)?;
             {
                 let __cell1 = SBInterval::new(vc.clone(), 1, vc.clone());
-                ints.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
+                let __idx1 = i.clone();
+                ints.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
             }
         }
         multiInt = SBMultiInterval::fromArray(ints.clone())?;
@@ -140,7 +142,8 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
             if !(SBInterval::isEmpty(int.clone())) {
                 {
                     let __cell0 = int.clone();
-                    mi.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
+                    let __idx0 = index.clone();
+                    mi.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
                 }
             } else {
                 mi = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -152,7 +155,8 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
             aux_lo = SBInterval::lowerBound(({let __elt = miv.borrow()[(i.clone()-1) as usize].clone(); __elt}));
             {
                 let __cell1 = SBInterval::new(aux_lo.clone(), 1, aux_lo.clone());
-                mi.clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
+                let __idx1 = index.clone();
+                mi.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
             }
         }
     }
@@ -330,50 +334,59 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
         aux_ec = Vector::get(eCount.clone(), i.clone())?;
         {
             let __cell0 = SBInterval::new(aux_ec.clone(), 1, aux_ec.clone() + count.clone() - 1);
-            unsafe { metamodelica::Dangerous::arrayInitSlot(mi.clone().clone(), i.clone(), __cell0); }
+            let __idx0 = i.clone();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(mi.clone().clone(), __idx0, __cell0); }
         }
         i1 = ({let __elt = ints1.borrow()[(i.clone()-1) as usize].clone(); __elt});
         i2 = ({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if sz1.clone() == 1 {
             {
                 let __cell1 = metamodelica::OrderedFloat(0.0_f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(g1.clone().clone(), i.clone(), __cell1); }
+                let __idx1 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(g1.clone().clone(), __idx1, __cell1); }
             }
             {
                 let __cell2 = metamodelica::OrderedFloat((SBInterval::lowerBound(i1.clone())) as f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(o1.clone().clone(), i.clone(), __cell2); }
+                let __idx2 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(o1.clone().clone(), __idx2, __cell2); }
             }
         } else {
             g1i = metamodelica::OrderedFloat((SBInterval::stepValue(i1.clone())) as f64);
             o1i = -(g1i.clone() * metamodelica::OrderedFloat((aux_ec.clone()) as f64)) + metamodelica::OrderedFloat((SBInterval::lowerBound(i1.clone())) as f64);
             {
                 let __cell3 = g1i.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(g1.clone().clone(), i.clone(), __cell3); }
+                let __idx3 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(g1.clone().clone(), __idx3, __cell3); }
             }
             {
                 let __cell4 = o1i.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(o1.clone().clone(), i.clone(), __cell4); }
+                let __idx4 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(o1.clone().clone(), __idx4, __cell4); }
             }
         }
         if sz2.clone() == 1 {
             {
                 let __cell5 = metamodelica::OrderedFloat(0.0_f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(g2.clone().clone(), i.clone(), __cell5); }
+                let __idx5 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(g2.clone().clone(), __idx5, __cell5); }
             }
             {
                 let __cell6 = metamodelica::OrderedFloat((SBInterval::lowerBound(i2.clone())) as f64);
-                unsafe { metamodelica::Dangerous::arrayInitSlot(o2.clone().clone(), i.clone(), __cell6); }
+                let __idx6 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(o2.clone().clone(), __idx6, __cell6); }
             }
         } else {
             g2i = metamodelica::OrderedFloat((SBInterval::stepValue(i2.clone())) as f64);
             o2i = -(g2i.clone() * metamodelica::OrderedFloat((aux_ec.clone()) as f64)) + metamodelica::OrderedFloat((SBInterval::lowerBound(i2.clone())) as f64);
             {
                 let __cell7 = g2i.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(g2.clone().clone(), i.clone(), __cell7); }
+                let __idx7 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(g2.clone().clone(), __idx7, __cell7); }
             }
             {
                 let __cell8 = o2i.clone();
-                unsafe { metamodelica::Dangerous::arrayInitSlot(o2.clone().clone(), i.clone(), __cell8); }
+                let __idx8 = i.clone();
+                unsafe { metamodelica::Dangerous::arrayInitSlot(o2.clone().clone(), __idx8, __cell8); }
             }
         }
         Vector::push(new_ec.clone(), aux_ec.clone() + count.clone());

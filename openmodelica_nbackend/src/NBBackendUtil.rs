@@ -395,16 +395,19 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
         let mut i = i.clone();
         {
             let __cell0 = i.clone();
-            map_back.clone().borrow_mut()[(j.clone()-1) as usize] = __cell0;
+            let __idx0 = j.clone();
+            map_back.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
         }
         UnorderedMap::addUnique(({let __elt = matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt}), j.clone(), var_loc.clone())?;
         {
             let __cell1 = j.clone();
-            eqn_to_var.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;
+            let __idx1 = j.clone();
+            eqn_to_var.clone().borrow_mut()[(__idx1-1) as usize] = __cell1;
         }
         {
             let __cell2 = j.clone();
-            var_to_eqn.clone().borrow_mut()[(j.clone()-1) as usize] = __cell2;
+            let __idx2 = j.clone();
+            var_to_eqn.clone().borrow_mut()[(__idx2-1) as usize] = __cell2;
         }
         j = j.clone() + 1;
     }
@@ -413,7 +416,8 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     for mut j in 1..=N.clone() {
         {
             let __cell3 = UnorderedMap::getList(({let __elt = m.borrow()[(({let __elt = map_back.borrow()[(j.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt}), var_loc.clone())?;
-            m_loc.clone().borrow_mut()[(j.clone()-1) as usize] = __cell3;
+            let __idx3 = j.clone();
+            m_loc.clone().borrow_mut()[(__idx3-1) as usize] = __cell3;
         }
     }
     Ok((m_loc, matching_loc, map_back))

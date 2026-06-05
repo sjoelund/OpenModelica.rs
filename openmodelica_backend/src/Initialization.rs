@@ -846,7 +846,8 @@ fn markIndex(mut inIndex: i32, mut inArray: metamodelica::Array<i32>) -> metamod
     let mut outArray: metamodelica::Array<i32> = inArray.clone();
     {
         let __cell0 = 1;
-        outArray.clone().borrow_mut()[(inIndex.clone()-1) as usize] = __cell0;
+        let __idx0 = inIndex.clone();
+        outArray.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     outArray
 }
@@ -1483,7 +1484,8 @@ fn squareAdjacencyMatrix1(mut inPos: i32, mut inDependency: Arc<metamodelica::Li
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = inM.clone();
     {
         let __cell0 = inDependency.clone();
-        outM.clone().borrow_mut()[(inPos.clone()-1) as usize] = __cell0;
+        let __idx0 = inPos.clone();
+        outM.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     outM
 }
@@ -1510,7 +1512,8 @@ fn squareAdjacencyMatrix2(mut inPos: i32, mut inRange: Arc<metamodelica::List<i3
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = inM.clone();
     {
         let __cell0 = listAppend(({let __elt = inM.borrow()[(inPos.clone()-1) as usize].clone(); __elt}), inRange.clone());
-        outM.clone().borrow_mut()[(inPos.clone()-1) as usize] = __cell0;
+        let __idx0 = inPos.clone();
+        outM.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
     }
     outM
 }

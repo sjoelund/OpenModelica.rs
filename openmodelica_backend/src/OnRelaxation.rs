@@ -2821,7 +2821,7 @@ fn getIndexesForEqnsRest(mut i: i32, mut size: i32, mut id: i32, mut mark: i32, 
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let false = (intGt(i.clone(), size.clone())) else { bail!("pattern mismatch") };
-            {let _arr = vec1.clone(); let _val = ({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(id.clone()-1) as usize] = _val; _arr};
+            {let _arr = vec1.clone(); let _idx = id.clone(); let _val = ({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = vec2.clone(); _arr.borrow_mut()[(id.clone()-1) as usize] = i.clone(); _arr};
             getIndexesForEqnsRest(i.clone() + 1, size.clone(), id.clone() + 1, mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), vec1.clone(), vec2.clone())?;
             Ok(())
@@ -2842,7 +2842,7 @@ fn markIndexdColums(mut i: i32, mut size: i32, mut mark: i32, mut colummarks: me
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let false = (intGt(i.clone(), size.clone())) else { bail!("pattern mismatch") };
             let true = (intGt(({let __elt = vec2.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
-            {let _arr = colummarks.clone(); _arr.borrow_mut()[(({let __elt = vec2.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize] = mark.clone(); _arr};
+            {let _arr = colummarks.clone(); let _idx = ({let __elt = vec2.borrow()[(i.clone()-1) as usize].clone(); __elt}); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             markIndexdColums(i.clone() + 1, size.clone(), mark.clone(), colummarks.clone(), vec2.clone())?;
             Ok(())
         })() { break 'mc __v; }

@@ -1289,7 +1289,8 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
             edge_lst = ({let __elt = graph.borrow()[(e.clone()-1) as usize].clone(); __elt});
             {
                 let __cell0 = metamodelica::nil();
-                graph.clone().borrow_mut()[(e.clone()-1) as usize] = __cell0;
+                let __idx0 = e.clone();
+                graph.clone().borrow_mut()[(__idx0-1) as usize] = __cell0;
             }
             (sets, graph) = setArrayAddConnection(set.clone(), edge_lst.clone(), sets.clone(), graph.clone())?;
         }
