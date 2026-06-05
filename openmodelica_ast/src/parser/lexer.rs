@@ -668,7 +668,7 @@ impl<'s> Lexer<'s> {
 
     /// Lex a string literal; the opening `"` has already been consumed.
     /// The raw content (with escape sequences preserved) is returned.
-    fn lex_string(&mut self) -> Result<TokenKind, LexError> {
+    fn lex_string(&mut self, start_line: u32, start_col: u32) -> Result<TokenKind, LexError> {
         let mut raw = String::new();
         loop {
             match self.advance() {
@@ -678,13 +678,43 @@ impl<'s> Lexer<'s> {
                     raw.push('\\');
                     match self.advance() {
                         None => return Err(self.err("unterminated escape sequence in string")),
-                        Some(c) => raw.push(c),
+                        Some(c) => {
+                            raw.push(c);
+                            self.warn_invalid_escape(c, start_line, start_col);
+                        }
                     }
                 }
                 Some(c) => raw.push(c),
             }
         }
         Ok(TokenKind::Str(raw.into()))
+    }
+
+    /// `SESCAPE` (BaseModelica_Lexer.g): a backslash escaping a byte that is not
+    /// one of the Modelica escape characters is kept verbatim (`\` treated as
+    /// `\\`) with a warning. The diagnostic spans from the opening quote of the
+    /// string to the real line:col just past the offending byte.
+    ///
+    /// (The C lexer historically reported a synthetic end column,
+    /// `start_col + byteLength`, on the *start* line, which gives a nonsensical
+    /// position when the string contains newlines; it has been corrected to use
+    /// the real position too.)
+    fn warn_invalid_escape(&self, c: char, start_line: u32, start_col: u32) {
+        if matches!(c, '\'' | '"' | '\\' | '?' | 'a' | 'b' | 'f' | 'n' | 'r' | 't' | 'v') {
+            return;
+        }
+        let reason = if c.is_ascii() {
+            format!("\\{c} is not a valid Modelica escape sequence")
+        } else {
+            // The C lexer inspects the raw byte; any non-ASCII char starts a
+            // UTF-8 sequence here (Rust already validated the encoding).
+            "the next byte is the start of a UTF-8 character and thus not a valid Modelica escape sequence".to_owned()
+        };
+        super::add_syntax_message(
+            super::SyntaxSeverity::Warning,
+            format!("Lexer treating \\ as \\\\, since {reason}."),
+            start_line, start_col, self.line, self.col,
+        );
     }
 
     /// Lex a quoted identifier; the opening `'` has already been consumed.
@@ -753,7 +783,26 @@ impl<'s> Lexer<'s> {
 
         if is_real {
             match s.parse::<f64>() {
-                Ok(n) if n.is_finite() => Ok(TokenKind::Real(n, s.into())),
+                Ok(n) if n.is_finite() => {
+                    // strtod (Modelica.g UNSIGNED_NUMBER) warns and converts to
+                    // 0.0 when a non-zero literal underflows to zero (errno ==
+                    // ERANGE, |d| <= DBL_MIN). Subnormals that round to a
+                    // non-zero value (e.g. 4.94e-324) are kept silently; only a
+                    // literal whose significand is non-zero yet parses to 0.0 is
+                    // an underflow.
+                    let significand = s.split(['e', 'E']).next().unwrap_or(&s);
+                    if n == 0.0 && significand.bytes().any(|b| (b'1'..=b'9').contains(&b)) {
+                        let col1 = self.col - s.chars().count() as u32;
+                        super::add_syntax_message(
+                            super::SyntaxSeverity::Warning,
+                            format!("Underflow: {s} cannot be represented by a double on this machine. It will be converted to 0.0."),
+                            self.line, col1, self.line, self.col,
+                        );
+                        Ok(TokenKind::Real(0.0, "0.0".into()))
+                    } else {
+                        Ok(TokenKind::Real(n, s.into()))
+                    }
+                }
                 Ok(_) => Err(self.err(format!("real literal '{}' is infinite or NaN, which is not allowed", s))),
                 Err(e) => Err(self.err(format!("invalid real literal '{}': {}", s, e))),
             }
@@ -880,7 +929,7 @@ impl<'s> Lexer<'s> {
                 _ => TokenKind::Dot,
             },
 
-            '"' => self.lex_string()?,
+            '"' => self.lex_string(line, col)?,
 
             '\'' => self.lex_qident()?,
 
