@@ -1710,7 +1710,13 @@ fn annotation(input: &mut TokenInput) -> ModalResult<Annotation> {
 
 fn import_clause(input: &mut TokenInput) -> ModalResult<Import> {
     t(TK::Import).parse_next(input)?;
-    let path = name_path(input)?;
+    // `name_path2`, not `name_path`: the implicit-import name (`name_path_star`
+    // in Modelica.g) and the named-import LHS do not accept a leading dot, so
+    // `import .P;` must be rejected. Only the named-import RHS below allows the
+    // fully-qualified `.P` form (via `name_path`). `cut_err` commits once the
+    // `import` keyword is seen, so the error is pinned to the offending token
+    // (the `.`) instead of backtracking out to the enclosing element parser.
+    let path = cut_err(name_path2).parse_next(input)?;
     // Group import: import Path.{Name, NewName = OldName, ...}
     // The dot before '{' is not consumed by name_path (it only follows dots to idents).
     match opt(alt((t(TK::StarEw), t(TK::Dot), t(TK::Equal)))).parse_next(input)? {
