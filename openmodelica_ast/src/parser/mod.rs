@@ -1058,6 +1058,24 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
                 comment: comment.map(Arc::new),
             }));
         }
+        if opt(t(TK::Der)).parse_next(input)?.is_some() {
+            // `pder` (Modelica.g): a partial function derivative,
+            // `function df = der(f, x, ...);` — DER LPAR name_path COMMA ident_list RPAR comment.
+            t(TK::LParen).parse_next(input)?;
+            let functionName = name_path.parse_next(input)?;
+            t(TK::Comma).parse_next(input)?;
+            let mut vars = List::new(t_ident(input)?);
+            while opt(t(TK::Comma)).parse_next(input)?.is_some() {
+                vars = cons(t_ident(input)?, vars);
+            }
+            t(TK::RParen).parse_next(input)?;
+            let comment = comment.parse_next(input)?;
+            return Ok(Arc::new(ClassDef::PDER {
+                functionName: Arc::new(functionName),
+                vars: vars.reverse(),
+                comment: comment.map(Arc::new),
+            }));
+        }
         if opt(t(TK::Overload)).parse_next(input)?.is_some() {
             // function div = $overload(OpenModelica.Internal.intDiv,OpenModelica.Internal.realDiv)
             t(TK::LParen).parse_next(input)?;
