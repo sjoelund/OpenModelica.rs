@@ -1102,6 +1102,7 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
     }
 
     let mut typeVars: Arc<List<ArcStr>> = Arc::new(List::Nil);
+    let mut classAttrs: Arc<List<Arc<Absyn::NamedArg>>> = Arc::new(List::Nil);
     if opt(t(TK::Less)).parse_next(input)?.is_some() {
         loop {
             let id = t_ident(input)?;
@@ -1110,9 +1111,24 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
             t(TK::Comma).parse_next(input)?;
         }
         typeVars = typeVars.reverse();
-    } else if opt(t(TK::LParen)).parse_next(input)?.is_some() {
-        // Optimica: unsupported
-        return Err(ErrMode::Backtrack(ContextError::default()));
+    } else if matches!(peek_kind(input), Some(TK::LParen)) {
+        // Optimica class attributes: `optimization Name (objective = x, ...)`.
+        // Modelica.g hard-asserts the grammar selection here rather than
+        // treating it as a syntax error.
+        next_tok(input)?;
+        if CURRENT_GRAMMAR.with(|g| g.get()) != Grammar::Optimica {
+            let (l2, c2) = next_pos(input);
+            return Err(parser_assert_fail(
+                "Class attributes are currently allowed only for Optimica. Use -g=Optimica.",
+                start_line, start_col, l2, c2,
+            ));
+        }
+        classAttrs = cut_err(named_arguments)
+            .context(StrContext::Label("Optimica class attributes"))
+            .parse_next(input)?;
+        cut_err(t(TK::RParen))
+            .context(StrContext::Label("')' closing class attributes"))
+            .parse_next(input)?;
     }
 
     let comment   = string_comment(input)?;
@@ -1151,7 +1167,7 @@ fn class_specifier2(input: &mut TokenInput, start_name: &ArcStr, start_line: u32
     };
 
     Ok(Arc::new(ClassDef::PARTS {
-        typeVars, classAttrs: Arc::new(List::Nil), classParts, ann, comment,
+        typeVars, classAttrs, classParts, ann, comment,
     }))
 }
 
