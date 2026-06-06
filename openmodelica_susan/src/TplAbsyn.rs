@@ -489,6 +489,15 @@ pub enum MMExp {
         eltName: Ident,
         statements: Arc<metamodelica::List<Arc<MMExp>>>,
     },
+    /// iterative list map: for eltName in listName loop match eltName ... end for;
+    MM_LIST_FOR_LOOP {
+        eltName: Ident,
+        listName: Ident,
+        /// pattern and body locals of the per-element match
+        matchLocals: TypedIdents,
+        /// the matched case plus an optional skip (else) case
+        matchCases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>)>>,
+    },
 }
 impl Default for MMExp {
     fn default() -> Self {
@@ -497,7 +506,7 @@ impl Default for MMExp {
         }
     }
 }
-pub use self::MMExp::{MM_ASSIGN,MM_FN_CALL,MM_IDENT,MM_STR_TOKEN,MM_STRING,MM_LITERAL,MM_MATCH,MM_FOR_LOOP};
+pub use self::MMExp::{MM_ASSIGN,MM_FN_CALL,MM_IDENT,MM_STR_TOKEN,MM_STRING,MM_LITERAL,MM_MATCH,MM_FOR_LOOP,MM_LIST_FOR_LOOP};
 
 pub type MMMatchCase = (Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>);
 
@@ -2699,31 +2708,27 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
             ::match_deref::match_deref! { match &__mc_input {
                 (isfirst, Deref @ metamodelica::List::Cons { head: argtomap @ (_, argtype, _), tail: restargs }, MapContext { ofBinding: ofbind, mapExp: mapexp @ (_, sinfo), iterMMExpOptions: iopts, hasIndexIdentOpt, useIter: useiter }, stmts, intxt, outtxt, locals, scEnv, tplPackage @ TemplPackage { astDefs, .. }, accMMDecls) => {
                     let mut mapstmts: Arc<metamodelica::List<Arc<MMExp>>> = metamodelica::nil();
-                    let mut rhsMMArgs: Arc<metamodelica::List<Arc<MMExp>>> = metamodelica::nil();
                     let mut stmt: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
-                    let mut mmRecCall: Arc<MMExp> = Arc::new(<MMExp as ::std::default::Default>::default());
                     let mut oftype: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
                     let mut fname: Ident = arcstr::literal!("");
                     let mut idxName: Ident = arcstr::literal!("");
                     let mut freshIdxName: Ident = arcstr::literal!("");
+                    let mut eltName: Ident = arcstr::literal!("");
                     let mut localArgs: TypedIdents = metamodelica::nil();
                     let mut encodedExtargs: TypedIdents = metamodelica::nil();
                     let mut maplocals: TypedIdents = metamodelica::nil();
                     let mut caseLocals: TypedIdents = metamodelica::nil();
                     let mut iargs: TypedIdents = metamodelica::nil();
                     let mut oargs: TypedIdents = metamodelica::nil();
+                    let mut matchLocals: TypedIdents = metamodelica::nil();
                     let mut mapctx: MapContext;
                     let mut extargvals: Arc<metamodelica::List<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)>> = metamodelica::nil();
-                    let mut inMapExtargvals: Arc<metamodelica::List<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)>> = metamodelica::nil();
                     let mut ofbindEnc: Arc<MatchingExp> = Arc::new(MatchingExp::NONE_MATCH);
                     let mut mexp: Arc<MatchingExp> = Arc::new(MatchingExp::NONE_MATCH);
-                    let mut mmmcEmptyList: MMMatchCase = (metamodelica::nil(), metamodelica::nil());
-                    let mut mmmcCons: MMMatchCase = (metamodelica::nil(), metamodelica::nil());
-                    let mut mmFailCons: MMMatchCase = (metamodelica::nil(), metamodelica::nil());
+                    let mut mmmcMatched: MMMatchCase = (metamodelica::nil(), metamodelica::nil());
                     let mut isUsed: bool = false;
                     let mut mmFun: MMDeclaration = <MMDeclaration as ::std::default::Default>::default();
                     let mut mmmcases: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>)>> = metamodelica::nil();
-                    let mut lhsArgs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut assignedIdents: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut localNames: Arc<metamodelica::List<(ArcStr, ArcStr)>> = metamodelica::nil();
                     let mut useiter = (*useiter).clone();
@@ -2762,20 +2767,14 @@ pub fn statementsFromMapExp(mut inIsFirstArgToMap: bool, mut inArgValuesToMap: A
                     assignedIdents = getAssignedIdents(mapstmts.clone(), metamodelica::nil())?;
                     oargs = List::filter1OnTrue(encodedExtargs.clone(), (std::sync::Arc::new(fnptr!(isAssignedText, (ArcStr, Arc<TypeSignature>), Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>), Arc<metamodelica::List<ArcStr>>) -> Result<bool> + 'static>), assignedIdents.clone())?;
                     oargs = metamodelica::cons(imlicitTxtArg.clone(), oargs.clone());
-                    lhsArgs = List::map(oargs.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
-                    inMapExtargvals = List::map(encodedExtargs.clone(), (std::sync::Arc::new(fnptr!(makeMMArgValue, (ArcStr, Arc<TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>)) -> Result<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)> + 'static>))?;
-                    rhsMMArgs = List::map(inMapExtargvals.clone(), std::sync::Arc::new(fnptr!(Util::tuple31, _)))?;
-                    mmRecCall = Arc::new(MMExp::MM_ASSIGN { lhsArgs: lhsArgs.clone(), rhs: Arc::new(MMExp::MM_FN_CALL { fnName: Arc::new(PathIdent::IDENT { ident: (fname.clone()).clone() }), args: metamodelica::cons(Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (arcstr::literal!(imlicitTxt)).clone() }) }), metamodelica::cons(Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (literal!("rest")).clone() }) }), rhsMMArgs.clone())) }) });
-                    mapstmts = metamodelica::cons(mmRecCall.clone(), mapstmts.clone()).reverse();
+                    mapstmts = mapstmts.clone().reverse();
                     (mapstmts, maplocals) = addGetIndex(isUsed.clone(), (freshIdxName.clone()).clone(), mapstmts.clone(), (arcstr::literal!(imlicitTxt)).clone(), maplocals.clone())?;
-                    mmmcEmptyList = makeMMMatchCase((Arc::new(MatchingExp::LIST_MATCH { listElts: metamodelica::nil() }), metamodelica::nil(), metamodelica::nil()), encodedExtargs.clone(), oargs.clone())?;
-                    mmmcCons = makeMMMatchCase((Arc::new(MatchingExp::LIST_CONS_MATCH { head: mexp.clone(), rest: Arc::new(MatchingExp::BIND_MATCH { bindIdent: (literal!("rest")).clone() }) }), encodedExtargs.clone(), mapstmts.clone()), encodedExtargs.clone(), oargs.clone())?;
-                    mmFailCons = makeMMMatchCase((Arc::new(MatchingExp::LIST_CONS_MATCH { head: crate::TplAbsyn::MatchingExp::interned_REST_MATCH(), rest: Arc::new(MatchingExp::BIND_MATCH { bindIdent: (literal!("rest")).clone() }) }), encodedExtargs.clone(), list![mmRecCall.clone()]), encodedExtargs.clone(), oargs.clone())?;
-                    mmmcases = if (isAlwaysMatchedBool(mexp.clone())?) {list![mmmcEmptyList.clone(), mmmcCons.clone()]} else {list![mmmcEmptyList.clone(), mmmcCons.clone(), mmFailCons.clone()]};
+                    matchLocals = maplocals.clone();
+                    eltName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lstElt_")); __mm_s.push_str(&*intString((accMMDecls.clone().len() as i32))); ArcStr::from(__mm_s) }).clone();
+                    mmmcMatched = (list![mexp.clone()], mapstmts.clone());
+                    mmmcases = if (isAlwaysMatchedBool(mexp.clone())?) {list![mmmcMatched.clone()]} else {list![mmmcMatched.clone(), (list![crate::TplAbsyn::MatchingExp::interned_REST_MATCH()], metamodelica::nil())]};
                     mapctx = MapContext { ofBinding: ofbind.clone(), mapExp: mapexp.clone(), iterMMExpOptions: iopts.clone(), hasIndexIdentOpt: hasIndexIdentOpt.clone(), useIter: useiter.clone() };
-                    maplocals = listAppend(encodedExtargs.clone(), maplocals.clone());
-                    maplocals = metamodelica::cons(imlicitTxtArg.clone(), metamodelica::cons((literal!("rest"), argtype.clone()), maplocals.clone()));
-                    mmFun = MMDeclaration::MM_FUN { isPublic: false, name: (fname.clone()).clone(), inArgs: iargs.clone(), outArgs: oargs.clone(), locals: maplocals.clone(), statements: list![Arc::new(MMExp::MM_MATCH { matchCases: mmmcases.clone() })], genInfoOpt: GenInfo::GI_MAP_FUN { mapType: argtype.clone(), mapContext: mapctx.clone() } };
+                    mmFun = MMDeclaration::MM_FUN { isPublic: false, name: (fname.clone()).clone(), inArgs: iargs.clone(), outArgs: oargs.clone(), locals: metamodelica::nil(), statements: list![Arc::new(MMExp::MM_LIST_FOR_LOOP { eltName: (eltName.clone()).clone(), listName: (literal!("items")).clone(), matchLocals: matchLocals.clone(), matchCases: mmmcases.clone() })], genInfoOpt: GenInfo::GI_MAP_FUN { mapType: argtype.clone(), mapContext: mapctx.clone() } };
                     (stmts, intxt) = addPushIter(isfirst.clone() && useiter.clone(), iopts.clone(), stmts.clone(), (intxt.clone()).clone(), (outtxt.clone()).clone())?;
                     extargvals = List::map(localArgs.clone(), (std::sync::Arc::new(fnptr!(makeMMArgValue, (ArcStr, Arc<TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>)) -> Result<(Arc<MMExp>, Arc<TypeSignature>, SourceInfo)> + 'static>))?;
                     (_, stmt, _, _, locals, intxt) = statementFromFun(metamodelica::cons(argtomap.clone(), extargvals.clone()), Arc::new(PathIdent::IDENT { ident: (fname.clone()).clone() }), iargs.clone(), oargs.clone(), metamodelica::nil(), (intxt.clone()).clone(), (outtxt.clone()).clone(), locals.clone(), tplPackage.clone(), sinfo.clone())?;
@@ -2988,6 +2987,24 @@ pub fn intersectInOutArgs(mut inList1: TypedIdents, mut inList2: TypedIdents) ->
     (outIntersection, outList1Rest, outList2Rest) = List::intersection1OnTrue(inList1.clone(), inList2.clone(), (std::sync::Arc::new(fnptr!(areTypedIdentsEqual, (ArcStr, Arc<TypeSignature>), (ArcStr, Arc<TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TypeSignature>), (ArcStr, Arc<TypeSignature>)) -> Result<bool> + 'static>))?;
     outIntersectionAndRests = (outIntersection.clone(), outList1Rest.clone(), outList2Rest.clone());
     Ok(outIntersectionAndRests)
+}
+
+pub fn isTupleListMember(mut inId: Ident, mut inList: TypedIdents) -> Result<bool> {
+    let mut outIsMember: bool = false;
+    outIsMember = 'mc: {
+        let __mc_input = ();
+        if let Ok(__v) = (|| -> Result<_> {
+            let () = __mc_input.clone() else { bail!("nomatch") };
+            lookupTupleList(inList.clone(), (inId.clone()).clone())?;
+            Ok(true)
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            let _ = __mc_input.clone() else { bail!("nomatch") };
+            Ok(false)
+        })() { break 'mc __v; }
+        bail!("matchcontinue: no arm matched")
+    };
+    Ok(outIsMember)
 }
 
 /*
@@ -7125,6 +7142,7 @@ fn addExpToSet(mut set: Arc<AvlSetString::Tree>, mut exp: Arc<MMExp>) -> Result<
         Deref @ MMExp::MM_FN_CALL { .. } => List::foldr(var_field!((*exp).args, MMExp::MM_FN_CALL).clone(), (std::sync::Arc::new(addExpToSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<AvlSetString::Tree>, Arc<MMExp>) -> Result<Arc<AvlSetString::Tree>> + 'static>), addPathIdentToSet(set.clone(), var_field!((*exp).fnName, MMExp::MM_FN_CALL).clone())?)?,
         Deref @ MMExp::MM_IDENT { .. } => addPathIdentToSet(set.clone(), var_field!((*exp).ident, MMExp::MM_IDENT).clone())?,
         Deref @ MMExp::MM_MATCH { .. } => List::foldr(var_field!((*exp).matchCases, MMExp::MM_MATCH).clone(), (std::sync::Arc::new(addMatchCaseToSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<AvlSetString::Tree>, (Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>)) -> Result<Arc<AvlSetString::Tree>> + 'static>), set.clone())?,
+        Deref @ MMExp::MM_LIST_FOR_LOOP { .. } => List::foldr(var_field!((*exp).matchCases, MMExp::MM_LIST_FOR_LOOP).clone(), (std::sync::Arc::new(addMatchCaseToSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<AvlSetString::Tree>, (Arc<metamodelica::List<Arc<MatchingExp>>>, Arc<metamodelica::List<Arc<MMExp>>>)) -> Result<Arc<AvlSetString::Tree>> + 'static>), set.clone())?,
         _ => set.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

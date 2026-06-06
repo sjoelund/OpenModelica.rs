@@ -22,44 +22,34 @@ pub fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mu
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_5(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Attribute>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_att, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_5(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<GraphML::Attribute>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_5 in &*items.clone() {
+        let mut lstElt_5 = lstElt_5.clone();
+        txt = (match lstElt_5.clone() {
+        mut i_att => {
             txt = dumpAttDef(txt.clone(), i_att.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_5(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_6(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Edge>>, mut in_a_attributes: metamodelica::Array<GraphML::Attribute>, mut in_a_graphInfo_graphEdgeKey: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_attributes.clone(), in_a_graphInfo_graphEdgeKey.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_edge, tail: rest }, a_attributes, a_graphInfo_graphEdgeKey) => {
-            let mut txt = (*txt).clone();
+fn lm_6(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<GraphML::Edge>>, mut a_attributes: metamodelica::Array<GraphML::Attribute>, mut a_graphInfo_graphEdgeKey: ArcStr) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_6 in &*items.clone() {
+        let mut lstElt_6 = lstElt_6.clone();
+        txt = (match lstElt_6.clone() {
+        mut i_edge => {
             txt = dumpEdge(txt.clone(), i_edge.clone(), (a_graphInfo_graphEdgeKey.clone()).clone(), a_attributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_6(txt.clone(), rest.clone(), a_attributes.clone(), (a_graphInfo_graphEdgeKey.clone()).clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML::GraphInfo) -> Result<Tpl::Text> {
@@ -107,52 +97,42 @@ pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML:
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_8(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>, mut in_a_graphNodeKey: ArcStr, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone(), in_a_graphNodeKey.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_idc, tail: rest }, a_graphAttributes, a_graphNodeKey, a_allGraphs, a_allNodes) => {
+fn lm_8(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>, mut a_graphAttributes: metamodelica::Array<GraphML::Attribute>, mut a_graphNodeKey: ArcStr, mut a_allGraphs: metamodelica::Array<GraphML::Graph>, mut a_allNodes: metamodelica::Array<GraphML::Node>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_8 in &*items.clone() {
+        let mut lstElt_8 = lstElt_8.clone();
+        txt = (match lstElt_8.clone() {
+        mut i_idc => {
             let mut ret_3: GraphML::Node = <GraphML::Node as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
-            let mut txt = (*txt).clone();
             ret_0 = metamodelica::arrayLength(a_allNodes.clone());
             ret_1 = intSub(ret_0.clone(), i_idc.clone());
             ret_2 = intAdd(1, ret_1.clone());
             ret_3 = metamodelica::arrayGet(a_allNodes.clone(), ret_2.clone())?;
             txt = dumpNode(txt.clone(), ret_3.clone(), a_allGraphs.clone(), a_allNodes.clone(), (a_graphNodeKey.clone()).clone(), a_graphAttributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_8(txt.clone(), rest.clone(), a_graphAttributes.clone(), (a_graphNodeKey.clone()).clone(), a_allGraphs.clone(), a_allNodes.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_9(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_val, tail: rest }, a_graphAttributes) => {
-            let mut txt = (*txt).clone();
+fn lm_9(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, ArcStr)>>, mut a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_9 in &*items.clone() {
+        let mut lstElt_9 = lstElt_9.clone();
+        txt = (match lstElt_9.clone() {
+        mut i_val => {
             txt = dumpAttKey(txt.clone(), i_val.clone(), a_graphAttributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_9(txt.clone(), rest.clone(), a_graphAttributes.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_edgeDesc: ArcStr, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
@@ -191,44 +171,34 @@ pub fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_11(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::NodeLabel>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_label, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_11(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<GraphML::NodeLabel>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_11 in &*items.clone() {
+        let mut lstElt_11 = lstElt_11.clone();
+        txt = (match lstElt_11.clone() {
+        mut i_label => {
             txt = dumpNodeLabel(txt.clone(), i_label.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_11(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_12(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_val, tail: rest }, a_graphAttributes) => {
-            let mut txt = (*txt).clone();
+fn lm_12(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, ArcStr)>>, mut a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_12 in &*items.clone() {
+        let mut lstElt_12 = lstElt_12.clone();
+        txt = (match lstElt_12.clone() {
+        mut i_val => {
             txt = dumpAttKey(txt.clone(), i_val.clone(), a_graphAttributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_12(txt.clone(), rest.clone(), a_graphAttributes.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_13(mut in_txt: Tpl::Text, mut in_mArg: Option<ArcStr>) -> Result<Tpl::Text> {
@@ -376,44 +346,34 @@ pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_al
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::EdgeLabel>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_label, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_17(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<GraphML::EdgeLabel>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_17 in &*items.clone() {
+        let mut lstElt_17 = lstElt_17.clone();
+        txt = (match lstElt_17.clone() {
+        mut i_label => {
             txt = dumpEdgeLabel(txt.clone(), i_label.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_17(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_18(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_val, tail: rest }, a_graphAttributes) => {
-            let mut txt = (*txt).clone();
+fn lm_18(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, ArcStr)>>, mut a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_18 in &*items.clone() {
+        let mut lstElt_18 = lstElt_18.clone();
+        txt = (match lstElt_18.clone() {
+        mut i_val => {
             txt = dumpAttKey(txt.clone(), i_val.clone(), a_graphAttributes.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_18(txt.clone(), rest.clone(), a_graphAttributes.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_graphEdgeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {

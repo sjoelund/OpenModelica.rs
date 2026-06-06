@@ -396,28 +396,23 @@ pub fn fmuModelDescriptionFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode:
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: (i_name, i_value), tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_59(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_59 in &*items.clone() {
+        let mut lstElt_59 = lstElt_59.clone();
+        txt = (match lstElt_59.clone() {
+        (mut i_name, mut i_value) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" : \"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_value.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_59(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn fmuSimulationFlagsFile(mut in_txt: Tpl::Text, mut in_a_fmiSimulationFlags: SimCode::FmiSimulationFlags) -> Result<Tpl::Text> {
@@ -698,33 +693,26 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_name, .. }, tail: rest }, a_simCode) => {
+fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_72 in &*items.clone() {
+        let mut lstElt_72 = lstElt_72.clone();
+        txt = (match lstElt_72.clone() {
+        SimCodeVar::SimVar { name: ref i_name, .. } => {
             let mut ret_1: bool = false;
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("$dummy")).clone());
             txt = fun_71(txt.clone(), ret_1.clone(), a_simCode.clone(), i_name.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_72(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
-            txt = lm_72(txt.clone(), rest.clone(), a_simCode.clone())?;
+        _ => {
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_73(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
@@ -745,53 +733,42 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_name, .. }, tail: rest }, a_simCode) => {
+fn lm_74(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_74 in &*items.clone() {
+        let mut lstElt_74 = lstElt_74.clone();
+        txt = (match lstElt_74.clone() {
+        SimCodeVar::SimVar { name: ref i_name, .. } => {
             let mut ret_1: bool = false;
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt = (*txt).clone();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
             ret_1 = stringEq((Tpl::textString(txt_0.clone())?).clone(), (literal!("der($dummy)")).clone());
             txt = fun_73(txt.clone(), ret_1.clone(), a_simCode.clone(), i_name.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_74(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
-            txt = lm_74(txt.clone(), rest.clone(), a_simCode.clone())?;
+        _ => {
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_75(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fn, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_75(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_75 in &*items.clone() {
+        let mut lstElt_75 = lstElt_75.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_75.clone()) {
+        i_fn => {
             txt = defineExternalFunction(txt.clone(), i_fn.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_75(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_76(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -930,224 +907,169 @@ pub fn defineExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFun
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_80(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_80(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_80 in &*items.clone() {
+        let mut lstElt_80 = lstElt_80.clone();
+        txt = (match lstElt_80.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_80(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_81(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_81 in &*items.clone() {
+        let mut lstElt_81 = lstElt_81.clone();
+        txt = (match lstElt_81.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_81(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_82(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_82(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_82 in &*items.clone() {
+        let mut lstElt_82 = lstElt_82.clone();
+        txt = (match lstElt_82.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_82(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_83(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_83(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_83 in &*items.clone() {
+        let mut lstElt_83 = lstElt_83.clone();
+        txt = (match lstElt_83.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_83(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_84(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_84(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_84 in &*items.clone() {
+        let mut lstElt_84 = lstElt_84.clone();
+        txt = (match lstElt_84.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("integerVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_84(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_85(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_85(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_85 in &*items.clone() {
+        let mut lstElt_85 = lstElt_85.clone();
+        txt = (match lstElt_85.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_85(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_86(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_86(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_86 in &*items.clone() {
+        let mut lstElt_86 = lstElt_86.clone();
+        txt = (match lstElt_86.clone() {
+        mut i_var => {
             txt = initValsDefault(txt.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_86(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_87(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_87(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_87 in &*items.clone() {
+        let mut lstElt_87 = lstElt_87.clone();
+        txt = (match lstElt_87.clone() {
+        mut i_var => {
             txt = initParamsDefault(txt.clone(), i_var.clone(), (literal!("realParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_87(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_88(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_88 in &*items.clone() {
+        let mut lstElt_88 = lstElt_88.clone();
+        txt = (match lstElt_88.clone() {
+        mut i_var => {
             txt = initParamsDefault(txt.clone(), i_var.clone(), (literal!("integerParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_88(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_89(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_89 in &*items.clone() {
+        let mut lstElt_89 = lstElt_89.clone();
+        txt = (match lstElt_89.clone() {
+        mut i_var => {
             txt = initParamsDefault(txt.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_89(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_90(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_90 in &*items.clone() {
+        let mut lstElt_90 = lstElt_90.clone();
+        txt = (match lstElt_90.clone() {
+        mut i_var => {
             txt = initParamsDefault(txt.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_90(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn setDefaultStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
@@ -1211,224 +1133,169 @@ pub fn setDefaultStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode:
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_92(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_92(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_92 in &*items.clone() {
+        let mut lstElt_92 = lstElt_92.clone();
+        txt = (match lstElt_92.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_92(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_93(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_93(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_93 in &*items.clone() {
+        let mut lstElt_93 = lstElt_93.clone();
+        txt = (match lstElt_93.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_93(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_94(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_94(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_94 in &*items.clone() {
+        let mut lstElt_94 = lstElt_94.clone();
+        txt = (match lstElt_94.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_94(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_95(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_95(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_95 in &*items.clone() {
+        let mut lstElt_95 = lstElt_95.clone();
+        txt = (match lstElt_95.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_95(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_96(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_96 in &*items.clone() {
+        let mut lstElt_96 = lstElt_96.clone();
+        txt = (match lstElt_96.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("integerVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_96(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_97(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_97 in &*items.clone() {
+        let mut lstElt_97 = lstElt_97.clone();
+        txt = (match lstElt_97.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_97(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_98(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_98(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_98 in &*items.clone() {
+        let mut lstElt_98 = lstElt_98.clone();
+        txt = (match lstElt_98.clone() {
+        mut i_var => {
             txt = initVals(txt.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_98(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_99(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_99(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_99 in &*items.clone() {
+        let mut lstElt_99 = lstElt_99.clone();
+        txt = (match lstElt_99.clone() {
+        mut i_var => {
             txt = initParams(txt.clone(), i_var.clone(), (literal!("realParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_99(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_100(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_100(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_100 in &*items.clone() {
+        let mut lstElt_100 = lstElt_100.clone();
+        txt = (match lstElt_100.clone() {
+        mut i_var => {
             txt = initParams(txt.clone(), i_var.clone(), (literal!("integerParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_100(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_101(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_101(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_101 in &*items.clone() {
+        let mut lstElt_101 = lstElt_101.clone();
+        txt = (match lstElt_101.clone() {
+        mut i_var => {
             txt = initParams(txt.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_101(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_102(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_102(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_102 in &*items.clone() {
+        let mut lstElt_102 = lstElt_102.clone();
+        txt = (match lstElt_102.clone() {
+        mut i_var => {
             txt = initParams(txt.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_102(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn setStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
@@ -1492,18 +1359,15 @@ pub fn setStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelI
     Ok(out_txt)
 }
 
-fn lm_104(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_sub: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    (out_txt, out_a_sub) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_sub.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, a_sub) => {
-            (txt.clone(), a_sub.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_cref, .. }, tail: rest }, a_sub) => {
+fn lm_104(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_sub: Tpl::Text = a_sub;
+    for mut lstElt_104 in &*items.clone() {
+        let mut lstElt_104 = lstElt_104.clone();
+        (txt, a_sub) = (::match_deref::match_deref! { match &(lstElt_104.clone()) {
+        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_cref, .. } => {
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt = (*txt).clone();
-            let mut a_sub = (*a_sub).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("if (sim_verbose) { printf(\"Setting variable start value: %s(start=%f)\\n\", \"")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_cref.clone())?;
             ret_1 = (Util::escapeModelicaStringToCString((Tpl::textString(txt_0.clone())?).clone())).clone();
@@ -1512,18 +1376,15 @@ fn lm_104(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCod
             (txt, a_sub) = CodegenCFunctions::cref(txt.clone(), i_cref.clone(), a_sub.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("); }")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt, a_sub) = lm_104(txt.clone(), rest.clone(), a_sub.clone())?;
             (txt.clone(), a_sub.clone())
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_sub) => {
-            let mut txt = (*txt).clone();
-            let mut a_sub = (*a_sub).clone();
-            (txt, a_sub) = lm_104(txt.clone(), rest.clone(), a_sub.clone())?;
+        _ => {
             (txt.clone(), a_sub.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok((out_txt, out_a_sub))
+    }
+    Ok((txt, a_sub))
 }
 
 pub fn initializeFunction(mut txt: Tpl::Text, mut a_allEquations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Tpl::Text> {
@@ -1924,124 +1785,94 @@ pub fn eventUpdateFunction(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_119(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_119(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_119 in &*items.clone() {
+        let mut lstElt_119 = lstElt_119.clone();
+        txt = (match lstElt_119.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_119(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_120(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_120(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_120 in &*items.clone() {
+        let mut lstElt_120 = lstElt_120.clone();
+        txt = (match lstElt_120.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_120(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_121(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_121(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_121 in &*items.clone() {
+        let mut lstElt_121 = lstElt_121.clone();
+        txt = (match lstElt_121.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_121(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_122(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_122(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_122 in &*items.clone() {
+        let mut lstElt_122 = lstElt_122.clone();
+        txt = (match lstElt_122.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_122(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_123(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_123(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_123 in &*items.clone() {
+        let mut lstElt_123 = lstElt_123.clone();
+        txt = (match lstElt_123.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_123(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_124(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_124(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_124 in &*items.clone() {
+        let mut lstElt_124 = lstElt_124.clone();
+        txt = (match lstElt_124.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Real")).clone(), (literal!("-")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_124(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_125(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2092,124 +1923,94 @@ pub fn getRealFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_127(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_127(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_127 in &*items.clone() {
+        let mut lstElt_127 = lstElt_127.clone();
+        txt = (match lstElt_127.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_127(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_128(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_128(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_128 in &*items.clone() {
+        let mut lstElt_128 = lstElt_128.clone();
+        txt = (match lstElt_128.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_128(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_129(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_129(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_129 in &*items.clone() {
+        let mut lstElt_129 = lstElt_129.clone();
+        txt = (match lstElt_129.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_129(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_130(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_130(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_130 in &*items.clone() {
+        let mut lstElt_130 = lstElt_130.clone();
+        txt = (match lstElt_130.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_130(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_131(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_131(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_131 in &*items.clone() {
+        let mut lstElt_131 = lstElt_131.clone();
+        txt = (match lstElt_131.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("realParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_131(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_132(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_132(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_132 in &*items.clone() {
+        let mut lstElt_132 = lstElt_132.clone();
+        txt = (match lstElt_132.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Real")).clone(), (literal!("-")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_132(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2260,64 +2061,49 @@ pub fn setRealFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_135(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_135(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_135 in &*items.clone() {
+        let mut lstElt_135 = lstElt_135.clone();
+        txt = (match lstElt_135.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("integerVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_135(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_136(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_136(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_136 in &*items.clone() {
+        let mut lstElt_136 = lstElt_136.clone();
+        txt = (match lstElt_136.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("integerParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_136(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_137(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_137(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_137 in &*items.clone() {
+        let mut lstElt_137 = lstElt_137.clone();
+        txt = (match lstElt_137.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Integer")).clone(), (literal!("-")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_137(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_138(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2356,64 +2142,49 @@ pub fn getIntegerFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, m
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_140(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_140(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_140 in &*items.clone() {
+        let mut lstElt_140 = lstElt_140.clone();
+        txt = (match lstElt_140.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("integerVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_140(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_141(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_141(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_141 in &*items.clone() {
+        let mut lstElt_141 = lstElt_141.clone();
+        txt = (match lstElt_141.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("integerParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_141(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_142(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_142(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_142 in &*items.clone() {
+        let mut lstElt_142 = lstElt_142.clone();
+        txt = (match lstElt_142.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Integer")).clone(), (literal!("-")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_142(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_143(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2452,64 +2223,49 @@ pub fn setIntegerFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, m
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_145(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_145(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_145 in &*items.clone() {
+        let mut lstElt_145 = lstElt_145.clone();
+        txt = (match lstElt_145.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_145(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_146(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_146(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_146 in &*items.clone() {
+        let mut lstElt_146 = lstElt_146.clone();
+        txt = (match lstElt_146.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_146(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_147(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_147(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_147 in &*items.clone() {
+        let mut lstElt_147 = lstElt_147.clone();
+        txt = (match lstElt_147.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Boolean")).clone(), (literal!("!")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_147(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_148(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2548,64 +2304,49 @@ pub fn getBooleanFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, m
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_150(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_150(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_150 in &*items.clone() {
+        let mut lstElt_150 = lstElt_150.clone();
+        txt = (match lstElt_150.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_150(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_151(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_151(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_151 in &*items.clone() {
+        let mut lstElt_151 = lstElt_151.clone();
+        txt = (match lstElt_151.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_151(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_152(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_152(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_152 in &*items.clone() {
+        let mut lstElt_152 = lstElt_152.clone();
+        txt = (match lstElt_152.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Boolean")).clone(), (literal!("!")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_152(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_153(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2644,64 +2385,49 @@ pub fn setBooleanFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, m
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_155(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_155(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_155 in &*items.clone() {
+        let mut lstElt_155 = lstElt_155.clone();
+        txt = (match lstElt_155.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_155(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_156(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_156(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_156 in &*items.clone() {
+        let mut lstElt_156 = lstElt_156.clone();
+        txt = (match lstElt_156.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_156(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_157(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_157(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_157 in &*items.clone() {
+        let mut lstElt_157 = lstElt_157.clone();
+        txt = (match lstElt_157.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("String")).clone(), (literal!("")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_157(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_158(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2740,64 +2466,49 @@ pub fn getStringFunction(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mu
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_160(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_160(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_160 in &*items.clone() {
+        let mut lstElt_160 = lstElt_160.clone();
+        txt = (match lstElt_160.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_160(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_161(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_161(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_161 in &*items.clone() {
+        let mut lstElt_161 = lstElt_161.clone();
+        txt = (match lstElt_161.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_161(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_162(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_162(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_162 in &*items.clone() {
+        let mut lstElt_162 = lstElt_162.clone();
+        txt = (match lstElt_162.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("String")).clone(), (literal!("")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_162(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_163(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -2872,29 +2583,22 @@ pub fn eventUpdateFunction2(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Si
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_167(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { aliasvar: i_aliasvar, .. }, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_167(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_167 in &*items.clone() {
+        let mut lstElt_167 = lstElt_167.clone();
+        txt = (match lstElt_167.clone() {
+        SimCodeVar::SimVar { aliasvar: mut i_aliasvar, .. } => {
             txt = aliasSetVR(txt.clone(), a_simCode.clone(), i_aliasvar.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_167(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
-            txt = lm_167(txt.clone(), rest.clone(), a_simCode.clone())?;
+        _ => {
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_168(mut in_txt: Tpl::Text, mut in_a_numAlgAliasVars: i32, mut in_a_simCode: SimCode::SimCode, mut in_a_vars_aliasVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
@@ -3138,29 +2842,22 @@ pub fn aliasSetVR(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_v: 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_177(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { aliasvar: i_aliasvar, .. }, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_177(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_177 in &*items.clone() {
+        let mut lstElt_177 = lstElt_177.clone();
+        txt = (match lstElt_177.clone() {
+        SimCodeVar::SimVar { aliasvar: mut i_aliasvar, .. } => {
             txt = aliasSetVR(txt.clone(), a_simCode.clone(), i_aliasvar.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_177(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
-            txt = lm_177(txt.clone(), rest.clone(), a_simCode.clone())?;
+        _ => {
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_178(mut in_txt: Tpl::Text, mut in_a_numAliasVars: i32, mut in_a_simCode: SimCode::SimCode, mut in_a_vars_intAliasVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
@@ -3334,64 +3031,49 @@ pub fn setIntegerFunction2(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_185(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_185(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_185 in &*items.clone() {
+        let mut lstElt_185 = lstElt_185.clone();
+        txt = (match lstElt_185.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_185(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_186(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_186(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_186 in &*items.clone() {
+        let mut lstElt_186 = lstElt_186.clone();
+        txt = (match lstElt_186.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_186(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_187(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_187(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_187 in &*items.clone() {
+        let mut lstElt_187 = lstElt_187.clone();
+        txt = (match lstElt_187.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Boolean")).clone(), (literal!("!")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_187(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_188(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -3430,64 +3112,49 @@ pub fn getBooleanFunction2(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_190(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_190(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_190 in &*items.clone() {
+        let mut lstElt_190 = lstElt_190.clone();
+        txt = (match lstElt_190.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_190(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_191(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_191(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_191 in &*items.clone() {
+        let mut lstElt_191 = lstElt_191.clone();
+        txt = (match lstElt_191.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("booleanParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_191(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_192(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_192(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_192 in &*items.clone() {
+        let mut lstElt_192 = lstElt_192.clone();
+        txt = (match lstElt_192.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("Boolean")).clone(), (literal!("!")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_192(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_193(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -3526,64 +3193,49 @@ pub fn setBooleanFunction2(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_195(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_195(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_195 in &*items.clone() {
+        let mut lstElt_195 = lstElt_195.clone();
+        txt = (match lstElt_195.clone() {
+        mut i_var => {
             txt = SwitchVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_195(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_196(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_196(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_196 in &*items.clone() {
+        let mut lstElt_196 = lstElt_196.clone();
+        txt = (match lstElt_196.clone() {
+        mut i_var => {
             txt = SwitchParameters(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_196(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_197(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_197(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_197 in &*items.clone() {
+        let mut lstElt_197 = lstElt_197.clone();
+        txt = (match lstElt_197.clone() {
+        mut i_var => {
             txt = SwitchAliasVars(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("String")).clone(), (literal!("")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_197(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_198(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -3622,64 +3274,49 @@ pub fn getStringFunction2(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, m
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_200(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_200(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_200 in &*items.clone() {
+        let mut lstElt_200 = lstElt_200.clone();
+        txt = (match lstElt_200.clone() {
+        mut i_var => {
             txt = SwitchVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringVars")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_200(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_201(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_201(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_201 in &*items.clone() {
+        let mut lstElt_201 = lstElt_201.clone();
+        txt = (match lstElt_201.clone() {
+        mut i_var => {
             txt = SwitchParametersSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("stringParameter")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_201(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_202(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_202(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_202 in &*items.clone() {
+        let mut lstElt_202 = lstElt_202.clone();
+        txt = (match lstElt_202.clone() {
+        mut i_var => {
             txt = SwitchAliasVarsSet(txt.clone(), a_simCode.clone(), i_var.clone(), (literal!("String")).clone(), (literal!("")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_202(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_203(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -3740,24 +3377,20 @@ pub fn setExternalFunction2(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_206(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fn, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_206(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_206 in &*items.clone() {
+        let mut lstElt_206 = lstElt_206.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_206.clone()) {
+        i_fn => {
             txt = setExternalFunctionSwitch(txt.clone(), i_fn.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_206(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn setExternalFunctionsSwitch(mut txt: Tpl::Text, mut a_functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<Tpl::Text> {
@@ -4446,26 +4079,21 @@ fn fun_241(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_ind
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_242(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
+fn lm_242(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_242 in &*items.clone() {
+        let mut lstElt_242 = lstElt_242.clone();
+        txt = (match lstElt_242.clone() {
+        mut i_var => {
             let mut x_index0: i32 = 0;
-            let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = fun_241(txt.clone(), i_var.clone(), x_index0.clone(), a_simCode.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_242(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_243(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_index0: i32, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -4490,26 +4118,21 @@ fn fun_243(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_ind
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_244(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_simCode) => {
+fn lm_244(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_244 in &*items.clone() {
+        let mut lstElt_244 = lstElt_244.clone();
+        txt = (match lstElt_244.clone() {
+        mut i_var => {
             let mut x_index0: i32 = 0;
-            let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = fun_243(txt.clone(), i_var.clone(), x_index0.clone(), a_simCode.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_244(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn mapInputAndOutputs(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -4566,24 +4189,19 @@ fn fun_246(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_FMU
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_247(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_FMUType: ArcStr, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_FMUType.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }, a_FMUType, a_simCode) => {
-            let mut txt = (*txt).clone();
+fn lm_247(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut a_FMUType: ArcStr, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_247 in &*items.clone() {
+        let mut lstElt_247 = lstElt_247.clone();
+        txt = (match lstElt_247.clone() {
+        mut i_var => {
             txt = fun_246(txt.clone(), i_var.clone(), (a_FMUType.clone()).clone(), a_simCode.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_247(txt.clone(), rest.clone(), (a_FMUType.clone()).clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn mapRealOutputDerivatives(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
@@ -4608,17 +4226,13 @@ pub fn mapRealOutputDerivatives(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_249(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: (i_index, i_cref), tail: rest }, a_simCode) => {
+fn lm_249(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_249 in &*items.clone() {
+        let mut lstElt_249 = lstElt_249.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_249.clone()) {
+        (i_index, i_cref) => {
             let mut ret_0: i32 = 0;
-            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_cref.clone(), a_simCode.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -4626,12 +4240,12 @@ fn lm_249(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; break;")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_249(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn mapInitialUnknownsdependentCrefs(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -4656,17 +4270,13 @@ pub fn mapInitialUnknownsdependentCrefs(mut in_txt: Tpl::Text, mut in_a_simCode:
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_251(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_simCode.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: (i_index, i_cref), tail: rest }, a_simCode) => {
+fn lm_251(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<(i32, Arc<DAE::ComponentRef>)>>, mut a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_251 in &*items.clone() {
+        let mut lstElt_251 = lstElt_251.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_251.clone()) {
+        (i_index, i_cref) => {
             let mut ret_0: i32 = 0;
-            let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case ")).clone() }))?;
             ret_0 = SimCodeUtil::lookupVR(i_cref.clone(), a_simCode.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(ret_0.clone())).clone())?;
@@ -4674,12 +4284,12 @@ fn lm_251(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, Arc<
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; break;")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_251(txt.clone(), rest.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn mapInitialUnknownsIndependentCrefs(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
@@ -4989,104 +4599,79 @@ pub fn settingsfile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_259(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_259(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_259 in &*items.clone() {
+        let mut lstElt_259 = lstElt_259.clone();
+        txt = (match lstElt_259.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_259(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_260(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_260(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_260 in &*items.clone() {
+        let mut lstElt_260 = lstElt_260.clone();
+        txt = (match lstElt_260.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_260(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_261(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_261(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_261 in &*items.clone() {
+        let mut lstElt_261 = lstElt_261.clone();
+        txt = (match lstElt_261.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_261(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_262(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_262(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_262 in &*items.clone() {
+        let mut lstElt_262 = lstElt_262.clone();
+        txt = (match lstElt_262.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_262(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_263(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_263(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_263 in &*items.clone() {
+        let mut lstElt_263 = lstElt_263.clone();
+        txt = (match lstElt_263.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_263(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_264(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_sundialsObjectFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_runtimeObjectFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_cminpackObjectFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_dgesvObjectFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
@@ -5147,24 +4732,19 @@ fn fun_265(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Resul
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_266(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lib, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_266(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_266 in &*items.clone() {
+        let mut lstElt_266 = lstElt_266.clone();
+        txt = (match lstElt_266.clone() {
+        mut i_lib => {
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_266(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_267(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
@@ -5470,24 +5050,19 @@ fn fun_273(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Resul
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_274(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lib, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_274(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_274 in &*items.clone() {
+        let mut lstElt_274 = lstElt_274.clone();
+        txt = (match lstElt_274.clone() {
+        mut i_lib => {
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_274(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_275(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
@@ -5536,24 +5111,19 @@ fn fun_277(mut in_txt: Tpl::Text, mut in_a_fmiSimulationFlags: Option<SimCode::F
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_278(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_278(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_278 in &*items.clone() {
+        let mut lstElt_278 = lstElt_278.clone();
+        txt = (match lstElt_278.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_278(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_279(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
@@ -5991,24 +5561,19 @@ pub fn importFMUModelDescription(mut in_txt: Tpl::Text, mut in_a_fmi: FMI::FmiIm
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_292(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::ModelVariables>>, mut in_a_generateOutputConnectors: bool, mut in_a_generateInputConnectors: bool, mut in_a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut in_a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_generateOutputConnectors.clone(), in_a_generateInputConnectors.clone(), in_a_fmiTypeDefinitionsList.clone(), in_a_FMUVersion.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiModelVariable, tail: rest }, a_generateOutputConnectors, a_generateInputConnectors, a_fmiTypeDefinitionsList, a_FMUVersion) => {
-            let mut txt = (*txt).clone();
+fn lm_292(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_generateOutputConnectors: bool, mut a_generateInputConnectors: bool, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_292 in &*items.clone() {
+        let mut lstElt_292 = lstElt_292.clone();
+        txt = (match lstElt_292.clone() {
+        mut i_fmiModelVariable => {
             txt = dumpFMUModelDescriptionVariable(txt.clone(), (a_FMUVersion.clone()).clone(), i_fmiModelVariable.clone(), a_fmiTypeDefinitionsList.clone(), a_generateInputConnectors.clone(), a_generateOutputConnectors.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_292(txt.clone(), rest.clone(), a_generateOutputConnectors.clone(), a_generateInputConnectors.clone(), a_fmiTypeDefinitionsList.clone(), (a_FMUVersion.clone()).clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMUModelDescriptionVariablesList(mut txt: Tpl::Text, mut a_FMUVersion: ArcStr, mut a_fmiModelVariablesList: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut a_generateInputConnectors: bool, mut a_generateOutputConnectors: bool) -> Result<Tpl::Text> {
@@ -6880,26 +6445,21 @@ fn fun_338(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stringOutputVariab
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_339(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eventIndicator, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_339(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_339 in &*items.clone() {
+        let mut lstElt_339 = lstElt_339.clone();
+        txt = (match lstElt_339.clone() {
+        mut i_eventIndicator => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("change(fmi_z_positive[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_eventIndicator.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("])")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_339(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_340(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo_fmiNumberOfEventIndicators: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
@@ -6926,28 +6486,23 @@ fn fun_340(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo_fmiNumberO
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_341(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_continuousStates, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_341(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_341 in &*items.clone() {
+        let mut lstElt_341 = lstElt_341.clone();
+        txt = (match lstElt_341.clone() {
+        mut i_continuousStates => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reinit(fmi_x[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_continuousStates.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("], fmi_x_new[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_continuousStates.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]);")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_341(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_342(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo_fmiNumberOfContinuousStates: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
@@ -7864,26 +7419,21 @@ fn fun_379(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stringOutputVariab
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_380(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eventIndicator, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_380(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_380 in &*items.clone() {
+        let mut lstElt_380 = lstElt_380.clone();
+        txt = (match lstElt_380.clone() {
+        mut i_eventIndicator => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("change(fmi_z_positive[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_eventIndicator.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("])")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_380(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_381(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo_fmiNumberOfEventIndicators: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
@@ -7982,28 +7532,23 @@ fn fun_385(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stringEventStartVa
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_386(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_continuousStates, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_386(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_386 in &*items.clone() {
+        let mut lstElt_386 = lstElt_386.clone();
+        txt = (match lstElt_386.clone() {
+        mut i_continuousStates => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reinit(fmi_x[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_continuousStates.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("], fmi_x_new[")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_continuousStates.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]);")).clone() }))?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_386(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_387(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmiInfo_fmiNumberOfContinuousStates: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
@@ -8946,24 +8491,19 @@ pub fn importFMU1CoSimulationStandAlone(mut in_txt: Tpl::Text, mut in_a_fmi: FMI
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_406(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiTypeDefinition, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_406(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_406 in &*items.clone() {
+        let mut lstElt_406 = lstElt_406.clone();
+        txt = (match lstElt_406.clone() {
+        mut i_fmiTypeDefinition => {
             txt = dumpFMITypeDefinition(txt.clone(), i_fmiTypeDefinition.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_406(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMITypeDefinitions(mut txt: Tpl::Text, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
@@ -8994,24 +8534,19 @@ pub fn dumpFMITypeDefinition(mut in_txt: Tpl::Text, mut in_a_fmiTypeDefinition: 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_409(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::EnumerationItem>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_item, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_409(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::EnumerationItem>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_409 in &*items.clone() {
+        let mut lstElt_409 = lstElt_409.clone();
+        txt = (match lstElt_409.clone() {
+        mut i_item => {
             txt = dumpFMITypeDefinitionsItem(txt.clone(), i_item.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_409(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMITypeDefinitionsItems(mut txt: Tpl::Text, mut a_items: Arc<metamodelica::List<FMI::EnumerationItem>>) -> Result<Tpl::Text> {
@@ -9036,24 +8571,19 @@ pub fn dumpFMITypeDefinitionsItem(mut in_txt: Tpl::Text, mut in_a_item: FMI::Enu
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_412(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiTypeDefinition, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_412(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_412 in &*items.clone() {
+        let mut lstElt_412 = lstElt_412.clone();
+        txt = (match lstElt_412.clone() {
+        mut i_fmiTypeDefinition => {
             txt = dumpFMITypeDefinitionMappingFunction(txt.clone(), i_fmiTypeDefinition.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_412(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMITypeDefinitionsMappingFunctions(mut txt: Tpl::Text, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
@@ -9064,26 +8594,21 @@ pub fn dumpFMITypeDefinitionsMappingFunctions(mut txt: Tpl::Text, mut a_fmiTypeD
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_414(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::EnumerationItem>>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_name.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_item, tail: rest }, a_name) => {
+fn lm_414(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::EnumerationItem>>, mut a_name: ArcStr) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_414 in &*items.clone() {
+        let mut lstElt_414 = lstElt_414.clone();
+        txt = (match lstElt_414.clone() {
+        mut i_item => {
             let mut x_i0: i32 = 0;
-            let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             txt = dumpFMITypeDefinitionMappingFunctionItems(txt.clone(), i_item.clone(), (a_name.clone()).clone(), x_i0.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_414(txt.clone(), rest.clone(), (a_name.clone()).clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_415(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
@@ -9180,24 +8705,19 @@ pub fn dumpFMITypeDefinitionMappingFunctionItems(mut in_txt: Tpl::Text, mut in_a
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_419(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiTypeDefinition, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_419(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_419 in &*items.clone() {
+        let mut lstElt_419 = lstElt_419.clone();
+        txt = (match lstElt_419.clone() {
+        mut i_fmiTypeDefinition => {
             txt = dumpFMITypeDefinitionsArrayMappingFunction(txt.clone(), i_fmiTypeDefinition.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_419(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMITypeDefinitionsArrayMappingFunctions(mut txt: Tpl::Text, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
@@ -9238,24 +8758,19 @@ pub fn dumpFMITypeDefinitionsArrayMappingFunction(mut in_txt: Tpl::Text, mut in_
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_422(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::ModelVariables>>, mut in_a_generateOutputConnectors: bool, mut in_a_generateInputConnectors: bool, mut in_a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut in_a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_generateOutputConnectors.clone(), in_a_generateInputConnectors.clone(), in_a_fmiTypeDefinitionsList.clone(), in_a_FMUVersion.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiModelVariable, tail: rest }, a_generateOutputConnectors, a_generateInputConnectors, a_fmiTypeDefinitionsList, a_FMUVersion) => {
-            let mut txt = (*txt).clone();
+fn lm_422(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_generateOutputConnectors: bool, mut a_generateInputConnectors: bool, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_422 in &*items.clone() {
+        let mut lstElt_422 = lstElt_422.clone();
+        txt = (match lstElt_422.clone() {
+        mut i_fmiModelVariable => {
             txt = dumpFMIModelVariable(txt.clone(), (a_FMUVersion.clone()).clone(), i_fmiModelVariable.clone(), a_fmiTypeDefinitionsList.clone(), a_generateInputConnectors.clone(), a_generateOutputConnectors.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_422(txt.clone(), rest.clone(), a_generateOutputConnectors.clone(), a_generateInputConnectors.clone(), a_fmiTypeDefinitionsList.clone(), (a_FMUVersion.clone()).clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFMIModelVariablesList(mut txt: Tpl::Text, mut a_FMUVersion: ArcStr, mut a_fmiModelVariablesList: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut a_generateInputConnectors: bool, mut a_generateOutputConnectors: bool) -> Result<Tpl::Text> {
@@ -10771,24 +10286,19 @@ pub fn dumpFMIModelVariablePlacementAnnotation(mut txt: Tpl::Text, mut a_x1Place
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_498(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::ModelVariables>>, mut in_a_fmiVersion: ArcStr, mut in_a_what: i32, mut in_a_dependent: bool, mut in_a_variabilityCausality: ArcStr, mut in_a_type: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fmiVersion.clone(), in_a_what.clone(), in_a_dependent.clone(), in_a_variabilityCausality.clone(), in_a_type.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiModelVariable, tail: rest }, a_fmiVersion, a_what, a_dependent, a_variabilityCausality, a_type) => {
-            let mut txt = (*txt).clone();
+fn lm_498(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_fmiVersion: ArcStr, mut a_what: i32, mut a_dependent: bool, mut a_variabilityCausality: ArcStr, mut a_type: ArcStr) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_498 in &*items.clone() {
+        let mut lstElt_498 = lstElt_498.clone();
+        txt = (match lstElt_498.clone() {
+        mut i_fmiModelVariable => {
             txt = dumpVariable(txt.clone(), i_fmiModelVariable.clone(), (a_type.clone()).clone(), (a_variabilityCausality.clone()).clone(), a_dependent.clone(), a_what.clone(), (a_fmiVersion.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_498(txt.clone(), rest.clone(), (a_fmiVersion.clone()).clone(), a_what.clone(), a_dependent.clone(), (a_variabilityCausality.clone()).clone(), (a_type.clone()).clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpVariables(mut txt: Tpl::Text, mut a_fmiModelVariablesList: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_type: ArcStr, mut a_variabilityCausality: ArcStr, mut a_dependent: bool, mut a_what: i32, mut a_fmiVersion: ArcStr) -> Result<Tpl::Text> {
@@ -12828,23 +12338,18 @@ pub fn dumpVariable(mut txt: Tpl::Text, mut a_fmiModelVariable: FMI::ModelVariab
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_617(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<FMI::ModelVariables>>, mut in_a_fmiType: ArcStr, mut in_a_fmiGetFunction: ArcStr, mut in_a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fmiType.clone(), in_a_fmiGetFunction.clone(), in_a_fmiTypeDefinitionsList.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, _, _, _) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_fmiModelVariable, tail: rest }, a_fmiType, a_fmiGetFunction, a_fmiTypeDefinitionsList) => {
-            let mut txt = (*txt).clone();
+fn lm_617(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_fmiType: ArcStr, mut a_fmiGetFunction: ArcStr, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_617 in &*items.clone() {
+        let mut lstElt_617 = lstElt_617.clone();
+        txt = (match lstElt_617.clone() {
+        mut i_fmiModelVariable => {
             txt = dumpOutputGetEnumerationVariable(txt.clone(), i_fmiModelVariable.clone(), a_fmiTypeDefinitionsList.clone(), (a_fmiGetFunction.clone()).clone(), (a_fmiType.clone()).clone())?;
-            txt = lm_617(txt.clone(), rest.clone(), (a_fmiType.clone()).clone(), (a_fmiGetFunction.clone()).clone(), a_fmiTypeDefinitionsList.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpOutputGetEnumerationVariables(mut txt: Tpl::Text, mut a_fmiModelVariablesList: Arc<metamodelica::List<FMI::ModelVariables>>, mut a_fmiTypeDefinitionsList: Arc<metamodelica::List<FMI::TypeDefinitions>>, mut a_fmiGetFunction: ArcStr, mut a_fmiType: ArcStr) -> Result<Tpl::Text> {
@@ -12900,264 +12405,199 @@ pub fn dumpOutputGetEnumerationVariable(mut in_txt: Tpl::Text, mut in_a_fmiModel
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_620(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_620(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_620 in &*items.clone() {
+        let mut lstElt_620 = lstElt_620.clone();
+        txt = (match lstElt_620.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_620(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_621(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_621(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_621 in &*items.clone() {
+        let mut lstElt_621 = lstElt_621.clone();
+        txt = (match lstElt_621.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_621(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_622(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_622(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_622 in &*items.clone() {
+        let mut lstElt_622 = lstElt_622.clone();
+        txt = (match lstElt_622.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_622(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_623(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_623(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_623 in &*items.clone() {
+        let mut lstElt_623 = lstElt_623.clone();
+        txt = (match lstElt_623.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_623(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_624(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_624(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_624 in &*items.clone() {
+        let mut lstElt_624 = lstElt_624.clone();
+        txt = (match lstElt_624.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_624(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_625(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_625(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_625 in &*items.clone() {
+        let mut lstElt_625 = lstElt_625.clone();
+        txt = (match lstElt_625.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_625(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_626(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_626(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_626 in &*items.clone() {
+        let mut lstElt_626 = lstElt_626.clone();
+        txt = (match lstElt_626.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("realParameterData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_626(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_627(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_627(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_627 in &*items.clone() {
+        let mut lstElt_627 = lstElt_627.clone();
+        txt = (match lstElt_627.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("integerVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_627(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_628(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_628(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_628 in &*items.clone() {
+        let mut lstElt_628 = lstElt_628.clone();
+        txt = (match lstElt_628.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("integerParameterData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_628(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_629(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_629(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_629 in &*items.clone() {
+        let mut lstElt_629 = lstElt_629.clone();
+        txt = (match lstElt_629.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("booleanVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_629(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_630(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_630(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_630 in &*items.clone() {
+        let mut lstElt_630 = lstElt_630.clone();
+        txt = (match lstElt_630.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("booleanParameterData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_630(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_631(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_631(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_631 in &*items.clone() {
+        let mut lstElt_631 = lstElt_631.clone();
+        txt = (match lstElt_631.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("stringVarsData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_631(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_632(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_632(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_632 in &*items.clone() {
+        let mut lstElt_632 = lstElt_632.clone();
+        txt = (match lstElt_632.clone() {
+        mut i_var => {
             txt = ScalarVariableFMU(txt.clone(), i_var.clone(), (literal!("stringParameterData")).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_632(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 fn fun_633(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {

@@ -24,24 +24,20 @@ use openmodelica_util::Config;
 use openmodelica_util::Flags;
 use openmodelica_util::System;
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAEDumpTypes::compWithSplitElements>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_dae, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_14(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAEDumpTypes::compWithSplitElements>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_14 in &*items.clone() {
+        let mut lstElt_14 = lstElt_14.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_14.clone()) {
+        i_dae => {
             txt = dumpComp(txt.clone(), i_dae.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_14(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_15(mut in_txt: Tpl::Text, mut in_a_funLists: DAEDumpTypes::functionList) -> Result<Tpl::Text> {
@@ -160,24 +156,20 @@ pub fn dumpComp(mut in_txt: Tpl::Text, mut in_a_fixedDae: Arc<DAEDumpTypes::comp
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_21(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAEDumpTypes::compWithSplitElements>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_flatSM, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_21(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAEDumpTypes::compWithSplitElements>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_21 in &*items.clone() {
+        let mut lstElt_21 = lstElt_21.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_21.clone()) {
+        i_flatSM => {
             txt = dumpStateMachineSection(txt.clone(), i_flatSM.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_21(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpCompStream(mut in_txt: Tpl::Text, mut in_a_elems: Arc<DAEDumpTypes::splitElements>) -> Result<Tpl::Text> {
@@ -220,24 +212,19 @@ pub fn dumpCompStream(mut in_txt: Tpl::Text, mut in_a_elems: Arc<DAEDumpTypes::s
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_23(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<DAE::Function>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_func, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_23(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<DAE::Function>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_23 in &*items.clone() {
+        let mut lstElt_23 = lstElt_23.clone();
+        txt = (match lstElt_23.clone() {
+        mut i_func => {
             txt = dumpFunction(txt.clone(), i_func.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_23(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFunctions(mut txt: Tpl::Text, mut a_funcs: Arc<metamodelica::List<DAE::Function>>) -> Result<Tpl::Text> {
@@ -402,24 +389,19 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_31(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_func, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_31(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_31 in &*items.clone() {
+        let mut lstElt_31 = lstElt_31.clone();
+        txt = (match lstElt_31.clone() {
+        mut i_func => {
             txt = dumpFunctionDefinition(txt.clone(), i_func.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_31(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFunctionDefinitions(mut txt: Tpl::Text, mut a_functions: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<Tpl::Text> {
@@ -430,24 +412,19 @@ pub fn dumpFunctionDefinitions(mut txt: Tpl::Text, mut a_functions: Arc<metamode
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_33(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_33(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_33 in &*items.clone() {
+        let mut lstElt_33 = lstElt_33.clone();
+        txt = (match lstElt_33.clone() {
+        mut i_var => {
             txt = Tpl::writeStr(txt.clone(), (i_var.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_33(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpFunctionDefinition(mut in_txt: Tpl::Text, mut in_a_functions: DAE::FunctionDefinition) -> Result<Tpl::Text> {
@@ -583,24 +560,19 @@ pub fn dumpExternalDecl(mut in_txt: Tpl::Text, mut in_a_externalDecl: DAE::Exter
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_39(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<DAE::ExtArg>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_39(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<DAE::ExtArg>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_39 in &*items.clone() {
+        let mut lstElt_39 = lstElt_39.clone();
+        txt = (match lstElt_39.clone() {
+        mut i_arg => {
             txt = dumpExtArg(txt.clone(), i_arg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_39(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpExtArgs(mut txt: Tpl::Text, mut a_args: Arc<metamodelica::List<DAE::ExtArg>>) -> Result<Tpl::Text> {
@@ -660,24 +632,20 @@ pub fn dumpRecordInputVarStr(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Ty
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_43(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_43 in &*items.clone() {
+        let mut lstElt_43 = lstElt_43.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_43.clone()) {
+        i_v => {
             txt = dumpRecordVar(txt.clone(), i_v.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_43(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpRecordVars(mut txt: Tpl::Text, mut a_varLst: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
@@ -795,43 +763,35 @@ pub fn dumpRecordVarBinding(mut in_txt: Tpl::Text, mut in_a_binding: Arc<DAE::Bi
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_49(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lst, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_49(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_49 in &*items.clone() {
+        let mut lstElt_49 = lstElt_49.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_49.clone()) {
+        i_lst => {
             txt = dumpFunctionElement(txt.clone(), i_lst.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_49(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_50(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_lst, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_50(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_50 in &*items.clone() {
+        let mut lstElt_50 = lstElt_50.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_50.clone()) {
+        i_lst => {
             txt = dumpFunctionAnnotation(txt.clone(), i_lst.clone())?;
-            txt = lm_50(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpFunctionBody(mut txt: Tpl::Text, mut a_dAElist: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -929,24 +889,20 @@ pub fn dumpFunctionAlgorithm(mut in_txt: Tpl::Text, mut in_a_algorithm__: Arc<DA
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_56(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_56 in &*items.clone() {
+        let mut lstElt_56 = lstElt_56.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_56.clone()) {
+        i_var => {
             txt = dumpVar(txt.clone(), i_var.clone(), false)?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_56(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpVars(mut txt: Tpl::Text, mut a_v: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -1209,24 +1165,19 @@ pub fn dumpVarDirection(mut in_txt: Tpl::Text, mut in_a_direction: DAE::VarDirec
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_it, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_69(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_69 in &*items.clone() {
+        let mut lstElt_69 = lstElt_69.clone();
+        txt = (match lstElt_69.clone() {
+        mut i_it => {
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_69(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_txt)
+    });
+    }
+    Ok(txt)
 }
 
 pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_attributes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
@@ -1472,24 +1423,21 @@ pub fn dumpArrayType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_
     Ok((out_txt, out_a_attributes))
 }
 
-fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_attr: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    (out_txt, out_a_attr) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_attr.clone())) {
-        (txt, Deref @ metamodelica::List::Nil, a_attr) => {
-            (txt.clone(), a_attr.clone())
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_attr) => {
-            let mut txt = (*txt).clone();
-            let mut a_attr = (*a_attr).clone();
+fn lm_74(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_attr: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
+    let mut txt: Tpl::Text = txt;
+    let mut a_attr: Tpl::Text = a_attr;
+    for mut lstElt_74 in &*items.clone() {
+        let mut lstElt_74 = lstElt_74.clone();
+        (txt, a_attr) = (::match_deref::match_deref! { match &(lstElt_74.clone()) {
+        i_ty => {
             (txt, a_attr) = dumpType(txt.clone(), i_ty.clone(), a_attr.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            (txt, a_attr) = lm_74(txt.clone(), rest.clone(), a_attr.clone())?;
             (txt.clone(), a_attr.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok((out_txt, out_a_attr))
+    }
+    Ok((txt, a_attr))
 }
 
 pub fn dumpTupleType(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_ty__begin: ArcStr, mut a_ty__end: ArcStr) -> Result<Tpl::Text> {
@@ -1504,24 +1452,20 @@ pub fn dumpTupleType(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<D
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_arg, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_76(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_76 in &*items.clone() {
+        let mut lstElt_76 = lstElt_76.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_76.clone()) {
+        i_arg => {
             txt = dumpFuncArg(txt.clone(), i_arg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_76(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpFunctionType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
@@ -1678,24 +1622,20 @@ pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_p: DAE::VarParallelism) -
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_83(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_var, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_83(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_83 in &*items.clone() {
+        let mut lstElt_83 = lstElt_83.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_83.clone()) {
+        i_var => {
             txt = dumpVarAttribute(txt.clone(), i_var.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_83(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpVarAttributes(mut in_txt: Tpl::Text, mut in_a_literalVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Tpl::Text> {
@@ -1736,24 +1676,20 @@ pub fn dumpVarAttribute(mut in_txt: Tpl::Text, mut in_a_var: Arc<DAE::Var>) -> R
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_86(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_dim, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_86(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_86 in &*items.clone() {
+        let mut lstElt_86 = lstElt_86.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_86.clone()) {
+        i_dim => {
             txt = dumpDimension(txt.clone(), i_dim.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_86(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpDimensions(mut in_txt: Tpl::Text, mut in_a_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
@@ -2688,24 +2624,20 @@ pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_c: Arc<DAE::ComponentRef>) -> Re
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_142(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_s, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_142(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_142 in &*items.clone() {
+        let mut lstElt_142 = lstElt_142.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_142.clone()) {
+        i_s => {
             txt = dumpDimension(txt.clone(), i_s.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_142(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpTypeDimensions(mut in_txt: Tpl::Text, mut in_a_dimensionLst: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Tpl::Text> {
@@ -2730,44 +2662,36 @@ pub fn dumpTypeDimensions(mut in_txt: Tpl::Text, mut in_a_dimensionLst: Arc<meta
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_144(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_s, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_144(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_144 in &*items.clone() {
+        let mut lstElt_144 = lstElt_144.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_144.clone()) {
+        i_s => {
             txt = dumpSubscript(txt.clone(), i_s.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_144(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_145(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_s, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_145(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_145 in &*items.clone() {
+        let mut lstElt_145 = lstElt_145.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_145.clone()) {
+        i_s => {
             txt = dumpSubscript(txt.clone(), i_s.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_145(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
@@ -2849,24 +2773,20 @@ pub fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscri
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_149(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_ineq, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_149(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_149 in &*items.clone() {
+        let mut lstElt_149 = lstElt_149.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_149.clone()) {
+        i_ineq => {
             txt = dumpEquationElement(txt.clone(), i_ineq.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_149(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpInitialEquationSection(mut in_txt: Tpl::Text, mut in_a_ie: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -2890,24 +2810,20 @@ pub fn dumpInitialEquationSection(mut in_txt: Tpl::Text, mut in_a_ie: Arc<metamo
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_151(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_eq, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_151(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_151 in &*items.clone() {
+        let mut lstElt_151 = lstElt_151.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_151.clone()) {
+        i_eq => {
             txt = dumpEquationElement(txt.clone(), i_eq.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_151(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpEquationSection(mut in_txt: Tpl::Text, mut in_a_e: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -3217,24 +3133,20 @@ pub fn dumpNoRetCall(mut txt: Tpl::Text, mut a_call__exp: Arc<DAE::Exp>, mut a_s
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_164(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_164(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_164 in &*items.clone() {
+        let mut lstElt_164 = lstElt_164.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_164.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_164(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_165(mut in_txt: Tpl::Text, mut in_a_elsewhen__: Option<Arc<DAE::Element>>) -> Result<Tpl::Text> {
@@ -3314,44 +3226,36 @@ pub fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) 
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_168(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_168(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_168 in &*items.clone() {
+        let mut lstElt_168 = lstElt_168.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_168.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_168(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_169(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_169(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_169 in &*items.clone() {
+        let mut lstElt_169 = lstElt_169.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_169.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_169(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -> Result<Tpl::Text> {
@@ -3413,44 +3317,36 @@ pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_171(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_171(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_171 in &*items.clone() {
+        let mut lstElt_171 = lstElt_171.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_171.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_171(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_172(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_172(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_172 in &*items.clone() {
+        let mut lstElt_172 = lstElt_172.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_172.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_172(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_173(mut in_txt: Tpl::Text, mut in_a_else__branch: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -3531,24 +3427,20 @@ pub fn dumpIfEquation(mut in_txt: Tpl::Text, mut in_a_conds: Arc<metamodelica::L
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_176(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_176(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_176 in &*items.clone() {
+        let mut lstElt_176 = lstElt_176.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_176.clone()) {
+        i_e => {
             txt = dumpEquationElement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_176(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_177(mut in_txt: Tpl::Text, mut in_a_equations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>, mut in_a_rest__conds: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_cond: Arc<DAE::Exp>) -> Result<Tpl::Text> {
@@ -3598,24 +3490,20 @@ pub fn dumpElseIfEquation(mut in_txt: Tpl::Text, mut in_a_condition1: Arc<metamo
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_179(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_alg, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_179(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_179 in &*items.clone() {
+        let mut lstElt_179 = lstElt_179.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_179.clone()) {
+        i_alg => {
             txt = dumpInitialAlgorithm(txt.clone(), i_alg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_179(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpInitialAlgorithmSection(mut txt: Tpl::Text, mut a_ia: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -3642,24 +3530,20 @@ pub fn dumpInitialAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<DAE::Elemen
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_182(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_alg, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_182(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_182 in &*items.clone() {
+        let mut lstElt_182 = lstElt_182.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_182.clone()) {
+        i_alg => {
             txt = dumpAlgorithmElement(txt.clone(), i_alg.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_182(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpAlgorithmSection(mut txt: Tpl::Text, mut a_a: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Tpl::Text> {
@@ -3706,24 +3590,20 @@ pub fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_algorithm__: Arc<DAE::Algor
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_186(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_stmt, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_186(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_186 in &*items.clone() {
+        let mut lstElt_186 = lstElt_186.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_186.clone()) {
+        i_stmt => {
             txt = dumpStatement(txt.clone(), i_stmt.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_186(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpStatements(mut txt: Tpl::Text, mut a_stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
@@ -3863,24 +3743,20 @@ pub fn dumpAssignment(mut txt: Tpl::Text, mut a_lhs: Arc<DAE::Exp>, mut a_rhs: A
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_191(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_191(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_191 in &*items.clone() {
+        let mut lstElt_191 = lstElt_191.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_191.clone()) {
+        i_e => {
             txt = dumpExp(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_191(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpTupleAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
@@ -3938,24 +3814,20 @@ pub fn dumpArrayAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::S
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_194(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_194(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_194 in &*items.clone() {
+        let mut lstElt_194 = lstElt_194.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_194.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_194(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
@@ -3995,44 +3867,36 @@ pub fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_196(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_196(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_196 in &*items.clone() {
+        let mut lstElt_196 = lstElt_196.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_196.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_196(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_197(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_197(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_197 in &*items.clone() {
+        let mut lstElt_197 = lstElt_197.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_197.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_197(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpElseIfStatements(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>) -> Result<Tpl::Text> {
@@ -4078,24 +3942,20 @@ pub fn dumpElseIfStatements(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Els
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_199(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_199(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_199 in &*items.clone() {
+        let mut lstElt_199 = lstElt_199.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_199.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_199(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
@@ -4133,24 +3993,20 @@ pub fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_201(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_201(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_201 in &*items.clone() {
+        let mut lstElt_201 = lstElt_201.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_201.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_201(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpParForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
@@ -4188,24 +4044,20 @@ pub fn dumpParForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statem
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_203(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_203(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_203 in &*items.clone() {
+        let mut lstElt_203 = lstElt_203.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_203.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_203(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
@@ -4241,24 +4093,20 @@ pub fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Stateme
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_205(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_e, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_205(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_205 in &*items.clone() {
+        let mut lstElt_205 = lstElt_205.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_205.clone()) {
+        i_e => {
             txt = dumpStatement(txt.clone(), i_e.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_205(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 fn fun_206(mut in_txt: Tpl::Text, mut in_a_elseWhen: Option<Arc<DAE::Statement>>) -> Result<Tpl::Text> {
@@ -4704,24 +4552,20 @@ pub fn dumpPathLastIndent(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_230(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
-        (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
-        },
-        (txt, Deref @ metamodelica::List::Cons { head: i_c, tail: rest }) => {
-            let mut txt = (*txt).clone();
+fn lm_230(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<Tpl::Text> {
+    let mut txt: Tpl::Text = txt;
+    for mut lstElt_230 in &*items.clone() {
+        let mut lstElt_230 = lstElt_230.clone();
+        txt = (::match_deref::match_deref! { match &(lstElt_230.clone()) {
+        i_c => {
             txt = dumpComment(txt.clone(), i_c.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_230(txt.clone(), rest.clone())?;
             txt.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Ok(out_txt)
+    }
+    Ok(txt)
 }
 
 pub fn dumpSource(mut in_txt: Tpl::Text, mut in_a_source: Arc<DAE::ElementSource>) -> Result<Tpl::Text> {
