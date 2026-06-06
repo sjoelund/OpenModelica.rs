@@ -26407,6 +26407,27 @@ fn fun_987(mut in_txt: Tpl::Text, mut in_a_call: SimCode::SimGenericCall, mut in
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
             txt.clone()
         },
+        (mut txt, SimCode::SimGenericCall::WHEN_GENERIC_CALL { resizable: mut i_resizable, iters: ref i_iters, index: mut i_index, .. }, mut a_jac, mut a_sub__name, mut a_context) => {
+            let mut l_idx__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_auxFunction: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_preExp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_sub: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            l_sub = Tpl::emptyTxt.clone();
+            l_preExp = Tpl::emptyTxt.clone();
+            l_varDecls = Tpl::emptyTxt.clone();
+            l_auxFunction = Tpl::emptyTxt.clone();
+            (l_idx__, l_sub, l_auxFunction, l_varDecls, l_preExp) = fun_986(Tpl::emptyTxt.clone(), i_resizable.clone(), l_sub.clone(), l_auxFunction.clone(), l_varDecls.clone(), l_preExp.clone(), a_context.clone(), i_iters.clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void genericCall_")).clone() }))?;
+            txt = Tpl::writeText(txt.clone(), a_sub__name.clone())?;
+            txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(DATA *data, threadData_t *threadData")).clone() }))?;
+            txt = Tpl::writeText(txt.clone(), a_jac.clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", const int equationIndexes[2], ")).clone() }))?;
+            txt = Tpl::writeText(txt.clone(), l_idx__.clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(");")).clone() }))?;
+            txt.clone()
+        },
         (mut txt, _, _, _, _) => {
             txt.clone()
         },
