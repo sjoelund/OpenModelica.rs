@@ -809,27 +809,30 @@ pub fn stringHash(str: ArcStr) -> i32 {
 /// Returns a DJB2 hash of the string.
 /// DJB2 algorithm: hash = hash * 33 + byte
 ///
-/// The C runtime (meta_modelica_builtin.c) applies `labs()` to the result, so
-/// the hash is always non-negative. Mirror that: callers like
-/// Util.hashFileNamePrefix embed `intString(hash)` in file names, where a
-/// leading '-' breaks the generated shell commands. (`wrapping_abs` matches C
-/// `labs`, which also keeps LONG_MIN negative — an unreachable edge case.)
+/// The C runtime (meta_modelica_builtin.c) applies `labs()` to its 64-bit
+/// result; this port deliberately does NOT mirror that on the wrapped i32:
+/// `wrapping_abs` maps `h` and `-h` to the same value, doubling the collision
+/// rate, and a brief experiment with it sent a hash-collision-sensitive
+/// algorithm in the clocked NBackend partitioning into unbounded recursion
+/// (NBackend/clocked/arraySample.mos) and flipped hash-iteration order in
+/// several NB dump tests. The one place that needs a non-negative value —
+/// Util.hashFileNamePrefix, which embeds `intString(hash)` in generated file
+/// names — applies `intAbs` itself.
 pub fn stringHashDjb2(str: ArcStr) -> i32 {
     let mut hash: i32 = 5381;
     for &byte in str.as_bytes() {
         hash = hash.wrapping_mul(33).wrapping_add(byte as i32);
     }
-    hash.wrapping_abs()
+    hash
 }
 
 /// Continues computing a DJB2 hash by adding another string to it.
-/// Non-negative like [`stringHashDjb2`] (the C runtime applies `labs()`).
 pub fn stringHashDjb2Continue(str: ArcStr, hash: i32) -> i32 {
     let mut h = hash;
     for &byte in str.as_bytes() {
         h = h.wrapping_mul(33).wrapping_add(byte as i32);
     }
-    h.wrapping_abs()
+    h
 }
 
 /// Computes a DJB2 hash and applies modulo without intermediate overflow issues.
@@ -2872,18 +2875,12 @@ mod tests {
 
         #[test]
         fn test_string_hash_djb2_continue() {
-            // The C runtime applies labs() to each result, so the naive
-            // "continue == hash of the concatenation" property only holds
-            // while no intermediate result is negative. With 64-bit C longs
-            // that is every practical string; with the port's i32 width even
-            // short strings wrap, so only check determinism + the short
-            // no-wrap case here.
-            let h1 = stringHashDjb2(literal!("ab"));
-            let combined = stringHashDjb2Continue(literal!("cd"), h1);
-            assert_eq!(combined, stringHashDjb2(literal!("abcd")));
-            // Non-negative like C labs(), even when the i32 hash wraps.
-            assert!(stringHashDjb2(literal!("hello world")) >= 0);
-            assert!(stringHashDjb2Continue(literal!(" world"), stringHashDjb2(literal!("hello"))) >= 0);
+            let h1 = stringHashDjb2(literal!("hello"));
+            let _h2 = stringHashDjb2(literal!(" world"));
+            let combined = stringHashDjb2Continue(literal!(" world"), h1);
+            // Starting from h1 and adding " world" should give the same
+            // as hashing "hello world" from scratch
+            assert_eq!(combined, stringHashDjb2(literal!("hello world")));
         }
 
         #[test]
