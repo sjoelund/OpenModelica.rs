@@ -261,7 +261,7 @@ pub mod ImportTreeImpl {
                 assign_variant_field!(tree => Tree::NODE; right = add(var_field!((*tree).right, Tree::NODE).clone(), (inKey.clone()).clone(), inValue.clone(), conflictFunc.clone())?);
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::NODE).clone(), (key.clone()).clone())?;
-                if !(referenceEq(&var_field!((*tree).value, Tree::NODE).clone(),&value.clone())) {
+                if !({ let __refeq_sl = &(var_field!((*tree).value, Tree::NODE).clone()); let __refeq_sr = &(value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                     assign_variant_field!(tree => Tree::NODE; value = value.clone());
                 }
             }
@@ -278,7 +278,7 @@ pub mod ImportTreeImpl {
                 outTree = Arc::new(Tree::NODE { key: (var_field!((*tree).key, Tree::LEAF).clone()).clone(), value: var_field!((*tree).value, Tree::LEAF).clone(), height: 2, left: crate::Conversion::ImportTreeImpl::Tree::interned_EMPTY(), right: Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() }) });
             } else {
                 value = conflictFunc(inValue.clone(), var_field!((*tree).value, Tree::LEAF).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone())?;
-                if !(referenceEq(&var_field!((*tree).value, Tree::LEAF).clone(),&value.clone())) {
+                if !({ let __refeq_sl = &(var_field!((*tree).value, Tree::LEAF).clone()); let __refeq_sr = &(value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                     assign_variant_field!(tree => Tree::LEAF; value = value.clone());
                 }
                 outTree = tree.clone();
@@ -683,7 +683,7 @@ pub mod ImportTreeImpl {
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
             new_value = inFunc((key.clone()).clone(), value.clone())?;
             new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
-            if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
+            if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
             outTree.clone()
@@ -691,7 +691,7 @@ pub mod ImportTreeImpl {
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = <ImportData as ::std::default::Default>::default();
             new_value = inFunc((key.clone()).clone(), value.clone())?;
-            if !(referenceEq(&value.clone(),&new_value.clone())) {
+            if !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
             outTree.clone()
@@ -717,7 +717,7 @@ pub mod ImportTreeImpl {
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
             (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
-            if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
+            if !(referenceEq(&*(new_left.clone()),&*(var_field!((*outTree).left, Tree::NODE).clone()))) || !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) || !(referenceEq(&*(new_right.clone()),&*(var_field!((*outTree).right, Tree::NODE).clone()))) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
             outTree.clone()
@@ -725,7 +725,7 @@ pub mod ImportTreeImpl {
         Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = <ImportData as ::std::default::Default>::default();
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
-            if !(referenceEq(&value.clone(),&new_value.clone())) {
+            if !({ let __refeq_sl = &(value.clone()); let __refeq_sr = &(new_value.clone()); referenceEq(&*(__refeq_sl.originalPath),&*(__refeq_sr.originalPath)) && referenceEq(&*(__refeq_sl.convertedPath),&*(__refeq_sr.convertedPath)) && referenceEq(&*(__refeq_sl.importName),&*(__refeq_sr.importName)) && ((__refeq_sl.shadowed) == (__refeq_sr.shadowed)) }) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
             outTree.clone()

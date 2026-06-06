@@ -9843,14 +9843,14 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // referenceEq is infallible: returns bool directly, no ctx.q() needed
             let ty1 = args.first().map(|a| a.ty()).unwrap_or_default();
             let ty2 = args.get(1).map(|a| a.ty()).unwrap_or_default();
-            Ok(try_emit_reference_eq(&arg1, &arg2, &ty1, ctx)
-                .or_else(|| try_emit_reference_eq(&arg1, &arg2, &ty2, ctx))
+            Ok(try_emit_reference_eq(&arg1, &arg2, &ty1, ctx, top_level)
+                .or_else(|| try_emit_reference_eq(&arg1, &arg2, &ty2, ctx, top_level))
                 // Fallback: compare the operands' own addresses. The operands
                 // are usually freshly cloned temporaries, so this is in
                 // practice always false — a false negative only, which is
                 // safe: MM uses referenceEq for sharing/short-circuit
                 // optimizations, so behaviour stays correct but reuse is lost.
-                .unwrap_or_else(|| format!("referenceEq(&{arg1},&{arg2})")))
+                .unwrap_or_else(|| format!("referenceEq(&{arg1},&{arg2}) /* always false: opaque type {ty1:?} — needs a ReferenceEq trait for generics */")))
         },
         "isPresent" => {
             Ok("true /* isPresent not implemented in Rust */".to_string())
@@ -15676,12 +15676,32 @@ fn referenceeq_derefs_to_pointee(ty: &Ty, ctx: &GenCtx) -> bool {
 ///   * `TypeVar`/`Unknown` — the representation is opaque at this call site.
 ///     A real fix needs instantiation-time information, e.g. a codegen-
 ///     implemented `ReferenceEq` trait bound on generic functions.
-///   * Non-recursive records/enums and tuples — value-represented; copies
-///     are genuinely distinct objects, there is no identity to observe.
 ///   * `Real` — heap-boxed in MMC (distinct boxes with equal values compare
 ///     unequal there too), so an (always-false) address compare on the Copy
 ///     `f64` is the closer approximation, unlike Integer/Boolean.
-fn try_emit_reference_eq(lhs: &str, rhs: &str, ty: &Ty, ctx: &GenCtx) -> Option<String> {
+///
+/// Non-recursive records/enums and tuples are *value-represented* in this
+/// port (MMC boxes every record). For those the lowering compares the fields
+/// shallowly — "observational identity". This is the strongest identity an
+/// unboxed value can have, and it is what the MM reuse/cache idioms actually
+/// rely on: in C the value would never have been copied at all, so two
+/// operands with pairwise-identical (pointer-equal) fields are
+/// indistinguishable from the same object to any MM code. The over-
+/// approximation (C may report false for a freshly rebuilt record with
+/// identical fields) can only turn a rebuild into a reuse of an equal,
+/// immutable value. The under-approximation of the address fallback was far
+/// worse in practice: e.g. `NFApi.frontEndLookup` caches the expanded MSL
+/// keyed on `referenceEq(absynProgram, …)` — `Absyn.Program` is an unboxed
+/// record here, so the always-false compare re-ran the whole NF front end on
+/// every `qualifyPath`, blowing tests up from 0.5 GB / 2 s to 14 GB / 110 s
+/// (testsuite openmodelica/interactive-API OOMs).
+fn try_emit_reference_eq<'a>(
+    lhs: &str,
+    rhs: &str,
+    ty: &Ty,
+    ctx: &mut GenCtx,
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+) -> Option<String> {
     match ty {
         Ty::I32 | Ty::Bool => Some(format!("(({lhs}) == ({rhs}))")),
         _ if referenceeq_derefs_to_pointee(ty, ctx) => {
@@ -15696,10 +15716,93 @@ fn try_emit_reference_eq(lhs: &str, rhs: &str, ty: &Ty, ctx: &GenCtx) -> Option<
             // expression. Nested Options shadow the binding names, which is
             // sound: each scrutinee is evaluated before its own arm bindings
             // come into scope.
-            let inner_cmp = try_emit_reference_eq("*__refeq_l", "*__refeq_r", inner, ctx)
+            let inner_cmp = try_emit_reference_eq("*__refeq_l", "*__refeq_r", inner, ctx, top_level)
                 .unwrap_or_else(|| "referenceEq(__refeq_l, __refeq_r)".to_owned());
             Some(format!(
                 "(match (&({lhs}), &({rhs})) {{ (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => {inner_cmp}, _ => false }})"
+            ))
+        }
+        Ty::Tuple(elems) => {
+            // Element-wise observational identity. Hoist the operands so each
+            // element expression is evaluated once.
+            let conds: Vec<String> = elems
+                .iter()
+                .enumerate()
+                .map(|(i, ety)| {
+                    try_emit_reference_eq(&format!("__refeq_tl.{i}"), &format!("__refeq_tr.{i}"), ety, ctx, top_level)
+                })
+                .collect::<Option<Vec<_>>>()?;
+            let cond = if conds.is_empty() { "true".to_owned() } else { conds.join(" && ") };
+            Some(format!(
+                "{{ let __refeq_tl = &({lhs}); let __refeq_tr = &({rhs}); {cond} }}"
+            ))
+        }
+        Ty::RustStruct(qname) | Ty::AliasTo(qname) if !is_arc_wrapped(ty, ctx) => {
+            // Unboxed record — including a single-record uniontype like
+            // `Absyn.Program`, whose value type appears as `AliasTo` — all
+            // fields pairwise identical. (Arc-wrapped records are caught by
+            // `referenceeq_derefs_to_pointee` above; an alias to a non-record
+            // type has no fields, `record_field_tys` returns `None`, and the
+            // caller's fallback applies as before.)
+            let fields = record_field_tys(qname, top_level)?;
+            let conds: Vec<String> = fields
+                .iter()
+                .map(|(fname, fty)| {
+                    let f = escape_ident(fname);
+                    try_emit_reference_eq(&format!("__refeq_sl.{f}"), &format!("__refeq_sr.{f}"), fty, ctx, top_level)
+                })
+                .collect::<Option<Vec<_>>>()?;
+            let cond = if conds.is_empty() { "true".to_owned() } else { conds.join(" && ") };
+            Some(format!(
+                "{{ let __refeq_sl = &({lhs}); let __refeq_sr = &({rhs}); {cond} }}"
+            ))
+        }
+        Ty::RustEnum(qname) if !is_arc_wrapped(ty, ctx) => {
+            // Unboxed uniontype: same variant with pairwise-identical fields.
+            let node = lookup_node(qname, top_level)?;
+            let NodeKind::Class(_) = &node.kind else { return None };
+            let enum_path = fmt_ty(ty, ctx);
+            let mut arms: Vec<String> = Vec::new();
+            for (vname, vnode) in &node.children {
+                let NodeKind::Class(vc) = &vnode.kind else { continue };
+                if !matches!(vc.restriction, Absyn::Restriction::R_RECORD { .. }) {
+                    continue;
+                }
+                let fields = component_fields(vc, &vnode.children);
+                let variant = escape_ident(vname);
+                if fields.is_empty() {
+                    arms.push(format!("({enum_path}::{variant}, {enum_path}::{variant}) => true"));
+                    continue;
+                }
+                let mut lpat: Vec<String> = Vec::new();
+                let mut rpat: Vec<String> = Vec::new();
+                let mut conds: Vec<String> = Vec::new();
+                for (i, (fname, fty)) in fields.iter().enumerate() {
+                    let f = escape_ident(fname);
+                    lpat.push(format!("{f}: __refeq_v{i}l"));
+                    rpat.push(format!("{f}: __refeq_v{i}r"));
+                    conds.push(try_emit_reference_eq(
+                        &format!("*__refeq_v{i}l"),
+                        &format!("*__refeq_v{i}r"),
+                        fty,
+                        ctx,
+                        top_level,
+                    )?);
+                }
+                arms.push(format!(
+                    "({enum_path}::{variant} {{ {} }}, {enum_path}::{variant} {{ {} }}) => {}",
+                    lpat.join(", "),
+                    rpat.join(", "),
+                    conds.join(" && ")
+                ));
+            }
+            if arms.is_empty() {
+                return None;
+            }
+            arms.push("_ => false".to_owned());
+            Some(format!(
+                "(match (&({lhs}), &({rhs})) {{ {} }})",
+                arms.join(", ")
             ))
         }
         _ => None,

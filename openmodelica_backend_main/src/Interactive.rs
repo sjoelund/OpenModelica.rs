@@ -3002,7 +3002,7 @@ pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Resu
             let mut x = x.clone();
             (po, patho, envo) = x.clone();
             if AbsynUtil::pathEqual(patho.clone(), p_class.clone()) {
-                if referenceEq(&po.clone(),&p.clone()) {
+                if { let __refeq_sl = &(po.clone()); let __refeq_sr = &(p.clone()); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
                     env_2 = envo.clone();
                     return Ok(env_2.clone());
                 } else {

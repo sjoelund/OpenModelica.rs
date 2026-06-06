@@ -5869,7 +5869,7 @@ pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static>(mut inExp: Arc<DAE:
     let mut ext_arg2: Type_a;
     (rel, ext_arg) = itpl.clone();
     (outExp, ext_arg2) = traverseExpBottomUp(inExp.clone(), rel.clone(), ext_arg.clone())?;
-    otpl = if (referenceEq(&ext_arg.clone(),&ext_arg2.clone())) {itpl.clone()} else {(rel.clone(), ext_arg2.clone())};
+    otpl = if (referenceEq(&ext_arg.clone(),&ext_arg2.clone()) /* always false: opaque type TypeVar("Type_a") — needs a ReferenceEq trait for generics */) {itpl.clone()} else {(rel.clone(), ext_arg2.clone())};
     Ok((outExp, otpl))
 }
 
@@ -5901,7 +5901,7 @@ pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static>(mut inExp: A
     let mut ext_arg2: Type_a;
     (rel, ext_arg) = itpl.clone();
     (outExp, ext_arg2) = traverseExpTopDown(inExp.clone(), rel.clone(), ext_arg.clone())?;
-    otpl = if (referenceEq(&ext_arg.clone(),&ext_arg2.clone())) {itpl.clone()} else {(rel.clone(), ext_arg2.clone())};
+    otpl = if (referenceEq(&ext_arg.clone(),&ext_arg2.clone()) /* always false: opaque type TypeVar("Type_a") — needs a ReferenceEq trait for generics */) {itpl.clone()} else {(rel.clone(), ext_arg2.clone())};
     Ok((outExp, otpl))
 }
 
@@ -7175,7 +7175,7 @@ fn traversingCrefFinder<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut i
         (Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, (func, arg)) => {
             let mut arg1: Type_a;
             arg1 = func(cr.clone(), arg.clone()).unwrap();
-            (inExp.clone(), if (referenceEq(&arg.clone(),&arg1.clone())) {inTpl.clone()} else {(func.clone(), arg1.clone())})
+            (inExp.clone(), if (referenceEq(&arg.clone(),&arg1.clone()) /* always false: opaque type TypeVar("Type_a") — needs a ReferenceEq trait for generics */) {inTpl.clone()} else {(func.clone(), arg1.clone())})
         },
         _ => {
             (inExp.clone(), inTpl.clone())

@@ -510,7 +510,7 @@ fn frontEndFront(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) -> 
     if !(cache.clone().is_empty()) {
         for mut i in &*cache.clone() {
             let mut i = i.clone();
-            if referenceEq(&absynProgram.clone(),&Util::tuple21(Util::tuple21(i.clone()))) {
+            if { let __refeq_sl = &(absynProgram.clone()); let __refeq_sr = &(Util::tuple21(Util::tuple21(i.clone()))); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
                 if AbsynUtil::pathEqual(classPath.clone(), Util::tuple22(Util::tuple21(i.clone()))) {
                     (program, name, inst_cls) = Util::tuple22(i.clone());
                     return Ok((program.clone(), name.clone(), inst_cls.clone()));
@@ -546,7 +546,7 @@ fn mkTop(mut absynProgram: Absyn::Program, mut name: ArcStr) -> Result<(Arc<meta
     let mut update: bool = true;
     cache = crate::Globals::instNFNodeCacheIndex.with(|__root| __root.borrow().clone());
     if !(cache.clone().is_empty()) {
-        if referenceEq(&absynProgram.clone(),&Util::tuple21(listHead(cache.clone())?)) {
+        if { let __refeq_sl = &(absynProgram.clone()); let __refeq_sr = &(Util::tuple21(listHead(cache.clone())?)); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
             (program, top) = Util::tuple22(listHead(cache.clone())?);
             InstNode::clearGeneratedInners(top.clone())?;
             update = false;
@@ -628,7 +628,7 @@ fn frontEndLookup(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) ->
     if !(cache.clone().is_empty()) {
         for mut i in &*cache.clone() {
             let mut i = i.clone();
-            if referenceEq(&absynProgram.clone(),&Util::tuple21(Util::tuple21(i.clone()))) {
+            if { let __refeq_sl = &(absynProgram.clone()); let __refeq_sr = &(Util::tuple21(Util::tuple21(i.clone()))); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
                 if AbsynUtil::pathEqual(classPath.clone(), Util::tuple22(Util::tuple21(i.clone()))) {
                     (program, name, expanded_cls) = Util::tuple22(i.clone());
                     return Ok((program.clone(), name.clone(), expanded_cls.clone()));

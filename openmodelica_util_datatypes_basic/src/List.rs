@@ -1394,7 +1394,7 @@ pub fn mapCheckReferenceEq<TI: Clone + 'static>(mut inList: Arc<metamodelica::Li
     for mut e in &*inList.clone() {
         let mut e = e.clone();
         e1 = inFunc(e.clone())?;
-        if !(referenceEq(&e.clone(),&e1.clone())) {
+        if !(referenceEq(&e.clone(),&e1.clone()) /* always false: opaque type TypeVar("TI") — needs a ReferenceEq trait for generics */) {
             savedElt = e1.clone();
             delst = DoubleEnded::empty(e1.clone());
             for mut elt in &*inList.clone() {
@@ -2184,7 +2184,7 @@ pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static, ArgT1: Clone + 'static, Ar
     for mut e in &*inList.clone() {
         let mut e = e.clone();
         (res, outArg) = inFunc(e.clone(), inConstArg.clone(), inConstArg2.clone(), outArg.clone())?;
-        if !(referenceEq(&e.clone(),&res.clone())) {
+        if !(referenceEq(&e.clone(),&res.clone()) /* always false: opaque type TypeVar("TIO") — needs a ReferenceEq trait for generics */) {
             savedElt = res.clone();
             delst = DoubleEnded::empty(res.clone());
             for mut elt in &*inList.clone() {

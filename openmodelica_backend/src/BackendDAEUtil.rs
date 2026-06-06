@@ -8094,7 +8094,7 @@ pub fn traverseArrayNoCopyWithUpdate<ArrT: Clone + 'static, ElemT: Clone + 'stat
     for mut i in 1..=inLength.clone() {
         e = ({let __elt = inArray.borrow()[(i.clone()-1) as usize].clone(); __elt});
         (new_e, outArg) = inArrayFunc(e.clone(), inElemFunc.clone(), outArg.clone())?;
-        if !(referenceEq(&e.clone(),&new_e.clone())) {
+        if !(referenceEq(&e.clone(),&new_e.clone()) /* always false: opaque type TypeVar("ArrT") — needs a ReferenceEq trait for generics */) {
             metamodelica::arrayUpdate(outArray.clone(), i.clone(), new_e.clone())?;
         }
     }

@@ -1874,7 +1874,7 @@ fn fixOption<Type_A: Clone + 'static>(mut inCache: metamodelica::Array<FCore::Ca
         Some(mut A1) => {
             let mut A2: Type_A;
             A2 = fixA(inCache.clone(), inEnv.clone(), A1.clone(), tree.clone())?;
-            if (referenceEq(&A1.clone(),&A2.clone())) {inA.clone()} else {Some(A2.clone())}
+            if (referenceEq(&A1.clone(),&A2.clone()) /* always false: opaque type TypeVar("Type_A") — needs a ReferenceEq trait for generics */) {inA.clone()} else {Some(A2.clone())}
         },
     });
     Ok(outA)
@@ -1927,7 +1927,7 @@ fn fixTuple2<Type_A: Clone + 'static, Type_B: Clone + 'static>(mut inCache: meta
     (a1, b1) = tpl.clone();
     a2 = fixA(inCache.clone(), inEnv.clone(), a1.clone(), tree.clone())?;
     b2 = fixB(inCache.clone(), inEnv.clone(), b1.clone(), tree.clone())?;
-    if !(referenceEq(&a1.clone(),&a2.clone()) && referenceEq(&b1.clone(),&b2.clone())) {
+    if !(referenceEq(&a1.clone(),&a2.clone()) /* always false: opaque type TypeVar("Type_A") — needs a ReferenceEq trait for generics */ && referenceEq(&b1.clone(),&b2.clone()) /* always false: opaque type TypeVar("Type_B") — needs a ReferenceEq trait for generics */) {
         tpl = (a2.clone(), b2.clone());
     }
     Ok(tpl)

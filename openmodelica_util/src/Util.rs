@@ -1337,7 +1337,7 @@ pub fn applyTuple21<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, 
     let mut e2: T2;
     (e1_1, e2) = inTuple.clone();
     e1_2 = func(e1_1.clone())?;
-    outTuple = if (referenceEq(&e1_1.clone(),&e1_2.clone())) {inTuple.clone()} else {(e1_2.clone(), e2.clone())};
+    outTuple = if (referenceEq(&e1_1.clone(),&e1_2.clone()) /* always false: opaque type TypeVar("T1") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(e1_2.clone(), e2.clone())};
     Ok(outTuple)
 }
 
@@ -1350,7 +1350,7 @@ pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, 
     let mut e2_2: T2;
     (e1, e2_1) = inTuple.clone();
     e2_2 = func(e2_1.clone())?;
-    outTuple = if (referenceEq(&e2_1.clone(),&e2_2.clone())) {inTuple.clone()} else {(e1.clone(), e2_2.clone())};
+    outTuple = if (referenceEq(&e2_1.clone(),&e2_2.clone()) /* always false: opaque type TypeVar("T2") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(e1.clone(), e2_2.clone())};
     Ok(outTuple)
 }
 
@@ -1364,7 +1364,7 @@ pub fn applyTuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'stati
     let mut t3: T3;
     (t1, t2, t3) = inTuple.clone();
     t1_new = func(t1.clone())?;
-    outTuple = if (referenceEq(&t1.clone(),&t1_new.clone())) {inTuple.clone()} else {(t1_new.clone(), t2.clone(), t3.clone())};
+    outTuple = if (referenceEq(&t1.clone(),&t1_new.clone()) /* always false: opaque type TypeVar("T1") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(t1_new.clone(), t2.clone(), t3.clone())};
     Ok(outTuple)
 }
 

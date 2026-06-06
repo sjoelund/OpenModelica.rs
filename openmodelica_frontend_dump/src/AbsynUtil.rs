@@ -4472,7 +4472,7 @@ fn traverseListGeneric<T: Clone + 'static, ArgT: Clone + 'static>(mut inList: Ar
         e = __pa0.clone();
         rest_e = __pa1.clone();
         (new_e, outArg, outContinue) = inFunc(e.clone(), outArg.clone())?;
-        eq = referenceEq(&new_e.clone(),&e.clone());
+        eq = referenceEq(&new_e.clone(),&e.clone()) /* always false: opaque type TypeVar("T") — needs a ReferenceEq trait for generics */;
         outList = metamodelica::cons(if (eq.clone()) {e.clone()} else {new_e.clone()}, outList.clone());
         changed = changed.clone() || !(eq.clone());
         if !(outContinue.clone()) {

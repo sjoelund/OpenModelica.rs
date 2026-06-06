@@ -4481,7 +4481,7 @@ fn traverserexpandDerExp(mut exp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
     (vars1, ops) = tpl.clone();
     (exp_1, vars2) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = shared.clone(); move |__pe_a0, __pe_a1| expandDerExp(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars1.clone())?;
-    if !(referenceEq(&vars1.clone(),&vars2.clone()) && referenceEq(&*(exp.clone()),&*(exp_1.clone()))) {
+    if !({ let __refeq_sl = &(vars1.clone()); let __refeq_sr = &(vars2.clone()); referenceEq(&*(__refeq_sl.crefIndices),&*(__refeq_sr.crefIndices)) && { let __refeq_sl = &(__refeq_sl.varArr); let __refeq_sr = &(__refeq_sr.varArr); ((__refeq_sl.numberOfElements) == (__refeq_sr.numberOfElements)) && referenceEq(&*(__refeq_sl.varOptArr),&*(__refeq_sr.varOptArr)) } && ((__refeq_sl.bucketSize) == (__refeq_sr.bucketSize)) && ((__refeq_sl.numberOfVars) == (__refeq_sr.numberOfVars)) } && referenceEq(&*(exp.clone()),&*(exp_1.clone()))) {
         ops = metamodelica::cons(Arc::new(DAE::SymbolicOperation::OP_DIFFERENTIATE { cr: DAE::crefTime().clone(), before: exp.clone(), after: exp_1.clone() }), ops.clone());
         exp = exp_1.clone();
         tpl = (vars2.clone(), ops.clone());
