@@ -542,7 +542,7 @@ pub enum ClassBodyItem {
     InitialEquations(Arc<List<EquationItem>>),
     Algorithms(Arc<List<AlgorithmItem>>),
     InitialAlgorithms(Arc<List<AlgorithmItem>>),
-    Constraints,
+    Constraints(Arc<List<Arc<Absyn::Exp>>>),
     External {
         /// Language tag from the `external "C"` clause (Modelica allows "C"
         /// and "FORTRAN 77"; OpenModelica only uses "C"). Absent for the bare
@@ -733,7 +733,7 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
             ClassBodyItem::InitialEquations(items) => ClassPart::INITIALEQUATIONS { contents: to_rc_list(items.clone()) },
             ClassBodyItem::Algorithms(items)       => ClassPart::ALGORITHMS       { contents: to_rc_list(items.clone()) },
             ClassBodyItem::InitialAlgorithms(items)=> ClassPart::INITIALALGORITHMS{ contents: to_rc_list(items.clone()) },
-            ClassBodyItem::Constraints             => ClassPart::CONSTRAINTS      { contents: Arc::new(List::Nil) },
+            ClassBodyItem::Constraints(contents)   => ClassPart::CONSTRAINTS      { contents: contents.clone() },
             ClassBodyItem::External { lang, funcName, output_, args, annotation_opt } => ClassPart::EXTERNAL {
                 externalDecl: Arc::new(ExternalDecl {
                     funcName: funcName.clone(),
@@ -1237,6 +1237,41 @@ fn composition2(input: &mut TokenInput) -> ModalResult<Arc<List<ClassBodyItem>>>
                 .parse_next(input)?;
             parts = cons(ClassBodyItem::Algorithms(items), parts);
             for ann in anns { parts = cons(ClassBodyItem::Annotation(ann), parts); }
+            continue;
+        }
+        if matches!(peek_kind(input), Some(TK::Constraint)) {
+            // Optimica `constraint` section (constraint_clause in Modelica.g;
+            // the lexer only produces TK::Constraint under -g=Optimica). The
+            // ANTLR `constraint` rule nominally admits algorithm-like
+            // alternatives (for/while/when clauses), but those would put
+            // Algorithm nodes in CONSTRAINTS' list<Exp> — only the expression
+            // form is used by real Optimica code, so only that is supported.
+            next_tok(input)?;
+            let mut constraints: Arc<List<Arc<Absyn::Exp>>> = Arc::new(List::Nil);
+            loop {
+                if matches!(
+                    peek_kind(input),
+                    Some(TK::End | TK::Constraint | TK::Equation | TK::Algorithm
+                        | TK::Initial | TK::Protected | TK::Public) | None
+                ) {
+                    break;
+                }
+                if let Some(ann) = opt(annotation).parse_next(input)? {
+                    cut_err(t(TK::Semi))
+                        .context(StrContext::Label("';' after constraint annotation"))
+                        .parse_next(input)?;
+                    parts = cons(ClassBodyItem::Annotation(ann), parts);
+                    continue;
+                }
+                let e = cut_err(expression)
+                    .context(StrContext::Label("constraint expression"))
+                    .parse_next(input)?;
+                cut_err(t(TK::Semi))
+                    .context(StrContext::Label("';' after constraint"))
+                    .parse_next(input)?;
+                constraints = cons(Arc::new(e), constraints);
+            }
+            parts = cons(ClassBodyItem::Constraints(constraints.reverse()), parts);
             continue;
         }
         break;
