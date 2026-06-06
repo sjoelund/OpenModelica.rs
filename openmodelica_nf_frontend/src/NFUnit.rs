@@ -60,7 +60,7 @@ pub type UnitToStringTable = Arc<UnorderedMap::UnorderedMap<Unit, ArcStr>>;
 
 pub type CrefToUnitTable = Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum Unit {
     /// based on SI base units
     UNIT {
@@ -104,7 +104,7 @@ pub const fn ONE() -> Unit { Unit::UNIT { s: 0, m: 0, g: 0, A: 0, K: 0, mol: 0, 
 pub const fn SECOND() -> Unit { Unit::UNIT { s: 1, m: 0, g: 0, A: 0, K: 0, mol: 0, cd: 0, factor: metamodelica::OrderedFloat(1e0_f64) } }
 
 //public constant Unit THRICE = ?
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Token {
     T_NUMBER {
         number: i32,

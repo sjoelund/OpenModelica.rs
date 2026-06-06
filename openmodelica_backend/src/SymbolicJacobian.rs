@@ -4367,7 +4367,7 @@ pub type LinearJacobianInd = metamodelica::Array<(i32, i32)>;
 
 pub mod LinearJacobian {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct LinearJacobian {
         /// all loop variables entries
         pub rows: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<i32, metamodelica::Real>>>,

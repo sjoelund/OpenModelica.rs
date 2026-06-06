@@ -655,7 +655,7 @@ pub fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i3
     Ok((token, mm_startSt, bufferRet, errorTokens))
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum TokenId {
     _NO_TOKEN = 1,
@@ -771,7 +771,7 @@ impl Default for TokenId {
     fn default() -> Self { Self::_NO_TOKEN }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Token {
     pub fileName: ArcStr,
     pub id: TokenId,

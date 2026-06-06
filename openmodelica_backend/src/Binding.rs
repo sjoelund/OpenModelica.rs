@@ -63,7 +63,7 @@ pub type Path = Arc<Absyn::Path>;
 pub type TypeSpec = Arc<Absyn::TypeSpec>;
 
 // Types
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Mediator {
     pub mType: ArcStr,
     pub template: ArcStr,
@@ -75,7 +75,7 @@ pub struct Mediator {
 pub type MEDIATOR = Mediator;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Client {
     pub modelID: ArcStr,
     pub component: ArcStr,
@@ -86,7 +86,7 @@ pub struct Client {
 pub type CLIENT = Client;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Provider {
     pub modelID: ArcStr,
     pub component: ArcStr,
@@ -96,7 +96,7 @@ pub struct Provider {
 pub type PROVIDER = Provider;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Preferred {
     pub clientInstancePath: ArcStr,
     pub providerInstancePath: ArcStr,
@@ -106,7 +106,7 @@ pub type PREFERRED = Preferred;
 
 
 /// internal client list representation
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Client_e {
     CLIENT_E {
         components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,

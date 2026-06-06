@@ -6141,7 +6141,7 @@ pub fn traverseModAddFinal(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>
                 Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: each_, subModLst: subs1, binding: eq, comment: cmt, info } => {
                     let mut subs2: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
                     subs2 = List::mapCheckReferenceEq(subs1.clone(), (std::sync::Arc::new(traverseModAddFinal4) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<Arc<SCode::SubMod>> + 'static>))?;
-                    Ok(if (openmodelica_frontend_types::SCode::Final::FINAL == f.clone() && referenceEq(&*(subs1.clone()),&*(subs2.clone()))) {r#mod.clone()} else {Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), subModLst: subs2.clone(), binding: eq.clone(), comment: cmt.clone(), info: info.clone() })})
+                    Ok(if (openmodelica_frontend_types::SCode::Final::FINAL == f.clone() && metamodelica::ReferenceEq::reference_eq(&*(subs1.clone()), &*(subs2.clone()))) {r#mod.clone()} else {Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), subModLst: subs2.clone(), binding: eq.clone(), comment: cmt.clone(), info: info.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}

@@ -141,7 +141,7 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<E
 // =========================================================================
 pub mod EventInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct EventInfo {
         /// tracks compact time events (SINGLE or SAMPLE)
         pub time_set: Arc<UnorderedSet::UnorderedSet<Arc<TimeEvent::TimeEvent>>>,
@@ -308,7 +308,7 @@ pub mod EventInfo {
 
 pub mod TimeEvent {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum TimeEvent {
         /// e.g. time > 0.5
         SINGLE {
@@ -599,7 +599,7 @@ pub mod TimeEvent {
 
 pub mod StateEvent {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct StateEvent {
         /// index for simcode
         pub index: i32,
@@ -764,7 +764,7 @@ pub mod StateEvent {
 
 pub mod CompositeEvent {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct CompositeEvent {
         pub index: i32,
         pub auxiliary: Pointer::Pointer<Arc<Variable::NFVariable>>,
@@ -913,7 +913,7 @@ pub mod CompositeEvent {
 
 pub mod Condition {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Condition {
         pub exp: Arc<Expression::NFExpression>,
         pub iter: Arc<Iterator::Iterator>,
@@ -993,7 +993,7 @@ pub fn convertEventIterator(mut iter: Arc<Iterator::Iterator>) -> Result<Option<
 // =========================================================================
 //                    PROTECTED UNIONTYPES AND FUNCTIONS
 // =========================================================================
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Bucket {
     /// tracks compact time events (SINGLE or SAMPLE)
     pub time_set: Arc<UnorderedSet::UnorderedSet<Arc<TimeEvent::TimeEvent>>>,

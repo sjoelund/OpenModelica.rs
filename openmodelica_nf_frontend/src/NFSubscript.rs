@@ -66,7 +66,7 @@ use openmodelica_util::JSON;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFSubscript {
     RAW_SUBSCRIPT {
         subscript: Arc<Absyn::Subscript>,

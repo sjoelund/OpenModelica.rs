@@ -65,7 +65,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFType {
     INTEGER,
     REAL,
@@ -185,7 +185,7 @@ impl Default for NFType {
     fn default() -> Self { Self::INTEGER }
 }
 pub use self::NFType::{INTEGER,REAL,STRING,BOOLEAN,CLOCK,ENUMERATION,__ENUMERATION_ANY_NOT_USED__,ARRAY,TUPLE,NORETCALL,UNKNOWN,COMPLEX,FUNCTION,METABOXED,POLYMORPHIC,ANY,CONDITIONAL_ARRAY,UNTYPED};
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum FunctionType {
     /// Function parameter of function type.
@@ -202,7 +202,7 @@ impl Ord for FunctionType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Branch {
     NONE = 1,

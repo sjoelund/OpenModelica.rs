@@ -1383,7 +1383,7 @@ pub fn mapArray<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodel
     Ok(outList)
 }
 
-pub fn mapCheckReferenceEq<TI: Clone + 'static>(mut inList: Arc<metamodelica::List<TI>>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>) -> Result<Arc<metamodelica::List<TI>>> {
+pub fn mapCheckReferenceEq<TI: Clone + 'static + metamodelica::ReferenceEq>(mut inList: Arc<metamodelica::List<TI>>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>) -> Result<Arc<metamodelica::List<TI>>> {
     pub type MapFunc<TI: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>;
 
     let mut outList: Arc<metamodelica::List<TI>> = metamodelica::nil();
@@ -1394,7 +1394,7 @@ pub fn mapCheckReferenceEq<TI: Clone + 'static>(mut inList: Arc<metamodelica::Li
     for mut e in &*inList.clone() {
         let mut e = e.clone();
         e1 = inFunc(e.clone())?;
-        if !(referenceEq(&e.clone(),&e1.clone()) /* always false: opaque type TypeVar("TI") — needs a ReferenceEq trait for generics */) {
+        if !(metamodelica::ReferenceEq::reference_eq(&(e.clone()), &(e1.clone()))) {
             savedElt = e1.clone();
             delst = DoubleEnded::empty(e1.clone());
             for mut elt in &*inList.clone() {
@@ -2172,7 +2172,7 @@ pub fn map2Fold<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'sta
     Ok((outList, outArg))
 }
 
-pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static>(mut inList: Arc<metamodelica::List<TIO>>, mut inFunc: Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>, mut inConstArg: ArgT1, mut inConstArg2: ArgT2, mut inArg: FT) -> Result<(Arc<metamodelica::List<TIO>>, FT)> {
+pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static + metamodelica::ReferenceEq, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static>(mut inList: Arc<metamodelica::List<TIO>>, mut inFunc: Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>, mut inConstArg: ArgT1, mut inConstArg2: ArgT2, mut inArg: FT) -> Result<(Arc<metamodelica::List<TIO>>, FT)> {
     pub type FuncType<TIO: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<TIO>> = metamodelica::nil();
@@ -2184,7 +2184,7 @@ pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static, ArgT1: Clone + 'static, Ar
     for mut e in &*inList.clone() {
         let mut e = e.clone();
         (res, outArg) = inFunc(e.clone(), inConstArg.clone(), inConstArg2.clone(), outArg.clone())?;
-        if !(referenceEq(&e.clone(),&res.clone()) /* always false: opaque type TypeVar("TIO") — needs a ReferenceEq trait for generics */) {
+        if !(metamodelica::ReferenceEq::reference_eq(&(e.clone()), &(res.clone()))) {
             savedElt = res.clone();
             delst = DoubleEnded::empty(res.clone());
             for mut elt in &*inList.clone() {
@@ -3682,14 +3682,25 @@ fn combinationMap_tail<TI: Clone + 'static, TO: Clone + 'static>(mut inElements:
     Ok(outElements)
 }
 
-pub fn allReferenceEq<T: Clone + 'static + std::ops::Deref>(inList1: Arc<metamodelica::List<T>>, inList2: Arc<metamodelica::List<T>>) -> bool {
-    match (&*inList1, &*inList2) {
-        (metamodelica::List::Cons { head: el1, tail: rest1 }, metamodelica::List::Cons { head: el2, tail: rest2 }) =>
-            metamodelica::referenceEq(&**el1, &**el2) && allReferenceEq(rest1.clone(), rest2.clone()),
-        (metamodelica::List::Nil, metamodelica::List::Nil) => true,
-        _ => false,
-    }
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+pub fn allReferenceEq<T: Clone + 'static + metamodelica::ReferenceEq>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> bool {
+    let mut outEqual: bool = false;
+    outEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
+        (Deref @ metamodelica::List::Cons { head: el1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: el2, tail: rest2 }) => {
+            if (metamodelica::ReferenceEq::reference_eq(&(el1.clone()), &(el2.clone()))) {allReferenceEq(rest1.clone(), rest2.clone())} else {false}
+        },
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
+            true
+        },
+        _ => {
+            false
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    outEqual
 }
+
 pub fn listIsLonger<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> Result<bool> {
     let mut isLonger: bool = compareLength(inList1.clone(), inList2.clone())? > 0;
     Ok(isLonger)

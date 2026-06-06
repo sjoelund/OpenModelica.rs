@@ -68,7 +68,7 @@ use openmodelica_util_datatypes_basic::List;
 ///  package:     SymbolTable
 ///  description: Thread-local, mutable symbol table. Set this at the start
 ///               of any interactive call or in Main.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SymbolTable {
     /// ast ; The ast
     pub ast: Absyn::Program,
@@ -126,7 +126,7 @@ pub fn getAbsyn() -> Absyn::Program {
 pub fn setAbsyn(mut ast: Absyn::Program) -> Result<()> {
     let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
-    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
+    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.classes), &*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
         return Ok(());
     }
     assign_field!(table.ast = ast.clone());
@@ -152,7 +152,7 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
     let mut scode_elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut scode_prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     table = get();
-    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
+    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.classes), &*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
         return Ok(());
     }
     assign_field!(table.ast = ast.clone());
@@ -195,7 +195,7 @@ pub fn setAbsynClass(mut ast: Absyn::Program, mut cls: Arc<Absyn::Class>, mut pa
     let mut scode_elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut scode_prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     table = get();
-    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
+    if { let __refeq_sl = &(table.ast.clone()); let __refeq_sr = &(ast.clone()); metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.classes), &*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
         return Ok(());
     }
     assign_field!(table.ast = ast.clone());
@@ -239,7 +239,7 @@ pub fn getSCode() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
 pub fn setSCode(mut ast: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>) -> () {
     let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
-    if (match (&(table.explodedAst.clone()), &(ast.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
+    if (match (&(table.explodedAst.clone()), &(ast.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => metamodelica::ReferenceEq::reference_eq(&*(*__refeq_l), &*(*__refeq_r)), _ => false }) {
         return ();
     }
     assign_field!(table.explodedAst = ast.clone());

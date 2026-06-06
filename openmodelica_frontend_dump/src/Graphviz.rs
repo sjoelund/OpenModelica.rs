@@ -50,7 +50,7 @@ pub type Ident = ArcStr;
 pub type Label = ArcStr;
 
 /// an Attribute is a pair of name an value.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Attribute {
     /// name
     pub name: ArcStr,
@@ -76,7 +76,7 @@ pub type Attributes = Arc<metamodelica::List<Attribute>>;
 ///    It has a type and attributes and children.
 ///    It can also have a list of labels, provided by the LNODE
 ///    constructor.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Node {
     NODE {
         type_: Type,

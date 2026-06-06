@@ -389,6 +389,10 @@ struct GenCtx {
     /// [`emit_function`] when formatting the signature's type parameters.
     /// Keyed by FQN (same convention as `fallible_functions`).
     partial_eq_required: BTreeMap<String, HashSet<String>>,
+    /// Per-function type parameters needing `+ metamodelica::ReferenceEq`
+    /// (same shape as [`Self::partial_eq_required`]); see
+    /// [`analyze_reference_eq`].
+    reference_eq_required: BTreeMap<String, HashSet<String>>,
     /// Per-function set of type-parameter names that need a `+ Default` bound.
     /// Populated by [`analyze_default`] (mirrors [`analyze_partial_eq`]) and
     /// consulted by [`emit_function`] when formatting the signature's type
@@ -571,7 +575,7 @@ enum VarShape {
 }
 
 impl GenCtx {
-    fn new(top_name: &str, current_crate: Option<String>, crate_map: BTreeMap<String, String>, nullable_global_roots: HashSet<String>, top_level_uniontype_names: HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, fn_type_vars: BTreeMap<String, Vec<String>>, fallible_functions: BTreeSet<String>, partial_eq_required: BTreeMap<String, HashSet<String>>, default_required: BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: HashSet<String>, types_needing_default: HashSet<String>) -> Self {
+    fn new(top_name: &str, current_crate: Option<String>, crate_map: BTreeMap<String, String>, nullable_global_roots: HashSet<String>, top_level_uniontype_names: HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, fn_type_vars: BTreeMap<String, Vec<String>>, fallible_functions: BTreeSet<String>, partial_eq_required: BTreeMap<String, HashSet<String>>, reference_eq_required: BTreeMap<String, HashSet<String>>, default_required: BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: HashSet<String>, types_needing_default: HashSet<String>) -> Self {
         Self {
             top_name: top_name.to_owned(),
             current_path: Vec::new(),
@@ -613,6 +617,7 @@ impl GenCtx {
             variant_shapes: HashMap::new(),
             fallible_functions,
             partial_eq_required,
+            reference_eq_required,
             default_required,
             defaultable_struct_qnames,
             types_needing_default,
@@ -705,14 +710,21 @@ impl GenCtx {
         // that hold a *direct* container via an inner field — still
         // auto-derive everything; the hand-rolled impl on the inner
         // type satisfies the derive's per-field bound.
+        // Every branch derives `metamodelica::ReferenceEq` (shallow
+        // observational identity): the trait is what `referenceEq` lowers to
+        // when the operand type is opaque at the call site (a bare type
+        // parameter), so *any* type that can instantiate a generic must
+        // implement it. Unlike PartialEq it never locks a type out — its
+        // field comparisons bottom out at allocation identity, which even
+        // `Arc<dyn Fn>` callbacks support.
         if self.types_directly_containing_dyn_fn.contains(qname) {
-            "#[derive(Clone)]"
+            "#[derive(Clone, metamodelica::ReferenceEq)]"
         } else if self.types_containing_mutable.contains(qname)
             || self.types_containing_array.contains(qname)
         {
-            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]"
+            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]"
         } else {
-            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]"
+            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]"
         }
     }
 
@@ -1423,7 +1435,7 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.reference_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
         if !file_unwraps.is_empty() {
             infallible_unwraps.lock().unwrap().extend(file_unwraps);
         }
@@ -1821,8 +1833,8 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
-    let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, reference_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
+    let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), reference_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     if let NodeKind::Class(c) = &node.kind {
         // Diagnostics (`sourceInfo()`) report the .mo relative to
@@ -2476,7 +2488,7 @@ fn emit_external_object<'a>(
     writeln!(out, "{indent}/// Opaque external object `{name}`. The runtime owns the").unwrap();
     writeln!(out, "{indent}/// representation; this struct exists only to give the type a").unwrap();
     writeln!(out, "{indent}/// nominal identity in Rust so call sites type-check.").unwrap();
-    writeln!(out, "{indent}#[derive(Clone, Debug)]").unwrap();
+    writeln!(out, "{indent}#[derive(Clone, Debug, metamodelica::ReferenceEq)]").unwrap();
     writeln!(out, "{indent}pub struct {ename} {{").unwrap();
     writeln!(out, "{indent}    _opaque: std::sync::Arc<std::sync::Mutex<()>>,").unwrap();
     writeln!(out, "{indent}}}").unwrap();
@@ -3641,7 +3653,7 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
                 // without consuming `self`.
                 let ename = escape_ident(name);
                 emit_doc_comment(out, indent, class_doc(c));
-                writeln!(out, "{indent}#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]").unwrap();
+                writeln!(out, "{indent}#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]").unwrap();
                 writeln!(out, "{indent}#[repr(i32)]").unwrap();
                 writeln!(out, "{indent}pub enum {ename} {{").unwrap();
                 let lit_indent = format!("{indent}    ");
@@ -4927,65 +4939,14 @@ fn collect_type_vars_in_typed_stmts(stmts: &[typedexp::TypedStmt], out: &mut Vec
 /// must be a complete module-level item with a signature compatible with every
 /// call site (the generator still resolves calls to `Module::fn`).
 fn function_source_replacement(qname: &str) -> Option<&'static str> {
+    // No replacements at present. Two used to live here, both working around
+    // referenceEq lowerings that have since been fixed properly:
+    //  * `List.allReferenceEq` — generic element compare was an always-false
+    //    address compare; now lowered through `metamodelica::ReferenceEq`.
+    //  * `Expression.traverseCases` — `referenceEq(cases, {})` was false for
+    //    the freshly-allocated `Nil` even though MMC's `{}` is a shared
+    //    singleton; the `list<T>` lowering is now List-aware (Nil == Nil).
     match qname {
-        // `List.allReferenceEq` compares list elements with `referenceEq`, but
-        // the element type is a type parameter whose representation is opaque at
-        // codegen time, so the lowering falls back to comparing two cloned
-        // stack temporaries — always false. Its one caller
-        // (`DAEUtil.traverseDAEEquationsStmtsList`) relies on a true result to
-        // preserve statement-list identity across a fixed point; the perpetual
-        // false makes match-expression simplification iterate to its maximum.
-        // Compare the elements' pointee identity directly (every instantiation
-        // is a heap handle, i.e. `T: Deref`).
-        "List.allReferenceEq" => Some(
-"pub fn allReferenceEq<T: Clone + 'static + std::ops::Deref>(inList1: Arc<metamodelica::List<T>>, inList2: Arc<metamodelica::List<T>>) -> bool {
-    match (&*inList1, &*inList2) {
-        (metamodelica::List::Cons { head: el1, tail: rest1 }, metamodelica::List::Cons { head: el2, tail: rest2 }) =>
-            metamodelica::referenceEq(&**el1, &**el2) && allReferenceEq(rest1.clone(), rest2.clone()),
-        (metamodelica::List::Nil, metamodelica::List::Nil) => true,
-        _ => false,
-    }
-}",
-        ),
-        // `Expression.traverseCases` preserves identity (returns `inCases` when
-        // no sub-expression changed) so a fixed point can stop. The empty-list
-        // base case in MetaModelica returns the `{}` literal, which is the
-        // shared `mmc_nil` singleton there, so `referenceEq(cases, {})` holds.
-        // The port's `nil()` allocates a fresh `Nil`, so the base case never
-        // compares reference-equal to the matched tail and every case (hence the
-        // whole MATCHEXPRESSION) is rebuilt on each pass — expression
-        // simplification then iterates to its maximum on any match. Return the
-        // matched input `inCases` instead, which is the identity-preserving form
-        // of returning `{}` here. The recursive case is unchanged.
-        "Expression.traverseCases" => Some(
-"pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
-    let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-    let mut oa: A;
-    (outCases, oa) = (::match_deref::match_deref! { match &((inCases.clone(), inA.clone())) {
-        (Deref @ metamodelica::List::Nil, a) => {
-            (inCases.clone(), a.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result, resultInfo, jump, info }, tail: cases }, a) => {
-            let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-            let mut result1: Option<Arc<DAE::Exp>> = None;
-            let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
-            let mut cases1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-            let mut cases = (*cases).clone();
-            let mut a = (*a).clone();
-            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()))?;
-            body1 = __pa0.clone();
-            a = __pa1.clone();
-            (patternGuard1, a) = traverseExpOpt(patternGuard.clone(), func.clone(), a.clone())?;
-            (result1, a) = traverseExpOpt(result.clone(), func.clone(), a.clone())?;
-            (cases1, a) = traverseCases(cases.clone(), func.clone(), a.clone())?;
-            cases = if (referenceEq(&*(cases.clone()),&*(cases1.clone())) && (match (&(patternGuard.clone()), &(patternGuard1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(result.clone()), &(result1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(body.clone()),&*(body1.clone()))) {inCases.clone()} else {metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases1.clone())};
-            (cases.clone(), a.clone())
-        },
-        _ => bail!(\"match: no arm matched\"),
-    } });
-    Ok((outCases, oa))
-}",
-        ),
         _ => None,
     }
 }
@@ -5972,10 +5933,16 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         // `T`). Mirrors the per-function lookup used for `PartialEq` above.
         let empty_def: HashSet<String> = HashSet::new();
         let default_vars = ctx.default_required.get(&fn_qname).unwrap_or(&empty_def);
+        // Type parameters that flow into a `referenceEq` lowered through the
+        // `metamodelica::ReferenceEq` trait (workspace-wide
+        // [`analyze_reference_eq`], direct + transitive like the other two).
+        let empty_refeq: HashSet<String> = HashSet::new();
+        let refeq_vars = ctx.reference_eq_required.get(&fn_qname).unwrap_or(&empty_refeq);
         let bounded: Vec<String> = all_type_vars.iter().map(|v| {
             let mut bounds = vec!["Clone", "'static"];
             if eq_vars.contains(v) { bounds.push("PartialEq"); }
             if default_vars.contains(v) { bounds.push("Default"); }
+            if refeq_vars.contains(v) { bounds.push("metamodelica::ReferenceEq"); }
             format!("{v}: {}", bounds.join(" + "))
         }).collect();
         format!("<{}>", bounded.join(", "))
@@ -9845,12 +9812,16 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             let ty2 = args.get(1).map(|a| a.ty()).unwrap_or_default();
             Ok(try_emit_reference_eq(&arg1, &arg2, &ty1, ctx, top_level)
                 .or_else(|| try_emit_reference_eq(&arg1, &arg2, &ty2, ctx, top_level))
-                // Fallback: compare the operands' own addresses. The operands
-                // are usually freshly cloned temporaries, so this is in
-                // practice always false — a false negative only, which is
-                // safe: MM uses referenceEq for sharing/short-circuit
-                // optimizations, so behaviour stays correct but reuse is lost.
-                .unwrap_or_else(|| format!("referenceEq(&{arg1},&{arg2}) /* always false: opaque type {ty1:?} — needs a ReferenceEq trait for generics */")))
+                // Fallback for types the structural lowering cannot decide —
+                // a bare type parameter, a generic struct instantiation, or a
+                // type that decayed to Unknown during typing: dispatch
+                // through the `metamodelica::ReferenceEq` trait. Every MM
+                // value type implements it (the generated types via
+                // `#[derive(metamodelica::ReferenceEq)]`, see `derives_for`;
+                // the runtime types in the metamodelica crate), and
+                // [`analyze_reference_eq`] bounds the enclosing function's
+                // type parameters so the call typechecks.
+                .unwrap_or_else(|| format!("metamodelica::ReferenceEq::reference_eq(&({arg1}), &({arg2}))")))
         },
         "isPresent" => {
             Ok("true /* isPresent not implemented in Rust */".to_string())
@@ -15670,15 +15641,12 @@ fn referenceeq_derefs_to_pointee(ty: &Ty, ctx: &GenCtx) -> bool {
 ///     unequal to another `SOME(x)` in C; we report equal when the payloads
 ///     are identical, which is indistinguishable to MM code.)
 ///
-/// Returns `None` when the type gives no usable representation info; the
-/// caller falls back to comparing the operands' own addresses, which yields
-/// false negatives only. In this bucket:
-///   * `TypeVar`/`Unknown` — the representation is opaque at this call site.
-///     A real fix needs instantiation-time information, e.g. a codegen-
-///     implemented `ReferenceEq` trait bound on generic functions.
-///   * `Real` — heap-boxed in MMC (distinct boxes with equal values compare
-///     unequal there too), so an (always-false) address compare on the Copy
-///     `f64` is the closer approximation, unlike Integer/Boolean.
+/// Returns `None` when the type gives no usable structural representation
+/// info at this call site (`TypeVar`, `Unknown`, generic struct
+/// instantiations); the caller falls back to dispatching through the
+/// `metamodelica::ReferenceEq` trait, whose impls encode the same
+/// per-representation rules. [`analyze_reference_eq`] adds the trait bound
+/// to the enclosing function's type parameters.
 ///
 /// Non-recursive records/enums and tuples are *value-represented* in this
 /// port (MMC boxes every record). For those the lowering compares the fields
@@ -15703,7 +15671,27 @@ fn try_emit_reference_eq<'a>(
     top_level: &'a BTreeMap<String, NameNode<'a>>,
 ) -> Option<String> {
     match ty {
-        Ty::I32 | Ty::Bool => Some(format!("(({lhs}) == ({rhs}))")),
+        // Real: MMC boxes reals, so distinct boxes with equal values compare
+        // unequal there — but an unboxed `OrderedFloat<f64>` has no identity
+        // beyond its value, and value equality is the observational-identity
+        // reading (consistent with the `ReferenceEq for Real` impl in the
+        // metamodelica crate; OrderedFloat keeps the relation reflexive for
+        // NaN).
+        Ty::I32 | Ty::Bool | Ty::F64 => Some(format!("(({lhs}) == ({rhs}))")),
+        // list<T>: dispatch on the *List value* (not the Arc handle): MMC's
+        // `{}` is the shared mmc_nil singleton, so `referenceEq({}, {})` is
+        // TRUE there — while this port's `nil()` allocates a fresh `Nil`
+        // every time, so a pointer compare is false for exactly the case MM
+        // identity-preserving rebuilds rely on (e.g. Expression.traverseCases
+        // returns `{}` in its base case and the caller tests the result
+        // against the matched tail to decide whether to reuse the input;
+        // perpetual false made ExpressionSimplify iterate match expressions
+        // to the max). The `ReferenceEq for List` impl compares Nil==Nil,
+        // and Cons by head identity + tail allocation — O(1), true whenever
+        // the MMC pointer compare would be.
+        Ty::List(_) => Some(format!(
+            "metamodelica::ReferenceEq::reference_eq(&*({lhs}), &*({rhs}))"
+        )),
         _ if referenceeq_derefs_to_pointee(ty, ctx) => {
             Some(format!("referenceEq(&*({lhs}),&*({rhs}))"))
         }
@@ -19167,6 +19155,206 @@ pub fn analyze_partial_eq<'a>(
 }
 
 /// Workspace-wide analysis: for each user-defined function, decide which of
+/// its declared type parameters need a `+ metamodelica::ReferenceEq` bound in
+/// the emitted Rust signature.
+///
+/// The structure mirrors [`analyze_partial_eq`]:
+///
+///   1. *Direct uses* — `referenceEq(a, b)` calls whose operand types contain
+///      the enclosing function's type parameters. For such operands the
+///      lowering ([`try_emit_reference_eq`]) cannot decide the representation
+///      structurally and dispatches through the `metamodelica::ReferenceEq`
+///      trait, which needs the bound. Collecting *all* type vars in the
+///      operand types over-approximates slightly (an operand typed
+///      `list<T>` is lowered via pointee identity and needs no bound), but
+///      the over-approximation is harmless: every MM value type implements
+///      the trait, so an extra bound can never lock a type out — unlike
+///      `PartialEq`, which `Arc<dyn Fn>`-carrying types lack.
+///
+///   2. *Transitive uses* — calls to functions whose own requirement set is
+///      non-empty, via the same substitution-based propagation as
+///      `PartialEq` ([`propagate_stmt_partial_eq`] reads requirements from
+///      whatever map it is given, so it is reused verbatim).
+///
+/// References to `referenceEq` as a *value* (`&referenceEq` callbacks) are
+/// deliberately not collected: those call the free runtime
+/// `metamodelica::referenceEq` (raw pointer compare, no bound), not the
+/// trait.
+///
+/// `HANDWRITTEN_TOP_PACKAGES` are skipped like in [`analyze_default`]: their
+/// Rust signatures are hand-maintained and do not carry the bound, so
+/// analysing their `.mo` bodies would propagate spurious requirements into
+/// every caller.
+pub fn analyze_reference_eq<'a>(
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+) -> BTreeMap<String, HashSet<String>> {
+    let mut all_fns: Vec<(String, &'a NameNode<'a>)> = Vec::new();
+    collect_all_function_nodes(top_level, "", &mut all_fns);
+
+    let mut cache: BTreeMap<String, Vec<typedexp::TypedStmt>> = BTreeMap::new();
+    let mut required: BTreeMap<String, HashSet<String>> = BTreeMap::new();
+
+    for (qname, node) in &all_fns {
+        let top_pkg = qname.split('.').next().unwrap_or("");
+        if HANDWRITTEN_TOP_PACKAGES.contains(&top_pkg) {
+            required.insert(qname.clone(), HashSet::new());
+            continue;
+        }
+        let has_type_vars = matches!(&node.ty, Ty::Function { inputs, output, type_vars, .. }
+            if !type_vars.is_empty()
+                || inputs.iter().any(|inp| ty_has_type_var(&inp.ty))
+                || ty_has_type_var(output));
+        if !has_type_vars {
+            required.insert(qname.clone(), HashSet::new());
+            continue;
+        }
+        let stmts = typedexp_function_body_for_analysis(qname, node, top_level);
+        let mut direct: HashSet<String> = HashSet::new();
+        for st in &stmts { visit_stmt_for_refeq(st, &mut direct); }
+        required.insert(qname.clone(), direct);
+        cache.insert(qname.clone(), stmts);
+    }
+
+    // Fixed-point propagation, sharing the requirement-agnostic machinery
+    // with the PartialEq analysis.
+    loop {
+        let mut changed = false;
+        let qnames: Vec<String> = cache.keys().cloned().collect();
+        for qname in &qnames {
+            let pkg_prefix = qname.rsplit_once('.').map_or("", |(p, _)| p).to_owned();
+            let stmts = &cache[qname];
+            let mut current = required[qname].clone();
+            let before = current.len();
+            for st in stmts {
+                propagate_stmt_partial_eq(st, &required, top_level, &pkg_prefix, &mut current);
+            }
+            if current.len() > before {
+                changed = true;
+                required.insert(qname.clone(), current);
+            }
+        }
+        if !changed { break; }
+    }
+
+    required
+}
+
+/// Direct-use visitor for [`analyze_reference_eq`]: collect the type
+/// variables occurring in the operand types of `referenceEq(a, b)` calls.
+/// Walks statements/expressions with the generic [`walk_stmt_exprs`]-style
+/// recursion of `visit_stmt_for_eq`, but matches only the `referenceEq`
+/// builtin.
+fn visit_stmt_for_refeq(stmt: &typedexp::TypedStmt, out: &mut std::collections::HashSet<String>) {
+    use typedexp::TypedStmt as S;
+    match stmt {
+        S::Assign { rhs, .. } => visit_exp_for_refeq(rhs, out),
+        S::NoRetCall { call } => visit_exp_for_refeq(call, out),
+        S::If { cond, then_, elseif, else_ } => {
+            visit_exp_for_refeq(cond, out);
+            for st in then_ { visit_stmt_for_refeq(st, out); }
+            for (c, body) in elseif {
+                visit_exp_for_refeq(c, out);
+                for st in body { visit_stmt_for_refeq(st, out); }
+            }
+            for st in else_ { visit_stmt_for_refeq(st, out); }
+        }
+        S::For { range, body, .. } => {
+            visit_exp_for_refeq(range, out);
+            for st in body { visit_stmt_for_refeq(st, out); }
+        }
+        S::While { cond, body } => {
+            visit_exp_for_refeq(cond, out);
+            for st in body { visit_stmt_for_refeq(st, out); }
+        }
+        S::Try { body, else_body } => {
+            for st in body { visit_stmt_for_refeq(st, out); }
+            for st in else_body { visit_stmt_for_refeq(st, out); }
+        }
+        S::Failure { body } => {
+            for st in body { visit_stmt_for_refeq(st, out); }
+        }
+        S::Return | S::Break | S::Continue | S::Todo(_) => {}
+    }
+}
+
+fn visit_exp_for_refeq(exp: &typedexp::TypedExp, out: &mut std::collections::HashSet<String>) {
+    use typedexp::TypedExp as E;
+    match exp {
+        E::Lit(_) | E::Todo(_) => {}
+        E::Var { segments, .. } => {
+            for seg in segments {
+                for sub in &seg.subscripts {
+                    visit_exp_for_refeq(sub, out);
+                }
+            }
+        }
+        E::BinOp { lhs, rhs, .. } => {
+            visit_exp_for_refeq(lhs, out);
+            visit_exp_for_refeq(rhs, out);
+        }
+        E::UnOp { operand, .. } => visit_exp_for_refeq(operand, out),
+        E::Call { func, args, named_args, .. } => {
+            let bare = func.rsplit('.').next().unwrap_or(func);
+            if bare == "referenceEq" {
+                for a in args {
+                    let mut tvs = Vec::new();
+                    crate::hierarchy::collect_type_vars_in_ty(&a.ty(), &mut tvs);
+                    out.extend(tvs);
+                }
+            }
+            for a in args { visit_exp_for_refeq(a, out); }
+            for (_, v) in named_args { visit_exp_for_refeq(v, out); }
+        }
+        E::Constructor { args, named_args, .. } => {
+            for a in args { visit_exp_for_refeq(a, out); }
+            for (_, v) in named_args { visit_exp_for_refeq(v, out); }
+        }
+        E::PartEval { args, named_args, .. } => {
+            for a in args { visit_exp_for_refeq(a, out); }
+            for (_, v) in named_args { visit_exp_for_refeq(v, out); }
+        }
+        E::If { cond, then_, elseif, else_, .. } => {
+            visit_exp_for_refeq(cond, out);
+            visit_exp_for_refeq(then_, out);
+            for (c, b) in elseif {
+                visit_exp_for_refeq(c, out);
+                visit_exp_for_refeq(b, out);
+            }
+            visit_exp_for_refeq(else_, out);
+        }
+        E::Cons { head, tail, .. } => {
+            visit_exp_for_refeq(head, out);
+            visit_exp_for_refeq(tail, out);
+        }
+        E::Tuple(elems) => { for e in elems { visit_exp_for_refeq(e, out); } }
+        E::Array { elems, .. } => { for e in elems { visit_exp_for_refeq(e, out); } }
+        E::Match { input, cases, .. } => {
+            visit_exp_for_refeq(input, out);
+            for c in cases {
+                if let Some(g) = &c.guard { visit_exp_for_refeq(g, out); }
+                for (_, _, d, _) in &c.locals {
+                    if let Some(d) = d { visit_exp_for_refeq(d, out); }
+                }
+                for st in &c.stmts { visit_stmt_for_refeq(st, out); }
+                visit_exp_for_refeq(&c.result, out);
+            }
+        }
+        E::Range { start, step, stop, .. } => {
+            visit_exp_for_refeq(start, out);
+            if let Some(st) = step { visit_exp_for_refeq(st, out); }
+            visit_exp_for_refeq(stop, out);
+        }
+        E::Reduction { body, iterators, .. } => {
+            visit_exp_for_refeq(body, out);
+            for it in iterators {
+                visit_exp_for_refeq(&it.range, out);
+                if let Some(g) = &it.guard { visit_exp_for_refeq(g, out); }
+            }
+        }
+    }
+}
+
+/// Workspace-wide analysis: for each user-defined function, decide which of
 /// its declared type parameters need a `+ Default` bound in the emitted Rust
 /// signature.
 ///
@@ -19436,10 +19624,47 @@ fn propagate_exp_partial_eq<'a>(
         E::UnOp { operand, .. } => propagate_exp_partial_eq(operand, required, top_level, pkg_prefix, out),
         E::Call { func, args, named_args, .. } => {
             if let Some(qname) = typedexp::resolve_call_node(func, top_level, pkg_prefix).map(|(q, _)| q)
-                && let Some(callee_req) = required.get(&qname)
-                    && !callee_req.is_empty()
-                        && let Some(callee_node) = typedexp_lookup_node(&qname, top_level)
-                            && let Ty::Function { inputs: formals, .. } = &callee_node.ty {
+                && let Some(callee_node) = typedexp_lookup_node(&qname, top_level)
+                    && let Ty::Function { inputs: formals, .. } = &callee_node.ty {
+                                let callee_req = required.get(&qname);
+                                let has_callee_req = callee_req.is_some_and(|r| !r.is_empty());
+                                // Function-reference arguments whose own
+                                // requirement sets must flow through this call
+                                // (see `compose` below). Collected up front so
+                                // the call-site substitution is only computed
+                                // when something needs it.
+                                let fn_ref_qname = |e: &TypedExp| -> Option<String> {
+                                    let name = match e {
+                                        TypedExp::Var { name, segments, .. } => {
+                                            if !segments.is_empty() {
+                                                segments.iter().map(|s| s.name.clone()).collect::<Vec<_>>().join(".")
+                                            } else {
+                                                name.clone()
+                                            }
+                                        }
+                                        TypedExp::PartEval { func, callee_is_local: false, .. } => func.clone(),
+                                        _ => return None,
+                                    };
+                                    typedexp::resolve_call_node(&name, top_level, pkg_prefix).map(|(q, _)| q)
+                                };
+                                let mut fn_ref_args: Vec<(&TypedExp, &Ty, String)> = Vec::new();
+                                for (i, arg) in args.iter().enumerate() {
+                                    if let Some(formal) = formals.get(i)
+                                        && let Some(gq) = fn_ref_qname(arg)
+                                        && required.get(&gq).is_some_and(|r| !r.is_empty())
+                                    {
+                                        fn_ref_args.push((arg, &formal.ty, gq));
+                                    }
+                                }
+                                for (n, arg) in named_args {
+                                    if let Some(formal) = formals.iter().find(|f| &f.name == n)
+                                        && let Some(gq) = fn_ref_qname(arg)
+                                        && required.get(&gq).is_some_and(|r| !r.is_empty())
+                                    {
+                                        fn_ref_args.push((arg, &formal.ty, gq));
+                                    }
+                                }
+                                if has_callee_req || !fn_ref_args.is_empty() {
                                 let mut subst: HashMap<String, HashSet<String>> = HashMap::new();
                                 for (i, arg) in args.iter().enumerate() {
                                     if let Some(formal) = formals.get(i) {
@@ -19451,16 +19676,80 @@ fn propagate_exp_partial_eq<'a>(
                                         unify_subst_collect(&formal.ty, &arg.ty(), &mut subst);
                                     }
                                 }
-                                for callee_tv in callee_req {
+                                for callee_tv in callee_req.into_iter().flatten() {
                                     if let Some(caller_tvs) = subst.get(callee_tv) {
                                         out.extend(caller_tvs.iter().cloned());
                                     }
+                                }
+                                // A *function reference* argument (bare `g` or a
+                                // partial application) instantiates g's own type
+                                // parameters, but its recorded use-site type still
+                                // names g's declared type vars — the actual
+                                // instantiation is only pinned down by the
+                                // enclosing call. Route g's requirements through a
+                                // two-step composition: unify g's declared type
+                                // against the receiving formal (g_tv → f_tv), then
+                                // map through this call's substitution
+                                // (f_tv → caller vars, fixed by the other
+                                // arguments). E.g. Expression.traverseCases passes
+                                // traverseSubexpressionsHelper (Type_a:
+                                // ReferenceEq) into DAEUtil.traverseDAEEquationsStmts
+                                // together with (func, a); the (func, a) argument
+                                // fixes f_tv := A, so A inherits the bound.
+                                for (_arg, formal_ty, gq) in &fn_ref_args {
+                                    let Some(g_req) = required.get(gq) else { continue };
+                                    let Some(g_node) = typedexp_lookup_node(gq, top_level) else { continue };
+                                    // Unify with the *formal* as the pattern: g's
+                                    // declared type is the more concrete side (the
+                                    // formal is often just `FuncExpType` whose
+                                    // payload positions are f's bare type vars).
+                                    // `f_to_g[f_tv]` then holds the g-type-var
+                                    // names f_tv stands for at this argument.
+                                    let mut f_to_g: HashMap<String, HashSet<String>> = HashMap::new();
+                                    unify_subst_collect(formal_ty, &g_node.ty, &mut f_to_g);
+                                    for g_tv in g_req {
+                                        for (f_name, g_names) in &f_to_g {
+                                            if g_names.contains(g_tv)
+                                                && let Some(caller_tvs) = subst.get(f_name)
+                                            {
+                                                out.extend(caller_tvs.iter().cloned());
+                                            }
+                                        }
+                                    }
+                                }
                                 }
                             }
             for a in args { propagate_exp_partial_eq(a, required, top_level, pkg_prefix, out); }
             for (_, v) in named_args { propagate_exp_partial_eq(v, required, top_level, pkg_prefix, out); }
         }
-        E::Constructor { args, named_args, .. } | E::PartEval { args, named_args, .. } => {
+        E::Constructor { args, named_args, .. } => {
+            for a in args { propagate_exp_partial_eq(a, required, top_level, pkg_prefix, out); }
+            for (_, v) in named_args { propagate_exp_partial_eq(v, required, top_level, pkg_prefix, out); }
+        }
+        E::PartEval { func, args, named_args, sig_ty, callee_is_local, .. } => {
+            // A partial application (`function f(x = v)`) — or a bare
+            // function reference lowered through PartEval — instantiates the
+            // callee's type parameters like a call does, so the callee's
+            // requirements flow back through the use-site signature type
+            // (`sig_ty` carries the callee signature with this site's
+            // substitutions applied). Without this arm, a generic function
+            // referenced as a *value* (e.g. Expression.traverseCases passing
+            // `traverseSubexpressionsHelper` into a tuple) escapes the
+            // propagation and the caller's bound goes missing.
+            if !callee_is_local
+                && let Some(qname) = typedexp::resolve_call_node(func, top_level, pkg_prefix).map(|(q, _)| q)
+                && let Some(callee_req) = required.get(&qname)
+                && !callee_req.is_empty()
+                && let Some(callee_node) = typedexp_lookup_node(&qname, top_level)
+            {
+                let mut subst: HashMap<String, HashSet<String>> = HashMap::new();
+                unify_subst_collect(&callee_node.ty, sig_ty, &mut subst);
+                for callee_tv in callee_req {
+                    if let Some(caller_tvs) = subst.get(callee_tv) {
+                        out.extend(caller_tvs.iter().cloned());
+                    }
+                }
+            }
             for a in args { propagate_exp_partial_eq(a, required, top_level, pkg_prefix, out); }
             for (_, v) in named_args { propagate_exp_partial_eq(v, required, top_level, pkg_prefix, out); }
         }

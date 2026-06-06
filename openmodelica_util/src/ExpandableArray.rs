@@ -53,7 +53,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 /// behaves like an ordinary array, which means all elements can get accessed via
 /// index. When the array runs out of space, it get automatically resized. It is
 /// also possible to delete an element from any position.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct ExpandableArray<T: Clone> {
     pub numberOfElements: Mutable::Mutable<i32>,
     pub lastUsedIndex: Mutable::Mutable<i32>,

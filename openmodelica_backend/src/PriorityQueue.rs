@@ -197,7 +197,7 @@ pub fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodel
 /* TODO: Hide from user when we remove RML... */
 pub type Rank = i32;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Tree {
     pub elt: Element,
     pub rank: Rank,

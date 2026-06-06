@@ -75,7 +75,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 
 pub mod AttributeIterator {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct AttributeIterator {
         pub name: ArcStr,
         pub confidence: i32,

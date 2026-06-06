@@ -47,7 +47,7 @@ use crate::NFConnector as Connector;
 use openmodelica_util::Error;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFConnection {
     pub lhs: Arc<Connector::NFConnector>,
     pub rhs: Arc<Connector::NFConnector>,

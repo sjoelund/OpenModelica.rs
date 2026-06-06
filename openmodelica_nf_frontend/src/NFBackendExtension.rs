@@ -77,7 +77,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Util imports
 pub mod BackendInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct BackendInfo {
         /// Structural kind: state, algebraic...
         pub varKind: Arc<VariableKind::VariableKind>,
@@ -241,7 +241,7 @@ pub fn DUMMY_BACKEND_INFO() -> Arc<BackendInfo::BackendInfo> { __DUMMY_BACKEND_I
 
 pub mod VariableKind {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum VariableKind {
         TIME,
         ALGEBRAIC,
@@ -563,7 +563,7 @@ pub mod VariableKind {
 
 pub mod VariableAttributes {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum VariableAttributes {
         VAR_ATTR_REAL {
             /// quantity
@@ -696,7 +696,7 @@ pub mod VariableAttributes {
         }
     }
     pub use self::VariableAttributes::{VAR_ATTR_REAL,VAR_ATTR_INT,VAR_ATTR_BOOL,VAR_ATTR_CLOCK,VAR_ATTR_STRING,VAR_ATTR_ENUMERATION,VAR_ATTR_RECORD};
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum VarType {
         ENUMERATION = 1,
@@ -1776,7 +1776,7 @@ pub fn EMPTY_VAR_ATTR_STRING() -> Arc<VariableAttributes::VariableAttributes> { 
 thread_local! { static __EMPTY_VAR_ATTR_ENUMERATION_TLS: Arc<VariableAttributes::VariableAttributes> = Arc::new(VariableAttributes::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: None, min: None, max: None, start: None, fixed: None, binding: None, isProtected: None, finalPrefix: None, startOrigin: None }); }
 pub fn EMPTY_VAR_ATTR_ENUMERATION() -> Arc<VariableAttributes::VariableAttributes> { __EMPTY_VAR_ATTR_ENUMERATION_TLS.with(|__t| __t.clone()) }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum StateSelect {
     NEVER = 1,
@@ -1795,7 +1795,7 @@ impl Default for StateSelect {
     fn default() -> Self { Self::NEVER }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum TearingSelect {
     NEVER = 1,
@@ -1814,7 +1814,7 @@ impl Default for TearingSelect {
     fn default() -> Self { Self::NEVER }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Uncertainty {
     GIVEN = 1,
@@ -1829,7 +1829,7 @@ impl Ord for Uncertainty {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Distribution {
     pub name: Arc<Expression::NFExpression>,
     pub params: Arc<Expression::NFExpression>,
@@ -1843,7 +1843,7 @@ pub mod Annotations {
     use super::*;
     /// all annotations that are vendor specific
     ///      note: doesn't include __OpenModelica_tearingSelect, this is considered a first class attribute
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct Annotations {
         pub hideResult: bool,
         pub resizable: bool,
@@ -1941,7 +1941,7 @@ pub mod Annotations {
 }
 
 // TODO: how to use Initial or Final state? - better state-pair Real x_0 = x (initialState = true);  -> binding only for initial time / optimizer?
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum OptimizerExpression {
     MAYER = 1,

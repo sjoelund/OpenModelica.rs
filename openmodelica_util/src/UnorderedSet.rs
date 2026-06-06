@@ -52,7 +52,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 ///
 ///   This implementation uses separate chaining and automatically rehashes the set
 ///   when the load factor becomes too large to keep the performance up.
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct UnorderedSet<T: Clone> {
     pub buckets: Mutable::Mutable<metamodelica::Array<Arc<metamodelica::List<T>>>>,
     pub size: Mutable::Mutable<i32>,

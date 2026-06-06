@@ -48,7 +48,7 @@ use openmodelica_frontend_types::DAE;
 
 // public imports
 /// Container for metadata about variables in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SimVars {
     pub stateVars: Arc<metamodelica::List<SimVar>>,
     pub derivativeVars: Arc<metamodelica::List<SimVar>>,
@@ -127,7 +127,7 @@ thread_local! { static __emptySimVars_TLS: SimVars = SimVars { stateVars: metamo
 pub fn emptySimVars() -> SimVars { __emptySimVars_TLS.with(|__t| __t.clone()) }
 
 /// Information about a variable in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SimVar {
     pub name: Arc<DAE::ComponentRef>,
     pub varKind: BackendDAE::VarKind,
@@ -212,7 +212,7 @@ impl Default for SimVar {
 pub type SIMVAR = SimVar;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum AliasVariable {
     NOALIAS,
     ALIAS {
@@ -227,7 +227,7 @@ impl Default for AliasVariable {
 }
 pub use self::AliasVariable::{NOALIAS,ALIAS,NEGATEDALIAS};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Causality {
     /// needed for FMI-1.0
     NONECAUS,
@@ -242,7 +242,7 @@ impl Default for Causality {
 }
 pub use self::Causality::{NONECAUS,OUTPUT,INPUT,LOCAL,PARAMETER,CALCULATED_PARAMETER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Initial {
     NONE_INITIAL,
     EXACT,
@@ -254,7 +254,7 @@ impl Default for Initial {
 }
 pub use self::Initial::{NONE_INITIAL,EXACT,APPROX,CALCULATED};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Variability {
     CONSTANT,
     FIXED,

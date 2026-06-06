@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::List;
 
 //public imports
 // protected imports
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum AnnotationType {
     ICON_ANNOTATION,
     DIAGRAM_ANNOTATION,
@@ -114,7 +114,7 @@ pub enum AnnotationType {
 pub use self::AnnotationType::{ICON_ANNOTATION,DIAGRAM_ANNOTATION};
 
 /// Used by buildEnvForGraphicProgram to avoid excessive work.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum GraphicEnvCache {
     GRAPHIC_ENV_NO_CACHE {
         program: Absyn::Program,
@@ -143,7 +143,7 @@ impl Default for GraphicEnvCache {
 }
 pub use self::GraphicEnvCache::{GRAPHIC_ENV_NO_CACHE,GRAPHIC_ENV_PARTIAL_CACHE,GRAPHIC_ENV_FULL_CACHE};
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Access {
     hide = 1,
@@ -3002,7 +3002,7 @@ pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Resu
             let mut x = x.clone();
             (po, patho, envo) = x.clone();
             if AbsynUtil::pathEqual(patho.clone(), p_class.clone()) {
-                if { let __refeq_sl = &(po.clone()); let __refeq_sr = &(p.clone()); referenceEq(&*(__refeq_sl.classes),&*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
+                if { let __refeq_sl = &(po.clone()); let __refeq_sr = &(p.clone()); metamodelica::ReferenceEq::reference_eq(&*(__refeq_sl.classes), &*(__refeq_sr.classes)) && (match (&(__refeq_sl.within_), &(__refeq_sr.within_)) { (Absyn::Within::TOP, Absyn::Within::TOP) => true, (Absyn::Within::WITHIN { path: __refeq_v0l }, Absyn::Within::WITHIN { path: __refeq_v0r }) => referenceEq(&*(*__refeq_v0l),&*(*__refeq_v0r)), _ => false }) } {
                     env_2 = envo.clone();
                     return Ok(env_2.clone());
                 } else {
@@ -3098,7 +3098,7 @@ fn getClassEnv_dispatch(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) ->
     Ok((cache, env_2))
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ComponentProperties {
     pub isFinal: bool,
     pub isFlow: bool,

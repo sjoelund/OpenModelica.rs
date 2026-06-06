@@ -95,7 +95,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // OF imports
 // NF imports
 // backend imports
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Status {
     UNPROCESSED = 1,
@@ -111,7 +111,7 @@ impl Ord for Status {
 }
 
 // TRUE -> relation must be inverted, FALSE -> relation must not be inverted, UNKNOWN -> TODO: make relation depend on derivative of the expr
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum RelationInversion {
     TRUE = 1,

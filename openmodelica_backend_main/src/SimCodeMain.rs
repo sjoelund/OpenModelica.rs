@@ -133,7 +133,7 @@ use openmodelica_util_datatypes_basic::GCExt;
 use openmodelica_util_datatypes_basic::List;
 
 /* used for new backend */
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum TranslateModelKind {
     NORMAL,
     XML,

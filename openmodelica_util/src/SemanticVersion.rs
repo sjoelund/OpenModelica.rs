@@ -47,7 +47,7 @@ use crate::StringUtil;
 use crate::System;
 use crate::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Version {
     /// Semantic version number MAJOR.MINOR.PATCH, see https://semver.org/.
     SEMVER {

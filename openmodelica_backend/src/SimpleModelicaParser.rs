@@ -63,7 +63,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub static newlineToken: std::sync::LazyLock<Token> = std::sync::LazyLock::new(|| { Token { fileName: (literal!("")).clone(), id: TokenId::NEWLINE.clone(), fileContents: (literal!("\n")).clone(), byteOffset: 1, length: 1, lineNumberStart: 1, columnNumberStart: 1, lineNumberEnd: 1, columnNumberEnd: 1 } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ParseTree {
     EMPTY,
     NODE {

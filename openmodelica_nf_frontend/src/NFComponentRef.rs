@@ -73,7 +73,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Pointer;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFComponentRef {
     CREF {
         node: Arc<InstNode::InstNode>,
@@ -106,7 +106,7 @@ impl Default for NFComponentRef {
     fn default() -> Self { Self::EMPTY }
 }
 pub use self::NFComponentRef::{CREF,EMPTY,WILD};
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Origin {
     /// From an Absyn cref.

@@ -61,7 +61,7 @@ use openmodelica_util::System;
 
 pub mod LookupStateName {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum LookupStateName {
         PATH {
             path: Arc<Absyn::Path>,
@@ -107,7 +107,7 @@ pub mod LookupState {
     use super::*;
     /// LookupState is used by the lookup to keep track of what state it's in so that
     ///  the rules for composite name lookup can be enforced.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum LookupState {
         /// The start state.
         BEGIN,

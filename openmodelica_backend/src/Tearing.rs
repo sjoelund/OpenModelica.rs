@@ -85,7 +85,7 @@ pub const BORDER: &'static str = "****************************************";
 
 pub const UNDERLINE: &'static str = "========================================";
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum TearingMethod {
     /// Only tear discrete variables from loops
     MINIMAL_TEARING,

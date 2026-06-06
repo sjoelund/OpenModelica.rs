@@ -93,7 +93,7 @@ pub type PotentialRoot = (Arc<DAE::ComponentRef>, metamodelica::Real);
 pub type PotentialRoots = Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Real)>>;
 
 /// Input structure for connection breaking algorithm. It is collected during instantiation phase.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ConnectionGraph {
     pub updateGraph: bool,
     /// Roots defined with Connection.root

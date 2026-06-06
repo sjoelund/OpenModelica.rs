@@ -311,8 +311,18 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "arcstr",
+ "metamodelica_derive",
  "num-traits",
  "ordered-float",
+]
+
+[[package]]
+name = "metamodelica_derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
 ]
 
 [[package]]

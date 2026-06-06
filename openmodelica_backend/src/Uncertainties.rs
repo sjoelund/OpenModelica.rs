@@ -100,7 +100,7 @@ pub type mapBlocks = Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, bool,
 // {blocks,blocks.visited,blocks.square}
 pub const UNDERLINE: &'static str = "==========================================================================";
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct AliasSet {
     pub symbols: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)),
     pub expl: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr)),

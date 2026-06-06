@@ -68,7 +68,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFDimension {
     RAW_DIM {
         dim: Arc<Subscript>,

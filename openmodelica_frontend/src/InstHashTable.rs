@@ -98,7 +98,7 @@ pub fn get(mut k: Key) -> Result<Value> {
     Ok(v)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum CachedInstItem {
     FUNC_instClassIn {
         inputs: CachedInstItemInputs,

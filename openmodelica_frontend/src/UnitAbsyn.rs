@@ -47,7 +47,7 @@ use openmodelica_frontend_dump::HashTable;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::MMath;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum UnitCheckResult {
     CONSISTENT,
     INCONSISTENT {
@@ -60,7 +60,7 @@ impl Default for UnitCheckResult {
 }
 pub use self::UnitCheckResult::{CONSISTENT,INCONSISTENT};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct SpecUnit {
     /// A type parameter also has an exponent.
     pub typeParameters: Arc<metamodelica::List<(MMath::Rational, TypeParameter)>>,
@@ -80,7 +80,7 @@ impl Default for SpecUnit {
 pub type SPECUNIT = SpecUnit;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct TypeParameter {
     /// a type parameter name has the form identifier followed by a apostrophe, e.g. p'
     pub name: ArcStr,
@@ -101,7 +101,7 @@ pub type TYPEPARAMETER = TypeParameter;
 
 
 /// A unit is either specified (including type parameters) or unspecified
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Unit {
     /// A specified unit
     SPECIFIED {
@@ -120,7 +120,7 @@ pub use self::Unit::{SPECIFIED,UNSPECIFIED};
 /// - an equation (equality)
 /// - a location with unique id
 ///
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum UnitTerm {
     /// addition ut1+ut2
     ADD {
@@ -193,7 +193,7 @@ pub use self::UnitTerm::{ADD,SUB,MUL,DIV,EQN,LOC,POW};
 
 pub type UnitTerms = Arc<metamodelica::List<Arc<UnitTerm>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Store {
     pub storeVector: metamodelica::Array<Option<Unit>>,
     /// Number of elements stored in vector
@@ -214,7 +214,7 @@ pub type STORE = Store;
 
 /// A store used in Inst.mo
 /// requires a mapping from variable names to locations. Unit checking can be turned off using NOSTORE
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub enum InstStore {
     INSTSTORE {
         store: Store,

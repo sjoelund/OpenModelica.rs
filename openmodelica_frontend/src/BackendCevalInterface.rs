@@ -50,7 +50,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::Values;
 use openmodelica_util::Global;
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct BackendInterfaceFunctions {
     pub cevalInteractiveFunctions: partialCevalInteractiveFunctions,
     pub cevalCallFunction: partialCevalCallFunction,

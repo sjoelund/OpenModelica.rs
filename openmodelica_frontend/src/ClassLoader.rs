@@ -61,7 +61,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub type HashTable = (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (HashTableStringToProgram::FuncHashCref, HashTableStringToProgram::FuncCrefEqual, HashTableStringToProgram::FuncCrefStr, HashTableStringToProgram::FuncExpStr));
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum PackageOrder {
     CLASSPART {
         cp: Arc<Absyn::ClassPart>,
@@ -84,7 +84,7 @@ impl Default for PackageOrder {
 }
 pub use self::PackageOrder::{CLASSPART,ELEMENT,CLASSLOAD};
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub enum LoadFileStrategy {
     STRATEGY_HASHTABLE {
         ht: HashTable,

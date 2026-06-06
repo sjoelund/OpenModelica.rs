@@ -61,7 +61,7 @@ pub type Builtins = Arc<UnorderedMap::UnorderedMap<ArcStr, ElementType>>;
 // user elements. To try and avoid issues when we have e.g. a component named
 // abs we keep track of what types of builtin elements we have and what type
 // of element we're looking for with this enumeration.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ElementType {
     TYPE = 1,
@@ -79,7 +79,7 @@ impl Default for ElementType {
     fn default() -> Self { Self::TYPE }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Env {
     pub mapping: Mapping,
     pub builtins: Builtins,

@@ -52,7 +52,7 @@ pub type Path = Arc<Absyn::Path>;
 
 pub type Subscript = Arc<Absyn::Subscript>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Restriction {
     R_CLASS,
     R_OPTIMIZATION,
@@ -105,7 +105,7 @@ pub use self::Restriction::{R_CLASS,R_OPTIMIZATION,R_MODEL,R_RECORD,R_BLOCK,R_CO
 
 // Same as Absyn.FunctionRestriction except this contains
 // FR_EXTERNAL_FUNCTION and FR_RECORD_CONSTRUCTOR.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum FunctionRestriction {
     /// a normal function
     FR_NORMAL_FUNCTION {
@@ -130,7 +130,7 @@ impl Default for FunctionRestriction {
 pub use self::FunctionRestriction::{FR_NORMAL_FUNCTION,FR_EXTERNAL_FUNCTION,FR_OPERATOR_FUNCTION,FR_RECORD_CONSTRUCTOR,FR_PARALLEL_FUNCTION,FR_KERNEL_FUNCTION};
 
 /// - Modifications
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Mod {
     MOD {
         /// final prefix
@@ -175,7 +175,7 @@ pub use self::Mod::{MOD,REDECL,BREAK_COMPONENT,BREAK_CONNECT,NOMOD};
 /// Modifications are represented in an more structured way than in
 ///    the `Absyn\' module.  Modifications using qualified names
 ///    (such as in `x.y =  z\') are normalized (to `x(y = z)\').
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct SubMod {
     pub ident: Ident,
     /// A named component
@@ -199,7 +199,7 @@ pub type NAMEMOD = SubMod;
 pub type Program = Arc<metamodelica::List<Arc<Element>>>;
 
 /// Enum, which is a name in an enumeration and an optional Comment.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Enum {
     pub literal: Ident,
     pub comment: Arc<Comment>,
@@ -233,7 +233,7 @@ pub type ENUM = Enum;
 ///  class extends A (modifier)
 ///    new elements;
 ///  end A;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ClassDef {
     /// a class made of parts
     PARTS {
@@ -297,7 +297,7 @@ impl Default for ClassDef {
 }
 pub use self::ClassDef::{PARTS,CLASS_EXTENDS,DERIVED,ENUMERATION,OVERLOAD,PDER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Comment {
     pub annotation_: Option<Arc<Annotation>>,
     pub comment: Option<ArcStr>,
@@ -318,7 +318,7 @@ pub type COMMENT = Comment;
 pub static noComment: std::sync::LazyLock<Arc<Comment>> = std::sync::LazyLock::new(|| { Arc::new(Comment { annotation_: None, comment: None }) });
 
 // stefan
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Annotation {
     pub modification: Arc<Mod>,
 }
@@ -335,7 +335,7 @@ pub type ANNOTATION = Annotation;
 
 
 /// Declaration of an external function call - ExternalDecl
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ExternalDecl {
     /// The name of the external function
     pub funcName: Option<ArcStr>,
@@ -366,7 +366,7 @@ pub type EXTERNALDECL = ExternalDecl;
 /// These represent equations and are almost identical to their Absyn versions.
 /// In EQ_IF the elseif branches are represented as normal else branches with
 /// a single if statement in them.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Equation {
     EQ_IF {
         /// conditional
@@ -479,7 +479,7 @@ pub use self::Equation::{EQ_IF,EQ_EQUALS,EQ_PDE,EQ_CONNECT,EQ_FOR,EQ_WHEN,EQ_ASS
 ///  statement. But here, an Algorithm means a whole
 ///  algorithm section.
 /// the algorithm section
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct AlgorithmSection {
     /// the algorithm statements
     pub statements: Arc<metamodelica::List<Arc<Statement>>>,
@@ -496,7 +496,7 @@ impl Default for AlgorithmSection {
 pub type ALGORITHM = AlgorithmSection;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ConstraintSection {
     pub constraints: Arc<metamodelica::List<Arc<Absyn::Exp>>>,
 }
@@ -513,7 +513,7 @@ pub type CONSTRAINTS = ConstraintSection;
 
 
 /// The Statement type describes one algorithm statement in an algorithm section.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Statement {
     ALG_ASSIGN {
         /// assignComponent
@@ -623,7 +623,7 @@ pub use self::Statement::{ALG_ASSIGN,ALG_IF,ALG_FOR,ALG_PARFOR,ALG_WHILE,ALG_WHE
 
 // common prefixes to elements
 /// the visibility prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Visibility {
     /// a public element
     PUBLIC,
@@ -636,7 +636,7 @@ impl Default for Visibility {
 pub use self::Visibility::{PUBLIC,PROTECTED};
 
 /// the redeclare prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Redeclare {
     /// a redeclare prefix
     REDECLARE,
@@ -648,7 +648,7 @@ impl Default for Redeclare {
 }
 pub use self::Redeclare::{REDECLARE,NOT_REDECLARE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ConstrainClass {
     pub constrainingClass: Arc<Absyn::Path>,
     pub modifier: Arc<Mod>,
@@ -669,7 +669,7 @@ pub type CONSTRAINCLASS = ConstrainClass;
 
 
 /// the replaceable prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Replaceable {
     /// a replaceable prefix containing an optional constraint
     REPLACEABLE {
@@ -692,7 +692,7 @@ impl Default for Replaceable {
 pub use self::Replaceable::{REPLACEABLE,NOT_REPLACEABLE};
 
 /// the final prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Final {
     /// a final prefix
     FINAL,
@@ -705,7 +705,7 @@ impl Default for Final {
 pub use self::Final::{FINAL,NOT_FINAL};
 
 /// the each prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Each {
     /// a each prefix
     EACH,
@@ -718,7 +718,7 @@ impl Default for Each {
 pub use self::Each::{EACH,NOT_EACH};
 
 /// the encapsulated prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Encapsulated {
     /// a encapsulated prefix
     ENCAPSULATED,
@@ -731,7 +731,7 @@ impl Default for Encapsulated {
 pub use self::Encapsulated::{ENCAPSULATED,NOT_ENCAPSULATED};
 
 /// the partial prefix
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Partial {
     /// a partial prefix
     PARTIAL,
@@ -743,7 +743,7 @@ impl Default for Partial {
 }
 pub use self::Partial::{PARTIAL,NOT_PARTIAL};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ConnectorType {
     /// No connector type prefix.
     POTENTIAL,
@@ -759,7 +759,7 @@ pub use self::ConnectorType::{POTENTIAL,FLOW,STREAM};
 
 /// the common class or component prefixes
 /// the common class or component prefixes
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Prefixes {
     /// the protected/public prefix
     pub visibility: Visibility,
@@ -795,7 +795,7 @@ pub type PREFIXES = Prefixes;
 ///  CLASS      (for top/local class definitions)
 ///  COMPONENT  (for local variables)
 ///  DEFINEUNIT (for units)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Element {
     /// an import element
     IMPORT {
@@ -883,7 +883,7 @@ pub use self::Element::{IMPORT,EXTENDS,CLASS,COMPONENT,DEFINEUNIT};
 
 /// - Attributes
 /// the attributes of the component
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Attributes {
     /// the array dimensions of the component
     pub arrayDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>,
@@ -916,7 +916,7 @@ pub type ATTR = Attributes;
 
 
 /// Parallelism
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Parallelism {
     /// Global variables for CUDA and OpenCL
     PARGLOBAL,
@@ -931,7 +931,7 @@ impl Default for Parallelism {
 pub use self::Parallelism::{PARGLOBAL,PARLOCAL,NON_PARALLEL};
 
 /// the variability of a component
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Variability {
     /// a variable
     VAR,
@@ -951,7 +951,7 @@ pub use self::Variability::{VAR,DISCRETE,PARAM,CONST};
 /// the initial attribute of an algorithm or equation
 /// Intial is used as argument to instantiation-function for
 /// specifying if equations or algorithms are initial or not.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Initial {
     /// an initial equation or algorithm
     INITIAL,

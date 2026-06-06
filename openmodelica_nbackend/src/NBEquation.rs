@@ -124,7 +124,7 @@ pub type Frame = (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpressio
 pub type FrameLocation = (metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>));
 
 /// final result of slicing
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SlicingStatus {
     UNCHANGED = 1,
@@ -140,7 +140,7 @@ impl Ord for SlicingStatus {
 }
 
 /// result of sub-routine recollect
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum RecollectStatus {
     SUCCESS = 1,
@@ -154,7 +154,7 @@ impl Ord for RecollectStatus {
 }
 
 /// result of sub-routine frame ordering
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum FrameOrderingStatus {
     UNCHANGED = 1,
@@ -185,7 +185,7 @@ pub type checkEqn = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equat
 
 pub mod Iterator {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Iterator {
         SINGLE {
             /// the name of the iterator
@@ -1222,7 +1222,7 @@ pub mod Iterator {
 
 pub mod Equation {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Equation {
         SCALAR_EQUATION {
             /// equality type
@@ -3316,7 +3316,7 @@ pub mod Equation {
 
 pub mod IfEquationBody {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct IfEquationBody {
         /// the if-condition
         pub condition: Arc<Expression::NFExpression>,
@@ -3739,7 +3739,7 @@ pub mod IfEquationBody {
 pub mod WhenEquationBody {
     use super::*;
     /// equation when condition then cr = exp, reinit(...), terminate(...) or assert(...)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct WhenEquationBody {
         /// the when-condition
         pub condition: Arc<Expression::NFExpression>,
@@ -4240,7 +4240,7 @@ pub mod WhenEquationBody {
 
 pub mod WhenStatement {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum WhenStatement {
         /// left_cr = right_exp
         ASSIGN {
@@ -4498,7 +4498,7 @@ pub mod WhenStatement {
 
 pub mod EquationAttributes {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct EquationAttributes {
         /// if the equation has been differentiated w.r.t time already
         pub derivative: Option<Pointer::Pointer<Arc<Equation::Equation>>>,
@@ -4599,7 +4599,7 @@ pub fn default(mut kind: EquationKind, mut exclusively_initial: bool, mut clock_
     attr
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum EquationKind {
     CONTINUOUS = 1,
@@ -4675,7 +4675,7 @@ pub fn equationKindString(mut eqKind: EquationKind, mut clock_idx: Option<i32>, 
 
 pub mod EquationPointers {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct EquationPointers {
         /// Map for cref->index
         pub map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>,
@@ -5087,7 +5087,7 @@ pub mod EquationPointers {
 
 pub mod EqData {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum EqData {
         EQ_DATA_SIM {
             /// current index to be used for new identifier
@@ -5340,7 +5340,7 @@ pub mod EqData {
         Ok(eqData)
     }
 
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum EqType {
         CONTINUOUS = 1,

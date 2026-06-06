@@ -4066,9 +4066,9 @@ pub fn mergeModifiers(mut inNewMod: Arc<SCode::Mod>, mut inOldMod: Arc<SCode::Mo
                     let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     b = if (isSome(b1.clone())) {b1.clone()} else {b2.clone()};
                     sl = mergeSubMods(sl1.clone(), sl2.clone())?;
-                    if (match (&(b.clone()), &(b1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(sl.clone()),&*(sl1.clone())) {
+                    if (match (&(b.clone()), &(b1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl1.clone())) {
                         m = inNewMod.clone();
-                    } else if (match (&(b.clone()), &(b2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(sl.clone()),&*(sl2.clone())) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
+                    } else if (match (&(b.clone()), &(b2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && metamodelica::ReferenceEq::reference_eq(&*(sl.clone()), &*(sl2.clone())) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
                         m = inOldMod.clone();
                     } else {
                         m = Arc::new(SCode::Mod::MOD { finalPrefix: f1.clone(), eachPrefix: e1.clone(), subModLst: sl.clone(), binding: b.clone(), comment: cmt.clone(), info: i1.clone() });

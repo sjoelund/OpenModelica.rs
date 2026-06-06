@@ -86,7 +86,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// package:     NBStrongComponent
 /// description: This file contains the data-types used save the strong Component
 ///              data after causalization.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NBStrongComponent {
     /// component for all equations that solve for a single (possibly multidimensional) variable
     ///    SCALAR_EQUATION, ARRAY_EQUATION, RECORD_EQUATION.
@@ -175,7 +175,7 @@ impl Default for NBStrongComponent {
 pub use self::NBStrongComponent::{SINGLE_COMPONENT,MULTI_COMPONENT,SLICED_COMPONENT,RESIZABLE_COMPONENT,GENERIC_COMPONENT,ENTWINED_COMPONENT,ALGEBRAIC_LOOP,ALIAS};
 pub mod AliasInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct AliasInfo {
         /// The partition kind
         pub kind: BPartition::Kind,
@@ -284,7 +284,7 @@ pub fn toString(mut comp: Arc<NBStrongComponent>, mut index: i32) -> Result<ArcS
     Ok(r#str)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct CountCollector {
     pub single_scalar: i32,
     pub single_array: i32,
@@ -624,7 +624,7 @@ pub fn createPseudoEntwinedIndices(mut entwined_indices: metamodelica::Array<Arc
     Ok(flat_tpl_indices)
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum DAEType {
     UNPROCESSED = 1,

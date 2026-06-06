@@ -65,7 +65,7 @@ use openmodelica_util_datatypes_basic::List;
 /// To be able to update these replacement rules incrementally a backward lookup mechanism is also required.
 /// For instance, having a rule a->b and adding a rule b->c requires to find the first rule a->b and update it to
 /// a->c. This is what the second binary tree is used for.
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct VariableReplacements {
     /// src -> dst, used for replacing. src is variable, dst is expression.
     pub hashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr)),

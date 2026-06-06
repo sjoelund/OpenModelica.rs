@@ -71,7 +71,7 @@ use openmodelica_util::IOStream;
 use openmodelica_util::System;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFClass {
     NOT_INSTANTIATED,
     PARTIAL_CLASS {
@@ -141,7 +141,7 @@ pub static DEFAULT_PREFIXES: std::sync::LazyLock<Arc<Prefixes::Prefixes>> = std:
 
 pub mod Prefixes {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct Prefixes {
         pub encapsulatedPrefix: SCode::Encapsulated,
         pub partialPrefix: SCode::Partial,

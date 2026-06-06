@@ -64,7 +64,7 @@ pub type VertexDescriptor = i32;
 // F - function/equation vertex set
 // U - unknown/variable vertex set
 // E - edge set
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SetType {
     V = 1,
@@ -86,7 +86,7 @@ pub fn edge_finder<EdgeT: Clone + 'static>(mut index: i32, mut e: EdgeT, mut edg
 
 pub mod IncidenceList {
     use super::*;
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
     pub struct IncidenceList<VertexT: Clone, EdgeT: Clone> {
         pub vertices: Arc<Vector::Vector<VertexT>>,
         pub edges: Arc<Vector::Vector<EdgeT>>,
@@ -253,7 +253,7 @@ pub mod IncidenceList {
 
 pub mod BipartiteIncidenceList {
     use super::*;
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
     pub struct BipartiteIncidenceList<VertexT: Clone, EdgeT: Clone> {
         pub F_vertices: Arc<Vector::Vector<VertexT>>,
         pub U_vertices: Arc<Vector::Vector<VertexT>>,

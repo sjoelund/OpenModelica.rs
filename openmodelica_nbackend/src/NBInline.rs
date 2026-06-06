@@ -818,7 +818,7 @@ pub mod InlineRating {
     /// used to rate a function by how much it grows when inlining.
     ///    collects data about how often the inputs will occur and how much constant bloating inlining would cause.
     /// factors for each input with an additional constant overhead.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct InlineRating {
         pub input_rating: metamodelica::Array<i32>,
         pub constant_rating: i32,

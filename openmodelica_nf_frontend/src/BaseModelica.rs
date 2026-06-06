@@ -45,7 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_util::Flags;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ScalarizeMode {
     SCALARIZED = 1,
@@ -62,7 +62,7 @@ impl Default for ScalarizeMode {
     fn default() -> Self { Self::SCALARIZED }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum RecordMode {
     WITH_RECORDS = 1,
@@ -78,7 +78,7 @@ impl Default for RecordMode {
     fn default() -> Self { Self::WITH_RECORDS }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct OutputFormat {
     pub scalarizeMode: ScalarizeMode,
     pub recordMode: RecordMode,

@@ -55,7 +55,7 @@ pub type FuncTypeKeyCompare<Key: Clone + 'static> = std::sync::Arc<dyn ::std::op
 
 /// a tree is a node and two optional printing functions
 /// a tree is a node and two optional printing functions
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct Tree<Key: Clone, Val: Clone> {
     pub root: Arc<Node<Key, Val>>,
     /// function to compare keys, should return -1, 0, 1 ONLY!
@@ -117,7 +117,7 @@ pub type TREE<Key, Val> = Tree<Key, Val>;
 
 
 /// The binary tree data structure
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Node<Key, Val> {
     NODE {
         /// Val
@@ -135,7 +135,7 @@ pub enum Node<Key, Val> {
 pub use self::Node::{NODE,NO_NODE};
 
 /// Each node in the binary tree can have an item associated with it.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Item<Key, Val> {
     ITEM {
         /// Key

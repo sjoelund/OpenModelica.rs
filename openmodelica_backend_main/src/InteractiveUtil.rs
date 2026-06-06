@@ -99,7 +99,7 @@ pub type GraphicEnvCache = Interactive::GraphicEnvCache;
 
 pub type AnnotationType = Interactive::AnnotationType;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Visibility {
     PUBLIC = 1,
@@ -2685,7 +2685,7 @@ pub fn getBaseClassNameFromExtends(mut inElementSpec: Arc<Absyn::ElementSpec>) -
 
 pub mod ClassEntry {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct ClassEntry {
         pub path: Arc<Absyn::Path>,
         pub cls: Arc<Absyn::Class>,

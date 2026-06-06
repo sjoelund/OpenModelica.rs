@@ -66,7 +66,7 @@ use openmodelica_util::Error;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFFunctionDerivative {
     pub derivativeFn: Arc<InstNode::InstNode>,
     pub derivedFn: Arc<InstNode::InstNode>,
@@ -90,7 +90,7 @@ impl Default for NFFunctionDerivative {
 
 pub type FUNCTION_DER = NFFunctionDerivative;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Condition {
     ZERO_DERIVATIVE = 1,

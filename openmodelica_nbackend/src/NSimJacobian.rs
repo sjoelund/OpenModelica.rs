@@ -89,7 +89,7 @@ pub type SparsityColoring = Arc<metamodelica::List<Arc<metamodelica::List<i32>>>
 
 pub mod SimJacobian {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct SimJacobian {
         /// unique matrix name
         pub name: ArcStr,

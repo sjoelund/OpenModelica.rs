@@ -47,7 +47,7 @@ use crate::Print;
 use crate::System;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Diff {
     Add = 1,

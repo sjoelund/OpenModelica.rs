@@ -80,7 +80,7 @@ pub type TaskGraph = metamodelica::Array<Arc<metamodelica::List<i32>>>;
 
 pub type Communications = Arc<metamodelica::List<Communication>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Communication {
     pub numberOfVars: i32,
     pub integerVars: Arc<metamodelica::List<i32>>,
@@ -108,7 +108,7 @@ impl Default for Communication {
 pub type COMMUNICATION = Communication;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ComponentInfo {
     pub isPartOfODESystem: bool,
     pub isPartOfZeroFuncSystem: bool,
@@ -130,7 +130,7 @@ pub type COMPONENTINFO = ComponentInfo;
 
 // TODO: Store compParamMapping, compNames and compDescs in ComponentInfo
 // TODO: Change nodeMark to compMarks
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct TaskGraphMeta {
     pub inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>,
     pub varCompMapping: metamodelica::Array<(i32, i32, i32)>,
@@ -164,7 +164,7 @@ impl Default for TaskGraphMeta {
 pub type TASKGRAPHMETA = TaskGraphMeta;
 
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum VariableType {
     INTEGER = 1,
@@ -2898,7 +2898,7 @@ fn solvesDiscreteValue(mut inComp: Arc<BackendDAE::StrongComponent>, mut iOrdere
 //------------------------------------------
 //Methods to write blt-structure as xml-file
 //------------------------------------------
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct GraphDumpOptions {
     pub visualizeCriticalPath: bool,
     pub visualizeTaskStartAndFinishTime: bool,

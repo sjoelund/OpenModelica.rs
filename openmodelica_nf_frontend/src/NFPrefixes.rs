@@ -269,7 +269,7 @@ pub mod ConnectorType {
 
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Parallelism {
     NON_PARALLEL = 1,
@@ -286,7 +286,7 @@ impl Default for Parallelism {
     fn default() -> Self { Self::NON_PARALLEL }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Variability {
     CONSTANT = 1,
@@ -307,7 +307,7 @@ impl Default for Variability {
     fn default() -> Self { Self::CONSTANT }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Purity {
     PURE = 1,
@@ -323,7 +323,7 @@ impl Default for Purity {
     fn default() -> Self { Self::PURE }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Direction {
     NONE = 1,
@@ -340,7 +340,7 @@ impl Default for Direction {
     fn default() -> Self { Self::NONE }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum InnerOuter {
     NOT_INNER_OUTER = 1,
@@ -358,7 +358,7 @@ impl Default for InnerOuter {
     fn default() -> Self { Self::NOT_INNER_OUTER }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Visibility {
     PUBLIC = 1,
@@ -374,7 +374,7 @@ impl Default for Visibility {
     fn default() -> Self { Self::PUBLIC }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum AccessLevel {
     HIDE = 1,
@@ -393,7 +393,7 @@ impl Ord for AccessLevel {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum Replaceable {
     REPLACEABLE {
         constrainingClass: Option<Arc<InstNode::InstNode>>,

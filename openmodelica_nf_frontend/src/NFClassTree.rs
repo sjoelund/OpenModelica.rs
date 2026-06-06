@@ -81,7 +81,7 @@ pub type LookupTable = Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<LookupTree::En
 
 pub mod ClassTree {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum ClassTree {
         /// A partial tree allows lookup of local classes and imported elements.
         PARTIAL_TREE {

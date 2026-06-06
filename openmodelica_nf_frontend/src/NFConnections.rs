@@ -61,7 +61,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFConnections {
     pub connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>>,
     pub flows: Arc<metamodelica::List<Arc<Connector::NFConnector>>>,
@@ -80,7 +80,7 @@ impl Default for NFConnections {
 
 pub type CONNECTIONS = NFConnections;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct BrokenEdge {
     pub lhs: Arc<ComponentRef::NFComponentRef>,
     pub rhs: Arc<ComponentRef::NFComponentRef>,

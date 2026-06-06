@@ -68,7 +68,7 @@ pub type Extends = Arc<NFSCodeEnv::Extends>;
 
 pub type Prefix = Arc<NFInstPrefix::Prefix>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum Replacement {
     /// an item got replaced
     REPLACED {

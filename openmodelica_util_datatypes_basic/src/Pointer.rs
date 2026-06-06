@@ -165,3 +165,11 @@ pub fn referenceEq<T>(a: &Pointer<T>, b: &Pointer<T>) -> bool {
         _ => false,
     }
 }
+
+/// Identity of the underlying cell, same as the free [`referenceEq`] the
+/// concrete-typed lowering dispatches to.
+impl<T> metamodelica::ReferenceEq for Pointer<T> {
+    fn reference_eq(&self, other: &Self) -> bool {
+        referenceEq(self, other)
+    }
+}

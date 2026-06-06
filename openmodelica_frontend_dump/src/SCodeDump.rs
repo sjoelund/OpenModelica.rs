@@ -51,7 +51,7 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_susan::Tpl;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct SCodeDumpOptions {
     pub stripAlgorithmSections: bool,
     pub stripProtectedImports: bool,

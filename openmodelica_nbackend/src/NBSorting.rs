@@ -72,7 +72,7 @@ use openmodelica_util_datatypes_basic::List;
 // ############################################################
 pub mod Value {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Value {
         SINGLE_VAL {
             /// cref to solve for in this mode
@@ -372,7 +372,7 @@ pub type SCC = Arc<metamodelica::List<i32>>;
 pub mod LoopIdentifier {
     use super::*;
     /// used to identify algebraic loops that are structurally equal just differ in local indexing
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct LoopIdentifier {
         pub eqns: Arc<UnorderedSet::UnorderedSet<i32>>,
         pub vars: Arc<UnorderedSet::UnorderedSet<i32>>,
@@ -429,7 +429,7 @@ pub mod LoopIdentifier {
 
 pub mod SuperNode {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum SuperNode {
         /// does not belong to an algebraic loop or array
         SINGLE {

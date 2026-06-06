@@ -88,7 +88,7 @@ pub type Msg = Option<SourceInfo>;
 pub static dummyLookupOption: Option<SourceInfo> = None;
 
 // SOME(Absyn.dummyInfo);
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Options {
     pub ignoreImports: bool,
     pub ignoreExtends: bool,

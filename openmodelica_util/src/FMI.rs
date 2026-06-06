@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::Flags;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Info {
     pub fmiVersion: ArcStr,
     pub fmiType: i32,
@@ -82,7 +82,7 @@ impl Default for Info {
 pub type INFO = Info;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct TypeDefinitions {
     pub name: ArcStr,
     pub description: ArcStr,
@@ -95,7 +95,7 @@ pub struct TypeDefinitions {
 pub type ENUMERATIONTYPE = TypeDefinitions;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct EnumerationItem {
     pub name: ArcStr,
     pub description: ArcStr,
@@ -104,7 +104,7 @@ pub struct EnumerationItem {
 pub type ENUMERATIONITEM = EnumerationItem;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ExperimentAnnotation {
     pub fmiExperimentStartTime: metamodelica::Real,
     pub fmiExperimentStopTime: metamodelica::Real,
@@ -124,7 +124,7 @@ impl Default for ExperimentAnnotation {
 pub type EXPERIMENTANNOTATION = ExperimentAnnotation;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ModelVariables {
     REALVARIABLE {
         instance: i32,
@@ -209,7 +209,7 @@ pub enum ModelVariables {
 }
 pub use self::ModelVariables::{REALVARIABLE,INTEGERVARIABLE,BOOLEANVARIABLE,STRINGVARIABLE,ENUMERATIONVARIABLE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct FmiImport {
     pub platform: ArcStr,
     pub fmuFileName: ArcStr,

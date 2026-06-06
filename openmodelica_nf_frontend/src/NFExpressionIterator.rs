@@ -53,7 +53,7 @@ use openmodelica_util::Error;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFExpressionIterator {
     ARRAY_ITERATOR {
         arr: metamodelica::Array<Arc<Expression::NFExpression>>,

@@ -95,7 +95,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Old imports
 pub mod BClock {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum BClock {
         BASE_CLOCK {
             clock: Arc<ClockKind::NFClockKind>,
@@ -378,7 +378,7 @@ pub type CrefLst = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
 
 pub mod ClockedInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct ClockedInfo {
         pub baseClocks: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>>>,
         pub subClocks: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>>>,
@@ -652,7 +652,7 @@ pub fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_coll: Arc<
     Ok(exp)
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ClusterElementType {
     EQUATION = 1,
@@ -667,7 +667,7 @@ impl Ord for ClusterElementType {
 
 pub mod Cluster {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Cluster {
         /// set of all variables in this cluster
         pub variables: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>,
@@ -842,7 +842,7 @@ pub mod Cluster {
 pub mod DisjointSetForest {
     use super::*;
     /// Custom implementation of disjoint-set data structure with constant number of elements.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct DisjointSetForest {
         pub parent: Pointer::Pointer<metamodelica::Array<i32>>,
         pub rank: Pointer::Pointer<metamodelica::Array<i32>>,

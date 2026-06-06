@@ -88,7 +88,7 @@ use openmodelica_util::UnorderedSet;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFFlatModel {
     pub name: Arc<Absyn::Path>,
     pub variables: Arc<metamodelica::List<Arc<Variable::NFVariable>>>,

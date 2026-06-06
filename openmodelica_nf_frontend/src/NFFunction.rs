@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 pub type NamedArg = (ArcStr, Arc<Expression::NFExpression>);
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct TypedArg {
     pub name: Option<ArcStr>,
     pub value: Arc<Expression::NFExpression>,
@@ -131,7 +131,7 @@ pub type TYPED_ARG = TypedArg;
 
 
 /// Determines which type of argument a slot accepts.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SlotType {
     /// Only accepts positional arguments.
@@ -151,7 +151,7 @@ impl Default for SlotType {
     fn default() -> Self { Self::POSITIONAL }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SlotEvalStatus {
     NOT_EVALUATED = 1,
@@ -170,7 +170,7 @@ impl Default for SlotEvalStatus {
 
 pub mod Slot {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Slot {
         pub node: Arc<InstNode::InstNode>,
         pub ty: SlotType,
@@ -229,7 +229,7 @@ pub mod Slot {
 
 pub mod FunctionMatchKind {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum FunctionMatchKind {
         /// Exact match.
         EXACT,
@@ -335,7 +335,7 @@ pub fn NO_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __NO_MATCH_TLS.
 
 pub mod MatchedFunction {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct MatchedFunction {
         pub func: Arc<Function::Function>,
         pub args: Arc<metamodelica::List<Arc<TypedArg>>>,
@@ -387,7 +387,7 @@ pub mod MatchedFunction {
 
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum FunctionStatus {
     /// A builtin function.
@@ -413,7 +413,7 @@ impl Default for FunctionStatus {
 
 pub mod Function {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Function {
         pub path: Arc<Absyn::Path>,
         pub node: Arc<InstNode::InstNode>,

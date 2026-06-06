@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use openmodelica_ast::Absyn;
 use openmodelica_util::Global;
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct BackendInterfaceFunctions {
     pub noRewriteRulesFrontEnd: partialNoRewriteRulesFrontEnd,
     pub rewriteFrontEnd: partialRewriteFrontEnd,

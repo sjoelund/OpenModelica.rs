@@ -51,7 +51,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_util::JSON;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFClockKind {
     /// Clock()
     INFERRED_CLOCK {

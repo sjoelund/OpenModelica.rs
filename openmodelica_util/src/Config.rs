@@ -49,7 +49,7 @@ use crate::FlagsUtil;
 use crate::System;
 
 /// Defines the various modelica language versions that OMC can use.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum LanguageStandard {
     _1_x = 1,

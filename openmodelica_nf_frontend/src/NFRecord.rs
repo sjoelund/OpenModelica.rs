@@ -83,7 +83,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 pub mod Field {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum Field {
         INPUT {
             name: ArcStr,

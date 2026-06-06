@@ -51,7 +51,7 @@ use crate::System;
 use openmodelica_util_datatypes_basic::List;
 
 /// Used to signal success or failure of a function call
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Status {
     SUCCESS,
     FAILURE,
@@ -61,7 +61,7 @@ impl Default for Status {
 }
 pub use self::Status::{SUCCESS,FAILURE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct DateTime {
     pub sec: i32,
     pub min: i32,
@@ -1328,7 +1328,7 @@ pub fn profilertock2() -> Result<metamodelica::Real> {
     Ok(t)
 }
 
-pub fn applyTuple21<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2)> {
+pub fn applyTuple21<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2)> {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1337,11 +1337,11 @@ pub fn applyTuple21<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, 
     let mut e2: T2;
     (e1_1, e2) = inTuple.clone();
     e1_2 = func(e1_1.clone())?;
-    outTuple = if (referenceEq(&e1_1.clone(),&e1_2.clone()) /* always false: opaque type TypeVar("T1") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(e1_2.clone(), e2.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e1_1.clone()), &(e1_2.clone()))) {inTuple.clone()} else {(e1_2.clone(), e2.clone())};
     Ok(outTuple)
 }
 
-pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> Result<(T1, T2)> {
+pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static + metamodelica::ReferenceEq>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> Result<(T1, T2)> {
     pub type FuncT<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1350,11 +1350,11 @@ pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, 
     let mut e2_2: T2;
     (e1, e2_1) = inTuple.clone();
     e2_2 = func(e2_1.clone())?;
-    outTuple = if (referenceEq(&e2_1.clone(),&e2_2.clone()) /* always false: opaque type TypeVar("T2") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(e1.clone(), e2_2.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(e2_1.clone()), &(e2_2.clone()))) {inTuple.clone()} else {(e1.clone(), e2_2.clone())};
     Ok(outTuple)
 }
 
-pub fn applyTuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2, T3)> {
+pub fn applyTuple31<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> Result<(T1, T2, T3)> {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2, T3);
@@ -1364,7 +1364,7 @@ pub fn applyTuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'stati
     let mut t3: T3;
     (t1, t2, t3) = inTuple.clone();
     t1_new = func(t1.clone())?;
-    outTuple = if (referenceEq(&t1.clone(),&t1_new.clone()) /* always false: opaque type TypeVar("T1") — needs a ReferenceEq trait for generics */) {inTuple.clone()} else {(t1_new.clone(), t2.clone(), t3.clone())};
+    outTuple = if (metamodelica::ReferenceEq::reference_eq(&(t1.clone()), &(t1_new.clone()))) {inTuple.clone()} else {(t1_new.clone(), t2.clone(), t3.clone())};
     Ok(outTuple)
 }
 

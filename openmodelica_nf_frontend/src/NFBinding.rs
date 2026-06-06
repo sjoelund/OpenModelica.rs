@@ -61,7 +61,7 @@ use openmodelica_util::Error;
 use openmodelica_util::ErrorTypes;
 use openmodelica_util_datatypes_basic::Mutable;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFBinding {
     UNBOUND,
     RAW_BINDING {
@@ -137,7 +137,7 @@ pub fn EMPTY_BINDING() -> Arc<NFBinding> { __EMPTY_BINDING_TLS.with(|__t| __t.cl
 
 pub const NO_CONFIDENCE: i32 = 99999;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum EachType {
     NOT_EACH = 1,
@@ -150,7 +150,7 @@ impl Ord for EachType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum EvalState {
     NOT_EVALUATED = 1,
@@ -164,7 +164,7 @@ impl Ord for EvalState {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Source {
     /// The binding comes from a binding equation.

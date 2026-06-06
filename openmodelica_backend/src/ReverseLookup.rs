@@ -54,7 +54,7 @@ use openmodelica_util::JSON;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct PathEntry {
     pub tree: Arc<PathTree::Tree>,
     pub shadowed: bool,
@@ -99,7 +99,7 @@ pub mod PathTree {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -779,7 +779,7 @@ pub mod PathTree {
 
 pub mod Paths {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct Paths {
         pub tree: Arc<PathTree::Tree>,
         pub relativePath: Arc<metamodelica::List<ArcStr>>,
@@ -805,7 +805,7 @@ pub mod Paths {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Match {
     pub name: Arc<Absyn::ComponentRef>,
     pub scope: ArcStr,

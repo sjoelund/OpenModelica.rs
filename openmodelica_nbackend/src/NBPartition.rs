@@ -76,7 +76,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // Backend Imports
 // Util imports
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Kind {
     ODE = 1,
@@ -101,7 +101,7 @@ impl Default for Kind {
 
 pub mod Association {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Association {
         CONTINUOUS {
             kind: Kind,
@@ -366,7 +366,7 @@ pub mod Association {
 
 pub mod Partition {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Partition {
         /// Partition index
         pub index: i32,

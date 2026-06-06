@@ -158,7 +158,7 @@ pub fn createDAEmodeBDAE(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
 // protected section for createDAEmodeBDAE
 //
 // =============================================================================
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct TraverseEqnAryFold {
     pub globalDAEData: BackendDAE::BackendDAEModeData,
     pub newDAEVars: BackendDAE::Variables,

@@ -81,18 +81,28 @@ fn start_compilation(results: Vec<Absyn::Program>) {
     // and only read `hier.top_level`, so we run them concurrently via
     // `rayon::join` to overlap their costs.
     let t0 = std::time::Instant::now();
-    let (partial_eq_required, default_required) = rayon::join(
+    // `analyze_reference_eq` is a third sibling pass (referenceEq on
+    // type-variable-typed operands lowers to a `metamodelica::ReferenceEq`
+    // trait call that needs the bound); independent like the other two, so
+    // it joins the same concurrent batch.
+    let (partial_eq_required, (default_required, reference_eq_required)) = rayon::join(
         || codegen::analyze_partial_eq(&hier.top_level),
-        || codegen::analyze_default(&hier.top_level),
+        || rayon::join(
+            || codegen::analyze_default(&hier.top_level),
+            || codegen::analyze_reference_eq(&hier.top_level),
+        ),
     );
     hier.partial_eq_required = partial_eq_required;
     hier.default_required = default_required;
+    hier.reference_eq_required = reference_eq_required;
     let with_eq = hier.partial_eq_required.values().filter(|s| !s.is_empty()).count();
     let with_default = hier.default_required.values().filter(|s| !s.is_empty()).count();
+    let with_refeq = hier.reference_eq_required.values().filter(|s| !s.is_empty()).count();
     println!(
-        "PartialEq + Default analysis: {} PartialEq-bounded, {} Default-bounded; {:.2}s",
+        "PartialEq + Default + ReferenceEq analysis: {} PartialEq-bounded, {} Default-bounded, {} ReferenceEq-bounded; {:.2}s",
         with_eq,
         with_default,
+        with_refeq,
         t0.elapsed().as_secs_f64(),
     );
 

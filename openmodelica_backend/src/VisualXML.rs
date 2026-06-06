@@ -70,7 +70,7 @@ use openmodelica_util_datatypes_basic::List;
 //----------------------------
 //  Visualization types
 //----------------------------
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum Visualization {
     SHAPE {
         ident: Arc<DAE::ComponentRef>,

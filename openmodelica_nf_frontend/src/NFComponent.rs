@@ -66,7 +66,7 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_util::IOStream;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NFComponent {
     COMPONENT_DEF {
         definition: Arc<Element>,
@@ -115,7 +115,7 @@ impl Default for NFComponent {
     fn default() -> Self { Self::WILD }
 }
 pub use self::NFComponent::{COMPONENT_DEF,COMPONENT,ITERATOR,ENUM_LITERAL,TYPE_ATTRIBUTE,INVALID_COMPONENT,WILD};
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ComponentState {
     /// Component instance has been created

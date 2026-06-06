@@ -84,3 +84,11 @@ pub fn access<T: Clone>(mutable: Mutable<T>) -> T {
 pub fn referenceEq<T: Clone>(a: &Mutable<T>, b: &Mutable<T>) -> bool {
     Arc::ptr_eq(&a.0, &b.0)
 }
+
+/// Identity of the underlying cell, same as the free [`referenceEq`] the
+/// concrete-typed lowering dispatches to.
+impl<T: Clone> metamodelica::ReferenceEq for Mutable<T> {
+    fn reference_eq(&self, other: &Self) -> bool {
+        referenceEq(self, other)
+    }
+}

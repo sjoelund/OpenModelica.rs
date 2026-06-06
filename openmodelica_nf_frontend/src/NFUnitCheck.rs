@@ -71,7 +71,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 //import DAE;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Functionargs {
     pub name: ArcStr,
     pub invars: Arc<metamodelica::List<ArcStr>>,

@@ -45,7 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Value {
     INTEGER {
         integer: i32,
@@ -139,7 +139,7 @@ impl Default for Value {
 }
 pub use self::Value::{INTEGER,REAL,STRING,BOOL,ENUM_LITERAL,ARRAY,LIST,META_ARRAY,TUPLE,META_TUPLE,RECORD,OPTION,CODE,NORETCALL,META_BOX,META_FAIL,EMPTY};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum IntRealOp {
     MULOP,
     DIVOP,

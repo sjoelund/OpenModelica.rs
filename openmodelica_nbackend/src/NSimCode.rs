@@ -113,7 +113,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Util imports
 // Script imports
 /// Unique simulation code indices
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SimCodeIndices {
     pub uniqueIndex: i32,
     pub realVarIndex: i32,
@@ -179,7 +179,7 @@ pub type SIM_CODE_INDICES = SimCodeIndices;
 
 pub mod Identifier {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Identifier {
         pub eqn: Pointer::Pointer<Arc<Equation::Equation>>,
         pub var_cref: Arc<ComponentRef::NFComponentRef>,
@@ -222,7 +222,7 @@ pub fn EMPTY_SIM_CODE_INDICES() -> SimCodeIndices {
 
 pub mod SimCode {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct SimCode {
         pub modelInfo: Arc<ModelInfo::ModelInfo>,
         /// shared literals
@@ -647,7 +647,7 @@ pub mod SimCode {
 
 pub mod ModelInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct ModelInfo {
         pub name: Arc<Absyn::Path>,
         pub description: ArcStr,
@@ -747,7 +747,7 @@ pub mod ModelInfo {
 pub mod DaeModeData {
     use super::*;
     /// contains data that belongs to the dae mode
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct DaeModeData {
         /// daeMode blocks
         pub blcks: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>>>>,
@@ -905,7 +905,7 @@ pub mod DaeModeData {
 
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum DaeModeConfig {
     ALL = 1,

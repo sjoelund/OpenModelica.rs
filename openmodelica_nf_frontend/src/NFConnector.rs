@@ -61,7 +61,7 @@ use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::Error;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFConnector {
     pub name: Arc<ComponentRef::NFComponentRef>,
     pub ty: Arc<Type::NFType>,
@@ -84,7 +84,7 @@ impl Default for NFConnector {
 
 pub type CONNECTOR = NFConnector;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Face {
     INSIDE = 1,

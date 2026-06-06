@@ -77,7 +77,7 @@ use openmodelica_util::System;
 use openmodelica_util::Testsuite;
 use openmodelica_util::UnorderedMap;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum MatchType {
     FOUND = 1,

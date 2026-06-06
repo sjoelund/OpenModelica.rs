@@ -52,7 +52,7 @@ use openmodelica_util::JSON;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFOperator {
     pub ty: Arc<Type::NFType>,
     pub op: Op,
@@ -69,7 +69,7 @@ impl Default for NFOperator {
 
 pub type OPERATOR = NFOperator;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Op {
     ADD = 1,
@@ -160,7 +160,7 @@ pub fn invert(mut operator: Arc<NFOperator>) -> Result<Arc<NFOperator>> {
     Ok(operator)
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum TypeRestriction {
     SCALAR = 1,
@@ -788,7 +788,7 @@ pub fn isElementWise(mut op: Arc<NFOperator>) -> bool {
     ew
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum MathClassification {
     ADDITION = 1,
@@ -806,7 +806,7 @@ impl Ord for MathClassification {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SizeClassification {
     SCALAR = 1,

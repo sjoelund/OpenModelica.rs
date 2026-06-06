@@ -88,7 +88,7 @@ pub type FunctionVar = (Arc<DAE::Element>, Option<Arc<Values::Value>>);
 // LoopControl is used to control the functions behaviour in different
 // situations. All evaluation functions returns a LoopControl variable that
 // tells the caller whether it should continue evaluating or not.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum LoopControl {
     /// Continue to the next statement.
     NEXT,

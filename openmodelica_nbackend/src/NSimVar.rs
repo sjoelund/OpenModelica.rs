@@ -89,7 +89,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub mod SimVar {
     use super::*;
     /// Information about a variable in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct SimVar {
         pub name: Arc<ComponentRef::NFComponentRef>,
         pub varKind: Arc<VariableKind::VariableKind>,
@@ -579,7 +579,7 @@ pub mod SimVar {
 
 pub mod Alias {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Alias {
         NO_ALIAS,
         /// General alias expression with a coefficent.
@@ -716,7 +716,7 @@ pub mod Alias {
 }
 
 // kabdelhak: i don't like "CALCULATED_PARAMETER", is there a better way to describe it?
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Causality {
     NONE = 1,
@@ -737,7 +737,7 @@ impl Default for Causality {
 }
 
 // kabdelhak: where is the difference between approx and calculated?
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Initial {
     NONE = 1,
@@ -756,7 +756,7 @@ impl Default for Initial {
 }
 
 // kabdelhak: i don't like "TUNABLE" -> just "VARIABLE"?
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum Variability {
     CONSTANT = 1,
@@ -778,7 +778,7 @@ impl Default for Variability {
 pub mod SimVars {
     use super::*;
     /// Container for metadata about variables in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct SimVars {
         pub stateVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
         pub derivativeVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
@@ -1351,7 +1351,7 @@ pub mod SimVars {
 thread_local! { static __emptySimVars_TLS: Arc<SimVars::SimVars> = Arc::new(SimVars::SimVars { stateVars: metamodelica::nil(), derivativeVars: metamodelica::nil(), algVars: metamodelica::nil(), discreteAlgVars: metamodelica::nil(), intAlgVars: metamodelica::nil(), boolAlgVars: metamodelica::nil(), stringAlgVars: metamodelica::nil(), enumAlgVars: metamodelica::nil(), inputVars: metamodelica::nil(), outputVars: metamodelica::nil(), aliasVars: metamodelica::nil(), intAliasVars: metamodelica::nil(), boolAliasVars: metamodelica::nil(), stringAliasVars: metamodelica::nil(), enumAliasVars: metamodelica::nil(), paramVars: metamodelica::nil(), intParamVars: metamodelica::nil(), boolParamVars: metamodelica::nil(), stringParamVars: metamodelica::nil(), enumParamVars: metamodelica::nil(), extObjVars: metamodelica::nil(), constVars: metamodelica::nil(), intConstVars: metamodelica::nil(), boolConstVars: metamodelica::nil(), stringConstVars: metamodelica::nil(), enumConstVars: metamodelica::nil(), residualVars: metamodelica::nil(), jacobianVars: metamodelica::nil(), seedVars: metamodelica::nil(), realOptimizeConstraintsVars: metamodelica::nil(), realOptimizeFinalConstraintsVars: metamodelica::nil(), sensitivityVars: metamodelica::nil(), dataReconSetcVars: metamodelica::nil(), dataReconinputVars: metamodelica::nil(), dataReconSetBVars: metamodelica::nil() }); }
 pub fn emptySimVars() -> Arc<SimVars::SimVars> { __emptySimVars_TLS.with(|__t| __t.clone()) }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum SplitType {
     NONE = 1,
@@ -1364,7 +1364,7 @@ impl Ord for SplitType {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum VarType {
     SIMULATION = 1,
@@ -1383,7 +1383,7 @@ impl Ord for VarType {
 // ToDo: PRE, OLD, RELATIONS...
 pub mod VarInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct VarInfo {
         pub numZeroCrossings: i32,
         pub numTimeEvents: i32,
@@ -1496,7 +1496,7 @@ pub mod VarInfo {
 
 pub mod ExtObjInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct ExtObjInfo {
         pub objects: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
         pub aliases: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>,

@@ -93,7 +93,7 @@ pub const VARTYPE_ALIAS: i32 = 4;
 
 pub const VARTYPE_OTHER: i32 = 5;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum CacheMap {
     CACHEMAP {
         cacheLineSize: i32,
@@ -119,7 +119,7 @@ impl Default for CacheMap {
 }
 pub use self::CacheMap::{CACHEMAP,UNIFORM_CACHEMAP};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct CacheLineMap {
     pub idx: i32,
     pub numBytesFree: i32,
@@ -139,7 +139,7 @@ impl Default for CacheLineMap {
 pub type CACHELINEMAP = CacheLineMap;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct CacheLineEntry {
     pub start: i32,
     pub dataType: i32,
@@ -163,7 +163,7 @@ impl Default for CacheLineEntry {
 pub type CACHELINEENTRY = CacheLineEntry;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct CacheMapMeta {
     pub allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>,
     pub simCodeVarTypes: metamodelica::Array<(i32, i32, i32)>,
@@ -183,7 +183,7 @@ impl Default for CacheMapMeta {
 pub type CACHEMAPMETA = CacheMapMeta;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum PartlyFilledCacheLine {
     PARTLYFILLEDCACHELINE_LEVEL {
         cacheLineMap: CacheLineMap,
@@ -203,7 +203,7 @@ impl Default for PartlyFilledCacheLine {
 }
 pub use self::PartlyFilledCacheLine::{PARTLYFILLEDCACHELINE_LEVEL,PARTLYFILLEDCACHELINE_THREAD};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ScVarInfo {
     pub ownerThread: i32,
     pub isShared: bool,

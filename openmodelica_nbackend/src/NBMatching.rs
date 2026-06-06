@@ -75,7 +75,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// file:        NBMatching.mo
 /// package:     NBMatching
 /// description: This file contains the functions which perform the matching process;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NBMatching {
     /// eqn := var_to_eqn[var]
     pub var_to_eqn: metamodelica::Array<i32>,

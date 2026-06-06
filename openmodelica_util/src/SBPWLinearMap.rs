@@ -52,7 +52,7 @@ use crate::UnorderedSet;
 use crate::Vector;
 use openmodelica_util_datatypes_basic::Array;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SBPWLinearMap {
     pub dom: metamodelica::Array<Arc<SBSet::SBSet>>,
     pub lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>,

@@ -75,7 +75,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Pointer;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum InstNodeType {
     /// An element with no specific characteristics.
     NORMAL_CLASS,
@@ -168,7 +168,7 @@ pub use self::InstNodeType::{NORMAL_CLASS,BASE_CLASS,DERIVED_CLASS,BUILTIN_CLASS
 
 pub const NUMBER_OF_CACHES: i32 = 2;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum PackageCacheState {
     NOT_INITIALIZED = 1,
@@ -186,7 +186,7 @@ impl Ord for PackageCacheState {
 
 pub mod CachedData {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum CachedData {
         NO_CACHE,
         PACKAGE {
@@ -274,7 +274,7 @@ pub mod CachedData {
 
 pub mod InstNode {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum InstNode {
         CLASS_NODE {
             name: ArcStr,
@@ -1329,7 +1329,7 @@ pub mod InstNode {
         Ok((r#mod, scope))
     }
 
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum ScopeType {
         /// Stops at a root class and doesn't include the root

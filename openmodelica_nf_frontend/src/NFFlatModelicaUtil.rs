@@ -57,7 +57,7 @@ use openmodelica_util::Util;
 
 // Used to indicate what type of element an annotation comes from, to allow
 // filtering out specific annotations for dumping.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ElementType {
     ROOT_CLASS = 1,

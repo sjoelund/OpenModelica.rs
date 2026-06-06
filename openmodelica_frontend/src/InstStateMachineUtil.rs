@@ -69,7 +69,7 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
 /// Collecting information about a state/mode
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct SMNode {
     pub componentRef: Arc<DAE::ComponentRef>,
     pub isInitial: bool,
@@ -115,7 +115,7 @@ pub type SMNODE = SMNode;
 
 
 /// Collecting information about a group of state components forming a flat state machine
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct FlatSMGroup {
     pub initState: Arc<DAE::ComponentRef>,
     pub states: metamodelica::Array<Arc<DAE::ComponentRef>>,
@@ -124,7 +124,7 @@ pub struct FlatSMGroup {
 pub type FLAT_SM_GROUP = FlatSMGroup;
 
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct AdjacencyTable {
     /// Map cref to corresponding index in adjacency matrix
     pub cref2index: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr)),

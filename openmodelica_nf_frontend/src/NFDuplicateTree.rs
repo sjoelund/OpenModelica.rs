@@ -49,7 +49,7 @@ use openmodelica_util::BaseAvlTree;
 use openmodelica_util::NFLookupTree;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum EntryType {
     DUPLICATE = 1,
@@ -66,7 +66,7 @@ impl Default for EntryType {
     fn default() -> Self { Self::DUPLICATE }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct Entry {
     pub entry: Arc<NFLookupTree::Entry::Entry>,
     pub node: Option<Arc<NFInstNode::InstNode::InstNode>>,
@@ -158,7 +158,7 @@ pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> 
 pub type Key = ArcStr;
 
 /// The binary tree data structure.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum Tree {
     NODE {
         /// The key of the node.

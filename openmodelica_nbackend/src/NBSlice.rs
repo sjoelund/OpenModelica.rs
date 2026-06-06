@@ -77,7 +77,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// file:         NBSlice.mo
 ///  package:      NBSlice
 ///  description:  This file contains util functions for slicing operations.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct NBSlice<T: Clone> {
     pub t: T,
     pub indices: IntLst,

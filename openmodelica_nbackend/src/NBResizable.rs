@@ -87,7 +87,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub struct NBResizable;
 pub const debug: bool = false;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum EvalOrder {
     INDEPENDENT = 1,

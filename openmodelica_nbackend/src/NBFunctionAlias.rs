@@ -174,7 +174,7 @@ pub mod Call_Id {
     use super::*;
     /// key for UnorderedMap.
     ///    used to uniquely identify a function call
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Call_Id {
         pub call: Arc<Expression::NFExpression>,
         pub iter: Arc<Iterator::Iterator>,
@@ -217,7 +217,7 @@ pub mod Call_Aux {
     /// value for UnorderedMap.
     ///    represents the auxilliary variable that will be created and has
     ///    the equation kind for auxilliary equation.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Call_Aux {
         pub replacer: Arc<Expression::NFExpression>,
         pub kind: EquationKind,
@@ -436,7 +436,7 @@ fn resolveAux(mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc
 }
 
 fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut aux_index: Pointer::Pointer<i32>, mut eqn_index: Pointer::Pointer<i32>, mut init: bool) -> Result<Arc<Equation::Equation>> {
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum Depth {
         FULL = 1,

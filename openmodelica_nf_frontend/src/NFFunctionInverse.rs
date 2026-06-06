@@ -61,7 +61,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Error;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct NFFunctionInverse {
     pub inputParam: Arc<ComponentRef::NFComponentRef>,
     pub inverseCall: Arc<Expression::NFExpression>,

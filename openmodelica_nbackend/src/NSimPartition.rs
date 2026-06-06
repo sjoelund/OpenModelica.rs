@@ -69,7 +69,7 @@ use openmodelica_util_datatypes_basic::List;
 /// package:     NSimPartition
 /// description: This file contains the data types and functions for clocked partitions
 ///              in simulation code phase.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum NSimPartition {
     BASE_PARTITION {
         baseClock: Arc<BClock::BClock>,

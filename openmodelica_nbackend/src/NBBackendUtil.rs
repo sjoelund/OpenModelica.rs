@@ -67,7 +67,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // old imports
 pub mod Rational {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct Rational {
         pub n: i32,
         pub d: i32,

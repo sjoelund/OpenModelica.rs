@@ -179,7 +179,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
             (e2m, arg) = traverseExpBidir(e2.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (e3m, arg) = traverseExpBidir(e3.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (else_ifs2, arg) = List::map2FoldCheckReferenceEq(else_ifs1.clone(), (std::sync::Arc::new(traverseExpBidirElseIf) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<Absyn::Exp>), _, _, _) -> Result<_> + 'static>), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(e1.clone()),&*(e1m.clone())) && referenceEq(&*(e2.clone()),&*(e2m.clone())) && referenceEq(&*(e3.clone()),&*(e3m.clone())) && referenceEq(&*(else_ifs1.clone()),&*(else_ifs2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::IFEXP { ifExp: e1m.clone(), trueBranch: e2m.clone(), elseBranch: e3m.clone(), elseIfBranch: else_ifs2.clone() })}, arg.clone())
+            (if (referenceEq(&*(e1.clone()),&*(e1m.clone())) && referenceEq(&*(e2.clone()),&*(e2m.clone())) && referenceEq(&*(e3.clone()),&*(e3m.clone())) && metamodelica::ReferenceEq::reference_eq(&*(else_ifs1.clone()), &*(else_ifs2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::IFEXP { ifExp: e1m.clone(), trueBranch: e2m.clone(), elseBranch: e3m.clone(), elseIfBranch: else_ifs2.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::CALL { function_: cref, functionArgs: fargs1, .. } => {
             let mut fargs2: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
@@ -194,7 +194,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
         Deref @ Absyn::Exp::ARRAY { arrayExp: expl1 } => {
             let mut expl2: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             (expl2, arg) = traverseExpListBidir(expl1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(expl1.clone()),&*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::ARRAY { arrayExp: expl2.clone() })}, arg.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(expl1.clone()), &*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::ARRAY { arrayExp: expl2.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::MATRIX { matrix: mat_expl } => {
             let mut mat_expl = (*mat_expl).clone();
@@ -216,7 +216,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
         Deref @ Absyn::Exp::TUPLE { expressions: expl1 } => {
             let mut expl2: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             (expl2, arg) = traverseExpListBidir(expl1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(expl1.clone()),&*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::TUPLE { expressions: expl2.clone() })}, arg.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(expl1.clone()), &*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::TUPLE { expressions: expl2.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::AS { id, exp: e1 } => {
             let mut e1m: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -240,7 +240,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
         Deref @ Absyn::Exp::LIST { exps: expl1 } => {
             let mut expl2: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             (expl2, arg) = traverseExpListBidir(expl1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(expl1.clone()),&*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::LIST { exps: expl2.clone() })}, arg.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(expl1.clone()), &*(expl2.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::LIST { exps: expl2.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::CODE { .. } => {
             (exp.clone(), arg.clone())
@@ -262,7 +262,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
             let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             (e1, arg) = traverseExpBidir(var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (subs, arg) = traverseExpBidirSubs(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone()),&*(e1.clone())) && referenceEq(&*(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone()),&*(subs.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: subs.clone() })}, arg.clone())
+            (if (referenceEq(&*(var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone()),&*(e1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone()), &*(subs.clone()))) {exp.clone()} else {Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: subs.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::BREAK { .. } => {
             (exp.clone(), arg.clone())
@@ -299,12 +299,12 @@ pub fn traverseExpBidirCref<Arg: Clone + 'static>(mut cref: Arc<Absyn::Component
             let mut subs2: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             (subs2, arg) = traverseExpBidirSubs(subs1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (cr2, arg) = traverseExpBidirCref(cr1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(cr1.clone()),&*(cr2.clone())) && referenceEq(&*(subs1.clone()),&*(subs2.clone()))) {cref.clone()} else {Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (name.clone()).clone(), subscripts: subs2.clone(), componentRef: cr2.clone() })}, arg.clone())
+            (if (referenceEq(&*(cr1.clone()),&*(cr2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(subs1.clone()), &*(subs2.clone()))) {cref.clone()} else {Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (name.clone()).clone(), subscripts: subs2.clone(), componentRef: cr2.clone() })}, arg.clone())
         },
         Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: subs1 } => {
             let mut subs2: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             (subs2, arg) = traverseExpBidirSubs(subs1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(subs1.clone()),&*(subs2.clone()))) {cref.clone()} else {Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: subs2.clone() })}, arg.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(subs1.clone()), &*(subs2.clone()))) {cref.clone()} else {Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: subs2.clone() })}, arg.clone())
         },
         Deref @ Absyn::ComponentRef::ALLWILD { .. } => {
             (cref.clone(), arg.clone())
@@ -370,14 +370,14 @@ pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static>(mut args: Arc<Absyn::F
             let mut named_args2: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
             (expl2, arg) = traverseExpListBidir(expl1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (named_args2, arg) = List::map2FoldCheckReferenceEq(named_args1.clone(), (std::sync::Arc::new(traverseExpBidirNamedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, _, _, _) -> Result<_> + 'static>), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(expl1.clone()),&*(expl2.clone())) && referenceEq(&*(named_args1.clone()),&*(named_args2.clone()))) {args.clone()} else {Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: expl2.clone(), argNames: named_args2.clone() })}, arg.clone())
+            (if (metamodelica::ReferenceEq::reference_eq(&*(expl1.clone()), &*(expl2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(named_args1.clone()), &*(named_args2.clone()))) {args.clone()} else {Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: expl2.clone(), argNames: named_args2.clone() })}, arg.clone())
         },
         Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp: e1, iterType, iterators: iters1 } => {
             let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut iters2: Arc<metamodelica::List<Arc<Absyn::ForIterator>>> = metamodelica::nil();
             (e2, arg) = traverseExpBidir(e1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (iters2, arg) = List::map2FoldCheckReferenceEq(iters1.clone(), (std::sync::Arc::new(traverseExpBidirIterator) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ForIterator>, _, _, _) -> Result<_> + 'static>), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
-            (if (referenceEq(&*(e1.clone()),&*(e2.clone())) && referenceEq(&*(iters1.clone()),&*(iters2.clone()))) {args.clone()} else {Arc::new(Absyn::FunctionArgs::FOR_ITER_FARG { exp: e2.clone(), iterType: iterType.clone(), iterators: iters2.clone() })}, arg.clone())
+            (if (referenceEq(&*(e1.clone()),&*(e2.clone())) && metamodelica::ReferenceEq::reference_eq(&*(iters1.clone()), &*(iters2.clone()))) {args.clone()} else {Arc::new(Absyn::FunctionArgs::FOR_ITER_FARG { exp: e2.clone(), iterType: iterType.clone(), iterators: iters2.clone() })}, arg.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4453,7 +4453,7 @@ pub fn traverseClassComponents<ArgT: Clone + 'static>(mut inClass: Arc<Absyn::Cl
     Ok((outClass, outArg))
 }
 
-fn traverseListGeneric<T: Clone + 'static, ArgT: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
+fn traverseListGeneric<T: Clone + 'static + metamodelica::ReferenceEq, ArgT: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
     pub type FuncType<T: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -4472,7 +4472,7 @@ fn traverseListGeneric<T: Clone + 'static, ArgT: Clone + 'static>(mut inList: Ar
         e = __pa0.clone();
         rest_e = __pa1.clone();
         (new_e, outArg, outContinue) = inFunc(e.clone(), outArg.clone())?;
-        eq = referenceEq(&new_e.clone(),&e.clone()) /* always false: opaque type TypeVar("T") — needs a ReferenceEq trait for generics */;
+        eq = metamodelica::ReferenceEq::reference_eq(&(new_e.clone()), &(e.clone()));
         outList = metamodelica::cons(if (eq.clone()) {e.clone()} else {new_e.clone()}, outList.clone());
         changed = changed.clone() || !(eq.clone());
         if !(outContinue.clone()) {
@@ -4568,7 +4568,7 @@ fn traverseElementSpecComponents<ArgT: Clone + 'static>(mut inSpec: Arc<Absyn::E
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => {
             let mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
             (comps, outArg, outContinue) = inFunc(var_field!((*outSpec).components, Absyn::ElementSpec::COMPONENTS).clone(), inArg.clone())?;
-            if !(referenceEq(&*(comps.clone()),&*(var_field!((*outSpec).components, Absyn::ElementSpec::COMPONENTS).clone()))) {
+            if !(metamodelica::ReferenceEq::reference_eq(&*(comps.clone()), &*(var_field!((*outSpec).components, Absyn::ElementSpec::COMPONENTS).clone()))) {
                 assign_variant_field!(outSpec => Absyn::ElementSpec::COMPONENTS; components = comps.clone());
             }
             (outSpec.clone(), outArg.clone(), outContinue.clone())

@@ -51,7 +51,7 @@ use openmodelica_util::BaseHashTable;
 use openmodelica_util::Error;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Unit {
     /// based on SI base units
     UNIT {
@@ -90,7 +90,7 @@ impl Default for Unit {
 }
 pub use self::Unit::{UNIT,MASTER,UNKNOWN};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Token {
     T_NUMBER {
         number: i32,

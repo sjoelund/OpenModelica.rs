@@ -588,7 +588,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
 
 /* the paper example */
 /// Algorithmic stmts
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Statement {
     /// An assignment stmt
     ASSIGN {
@@ -604,7 +604,7 @@ pub enum Statement {
 pub use self::Statement::{ASSIGN,WHILE};
 
 /// Expression nodes
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Exp {
     /// Integer constant value
     ICONST {
@@ -623,7 +623,7 @@ pub enum Exp {
 }
 pub use self::Exp::{ICONST,VARIABLE,BINARY};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Operator {
     PLUS,
     TIMES,

@@ -52,7 +52,7 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_util::Error;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum NFRestriction {
     BLOCK,
     CLASS,

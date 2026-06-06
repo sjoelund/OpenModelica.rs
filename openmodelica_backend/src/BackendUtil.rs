@@ -47,7 +47,7 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct ReplacePattern {
     /// from string (ie \".\"
     pub from: ArcStr,

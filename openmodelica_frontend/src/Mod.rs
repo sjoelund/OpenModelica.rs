@@ -87,7 +87,7 @@ use openmodelica_util_datatypes_basic::List;
 pub type InstanceHierarchy = Arc<metamodelica::List<InnerOuter::TopInstance>>;
 
 /// Used to know where a modifier came from, for error reporting.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ModScope {
     COMPONENT {
         name: ArcStr,
@@ -102,7 +102,7 @@ pub enum ModScope {
 pub use self::ModScope::{COMPONENT,EXTENDS,DERIVED};
 
 /// used for error reporting
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum FullMod {
     /// the fully qualified cref and the mod, only used for redeclare
     MOD {

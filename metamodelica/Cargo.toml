@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+metamodelica_derive = { path = "../metamodelica_derive" }
 anyhow.workspace=true
 arcstr.workspace=true
 ordered-float.workspace=true

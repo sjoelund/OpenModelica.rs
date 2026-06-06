@@ -54,7 +54,7 @@ use openmodelica_util::Util;
  **************************/
 /// Generic Binary tree implementation
 ///  - Binary Tree
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct BinTree {
     /// Value
     pub value: Option<TreeValue>,
@@ -79,7 +79,7 @@ pub type TREENODE = BinTree;
 
 /// Each node in the binary tree can have a value associated with it.
 ///  - Tree Value
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct TreeValue {
     /// Key
     pub key: Key,

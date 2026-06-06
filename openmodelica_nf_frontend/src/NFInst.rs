@@ -124,7 +124,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 pub mod InstSettings {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct InstSettings {
         /// Merge sections from extends clauses if true
         pub mergeExtendsSections: bool,
@@ -1114,7 +1114,7 @@ pub fn modifyExtends(mut extendsNode: Arc<InstNode::InstNode>, mut scope: Arc<In
     Ok(extendsNode)
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ExtendsVisibility {
     PUBLIC = 1,

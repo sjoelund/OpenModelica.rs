@@ -83,7 +83,7 @@ use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::GCExt;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct CSE_Equation {
     /// lhs
     pub cse: Arc<DAE::Exp>,
@@ -2050,7 +2050,7 @@ fn checkOp(mut inOp: DAE::Operator) -> bool {
 // Common Sub Expressions
 //
 // =============================================================================
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum CommonSubExp {
     ASSIGNMENT_CSE {
         eqIdcs: Arc<metamodelica::List<i32>>,

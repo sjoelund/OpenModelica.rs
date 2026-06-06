@@ -279,6 +279,14 @@ pub struct InstanceHierarchy<'a> {
     /// because `arrayCreateNoInit(size, <unassigned dummy>)` lowers to
     /// `arrayCreateDefault(size)` which requires `A: Default`.
     pub default_required: BTreeMap<String, std::collections::HashSet<String>>,
+    /// Per-function set of type-parameter names that need a
+    /// `+ metamodelica::ReferenceEq` bound, populated by
+    /// [`crate::codegen::analyze_reference_eq`].  Companion to
+    /// [`Self::partial_eq_required`] — same shape, different bound; required
+    /// because `referenceEq(a, b)` on operands of opaque (type-variable)
+    /// type lowers to a `metamodelica::ReferenceEq::reference_eq` trait
+    /// call.
+    pub reference_eq_required: BTreeMap<String, std::collections::HashSet<String>>,
 }
 
 impl<'a> InstanceHierarchy<'a> {
@@ -297,6 +305,7 @@ impl<'a> InstanceHierarchy<'a> {
             fallible_functions: BTreeSet::new(),
             partial_eq_required: BTreeMap::new(),
             default_required: BTreeMap::new(),
+            reference_eq_required: BTreeMap::new(),
         }
     }
 }

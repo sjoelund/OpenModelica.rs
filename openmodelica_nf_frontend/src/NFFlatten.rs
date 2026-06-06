@@ -152,7 +152,7 @@ pub mod FunctionTreeImpl {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -830,7 +830,7 @@ pub mod FunctionTreeImpl {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct FlattenSettings {
     pub scalarize: bool,
     pub arrayConnect: bool,
@@ -862,7 +862,7 @@ pub type SETTINGS = FlattenSettings;
 
 pub mod Prefix {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Prefix {
         PREFIX {
             root: Arc<InstNode::InstNode>,
@@ -1303,7 +1303,7 @@ fn getComponentType(mut ty: Arc<Type::NFType>, mut settings: FlattenSettings) ->
     compTy
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum ComponentType {
     NORMAL = 1,

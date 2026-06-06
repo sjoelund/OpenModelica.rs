@@ -47,7 +47,7 @@ use crate::SBInterval;
 use crate::SBMultiInterval;
 use crate::UnorderedSet;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct SBAtomicSet {
     pub aset: Arc<SBMultiInterval::SBMultiInterval>,
     pub ndim: i32,

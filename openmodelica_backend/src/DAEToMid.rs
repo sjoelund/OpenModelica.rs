@@ -76,7 +76,7 @@ pub fn DAEFunctionsToMid(mut simfuncs: Arc<metamodelica::List<Arc<SimCodeFunctio
     Ok(midfuncs)
 }
 
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct State {
     pub locals: DoubleEnded::MutableList<MidCode::Var>,
     pub localBufs: DoubleEnded::MutableList<MidCode::VarBuf>,

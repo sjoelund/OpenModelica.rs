@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 /// The expression should be evaluated to a literal value; return an error if this fails
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Evaluate {
     NO_EVAL,
     DO_EVAL,
@@ -56,7 +56,7 @@ pub use self::Evaluate::{NO_EVAL,DO_EVAL};
 
 pub type Options = Evaluate;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum IntOp {
     MULOP,
     DIVOP,

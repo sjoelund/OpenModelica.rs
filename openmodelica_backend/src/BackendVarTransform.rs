@@ -91,7 +91,7 @@ pub type CrefSet = Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>;
 /// To be able to update these replacement rules incrementally a backward lookup mechanism is also required.
 /// For instance, having a rule a->b and adding a rule b->c requires to find the first rule a->b and update it to
 /// a->c. This is what the second binary tree is used for.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub struct VariableReplacements {
     /// src -> dst, used for replacing. src is variable, dst is expression.
     pub hashTable: CrefExpTable,

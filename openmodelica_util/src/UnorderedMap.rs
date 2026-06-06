@@ -55,7 +55,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 ///
 ///   This implementation uses separate chaining and automatically rehashes the map
 ///   when the load factor becomes too large to keep the performance up.
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub struct UnorderedMap<K: Clone, V: Clone> {
     pub buckets: Arc<Vector::Vector<Arc<metamodelica::List<i32>>>>,
     pub keys: Arc<Vector::Vector<K>>,

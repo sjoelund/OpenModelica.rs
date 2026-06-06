@@ -92,7 +92,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // NB imports
 // Util import
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
 pub enum MatrixStrictness {
     LINEAR = 1,
@@ -124,7 +124,7 @@ pub fn strictnessString(mut s: MatrixStrictness) -> ArcStr {
 
 pub mod Mapping {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Mapping {
         /// eqn: scal_idx -> arr_idx
         pub eqn_StA: metamodelica::Array<i32>,
@@ -379,7 +379,7 @@ pub mod Mode {
     /// most of the time this will only have one cref. if there are multiple crefs
     ///      representing the same variable its a multi mode and the equation needs to
     ///      be split when solved for it
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Mode {
         /// the equation name
         pub eqn_name: Arc<ComponentRef::NFComponentRef>,
@@ -478,7 +478,7 @@ pub mod Matrix {
     /// used to store adjacency information for the bipartite graph representing the system of equations and variables
     ///    you have to create it in this specific order: EMPTY->FULL->FINAL(LINEAR)->FINAL->(MATCHING)->FINAL(SORTING)
     ///    and store the FULL for further use.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Matrix {
         /// placeholder for empty matrices, just stores intended strictness
         EMPTY {
@@ -1839,7 +1839,7 @@ pub mod Dependency {
     use super::*;
     /// the dependency kind to show how a component reference occurs in an equation.
     ///    for each dimension there has to be one dependency kind.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct Dependency {
         pub skips: metamodelica::Array<Arc<metamodelica::List<i32>>>,
         pub kinds: Arc<metamodelica::List<Kind>>,
@@ -1856,7 +1856,7 @@ pub mod Dependency {
 
     pub type DEPENDENCY = Dependency;
 
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum Kind {
         REGULAR = 1,
@@ -2119,7 +2119,7 @@ pub mod Dependency {
 
 pub mod Solvability {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum Solvability {
         UNKNOWN,
         UNSOLVABLE,

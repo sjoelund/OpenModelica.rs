@@ -87,7 +87,7 @@ pub const BASECLASS_IS_VAR_ERROR: &'static str = "$4";
 
 pub const BASECLASS_UNKNOWN_ERROR: &'static str = "$5";
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum ExtendsWrapper {
     UNQUALIFIED_EXTENDS {
         ext: Extends,

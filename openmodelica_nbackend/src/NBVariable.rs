@@ -1979,7 +1979,7 @@ pub fn checkCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn 
 // ==========================================================================
 pub mod VariablePointers {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub struct VariablePointers {
         /// Map for cref->index
         pub map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>,
@@ -2444,7 +2444,7 @@ pub mod VarData {
     use super::*;
     /// All variable arrays are pointer subsets of an array of variables indicated
     ///    by preceding comment. Used to traverse all variables of a special kind.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
     pub enum VarData {
         /// Only to be used for simulation systems.
         VAR_DATA_SIM {
@@ -2718,7 +2718,7 @@ pub mod VarData {
         Ok(state_order)
     }
 
-    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
     pub enum VarType {
         STATE = 1,

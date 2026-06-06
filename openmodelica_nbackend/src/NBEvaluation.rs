@@ -54,7 +54,7 @@ use openmodelica_util_datatypes_basic::Array;
 // Old Backend imports
 pub mod Stages {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub struct Stages {
         pub dynamicEval: bool,
         pub algebraicEval: bool,

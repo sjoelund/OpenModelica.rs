@@ -59,7 +59,7 @@ use openmodelica_util_datatypes_basic::List;
 // private imports
 /// Root data structure containing information required for templates to
 ///  generate C functions for Modelica/MetaModelica functions.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct FunctionCode {
     pub name: ArcStr,
     /// This function is special; the 'in'-function should be generated for it
@@ -80,7 +80,7 @@ pub type FUNCTIONCODE = FunctionCode;
 pub mod Function {
     use super::*;
     /// Represents a Modelica, MetaModelica or external function.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum Function {
         FUNCTION {
             name: Arc<Absyn::Path>,
@@ -200,7 +200,7 @@ pub mod Function {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum RecordDeclaration {
     RECORD_DECL_FULL {
         /// struct (record) name ? encoded
@@ -239,7 +239,7 @@ impl Default for RecordDeclaration {
 pub use self::RecordDeclaration::{RECORD_DECL_FULL,RECORD_DECL_ADD_CONSTRCTOR,RECORD_DECL_DEF};
 
 /// Platform specific parameters used when generating makefiles.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct MakefileParams {
     pub ccompiler: ArcStr,
     pub cxxcompiler: ArcStr,
@@ -285,7 +285,7 @@ pub type MAKEFILE_PARAMS = MakefileParams;
 pub mod SimExtArg {
     use super::*;
     /// Information about an argument to an external function.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum SimExtArg {
         SIMEXTARG {
             cref: Arc<DAE::ComponentRef>,
@@ -369,7 +369,7 @@ pub mod SimExtArg {
 pub mod Variable {
     use super::*;
     /// A variable represents a name, a type and a possible default value
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
     pub enum Variable {
         VARIABLE {
             name: Arc<DAE::ComponentRef>,
@@ -428,7 +428,7 @@ pub mod Variable {
 
 /// Constants of this type defined below are used by templates to be able to
 ///  generate different code depending on the context it is generated in.
-#[derive(Clone)]
+#[derive(Clone, metamodelica::ReferenceEq)]
 pub enum Context {
     SIMULATION_CONTEXT {
         genDiscrete: bool,

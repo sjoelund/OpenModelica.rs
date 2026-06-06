@@ -103,7 +103,7 @@ pub const BORDERWIDTH_BOLD: metamodelica::Real = metamodelica::OrderedFloat(4.0_
 // -------------------------
 // Data structures
 // -------------------------
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
 pub enum GraphInfo {
     GRAPHINFO {
         graphs: Arc<metamodelica::List<Graph>>,
@@ -139,7 +139,7 @@ impl Default for GraphInfo {
 }
 pub use self::GraphInfo::{GRAPHINFO,GRAPHINFOARR};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Graph {
     pub id: ArcStr,
     pub directed: bool,
@@ -161,7 +161,7 @@ impl Default for Graph {
 pub type GRAPH = Graph;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum Node {
     NODE {
         id: ArcStr,
@@ -191,7 +191,7 @@ impl Default for Node {
 }
 pub use self::Node::{NODE,GROUPNODE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Edge {
     pub id: ArcStr,
     pub target: ArcStr,
@@ -225,7 +225,7 @@ impl Default for Edge {
 pub type EDGE = Edge;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct Attribute {
     pub attIdx: i32,
     pub defaultValue: ArcStr,
@@ -249,7 +249,7 @@ impl Default for Attribute {
 pub type ATTRIBUTE = Attribute;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum NodeLabel {
     NODELABEL_INTERNAL {
         text: ArcStr,
@@ -274,7 +274,7 @@ impl Default for NodeLabel {
 }
 pub use self::NodeLabel::{NODELABEL_INTERNAL,NODELABEL_CORNER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub struct EdgeLabel {
     pub text: ArcStr,
     pub backgroundColor: Option<ArcStr>,
@@ -294,7 +294,7 @@ impl Default for EdgeLabel {
 pub type EDGELABEL = EdgeLabel;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum FontStyle {
     FONTPLAIN,
     FONTBOLD,
@@ -306,7 +306,7 @@ impl Default for FontStyle {
 }
 pub use self::FontStyle::{FONTPLAIN,FONTBOLD,FONTITALIC,FONTBOLDITALIC};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ShapeType {
     RECTANGLE,
     ROUNDRECTANGLE,
@@ -324,7 +324,7 @@ impl Default for ShapeType {
 }
 pub use self::ShapeType::{RECTANGLE,ROUNDRECTANGLE,ELLIPSE,PARALLELOGRAM,HEXAGON,TRIANGLE,OCTAGON,DIAMOND,TRAPEZOID,TRAPEZOID2};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum LineType {
     LINE,
     DASHED,
@@ -335,7 +335,7 @@ impl Default for LineType {
 }
 pub use self::LineType::{LINE,DASHED,DASHEDDOTTED};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum ArrowType {
     ARROWSTANDART,
     ARROWNONE,
@@ -346,7 +346,7 @@ impl Default for ArrowType {
 }
 pub use self::ArrowType::{ARROWSTANDART,ARROWNONE,ARROWCONCAVE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum AttributeType {
     TYPE_STRING,
     TYPE_BOOLEAN,
@@ -358,7 +358,7 @@ impl Default for AttributeType {
 }
 pub use self::AttributeType::{TYPE_STRING,TYPE_BOOLEAN,TYPE_INTEGER,TYPE_DOUBLE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
 pub enum AttributeTarget {
     TARGET_NODE,
     TARGET_EDGE,
