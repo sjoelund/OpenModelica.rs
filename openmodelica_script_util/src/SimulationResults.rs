@@ -1318,6 +1318,25 @@ fn calculate_tubes(x: &mut [f64], y: &[f64], length: usize, r: f64) -> Tubes {
         }
     }
 
+    // Degenerate series — a single sample, or time that never advances (a
+    // start == stop run like the ModelicaTest function tests with
+    // stopTime=0.0 produces the time column {0.0, 0.0}): every iteration
+    // above took the jump-continue, no segment was created, and the
+    // terminal extension below would index count-1 with count == 0 (the C
+    // original, SimulationResultsCmpTubes.c, reads out of bounds here).
+    // Seed a flat zero-slope tube at the first sample instead; the relative
+    // tolerance the caller adds then makes the comparison pointwise.
+    if p.count_high == 0 {
+        p.mh[0] = 0.0;
+        p.ml[0] = 0.0;
+        p.x_high[0] = x[0] - p.delta;
+        p.y_high[0] = y[0];
+        p.x_low[0] = x[0] - p.delta;
+        p.y_low[0] = y[0];
+        p.count_high = 1;
+        p.count_low = 1;
+    }
+
     // terminal value, upper tube
     p.x1 = p.x_high[p.count_high - 1];
     p.y1 = p.y_high[p.count_high - 1];
