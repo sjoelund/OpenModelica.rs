@@ -132,7 +132,7 @@ fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, m
     match '__try0: {
         for mut i in 1..=inMaxIndex.clone() {
             index = unwrap_break_err!(metamodelica::arrayGet(inColors.clone(), i.clone()), '__try0);
-            {let _arr = inArray.clone(); let _idx = index.clone(); let _val = metamodelica::cons(i.clone(), unwrap_break_err!(metamodelica::arrayGet(inArray.clone(), index.clone()), '__try0)); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            unwrap_break_err!(metamodelica::arrayUpdate(inArray.clone(), index.clone(), metamodelica::cons(i.clone(), unwrap_break_err!(metamodelica::arrayGet(inArray.clone(), index.clone()), '__try0))), '__try0);
         }
         Ok::<(), anyhow::Error>(())
     } {

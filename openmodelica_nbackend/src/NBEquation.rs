@@ -642,6 +642,11 @@ pub mod Iterator {
     }
 
     pub fn createSingleReplacement(mut replacor_cref: Arc<ComponentRef::NFComponentRef>, mut replacor_range: Arc<Expression::NFExpression>, mut replacee_cref: Arc<ComponentRef::NFComponentRef>, mut replacee_range: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<bool> {
+        fn rangeLength(mut start: i32, mut step: i32, mut stop: i32) -> i32 {
+            let mut length: i32 = (((metamodelica::OrderedFloat((stop.clone() - start.clone() + Util::intSign(step.clone())) as f64)) / metamodelica::OrderedFloat((step.clone()) as f64)).0.floor() as i32);
+            length
+        }
+
         let mut failed: bool = false;
         let mut or_start: i32 = 0;
         let mut or_step: i32 = 0;
@@ -652,7 +657,7 @@ pub mod Iterator {
         let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         (or_start, or_step, or_stop) = Expression::getIntegerRange(replacor_range.clone(), true)?;
         (ee_start, ee_step, ee_stop) = Expression::getIntegerRange(replacee_range.clone(), true)?;
-        if (metamodelica::OrderedFloat((or_stop.clone() - or_start.clone() + 1) as f64)) / metamodelica::OrderedFloat((or_step.clone()) as f64) == (metamodelica::OrderedFloat((ee_stop.clone() - ee_start.clone() + 1) as f64)) / metamodelica::OrderedFloat((ee_step.clone()) as f64) {
+        if rangeLength(or_start.clone(), or_step.clone(), or_stop.clone()) == rangeLength(ee_start.clone(), ee_step.clone(), ee_stop.clone()) {
             exp = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(ee_start.clone()) }), Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(ee_step.clone()) / intReal(or_step.clone()) }), Arc::new(Expression::NFExpression::MULTARY { arguments: list![Expression::fromCref(replacor_cref.clone(), false)?], inv_arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(or_start.clone()) })], operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_REAL()) })], inv_arguments: metamodelica::nil(), operator: Operator::makeMul(openmodelica_nf_frontend::NFType::interned_REAL()) })], inv_arguments: metamodelica::nil(), operator: Operator::makeAdd(openmodelica_nf_frontend::NFType::interned_REAL()) });
             UnorderedMap::add(replacee_cref.clone(), exp.clone(), replacements.clone())?;
         } else {

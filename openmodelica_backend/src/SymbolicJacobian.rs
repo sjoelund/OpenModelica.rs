@@ -667,8 +667,8 @@ fn updateAssignment(mut comp: Arc<BackendDAE::StrongComponent>, mut ass1: metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eq, var } => {
-                    {let _arr = ass2.clone(); let _idx = eq.clone(); let _val = var.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-                    {let _arr = ass1.clone(); let _idx = var.clone(); let _val = eq.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(ass2.clone(), eq.clone(), var.clone())?;
+                    metamodelica::arrayUpdate(ass1.clone(), var.clone(), eq.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -731,7 +731,7 @@ fn solveConstJacLinearSystem(mut syst: Arc<BackendDAE::EqSystem>, mut ishared: A
     b = arrayCreate(n.clone() * n.clone(), metamodelica::OrderedFloat(0.0_f64));
     order = arrayCreate(n.clone(), 0);
     for mut row in 1..=n.clone() {
-        {let _arr = b.clone(); let _idx = (row.clone() - 1) * n.clone() + row.clone(); let _val = metamodelica::OrderedFloat(1.0_f64); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(b.clone(), (row.clone() - 1) * n.clone() + row.clone(), metamodelica::OrderedFloat(1.0_f64))?;
     }
     gauss(A.clone(), b.clone(), 1, n.clone(), List::intRange(n.clone()), order.clone())?;
     (bVarsOut, bEqsOut) = createBVecVars(sysIdxIn.clone(), compIdxIn.clone(), n.clone(), DAE::T_REAL_DEFAULT().clone(), beqs.clone())?;
@@ -828,18 +828,18 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
             let mut range: Arc<metamodelica::List<i32>> = range.clone();
             let true = (intLe(indxIn.clone(), n.clone())) else { bail!("pattern mismatch") };
             (pivotIdx, pivot) = getPivotElement(A.clone(), rangeIn.clone(), indxIn.clone(), n.clone())?;
-            {let _arr = permutation.clone(); let _idx = indxIn.clone(); let _val = pivotIdx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(permutation.clone(), indxIn.clone(), pivotIdx.clone())?;
             (range, _) = List::deleteMemberOnTrue(pivotIdx.clone(), rangeIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             for mut ic in indxIn.clone()..=n.clone() {
                 entry = metamodelica::arrayGet(({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}), ic.clone())?;
                 entry = realDiv(entry.clone(), pivot.clone());
-                {let _arr = ({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}); let _idx = ic.clone(); let _val = entry.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}), ic.clone(), entry.clone())?;
             }
             for mut ic in 1..=n.clone() {
                 pos = (pivotIdx.clone() - 1) * n.clone() + ic.clone();
                 b_entry = metamodelica::arrayGet(b.clone(), pos.clone())?;
                 b_entry = realDiv(b_entry.clone(), pivot.clone());
-                {let _arr = b.clone(); let _idx = pos.clone(); let _val = b_entry.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(b.clone(), pos.clone(), b_entry.clone())?;
             }
             for mut ir in &*range.clone() {
                 let mut ir = ir.clone();
@@ -849,11 +849,11 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
                     entry = metamodelica::arrayGet(({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}), ic.clone())?;
                     pivot = metamodelica::arrayGet(({let __elt = A.borrow()[(pivotIdx.clone()-1) as usize].clone(); __elt}), ic.clone())?;
                     entry = (entry.clone()) - ((first.clone()) * (pivot.clone()));
-                    {let _arr = ({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}); let _idx = ic.clone(); let _val = entry.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(({let __elt = A.borrow()[(ir.clone()-1) as usize].clone(); __elt}), ic.clone(), entry.clone())?;
                     b_entry = metamodelica::arrayGet(b.clone(), pos.clone())?;
                     pivot = metamodelica::arrayGet(b.clone(), (pivotIdx.clone() - 1) * n.clone() + ic.clone())?;
                     b_entry = b_entry.clone() - (first.clone()) * (pivot.clone());
-                    {let _arr = b.clone(); let _idx = pos.clone(); let _val = b_entry.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(b.clone(), pos.clone(), b_entry.clone())?;
                 }
             }
             gauss(A.clone(), b.clone(), indxIn.clone() + 1, n.clone(), range.clone(), permutation.clone())?;
@@ -1135,7 +1135,7 @@ fn evaluateConstantJacobian2(mut jac: (i32, i32, Arc<BackendDAE::Equation>), mut
                 _ => bail!("pattern mismatch"),
             } };
             r = __pa0.clone();
-            {let _arr = metamodelica::arrayGet(vals.clone(), i1.clone())?; let _idx = i2.clone(); let _val = r.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(metamodelica::arrayGet(vals.clone(), i1.clone())?, i2.clone(), r.clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -1662,7 +1662,7 @@ fn getSparsePatternHelp(mut inInputVars: Arc<metamodelica::List<i32>>, mut invar
         if intEq(1, arrayElement.clone()) {
             arrayElement = metamodelica::arrayGet(inMark.clone(), var.clone())?;
             if !(intEq(inmarkValue.clone(), arrayElement.clone())) {
-                {let _arr = inMark.clone(); let _idx = var.clone(); let _val = inmarkValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(inMark.clone(), var.clone(), inmarkValue.clone())?;
                 outLocalList = metamodelica::cons(var.clone(), outLocalList.clone());
             }
         }
@@ -1671,7 +1671,7 @@ fn getSparsePatternHelp(mut inInputVars: Arc<metamodelica::List<i32>>, mut invar
             let mut v = v.clone();
             arrayElement = metamodelica::arrayGet(inMark.clone(), v.clone())?;
             if !(intEq(inmarkValue.clone(), arrayElement.clone())) {
-                {let _arr = inMark.clone(); let _idx = v.clone(); let _val = inmarkValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(inMark.clone(), v.clone(), inmarkValue.clone())?;
                 outLocalList = metamodelica::cons(v.clone(), outLocalList.clone());
             }
         }
@@ -3396,7 +3396,7 @@ fn markSetStates(mut inCr: Arc<DAE::ComponentRef>, mut iVars: BackendDAE::Variab
     let mut oMark: metamodelica::Array<bool> = Default::default();
     let mut index: i32 = 0;
     (_, index) = BackendVariable::getVarSingle(inCr.clone(), iVars.clone())?;
-    oMark = {let _arr = iMark.clone(); let _idx = index.clone(); let _val = true; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    oMark = metamodelica::arrayUpdate(iMark.clone(), index.clone(), true)?;
     Ok(oMark)
 }
 

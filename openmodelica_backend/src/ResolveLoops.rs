@@ -230,7 +230,7 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
             deadEndEqsMark = arrayCreate(numVars.clone(), 0);
             for mut idx in &*nonLoopVars.clone() {
                 let mut idx = idx.clone();
-                {let _arr = deadEndVarsMark.clone(); let _idx = idx.clone(); let _val = 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(deadEndVarsMark.clone(), idx.clone(), 1)?;
             }
             for mut idx in &*nonLoopVars.clone() {
                 let mut idx = idx.clone();
@@ -239,22 +239,22 @@ fn resolveLoops_cutNodes(mut mIn: metamodelica::Array<Arc<metamodelica::List<i32
             idx = 1;
             while idx.clone() <= numVars.clone() {
                 if metamodelica::arrayGet(deadEndVarsMark.clone(), idx.clone())? == 1 {
-                    {let _arr = mTIn.clone(); let _idx = idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(mTIn.clone(), idx.clone(), metamodelica::nil())?;
                 } else {
                     loopEqs = metamodelica::arrayGet(mTIn.clone(), idx.clone())?;
                     loopEqs = List::filter1OnTrue(loopEqs.clone(), (std::sync::Arc::new(fnptr!(arrayIsZeroAt, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), deadEndEqsMark.clone())?;
-                    {let _arr = mTIn.clone(); let _idx = idx.clone(); let _val = loopEqs.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(mTIn.clone(), idx.clone(), loopEqs.clone())?;
                 }
                 idx = idx.clone() + 1;
             }
             idx = 1;
             while idx.clone() <= numEqs.clone() {
                 if metamodelica::arrayGet(deadEndEqsMark.clone(), idx.clone())? == 1 {
-                    {let _arr = mIn.clone(); let _idx = idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(mIn.clone(), idx.clone(), metamodelica::nil())?;
                 } else {
                     loopVars = metamodelica::arrayGet(mIn.clone(), idx.clone())?;
                     loopVars = List::filter1OnTrue(loopVars.clone(), (std::sync::Arc::new(fnptr!(arrayIsZeroAt, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), deadEndVarsMark.clone())?;
-                    {let _arr = mIn.clone(); let _idx = idx.clone(); let _val = loopVars.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(mIn.clone(), idx.clone(), loopVars.clone())?;
                 }
                 idx = idx.clone() + 1;
             }
@@ -302,7 +302,7 @@ fn getSimpleEquations(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (Arc<metam
             let __range2 = &*({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             for mut varIdx in __range2 {
                 let mut varIdx = varIdx.clone();
-                {let _arr = markLinEqVars.clone(); let _idx = intAbs(varIdx.clone()); let _val = 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(markLinEqVars.clone(), intAbs(varIdx.clone()), 1)?;
             }
         }
     }
@@ -473,10 +473,10 @@ fn resolveLoops_findLoops2(mut eqsIn: Arc<metamodelica::List<i32>>, mut eqCrossL
             let mut paths: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut eqCrossSet: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             for mut i in 1..=metamodelica::arrayLength(mIn.clone()) {
-                {let _arr = mIn.clone(); let _idx = i.clone(); let _val = List::heapSortIntList(({let __elt = mIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(mIn.clone(), i.clone(), List::heapSortIntList(({let __elt = mIn.borrow()[(i.clone()-1) as usize].clone(); __elt})))?;
             }
             for mut i in 1..=metamodelica::arrayLength(mTIn.clone()) {
-                {let _arr = mTIn.clone(); let _idx = i.clone(); let _val = List::heapSortIntList(({let __elt = mTIn.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(mTIn.clone(), i.clone(), List::heapSortIntList(({let __elt = mTIn.borrow()[(i.clone()-1) as usize].clone(); __elt})))?;
             }
             eqCrossSet = AvlSetInt::addList(crate::AvlSetInt::Tree::interned_EMPTY(), eqCrossLstIn.clone())?;
             paths = getShortPathsBetweenEqCrossNodes(AvlSetInt::listKeysReverse(eqCrossSet.clone(), metamodelica::nil()), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), metamodelica::nil(), findExactlyOneLoop.clone())?;
@@ -537,7 +537,7 @@ fn getMinimalAdjacencyMatrix(mut crossNodes: Arc<metamodelica::List<i32>>, mut u
     }
     for mut cn in &*crossNodes.clone() {
         let mut cn = cn.clone();
-        {let _arr = minAdj.clone(); let _idx = cn.clone(); let _val = List::sort(metamodelica::arrayGet(minAdj.clone(), cn.clone())?, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(minAdj.clone(), cn.clone(), List::sort(metamodelica::arrayGet(minAdj.clone(), cn.clone())?, (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?;
     }
     Ok(minAdj)
 }
@@ -560,7 +560,7 @@ fn removeEqualPaths(mut crossNodes: Arc<metamodelica::List<i32>>, mut minAdj: me
                 let mut cn2 = cn2.clone();
                 if HpcOmTaskGraph::equalLists(metamodelica::arrayGet(minAdj.clone(), cn1.clone())?, metamodelica::arrayGet(minAdj.clone(), cn2.clone())?) {
                     assigned = metamodelica::cons(cn2.clone(), assigned.clone());
-                    {let _arr = minAdj.clone(); let _idx = cn2.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(minAdj.clone(), cn2.clone(), metamodelica::nil())?;
                     uniquePaths = removeNode(cn2.clone(), uniquePaths.clone(), metamodelica::nil());
                 } else {
                     unassigned = metamodelica::cons(cn2.clone(), unassigned.clone());
@@ -885,11 +885,11 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             List::map2_0(adjVars.clone(), (std::sync::Arc::new(arrayGetDeleteInLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> + 'static>), loop1.clone(), mTIn.clone())?;
             List::map2_0(adjVars.clone(), (std::sync::Arc::new(arrayGetAppendLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> + 'static>), list![pos.clone()], mTIn.clone())?;
             List::map2_0(loop1.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), metamodelica::nil(), mIn.clone())?;
-            {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = adjVars.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mIn.clone(), pos.clone(), adjVars.clone())?;
             rest = List::map2(rest.clone(), (std::sync::Arc::new(replaceContractedNodes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), pos.clone(), eqs.clone())?;
             rest = List::unique(rest.clone());
             replEqs = metamodelica::cons(pos.clone(), replEqsIn.clone());
-            {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = m_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
             (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
@@ -927,11 +927,11 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             List::map2_0(adjVars.clone(), (std::sync::Arc::new(arrayGetDeleteInLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> + 'static>), loop1.clone(), mTIn.clone())?;
             List::map2_0(adjVars.clone(), (std::sync::Arc::new(arrayGetAppendLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> + 'static>), list![pos.clone()], mTIn.clone())?;
             List::map2_0(loop1.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), metamodelica::nil(), mIn.clone())?;
-            {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = adjVars.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mIn.clone(), pos.clone(), adjVars.clone())?;
             rest = List::map2(rest.clone(), (std::sync::Arc::new(replaceContractedNodes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), pos.clone(), eqs.clone())?;
             rest = List::unique(rest.clone());
             replEqs = metamodelica::cons(pos.clone(), replEqsIn.clone());
-            {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = m_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
             (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
@@ -960,7 +960,7 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             List::map2_0(loop1.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), metamodelica::nil(), mIn.clone())?;
             List::map2_0(vars.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), metamodelica::nil(), mTIn.clone())?;
             replEqs = metamodelica::cons(pos.clone(), replEqsIn.clone());
-            {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = m_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
             (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
@@ -991,7 +991,7 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
                     pos = eq2.clone();
                 }
                 replEqs = metamodelica::cons(pos.clone(), replEqsIn.clone());
-                {let _arr = mIn.clone(); let _idx = pos.clone(); let _val = m_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
                 pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
                 daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
             } else {
@@ -1032,12 +1032,12 @@ fn markDeadEndsInBipartiteGraph(mut varIdx: i32, mut mIn: metamodelica::Array<Ar
     adjEqs = List::filter1OnTrue(adjEqs.clone(), (std::sync::Arc::new(fnptr!(arrayIsZeroAt, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), deadEndEqs.clone())?;
     if (adjEqs.clone().len() as i32) == 1 {
         eqIdx = listHead(adjEqs.clone())?;
-        {let _arr = deadEndVars.clone(); let _idx = varIdx.clone(); let _val = 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(deadEndVars.clone(), varIdx.clone(), 1)?;
         adjVars = metamodelica::arrayGet(mIn.clone(), eqIdx.clone())?;
         adjVars = List::filter1OnTrue(adjVars.clone(), (std::sync::Arc::new(fnptr!(arrayIsZeroAt, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), deadEndVars.clone())?;
         if (adjVars.clone().len() as i32) == 1 {
             nextVarIdx = listHead(adjVars.clone())?;
-            {let _arr = deadEndEqs.clone(); let _idx = eqIdx.clone(); let _val = 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(deadEndEqs.clone(), eqIdx.clone(), 1)?;
             markDeadEndsInBipartiteGraph(nextVarIdx.clone(), mIn.clone(), mTIn.clone(), deadEndEqs.clone(), deadEndVars.clone())?;
         }
     }
@@ -1048,14 +1048,14 @@ fn arrayGetDeleteInLst(mut idx: i32, mut delEntries: Arc<metamodelica::List<i32>
     let mut entry: Arc<metamodelica::List<i32>> = metamodelica::nil();
     entry = metamodelica::arrayGet(arrIn.clone(), idx.clone())?;
     (_, entry, _) = List::intersection1OnTrue(entry.clone(), delEntries.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-    {let _arr = arrIn.clone(); let _idx = idx.clone(); let _val = entry.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(arrIn.clone(), idx.clone(), entry.clone())?;
     Ok(())
 }
 
 fn arrayGetAppendLst(mut idx: i32, mut appLst: Arc<metamodelica::List<i32>>, mut arrIn: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut entry: Arc<metamodelica::List<i32>> = metamodelica::nil();
     entry = metamodelica::arrayGet(arrIn.clone(), idx.clone())?;
-    {let _arr = arrIn.clone(); let _idx = idx.clone(); let _val = listAppend(entry.clone(), appLst.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(arrIn.clone(), idx.clone(), listAppend(entry.clone(), appLst.clone()))?;
     Ok(())
 }
 
@@ -1909,7 +1909,7 @@ fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
             eq = (*__esc_eq).clone();
             rest = (*__esc_rest).clone();
             if arrayGetIsNotPositive(eq.clone(), markEqs.clone())? {
-                {let _arr = markEqs.clone(); let _idx = eq.clone(); let _val = currNumberIn.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(markEqs.clone(), eq.clone(), currNumberIn.clone())?;
                 if partitionsIn.clone().is_empty() {
                     partitions = list![list![eq.clone()]];
                 } else {
@@ -2543,7 +2543,7 @@ fn getDoublicates(mut lstIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamod
 fn getDoublicates2(mut idx: i32, mut arr: metamodelica::Array<i32>) -> Result<()> {
     let mut entry: i32 = 0;
     entry = metamodelica::arrayGet(arr.clone(), idx.clone())?;
-    {let _arr = arr.clone(); let _idx = idx.clone(); let _val = entry.clone() + 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(arr.clone(), idx.clone(), entry.clone() + 1)?;
     Ok(())
 }
 
@@ -2813,7 +2813,7 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
         jac_ = __pa3.clone();
         m = ii.clone() + (jj.clone() - 1) * n.clone();
         (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$A$")); __mm_s.push_str(&*intString(m.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = A.clone(); let _idx = m.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(A.clone(), m.clone(), a.clone())?;
     }
     for mut i in 1..=n.clone() {
         m = (i.clone() - 1) * n.clone();
@@ -2825,7 +2825,7 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
         }
         __acc.reverse()
     }), false)?;
-        {let _arr = scaleA.clone(); let _idx = i.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(scaleA.clone(), i.clone(), a.clone())?;
     }
     for mut i in 1..=n.clone() {
         m = (i.clone() - 1) * n.clone();
@@ -2834,7 +2834,7 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
             if !(Expression::isZero(a.clone())?) {
                 a = Expression::expDiv(a.clone(), metamodelica::arrayGet(scaleA.clone(), j.clone())?)?;
                 (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$sA$")); __mm_s.push_str(&*intString(i.clone() + (j.clone() - 1) * n.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-                {let _arr = A.clone(); let _idx = j.clone() + m.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(A.clone(), j.clone() + m.clone(), a.clone())?;
             }
         }
     }
@@ -2842,7 +2842,7 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
     for mut b_ in &*b_lst.clone() {
         let mut b_ = b_.clone();
         (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(b_.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$b$")); __mm_s.push_str(&*intString(m.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = b.clone(); let _idx = m.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(b.clone(), m.clone(), a.clone())?;
         m = m.clone() + 1;
     }
     m = 1;
@@ -2855,16 +2855,16 @@ fn solveLinearSystem4(mut b_lst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut jac
         var = __pa4.clone();
         vars = __pa5.clone();
         if BackendVariable::isStateVar(var.clone()) {
-            {let _arr = ax.clone(); let _idx = m.clone(); let _val = Expression::expDer(xx.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(ax.clone(), m.clone(), Expression::expDer(xx.clone()))?;
         } else {
-            {let _arr = ax.clone(); let _idx = m.clone(); let _val = xx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(ax.clone(), m.clone(), xx.clone())?;
         }
         m = m.clone() + 1;
     }
     for mut i in 1..=n.clone() {
         a = Expression::expMul(metamodelica::arrayGet(ax.clone(), i.clone())?, metamodelica::arrayGet(scaleA.clone(), i.clone())?)?;
         (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$sx$")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = scaled_x.clone(); let _idx = i.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(scaled_x.clone(), i.clone(), a.clone())?;
     }
     (R, Qb, oeqns, ovars, oshared) = qrDecompositionHouseholder(A.clone(), n.clone(), b.clone(), oeqns.clone(), ovars.clone(), offset.clone(), oshared.clone())?;
     for mut i in ({let __s=n.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
@@ -2911,15 +2911,15 @@ fn qrDecompositionHouseholder(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: 
         (alpha, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(alpha.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$a$")); __mm_s.push_str(&*intString(iter.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
         e = Expression::expAdd(y1.clone(), alpha.clone())?;
         (e, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(e.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$y1$")); __mm_s.push_str(&*intString(iter.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = v.clone(); let _idx = 1; let _val = e.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(v.clone(), 1, e.clone())?;
         h = Expression::expAdd(y1.clone(), alpha.clone())?;
         h = Expression::expMul(alpha.clone(), h.clone())?;
         h = Expression::negate(h.clone())?;
         (h, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(h.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$h$")); __mm_s.push_str(&*intString(iter.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
         shift = (iter.clone() - 1) * n.clone() + iter.clone();
-        {let _arr = R.clone(); let _idx = shift.clone(); let _val = Expression::negate(alpha.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(R.clone(), shift.clone(), Expression::negate(alpha.clone())?)?;
         for mut j in 2..=m.clone() {
-            {let _arr = R.clone(); let _idx = shift.clone() + (j.clone() - 1) * n.clone(); let _val = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(R.clone(), shift.clone() + (j.clone() - 1) * n.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }))?;
         }
         for mut col in 2..=m.clone() {
             qrGet_cA(A.clone(), iter.clone(), col.clone(), n.clone(), cA.clone())?;
@@ -2933,11 +2933,11 @@ fn qrDecompositionHouseholder(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: 
                 e = Expression::expAdd(e1.clone(), Expression::expMul(h2.clone(), e2.clone())?)?;
                 (e, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(e.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$R$")); __mm_s.push_str(&*intString(idxVars.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
                 idxVars = idxVars.clone() + 1;
-                {let _arr = A.clone(); let _idx = shift.clone() + (j.clone() - 1) * n.clone() + col.clone() - 1; let _val = e.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(A.clone(), shift.clone() + (j.clone() - 1) * n.clone() + col.clone() - 1, e.clone())?;
             }
         }
         for mut j in 1..=m.clone() {
-            {let _arr = cA.clone(); let _idx = j.clone(); let _val = metamodelica::arrayGet(b.clone(), iter.clone() - 1 + j.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(cA.clone(), j.clone(), metamodelica::arrayGet(b.clone(), iter.clone() - 1 + j.clone())?)?;
         }
         h2 = Expression::makeScalarProduct(v.clone(), cA.clone())?;
         h2 = Expression::expDiv(h2.clone(), h.clone())?;
@@ -2951,7 +2951,7 @@ fn qrDecompositionHouseholder(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: 
             e = ExpressionSimplify::simplify2(e.clone(), true, true)?;
             (e, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(e.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$b$")); __mm_s.push_str(&*intString(idxVars.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
             idxVars = idxVars.clone() + 1;
-            {let _arr = b.clone(); let _idx = iter.clone() - 1 + j.clone(); let _val = e.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(b.clone(), iter.clone() - 1 + j.clone(), e.clone())?;
         }
     }
     Ok((R, b, oeqns, ovars, oshared))
@@ -2961,10 +2961,10 @@ fn qrGet_cA(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut iter: i32, mut j: i32
     let mut shift: i32 = (iter.clone() - 1) * n.clone() + iter.clone() + j.clone() - 1;
     let mut m: i32 = n.clone() - iter.clone() + 1;
     for mut i in 1..=m.clone() {
-        {let _arr = cA.clone(); let _idx = i.clone(); let _val = metamodelica::arrayGet(A.clone(), shift.clone() + (i.clone() - 1) * n.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(cA.clone(), i.clone(), metamodelica::arrayGet(A.clone(), shift.clone() + (i.clone() - 1) * n.clone())?)?;
     }
     for mut i in m.clone() + 1..=n.clone() {
-        {let _arr = cA.clone(); let _idx = i.clone(); let _val = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(cA.clone(), i.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }))?;
     }
     Ok(())
 }
@@ -3006,7 +3006,7 @@ fn qrDecomposition(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: i32, mut ib
     for mut j in 1..=n.clone() {
         (a, _) = ExpressionSimplify::simplify(metamodelica::arrayGet(u.clone(), j.clone())?)?;
         (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$Q$")); __mm_s.push_str(&*intString(kk.clone() + (j.clone() - 1) * n.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = Q.clone(); let _idx = kk.clone() + (j.clone() - 1) * n.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(Q.clone(), kk.clone() + (j.clone() - 1) * n.clone(), a.clone())?;
     }
     for mut k in 1..=m.clone() {
         v = qrDecomposition1(A.clone(), n.clone(), k.clone() + 1)?;
@@ -3020,7 +3020,7 @@ fn qrDecomposition(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: i32, mut ib
             nn = k.clone() + 1 + (j.clone() - 1) * n.clone();
             (a, _) = ExpressionSimplify::simplify(metamodelica::arrayGet(u.clone(), j.clone())?)?;
             (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$Q$")); __mm_s.push_str(&*intString(nn.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-            {let _arr = Q.clone(); let _idx = nn.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(Q.clone(), nn.clone(), a.clone())?;
         }
     }
     for mut i in 1..=n.clone() {
@@ -3030,14 +3030,14 @@ fn qrDecomposition(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: i32, mut ib
             y = qrDecomposition1(A.clone(), n.clone(), j.clone())?;
             a = Expression::makeScalarProduct(x.clone(), y.clone())?;
             (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$R$")); __mm_s.push_str(&*intString(m.clone() + j.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-            {let _arr = R.clone(); let _idx = m.clone() + j.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(R.clone(), m.clone() + j.clone(), a.clone())?;
         }
     }
     for mut i in 1..=n.clone() {
         x = qrDecomposition1(Q.clone(), n.clone(), i.clone())?;
         a = Expression::makeScalarProduct(x.clone(), ib.clone())?;
         (a, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(a.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("QR$Qb$")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = b.clone(); let _idx = i.clone(); let _val = a.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(b.clone(), i.clone(), a.clone())?;
     }
     Ok((R, b, oeqns, ovars, oshared))
 }
@@ -3045,7 +3045,7 @@ fn qrDecomposition(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut n: i32, mut ib
 fn qrDecomposition1(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut sizeA: i32, mut i: i32) -> Result<metamodelica::Array<Arc<DAE::Exp>>> {
     let mut column: metamodelica::Array<Arc<DAE::Exp>> = arrayCreate(sizeA.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
     for mut j in 1..=sizeA.clone() {
-        {let _arr = column.clone(); let _idx = j.clone(); let _val = metamodelica::arrayGet(A.clone(), i.clone() + (j.clone() - 1) * sizeA.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(column.clone(), j.clone(), metamodelica::arrayGet(A.clone(), i.clone() + (j.clone() - 1) * sizeA.clone())?)?;
     }
     Ok(column)
 }
@@ -3054,7 +3054,7 @@ fn qrDecomposition2(mut A: metamodelica::Array<Arc<DAE::Exp>>, mut sizeA: i32, m
     let mut row: metamodelica::Array<Arc<DAE::Exp>> = arrayCreate(sizeA.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
     let mut k: i32 = i.clone() - 1;
     for mut j in 1..=sizeA.clone() {
-        {let _arr = row.clone(); let _idx = j.clone(); let _val = metamodelica::arrayGet(A.clone(), j.clone() + k.clone() * sizeA.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(row.clone(), j.clone(), metamodelica::arrayGet(A.clone(), j.clone() + k.clone() * sizeA.clone())?)?;
     }
     Ok(row)
 }
@@ -3085,7 +3085,7 @@ fn gramSchmidtProcessHelper(mut w: metamodelica::Array<Arc<DAE::Exp>>, mut u: me
     v = Expression::subVec(w.clone(), v.clone())?;
     for mut i in 1..=n.clone() {
         (h, oeqns, ovars, oshared, _, _) = BackendEquation::makeTmpEqnForExp(metamodelica::arrayGet(v.clone(), i.clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), offset.clone(), oeqns.clone(), ovars.clone(), oshared.clone(), false)?;
-        {let _arr = v.clone(); let _idx = i.clone(); let _val = h.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(v.clone(), i.clone(), h.clone())?;
     }
     Ok((v, oeqns, ovars, oshared))
 }

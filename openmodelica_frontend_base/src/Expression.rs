@@ -4780,7 +4780,7 @@ pub fn subVec(mut v: metamodelica::Array<Arc<DAE::Exp>>, mut w: metamodelica::Ar
     }
     y = arrayCreate(size1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }));
     for mut i in 1..=size1.clone() {
-        {let _arr = y.clone(); let _idx = i.clone(); let _val = expSub(metamodelica::arrayGet(v.clone(), i.clone())?, metamodelica::arrayGet(w.clone(), i.clone())?)?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(y.clone(), i.clone(), expSub(metamodelica::arrayGet(v.clone(), i.clone())?, metamodelica::arrayGet(w.clone(), i.clone())?)?)?;
     }
     Ok(y)
 }

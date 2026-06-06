@@ -68,11 +68,13 @@ pub fn checkModel(mut inDAELst: DAE::DAElist) -> Result<(i32, i32, i32)> {
     let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut lst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
+    let mut debug_dump: bool = Flags::isSet(Flags::DUMP_CHECK_MODEL.clone())?;
+    let mut arg: CountVarEqnFoldArg;
     ExecStat::execStat((literal!("CheckModel - start counting")).clone())?;
     let DAE::DAE { elementLst: __pa0 } = (inDAELst.clone()) else { bail!("pattern mismatch") };
     lst = __pa0.clone();
     hs = HashSet::emptyHashSet();
-    (varSize, eqnSize, eqns, hs) = List::fold(lst.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), (0, 0, metamodelica::nil(), hs.clone()))?;
+    (varSize, eqnSize, eqns, hs) = countVarEqnSizeList(lst.clone(), (0, 0, metamodelica::nil(), hs.clone()), debug_dump.clone())?;
     simpleEqnSize = countSimpleEqnSize(eqns.clone(), 0, hs.clone())?;
     ExecStat::execStat((literal!("CheckModel - end counting")).clone())?;
     Ok((varSize, eqnSize, simpleEqnSize))
@@ -84,7 +86,16 @@ pub type CountVarEqnFoldArg = (i32, i32, Arc<metamodelica::List<Arc<DAE::Element
 /*eqnSize*/
 /*eqns*/
 /*vars*/
-fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg) -> Result<CountVarEqnFoldArg> {
+fn countVarEqnSizeList(mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut arg: CountVarEqnFoldArg, mut debugDump: bool) -> Result<CountVarEqnFoldArg> {
+    let mut arg: CountVarEqnFoldArg = arg;
+    for mut e in &*elements.clone() {
+        let mut e = e.clone();
+        arg = countVarEqnSize(e.clone(), arg.clone(), debugDump.clone())?;
+    }
+    Ok(arg)
+}
+
+fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg, mut debugDump: bool) -> Result<CountVarEqnFoldArg> {
     let mut outArg: CountVarEqnFoldArg;
     outArg = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ DAE::Element::EXTOBJECTCLASS { .. } => {
@@ -105,15 +116,20 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut size: i32 = 0;
             let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
+            let mut elem: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             size = Expression::sizeOf(var_field!((*element).ty, DAE::Element::VAR).clone())?;
             varSize = varSize.clone() + size.clone();
+            dumpVar(cr.clone(), size.clone(), debugDump.clone())?;
             if DAEUtil::isInput(element.clone()) && DAEUtil::isPublicVar(element.clone()) {
                 eqnSize = eqnSize.clone() + size.clone();
+                dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             } else {
                 if isSome(var_field!((*element).binding, DAE::Element::VAR).clone()) {
                     eqnSize = eqnSize.clone() + size.clone();
-                    eqns = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Expression::crefExp(var_field!((*element).componentRef, DAE::Element::VAR).clone())?, scalar: Util::getOption(var_field!((*element).binding, DAE::Element::VAR).clone())?, source: var_field!((*element).source, DAE::Element::VAR).clone() }), eqns.clone());
+                    elem = Arc::new(DAE::Element::EQUATION { exp: Expression::crefExp(var_field!((*element).componentRef, DAE::Element::VAR).clone())?, scalar: Util::getOption(var_field!((*element).binding, DAE::Element::VAR).clone())?, source: var_field!((*element).source, DAE::Element::VAR).clone() });
+                    dumpEqn(elem.clone(), size.clone(), debugDump.clone())?;
+                    eqns = metamodelica::cons(elem.clone(), eqns.clone());
                 }
                 hs = BaseHashSet::add(cr.clone(), hs.clone())?;
             }
@@ -127,6 +143,7 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             size = Expression::sizeOf(Expression::r#typeof(e.clone())?)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), metamodelica::cons(element.clone(), eqns.clone()), hs.clone())
         },
         Deref @ DAE::Element::INITIALEQUATION { .. } => {
@@ -142,6 +159,7 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             tp = ComponentReference::crefTypeConsiderSubs(cr.clone())?;
             size = Expression::sizeOf(tp.clone())?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), metamodelica::cons(element.clone(), eqns.clone()), hs.clone())
         },
         Deref @ DAE::Element::DEFINE { componentRef: cr, .. } => {
@@ -154,6 +172,7 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             tp = ComponentReference::crefTypeConsiderSubs(cr.clone())?;
             size = Expression::sizeOf(tp.clone())?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), metamodelica::cons(element.clone(), eqns.clone()), hs.clone())
         },
         Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e, .. } => {
@@ -164,6 +183,7 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             size = Expression::sizeOf(Expression::r#typeof(e.clone())?)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), metamodelica::cons(element.clone(), eqns.clone()), hs.clone())
         },
         Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { .. } => {
@@ -177,6 +197,7 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             size = Expression::sizeOf(Expression::r#typeof(var_field!((*element).exp, DAE::Element::ARRAY_EQUATION).clone())?)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), metamodelica::cons(element.clone(), eqns.clone()), hs.clone())
         },
         Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { .. } => {
@@ -189,7 +210,8 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
-            (_, size, _, _) = List::fold(daeElts.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), (0, 0, metamodelica::nil(), hs.clone()))?;
+            (_, size, _, _) = countVarEqnSizeList(daeElts.clone(), (0, 0, metamodelica::nil(), hs.clone()), false)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), eqns.clone(), hs.clone())
         },
         Deref @ DAE::Element::INITIAL_FOR_EQUATION { .. } => {
@@ -199,8 +221,9 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
-            (_, size, _, _) = List::fold(var_field!((*element).equations, DAE::Element::INITIAL_FOR_EQUATION).clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), (0, 0, metamodelica::nil(), hs.clone()))?;
+            (_, size, _, _) = countVarEqnSizeList(var_field!((*element).equations, DAE::Element::INITIAL_FOR_EQUATION).clone(), (0, 0, metamodelica::nil(), hs.clone()), false)?;
             size = size.clone() * Expression::sizeOf(Expression::r#typeof(var_field!((*element).range, DAE::Element::INITIAL_FOR_EQUATION).clone())?)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), eqns.clone(), hs.clone())
         },
         Deref @ DAE::Element::FOR_EQUATION { .. } => {
@@ -210,8 +233,9 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
-            (_, size, _, _) = List::fold(var_field!((*element).equations, DAE::Element::FOR_EQUATION).clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), (0, 0, metamodelica::nil(), hs.clone()))?;
+            (_, size, _, _) = countVarEqnSizeList(var_field!((*element).equations, DAE::Element::FOR_EQUATION).clone(), (0, 0, metamodelica::nil(), hs.clone()), false)?;
             size = size.clone() * Expression::sizeOf(Expression::r#typeof(var_field!((*element).range, DAE::Element::FOR_EQUATION).clone())?)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), eqns.clone(), hs.clone())
         },
         Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: false }, tail: Deref @ metamodelica::List::Nil }, equations3: Deref @ metamodelica::List::Nil, .. } => {
@@ -224,7 +248,8 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             let mut eqns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (varSize, eqnSize, eqns, hs) = inArg.clone();
-            (_, size, _, _) = List::fold(daeElts.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), (0, 0, metamodelica::nil(), hs.clone()))?;
+            (_, size, _, _) = countVarEqnSizeList(daeElts.clone(), (0, 0, metamodelica::nil(), hs.clone()), false)?;
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), eqns.clone(), hs.clone())
         },
         Deref @ DAE::Element::INITIAL_IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: false }, tail: Deref @ metamodelica::List::Nil }, equations3: Deref @ metamodelica::List::Nil, .. } => {
@@ -243,13 +268,14 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             (varSize, eqnSize, eqns, hs) = inArg.clone();
             crlst = checkAndGetAlgorithmOutputs(alg.clone(), source.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
             size = (crlst.clone().len() as i32);
+            dumpEqn(element.clone(), size.clone(), debugDump.clone())?;
             (varSize.clone(), eqnSize.clone() + size.clone(), eqns.clone(), hs.clone())
         },
         Deref @ DAE::Element::INITIALALGORITHM { .. } => {
             inArg.clone()
         },
         Deref @ DAE::Element::COMP { dAElist: daeElts, .. } => {
-            List::fold(daeElts.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), inArg.clone())?
+            countVarEqnSizeList(daeElts.clone(), inArg.clone(), debugDump.clone())?
         },
         Deref @ DAE::Element::REINIT { .. } => {
             inArg.clone()
@@ -276,10 +302,10 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
             inArg.clone()
         },
         Deref @ DAE::Element::FLAT_SM { dAElist: daeElts, .. } => {
-            List::fold(daeElts.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), inArg.clone())?
+            countVarEqnSizeList(daeElts.clone(), inArg.clone(), debugDump.clone())?
         },
         Deref @ DAE::Element::SM_COMP { dAElist: daeElts, .. } => {
-            List::fold(daeElts.clone(), (std::sync::Arc::new(countVarEqnSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(i32, i32, Arc<metamodelica::List<Arc<DAE::Element>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), inArg.clone())?
+            countVarEqnSizeList(daeElts.clone(), inArg.clone(), debugDump.clone())?
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -289,6 +315,20 @@ fn countVarEqnSize(mut element: Arc<DAE::Element>, mut inArg: CountVarEqnFoldArg
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outArg)
+}
+
+fn dumpVar(mut cref: Arc<DAE::ComponentRef>, mut size: i32, mut dump: bool) -> Result<()> {
+    if dump.clone() {
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[var: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", size.clone()))); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    }
+    Ok(())
+}
+
+fn dumpEqn(mut eqn: Arc<DAE::Element>, mut size: i32, mut dump: bool) -> Result<()> {
+    if dump.clone() {
+        metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[eqn: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", size.clone()))); __mm_s.push_str(&*literal!("] ")); __mm_s.push_str(&*DAEDump::dumpEquationStr(eqn.clone())?); ArcStr::from(__mm_s) }).clone());
+    }
+    Ok(())
 }
 
 pub fn checkAndGetAlgorithmOutputs(mut inAlgorithm: Arc<DAE::Algorithm>, mut inSource: Arc<DAE::ElementSource>, mut inCrefExpansionRule: DAE::Expand) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {

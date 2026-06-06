@@ -467,7 +467,7 @@ fn isMarked(mut ass: (metamodelica::Array<i32>, i32), mut indx: i32) -> bool {
 
 fn markTrue(mut indx: i32, mut mark: i32, mut arr: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     let mut arr: metamodelica::Array<i32> = arr;
-    {let _arr = arr.clone(); let _idx = intAbs(indx.clone()); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(arr.clone(), intAbs(indx.clone()), mark.clone())?;
     Ok(arr)
 }
 
@@ -1350,7 +1350,7 @@ fn inlineOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<B
     for mut e in 1..=numEqs.clone() {
         orgeqns = metamodelica::arrayGet(inOrgEqns.clone(), e.clone())?;
         (orgeqns, _) = BackendInline::inlineEqs(orgeqns.clone(), inA.clone(), metamodelica::nil(), false)?;
-        {let _arr = outOrgEqns.clone(); let _idx = e.clone(); let _val = orgeqns.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(outOrgEqns.clone(), e.clone(), orgeqns.clone())?;
     }
     Ok(outOrgEqns)
 }
@@ -2207,8 +2207,8 @@ fn getStateIndexes(mut inVar: BackendDAE::Var, mut inTpl: (metamodelica::Array<i
                     let mut newindx: i32 = 0;
                     (_, s) = BackendVariable::getVarSingle(cr.clone(), hov.clone())?;
                     newindx = nv.clone() + s.clone();
-                    {let _arr = stateindexs.clone(); let _idx = indx.clone(); let _val = newindx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-                    {let _arr = invmap.clone(); let _idx = s.clone(); let _val = indx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(stateindexs.clone(), indx.clone(), newindx.clone())?;
+                    metamodelica::arrayUpdate(invmap.clone(), s.clone(), indx.clone())?;
                     Ok((inVar.clone(), (stateindexs.clone(), invmap.clone(), indx.clone() + 1, nv.clone(), hov.clone(), metamodelica::cons(indx.clone(), derstatesindexs.clone()))))
                 }
                 _ => bail!("nomatch"),
@@ -2233,7 +2233,7 @@ fn getAdjacencyMatrixSelectStates(mut nEqns: i32, mut m: metamodelica::Array<Arc
     for mut i in ({let __s=nEqns.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
         row = ({let __elt = mo.borrow()[(i.clone()-1) as usize].clone(); __elt});
         row = List::map1(row.clone(), (std::sync::Arc::new(fnptr!(replaceStateIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), stateindexs.clone())?;
-        {let _arr = m.clone(); let _idx = i.clone(); let _val = row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(m.clone(), i.clone(), row.clone())?;
         (row, negrow) = List::split1OnTrue(row.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
         List::fold1(row.clone(), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), i.clone(), mT.clone())?;
         row = List::map(negrow.clone(), Arc::new(fnptr!(intAbs, i32)))?;
@@ -2276,7 +2276,7 @@ fn getAdjacencyMatrixLevelEquations(mut iEqns: Arc<metamodelica::List<Arc<Backen
             i1 = index.clone() + 1;
             rowindxs = List::intRange2(sindex.clone() + 1, rowSize.clone());
             List::fold1r(rowindxs.clone(), Arc::new(arrayUpdate.clone()), i1.clone(), mapIncRowEqn.clone())?;
-            {let _arr = mapEqnIncRow.clone(); let _idx = i1.clone(); let _val = rowindxs.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mapEqnIncRow.clone(), i1.clone(), rowindxs.clone())?;
             row = List::map1(row.clone(), (std::sync::Arc::new(fnptr!(replaceStateIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), stateindexs.clone())?;
             List::fold1r(rowindxs.clone(), Arc::new(arrayUpdate.clone()), row.clone(), m.clone())?;
             (row, negrow) = List::split1OnTrue(row.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
@@ -2318,7 +2318,7 @@ fn partitionSystem1(mut index: i32, mut m: metamodelica::Array<Arc<metamodelica:
         _ if (!(intGt(({let __elt = rowmarkarr.borrow()[(index.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut nsystems: i32 = 0;
-            {let _arr = rowmarkarr.clone(); let _idx = index.clone(); let _val = iNSystems.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(rowmarkarr.clone(), index.clone(), iNSystems.clone())?;
             rows = List::select(({let __elt = m.borrow()[(index.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             nsystems = partitionSystemstraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone())?;
             partitionSystem1(index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), nsystems.clone())?
@@ -2344,7 +2344,7 @@ fn partitionSystemstraverseRows(mut iRows: Arc<metamodelica::List<i32>>, mut iQu
         (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _) if (!(intGt(({let __elt = collmarkarr.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut colls: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            {let _arr = collmarkarr.clone(); let _idx = r.clone(); let _val = iNSystems.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(collmarkarr.clone(), r.clone(), iNSystems.clone())?;
             colls = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             colls = List::select1r(colls.clone(), (std::sync::Arc::new(fnptr!(Matching::isUnAssigned, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), rowmarkarr.clone())?;
             List::fold1(colls.clone(), (std::sync::Arc::new(markTrue) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), iNSystems.clone(), rowmarkarr.clone())?;
@@ -2531,7 +2531,7 @@ fn getSetEqnStates(mut v: i32, mut flag: metamodelica::Array<bool>, mut inM: met
     (states, dstates) = iStates.clone();
     states = List::consOnTrue(intLt(({let __elt = vec2.borrow()[(v.clone()-1) as usize].clone(); __elt}), 1) && ({let __elt = flag.borrow()[(v.clone()-1) as usize].clone(); __elt}), v.clone(), states.clone());
     dstates = List::consOnTrue(intGt(({let __elt = vec2.borrow()[(v.clone()-1) as usize].clone(); __elt}), 0) && ({let __elt = flag.borrow()[(v.clone()-1) as usize].clone(); __elt}), v.clone(), dstates.clone());
-    {let _arr = flag.clone(); let _idx = v.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(flag.clone(), v.clone(), false)?;
     oStates = (states.clone(), dstates.clone());
     Ok(oStates)
 }
@@ -2593,7 +2593,7 @@ fn getEqnsforDynamicStateSelectionPhase(mut elst: Arc<metamodelica::List<i32>>, 
             rows = List::removeOnTrue(({let __elt = ass1.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rows.clone())?;
             (set, found) = getEqnsforDynamicStateSelectionRows(rows.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             set = List::consOnTrue(found.clone(), e.clone(), set.clone());
-            {let _arr = colummarks.clone(); let _idx = e.clone(); let _val = if (found.clone()) {mark.clone()} else {({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt})}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(colummarks.clone(), e.clone(), if (found.clone()) {mark.clone()} else {({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt})})?;
             (set, found) = getEqnsforDynamicStateSelectionPhase(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone(), found.clone() || iFound.clone())?;
             (set.clone(), found.clone())
         },
@@ -2665,7 +2665,7 @@ fn removeFirstOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<
         },
         _ => bail!("match: no arm matched"),
     } });
-            {let _arr = outOrgEqns.clone(); let _idx = e.clone(); let _val = orgeqns.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(outOrgEqns.clone(), e.clone(), orgeqns.clone())?;
         }
     }
     Ok((outEqnsLst, outOrgEqns))
@@ -3206,9 +3206,9 @@ fn setHigerDerivativeAssignment(mut inTpl: (i32, i32), mut ass1: metamodelica::A
     let mut e: i32 = 0;
     (i, j) = inTpl.clone();
     e = ({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt});
-    {let _arr = ass1.clone(); let _idx = i.clone(); let _val = -1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-    {let _arr = ass1.clone(); let _idx = j.clone(); let _val = e.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-    {let _arr = ass2.clone(); let _idx = e.clone(); let _val = j.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(ass1.clone(), i.clone(), -1)?;
+    metamodelica::arrayUpdate(ass1.clone(), j.clone(), e.clone())?;
+    metamodelica::arrayUpdate(ass2.clone(), e.clone(), j.clone())?;
     Ok(())
 }
 
@@ -4010,7 +4010,7 @@ fn addOrgEqn(mut e: i32, mut inEqn: Arc<BackendDAE::Equation>, mut inOrgEqns: me
     outOrgEqns = inOrgEqns.clone();
     eqs = metamodelica::arrayGet(inOrgEqns.clone(), e.clone())?;
     eqs = metamodelica::cons(inEqn.clone(), eqs.clone());
-    {let _arr = outOrgEqns.clone(); let _idx = e.clone(); let _val = eqs.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(outOrgEqns.clone(), e.clone(), eqs.clone())?;
     Ok(outOrgEqns)
 }
 

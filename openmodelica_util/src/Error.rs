@@ -1321,9 +1321,9 @@ pub fn updateCurrentComponent(mut component: ArcStr, mut info: SourceInfo, mut f
             astr = __esc_astr.clone();
             ainfo = __esc_ainfo.clone();
             afunc = __esc_afunc.clone();
-            {let _arr = astr.clone(); let _idx = 1; let _val = (component.clone()).clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            {let _arr = ainfo.clone(); let _idx = 1; let _val = info.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            {let _arr = afunc.clone(); let _idx = 1; let _val = func.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(astr.clone(), 1, (component.clone()).clone())?;
+            metamodelica::arrayUpdate(ainfo.clone(), 1, info.clone())?;
+            metamodelica::arrayUpdate(afunc.clone(), 1, func.clone())?;
             ()
         },
     });

@@ -563,7 +563,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = metamodelica::arrayGet(var_field!(vis.T, Visualization::SHAPE).clone(), pos.clone())?;
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
-                    {let _arr = var_field!(vis.T, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = T0.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.T, Visualization::SHAPE).clone(), pos.clone(), T0.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -574,7 +574,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "r", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SHAPE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.r, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.r, Visualization::SHAPE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -585,7 +585,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "r_shape", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SHAPE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.r_shape, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.r_shape, Visualization::SHAPE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -596,7 +596,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "lengthDirection", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SHAPE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.lengthDir, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.lengthDir, Visualization::SHAPE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -607,7 +607,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "widthDirection", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SHAPE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.widthDir, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.widthDir, Visualization::SHAPE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -670,7 +670,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "color", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SHAPE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.color, Visualization::SHAPE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.color, Visualization::SHAPE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -714,7 +714,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = metamodelica::arrayGet(var_field!(vis.T, Visualization::VECTOR).clone(), pos.clone())?;
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
-                    {let _arr = var_field!(vis.T, Visualization::VECTOR).clone(); let _idx = pos.clone(); let _val = T0.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.T, Visualization::VECTOR).clone(), pos.clone(), T0.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -725,7 +725,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "r", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::VECTOR { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.r, Visualization::VECTOR).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.r, Visualization::VECTOR).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -736,7 +736,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "coordinates", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::VECTOR { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.coordinates, Visualization::VECTOR).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.coordinates, Visualization::VECTOR).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -747,7 +747,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "color", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::VECTOR { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.color, Visualization::VECTOR).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.color, Visualization::VECTOR).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -830,7 +830,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = metamodelica::arrayGet(var_field!(vis.T, Visualization::SURFACE).clone(), pos.clone())?;
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
-                    {let _arr = var_field!(vis.T, Visualization::SURFACE).clone(); let _idx = pos.clone(); let _val = T0.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.T, Visualization::SURFACE).clone(), pos.clone(), T0.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -841,7 +841,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "r_0", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SURFACE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.r_0, Visualization::SURFACE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.r_0, Visualization::SURFACE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -904,7 +904,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "color", subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, .. }, Visualization::SURFACE { .. }) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    {let _arr = var_field!(vis.color, Visualization::SURFACE).clone(); let _idx = pos.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!(vis.color, Visualization::SURFACE).clone(), pos.clone(), exp.clone())?;
                     Ok(())
                 }
                 _ => bail!("nomatch"),

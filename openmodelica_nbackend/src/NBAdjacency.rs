@@ -1829,7 +1829,7 @@ pub mod Matrix {
     }
 
     fn updateIntegerRow(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut idx: i32, mut row: Arc<metamodelica::List<i32>>) -> Result<()> {
-        {let _arr = m.clone(); let _idx = idx.clone(); let _val = listAppend(row.clone(), ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(m.clone(), idx.clone(), listAppend(row.clone(), ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})))?;
         Ok(())
     }
 
@@ -1976,7 +1976,7 @@ pub mod Dependency {
             } };
             dep = __pa0.clone();
             if metamodelica::arrayLength(dep.skips.clone()) >= depth.clone() {
-                {let _arr = dep.skips.clone(); let _idx = depth.clone(); let _val = UnorderedSet::unique_list(metamodelica::cons(sk.clone(), ({let __elt = dep.skips.borrow()[(depth.clone()-1) as usize].clone(); __elt})), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(dep.skips.clone(), depth.clone(), UnorderedSet::unique_list(metamodelica::cons(sk.clone(), ({let __elt = dep.skips.borrow()[(depth.clone()-1) as usize].clone(); __elt})), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?;
             } else {
                 if Flags::isSet(Flags::FAILTRACE.clone())? {
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Dependency.skip")); __mm_s.push_str(&*literal!(": Cref ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" was saved with depth ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(dep.skips.clone()))); __mm_s.push_str(&*literal!(" but depth ")); __mm_s.push_str(&*intString(depth.clone())); __mm_s.push_str(&*literal!(" was requested.")); ArcStr::from(__mm_s) }).clone())?;
@@ -2004,19 +2004,19 @@ pub mod Dependency {
             dep = __pa0.clone();
             if num.clone() < 0 {
                 for mut i in 1..=metamodelica::arrayLength(dep.skips.clone()) {
-                    {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(dep.skips.clone(), i.clone(), metamodelica::nil())?;
                 }
             } else {
                 i = if (reverse.clone()) {metamodelica::arrayLength(dep.skips.clone())} else {1};
                 while rest.clone() > 0 && i.clone() > 0 && i.clone() < metamodelica::arrayLength(dep.skips.clone()) + 1 {
                     len = (({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
                     if len.clone() <= rest.clone() {
-                        {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                        metamodelica::arrayUpdate(dep.skips.clone(), i.clone(), metamodelica::nil())?;
                     } else if len.clone() > 0 {
                         if reverse.clone() {
-                            {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                            metamodelica::arrayUpdate(dep.skips.clone(), i.clone(), List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?)?;
                         } else {
-                            {let _arr = dep.skips.clone(); let _idx = i.clone(); let _val = List::lastN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                            metamodelica::arrayUpdate(dep.skips.clone(), i.clone(), List::lastN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?)?;
                         }
                     }
                     rest = rest.clone() - len.clone();

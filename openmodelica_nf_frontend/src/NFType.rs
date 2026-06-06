@@ -939,7 +939,7 @@ pub fn applyToDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dim
         },
         Deref @ UNTYPED { .. } => {
             for mut i in 1..=metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()) {
-                {let _arr = var_field!((*ty).dimensions, NFType::UNTYPED).clone(); let _idx = i.clone(); let _val = func(({let __elt = var_field!((*ty).dimensions, NFType::UNTYPED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), i.clone(), func(({let __elt = var_field!((*ty).dimensions, NFType::UNTYPED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?)?;
             }
             ty.clone()
         },

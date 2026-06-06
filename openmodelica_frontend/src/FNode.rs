@@ -169,7 +169,7 @@ pub fn fromRef(mut inRef: Ref) -> Result<Node> {
 
 pub fn updateRef(mut inRef: Ref, mut inNode: Node) -> Result<Ref> {
     let mut outRef: Ref = Default::default();
-    outRef = {let _arr = inRef.clone(); let _idx = 1; let _val = inNode.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    outRef = metamodelica::arrayUpdate(inRef.clone(), 1, inNode.clone())?;
     Ok(outRef)
 }
 

@@ -2199,7 +2199,7 @@ fn simplifySymmetric(mut marr: metamodelica::Array<metamodelica::Array<Arc<DAE::
             v1 = metamodelica::arrayGet(marr.clone(), i1.clone())?;
             v2 = metamodelica::arrayGet(marr.clone(), i2.clone())?;
             exp = metamodelica::arrayGet(v1.clone(), i2.clone())?;
-            {let _arr = v2.clone(); let _idx = i1.clone(); let _val = exp.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(v2.clone(), i1.clone(), exp.clone())?;
             simplifySymmetric(marr.clone(), if (i1.clone() == 1) {i2.clone() - 2} else {i1.clone() - 1}, if (i1.clone() == 1) {i2.clone() - 1} else {i2.clone()})?;
             ()
         },

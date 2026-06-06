@@ -1228,14 +1228,14 @@ fn patternToMidCode2(mut state: State, mut matches: Arc<metamodelica::List<(MidC
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             ty = RValueType(MidCode::RValue::VARIABLE { src: scrutinee.clone() })?;
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            {let _arr = assignBlock.clone(); let _idx = 1; let _val = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::VARIABLE { src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
             patternToMidCode2(state.clone(), metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch.clone(), assignBlock.clone())?;
             ()
         },
         Deref @ metamodelica::List::Cons { head: (scrutinee, Deref @ DAE::Pattern::PAT_AS { id, ty: Some(ty), pat: pattern, .. }), tail: restMatches } => {
             let mut midvar: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             midvar = MidCode::Var { name: (id.clone()).clone(), ty: ty.clone(), volatile: false };
-            {let _arr = assignBlock.clone(); let _idx = 1; let _val = metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::UNARYOP { op: crate::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(assignBlock.clone(), 1, metamodelica::cons(MidCode::Stmt::ASSIGN { dest: midvar.clone(), src: MidCode::RValue::UNARYOP { op: crate::MidCode::UnaryOp::UNBOX, src: scrutinee.clone() } }, metamodelica::arrayGet(assignBlock.clone(), 1)?))?;
             patternToMidCode2(state.clone(), metamodelica::cons((scrutinee.clone(), pattern.clone()), restMatches.clone()), labelNoMatch.clone(), assignBlock.clone())?;
             ()
         },

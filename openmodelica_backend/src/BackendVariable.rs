@@ -2075,7 +2075,7 @@ fn vararrayAdd(mut inVariableArray: BackendDAE::VariableArray, mut inVar: Backen
     arr = __pa1.clone();
     num_elems = num_elems.clone() + 1;
     arr = Array::expandOnDemand(num_elems.clone(), arr.clone(), metamodelica::OrderedFloat(1.4_f64), None)?;
-    {let _arr = arr.clone(); let _idx = num_elems.clone(); let _val = Some(inVar.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(arr.clone(), num_elems.clone(), Some(inVar.clone()))?;
     outVariableArray = BackendDAE::VariableArray { numberOfElements: num_elems.clone(), varOptArr: arr.clone() };
     Ok(outVariableArray)
 }
@@ -2083,7 +2083,7 @@ fn vararrayAdd(mut inVariableArray: BackendDAE::VariableArray, mut inVar: Backen
 fn vararraySetnth(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i32, mut inVar: BackendDAE::Var) -> Result<BackendDAE::VariableArray> {
     let mut outVariableArray: BackendDAE::VariableArray = inVariableArray.clone();
     let true = (inIndex.clone() <= inVariableArray.numberOfElements.clone()) else { bail!("pattern mismatch") };
-    {let _arr = inVariableArray.varOptArr.clone(); let _idx = inIndex.clone(); let _val = Some(inVar.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(inVariableArray.varOptArr.clone(), inIndex.clone(), Some(inVar.clone()))?;
     Ok(outVariableArray)
 }
 
@@ -2106,7 +2106,7 @@ fn vararrayDelete(mut inVariableArray: BackendDAE::VariableArray, mut inIndex: i
         _ => bail!("pattern mismatch"),
     } };
     outVar = __pa0.clone();
-    {let _arr = outVariableArray.varOptArr.clone(); let _idx = inIndex.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(outVariableArray.varOptArr.clone(), inIndex.clone(), None)?;
     Ok((outVariableArray, outVar))
 }
 
@@ -2585,7 +2585,7 @@ pub fn removeVar(mut inIndex: i32, mut inVariables: BackendDAE::Variables) -> Re
     hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(cr.clone())?, buckets.clone()) + 1;
     cr_indices = ({let __elt = indices.borrow()[(hash_idx.clone()-1) as usize].clone(); __elt});
     (cr_indices, _) = List::deleteMemberOnTrue(BackendDAE::CrefIndex { cref: cr.clone(), index: inIndex.clone() - 1 }, cr_indices.clone(), (std::sync::Arc::new(fnptr!(removeVar2, BackendDAE::CrefIndex, BackendDAE::CrefIndex)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::CrefIndex, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?;
-    {let _arr = indices.clone(); let _idx = hash_idx.clone(); let _val = cr_indices.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(indices.clone(), hash_idx.clone(), cr_indices.clone())?;
     outVariables = BackendDAE::Variables { crefIndices: indices.clone(), varArr: arr.clone(), bucketSize: buckets.clone(), numberOfVars: num_vars.clone() - 1 };
     Ok((outVariables, outVar))
 }
@@ -2737,7 +2737,7 @@ pub fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Variables
         }
         Err(_) => {
             outVariables.varArr = vararrayAdd(outVariables.varArr.clone(), inVar.clone())?;
-            {let _arr = outVariables.crefIndices.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: outVariables.numberOfVars.clone() }, indices.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(outVariables.crefIndices.clone(), hash_idx.clone(), metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: outVariables.numberOfVars.clone() }, indices.clone()))?;
             outVariables.numberOfVars = outVariables.numberOfVars.clone() + 1;
         }
     }
@@ -2772,7 +2772,7 @@ pub fn addNewVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Variab
     idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, bsize.clone()) + 1;
     varr = vararrayAdd(varr.clone(), inVar.clone())?;
     indices = ({let __elt = hashvec.borrow()[(idx.clone()-1) as usize].clone(); __elt});
-    {let _arr = hashvec.clone(); let _idx = idx.clone(); let _val = metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: num_vars.clone() }, indices.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(hashvec.clone(), idx.clone(), metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: num_vars.clone() }, indices.clone()))?;
     outVariables = BackendDAE::Variables { crefIndices: hashvec.clone(), varArr: varr.clone(), bucketSize: bsize.clone(), numberOfVars: num_vars.clone() + 1 };
     Ok(outVariables)
 }
@@ -3567,8 +3567,8 @@ fn traversingisXXXFinder(mut inVar: BackendDAE::Var, mut v_lst: metamodelica::Ar
     let mut inVar: BackendDAE::Var = inVar;
     let mut i: metamodelica::Array<i32> = i;
     if isFunc(inVar.clone())? {
-        {let _arr = v_lst.clone(); let _idx = 1; let _val = metamodelica::cons(inVar.clone(), ({let __elt = v_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-        {let _arr = i_lst.clone(); let _idx = 1; let _val = metamodelica::cons(({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}), ({let __elt = i_lst.borrow()[(1-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(v_lst.clone(), 1, metamodelica::cons(inVar.clone(), ({let __elt = v_lst.borrow()[(1-1) as usize].clone(); __elt})))?;
+        metamodelica::arrayUpdate(i_lst.clone(), 1, metamodelica::cons(({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}), ({let __elt = i_lst.borrow()[(1-1) as usize].clone(); __elt})))?;
     }
     {
         let __cell0 = ({let __elt = i.borrow()[(1-1) as usize].clone(); __elt}) + 1;

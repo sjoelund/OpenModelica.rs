@@ -812,7 +812,7 @@ pub fn getStatefulBoolean(mut sb: StatefulBoolean) -> bool {
 }
 
 pub fn setStatefulBoolean(mut sb: StatefulBoolean, mut b: bool) -> Result<()> {
-    {let _arr = sb.clone(); let _idx = 1; let _val = b.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(sb.clone(), 1, b.clone())?;
     Ok(())
 }
 

@@ -251,7 +251,7 @@ pub mod CachedData {
     }
 
     pub fn setFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> Result<()> {
-        {let _arr = in_caches.clone(); let _idx = 1; let _val = in_cache.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(in_caches.clone(), 1, in_cache.clone())?;
         Ok(())
     }
 
@@ -261,12 +261,12 @@ pub mod CachedData {
     }
 
     pub fn setPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> Result<metamodelica::Array<Arc<CachedData>>> {
-        let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); let _idx = 2; let _val = in_cache.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        let mut out_caches: metamodelica::Array<Arc<CachedData>> = metamodelica::arrayUpdate(in_caches.clone(), 2, in_cache.clone())?;
         Ok(out_caches)
     }
 
     pub fn clearPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<metamodelica::Array<Arc<CachedData>>> {
-        let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); let _idx = 2; let _val = crate::NFInstNode::CachedData::interned_NO_CACHE(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        let mut out_caches: metamodelica::Array<Arc<CachedData>> = metamodelica::arrayUpdate(in_caches.clone(), 2, crate::NFInstNode::CachedData::interned_NO_CACHE())?;
         Ok(out_caches)
     }
 

@@ -63,25 +63,27 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
         (txt, i_simCode @ SimCode::SimCode { modelInfo: i_modelInfo @ SimCode::ModelInfo { name: _, .. }, fileNamePrefix: i_fileNamePrefix, .. }, a_FMUVersion, a_FMUType, a_sourceFiles) => {
-            let mut ret_30: bool = false;
+            let mut ret_32: bool = false;
             let mut l_0___1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_30: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_29: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_27: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_26: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_23: bool = false;
+            let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_21: bool = false;
             let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_19: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_17: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_16: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_cpp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            let mut ret_13: bool = false;
+            let mut ret_15: bool = false;
             let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut ret_13: ArcStr = arcstr::literal!("");
+            let mut l_extraAnnotations: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_numStringVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_numBoolVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_numIntVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -106,42 +108,44 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
             l_numIntVars = CodegenCpp::numIntvars(Tpl::emptyTxt.clone(), i_modelInfo.clone())?;
             l_numBoolVars = CodegenCpp::numBoolvars(Tpl::emptyTxt.clone(), i_modelInfo.clone())?;
             l_numStringVars = CodegenCpp::numStringvars(Tpl::emptyTxt.clone(), i_modelInfo.clone())?;
-            ret_13 = FlagsUtil::set(Flags::HARDCODED_START_VALUES.clone(), true)?;
-            l_0__ = Tpl::writeStr(Tpl::emptyTxt.clone(), (Tpl::booleanString(ret_13.clone())).clone())?;
+            ret_13 = (Flags::getConfigString(Flags::FMI_EXTRA_ANNOTATIONS.clone())?).clone();
+            l_extraAnnotations = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_13.clone()).clone())?;
+            ret_15 = FlagsUtil::set(Flags::HARDCODED_START_VALUES.clone(), true)?;
+            l_0__ = Tpl::writeStr(Tpl::emptyTxt.clone(), (Tpl::booleanString(ret_15.clone())).clone())?;
             l_cpp = CodegenCpp::translateModel(Tpl::emptyTxt.clone(), i_simCode.clone())?;
-            (txt_15, l_extraFuncs, l_extraFuncsDecl, _) = fmuWriteOutputHeaderFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })))?;
-            txt_16 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
-            txt_16 = Tpl::writeStr(txt_16.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_16 = Tpl::writeTok(txt_16.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput.h")).clone() }))?;
-            Tpl::textFile(txt_15.clone(), (Tpl::textString(txt_16.clone())?).clone())?;
-            (txt_17, l_extraFuncs, l_extraFuncsDecl, _) = fmuModelHeaderFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (Tpl::textString(l_guid.clone())?).clone(), (a_FMUVersion.clone()).clone())?;
+            (txt_17, l_extraFuncs, l_extraFuncsDecl, _) = fmuWriteOutputHeaderFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })))?;
             txt_18 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
             txt_18 = Tpl::writeStr(txt_18.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_18 = Tpl::writeTok(txt_18.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FMU.h")).clone() }))?;
+            txt_18 = Tpl::writeTok(txt_18.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput.h")).clone() }))?;
             Tpl::textFile(txt_17.clone(), (Tpl::textString(txt_18.clone())?).clone())?;
-            (txt_19, l_extraFuncs, l_extraFuncsDecl, _) = fmuModelCppFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (Tpl::textString(l_guid.clone())?).clone(), (a_FMUVersion.clone()).clone())?;
+            (txt_19, l_extraFuncs, l_extraFuncsDecl, _) = fmuModelHeaderFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (Tpl::textString(l_guid.clone())?).clone(), (a_FMUVersion.clone()).clone())?;
             txt_20 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
             txt_20 = Tpl::writeStr(txt_20.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_20 = Tpl::writeTok(txt_20.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FMU.cpp")).clone() }))?;
+            txt_20 = Tpl::writeTok(txt_20.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FMU.h")).clone() }))?;
             Tpl::textFile(txt_19.clone(), (Tpl::textString(txt_20.clone())?).clone())?;
-            ret_21 = FMI::isFMIVersion10((a_FMUVersion.clone()).clone());
-            (txt_21, l_stateDerVectorName, l_complexStartExpressions) = fun_54(Tpl::emptyTxt.clone(), ret_21.clone(), l_stateDerVectorName.clone(), l_complexStartExpressions.clone(), l_numStringVars.clone(), l_numBoolVars.clone(), l_numIntVars.clone(), l_numRealVars.clone(), a_sourceFiles.clone(), (a_FMUType.clone()).clone(), (a_FMUVersion.clone()).clone(), l_guid.clone(), i_simCode.clone())?;
-            Tpl::textFile(txt_21.clone(), (literal!("modelDescription.xml")).clone())?;
-            txt_23 = CodegenFMU::fmudeffile(Tpl::emptyTxt.clone(), i_simCode.clone(), (a_FMUVersion.clone()).clone())?;
-            txt_24 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_24 = Tpl::writeTok(txt_24.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".def")).clone() }))?;
-            Tpl::textFile(txt_23.clone(), (Tpl::textString(txt_24.clone())?).clone())?;
-            (txt_25, l_extraFuncs, l_extraFuncsDecl, _) = fmuMakefile(Tpl::emptyTxt.clone(), (Tpl::textString(l_target.clone())?).clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (a_FMUVersion.clone()).clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone())?;
+            (txt_21, l_extraFuncs, l_extraFuncsDecl, _) = fmuModelCppFile(Tpl::emptyTxt.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (Tpl::textString(l_guid.clone())?).clone(), (a_FMUVersion.clone()).clone())?;
+            txt_22 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
+            txt_22 = Tpl::writeStr(txt_22.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt_22 = Tpl::writeTok(txt_22.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FMU.cpp")).clone() }))?;
+            Tpl::textFile(txt_21.clone(), (Tpl::textString(txt_22.clone())?).clone())?;
+            ret_23 = FMI::isFMIVersion10((a_FMUVersion.clone()).clone());
+            (txt_23, l_stateDerVectorName, l_complexStartExpressions) = fun_54(Tpl::emptyTxt.clone(), ret_23.clone(), l_stateDerVectorName.clone(), l_complexStartExpressions.clone(), l_numStringVars.clone(), l_numBoolVars.clone(), l_numIntVars.clone(), l_numRealVars.clone(), a_sourceFiles.clone(), (a_FMUType.clone()).clone(), (a_FMUVersion.clone()).clone(), l_guid.clone(), i_simCode.clone())?;
+            Tpl::textFile(txt_23.clone(), (literal!("modelDescription.xml")).clone())?;
+            txt_25 = CodegenFMU::fmudeffile(Tpl::emptyTxt.clone(), i_simCode.clone(), (a_FMUVersion.clone()).clone())?;
             txt_26 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_26 = Tpl::writeTok(txt_26.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_FMU.makefile")).clone() }))?;
+            txt_26 = Tpl::writeTok(txt_26.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".def")).clone() }))?;
             Tpl::textFile(txt_25.clone(), (Tpl::textString(txt_26.clone())?).clone())?;
-            txt_27 = fmuCalcHelperMainfile(Tpl::emptyTxt.clone(), i_simCode.clone())?;
-            txt_28 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
-            txt_28 = Tpl::writeStr(txt_28.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt_28 = Tpl::writeTok(txt_28.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CalcHelperMain.cpp")).clone() }))?;
+            (txt_27, l_extraFuncs, l_extraFuncsDecl, _) = fmuMakefile(Tpl::emptyTxt.clone(), (Tpl::textString(l_target.clone())?).clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), (a_FMUVersion.clone()).clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone(), (literal!("")).clone(), (Tpl::textString(l_extraAnnotations.clone())?).clone())?;
+            txt_28 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt_28 = Tpl::writeTok(txt_28.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_FMU.makefile")).clone() }))?;
             Tpl::textFile(txt_27.clone(), (Tpl::textString(txt_28.clone())?).clone())?;
-            ret_30 = FlagsUtil::set(Flags::HARDCODED_START_VALUES.clone(), false)?;
-            l_0___1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (Tpl::booleanString(ret_30.clone())).clone())?;
+            txt_29 = fmuCalcHelperMainfile(Tpl::emptyTxt.clone(), i_simCode.clone())?;
+            txt_30 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OMCpp")).clone() }))?;
+            txt_30 = Tpl::writeStr(txt_30.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt_30 = Tpl::writeTok(txt_30.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CalcHelperMain.cpp")).clone() }))?;
+            Tpl::textFile(txt_29.clone(), (Tpl::textString(txt_30.clone())?).clone())?;
+            ret_32 = FlagsUtil::set(Flags::HARDCODED_START_VALUES.clone(), false)?;
+            l_0___1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (Tpl::booleanString(ret_32.clone())).clone())?;
             txt.clone()
         },
         (txt, _, _, _, _) => {
@@ -2503,10 +2507,10 @@ fn lm_154(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) 
     Ok(out_txt)
 }
 
-fn fun_155(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_additionalLinkerFlags__GCC: ArcStr, mut in_a_additionalCFlags__GCC: ArcStr) -> Result<Tpl::Text> {
+fn fun_155(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraAnnotations: ArcStr, mut in_a_additionalLinkerFlags__GCC: ArcStr, mut in_a_additionalCFlags__GCC: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_additionalLinkerFlags__GCC.clone(), in_a_additionalCFlags__GCC.clone()) {
-        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: mut i_makefileParams_platform, omhome: mut i_makefileParams_omhome, ccompiler: mut i_makefileParams_ccompiler, cxxcompiler: mut i_makefileParams_cxxcompiler, dllext: mut i_makefileParams_dllext, includes: ref i_makefileParams_includes, .. }, simulationSettingsOpt: mut i_sopt, fileNamePrefix: mut i_fileNamePrefix, fmuTargetName: mut i_fmuTargetName, .. }, mut a_additionalLinkerFlags__GCC, mut a_additionalCFlags__GCC) => {
+    out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_extraAnnotations.clone(), in_a_additionalLinkerFlags__GCC.clone(), in_a_additionalCFlags__GCC.clone()) {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: mut i_makefileParams_platform, omhome: mut i_makefileParams_omhome, ccompiler: mut i_makefileParams_ccompiler, cxxcompiler: mut i_makefileParams_cxxcompiler, dllext: mut i_makefileParams_dllext, includes: ref i_makefileParams_includes, .. }, simulationSettingsOpt: mut i_sopt, fileNamePrefix: mut i_fileNamePrefix, fmuTargetName: mut i_fmuTargetName, .. }, mut a_extraAnnotations, mut a_additionalLinkerFlags__GCC, mut a_additionalCFlags__GCC) => {
             let mut ret_12: bool = false;
             let mut ret_11: bool = false;
             let mut ret_10: bool = false;
@@ -2642,23 +2646,22 @@ fn fun_155(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_a
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("zip -r \"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fmuTargetName.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".fmu\" modelDescription.xml binaries sources\n")).clone(), (literal!("endif\n")).clone(), (literal!("endif\n")).clone(), (literal!("\n")).clone(), (literal!("ifeq ($(ZIP_FMU),OFF)\n")).clone()], lastHasNewLine: true }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".fmu\" modelDescription.xml binaries sources\n")).clone(), (literal!("endif\n")).clone(), (literal!("endif\n")).clone(), (literal!("ifneq (\"")).clone()], lastHasNewLine: false }))?;
+            txt = Tpl::writeStr(txt.clone(), (a_extraAnnotations.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("\",\"\")\n")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rm -f OMCpp")).clone() }))?;
+            txt = Tpl::writeText(txt.clone(), l_mkdir.clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(" -p extra/org.openmodelica\n")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jq --arg regex \"")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (a_extraAnnotations.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\" -f \"$(OMHOME)/share/omc/scripts/filter-annotations.jq\" ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("* ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_FMU.* ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".def ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".sh ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".bat ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".makefile ")).clone() }))?;
-            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_init.xml\n")).clone(), (literal!("endif\n")).clone(), (literal!("\n")).clone(), (literal!("clean:\n")).clone()], lastHasNewLine: true }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_modelInstance.json > extra/org.openmodelica/modelAnnotations.json\n")).clone(), (literal!("ifeq ($(ZIP_FMU),ON)\n")).clone()], lastHasNewLine: true }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("zip -ur \"")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fmuTargetName.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".fmu\" extra\n")).clone(), (literal!("endif\n")).clone(), (literal!("endif\n")).clone(), (literal!("\n")).clone(), (literal!("ifeq ($(ZIP_FMU),OFF)\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rm -f OMCpp")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
@@ -2676,30 +2679,52 @@ fn fun_155(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_a
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_init.xml\n")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("rm -rf modelDescription.xml binaries sources documentation\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rm -f ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_modelInstance.json\n")).clone(), (literal!("endif\n")).clone(), (literal!("\n")).clone(), (literal!("clean:\n")).clone()], lastHasNewLine: true }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rm -f OMCpp")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("* ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_FMU.* ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".def ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".sh ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".bat ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".makefile ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("_init.xml\n")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rm -rf modelDescription.xml binaries sources documentation extra ")).clone() }))?;
+            txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_modelInstance.json\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt.clone()
         },
-        (mut txt, _, _, _) => {
+        (mut txt, _, _, _, _) => {
             txt.clone()
         },
     });
     Ok(out_txt)
 }
 
-fn fun_156(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_simCode: SimCode::SimCode, mut in_a_additionalLinkerFlags__GCC: ArcStr, mut in_a_additionalCFlags__GCC: ArcStr) -> Result<Tpl::Text> {
+fn fun_156(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_simCode: SimCode::SimCode, mut in_a_additionalLinkerFlags__GCC: ArcStr, mut in_a_additionalCFlags__GCC: ArcStr, mut in_a_extraAnnotations: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_additionalLinkerFlags__GCC.clone(), in_a_additionalCFlags__GCC.clone())) {
-        (txt, Deref @ "msvc", a_simCode, _, _) => {
+    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_simCode.clone(), in_a_additionalLinkerFlags__GCC.clone(), in_a_additionalCFlags__GCC.clone(), in_a_extraAnnotations.clone())) {
+        (txt, Deref @ "msvc", a_simCode, _, _, _) => {
             let mut txt = (*txt).clone();
             txt = fun_145(txt.clone(), a_simCode.clone())?;
             txt.clone()
         },
-        (txt, Deref @ "gcc", a_simCode, a_additionalLinkerFlags__GCC, a_additionalCFlags__GCC) => {
+        (txt, Deref @ "gcc", a_simCode, a_additionalLinkerFlags__GCC, a_additionalCFlags__GCC, a_extraAnnotations) => {
             let mut txt = (*txt).clone();
-            txt = fun_155(txt.clone(), a_simCode.clone(), (a_additionalLinkerFlags__GCC.clone()).clone(), (a_additionalCFlags__GCC.clone()).clone())?;
+            txt = fun_155(txt.clone(), a_simCode.clone(), (a_extraAnnotations.clone()).clone(), (a_additionalLinkerFlags__GCC.clone()).clone(), (a_additionalCFlags__GCC.clone()).clone())?;
             txt.clone()
         },
-        (txt, _, _, _, _) => {
+        (txt, _, _, _, _, _) => {
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2707,7 +2732,7 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_simCode: SimCode
     Ok(out_txt)
 }
 
-pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_FMUVersion: ArcStr, mut a_additionalLinkerFlags__GCC: ArcStr, mut a_additionalLinkerFlags__MSVC: ArcStr, mut a_additionalCFlags__GCC: ArcStr, mut a_additionalCFlags__MSVC: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_FMUVersion: ArcStr, mut a_additionalLinkerFlags__GCC: ArcStr, mut a_additionalLinkerFlags__MSVC: ArcStr, mut a_additionalCFlags__GCC: ArcStr, mut a_additionalCFlags__MSVC: ArcStr, mut a_extraAnnotations: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2716,7 +2741,7 @@ pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimC
     let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     txt_0 = CodegenUtil::getGeneralTarget(Tpl::emptyTxt.clone(), (a_target.clone()).clone())?;
     str_1 = (Tpl::textString(txt_0.clone())?).clone();
-    out_txt = fun_156(txt.clone(), (str_1.clone()).clone(), a_simCode.clone(), (a_additionalLinkerFlags__GCC.clone()).clone(), (a_additionalCFlags__GCC.clone()).clone())?;
+    out_txt = fun_156(txt.clone(), (str_1.clone()).clone(), a_simCode.clone(), (a_additionalLinkerFlags__GCC.clone()).clone(), (a_additionalCFlags__GCC.clone()).clone(), (a_extraAnnotations.clone()).clone())?;
     out_a_extraFuncs = a_extraFuncs.clone();
     out_a_extraFuncsDecl = a_extraFuncsDecl.clone();
     out_a_extraFuncsNamespace = a_extraFuncsNamespace.clone();

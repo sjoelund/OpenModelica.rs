@@ -236,7 +236,7 @@ pub fn clone(mut inGraph: Graph) -> Result<Graph> {
             ag = arrayCreate(1, emptyGraph().clone());
             t = FCore::Top { graph: ag.clone(), name: (t.name.clone()).clone(), node: nt.clone(), extra: t.extra.clone() };
             g = FCore::Graph::G { top: t.clone(), scope: s.clone() };
-            {let _arr = ag.clone(); let _idx = 1; let _val = g.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(ag.clone(), 1, g.clone())?;
             g.clone()
         },
         _ => bail!("match: no arm matched"),

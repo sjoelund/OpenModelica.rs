@@ -9973,16 +9973,22 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             if arr_is_uninit {
                 Ok(format!("unsafe {{ metamodelica::Dangerous::arrayInitSlot({arg1}, {arg2}, {arg3}) }}"))
             } else {
-                // Hoist the index and value into temps so every read finishes
-                // before the mutable borrow is acquired (the temp order also
-                // matches MetaModelica's arr/idx/val evaluation order). The
-                // expressions may read the array we're about to `borrow_mut()`
-                // through *any* function call — directly (`arrayUpdate(work,
-                // arrayLength(work)-c, v)`, SimpleModelicaParser.findTokens) or
-                // transitively (`arrayUpdate(parent, find(dsf,i), v)` where
-                // `find` reads `parent`) — so no syntactic check on the emitted
-                // strings can soundly prove the compact in-place form safe.
-                Ok(format!("{{let _arr = {}; let _idx = {}; let _val = {}; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr}}", arg1, arg2, arg3))
+                // Lower through `metamodelica::arrayUpdate`, for the same two
+                // reasons as `arrayGet` above: (a) the argument expressions
+                // may read the array we're about to `borrow_mut()` — directly
+                // (`arrayUpdate(work, arrayLength(work)-c, v)`,
+                // SimpleModelicaParser.findTokens) or transitively
+                // (`arrayUpdate(parent, find(dsf,i), v)` where `find` reads
+                // `parent`) — and Rust's call-argument evaluation order
+                // guarantees every read finishes before the helper acquires
+                // the mutable borrow; and (b) bounds-check failure must be a
+                // *catchable failure* (`Err`), not a panic — e.g.
+                // HpcOmMemory.getEqSCVarMapping0 runs `arrayUpdate` inside a
+                // matchcontinue whose next case handles the out-of-range
+                // index. The builtin is classified Fallible accordingly
+                // (fallibility.rs), so an inlined panicking index would
+                // silently diverge from the analysis.
+                Ok(ctx.q(&format!("metamodelica::arrayUpdate({arg1}, {arg2}, {arg3})")))
             }
         },
         // Real call into the runtime's truly-unchecked variant (see the

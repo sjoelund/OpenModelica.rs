@@ -200,7 +200,7 @@ fn analyseStrongComponentScalar(mut inComp: Arc<metamodelica::List<i32>>, mut sy
 fn uniqueComp(mut c: i32, mut mark: i32, mut markarray: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAcc: Arc<metamodelica::List<i32>> = iAcc.clone();
     if mark.clone() != ({let __elt = markarray.borrow()[(c.clone()-1) as usize].clone(); __elt}) {
-        {let _arr = markarray.clone(); let _idx = c.clone(); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(markarray.clone(), c.clone(), mark.clone())?;
         oAcc = metamodelica::cons(c.clone(), iAcc.clone());
     }
     Ok(oAcc)

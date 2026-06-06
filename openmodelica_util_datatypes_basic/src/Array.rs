@@ -283,7 +283,7 @@ pub fn reduce<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inRed
 }
 
 pub fn updateIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inValue: T, mut inArray: metamodelica::Array<T>) -> Result<()> {
-    {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), inValue.clone())?;
     Ok(())
 }
 
@@ -295,7 +295,7 @@ pub fn getIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inArray: metamode
 pub fn replaceAtWithFill<T: Clone + 'static>(mut inPos: i32, mut inTypeReplace: T, mut inTypeFill: T, mut inArray: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
     let mut outArray: metamodelica::Array<T> = Default::default();
     outArray = expandToSize(inPos.clone(), inArray.clone(), inTypeFill.clone())?;
-    {let _arr = outArray.clone(); let _idx = inPos.clone(); let _val = inTypeReplace.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(outArray.clone(), inPos.clone(), inTypeReplace.clone())?;
     Ok(outArray)
 }
 
@@ -341,13 +341,13 @@ pub fn expandOnDemand<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metam
 
 pub fn consToElement<T: Clone + 'static>(mut inIndex: i32, mut inElement: T, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
-    outArray = {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = metamodelica::cons(inElement.clone(), ({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), metamodelica::cons(inElement.clone(), ({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt})))?;
     Ok(outArray)
 }
 
 pub fn appendToElement<T: Clone + 'static>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
     let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
-    outArray = {let _arr = inArray.clone(); let _idx = inIndex.clone(); let _val = listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    outArray = metamodelica::arrayUpdate(inArray.clone(), inIndex.clone(), listAppend(({let __elt = inArray.borrow()[(inIndex.clone()-1) as usize].clone(); __elt}), inElements.clone()))?;
     Ok(outArray)
 }
 
@@ -443,7 +443,7 @@ pub fn setRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArra
         bail!("fail");
     }
     for mut i in inStart.clone()..=inEnd.clone() {
-        {let _arr = inArray.clone(); let _idx = i.clone(); let _val = inValue.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(inArray.clone(), i.clone(), inValue.clone())?;
     }
     Ok(outArray)
 }
@@ -500,8 +500,8 @@ pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Resul
     for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
         elem1 = metamodelica::arrayGet(inArray.clone(), i.clone())?;
         elem2 = metamodelica::arrayGet(inArray.clone(), size.clone() - i.clone() + 1)?;
-        outArray = {let _arr = outArray.clone(); let _idx = i.clone(); let _val = elem2.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-        outArray = {let _arr = outArray.clone(); let _idx = size.clone() - i.clone() + 1; let _val = elem1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        outArray = metamodelica::arrayUpdate(outArray.clone(), i.clone(), elem2.clone())?;
+        outArray = metamodelica::arrayUpdate(outArray.clone(), size.clone() - i.clone() + 1, elem1.clone())?;
     }
     Ok(outArray)
 }
@@ -534,6 +534,14 @@ pub fn toString<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inP
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
+}
+
+pub fn hashIntArray(mut arr: metamodelica::Array<i32>) -> i32 {
+    let mut hash: i32 = 5381;
+    for mut i in 1..=metamodelica::arrayLength(arr.clone()) {
+        hash = intMod(hash.clone() * 31 + metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()), 536870911);
+    }
+    hash
 }
 
 pub fn isEqual<T: Clone + 'static + PartialEq>(mut inArr1: metamodelica::Array<T>, mut inArr2: metamodelica::Array<T>) -> Result<bool> {

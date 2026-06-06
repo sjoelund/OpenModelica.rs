@@ -3791,7 +3791,7 @@ fn semiLinearSort(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     i = BaseHashTable::get(y.clone(), iHt.clone())?;
                     eqns = ({let __elt = iEqnsarray.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    eqnsarray = {let _arr = iEqnsarray.clone(); let _idx = i.clone(); let _val = metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    eqnsarray = metamodelica::arrayUpdate(iEqnsarray.clone(), i.clone(), metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()))?;
                     Ok(semiLinearSort(rest.clone(), iHt.clone(), size.clone(), eqnsarray.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -3804,7 +3804,7 @@ fn semiLinearSort(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     ht = BaseHashTable::add((y.clone(), size.clone()), iHt.clone())?;
                     eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
-                    eqnsarray = {let _arr = eqnsarray.clone(); let _idx = size.clone(); let _val = list![(eqn.clone(), index.clone())]; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    eqnsarray = metamodelica::arrayUpdate(eqnsarray.clone(), size.clone(), list![(eqn.clone(), index.clone())])?;
                     Ok(semiLinearSort(rest.clone(), ht.clone(), size.clone() + 1, eqnsarray.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -3826,7 +3826,7 @@ fn semiLinearSort1(mut eqnslstlst: Arc<metamodelica::List<Arc<metamodelica::List
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: tpl, tail: Deref @ metamodelica::List::Nil }, tail: rest } => {
             let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
             eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
-            eqnsarray = {let _arr = eqnsarray.clone(); let _idx = size.clone(); let _val = list![tpl.clone()]; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            eqnsarray = metamodelica::arrayUpdate(eqnsarray.clone(), size.clone(), list![tpl.clone()])?;
             semiLinearSort1(rest.clone(), size.clone() + 1, eqnsarray.clone())?
         },
         Deref @ metamodelica::List::Cons { head: eqns, tail: rest } => {
@@ -3863,7 +3863,7 @@ fn semiLinearSort2(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     i = BaseHashTable::get(x.clone(), iHt.clone())?;
                     eqns = ({let __elt = iEqnsarray.borrow()[(i.clone()-1) as usize].clone(); __elt});
-                    eqnsarray = {let _arr = iEqnsarray.clone(); let _idx = i.clone(); let _val = metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    eqnsarray = metamodelica::arrayUpdate(iEqnsarray.clone(), i.clone(), metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()))?;
                     (i, eqnsarray) = semiLinearSort2(rest.clone(), iHt.clone(), size.clone(), eqnsarray.clone())?;
                     Ok((i.clone(), eqnsarray.clone()))
                 }
@@ -3878,7 +3878,7 @@ fn semiLinearSort2(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     ht = BaseHashTable::add((x.clone(), size.clone()), iHt.clone())?;
                     eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
-                    eqnsarray = {let _arr = eqnsarray.clone(); let _idx = size.clone(); let _val = list![(eqn.clone(), index.clone())]; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    eqnsarray = metamodelica::arrayUpdate(eqnsarray.clone(), size.clone(), list![(eqn.clone(), index.clone())])?;
                     (i, eqnsarray) = semiLinearSort2(rest.clone(), ht.clone(), size.clone() + 1, eqnsarray.clone())?;
                     Ok((i.clone(), eqnsarray.clone()))
                 }

@@ -781,7 +781,7 @@ pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Resu
     }
     parent = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
     while parent.clone() > 0 {
-        {let _arr = nodes.clone(); let _idx = idx.clone(); let _val = rootIndex.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(nodes.clone(), idx.clone(), rootIndex.clone())?;
         idx = parent.clone();
         parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
     }
@@ -858,12 +858,12 @@ pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
         rank1 = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt});
         rank2 = ({let __elt = sets.nodes.borrow()[(set2.clone()-1) as usize].clone(); __elt});
         if rank1.clone() > rank2.clone() {
-            {let _arr = sets.nodes.clone(); let _idx = set2.clone(); let _val = set1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(sets.nodes.clone(), set2.clone(), set1.clone())?;
         } else if rank1.clone() < rank2.clone() {
-            {let _arr = sets.nodes.clone(); let _idx = set1.clone(); let _val = set2.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(sets.nodes.clone(), set1.clone(), set2.clone())?;
         } else {
-            {let _arr = sets.nodes.clone(); let _idx = set1.clone(); let _val = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            {let _arr = sets.nodes.clone(); let _idx = set2.clone(); let _val = set1.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(sets.nodes.clone(), set1.clone(), ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1)?;
+            metamodelica::arrayUpdate(sets.nodes.clone(), set2.clone(), set1.clone())?;
         }
     }
     Ok(sets)

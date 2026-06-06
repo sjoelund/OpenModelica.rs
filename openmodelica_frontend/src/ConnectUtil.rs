@@ -1276,9 +1276,9 @@ fn addConnectionToGraph(mut connection: (i32, i32), mut graph: SetGraph) -> Resu
     let mut node2: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (set1, set2) = connection.clone();
     node1 = metamodelica::arrayGet(graph.clone(), set1.clone())?;
-    graph = {let _arr = graph.clone(); let _idx = set1.clone(); let _val = metamodelica::cons(set2.clone(), node1.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    graph = metamodelica::arrayUpdate(graph.clone(), set1.clone(), metamodelica::cons(set2.clone(), node1.clone()))?;
     node2 = metamodelica::arrayGet(graph.clone(), set2.clone())?;
-    graph = {let _arr = graph.clone(); let _idx = set2.clone(); let _val = metamodelica::cons(set1.clone(), node2.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    graph = metamodelica::arrayUpdate(graph.clone(), set2.clone(), metamodelica::cons(set1.clone(), node2.clone()))?;
     Ok(graph)
 }
 
@@ -1307,7 +1307,7 @@ fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: me
     let mut set: Set = <Set as ::std::default::Default>::default();
     set = ({let __elt = sets.borrow()[(setPointee.clone()-1) as usize].clone(); __elt});
     sets = (match set.clone() {
-        DAE::Connect::Set::SET { .. } => {let _arr = sets.clone(); let _idx = setPointer.clone(); let _val = Set::SET_POINTER { index: setPointee.clone() }; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr},
+        DAE::Connect::Set::SET { .. } => metamodelica::arrayUpdate(sets.clone(), setPointer.clone(), Set::SET_POINTER { index: setPointee.clone() })?,
         DAE::Connect::Set::SET_POINTER { .. } => setArrayAddConnection2(setPointer.clone(), var_field!(set.index, Set::SET_POINTER).clone(), sets.clone())?,
     });
     Ok(sets)
@@ -1417,7 +1417,7 @@ fn setArrayUpdate(mut sets: metamodelica::Array<Set>, mut index: i32, mut elemen
             } else {
                 el = metamodelica::cons(element.clone(), var_field!(set.elements, Set::SET).clone());
             }
-            {let _arr = sets.clone(); let _idx = index.clone(); let _val = Set::SET { ty: element.ty.clone(), elements: el.clone() }; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr}
+            metamodelica::arrayUpdate(sets.clone(), index.clone(), Set::SET { ty: element.ty.clone(), elements: el.clone() })?
         },
         (DAE::Connect::Set::SET_POINTER { .. }, _) => setArrayUpdate(sets.clone(), var_field!(set.index, Set::SET_POINTER).clone(), element.clone())?,
         _ => bail!("match: no arm matched"),

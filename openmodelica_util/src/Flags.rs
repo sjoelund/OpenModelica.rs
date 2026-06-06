@@ -604,6 +604,8 @@ pub static DEBUG_ADJOINT: DebugFlag = DebugFlag { index: 197, name: literal!("de
 
 pub static FLOW_ALIAS_ELIMINATION: DebugFlag = DebugFlag { index: 198, name: literal!("flowAliasElimination"), default: false, description: Gettext::TranslatableContent::gettext { msgid: literal!("Enables simple alias elimination of flow variables in stream connectors.") } };
 
+pub static DUMP_CHECK_MODEL: DebugFlag = DebugFlag { index: 199, name: literal!("dumpCheckModel"), default: false, description: Gettext::TranslatableContent::gettext { msgid: literal!("Dumps the variables and equations found by checkModel.") } };
+
 // CONFIGURATION FLAGS
 pub static DEBUG: std::sync::LazyLock<ConfigFlag> = std::sync::LazyLock::new(|| { ConfigFlag { index: 1, name: (literal!("debug")).clone(), shortname: Some((literal!("d")).clone()), visibility: crate::Flags::FlagVisibility::EXTERNAL, defaultValue: FlagData::STRING_LIST_FLAG { data: metamodelica::nil() }, validOptions: None, description: Gettext::TranslatableContent::gettext { msgid: (literal!("Sets debug flags. Use --help=debug to see available flags.")).clone() } } });
 
@@ -933,6 +935,8 @@ pub static SIM_CODE_SCALARIZE: ConfigFlag = ConfigFlag { index: 161, name: liter
 pub static EXECUTE_COMMAND: ConfigFlag = ConfigFlag { index: 162, name: literal!("cmd"), shortname: None, visibility: crate::Flags::FlagVisibility::EXTERNAL, defaultValue: FlagData::STRING_FLAG { data: literal!("") }, validOptions: None, description: Gettext::TranslatableContent::gettext { msgid: literal!("Executes the string argument as a script before any other operation.") } };
 
 pub static MOO_DYNAMIC_OPTIMIZATION: ConfigFlag = ConfigFlag { index: 163, name: literal!("moo"), shortname: None, visibility: crate::Flags::FlagVisibility::EXTERNAL, defaultValue: FlagData::BOOL_FLAG { data: false }, validOptions: None, description: Gettext::TranslatableContent::gettext { msgid: literal!("Generate code for dynamic optimization library MOO.") } };
+
+pub static FMI_EXTRA_ANNOTATIONS: ConfigFlag = ConfigFlag { index: 164, name: literal!("fmiExtraAnnotations"), shortname: None, visibility: crate::Flags::FlagVisibility::EXTERNAL, defaultValue: FlagData::STRING_FLAG { data: literal!("") }, validOptions: None, description: Gettext::TranslatableContent::gettext { msgid: literal!("Export annotations matching the given regex to extra/org.openmodelica/modelAnnotations.json.") } };
 
 pub fn getFlags(mut initialize: bool) -> Flag {
     let mut flags: Flag = Flag::NO_FLAGS;

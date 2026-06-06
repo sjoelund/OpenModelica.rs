@@ -279,7 +279,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     cref = BackendVariable::varCref(v.clone())?;
                     select = selectParameter(v.clone())? || AvlSetCR::hasKey(ht.clone(), cref.clone())?;
                     selectedParameters = List::consOnTrue(select.clone(), index.clone(), selectedParameters.clone());
-                    m = {let _arr = m.clone(); let _idx = index.clone(); let _val = ilst.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    m = metamodelica::arrayUpdate(m.clone(), index.clone(), ilst.clone())?;
                     mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone())?;
                     Ok((v.clone(), (globalKnownVars.clone(), index.clone() + 1, selectParameter.clone(), selectedParameters.clone(), m.clone(), mt.clone(), ht.clone(), isInitial.clone())))
                 }
@@ -304,7 +304,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     cref = BackendVariable::varCref(v.clone())?;
                     select = selectParameter(v.clone())? || AvlSetCR::hasKey(ht.clone(), cref.clone())?;
                     selectedParameters = List::consOnTrue(select.clone(), index.clone(), selectedParameters.clone());
-                    m = {let _arr = m.clone(); let _idx = index.clone(); let _val = ilst.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    m = metamodelica::arrayUpdate(m.clone(), index.clone(), ilst.clone())?;
                     mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone())?;
                     Ok((v.clone(), (globalKnownVars.clone(), index.clone() + 1, selectParameter.clone(), selectedParameters.clone(), m.clone(), mt.clone(), ht.clone(), isInitial.clone())))
                 }
@@ -323,7 +323,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     select = selectParameter(v.clone())? || AvlSetCR::hasKey(ht.clone(), cref.clone())?;
                     selectedParameters = List::consOnTrue(select.clone(), index.clone(), selectedParameters.clone());
                     ilst = list![index.clone()];
-                    mt = {let _arr = mt.clone(); let _idx = index.clone(); let _val = ilst.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    mt = metamodelica::arrayUpdate(mt.clone(), index.clone(), ilst.clone())?;
                     Ok((v.clone(), (globalKnownVars.clone(), index.clone() + 1, selectParameter.clone(), selectedParameters.clone(), m.clone(), mt.clone(), ht.clone(), isInitial.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -356,7 +356,7 @@ fn evaluateSelectedParameters0(mut i: i32, mut globalKnownVars: BackendDAE::Vari
     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     match '__try0: {
         let false = (intGt(({let __elt = markarr.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
-        {let _arr = markarr.clone(); let _idx = i.clone(); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        unwrap_break_err!(metamodelica::arrayUpdate(markarr.clone(), i.clone(), mark.clone()), '__try0);
         (globalKnownVars, cache, mark, repl, replEvaluate) = unwrap_break_err!(evaluateSelectedParameters1(({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone()), '__try0);
         v = unwrap_break_err!(BackendVariable::getVarAt(globalKnownVars.clone(), i.clone()), '__try0);
         (v, globalKnownVars, cache, mark, repl) = unwrap_break_err!(evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone()), '__try0);
@@ -404,7 +404,7 @@ fn evaluateSelectedParameters1(mut iUsed: Arc<metamodelica::List<i32>>, mut glob
                     let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
                     let mut replEvaluate: BackendVarTransform::VariableReplacements = replEvaluate.clone();
                     let false = (intGt(({let __elt = markarr.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = markarr.clone(); let _idx = i.clone(); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(markarr.clone(), i.clone(), mark.clone())?;
                     (globalKnownVars, cache, mark, repl, replEvaluate) = evaluateSelectedParameters1(({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone())?;
                     v = BackendVariable::getVarAt(globalKnownVars.clone(), i.clone())?;
                     (v, globalKnownVars, cache, mark, repl) = evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone())?;

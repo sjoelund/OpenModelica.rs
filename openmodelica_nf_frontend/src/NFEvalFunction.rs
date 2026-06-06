@@ -748,9 +748,9 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             rest_subs = (*__esc_rest_subs).clone();
             idx = Expression::toInteger(sub.clone())?;
             if rest_subs.clone().is_empty() {
-                {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _idx = idx.clone(); let _val = value.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone(), value.clone())?;
             } else {
-                {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _idx = idx.clone(); let _val = assignArrayElement(metamodelica::arrayGet(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone())?, rest_subs.clone(), value.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone(), assignArrayElement(metamodelica::arrayGet(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone())?, rest_subs.clone(), value.clone())?)?;
             }
             arrayExp.clone()
         },
@@ -767,14 +767,14 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
                     sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
                     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
-                    {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _idx = idx.clone(); let _val = val.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone(), val.clone())?;
                 }
             } else {
                 for mut i in 1..=metamodelica::arrayLength(subs.clone()) {
                     sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
                     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
-                    {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _idx = idx.clone(); let _val = assignArrayElement(metamodelica::arrayGet(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone())?, rest_subs.clone(), val.clone())?; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone(), assignArrayElement(metamodelica::arrayGet(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), idx.clone())?, rest_subs.clone(), val.clone())?)?;
                 }
             }
             arrayExp.clone()

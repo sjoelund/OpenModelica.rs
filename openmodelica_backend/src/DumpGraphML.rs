@@ -605,7 +605,7 @@ fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metam
                     let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
                     c = ({let __elt = varcomp.borrow()[(v.clone()-1) as usize].clone(); __elt});
                     let false = (intEq(({let __elt = markarray.borrow()[(c.clone()-1) as usize].clone(); __elt}), mark.clone())) else { bail!("pattern mismatch") };
-                    {let _arr = markarray.clone(); let _idx = c.clone(); let _val = mark.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                    metamodelica::arrayUpdate(markarray.clone(), c.clone(), mark.clone())?;
                     (graph, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("e")); __mm_s.push_str(&*intString(id.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(c.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(iN.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWSTANDART, openmodelica_susan::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), iGraph.clone())?;
                     (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone() + 1, graph.clone())?;
                     Ok((n.clone(), graph.clone()))

@@ -2836,8 +2836,8 @@ pub fn instElementList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         for mut idx in &*element_order.clone() {
             let mut idx = idx.clone();
             (cache, outEnv, outIH, outStore, dae, outSets, outState, vars, outGraph, fieldDomOpt) = instElement2(cache.clone(), outEnv.clone(), outIH.clone(), outStore.clone(), inMod.clone(), inPrefix.clone(), outState.clone(), ({let __elt = el_arr.borrow()[(idx.clone()-1) as usize].clone(); __elt}), inInstDims.clone(), inImplInst.clone(), inCallingScope.clone(), outGraph.clone(), outSets.clone(), inStopOnError.clone())?;
-            {let _arr = var_arr.clone(); let _idx = length.clone() - idx.clone() + 1; let _val = vars.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            {let _arr = dae_arr.clone(); let _idx = length.clone() - idx.clone() + 1; let _val = dae.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(var_arr.clone(), length.clone() - idx.clone() + 1, vars.clone())?;
+            metamodelica::arrayUpdate(dae_arr.clone(), length.clone() - idx.clone() + 1, dae.clone())?;
             if intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::PDEMODELICA.clone()) {
                 domainFieldsListOut = InstUtil::optAppendField(domainFieldsListOut.clone(), fieldDomOpt.clone())?;
             }

@@ -160,8 +160,8 @@ fn freeStateAssignments(mut inVar: BackendDAE::Var, mut inTpl: (i32, metamodelic
         (mut var @ BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, (mut index, mut ass1, mut ass2)) => {
             let mut e: i32 = 0;
             e = ({let __elt = ass1.borrow()[(index.clone()-1) as usize].clone(); __elt});
-            ass1 = {let _arr = ass1.clone(); let _idx = index.clone(); let _val = -1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            ass2 = {let _arr = ass2.clone(); let _idx = e.clone(); let _val = -1; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            ass1 = metamodelica::arrayUpdate(ass1.clone(), index.clone(), -1)?;
+            ass2 = metamodelica::arrayUpdate(ass2.clone(), e.clone(), -1)?;
             (var.clone(), (index.clone() + 1, ass1.clone(), ass2.clone()))
         },
         (mut var, (mut index, mut ass1, mut ass2)) => {

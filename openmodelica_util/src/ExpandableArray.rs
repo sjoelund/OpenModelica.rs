@@ -158,7 +158,7 @@ pub fn set<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<Ex
             expandToSize(capacity.clone(), exarray.clone())?;
             data = Mutable::access(exarray.data.clone());
         }
-        {let _arr = data.clone(); let _idx = index.clone(); let _val = Some(value.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(data.clone(), index.clone(), Some(value.clone()))?;
         Mutable::update(exarray.numberOfElements.clone(), numberOfElements.clone() + 1);
         if index.clone() > lastUsedIndex.clone() {
             Mutable::update(exarray.lastUsedIndex.clone(), index.clone());
@@ -184,7 +184,7 @@ pub fn delete<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArr
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone())) {
-        {let _arr = data.clone(); let _idx = index.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(data.clone(), index.clone(), None)?;
         Mutable::update(exarray.numberOfElements.clone(), numberOfElements.clone() - 1);
         if index.clone() == lastUsedIndex.clone() {
             lastUsedIndex = lastUsedIndex.clone() - 1;
@@ -204,7 +204,7 @@ pub fn update<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone())) {
-        {let _arr = data.clone(); let _idx = index.clone(); let _val = Some(value.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(data.clone(), index.clone(), Some(value.clone()))?;
     } else {
         bail!("fail");
     }

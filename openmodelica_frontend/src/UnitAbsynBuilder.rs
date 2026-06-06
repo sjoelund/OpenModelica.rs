@@ -338,7 +338,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
             let UnitAbsyn::Store { storeVector: mut vector, numElts: mut numElts } = __mc_input.clone() else { bail!("nomatch") };
             let mut newIndx: i32 = 0;
             newIndx = numElts.clone() + 1;
-            vector = {let _arr = vector.clone(); let _idx = newIndx.clone(); let _val = Some(unit.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            vector = metamodelica::arrayUpdate(vector.clone(), newIndx.clone(), Some(unit.clone()))?;
             Ok((UnitAbsyn::Store { storeVector: vector.clone(), numElts: newIndx.clone() }, newIndx.clone()))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -378,7 +378,7 @@ pub fn update(mut unit: UnitAbsyn::Unit, mut index: i32, mut st: UnitAbsyn::Stor
         let __mc_input = st.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let UnitAbsyn::Store { storeVector: mut vector, numElts: mut indx } = __mc_input.clone() else { bail!("nomatch") };
-            vector = {let _arr = vector.clone(); let _idx = index.clone(); let _val = Some(unit.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            vector = metamodelica::arrayUpdate(vector.clone(), index.clone(), Some(unit.clone()))?;
             Ok(UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -904,7 +904,7 @@ fn createTypeParameterLocations2(mut istore: UnitAbsyn::Store, mut iht: (metamod
             } };
             unit = __pa0.clone();
             (unit, ht, nextElt) = createTypeParameterLocations3(unit.clone(), ht.clone(), nextElt.clone())?;
-            vect = {let _arr = vect.clone(); let _idx = i.clone(); let _val = Some(unit.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            vect = metamodelica::arrayUpdate(vect.clone(), i.clone(), Some(unit.clone()))?;
             (store, ht, nextElt) = createTypeParameterLocations2(UnitAbsyn::Store { storeVector: vect.clone(), numElts: numElts.clone() }, ht.clone(), i.clone() + 1, nextElt.clone())?;
             Ok((store.clone(), ht.clone(), nextElt.clone()))
         })() { break 'mc __v; }

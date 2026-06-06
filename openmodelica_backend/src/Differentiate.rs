@@ -3379,7 +3379,7 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-        {let _arr = ba.clone(); let _idx = i.clone(); let _val = false; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+        metamodelica::arrayUpdate(ba.clone(), i.clone(), false)?;
     }
     outblst = Arc::new(ba.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     Ok(outblst)

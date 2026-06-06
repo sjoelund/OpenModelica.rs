@@ -397,8 +397,8 @@ pub fn getDependentCrefIndicesPseudoFull(mut dependencies: Arc<metamodelica::Lis
         for mut var_scal_idx in &*scal_lst.clone().reverse() {
             let mut var_scal_idx = var_scal_idx.clone();
             mode_to_var_row = ({let __elt = mode_to_var.borrow()[(idx.clone()-1) as usize].clone(); __elt});
-            {let _arr = mode_to_var_row.clone(); let _idx = mode.clone(); let _val = var_scal_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-            {let _arr = mode_to_var.clone(); let _idx = idx.clone(); let _val = mode_to_var_row.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(mode_to_var_row.clone(), mode.clone(), var_scal_idx.clone())?;
+            metamodelica::arrayUpdate(mode_to_var.clone(), idx.clone(), mode_to_var_row.clone())?;
             {
                 let __cell1 = metamodelica::cons(var_scal_idx.clone(), ({let __elt = indices.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
                 let __idx1 = idx.clone();
@@ -575,7 +575,7 @@ pub type updateDependencies = std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32) -
 
 pub fn updateDependenciesCref(mut eqn_idx: i32, mut var_idx: i32, mut var_arr_idx: i32, mut accum_dep_arr: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut vars: Arc<VariablePointers::VariablePointers>, mut mapping: Arc<Mapping::Mapping>, mut resize: bool) -> Result<i32> {
     let mut eqn_idx: i32 = eqn_idx;
-    {let _arr = accum_dep_arr.clone(); let _idx = eqn_idx.clone(); let _val = metamodelica::cons(BVariable::VariablePointers::varSlice(vars.clone(), var_idx.clone(), var_arr_idx.clone(), mapping.clone(), resize.clone())?, ({let __elt = accum_dep_arr.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(accum_dep_arr.clone(), eqn_idx.clone(), metamodelica::cons(BVariable::VariablePointers::varSlice(vars.clone(), var_idx.clone(), var_arr_idx.clone(), mapping.clone(), resize.clone())?, ({let __elt = accum_dep_arr.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})))?;
     eqn_idx = eqn_idx.clone() + 1;
     Ok(eqn_idx)
 }
@@ -584,8 +584,8 @@ pub fn updateDependenciesInteger(mut eqn_idx: i32, mut var_idx: i32, mut var_arr
     let mut eqn_idx: i32 = eqn_idx;
     let mut mode_to_var_row: metamodelica::Array<i32> = Default::default();
     mode_to_var_row = ({let __elt = mode_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
-    {let _arr = mode_to_var_row.clone(); let _idx = mode.clone(); let _val = var_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-    {let _arr = indices.clone(); let _idx = eqn_idx.clone(); let _val = metamodelica::cons(var_idx.clone(), ({let __elt = indices.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+    metamodelica::arrayUpdate(mode_to_var_row.clone(), mode.clone(), var_idx.clone())?;
+    metamodelica::arrayUpdate(indices.clone(), eqn_idx.clone(), metamodelica::cons(var_idx.clone(), ({let __elt = indices.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})))?;
     eqn_idx = eqn_idx.clone() + 1;
     Ok(eqn_idx)
 }
@@ -1540,7 +1540,7 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
         },
         Deref @ metamodelica::List::Cons { head: (dim, true), tail: rest } => {
             for mut i in 1..=Dimension::size(dim.clone(), true)? {
-                {let _arr = key.clone(); let _idx = index.clone(); let _val = i.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(key.clone(), index.clone(), i.clone())?;
                 resolveEquationDimensions(rest.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
             }
             ()
@@ -1553,7 +1553,7 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
 fn addMatrixEntry(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut eqn_idx: i32, mut var_idx: i32, mut mode: Arc<Mode::Mode>) -> Result<()> {
     match '__try0: {
         if var_idx.clone() > 0 {
-            {let _arr = m.clone(); let _idx = eqn_idx.clone(); let _val = metamodelica::cons(var_idx.clone(), ({let __elt = m.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            unwrap_break_err!(metamodelica::arrayUpdate(m.clone(), eqn_idx.clone(), metamodelica::cons(var_idx.clone(), ({let __elt = m.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}))), '__try0);
             unwrap_break_err!(UnorderedMap::addUpdate((eqn_idx.clone(), var_idx.clone()), (std::sync::Arc::new({ let __pe_b1 = mode.clone(); move |__pe_a0| Mode::mergeCreate(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Mode::Mode>>) -> Result<Arc<Mode::Mode>> + 'static>), modes.clone()), '__try0);
         }
         Ok::<(), anyhow::Error>(())
@@ -1586,7 +1586,7 @@ fn resolveReductions(mut lst: Arc<metamodelica::List<(Arc<Subscript::NFSubscript
             sub_idx = 1;
             for mut s in &*Subscript::scalarize(sub.clone(), dim.clone(), true)? {
                 let mut s = s.clone();
-                {let _arr = key.clone(); let _idx = index.clone(); let _val = sub_idx.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                metamodelica::arrayUpdate(key.clone(), index.clone(), sub_idx.clone())?;
                 resolveReductions(rest.clone(), map.clone(), key.clone(), stripped.clone(), metamodelica::cons(s.clone(), acc.clone()), index.clone() + 1)?;
                 sub_idx = sub_idx.clone() + 1;
             }

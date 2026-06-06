@@ -6212,6 +6212,9 @@ fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
     logfile = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!(".log")); ArcStr::from(__mm_s) }).clone();
     dir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) }).clone();
     if Config::simCodeTarget()? == literal!("Cpp") {
+        if Flags::getConfigString(Flags::FMI_EXTRA_ANNOTATIONS.clone())? != literal!("") {
+            System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_modelInstance.json")); ArcStr::from(__mm_s) }).clone(), (ValuesUtil::extractValueString(NFApi::getModelInstance(className.clone(), className.clone(), (literal!("")).clone(), true)?)?).clone())?;
+        }
         System::removeDirectory((literal!("binaries")).clone());
         for mut platform in &*platforms.clone() {
             let mut platform = platform.clone();

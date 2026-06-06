@@ -764,7 +764,7 @@ fn transitiveClosure(mut iTable: AdjacencyTable, mut nStates: i32) -> Result<Adj
             if metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), i.clone())?, k.clone())? {
                 for mut j in 1..=n.clone() {
                     if metamodelica::arrayGet(metamodelica::arrayGet(adjacency.clone(), k.clone())?, j.clone())? {
-                        {let _arr = metamodelica::arrayGet(adjacency.clone(), i.clone())?; let _idx = j.clone(); let _val = true; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+                        metamodelica::arrayUpdate(metamodelica::arrayGet(adjacency.clone(), i.clone())?, j.clone(), true)?;
                     }
                 }
             }
@@ -810,7 +810,7 @@ fn createAdjacencyTable(mut smNodes: SMNodeTable, mut nStates: i32) -> Result<Ad
         for mut j in 1..=m.clone() {
             cref = ({let __elt = crefs2.borrow()[(j.clone()-1) as usize].clone(); __elt});
             k = BaseHashTable::get(cref.clone(), cref2index.clone())?;
-            {let _arr = metamodelica::arrayGet(adjacency.clone(), i.clone())?; let _idx = k.clone(); let _val = true; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
+            metamodelica::arrayUpdate(metamodelica::arrayGet(adjacency.clone(), i.clone())?, k.clone(), true)?;
         }
     }
     iTable = AdjacencyTable { cref2index: cref2index.clone(), adjacency: adjacency.clone() };
