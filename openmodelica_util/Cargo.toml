@@ -14,3 +14,5 @@ openmodelica_util_datatypes_basic.workspace=true
 arcstr.workspace=true
 match_deref.workspace=true
 libc.workspace=true
+# GraphML reader in the hand-written TaskGraphResults.rs.
+roxmltree.workspace=true

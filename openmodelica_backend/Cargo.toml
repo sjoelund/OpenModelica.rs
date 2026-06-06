@@ -29,3 +29,6 @@ tailcall.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true
+# Profiling-file readers in the hand-written HpcOmBenchmarkExt.rs.
+roxmltree.workspace=true
+serde_json.workspace=true

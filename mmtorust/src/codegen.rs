@@ -100,6 +100,19 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // hand-written in `openmodelica_util/src/Lapack.rs` using the `lapack` crate
     // bound to the system LAPACK/BLAS.
     "Lapack",
+    // All bodies are `external "C"` wrappers over
+    // `runtime/HpcOmBenchmarkExt.cpp` (hardcoded op/comm cost estimates plus
+    // readers for the `*_prof.xml` / `*_prof.json` profiling files written by
+    // the simulation runtime); hand-written in
+    // `openmodelica_backend/src/HpcOmBenchmarkExt.rs` using `roxmltree` /
+    // `serde_json`.
+    "HpcOmBenchmarkExt",
+    // All bodies are `external "C"` wrappers over
+    // `runtime/TaskGraphResultsCmp.cpp` (structural comparison of hpcom task
+    // graphs in GraphML form, plus the TG_NODE/TG_DEPENDENCY comment-graph
+    // reader); hand-written in `openmodelica_util/src/TaskGraphResults.rs`
+    // using `roxmltree`.
+    "TaskGraphResults",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.

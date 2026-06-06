@@ -38,7 +38,13 @@ cc = "1"
 # bundled `static-curl` feature will be needed; add it when the Windows build
 # is set up (see Curl.rs).
 curl = "0.4"
-mmtorust = {path = "mmtorust"}
+# Read-only XML DOM for the `*_prof.xml` profiling files written by the
+# simulation runtime (HpcOmBenchmarkExt.rs, replacing the expat parser of
+# runtime/HpcOmBenchmarkExt.cpp).
+roxmltree = "0.21"
+# JSON reader for the `*_prof.json` profiling files (HpcOmBenchmarkExt.rs,
+# replacing the cJSON parser of runtime/HpcOmBenchmarkExt.cpp).
+serde_json = "1"
 metamodelica = {path = "metamodelica"}
 openmodelica_ast = {path = "openmodelica_ast"}
 openmodelica_frontend = {path = "openmodelica_frontend"}
