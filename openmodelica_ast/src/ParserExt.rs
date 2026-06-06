@@ -95,10 +95,34 @@ fn report_syntax_messages(info_filename: &str) {
 /// `info_filename` (the possibly testsuite-friendly name) is only used to
 /// display syntax errors — same split as the C parser's `filename_C` vs
 /// `filename_C_testsuiteFriendly` (Parser/parse.c).
-fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, readonly: bool) -> Result<Absyn::Program> {
-    let result = parser::parse(src, filename, info_filename, grammar, readonly).map_err(|e| anyhow!(e.to_string()));
+fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, readonly: bool, timestamp: f64) -> Result<Absyn::Program> {
+    let result = parser::parse(src, filename, info_filename, grammar, readonly, timestamp).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(info_filename);
     result
+}
+
+/// The file's mtime in seconds, the way parseFile in Parser/parse.c stores
+/// `st.st_mtime` into every SOURCEINFO's lastModification — except under
+/// OPENMODELICA_BACKEND_STUBS, where it is pinned to 0.0 so bootstrapping
+/// sources are reproducible. getTimeStamp/reloadClass compare this value.
+fn file_timestamp(filename: &str) -> f64 {
+    if std::env::var_os("OPENMODELICA_BACKEND_STUBS").is_some_and(|v| v == "1") {
+        return 0.0;
+    }
+    std::fs::metadata(filename)
+        .and_then(|m| m.modified())
+        .ok()
+        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+        .map(|d| d.as_secs() as f64)
+        .unwrap_or(0.0)
+}
+
+/// `time(NULL)` for string parses, like parseString in Parser/parse.c.
+fn now_timestamp() -> f64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs() as f64)
+        .unwrap_or(0.0)
 }
 
 pub fn parse(
@@ -128,7 +152,7 @@ pub fn parse(
     // cannot write to are flagged read-only in their SOURCEINFO, so the
     // interactive API refuses to modify them.
     let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
-    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly)
+    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str()))
 }
 
 pub fn parsestring(
@@ -142,7 +166,7 @@ pub fn parsestring(
     let grammar = select_grammar(acceptedGram, languageStandardInt);
     // String input has no on-disk path; the interactive name serves as both
     // the SOURCEINFO and the error-display name (like the C `parseString`).
-    run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false)
+    run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false, now_timestamp())
 }
 
 // ---------------------------------------------------------------------
@@ -163,7 +187,7 @@ pub fn parseexp(
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
     let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
-    let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly).map_err(|e| anyhow!(e.to_string()));
+    let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str())).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());
     result
 }
@@ -176,7 +200,7 @@ pub fn parsestringexp(
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    let result = parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false).map_err(|e| anyhow!(e.to_string()));
+    let result = parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false, now_timestamp()).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());
     result
 }
