@@ -92,6 +92,10 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // of external functions); hand-written (using the `libffi` crate) in
     // `openmodelica_nf_frontend/src/FFI.rs`.
     "FFI",
+    // All bodies are `external "C"` into the unit parser/scanner runtime
+    // (`runtime/unitparser.cpp` + `unitparserext.cpp`); reimplemented in pure
+    // Rust in `openmodelica_script_util/src/UnitParserExt.rs`.
+    "UnitParserExt",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
