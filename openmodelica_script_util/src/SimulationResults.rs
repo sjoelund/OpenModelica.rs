@@ -397,8 +397,21 @@ struct DiffData {
 
 /// C `getData`: full trajectory of `varname` over all `nrows` sample points
 /// (a constant vector for parameters), or `None` if the variable is missing.
-fn get_data(reader: &mut MatReader, varname: &str) -> Option<Vec<f64>> {
-    let idx = reader.find_var(varname)?;
+/// The filename to show in messages: `basename` under the testsuite, otherwise
+/// the full path. Matches the C `runningTestsuite ? SystemImpl__basename(f) : f`.
+fn display_filename(running_testsuite: bool, f: &ArcStr) -> ArcStr {
+    if running_testsuite { openmodelica_util::System::basename(f.clone()) } else { f.clone() }
+}
+
+/// C `getData` → `SimulationResultsImpl__readDataset` for a single variable.
+/// Returns the trajectory, or `None` after emitting the scripting error
+/// `Could not read variable %s in file %s.` (with `file_msg` already in display
+/// form) — exactly as `readDataset` does when a variable cannot be read.
+fn get_data(reader: &mut MatReader, varname: &str, file_msg: &ArcStr) -> Result<Option<Vec<f64>>> {
+    let Some(idx) = reader.find_var(varname) else {
+        err(&ERROR_COULD_NOT_READ_VAR, [ArcStr::from(varname), file_msg.clone()])?;
+        return Ok(None);
+    };
     let (is_param, index) = {
         let info = &reader.allInfo[idx];
         (info.isParam, info.index)
@@ -406,12 +419,19 @@ fn get_data(reader: &mut MatReader, varname: &str) -> Option<Vec<f64>> {
     if is_param {
         let absp = index.unsigned_abs() as usize;
         if absp == 0 || absp > reader.params.len() {
-            return None;
+            err(&ERROR_COULD_NOT_READ_VAR, [ArcStr::from(varname), file_msg.clone()])?;
+            return Ok(None);
         }
         let p = reader.params[absp - 1];
-        Some(vec![if index < 0 { -p } else { p }; reader.nrows])
+        Ok(Some(vec![if index < 0 { -p } else { p }; reader.nrows]))
     } else {
-        reader.read_vals(index)
+        match reader.read_vals(index) {
+            Some(v) => Ok(Some(v)),
+            None => {
+                err(&ERROR_COULD_NOT_READ_VAR, [ArcStr::from(varname), file_msg.clone()])?;
+                Ok(None)
+            }
+        }
     }
 }
 
@@ -780,16 +800,18 @@ pub fn cmpSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, mu
         }
     }
 
+    let c_file = display_filename(runningTestsuite, &filename);
+    let ref_file = display_filename(runningTestsuite, &reffilename);
     let time_name = get_time_var_name(&allvars);
     let timeref_name = get_time_var_name(&allvarsref);
-    let time = match get_data(&mut reader_c, time_name) {
+    let time = match get_data(&mut reader_c, time_name, &c_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME, [])?;
             return Ok(Arc::new(List::Nil));
         }
     };
-    let timeref = match get_data(&mut reader_ref, timeref_name) {
+    let timeref = match get_data(&mut reader_ref, timeref_name, &ref_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME_REF, [])?;
@@ -827,20 +849,18 @@ pub fn cmpSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, mu
     let mut nfailed = 0u32;
     for var in &cmpvars {
         let var1 = strip_quotes(var.as_str());
-        let mut dataref = match get_data(&mut reader_ref, var1.as_str()) {
+        let mut dataref = match get_data(&mut reader_ref, var1.as_str(), &ref_file)? {
             Some(d) if !d.is_empty() => d,
             _ => {
-                let file = if runningTestsuite { openmodelica_util::System::basename(reffilename.clone()) } else { reffilename.clone() };
-                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                err(&ERROR_GET_DATA_FAILED, [var.clone(), ref_file.clone()])?;
                 nfailed += 1;
                 continue;
             }
         };
-        let mut data = match get_data(&mut reader_c, var1.as_str()) {
+        let mut data = match get_data(&mut reader_c, var1.as_str(), &c_file)? {
             Some(d) if !d.is_empty() => d,
             _ => {
-                let file = if runningTestsuite { openmodelica_util::System::basename(filename.clone()) } else { filename.clone() };
-                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                err(&ERROR_GET_DATA_FAILED, [var.clone(), c_file.clone()])?;
                 nfailed += 1;
                 continue;
             }
@@ -977,16 +997,20 @@ pub fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut
         }
     }
 
+    // deltaSimulationResults is the C `deltaSimulationResults`, which passes
+    // runningTestsuite = 0, so messages always use the full path.
+    let c_file = filename.clone();
+    let ref_file = reffilename.clone();
     let time_name = get_time_var_name(&allvars);
     let timeref_name = get_time_var_name(&allvarsref);
-    let time = match get_data(&mut reader_c, time_name) {
+    let time = match get_data(&mut reader_c, time_name, &c_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME, [])?;
             return Ok(OrderedFloat(-1.0));
         }
     };
-    let timeref = match get_data(&mut reader_ref, timeref_name) {
+    let timeref = match get_data(&mut reader_ref, timeref_name, &ref_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME_REF, [])?;
@@ -1007,11 +1031,11 @@ pub fn deltaSimulationResults(mut filename: ArcStr, mut reffilename: ArcStr, mut
     let mut res = 0.0;
     for var in &cmpvars {
         let var1 = strip_quotes(var.as_str());
-        let mut dataref = match get_data(&mut reader_ref, var1.as_str()) {
+        let mut dataref = match get_data(&mut reader_ref, var1.as_str(), &ref_file)? {
             Some(d) if !d.is_empty() => d,
             _ => continue,
         };
-        let mut data = match get_data(&mut reader_c, var1.as_str()) {
+        let mut data = match get_data(&mut reader_c, var1.as_str(), &c_file)? {
             Some(d) if !d.is_empty() => d,
             _ => continue,
         };
@@ -1552,16 +1576,18 @@ pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, m
         }
     }
 
+    let c_file = display_filename(runningTestsuite, &filename);
+    let ref_file = display_filename(runningTestsuite, &reffilename);
     let time_name = get_time_var_name(&allvars);
     let timeref_name = get_time_var_name(&allvarsref);
-    let time = match get_data(&mut reader_c, time_name) {
+    let time = match get_data(&mut reader_c, time_name, &c_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME, [])?;
             return Ok((false, Arc::new(List::Nil)));
         }
     };
-    let timeref = match get_data(&mut reader_ref, timeref_name) {
+    let timeref = match get_data(&mut reader_ref, timeref_name, &ref_file)? {
         Some(t) if !t.is_empty() => t,
         _ => {
             err(&ERROR_GET_TIME_REF, [])?;
@@ -1597,19 +1623,17 @@ pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, m
     let mut diff_vars: Vec<ArcStr> = Vec::new();
     for var in &cmpvars {
         let var1 = strip_quotes(var.as_str());
-        let mut dataref = match get_data(&mut reader_ref, var1.as_str()) {
+        let mut dataref = match get_data(&mut reader_ref, var1.as_str(), &ref_file)? {
             Some(d) if !d.is_empty() => d,
             _ => {
-                let file = if runningTestsuite { openmodelica_util::System::basename(reffilename.clone()) } else { reffilename.clone() };
-                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                err(&ERROR_GET_DATA_FAILED, [var.clone(), ref_file.clone()])?;
                 continue;
             }
         };
-        let mut data = match get_data(&mut reader_c, var1.as_str()) {
+        let mut data = match get_data(&mut reader_c, var1.as_str(), &c_file)? {
             Some(d) if !d.is_empty() => d,
             _ => {
-                let file = if runningTestsuite { openmodelica_util::System::basename(filename.clone()) } else { filename.clone() };
-                err(&ERROR_GET_DATA_FAILED, [file, var.clone()])?;
+                err(&ERROR_GET_DATA_FAILED, [var.clone(), c_file.clone()])?;
                 continue;
             }
         };
