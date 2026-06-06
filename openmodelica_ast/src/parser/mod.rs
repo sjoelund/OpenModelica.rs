@@ -3791,6 +3791,13 @@ fn string_comment(input: &mut TokenInput) -> ModalResult<Option<ArcStr>> {
 fn comment(input: &mut TokenInput) -> ModalResult<Option<Comment>> {
     let comment = string_comment.parse_next(input)?;
     let annotation_ = opt(annotation).parse_next(input)?;
+    // The ANTLR rule yields no COMMENT node when both parts are absent —
+    // `SOME(COMMENT(NONE, NONE))` is not the same as `NONE` to consumers
+    // like Interactive.updateEquation's mergeDescription, which probes
+    // `isNone(newEq.comment)` to decide whether to keep the old description.
+    if comment.is_none() && annotation_.is_none() {
+        return Ok(None);
+    }
     Ok(Some(Comment { comment, annotation_: annotation_.map(Arc::new) }))
 }
 
