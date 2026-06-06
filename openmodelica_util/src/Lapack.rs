@@ -1,345 +1,605 @@
-// Auto-generated from MetaModelica source
-/*
- * This file is part of OpenModelica.
- *
- * Copyright (c) 1998-2026, Open Source Modelica Consortium (OSMC),
- * c/o Linköpings universitet, Department of Computer and Information Science,
- * SE-58183 Linköping, Sweden.
- *
- * All rights reserved.
- *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF AGPL VERSION 3 LICENSE OR
- * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.8.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GNU AGPL
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
- *
- * The OpenModelica software and the OSMC (Open Source Modelica Consortium)
- * Public License (OSMC-PL) are obtained from OSMC, either from the above
- * address, from the URLs:
- * http://www.openmodelica.org or
- * https://github.com/OpenModelica/ or
- * http://www.ida.liu.se/projects/OpenModelica,
- * and in the OpenModelica distribution.
- *
- * GNU AGPL version 3 is obtained from:
- * https://www.gnu.org/licenses/licenses.html#GPL
- *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
- * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.
- *
- * See the full OSMC Public License conditions for more details.
- *
- */
-#![allow(warnings)]
-#![allow(unreachable_patterns, unreachable_code, non_camel_case_types, non_snake_case, dead_code, unused_imports, unused_variables, non_upper_case_globals, unused_mut)]
+// Manually written file.
+//
+// Rust port of `OMCompiler/Compiler/Util/Lapack.mo`'s `external "C"`
+// declarations, which are thin FFI shims into `runtime/lapackimpl.c`. Like the
+// C runtime, we bind the system LAPACK directly through its Fortran ABI (the
+// `d*_` symbols, linked via `build.rs`) and reproduce the matrix/vector
+// marshalling that `lapackimpl.c` performs:
+//
+//   * MetaModelica matrices are `list<list<Real>>` (a list of rows). LAPACK
+//     expects column-major storage with leading dimension equal to the row
+//     count, so element (row i, col j) lives at `buf[j*rows + i]`. This mirrors
+//     `alloc_real_matrix`/`mk_rml_real_matrix`.
+//   * Vectors are `list<Real>` / `list<Integer>` stored contiguously.
+//
+// The dimensions handed to each allocation/result-builder are copied verbatim
+// from `lapackimpl.c` so the observable behaviour matches the C runtime.
+//
+// `CHARACTER*1` arguments (`trans`, `jobvl`, …) are passed without the hidden
+// Fortran string-length argument, exactly as `lapackimpl.c` does — LAPACK only
+// inspects the first character via `LSAME` and never reads the length. The
+// LAPACK `integer` type is 32-bit on the system (reference/OpenBLAS LP64
+// build), matching the port's `Integer`.
+
+#![allow(non_snake_case)]
 
 use std::sync::Arc;
-use anyhow::{Result, bail};
-use loop_unwrap::unwrap_break_err;
-use metamodelica::*; // Built-in types and functions
-use const_str;
-use arcstr::{ArcStr, literal, format};
 
-// ── helpers shared by the LAPACK wrappers ───────────────────────────────────
-// MetaModelica matrices are row lists (`List<List<Real>>`); LAPACK operates on
-// column-major arrays with leading dimension `lda`, exactly as the C runtime's
-// `alloc_real_matrix` / `mk_rml_real_matrix` (lapackimpl.c) convert them
-// (`a[j*lda + i]` holds row `i`, column `j`).
+use arcstr::ArcStr;
+use libc::c_char;
+use metamodelica::{List, OrderedFloat, Real, nil};
 
-type RealMat = Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>;
+type Mat = Arc<List<Arc<List<Real>>>>;
+type Vec64 = Arc<List<Real>>;
+type IVec = Arc<List<i32>>;
 
-fn mat_to_colmajor(rows: &RealMat, lda: usize, ncol: usize) -> Vec<f64> {
-    let mut a = vec![0.0f64; lda * ncol];
-    for (i, row) in (&**rows).into_iter().enumerate() {
-        if i >= lda { break; }
+unsafe extern "C" {
+    fn dgeev_(
+        jobvl: *const c_char, jobvr: *const c_char, n: *const i32, a: *mut f64, lda: *const i32,
+        wr: *mut f64, wi: *mut f64, vl: *mut f64, ldvl: *const i32, vr: *mut f64, ldvr: *const i32,
+        work: *mut f64, lwork: *const i32, info: *mut i32,
+    );
+    fn dgegv_(
+        jobvl: *const c_char, jobvr: *const c_char, n: *const i32, a: *mut f64, lda: *const i32,
+        b: *mut f64, ldb: *const i32, alphar: *mut f64, alphai: *mut f64, beta: *mut f64,
+        vl: *mut f64, ldvl: *const i32, vr: *mut f64, ldvr: *const i32, work: *mut f64,
+        lwork: *const i32, info: *mut i32,
+    );
+    fn dgels_(
+        trans: *const c_char, m: *const i32, n: *const i32, nrhs: *const i32, a: *mut f64,
+        lda: *const i32, b: *mut f64, ldb: *const i32, work: *mut f64, lwork: *const i32,
+        info: *mut i32,
+    );
+    fn dgelsx_(
+        m: *const i32, n: *const i32, nrhs: *const i32, a: *mut f64, lda: *const i32, b: *mut f64,
+        ldb: *const i32, jpvt: *mut i32, rcond: *const f64, rank: *mut i32, work: *mut f64,
+        info: *mut i32,
+    );
+    fn dgelsy_(
+        m: *const i32, n: *const i32, nrhs: *const i32, a: *mut f64, lda: *const i32, b: *mut f64,
+        ldb: *const i32, jpvt: *mut i32, rcond: *const f64, rank: *mut i32, work: *mut f64,
+        lwork: *const i32, info: *mut i32,
+    );
+    fn dgesv_(
+        n: *const i32, nrhs: *const i32, a: *mut f64, lda: *const i32, ipiv: *mut i32, b: *mut f64,
+        ldb: *const i32, info: *mut i32,
+    );
+    fn dgglse_(
+        m: *const i32, n: *const i32, p: *const i32, a: *mut f64, lda: *const i32, b: *mut f64,
+        ldb: *const i32, c: *mut f64, d: *mut f64, x: *mut f64, work: *mut f64, lwork: *const i32,
+        info: *mut i32,
+    );
+    fn dgtsv_(
+        n: *const i32, nrhs: *const i32, dl: *mut f64, d: *mut f64, du: *mut f64, b: *mut f64,
+        ldb: *const i32, info: *mut i32,
+    );
+    fn dgbsv_(
+        n: *const i32, kl: *const i32, ku: *const i32, nrhs: *const i32, ab: *mut f64,
+        ldab: *const i32, ipiv: *mut i32, b: *mut f64, ldb: *const i32, info: *mut i32,
+    );
+    fn dgesvd_(
+        jobu: *const c_char, jobvt: *const c_char, m: *const i32, n: *const i32, a: *mut f64,
+        lda: *const i32, s: *mut f64, u: *mut f64, ldu: *const i32, vt: *mut f64, ldvt: *const i32,
+        work: *mut f64, lwork: *const i32, info: *mut i32,
+    );
+    fn dgetrf_(
+        m: *const i32, n: *const i32, a: *mut f64, lda: *const i32, ipiv: *mut i32, info: *mut i32,
+    );
+    fn dgetrs_(
+        trans: *const c_char, n: *const i32, nrhs: *const i32, a: *mut f64, lda: *const i32,
+        ipiv: *mut i32, b: *mut f64, ldb: *const i32, info: *mut i32,
+    );
+    fn dgetri_(
+        n: *const i32, a: *mut f64, lda: *const i32, ipiv: *mut i32, work: *mut f64,
+        lwork: *const i32, info: *mut i32,
+    );
+    fn dgeqpf_(
+        m: *const i32, n: *const i32, a: *mut f64, lda: *const i32, jpvt: *mut i32, tau: *mut f64,
+        work: *mut f64, info: *mut i32,
+    );
+    fn dorgqr_(
+        m: *const i32, n: *const i32, k: *const i32, a: *mut f64, lda: *const i32, tau: *mut f64,
+        work: *mut f64, lwork: *const i32, info: *mut i32,
+    );
+    fn dhseqr_(
+        job: *const c_char, compz: *const c_char, n: *const i32, ilo: *const i32, ihi: *const i32,
+        h: *mut f64, ldh: *const i32, wr: *mut f64, wi: *mut f64, z: *mut f64, ldz: *const i32,
+        work: *mut f64, lwork: *const i32, info: *mut i32,
+    );
+}
+
+/// Read a `list<list<Real>>` of `rows`×`cols` into a column-major `f64` buffer
+/// (`buf[j*rows + i]`).
+fn mat_in(rows: i32, cols: i32, data: &Mat) -> Vec<f64> {
+    let (r, c) = (rows.max(0) as usize, cols.max(0) as usize);
+    let mut m = vec![0.0f64; r * c];
+    for (i, row) in (&**data).into_iter().enumerate() {
+        if i >= r {
+            break;
+        }
         for (j, v) in (&**row).into_iter().enumerate() {
-            if j >= ncol { break; }
-            a[j * lda + i] = v.0;
+            if j >= c {
+                break;
+            }
+            m[j * r + i] = v.0;
         }
     }
-    a
+    m
 }
 
-fn colmajor_to_mat(a: &[f64], lda: usize, ncol: usize) -> RealMat {
-    let mut res = metamodelica::nil();
-    for i in (0..lda).rev() {
-        let mut row = metamodelica::nil();
-        for j in (0..ncol).rev() {
-            row = metamodelica::cons(metamodelica::OrderedFloat(a[j * lda + i]), row);
+/// Build a `list<list<Real>>` of `rows`×`cols` from a column-major buffer.
+fn mat_out(rows: i32, cols: i32, m: &[f64]) -> Mat {
+    let (r, c) = (rows.max(0) as usize, cols.max(0) as usize);
+    Arc::new(List::from_iter((0..r).map(|i| {
+        Arc::new(List::from_iter((0..c).map(|j| OrderedFloat(m[j * r + i]))))
+    })))
+}
+
+fn vec_in(n: i32, data: &Vec64) -> Vec<f64> {
+    let len = n.max(0) as usize;
+    let mut v = vec![0.0f64; len];
+    for (i, x) in (&**data).into_iter().enumerate() {
+        if i >= len {
+            break;
         }
-        res = metamodelica::cons(row, res);
+        v[i] = x.0;
     }
-    res
+    v
 }
 
-fn intlist_to_vec(l: &Arc<metamodelica::List<i32>>) -> Vec<i32> {
-    (&**l).into_iter().copied().collect()
+fn vec_out(n: i32, v: &[f64]) -> Vec64 {
+    let len = n.max(0) as usize;
+    Arc::new(List::from_iter((0..len).map(|i| OrderedFloat(v[i]))))
 }
 
-fn vec_to_intlist(v: &[i32]) -> Arc<metamodelica::List<i32>> {
-    let mut res = metamodelica::nil();
-    for &x in v.iter().rev() { res = metamodelica::cons(x, res); }
-    res
-}
-
-fn vec_to_reallist(v: &[f64]) -> Arc<metamodelica::List<metamodelica::Real>> {
-    let mut res = metamodelica::nil();
-    for &x in v.iter().rev() { res = metamodelica::cons(metamodelica::OrderedFloat(x), res); }
-    res
-}
-
-/// Reference LAPACK `dgetf2`: partial-pivot LU of an m×n column-major matrix
-/// (leading dimension `lda`). Overwrites `a` with L\U; fills 1-based `ipiv`
-/// (length min(m,n)); returns INFO (k>0 ⇒ U(k,k)==0).
-fn lu_dgetf2(m: usize, n: usize, lda: usize, a: &mut [f64], ipiv: &mut [i32]) -> i32 {
-    let mut info = 0i32;
-    let mn = m.min(n);
-    for j in 0..mn {
-        // Pivot: row of largest magnitude in column j, rows j..m.
-        let mut jp = j;
-        let mut amax = a[j + j * lda].abs();
-        for i in (j + 1)..m {
-            let v = a[i + j * lda].abs();
-            if v > amax { amax = v; jp = i; }
+fn ivec_in(n: i32, data: &IVec) -> Vec<i32> {
+    let len = n.max(0) as usize;
+    let mut v = vec![0i32; len];
+    for (i, x) in (&**data).into_iter().enumerate() {
+        if i >= len {
+            break;
         }
-        ipiv[j] = (jp + 1) as i32;
-        if a[jp + j * lda] != 0.0 {
-            if jp != j {
-                for col in 0..n { a.swap(j + col * lda, jp + col * lda); }
-            }
-            if j + 1 < m {
-                let piv = a[j + j * lda];
-                for i in (j + 1)..m { a[i + j * lda] /= piv; }
-            }
-        } else if info == 0 {
-            info = (j + 1) as i32;
-        }
-        // Rank-1 update of the trailing submatrix.
-        for jj in (j + 1)..n {
-            let ajj = a[j + jj * lda];
-            if ajj != 0.0 {
-                for i in (j + 1)..m { a[i + jj * lda] -= a[i + j * lda] * ajj; }
-            }
-        }
+        v[i] = *x;
     }
-    info
+    v
 }
 
-/// Reference LAPACK `dgetri`: inverse of an n×n matrix from its `dgetf2`
-/// factorization (`a` = L\U, 1-based `ipiv`). Overwrites `a` with inv(A);
-/// returns INFO (k>0 ⇒ U(k,k)==0, singular).
-fn lu_inverse_dgetri(n: usize, lda: usize, a: &mut [f64], ipiv: &[i32]) -> i32 {
-    // Invert U in place (dtrtri 'Upper','Non-unit').
-    for jj in 0..n {
-        let d = a[jj + jj * lda];
-        if d == 0.0 { return (jj + 1) as i32; }
-        let d = 1.0 / d;
-        a[jj + jj * lda] = d;
-        let ajj = -d;
-        // dtrmv: A(0..jj, jj) := U(0..jj, 0..jj) * A(0..jj, jj)
-        for k in 0..jj {
-            let temp = a[k + jj * lda];
-            if temp != 0.0 {
-                for i in 0..k { a[i + jj * lda] += temp * a[i + k * lda]; }
-                a[k + jj * lda] = temp * a[k + k * lda];
-            }
-        }
-        for i in 0..jj { a[i + jj * lda] *= ajj; }
+fn ivec_out(n: i32, v: &[i32]) -> IVec {
+    let len = n.max(0) as usize;
+    Arc::new(List::from_iter((0..len).map(|i| v[i])))
+}
+
+/// First byte of a LAPACK single-character option (`"N"`, `"T"`, `"V"`, …).
+fn ch(s: &ArcStr) -> c_char {
+    *s.as_bytes().first().unwrap_or(&b' ') as c_char
+}
+
+pub fn dgeev(
+    inJOBVL: ArcStr,
+    inJOBVR: ArcStr,
+    inN: i32,
+    inA: Mat,
+    inLDA: i32,
+    inLDVL: i32,
+    inLDVR: i32,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Vec64, Vec64, Mat, Mat, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut work = vec_in(inLWORK, &inWORK);
+    let mut wr = vec![0.0f64; inN.max(0) as usize];
+    let mut wi = vec![0.0f64; inN.max(0) as usize];
+    let mut vl = vec![0.0f64; (inLDVL.max(0) * inN.max(0)) as usize];
+    let mut vr = vec![0.0f64; (inLDVR.max(0) * inN.max(0)) as usize];
+    let (jobvl, jobvr) = (ch(&inJOBVL), ch(&inJOBVR));
+    let mut info = 0;
+    unsafe {
+        dgeev_(
+            &jobvl, &jobvr, &inN, a.as_mut_ptr(), &inLDA, wr.as_mut_ptr(), wi.as_mut_ptr(),
+            vl.as_mut_ptr(), &inLDVL, vr.as_mut_ptr(), &inLDVR, work.as_mut_ptr(), &inLWORK,
+            &mut info,
+        );
     }
-    // Solve inv(A) * L = inv(U) for inv(A).
-    let mut work = vec![0.0f64; n];
-    for j in (0..n).rev() {
-        for i in (j + 1)..n {
-            work[i] = a[i + j * lda];
-            a[i + j * lda] = 0.0;
-        }
-        for jj in (j + 1)..n {
-            let wj = work[jj];
-            if wj != 0.0 {
-                for i in 0..n { a[i + j * lda] -= a[i + jj * lda] * wj; }
-            }
-        }
+    (
+        mat_out(inLDA, inN, &a),
+        vec_out(inN, &wr),
+        vec_out(inN, &wi),
+        mat_out(inLDVL, inN, &vl),
+        mat_out(inLDVR, inN, &vr),
+        vec_out(inLWORK, &work),
+        info,
+    )
+}
+
+pub fn dgegv(
+    inJOBVL: ArcStr,
+    inJOBVR: ArcStr,
+    inN: i32,
+    inA: Mat,
+    inLDA: i32,
+    inB: Mat,
+    inLDB: i32,
+    inLDVL: i32,
+    inLDVR: i32,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Vec64, Vec64, Vec64, Mat, Mat, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inN, &inB);
+    let mut alphar = vec![0.0f64; inN.max(0) as usize];
+    let mut alphai = vec![0.0f64; inN.max(0) as usize];
+    let mut beta = vec![0.0f64; inN.max(0) as usize];
+    let mut vl = vec![0.0f64; (inLDVL.max(0) * inN.max(0)) as usize];
+    // lapackimpl.c sizes vr with ldvl (not ldvr); reproduce it (they are equal
+    // in practice, both = N).
+    let mut vr = vec![0.0f64; (inLDVL.max(0) * inN.max(0)) as usize];
+    let mut work = vec_in(inLWORK, &inWORK);
+    let (jobvl, jobvr) = (ch(&inJOBVL), ch(&inJOBVR));
+    let mut info = 0;
+    unsafe {
+        dgegv_(
+            &jobvl, &jobvr, &inN, a.as_mut_ptr(), &inLDA, b.as_mut_ptr(), &inLDB,
+            alphar.as_mut_ptr(), alphai.as_mut_ptr(), beta.as_mut_ptr(), vl.as_mut_ptr(), &inLDVL,
+            vr.as_mut_ptr(), &inLDVR, work.as_mut_ptr(), &inLWORK, &mut info,
+        );
     }
-    // Apply column interchanges in reverse order.
-    if n >= 2 {
-        for j in (0..n - 1).rev() {
-            let jp = (ipiv[j] - 1) as usize;
-            if jp != j {
-                for i in 0..n { a.swap(i + j * lda, i + jp * lda); }
-            }
-        }
+    (
+        vec_out(inN, &alphar),
+        vec_out(inN, &alphai),
+        vec_out(inN, &beta),
+        mat_out(inLDVL, inN, &vl),
+        mat_out(inLDVL, inN, &vr),
+        vec_out(inLWORK, &work),
+        info,
+    )
+}
+
+pub fn dgels(
+    inTRANS: ArcStr,
+    inM: i32,
+    inN: i32,
+    inNRHS: i32,
+    inA: Mat,
+    inLDA: i32,
+    inB: Mat,
+    inLDB: i32,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Mat, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDA, inNRHS, &inB);
+    let mut work = vec_in(inLWORK, &inWORK);
+    let trans = ch(&inTRANS);
+    let mut info = 0;
+    unsafe {
+        dgels_(
+            &trans, &inM, &inN, &inNRHS, a.as_mut_ptr(), &inLDA, b.as_mut_ptr(), &inLDB,
+            work.as_mut_ptr(), &inLWORK, &mut info,
+        );
     }
-    0
+    (mat_out(inLDA, inN, &a), mat_out(inLDA, inNRHS, &b), vec_out(inLWORK, &work), info)
 }
 
-pub fn dgeev(mut inJOBVL: ArcStr, mut inJOBVR: ArcStr, mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inLDVL: i32, mut inLDVR: i32, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outWI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outVL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outVR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgeev"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWI", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 67, columnNumberStart: 24, lineNumberEnd: 67, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 67, columnNumberStart: 16, lineNumberEnd: 67, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outWR, outWI, outVL, outVR, outWORK, outINFO)
+pub fn dgelsx(
+    inM: i32,
+    inN: i32,
+    inNRHS: i32,
+    inA: Mat,
+    inLDA: i32,
+    inB: Mat,
+    inLDB: i32,
+    inJPVT: IVec,
+    inRCOND: Real,
+    inWORK: Vec64,
+) -> (Mat, Mat, IVec, i32, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut jpvt = ivec_in(inN, &inJPVT);
+    // Workspace size as computed by lapackimpl.c.
+    let mn = inM.min(inN);
+    let lwork = (mn + 3 * inN).max(2 * mn + inNRHS);
+    let mut work = vec_in(lwork, &inWORK);
+    let rcond = inRCOND.0;
+    let mut rank = 0;
+    let mut info = 0;
+    unsafe {
+        dgelsx_(
+            &inM, &inN, &inNRHS, a.as_mut_ptr(), &inLDA, b.as_mut_ptr(), &inLDB, jpvt.as_mut_ptr(),
+            &rcond, &mut rank, work.as_mut_ptr(), &mut info,
+        );
+    }
+    (mat_out(inLDA, inN, &a), mat_out(inLDA, inNRHS, &b), ivec_out(inN, &jpvt), rank, info)
 }
 
-pub fn dgegv(mut inJOBVL: ArcStr, mut inJOBVR: ArcStr, mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32, mut inLDVL: i32, mut inLDVR: i32, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outALPHAR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outALPHAI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outBETA: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outVL: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outVR: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgegv"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outALPHAR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outALPHAI", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outBETA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outVL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outVR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 91, columnNumberStart: 49, lineNumberEnd: 91, columnNumberEnd: 75, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 91, columnNumberStart: 41, lineNumberEnd: 91, columnNumberEnd: 75, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outALPHAR, outALPHAI, outBETA, outVL, outVR, outWORK, outINFO)
+pub fn dgelsy(
+    inM: i32,
+    inN: i32,
+    inNRHS: i32,
+    inA: Mat,
+    inLDA: i32,
+    inB: Mat,
+    inLDB: i32,
+    inJPVT: IVec,
+    inRCOND: Real,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Mat, IVec, i32, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut work = vec_in(inLWORK, &inWORK);
+    let mut jpvt = ivec_in(inN, &inJPVT);
+    let rcond = inRCOND.0;
+    let mut rank = 0;
+    let mut info = 0;
+    unsafe {
+        dgelsy_(
+            &inM, &inN, &inNRHS, a.as_mut_ptr(), &inLDA, b.as_mut_ptr(), &inLDB, jpvt.as_mut_ptr(),
+            &rcond, &mut rank, work.as_mut_ptr(), &inLWORK, &mut info,
+        );
+    }
+    (
+        mat_out(inLDA, inN, &a),
+        mat_out(inLDA, inNRHS, &b),
+        ivec_out(inN, &jpvt),
+        rank,
+        vec_out(inLWORK, &work),
+        info,
+    )
 }
 
-pub fn dgels(mut inTRANS: ArcStr, mut inM: i32, mut inN: i32, mut inNRHS: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgels"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inTRANS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 111, columnNumberStart: 24, lineNumberEnd: 111, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 111, columnNumberStart: 16, lineNumberEnd: 111, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outB, outWORK, outINFO)
+pub fn dgesv(inN: i32, inNRHS: i32, inA: Mat, inLDA: i32, inB: Mat, inLDB: i32) -> (Mat, IVec, Mat, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut ipiv = vec![0i32; inN.max(0) as usize];
+    let mut info = 0;
+    unsafe {
+        dgesv_(&inN, &inNRHS, a.as_mut_ptr(), &inLDA, ipiv.as_mut_ptr(), b.as_mut_ptr(), &inLDB, &mut info);
+    }
+    (mat_out(inLDA, inN, &a), ivec_out(inN, &ipiv), mat_out(inLDB, inNRHS, &b), info)
 }
 
-pub fn dgelsx(mut inM: i32, mut inN: i32, mut inNRHS: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32, mut inJPVT: Arc<metamodelica::List<i32>>, mut inRCOND: metamodelica::Real, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, i32, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outJPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outRANK: i32 = 0;
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgelsx"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inRCOND", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outRANK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 132, columnNumberStart: 24, lineNumberEnd: 132, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 132, columnNumberStart: 16, lineNumberEnd: 132, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outB, outJPVT, outRANK, outINFO)
+pub fn dgglse(
+    inM: i32,
+    inN: i32,
+    inP: i32,
+    inA: Mat,
+    inLDA: i32,
+    inB: Mat,
+    inLDB: i32,
+    inC: Vec64,
+    inD: Vec64,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Mat, Vec64, Vec64, Vec64, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inN, &inB);
+    let mut c = vec_in(inM, &inC);
+    let mut d = vec_in(inP, &inD);
+    let mut x = vec![0.0f64; inN.max(0) as usize];
+    let mut work = vec_in(inLWORK, &inWORK);
+    let mut info = 0;
+    unsafe {
+        dgglse_(
+            &inM, &inN, &inP, a.as_mut_ptr(), &inLDA, b.as_mut_ptr(), &inLDB, c.as_mut_ptr(),
+            d.as_mut_ptr(), x.as_mut_ptr(), work.as_mut_ptr(), &inLWORK, &mut info,
+        );
+    }
+    (
+        mat_out(inLDA, inN, &a),
+        mat_out(inLDB, inN, &b),
+        vec_out(inM, &c),
+        vec_out(inP, &d),
+        vec_out(inN, &x),
+        vec_out(inLWORK, &work),
+        info,
+    )
 }
 
-pub fn dgelsy(mut inM: i32, mut inN: i32, mut inNRHS: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32, mut inJPVT: Arc<metamodelica::List<i32>>, mut inRCOND: metamodelica::Real, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, i32, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outJPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outRANK: i32 = 0;
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgelsy"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inRCOND", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outRANK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 155, columnNumberStart: 24, lineNumberEnd: 155, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 155, columnNumberStart: 16, lineNumberEnd: 155, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outB, outJPVT, outRANK, outWORK, outINFO)
+pub fn dgtsv(
+    inN: i32,
+    inNRHS: i32,
+    inDL: Vec64,
+    inD: Vec64,
+    inDU: Vec64,
+    inB: Mat,
+    inLDB: i32,
+) -> (Vec64, Vec64, Vec64, Mat, i32) {
+    let mut dl = vec_in(inN - 1, &inDL);
+    let mut d = vec_in(inN, &inD);
+    let mut du = vec_in(inN - 1, &inDU);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut info = 0;
+    unsafe {
+        dgtsv_(&inN, &inNRHS, dl.as_mut_ptr(), d.as_mut_ptr(), du.as_mut_ptr(), b.as_mut_ptr(), &inLDB, &mut info);
+    }
+    (vec_out(inN - 1, &dl), vec_out(inN, &d), vec_out(inN - 1, &du), mat_out(inLDB, inNRHS, &b), info)
 }
 
-pub fn dgesv(mut inN: i32, mut inNRHS: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outIPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgesv"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outIPIV", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 170, columnNumberStart: 54, lineNumberEnd: 170, columnNumberEnd: 80, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 170, columnNumberStart: 46, lineNumberEnd: 170, columnNumberEnd: 80, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outIPIV, outB, outINFO)
+pub fn dgbsv(
+    inN: i32,
+    inKL: i32,
+    inKU: i32,
+    inNRHS: i32,
+    inAB: Mat,
+    inLDAB: i32,
+    inB: Mat,
+    inLDB: i32,
+) -> (Mat, IVec, Mat, i32) {
+    let mut ab = mat_in(inLDAB, inN, &inAB);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut ipiv = vec![0i32; inN.max(0) as usize];
+    let mut info = 0;
+    unsafe {
+        dgbsv_(
+            &inN, &inKL, &inKU, &inNRHS, ab.as_mut_ptr(), &inLDAB, ipiv.as_mut_ptr(),
+            b.as_mut_ptr(), &inLDB, &mut info,
+        );
+    }
+    (mat_out(inLDAB, inN, &ab), ivec_out(inN, &ipiv), mat_out(inLDB, inNRHS, &b), info)
 }
 
-pub fn dgglse(mut inM: i32, mut inN: i32, mut inP: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32, mut inC: Arc<metamodelica::List<metamodelica::Real>>, mut inD: Arc<metamodelica::List<metamodelica::Real>>, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outC: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outD: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outX: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgglse"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inP", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inC", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inD", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outC", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outD", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outX", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 194, columnNumberStart: 24, lineNumberEnd: 194, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 194, columnNumberStart: 16, lineNumberEnd: 194, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outB, outC, outD, outX, outWORK, outINFO)
+pub fn dgesvd(
+    inJOBU: ArcStr,
+    inJOBVT: ArcStr,
+    inM: i32,
+    inN: i32,
+    inA: Mat,
+    inLDA: i32,
+    inLDU: i32,
+    inLDVT: i32,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Vec64, Mat, Mat, Vec64, i32) {
+    let lds = inM.min(inN);
+    let ucol = match ch(&inJOBU) as u8 {
+        b'A' => inM,
+        b'S' => lds,
+        _ => 0,
+    };
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut s = vec![0.0f64; lds.max(0) as usize];
+    // LAPACK requires a valid (non-null) `u` pointer with ldu >= 1 even when it
+    // is not referenced (jobu = 'N'/'O'); allocate at least one element.
+    let mut u = vec![0.0f64; ((inLDU.max(0) * ucol.max(0)) as usize).max(1)];
+    let mut vt = vec![0.0f64; (inLDVT.max(0) * inN.max(0)) as usize];
+    let mut work = vec_in(inLWORK, &inWORK);
+    let (jobu, jobvt) = (ch(&inJOBU), ch(&inJOBVT));
+    let mut info = 0;
+    unsafe {
+        dgesvd_(
+            &jobu, &jobvt, &inM, &inN, a.as_mut_ptr(), &inLDA, s.as_mut_ptr(), u.as_mut_ptr(),
+            &inLDU, vt.as_mut_ptr(), &inLDVT, work.as_mut_ptr(), &inLWORK, &mut info,
+        );
+    }
+    let out_u = if ucol > 0 { mat_out(inLDU, ucol, &u) } else { nil() };
+    (mat_out(inLDA, inN, &a), vec_out(lds, &s), out_u, mat_out(inLDVT, inN, &vt), vec_out(inLWORK, &work), info)
 }
 
-pub fn dgtsv(mut inN: i32, mut inNRHS: i32, mut inDL: Arc<metamodelica::List<metamodelica::Real>>, mut inD: Arc<metamodelica::List<metamodelica::Real>>, mut inDU: Arc<metamodelica::List<metamodelica::Real>>, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32) -> (Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, i32) {
-    let mut outDL: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outD: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outDU: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgtsv"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inDL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inD", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inDU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outDL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outD", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outDU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 212, columnNumberStart: 24, lineNumberEnd: 212, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 212, columnNumberStart: 16, lineNumberEnd: 212, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outDL, outD, outDU, outB, outINFO)
+pub fn dgetrf(inM: i32, inN: i32, inA: Mat, inLDA: i32) -> (Mat, IVec, i32) {
+    let ldipiv = inM.min(inN);
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut ipiv = vec![0i32; ldipiv.max(0) as usize];
+    let mut info = 0;
+    unsafe {
+        dgetrf_(&inM, &inN, a.as_mut_ptr(), &inLDA, ipiv.as_mut_ptr(), &mut info);
+    }
+    (mat_out(inLDA, inN, &a), ivec_out(ldipiv, &ipiv), info)
 }
 
-pub fn dgbsv(mut inN: i32, mut inKL: i32, mut inKU: i32, mut inNRHS: i32, mut inAB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDAB: i32, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, i32) {
-    let mut outAB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outIPIV: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgbsv"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inKL", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inKU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inAB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDAB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outAB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outIPIV", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 230, columnNumberStart: 24, lineNumberEnd: 230, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 230, columnNumberStart: 16, lineNumberEnd: 230, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outAB, outIPIV, outB, outINFO)
+pub fn dgetrs(
+    inTRANS: ArcStr,
+    inN: i32,
+    inNRHS: i32,
+    inA: Mat,
+    inLDA: i32,
+    inIPIV: IVec,
+    inB: Mat,
+    inLDB: i32,
+) -> (Mat, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut b = mat_in(inLDB, inNRHS, &inB);
+    let mut ipiv = ivec_in(inN, &inIPIV);
+    let trans = ch(&inTRANS);
+    let mut info = 0;
+    unsafe {
+        dgetrs_(
+            &trans, &inN, &inNRHS, a.as_mut_ptr(), &inLDA, ipiv.as_mut_ptr(), b.as_mut_ptr(),
+            &inLDB, &mut info,
+        );
+    }
+    (mat_out(inLDB, inNRHS, &b), info)
 }
 
-pub fn dgesvd(mut inJOBU: ArcStr, mut inJOBVT: ArcStr, mut inM: i32, mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inLDU: i32, mut inLDVT: i32, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outS: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outU: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outVT: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgesvd"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOBVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 252, columnNumberStart: 24, lineNumberEnd: 252, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 252, columnNumberStart: 16, lineNumberEnd: 252, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outS, outU, outVT, outWORK, outINFO)
+pub fn dgetri(inN: i32, inA: Mat, inLDA: i32, inIPIV: IVec, inWORK: Vec64, inLWORK: i32) -> (Mat, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut work = vec_in(inLWORK, &inWORK);
+    let mut ipiv = ivec_in(inN, &inIPIV);
+    let mut info = 0;
+    unsafe {
+        dgetri_(&inN, a.as_mut_ptr(), &inLDA, ipiv.as_mut_ptr(), work.as_mut_ptr(), &inLWORK, &mut info);
+    }
+    (mat_out(inLDA, inN, &a), vec_out(inLWORK, &work), info)
 }
 
-pub fn dgetrf(mut inM: i32, mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, i32) {
-    // Mirror LapackImpl__dgetrf (lapackimpl.c): partial-pivot LU.
-    let m = inM.max(0) as usize;
-    let n = inN.max(0) as usize;
-    let lda = inLDA.max(1) as usize;
-    let mut a = mat_to_colmajor(&inA, lda, n);
-    let mut ipiv = vec![0i32; m.min(n)];
-    let outINFO = lu_dgetf2(m, n, lda, &mut a, &mut ipiv);
-    let outA = colmajor_to_mat(&a, lda, n);
-    let outIPIV = vec_to_intlist(&ipiv);
-    (outA, outIPIV, outINFO)
+pub fn dgeqpf(
+    inM: i32,
+    inN: i32,
+    inA: Mat,
+    inLDA: i32,
+    inJPVT: IVec,
+    inWORK: Vec64,
+) -> (Mat, IVec, Vec64, i32) {
+    let ldtau = inM.min(inN);
+    let lwork = 3 * inN;
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut jpvt = ivec_in(inN, &inJPVT);
+    let mut tau = vec![0.0f64; ldtau.max(0) as usize];
+    let mut work = vec_in(lwork, &inWORK);
+    let mut info = 0;
+    unsafe {
+        dgeqpf_(
+            &inM, &inN, a.as_mut_ptr(), &inLDA, jpvt.as_mut_ptr(), tau.as_mut_ptr(),
+            work.as_mut_ptr(), &mut info,
+        );
+    }
+    (mat_out(inLDA, inN, &a), ivec_out(inN, &jpvt), vec_out(ldtau, &tau), info)
 }
 
-pub fn dgetrs(mut inTRANS: ArcStr, mut inN: i32, mut inNRHS: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inIPIV: Arc<metamodelica::List<i32>>, mut inB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDB: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, i32) {
-    let mut outB: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgetrs"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inTRANS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inNRHS", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inIPIV", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 280, columnNumberStart: 24, lineNumberEnd: 280, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 280, columnNumberStart: 16, lineNumberEnd: 280, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outB, outINFO)
+pub fn dorgqr(
+    inM: i32,
+    inN: i32,
+    inK: i32,
+    inA: Mat,
+    inLDA: i32,
+    inTAU: Vec64,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Vec64, i32) {
+    let mut a = mat_in(inLDA, inN, &inA);
+    let mut tau = vec_in(inK, &inTAU);
+    let mut work = vec_in(inLWORK, &inWORK);
+    let mut info = 0;
+    unsafe {
+        dorgqr_(
+            &inM, &inN, &inK, a.as_mut_ptr(), &inLDA, tau.as_mut_ptr(), work.as_mut_ptr(),
+            &inLWORK, &mut info,
+        );
+    }
+    (mat_out(inLDA, inN, &a), vec_out(inLWORK, &work), info)
 }
 
-pub fn dgetri(mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inIPIV: Arc<metamodelica::List<i32>>, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    // Mirror LapackImpl__dgetri (lapackimpl.c): inverse from the LU factors.
-    let n = inN.max(0) as usize;
-    let lda = inLDA.max(1) as usize;
-    let lwork = inLWORK.max(0) as usize;
-    let mut a = mat_to_colmajor(&inA, lda, n);
-    let ipiv = intlist_to_vec(&inIPIV);
-    let outINFO = lu_inverse_dgetri(n, lda, &mut a, &ipiv);
-    let outA = colmajor_to_mat(&a, lda, n);
-    // The work array's contents are unused by callers; return a zeroed buffer
-    // of the requested length (LAPACK would leave the optimal lwork in WORK(1)).
-    let outWORK = vec_to_reallist(&vec![0.0f64; lwork]);
-    (outA, outWORK, outINFO)
+pub fn dhseqr(
+    inJOB: ArcStr,
+    inCOMPZ: ArcStr,
+    inN: i32,
+    inILO: i32,
+    inIHI: i32,
+    inH: Mat,
+    inLDH: i32,
+    inZ: Mat,
+    inLDZ: i32,
+    inWORK: Vec64,
+    inLWORK: i32,
+) -> (Mat, Vec64, Vec64, Mat, Vec64, i32) {
+    let mut h = mat_in(inLDH, inN, &inH);
+    let mut z = mat_in(inLDZ, inN, &inZ);
+    let mut wr = vec![0.0f64; inN.max(0) as usize];
+    let mut wi = vec![0.0f64; inN.max(0) as usize];
+    let mut work = vec_in(inLWORK, &inWORK);
+    let (job, compz) = (ch(&inJOB), ch(&inCOMPZ));
+    let mut info = 0;
+    unsafe {
+        dhseqr_(
+            &job, &compz, &inN, &inILO, &inIHI, h.as_mut_ptr(), &inLDH, wr.as_mut_ptr(),
+            wi.as_mut_ptr(), z.as_mut_ptr(), &inLDZ, work.as_mut_ptr(), &inLWORK, &mut info,
+        );
+    }
+    (
+        mat_out(inLDH, inN, &h),
+        vec_out(inN, &wr),
+        vec_out(inN, &wi),
+        mat_out(inLDZ, inN, &z),
+        vec_out(inLWORK, &work),
+        info,
+    )
 }
-
-pub fn dgeqpf(mut inM: i32, mut inN: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inJPVT: Arc<metamodelica::List<i32>>, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outJPVT: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut outTAU: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dgeqpf"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outJPVT", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outTAU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 309, columnNumberStart: 50, lineNumberEnd: 309, columnNumberEnd: 76, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 309, columnNumberStart: 42, lineNumberEnd: 309, columnNumberEnd: 76, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outJPVT, outTAU, outINFO)
-}
-
-pub fn dorgqr(mut inM: i32, mut inN: i32, mut inK: i32, mut inA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDA: i32, mut inTAU: Arc<metamodelica::List<metamodelica::Real>>, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outA: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dorgqr"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inM", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inTAU", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 325, columnNumberStart: 48, lineNumberEnd: 325, columnNumberEnd: 74, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 325, columnNumberStart: 40, lineNumberEnd: 325, columnNumberEnd: 74, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outA, outWORK, outINFO)
-}
-
-pub fn dhseqr(mut inJOB: ArcStr, mut inCOMPZ: ArcStr, mut inN: i32, mut inILO: i32, mut inIHI: i32, mut inH: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDH: i32, mut inZ: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, mut inLDZ: i32, mut inWORK: Arc<metamodelica::List<metamodelica::Real>>, mut inLWORK: i32) -> (Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<metamodelica::Real>>, Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>, Arc<metamodelica::List<metamodelica::Real>>, i32) {
-    let mut outH: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWR: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outWI: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outZ: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut outWORK: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut outINFO: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("LapackImpl__dhseqr"), lang: Some("C"), output_: None, args: Cons { head: CREF { componentRef: CREF_IDENT { name: "inJOB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inCOMPZ", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inN", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inILO", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inIHI", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inH", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDH", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inZ", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLDZ", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "inLWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outH", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWR", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWI", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outZ", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outWORK", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "outINFO", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "Lapack" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 348, columnNumberStart: 24, lineNumberEnd: 348, columnNumberEnd: 50, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Lapack.mo", isReadOnly: false, lineNumberStart: 348, columnNumberStart: 16, lineNumberEnd: 348, columnNumberEnd: 50, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (outH, outWR, outWI, outZ, outWORK, outINFO)
-}
-

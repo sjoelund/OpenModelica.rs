@@ -96,6 +96,10 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // (`runtime/unitparser.cpp` + `unitparserext.cpp`); reimplemented in pure
     // Rust in `openmodelica_script_util/src/UnitParserExt.rs`.
     "UnitParserExt",
+    // All bodies are `external "C"` wrappers over LAPACK (`runtime/lapackimpl.c`);
+    // hand-written in `openmodelica_util/src/Lapack.rs` using the `lapack` crate
+    // bound to the system LAPACK/BLAS.
+    "Lapack",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
