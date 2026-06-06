@@ -25,7 +25,7 @@ use metamodelica::{cons, nil, SourceInfo};
 
 use winnow::{Parser, ModalResult, combinator::{opt, alt, cut_err}, error::{AddContext, ContextError, StrContext, StrContextValue, ErrMode}};
 use std::sync::Arc;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use arcstr::{ArcStr, literal};
 
 thread_local! {
@@ -33,6 +33,12 @@ thread_local! {
     /// the *real* path of the file being parsed — like `members.filename_C`
     /// in the C parser (Parser/parse.c), NOT the testsuite-friendly name.
     static CURRENT_FILE: RefCell<ArcStr> = const { RefCell::new(literal!("")) };
+    /// Whether the file being parsed is read-only (not writable on disk).
+    /// Mirrors `members.readonly` in Parser/parse.c: file-based parses set
+    /// it from the file's writability, string-based parses leave it false.
+    /// Recorded into every SOURCEINFO so the interactive API can refuse to
+    /// modify classes from read-only files.
+    static CURRENT_READONLY: Cell<bool> = const { Cell::new(false) };
     /// File name used when *displaying* syntax errors — the C parser's
     /// `filename_C_testsuiteFriendly` (`infoFilename` in ParserExt.mo). In
     /// testsuite mode this is the testsuite-relative name, so parse-error
@@ -359,9 +365,11 @@ fn run_entry<T>(
     info_filename: &str,
     grammar: Grammar,
     interactive: bool,
+    readonly: bool,
     mut entry: fn(&mut &[LexToken]) -> ModalResult<T>,
 ) -> Result<T, Box<dyn std::error::Error>> {
     CURRENT_FILE.with(|f| *f.borrow_mut() = ArcStr::from(filename));
+    CURRENT_READONLY.with(|f| f.set(readonly));
     CURRENT_ERROR_FILE.with(|f| *f.borrow_mut() = ArcStr::from(info_filename));
     CURRENT_GRAMMAR.with(|g| g.set(grammar));
     INTERACTIVE_PARSE.with(|f| f.set(interactive));
@@ -485,8 +493,8 @@ fn expect_rparen(input: &mut TokenInput) -> ModalResult<()> {
 }
 
 /// Lex then parse `src`.  Returns the AST or the first error encountered.
-pub fn parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Program, Box<dyn std::error::Error>> {
-    run_entry(src, filename, info_filename, grammar, false, stored_definition)
+pub fn parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, readonly: bool) -> Result<Program, Box<dyn std::error::Error>> {
+    run_entry(src, filename, info_filename, grammar, false, readonly, stored_definition)
 }
 
 /// Parse a `.mos` script / sequence of interactive statements (ANTLR3 rule
@@ -497,32 +505,33 @@ pub fn parse_statements(
     filename: &str,
     info_filename: &str,
     grammar: Grammar,
+    readonly: bool,
 ) -> Result<crate::GlobalScript::Statements, Box<dyn std::error::Error>> {
-    run_entry(src, filename, info_filename, grammar, true, interactive_stmt)
+    run_entry(src, filename, info_filename, grammar, true, readonly, interactive_stmt)
 }
 
 /// Parse a dotted name path such as `Modelica.Blocks.Sources` (ANTLR3 rule
 /// `name_path_end`; entry point for `ParserExt.stringPath`).
 pub fn parse_path(src: &str, filename: &str, grammar: Grammar) -> Result<Path, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, false, name_path)
+    run_entry(src, filename, filename, grammar, false, /*readonly=*/false, name_path)
 }
 
 /// Parse a component reference such as `a.b[1].c` (ANTLR3 rule
 /// `component_reference_end`; entry point for `ParserExt.stringCref`).
 pub fn parse_cref(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ComponentRef, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, false, component_reference)
+    run_entry(src, filename, filename, grammar, false, /*readonly=*/false, component_reference)
 }
 
 /// Parse a single element modification such as `x(start = 1.0)` (ANTLR3 rule
 /// `element_modification_or_replaceable`; entry point for `ParserExt.stringMod`).
 pub fn parse_modification(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ElementArg, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, false, element_modification_or_replaceable)
+    run_entry(src, filename, filename, grammar, false, /*readonly=*/false, element_modification_or_replaceable)
 }
 
 /// Parse a single equation such as `x = y + 1` (ANTLR3 rule `equation`;
 /// entry point for `ParserExt.stringEq`).
 pub fn parse_equation(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::EquationItem, Box<dyn std::error::Error>> {
-    run_entry(src, filename, filename, grammar, false, equation_item)
+    run_entry(src, filename, filename, grammar, false, /*readonly=*/false, equation_item)
 }
 
 // ---------------------------------------------------------------------------
@@ -613,7 +622,7 @@ struct ComponentClause {
 fn source_info(tok1: &Token, lt1: &Token) -> SourceInfo {
     SourceInfo {
         fileName: CURRENT_FILE.with(|f| f.borrow().clone()),
-        isReadOnly: false,
+        isReadOnly: CURRENT_READONLY.with(|f| f.get()),
         lineNumberStart: tok1.line as i32,
         columnNumberStart: tok1.col as i32,
         lineNumberEnd: lt1.line as i32,
@@ -645,7 +654,7 @@ fn parser_info_from(first: &Token, start: &TokenInput, input: &TokenInput) -> So
     };
     SourceInfo {
         fileName: CURRENT_FILE.with(|f| f.borrow().clone()),
-        isReadOnly: false,
+        isReadOnly: CURRENT_READONLY.with(|f| f.get()),
         lineNumberStart: first.line as i32,
         columnNumberStart: first.col as i32,
         lineNumberEnd: end_line as i32,

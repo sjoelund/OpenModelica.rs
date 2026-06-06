@@ -95,8 +95,8 @@ fn report_syntax_messages(info_filename: &str) {
 /// `info_filename` (the possibly testsuite-friendly name) is only used to
 /// display syntax errors — same split as the C parser's `filename_C` vs
 /// `filename_C_testsuiteFriendly` (Parser/parse.c).
-fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar) -> Result<Absyn::Program> {
-    let result = parser::parse(src, filename, info_filename, grammar).map_err(|e| anyhow!(e.to_string()));
+fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, readonly: bool) -> Result<Absyn::Program> {
+    let result = parser::parse(src, filename, info_filename, grammar, readonly).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(info_filename);
     result
 }
@@ -124,7 +124,11 @@ pub fn parse(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parse: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar)
+    // Like parseFile in Parser/parse.c: classes parsed from a file the user
+    // cannot write to are flagged read-only in their SOURCEINFO, so the
+    // interactive API refuses to modify them.
+    let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
+    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly)
 }
 
 pub fn parsestring(
@@ -138,7 +142,7 @@ pub fn parsestring(
     let grammar = select_grammar(acceptedGram, languageStandardInt);
     // String input has no on-disk path; the interactive name serves as both
     // the SOURCEINFO and the error-display name (like the C `parseString`).
-    run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar)
+    run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false)
 }
 
 // ---------------------------------------------------------------------
@@ -158,7 +162,8 @@ pub fn parseexp(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()));
+    let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
+    let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());
     result
 }
@@ -171,7 +176,7 @@ pub fn parsestringexp(
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
-    let result = parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar).map_err(|e| anyhow!(e.to_string()));
+    let result = parser::parse_statements(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());
     result
 }
