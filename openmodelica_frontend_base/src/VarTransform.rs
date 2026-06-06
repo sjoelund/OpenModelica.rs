@@ -540,7 +540,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { source, exp: e, exp1: e2, type_: tp }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { type_: tp, exp1: e2, exp: e, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -557,7 +557,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, exp: e, expExpLst: expl1, type_: tp }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { type_: tp, expExpLst: expl1, exp: e, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut expl2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -574,7 +574,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { source, exp: e2, lhs: e1, type_: tp }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { type_: tp, lhs: e1, exp: e2, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -591,7 +591,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { source, else_: el, statementLst: stmts, exp: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp: e, statementLst: stmts, else_: el, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -611,7 +611,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { source, statementLst: stmts, range: e, iter: id1, iterIsArray, type_: tp }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { type_: tp, iterIsArray, iter: id1, range: e, statementLst: stmts, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -628,7 +628,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { source, statementLst: stmts, exp: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { exp: e, statementLst: stmts, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -645,7 +645,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { source, elseWhen: ew, statementLst: stmts, initialCall, conditions, exp: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { exp: e, conditions, initialCall, statementLst: stmts, elseWhen: ew, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmts2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -665,7 +665,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSERT { source, level: e3, msg: e2, cond: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSERT { cond: e, msg: e2, level: e3, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -685,7 +685,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TERMINATE { source, msg: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TERMINATE { msg: e, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?) {
@@ -701,7 +701,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_REINIT { source, value: e2, var: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_REINIT { var: e, value: e2, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -718,7 +718,7 @@ pub fn replaceEquationsStmts(mut inAlgorithmStatementLst: Arc<metamodelica::List
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_NORETCALL { source, exp: e }, tail: xs } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_NORETCALL { exp: e, source }, tail: xs } => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut xs_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(replaceExp(e.clone(), repl.clone(), condExpFunc.clone())?) {

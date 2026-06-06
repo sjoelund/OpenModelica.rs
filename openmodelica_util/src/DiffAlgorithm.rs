@@ -98,9 +98,18 @@ pub fn printDiffTerminalColor<T: Clone + 'static>(mut seq: Arc<metamodelica::Lis
     for mut d in &*seq.clone() {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
-        (Diff::Equal, ts) => (literal!(""), literal!(""), ts.clone(), true),
-        (Diff::Add, ts) => (literal!("\u{1b}[4;32m"), literal!("\u{1b}[0m"), ts.clone(), true),
-        (Diff::Delete, ts) => (literal!("\u{1b}[9;31m"), literal!("\u{1b}[0m"), ts.clone(), true),
+        (Diff::Equal, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!(""), literal!(""), ts.clone(), true)
+        },
+        (Diff::Add, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!("\u{1b}[4;32m"), literal!("\u{1b}[0m"), ts.clone(), true)
+        },
+        (Diff::Delete, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!("\u{1b}[9;31m"), literal!("\u{1b}[0m"), ts.clone(), true)
+        },
         _ => panic!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
@@ -128,9 +137,18 @@ pub fn printDiffXml<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, A
     for mut d in &*seq.clone() {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
-        (Diff::Equal, ts) => (literal!("<equal>"), literal!("</equal>"), ts.clone(), true),
-        (Diff::Add, ts) => (literal!("<add>"), literal!("</add>"), ts.clone(), true),
-        (Diff::Delete, ts) => (literal!("<del>"), literal!("</del>"), ts.clone(), true),
+        (Diff::Equal, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!("<equal>"), literal!("</equal>"), ts.clone(), true)
+        },
+        (Diff::Add, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!("<add>"), literal!("</add>"), ts.clone(), true)
+        },
+        (Diff::Delete, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!("<del>"), literal!("</del>"), ts.clone(), true)
+        },
         _ => panic!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b.clone() || true && true && true) {
@@ -158,9 +176,18 @@ pub fn printActual<T: Clone + 'static>(mut seq: Arc<metamodelica::List<(Diff, Ar
     for mut d in &*seq.clone() {
         let mut d = d.clone();
         (open, close, ts, b) = (::match_deref::match_deref! { match &(d.clone()) {
-        (Diff::Equal, ts) => (literal!(""), literal!(""), ts.clone(), true),
-        (Diff::Add, ts) => (literal!(""), literal!(""), ts.clone(), true),
-        (Diff::Delete, ts) => (literal!(""), literal!(""), ts.clone(), false),
+        (Diff::Equal, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!(""), literal!(""), ts.clone(), true)
+        },
+        (Diff::Add, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!(""), literal!(""), ts.clone(), true)
+        },
+        (Diff::Delete, __esc_ts) => {
+            ts = (*__esc_ts).clone();
+            (literal!(""), literal!(""), ts.clone(), false)
+        },
         _ => panic!("match: no arm matched"),
     } });
         if !(ts.clone().is_empty()) && (b.clone() || true && true && false) {

@@ -195,7 +195,8 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attri
     info = InstNode::info(node.clone())?;
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::COMPLEX { cls: class_node, .. } => {
+        Deref @ Type::COMPLEX { cls: __esc_class_node, .. } => {
+            class_node = (*__esc_class_node).clone();
             child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?)?;
             children = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
@@ -721,7 +722,10 @@ pub fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
         _ => {
             let mut der_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
             (match (getVarPDer(var_ptr.clone(), true)).0 {
-        Some(mut der_var) => isJacobianResultVarPDer(der_var.clone()),
+        Some(mut __esc_der_var) => {
+            der_var = __esc_der_var.clone();
+            isJacobianResultVarPDer(der_var.clone())
+        },
         _ => false,
     })
         },
@@ -802,7 +806,7 @@ pub fn isOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizable: true, .. }, varKind: Deref @ BackendExtension::VariableKind::PARAMETER { .. }, .. } => true,
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: Deref @ BackendExtension::VariableKind::PARAMETER { .. }, annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizable: true, .. }, .. } => true,
         Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizable: true, .. }, .. } if (isInput(var_ptr.clone())) => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -822,7 +826,10 @@ pub fn isInitialTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::INITIAL_TIME.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::INITIAL_TIME.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -834,7 +841,10 @@ pub fn isFinalTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::FINAL_TIME.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::FINAL_TIME.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -846,7 +856,10 @@ pub fn isLagrange(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> b
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::LAGRANGE.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::LAGRANGE.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -858,7 +871,10 @@ pub fn isMayer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::MAYER.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::MAYER.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -870,7 +886,10 @@ pub fn isPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -882,7 +901,10 @@ pub fn isFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -894,7 +916,10 @@ pub fn isInitialConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::INITIAL_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::INITIAL_CONSTRAINT.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -910,7 +935,10 @@ pub fn isLfgFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
         return b.clone();
     }
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::LAGRANGE.clone() || optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::LAGRANGE.clone() || optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -922,7 +950,10 @@ pub fn isMrfFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::MAYER.clone() || optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(__esc_optExp), .. }, .. } => {
+            optExp = (*__esc_optExp).clone();
+            optExp.clone() == OptimizerExpression::MAYER.clone() || optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -961,7 +992,7 @@ pub fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariab
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { resizable: true, .. }, varKind: Deref @ BackendExtension::VariableKind::PARAMETER { .. }, .. } => true,
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: Deref @ BackendExtension::VariableKind::PARAMETER { .. }, annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { resizable: true, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -972,7 +1003,7 @@ pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVa
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut val: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var.name.clone(), optimal_values.clone())?;
     let () = (::match_deref::match_deref! { match &((val.clone(), var.backendinfo.clone())) {
-        (Some(Deref @ Expression::INTEGER { value: i }), Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { resizable: true, .. }, varKind: varKind @ Deref @ BackendExtension::VariableKind::PARAMETER { .. }, .. }) => {
+        (Some(Deref @ Expression::INTEGER { value: i }), Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ BackendExtension::VariableKind::PARAMETER { .. }, annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { resizable: true, .. }, .. }) => {
             let mut varKind = (*varKind).clone();
             assign_variant_field!(varKind => VariableKind::VariableKind::PARAMETER; resize_value = Some(i.clone()));
             setVarKind(var_ptr.clone(), varKind.clone());
@@ -1467,8 +1498,8 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
                 cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
                 var = fromCref(cref.clone(), Attributes::IMPL_DISCRETE_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
                 varKind = (::match_deref::match_deref! { match &(getVarKind(old_var_ptr.clone())) {
-        varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. } => {
-            let mut varKind = (*varKind).clone();
+        __esc_varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. } => {
+            varKind = (*__esc_varKind).clone();
             assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = metamodelica::nil());
             varKind.clone()
         },
@@ -1510,8 +1541,8 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
                 cref = ComponentRef::append(cref.clone(), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;
                 var = fromCref(cref.clone(), Variable::attributes(Pointer::access(res_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
                 varKind = (::match_deref::match_deref! { match &(getVarKind(res_ptr.clone())) {
-        varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. } => {
-            let mut varKind = (*varKind).clone();
+        __esc_varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. } => {
+            varKind = (*__esc_varKind).clone();
             assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = metamodelica::nil());
             varKind.clone()
         },
@@ -2357,11 +2388,11 @@ pub mod VariablePointers {
         (start, _) = ({let __elt = mapping.var_AtS.borrow()[(arr.clone()-1) as usize].clone(); __elt});
         var = getVarAt(vars.clone(), arr.clone())?;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Pointer::access(var.clone())) {
-            Deref @ Variable::VARIABLE { ty: __pa0, name: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            Deref @ Variable::VARIABLE { name: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        ty = __pa0.clone();
-        cref = __pa1.clone();
+        cref = __pa0.clone();
+        ty = __pa1.clone();
         dims = Type::arrayDims(ty.clone());
         sizes = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();

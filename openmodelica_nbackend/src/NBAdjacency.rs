@@ -640,7 +640,10 @@ pub mod Matrix {
                         (dep_cref, dep) = tpl.clone();
                         repeated = UnorderedSet::contains(dep_cref.clone(), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt}))?;
                         (inner_deps, changed) = (::match_deref::match_deref! { match &(UnorderedMap::get(dep_cref.clone(), inner_map.clone())?) {
-        Some(inner_deps) => (inner_deps.clone(), true),
+        Some(__esc_inner_deps) => {
+            inner_deps = (*__esc_inner_deps).clone();
+            (inner_deps.clone(), true)
+        },
         _ => (list![dep_cref.clone()], changed.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1017,7 +1020,7 @@ pub mod Matrix {
                                     linear_set = Expression::extractCrefs(exp.clone())?;
                                     linear_set = UnorderedSet::filterOnFalse(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
                                     (param_set, var_set) = UnorderedSet::splitOnTrue(linear_set.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); let __pe_b2 = metamodelica::sourceInfo!("NBackEnd/Util/NBAdjacency.mo"); move |__pe_a0| BVariable::checkCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
-                                    sol = Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { vars: if (UnorderedSet::isEmpty(var_set.clone())) {None} else {Some(var_set.clone())}, pars: if (UnorderedSet::isEmpty(param_set.clone())) {None} else {Some(param_set.clone())} });
+                                    sol = Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { pars: if (UnorderedSet::isEmpty(param_set.clone())) {None} else {Some(param_set.clone())}, vars: if (UnorderedSet::isEmpty(var_set.clone())) {None} else {Some(var_set.clone())} });
                                 }
                             }
                             UnorderedMap::add(var.clone(), sol.clone(), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}))?;

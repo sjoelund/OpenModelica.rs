@@ -748,7 +748,10 @@ pub mod VariableAttributes {
         Deref @ Type::STRING => createString(attrs.clone(), is_final.clone())?,
         Deref @ Type::ENUMERATION { .. } => createEnum(attrs.clone(), is_final.clone())?,
         Deref @ Type::CLOCK => createClock(is_final.clone()),
-        Deref @ Type::COMPLEX { complexTy: complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => createRecord(attrs.clone(), var_field!((**complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children.clone(), is_final.clone())?,
+        Deref @ Type::COMPLEX { complexTy: __esc_complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => {
+            complexTy = (*__esc_complexTy).clone();
+            createRecord(attrs.clone(), var_field!((*complexTy).indexMap, ComplexType::NFComplexType::RECORD).clone(), children.clone(), is_final.clone())?
+        },
         _ => createReal(attrs.clone(), is_final.clone(), comment.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1627,9 +1630,18 @@ pub mod VariableAttributes {
         let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         name = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
-        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, .. }, .. } => InstNode::name(node.clone())?,
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => getStateSelectName(var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?,
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: _ }, .. } } if (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)? == literal!("fill")) => getStateSelectName(arg.clone())?,
+        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: __esc_node, .. }, .. } => {
+            node = (*__esc_node).clone();
+            InstNode::name(node.clone())?
+        },
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
+            call = (*__esc_call).clone();
+            getStateSelectName(var_field!((*call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?
+        },
+        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: __esc_arg, tail: _ }, .. } } if (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)? == literal!("fill")) => {
+            arg = (*__esc_arg).clone();
+            getStateSelectName(arg.clone())?
+        },
         Deref @ Expression::ARRAY { .. } => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Arc::new(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -1715,11 +1727,11 @@ pub mod VariableAttributes {
     fn getTearingSelectName(mut exp: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<ArcStr> {
         let mut name: ArcStr = arcstr::literal!("");
         name = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name }, subscripts: Deref @ metamodelica::List::Nil, name: Deref @ "TearingSelect" } } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "TearingSelect", subscripts: Deref @ metamodelica::List::Nil, componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, subscripts: Deref @ metamodelica::List::Nil } } } => {
             name = (*__esc_name).clone();
             name.clone()
         },
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name } } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, subscripts: Deref @ metamodelica::List::Nil } } => {
             name = (*__esc_name).clone();
             Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(name.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearingSelect.")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
             literal!("")
@@ -1860,53 +1872,56 @@ pub mod Annotations {
             assign_field!(annotations.resizable = true);
         }
         let () = (::match_deref::match_deref! { match &(comment.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: r#mod @ Deref @ SCode::Mod::MOD { .. } }), .. } => {
-            for mut submod in &*var_field!((**r#mod).subModLst, SCode::Mod::MOD).clone() {
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod @ Deref @ SCode::Mod::MOD { .. } }), .. } => {
+            r#mod = (*__esc_mod).clone();
+            for mut submod in &*var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone() {
                 let mut submod = submod.clone();
                 let () = (::match_deref::match_deref! { match &(submod.clone()) {
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: true }), .. }, ident: Deref @ "HideResult" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "HideResult", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: true }), .. } } => {
             assign_field!(annotations.hideResult = true);
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "__OpenModelica_resizable" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "__OpenModelica_resizable", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.resizable = b.clone());
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: b }), .. }, ident: Deref @ "optimizable" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "optimizable", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
+            b = (*__esc_b).clone();
             assign_field!(annotations.optimizable = b.clone());
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isMayer" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isMayer", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::MAYER.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isLagrange" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isLagrange", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::LAGRANGE.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isConstraint" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isConstraint", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::PATH_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isInitialConstraint" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isInitialConstraint", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::INITIAL_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isFinalConstraint" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isFinalConstraint", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::FINAL_CONSTRAINT.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isInitialTime" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isInitialTime", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::INITIAL_TIME.clone()));
             ()
         },
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. }, ident: Deref @ "isFinalTime" } => {
+        Deref @ SCode::SubMod { ident: Deref @ "isFinalTime", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_b }), .. } } => {
             b = (*__esc_b).clone();
             assign_field!(annotations.optimizerExpression = Some(OptimizerExpression::FINAL_TIME.clone()));
             ()

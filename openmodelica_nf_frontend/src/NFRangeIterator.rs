@@ -98,19 +98,19 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
         Deref @ Expression::ARRAY { .. } => {
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), index: 1 })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: istop }, step: Some(Deref @ Expression::INTEGER { value: istep }), start: Deref @ Expression::INTEGER { value: istart }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: istart }, step: Some(Deref @ Expression::INTEGER { value: istep }), stop: Deref @ Expression::INTEGER { value: istop }, .. } => {
             Arc::new(NFRangeIterator::INT_STEP_RANGE { current: istart.clone(), stepsize: istep.clone(), last: istop.clone() })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: istop }, step: None, start: Deref @ Expression::INTEGER { value: istart }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: istart }, step: None, stop: Deref @ Expression::INTEGER { value: istop }, .. } => {
             Arc::new(NFRangeIterator::INT_RANGE { current: istart.clone(), last: istop.clone() })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::REAL { value: rstop }, step: Some(Deref @ Expression::REAL { value: rstep }), start: Deref @ Expression::REAL { value: rstart }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::REAL { value: rstart }, step: Some(Deref @ Expression::REAL { value: rstep }), stop: Deref @ Expression::REAL { value: rstop }, .. } => {
             Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: rstep.clone(), current: 0, steps: Util::realRangeSize(rstart.clone(), rstep.clone(), rstop.clone()) })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::REAL { value: rstop }, step: None, start: Deref @ Expression::REAL { value: rstart }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::REAL { value: rstart }, step: None, stop: Deref @ Expression::REAL { value: rstop }, .. } => {
             Arc::new(NFRangeIterator::REAL_RANGE { start: rstart.clone(), stepsize: metamodelica::OrderedFloat(1.0_f64), current: 0, steps: Util::realRangeSize(rstart.clone(), metamodelica::OrderedFloat(1.0_f64), rstop.clone()) })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::BOOLEAN { value: bstop }, start: Deref @ Expression::BOOLEAN { value: bstart }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::BOOLEAN { value: bstart }, stop: Deref @ Expression::BOOLEAN { value: bstop }, .. } => {
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut b in (({let __bs = bstart.clone(); let __be = bstop.clone(); if !__bs && !__be { vec![false] } else if !__bs && __be { vec![false, true] } else if __bs && __be { vec![true] } else { Vec::<bool>::new() }})).into_iter() {
@@ -120,7 +120,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
         __acc.reverse()
     }).into_iter().cloned().collect()), index: 1 })
         },
-        Deref @ Expression::RANGE { stop: Deref @ Expression::ENUM_LITERAL { index: istop, .. }, step: None, start: Deref @ Expression::ENUM_LITERAL { index: istart, ty, .. }, .. } => {
+        Deref @ Expression::RANGE { start: Deref @ Expression::ENUM_LITERAL { ty, index: istart, .. }, step: None, stop: Deref @ Expression::ENUM_LITERAL { index: istop, .. }, .. } => {
             let mut literals: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {

@@ -397,13 +397,18 @@ pub mod Block {
         let mut rest: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         (out_blcks, new_blcks, indices) = (::match_deref::match_deref! { match &(blcks.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ WHEN { .. }, tail: rest } => filterWhen(rest.clone(), out_blcks.clone(), new_blcks.clone(), indices.clone())?,
-        Deref @ metamodelica::List::Cons { head: blck @ Deref @ ALGORITHM { .. }, tail: rest } => {
-            stmts = Statement::filterDiscrete(var_field!((**blck).stmts, Block::ALGORITHM).clone(), metamodelica::nil())?;
+        Deref @ metamodelica::List::Cons { head: Deref @ WHEN { .. }, tail: __esc_rest } => {
+            rest = (*__esc_rest).clone();
+            filterWhen(rest.clone(), out_blcks.clone(), new_blcks.clone(), indices.clone())?
+        },
+        Deref @ metamodelica::List::Cons { head: __esc_blck @ Deref @ ALGORITHM { .. }, tail: __esc_rest } => {
+            blck = (*__esc_blck).clone();
+            rest = (*__esc_rest).clone();
+            stmts = Statement::filterDiscrete(var_field!((*blck).stmts, Block::ALGORITHM).clone(), metamodelica::nil())?;
             if stmts.clone().is_empty() {
                 (out_blcks, new_blcks, indices) = filterWhen(rest.clone(), out_blcks.clone(), new_blcks.clone(), indices.clone())?;
-            } else if List::compareLength(stmts.clone(), var_field!((**blck).stmts, Block::ALGORITHM).clone())? != 0 {
-                new_blck = Arc::new(Block::ALGORITHM { index: indices.equationIndex.clone(), stmts: stmts.clone(), attr: var_field!((**blck).attr, Block::ALGORITHM).clone() });
+            } else if List::compareLength(stmts.clone(), var_field!((*blck).stmts, Block::ALGORITHM).clone())? != 0 {
+                new_blck = Arc::new(Block::ALGORITHM { index: indices.equationIndex.clone(), stmts: stmts.clone(), attr: var_field!((*blck).attr, Block::ALGORITHM).clone() });
                 indices.equationIndex = indices.equationIndex.clone() + 1;
                 (out_blcks, new_blcks, indices) = filterWhen(rest.clone(), metamodelica::cons(new_blck.clone(), out_blcks.clone()), metamodelica::cons(new_blck.clone(), new_blcks.clone()), indices.clone())?;
             } else {
@@ -411,7 +416,11 @@ pub mod Block {
             }
             (out_blcks.clone(), new_blcks.clone(), indices.clone())
         },
-        Deref @ metamodelica::List::Cons { head: blck, tail: rest } => filterWhen(rest.clone(), metamodelica::cons(blck.clone(), out_blcks.clone()), new_blcks.clone(), indices.clone())?,
+        Deref @ metamodelica::List::Cons { head: __esc_blck, tail: __esc_rest } => {
+            blck = (*__esc_blck).clone();
+            rest = (*__esc_rest).clone();
+            filterWhen(rest.clone(), metamodelica::cons(blck.clone(), out_blcks.clone()), new_blcks.clone(), indices.clone())?
+        },
         _ => (out_blcks.clone(), new_blcks.clone(), indices.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -759,7 +768,7 @@ pub mod Block {
             } else {
                 jacobian = None;
             }
-            system = Arc::new(NonlinearSystem::NonlinearSystem { torn: true, mixed: var_field!((*comp).mixed, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone(), homotopy: var_field!((*comp).homotopy, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone(), jacobian: Pointer::create(jacobian.clone()), size: (crefs.clone().len() as i32), indexSystem: simCodeIndices.nonlinearSystemIndex.clone(), crefs: crefs.clone().reverse(), blcks: eqns.clone().reverse(), index: simCodeIndices.equationIndex.clone() });
+            system = Arc::new(NonlinearSystem::NonlinearSystem { index: simCodeIndices.equationIndex.clone(), blcks: eqns.clone().reverse(), crefs: crefs.clone().reverse(), indexSystem: simCodeIndices.nonlinearSystemIndex.clone(), size: (crefs.clone().len() as i32), jacobian: Pointer::create(jacobian.clone()), homotopy: var_field!((*comp).homotopy, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone(), mixed: var_field!((*comp).mixed, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone(), torn: true });
             simCodeIndices.nonlinearSystemIndex = simCodeIndices.nonlinearSystemIndex.clone() + 1;
             simCodeIndices.equationIndex = simCodeIndices.equationIndex.clone() + 1;
             (Arc::new(Block::NONLINEAR { system: system.clone(), alternativeTearing: None }), system.index.clone())
@@ -1137,24 +1146,24 @@ pub mod Block {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimStrongComponent.Block.convert")); __mm_s.push_str(&*literal!(" failed because there ")); __mm_s.push_str(&*literal!("is no non-conditional branch in:\n")); __mm_s.push_str(&*toString(blck.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
                 bail!("fail");
             }
-            Arc::new(OldSimCode::SimEqSystem::SES_IFEQUATION { eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::IF).clone())?, source: var_field!((*blck).source, Block::IF).clone(), elsebranch: else_branch.clone(), ifbranches: oldBranches.clone().reverse(), index: var_field!((*blck).index, Block::IF).clone() })
+            Arc::new(OldSimCode::SimEqSystem::SES_IFEQUATION { index: var_field!((*blck).index, Block::IF).clone(), ifbranches: oldBranches.clone().reverse(), elsebranch: else_branch.clone(), source: var_field!((*blck).source, Block::IF).clone(), eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::IF).clone())? })
         },
         Deref @ WHEN { .. } => {
-            Arc::new(OldSimCode::SimEqSystem::SES_WHEN { eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::WHEN).clone())?, source: var_field!((*blck).source, Block::WHEN).clone(), elseWhen: Util::applyOption(var_field!((*blck).else_when, Block::WHEN).clone(), (std::sync::Arc::new(convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block>) -> Result<Arc<OldSimCode::SimEqSystem>> + 'static>))?, whenStmtLst: ({
-        let mut __acc: Arc<metamodelica::List<OldBackendDAE::WhenOperator>> = metamodelica::nil();
-        for mut stmt in (var_field!((*blck).when_stmts, Block::WHEN).clone()).into_iter().cloned() {
-            let __x = BEquation::WhenStatement::convert(stmt.clone())?;
-            __acc = cons(__x, __acc);
-        }
-        __acc.reverse()
-    }), initialCall: var_field!((*blck).initialCall, Block::WHEN).clone(), conditions: ({
+            Arc::new(OldSimCode::SimEqSystem::SES_WHEN { index: var_field!((*blck).index, Block::WHEN).clone(), conditions: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
         for mut cr in (var_field!((*blck).conditions, Block::WHEN).clone()).into_iter().cloned() {
             let __x = ComponentRef::toDAE(cr.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), index: var_field!((*blck).index, Block::WHEN).clone() })
+    }), initialCall: var_field!((*blck).initialCall, Block::WHEN).clone(), whenStmtLst: ({
+        let mut __acc: Arc<metamodelica::List<OldBackendDAE::WhenOperator>> = metamodelica::nil();
+        for mut stmt in (var_field!((*blck).when_stmts, Block::WHEN).clone()).into_iter().cloned() {
+            let __x = BEquation::WhenStatement::convert(stmt.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }), elseWhen: Util::applyOption(var_field!((*blck).else_when, Block::WHEN).clone(), (std::sync::Arc::new(convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block>) -> Result<Arc<OldSimCode::SimEqSystem>> + 'static>))?, source: var_field!((*blck).source, Block::WHEN).clone(), eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::WHEN).clone())? })
         },
         Deref @ NONLINEAR { .. } => {
             Arc::new(OldSimCode::SimEqSystem::SES_NONLINEAR { nlSystem: NonlinearSystem::convert(var_field!((*blck).system, Block::NONLINEAR).clone())?, alternativeTearing: None, eqAttr: BEquation::EquationAttributes::convert(BEquation::default(EquationKind::CONTINUOUS.clone(), false, None, None))? })
@@ -1470,7 +1479,7 @@ pub mod NonlinearSystem {
             let mut cref = cref.clone();
             crefs = metamodelica::cons(ComponentRef::toDAE(cref.clone())?, crefs.clone());
         }
-        oldSystem = Arc::new(OldSimCode::NonlinearSystem { clockIndex: None, tornSystem: system.torn.clone(), mixedSystem: system.mixed.clone(), homotopySupport: system.homotopy.clone(), jacobianMatrix: Util::applyOption(Pointer::access(system.jacobian.clone()), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, nUnknowns: system.size.clone(), indexNonLinearSystem: system.indexSystem.clone(), crefs: crefs.clone().reverse(), eqs: Block::convertList(system.blcks.clone())?, index: system.index.clone() });
+        oldSystem = Arc::new(OldSimCode::NonlinearSystem { index: system.index.clone(), eqs: Block::convertList(system.blcks.clone())?, crefs: crefs.clone().reverse(), indexNonLinearSystem: system.indexSystem.clone(), nUnknowns: system.size.clone(), jacobianMatrix: Util::applyOption(Pointer::access(system.jacobian.clone()), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, homotopySupport: system.homotopy.clone(), mixedSystem: system.mixed.clone(), tornSystem: system.torn.clone(), clockIndex: None });
         Ok(oldSystem)
     }
 

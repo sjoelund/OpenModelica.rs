@@ -271,7 +271,7 @@ pub fn addImport(mut inImport: Arc<SCode::Element>, mut inImportTable: ImportTab
             unqual_imps = List::unionElt(imp.clone(), unqual_imps.clone());
             FCore::ImportTable { hidden: hidden.clone(), qualifiedImports: qual_imps.clone(), unqualifiedImports: unqual_imps.clone() }
         },
-        (Deref @ SCode::Element::IMPORT { info, imp, .. }, FCore::ImportTable { hidden, qualifiedImports: qual_imps, unqualifiedImports: unqual_imps }) => {
+        (Deref @ SCode::Element::IMPORT { imp, info, .. }, FCore::ImportTable { hidden, qualifiedImports: qual_imps, unqualifiedImports: unqual_imps }) => {
             let mut imp = (*imp).clone();
             let mut qual_imps = (*qual_imps).clone();
             imp = translateQualifiedImportToNamed(imp.clone())?;
@@ -958,7 +958,7 @@ pub fn isMod(mut inNode: Node) -> bool {
 pub fn isModHolder(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::MO { .. }, name: mut n, .. } => {
+        FCore::Node { name: mut n, data: FCore::Data::MO { .. }, .. } => {
             stringEq((n.clone()).clone(), (arcstr::literal!(modNodeName)).clone())
         },
         _ => {

@@ -811,11 +811,11 @@ pub fn printToken(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr = arcstr::literal!("");
     let mut byteOffset: i32 = 0;
     let mut length: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, id: __pa3, .. } = (token.clone()) else { bail!("pattern mismatch") };
-    length = __pa0.clone();
-    byteOffset = __pa1.clone();
-    contents = __pa2.clone();
-    id = __pa3.clone();
+    let Token { id: __pa0, fileContents: __pa1, byteOffset: __pa2, length: __pa3, .. } = (token.clone()) else { bail!("pattern mismatch") };
+    id = __pa0.clone();
+    contents = __pa1.clone();
+    byteOffset = __pa2.clone();
+    length = __pa3.clone();
     contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
     strTk = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[TOKEN:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", id.clone()))); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*contents.clone()); __mm_s.push_str(&*literal!("' (")); __mm_s.push_str(&*intString(token.lineNumberStart.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberStart.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(token.lineNumberEnd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberEnd.clone())); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
     Ok(strTk)
@@ -825,10 +825,10 @@ pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr = arcstr::literal!("");
     let mut byteOffset: i32 = 0;
     let mut length: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
-    length = __pa0.clone();
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
+    contents = __pa0.clone();
     byteOffset = __pa1.clone();
-    contents = __pa2.clone();
+    length = __pa2.clone();
     contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
     Ok(contents)
 }
@@ -841,14 +841,14 @@ pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     let mut length1: i32 = 0;
     let mut offset2: i32 = 0;
     let mut length2: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
-    length1 = __pa0.clone();
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
+    contents1 = __pa0.clone();
     offset1 = __pa1.clone();
-    contents1 = __pa2.clone();
-    let Token { length: __pa3, byteOffset: __pa4, fileContents: __pa5, .. } = (token2.clone()) else { bail!("pattern mismatch") };
-    length2 = __pa3.clone();
+    length1 = __pa2.clone();
+    let Token { fileContents: __pa3, byteOffset: __pa4, length: __pa5, .. } = (token2.clone()) else { bail!("pattern mismatch") };
+    contents2 = __pa3.clone();
     offset2 = __pa4.clone();
-    contents2 = __pa5.clone();
+    length2 = __pa5.clone();
     b = if (length1.clone() != length2.clone()) {false} else {0 == System::strcmp_offset((contents1.clone()).clone(), offset1.clone(), length1.clone(), (contents2.clone()).clone(), offset2.clone(), length2.clone())};
     Ok(b)
 }
@@ -1082,9 +1082,9 @@ fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i3
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
-        lineStart = __pa0.clone();
-        filename = __pa1.clone();
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+        filename = __pa0.clone();
+        lineStart = __pa1.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
@@ -1095,9 +1095,9 @@ fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut inf
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
-        lineStart = __pa0.clone();
-        filename = __pa1.clone();
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+        filename = __pa0.clone();
+        lineStart = __pa1.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
@@ -1236,10 +1236,12 @@ pub fn filterModelicaDiff(mut diffs: Arc<metamodelica::List<(DiffAlgorithm::Diff
     depth = 2;
     while !(simpleDiff.clone().is_empty()) {
         (lastIsNewline, simpleDiff, tmp) = (::match_deref::match_deref! { match &(simpleDiff.clone()) {
-        Deref @ metamodelica::List::Cons { head: e1 @ (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t1 @ Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t2 @ Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e2 @ (DiffAlgorithm::Diff::Equal, _), tail: rest } } } } => {
+        Deref @ metamodelica::List::Cons { head: e1 @ (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t1 @ Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t2 @ Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e2 @ (DiffAlgorithm::Diff::Equal, _), tail: __esc_rest } } } } => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons(e1.clone(), metamodelica::cons((Diff::Equal.clone(), t1.clone()), metamodelica::cons((Diff::Equal.clone(), t2.clone()), metamodelica::cons(e2.clone(), rest.clone())))), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: e1 @ (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t @ Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e2 @ (DiffAlgorithm::Diff::Equal, _), tail: rest } } } => {
+        Deref @ metamodelica::List::Cons { head: e1 @ (DiffAlgorithm::Diff::Equal, _), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Delete, t @ Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e2 @ (DiffAlgorithm::Diff::Equal, _), tail: __esc_rest } } } => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons(e1.clone(), metamodelica::cons((Diff::Equal.clone(), t.clone()), metamodelica::cons(e2.clone(), rest.clone()))), tmp.clone())
         },
         Deref @ metamodelica::List::Cons { head: e1 @ (DiffAlgorithm::Diff::Equal, Token { id: t3, .. }), tail: rest } if (t3.clone() != TokenId::WHITESPACE.clone() && t3.clone() != TokenId::NEWLINE.clone() && (deleteWhitespaceFollowedByEqualNonWhitespace(rest.clone())?).0) => {
@@ -1247,37 +1249,48 @@ pub fn filterModelicaDiff(mut diffs: Arc<metamodelica::List<(DiffAlgorithm::Diff
             (_, rest) = deleteWhitespaceFollowedByEqualNonWhitespace(rest.clone())?;
             (false, metamodelica::cons(e1.clone(), rest.clone()), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t5, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone()) && (t5.clone() == TokenId::NEWLINE.clone() || t5.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t5, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone()) && (t5.clone() == TokenId::NEWLINE.clone() || t5.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), rest.clone()), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), rest.clone()), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), rest.clone()), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d4, tk4 @ Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d5, tk5 @ Token { id: t5, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (d4.clone() == Diff::Equal.clone() || d4.clone() == Diff::Delete.clone()) && (d5.clone() == Diff::Equal.clone() || d5.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone()) && (t5.clone() == TokenId::NEWLINE.clone() || t5.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d4, tk4 @ Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d5, tk5 @ Token { id: t5, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (d4.clone() == Diff::Equal.clone() || d4.clone() == Diff::Delete.clone()) && (d5.clone() == Diff::Equal.clone() || d5.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone()) && (t5.clone() == TokenId::NEWLINE.clone() || t5.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), metamodelica::cons((Diff::Equal.clone(), tk3.clone()), metamodelica::cons((Diff::Equal.clone(), tk4.clone()), metamodelica::cons((Diff::Equal.clone(), tk5.clone()), rest.clone())))), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d4, tk4 @ Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (d4.clone() == Diff::Equal.clone() || d4.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d4, tk4 @ Token { id: t4, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (d4.clone() == Diff::Equal.clone() || d4.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone()) && (t4.clone() == TokenId::NEWLINE.clone() || t4.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), metamodelica::cons((Diff::Equal.clone(), tk3.clone()), metamodelica::cons((Diff::Equal.clone(), tk4.clone()), rest.clone()))), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: rest } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone())) => {
+        Deref @ metamodelica::List::Cons { head: (d1, t1), tail: Deref @ metamodelica::List::Cons { head: (d3, tk3 @ Token { id: t3, .. }), tail: Deref @ metamodelica::List::Cons { head: (d2, t2), tail: __esc_rest } } } if ((d1.clone() == Diff::Add.clone() && d2.clone() == Diff::Delete.clone() || d2.clone() == Diff::Add.clone() && d1.clone() == Diff::Delete.clone()) && modelicaDiffTokenEq(t1.clone(), t2.clone())? && (d3.clone() == Diff::Equal.clone() || d3.clone() == Diff::Delete.clone()) && (t3.clone() == TokenId::NEWLINE.clone() || t3.clone() == TokenId::WHITESPACE.clone())) => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons((Diff::Equal.clone(), t1.clone()), metamodelica::cons((Diff::Equal.clone(), tk3.clone()), rest.clone())), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } } => {
+        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: __esc_rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } } => {
+            rest = (*__esc_rest).clone();
             (false, rest.clone(), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } => {
+        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: __esc_rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } => {
+            rest = (*__esc_rest).clone();
             (false, rest.clone(), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: e @ (_, Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: rest } } => {
+        Deref @ metamodelica::List::Cons { head: e @ (_, Token { id: TokenId::NEWLINE, .. }), tail: Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::NEWLINE, .. }), tail: __esc_rest } } => {
+            rest = (*__esc_rest).clone();
             (false, metamodelica::cons(e.clone(), rest.clone()), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: e @ (_, Token { id: TokenId::NEWLINE, .. }), tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: e @ (_, Token { id: TokenId::NEWLINE, .. }), tail: __esc_rest } => {
+            rest = (*__esc_rest).clone();
             (true, rest.clone(), metamodelica::cons(e.clone(), tmp.clone()))
         },
-        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e @ (DiffAlgorithm::Diff::Add, _), tail: rest } } if (lastIsNewline.clone()) => {
+        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: Deref @ metamodelica::List::Cons { head: e @ (DiffAlgorithm::Diff::Add, _), tail: __esc_rest } } if (lastIsNewline.clone()) => {
+            rest = (*__esc_rest).clone();
             (false, rest.clone(), metamodelica::cons(e.clone(), metamodelica::cons((Diff::Add.clone(), Token { fileName: (literal!("WHITESPACE")).clone(), id: TokenId::WHITESPACE.clone(), fileContents: (({
         let mut __acc = String::new();
         for mut i in (1..=depth.clone()).into_iter() {
@@ -1287,15 +1300,18 @@ pub fn filterModelicaDiff(mut diffs: Arc<metamodelica::List<(DiffAlgorithm::Diff
         ArcStr::from(__acc)
     })).clone(), byteOffset: 1, length: depth.clone(), lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0 }), tmp.clone())))
         },
-        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } if (lastIsNewline.clone()) => {
+        Deref @ metamodelica::List::Cons { head: (DiffAlgorithm::Diff::Add, Token { id: TokenId::WHITESPACE, .. }), tail: __esc_rest @ Deref @ metamodelica::List::Cons { head: (_, Token { id: TokenId::NEWLINE, .. }), tail: _ } } if (lastIsNewline.clone()) => {
+            rest = (*__esc_rest).clone();
             (true, rest.clone(), tmp.clone())
         },
-        Deref @ metamodelica::List::Cons { head: e @ (_, t @ Token { id: TokenId::WHITESPACE, .. }), tail: rest } if (lastIsNewline.clone()) => {
+        Deref @ metamodelica::List::Cons { head: e @ (_, t @ Token { id: TokenId::WHITESPACE, .. }), tail: __esc_rest } if (lastIsNewline.clone()) => {
+            rest = (*__esc_rest).clone();
             let Token { length: __pa0, .. } = (t.clone()) else { bail!("pattern mismatch") };
             depth = __pa0.clone();
             (false, rest.clone(), metamodelica::cons(e.clone(), tmp.clone()))
         },
-        Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: e, tail: __esc_rest } => {
+            rest = (*__esc_rest).clone();
             (false, rest.clone(), metamodelica::cons(e.clone(), tmp.clone()))
         },
         _ => bail!("match: no arm matched"),

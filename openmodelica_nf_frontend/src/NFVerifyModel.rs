@@ -278,7 +278,7 @@ fn checkSubscriptBounds_traverser(mut exp: Arc<Expression::NFExpression>, mut is
 
 fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isPartial: bool, mut info: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ ComponentRef::CREF { ty: Deref @ Type::ARRAY { dimensions: dims, .. }, subscripts: subs @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => {
+        Deref @ ComponentRef::CREF { subscripts: subs @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, ty: Deref @ Type::ARRAY { dimensions: dims, .. }, .. } => {
             let mut d: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
             let mut int_sub: i32 = 0;
             let mut index: i32 = 0;
@@ -443,11 +443,11 @@ fn checkDiscreteRealStatement(mut statement: Arc<Statement::NFStatement>, mut di
 
 fn checkDiscreteRealExp(mut exp: Arc<Expression::NFExpression>, mut discreteReals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref, ty } if (Type::isReal(Type::arrayElementType(ty.clone()))?) => {
+        Deref @ Expression::CREF { ty, cref } if (Type::isReal(Type::arrayElementType(ty.clone()))?) => {
             UnorderedSet::add(cref.clone(), discreteReals.clone())?;
             ()
         },
-        Deref @ Expression::CREF { cref, ty: ty @ Deref @ Type::COMPLEX { cls, .. } } if (Type::isRecord(ty.clone())) => {
+        Deref @ Expression::CREF { ty: ty @ Deref @ Type::COMPLEX { cls, .. }, cref } if (Type::isRecord(ty.clone())) => {
             checkDiscreteRealRecord(cref.clone(), cls.clone(), discreteReals.clone())?;
             ()
         },

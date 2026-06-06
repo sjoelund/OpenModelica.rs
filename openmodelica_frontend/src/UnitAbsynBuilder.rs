@@ -149,7 +149,7 @@ fn registerUnitWeightDefineunits2(mut idu: Arc<metamodelica::List<Arc<SCode::Ele
         let __mc_input = idu.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { weight: Some(w), name: n, .. }, tail: du } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::DEFINEUNIT { name: n, weight: Some(w), .. }, tail: du } => {
                     UnitParserExt::registerWeight((n.clone()).clone(), w.clone());
                     registerUnitWeightDefineunits2(du.clone())?;
                     Ok(())
@@ -326,7 +326,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
     (outSt, index) = 'mc: {
         let __mc_input = ist.clone();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
-            let ref st @ UnitAbsyn::Store { numElts: ref numElts, storeVector: ref vector } = __mc_input.clone() else { bail!("nomatch") };
+            let ref st @ UnitAbsyn::Store { storeVector: ref vector, numElts: ref numElts } = __mc_input.clone() else { bail!("nomatch") };
             let mut st = st.clone();
             let mut index: i32 = index.clone();
             let true = (numElts.clone() == metamodelica::arrayLength(vector.clone())) else { bail!("pattern mismatch") };
@@ -335,7 +335,7 @@ pub fn add(mut unit: UnitAbsyn::Unit, mut ist: UnitAbsyn::Store) -> Result<(Unit
             Ok(((st.clone(), index.clone()), index.clone()))
         })() { index = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let UnitAbsyn::Store { numElts: mut numElts, storeVector: mut vector } = __mc_input.clone() else { bail!("nomatch") };
+            let UnitAbsyn::Store { storeVector: mut vector, numElts: mut numElts } = __mc_input.clone() else { bail!("nomatch") };
             let mut newIndx: i32 = 0;
             newIndx = numElts.clone() + 1;
             vector = {let _arr = vector.clone(); let _idx = newIndx.clone(); let _val = Some(unit.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
@@ -794,7 +794,8 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
                     for mut v in &*varLst.clone() {
                         let mut v = v.clone();
                         let () = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: unitStr }, .. }, name: Deref @ "unit", .. } => {
+        Deref @ DAE::Var { name: Deref @ "unit", binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: __esc_unitStr }, .. }, .. } => {
+                    unitStr = (*__esc_unitStr).clone();
                     unit = str2unit((unitStr.clone()).clone(), None)?;
                     unit = if (0 == stringCompare((unitStr.clone()).clone(), (literal!("")).clone())) {crate::UnitAbsyn::Unit::UNSPECIFIED} else {unit.clone()};
                     (st, indx) = add(unit.clone(), st.clone())?;
@@ -1069,7 +1070,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         })() { terms = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: Some(e1), componentRef: cr1 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ }, .. }, tail: elts } }, store) => {
+                (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr1 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ }, binding: Some(e1), .. }, tail: elts } }, store) => {
                     let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ut1: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
                     let mut ut2: Arc<UnitAbsyn::UnitTerm> = Arc::new(<UnitAbsyn::UnitTerm as ::std::default::Default>::default());
@@ -1314,7 +1315,7 @@ fn buildTermExp(mut env: FCore::Graph, mut exp: Arc<DAE::Exp>, mut idivOrMul: bo
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CALL { expLst: expl, path, .. }, divOrMul, ht, store) => {
+                (e @ Deref @ DAE::Exp::CALL { path, expLst: expl, .. }, divOrMul, ht, store) => {
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
                     let mut divOrMul = (*divOrMul).clone();
                     let mut store = (*store).clone();
@@ -1622,8 +1623,6 @@ fn buildFuncTypeStores2(mut ifargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, 
     Ok((outStore, indxs))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getUnitStr(mut itp: Arc<DAE::Type>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
@@ -1634,7 +1633,7 @@ fn getUnitStr(mut itp: Arc<DAE::Type>) -> Result<ArcStr> {
                     for mut v in &*varLst.clone() {
                         let mut v = v.clone();
                         let () = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: __esc_str }, .. }, name: Deref @ "unit", .. } => {
+        Deref @ DAE::Var { name: Deref @ "unit", binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: __esc_str }, .. }, .. } => {
                     r#str = (*__esc_str).clone();
                     return Ok(r#str.clone());
                     ()
@@ -1772,7 +1771,7 @@ fn buildStores2(mut dae: DAE::DAElist, mut inStore: UnitAbsyn::Store, mut inHt: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { variableAttributesOption: attropt, componentRef: cr, .. }, tail: elts } } => {
+                DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { componentRef: cr, variableAttributesOption: attropt, .. }, tail: elts } } => {
                     let mut indx: i32 = 0;
                     let mut unitStr: ArcStr = arcstr::literal!("");
                     let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;

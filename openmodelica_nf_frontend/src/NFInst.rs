@@ -144,13 +144,13 @@ pub mod InstSettings {
     pub type SETTINGS = InstSettings;
 
     pub fn create() -> Result<Arc<InstSettings>> {
-        let mut settings: Arc<InstSettings> = Arc::new(InstSettings { resizableArrays: Flags::getConfigBool(Flags::RESIZABLE_ARRAYS.clone())?, mergeExtendsSections: true });
+        let mut settings: Arc<InstSettings> = Arc::new(InstSettings { mergeExtendsSections: true, resizableArrays: Flags::getConfigBool(Flags::RESIZABLE_ARRAYS.clone())? });
         Ok(settings)
     }
 
 }
 
-pub static DEFAULT_SETTINGS: std::sync::LazyLock<Arc<InstSettings::InstSettings>> = std::sync::LazyLock::new(|| { Arc::new(InstSettings::InstSettings { resizableArrays: false, mergeExtendsSections: true }) });
+pub static DEFAULT_SETTINGS: std::sync::LazyLock<Arc<InstSettings::InstSettings>> = std::sync::LazyLock::new(|| { Arc::new(InstSettings::InstSettings { mergeExtendsSections: true, resizableArrays: false }) });
 
 pub fn Inst_makeTopNode(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut annotationProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Arc<InstNode::InstNode> {
     let mut topNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -475,11 +475,12 @@ pub fn partialInstClass2(mut definition: Arc<SCode::Element>, mut scope: Arc<Ins
     prefs = instClassPrefixes(definition.clone())?;
     cls = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => Class::fromSCode(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), false, scope.clone(), prefs.clone())?,
-        Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: ce_cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
+        Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: __esc_ce_cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
+            ce_cdef = (*__esc_ce_cdef).clone();
             if !(SCodeUtil::isElementRedeclare(definition.clone())?) {
                 Error::addSourceMessage(Error::CLASS_EXTENDS_MISSING_REDECLARE.clone(), list![(SCodeUtil::elementName(definition.clone())?).clone()], SCodeUtil::elementInfo(definition.clone()))?;
             }
-            Class::fromSCode(var_field!((**ce_cdef).elementLst, SCode::ClassDef::PARTS).clone(), true, scope.clone(), prefs.clone())?
+            Class::fromSCode(var_field!((*ce_cdef).elementLst, SCode::ClassDef::PARTS).clone(), true, scope.clone(), prefs.clone())?
         },
         Deref @ SCode::ClassDef::ENUMERATION { .. } => {
             ty = makeEnumerationType(var_field!((*cdef).enumLst, SCode::ClassDef::ENUMERATION).clone(), scope.clone())?;
@@ -495,8 +496,11 @@ pub fn instClassPrefixes(mut cls: Arc<SCode::Element>) -> Result<Arc<Class::Pref
     let mut prefixes: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
     let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     prefixes = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, .. }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, .. } => Class::DEFAULT_PREFIXES.clone(),
-        Deref @ SCode::Element::CLASS { prefixes: prefs, .. } => Arc::new(Class::Prefixes::Prefixes { encapsulatedPrefix: var_field!((*cls).encapsulatedPrefix, SCode::Element::CLASS).clone(), partialPrefix: var_field!((*cls).partialPrefix, SCode::Element::CLASS).clone(), finalPrefix: prefs.finalPrefix.clone(), innerOuter: prefs.innerOuter.clone(), replaceablePrefix: prefs.replaceablePrefix.clone() }),
+        Deref @ SCode::Element::CLASS { encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, prefixes: Deref @ SCode::Prefixes { finalPrefix: SCode::Final::NOT_FINAL { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, .. }, .. } => Class::DEFAULT_PREFIXES.clone(),
+        Deref @ SCode::Element::CLASS { prefixes: __esc_prefs, .. } => {
+            prefs = (*__esc_prefs).clone();
+            Arc::new(Class::Prefixes::Prefixes { encapsulatedPrefix: var_field!((*cls).encapsulatedPrefix, SCode::Element::CLASS).clone(), partialPrefix: var_field!((*cls).partialPrefix, SCode::Element::CLASS).clone(), finalPrefix: prefs.finalPrefix.clone(), innerOuter: prefs.innerOuter.clone(), replaceablePrefix: prefs.replaceablePrefix.clone() })
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(prefixes)
@@ -536,11 +540,11 @@ pub fn expandClass2(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Resu
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut name_map: Option<Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>> = None;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(def.clone()) {
-        Deref @ SCode::Element::CLASS { info: __pa0, classDef: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::Element::CLASS { classDef: __pa0, info: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    info = __pa0.clone();
-    cdef = __pa1.clone();
+    cdef = __pa0.clone();
+    info = __pa1.clone();
     node = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
             (node, name_map) = expandClassParts(def.clone(), node.clone(), context.clone(), info.clone())?;
@@ -587,13 +591,13 @@ pub fn expandClassParts(mut def: Arc<SCode::Element>, mut node: Arc<InstNode::In
     cls = Class::initExpandedClass(cls.clone())?;
     node = InstNode::updateClass(cls.clone(), node.clone())?;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::EXPANDED_CLASS { prefixes: __pa0, ccMod: __pa1, modifier: __pa2, elements: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ Class::EXPANDED_CLASS { elements: __pa0, modifier: __pa1, ccMod: __pa2, prefixes: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    prefs = __pa0.clone();
-    cc_mod = __pa1.clone();
-    r#mod = __pa2.clone();
-    cls_tree = __pa3.clone();
+    cls_tree = __pa0.clone();
+    r#mod = __pa1.clone();
+    cc_mod = __pa2.clone();
+    prefs = __pa3.clone();
     if ClassTree::extendsCount(cls_tree.clone()) > 0 {
         name_map = InstUtil::makeMergeNameMap();
         builtin_ext = ClassTree::mapFoldExtends(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b2 = context.clone(); let __pe_b3 = name_map.clone(); move |__pe_a0, __pe_a1| expandExtends(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)> + 'static>), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
@@ -631,7 +635,10 @@ pub fn expandExtends(mut ext: Arc<InstNode::InstNode>, mut builtinExt: Arc<InstN
     }
     def = InstNode::definition(ext.clone())?;
     let () = (::match_deref::match_deref! { match &(def.clone()) {
-        Deref @ SCode::Element::EXTENDS { baseClassPath: base_path, visibility: _, modifications: smod, ann: _, info } => {
+        Deref @ SCode::Element::EXTENDS { baseClassPath: __esc_base_path, visibility: _, modifications: __esc_smod, ann: _, info: __esc_info } => {
+            base_path = (*__esc_base_path).clone();
+            smod = (*__esc_smod).clone();
+            info = (*__esc_info).clone();
             scope = InstNode::parent(ext.clone());
             let (__pa1, __pa0) = ::match_deref::match_deref! { match &(Lookup::lookupBaseClassName(base_path.clone(), scope.clone(), context.clone(), info.clone())?) {
                 __pa1 @ Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => (__pa1.clone(), __pa0.clone()),
@@ -813,11 +820,11 @@ pub fn expandClassDerived(mut element: Arc<SCode::Element>, mut definition: Arc<
     let mut cc_mod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
     let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(definition.clone()) {
-        Deref @ SCode::ClassDef::DERIVED { attributes: __pa0, typeSpec: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::ClassDef::DERIVED { typeSpec: __pa0, attributes: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    sattrs = __pa0.clone();
-    ty = __pa1.clone();
+    ty = __pa0.clone();
+    sattrs = __pa1.clone();
     let __pa2 = ::match_deref::match_deref! { match &(Lookup::lookupBaseClassName(AbsynUtil::typeSpecPath(ty.clone())?, InstNode::parent(node.clone()), context.clone(), info.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa2, tail: _ } => __pa2.clone(),
         _ => bail!("pattern mismatch"),
@@ -907,7 +914,8 @@ pub fn instClassDef(mut cls: Arc<Class::NFClass>, mut outerMod: Arc<Modifier::Mo
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut attrs: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::EXPANDED_CLASS { restriction: res, .. } => {
+        Deref @ Class::EXPANDED_CLASS { restriction: __esc_res, .. } => {
+            res = (*__esc_res).clone();
             if InstNode::isBaseClass(node.clone()) {
                 par = parent.clone();
             } else {
@@ -974,7 +982,9 @@ pub fn instClassDef(mut cls: Arc<Class::NFClass>, mut outerMod: Arc<Modifier::Mo
             instExternalObjectStructors(var_field!((*cls).ty, Class::NFClass::PARTIAL_BUILTIN).clone(), parent.clone(), context.clone())?;
             ()
         },
-        Deref @ Class::PARTIAL_BUILTIN { restriction: res, ty, .. } => {
+        Deref @ Class::PARTIAL_BUILTIN { ty: __esc_ty, restriction: __esc_res, .. } => {
+            ty = (*__esc_ty).clone();
+            res = (*__esc_res).clone();
             (node, par, _, _) = ClassTree::instantiate(node.clone(), parent.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE())?;
             updateComponentType(parent.clone(), node.clone())?;
             cls_tree = Class::classTree(InstNode::getClass(node.clone())?)?;
@@ -1125,16 +1135,17 @@ pub fn applyExtendsVisibility(mut node: Arc<InstNode::InstNode>, mut visibility:
     let mut vis: ExtendsVisibility = visibility.clone();
     cls = InstNode::getClass(node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::EXPANDED_CLASS { elements: cls_tree @ Deref @ ClassTree::INSTANTIATED_TREE { .. }, .. } => {
+        Deref @ Class::EXPANDED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::INSTANTIATED_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
             if vis.clone() == ExtendsVisibility::PUBLIC.clone() && InstNode::isProtectedBaseClass(node.clone()) || vis.clone() == ExtendsVisibility::DERIVED_PROTECTED.clone() {
                 vis = ExtendsVisibility::PROTECTED.clone();
             }
             if vis.clone() == ExtendsVisibility::PROTECTED.clone() && visibility.clone() != ExtendsVisibility::PROTECTED.clone() {
-                let __range0 = var_field!((**cls_tree).classes, ClassTree::ClassTree::INSTANTIATED_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+                let __range0 = var_field!((*cls_tree).classes, ClassTree::ClassTree::INSTANTIATED_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range0 {
                     Mutable::update(c.clone(), InstNode::protectClass(Mutable::access(c.clone())));
                 }
-                let __range1 = var_field!((**cls_tree).components, ClassTree::ClassTree::INSTANTIATED_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+                let __range1 = var_field!((*cls_tree).components, ClassTree::ClassTree::INSTANTIATED_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range1 {
                     Mutable::update(c.clone(), InstNode::protectComponent(Mutable::access(c.clone())));
                 }
@@ -1163,7 +1174,8 @@ pub fn instExtends(mut node: Arc<InstNode::InstNode>, mut attributes: Arc<Attrib
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     cls = InstNode::getClass(node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::EXPANDED_CLASS { elements: cls_tree @ Deref @ ClassTree::INSTANTIATED_TREE { .. }, .. } => {
+        Deref @ Class::EXPANDED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::INSTANTIATED_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
             ClassTree::mapExtends(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b1 = attributes.clone(); let __pe_b2 = useBinding.clone(); let __pe_b3 = instLevel.clone(); let __pe_b4 = context.clone(); move |__pe_a0| instExtends(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>))?;
             ClassTree::applyLocalComponents(cls_tree.clone(), (std::sync::Arc::new({ let __pe_b1 = attributes.clone(); let __pe_b2 = crate::NFModifier::Modifier::interned_NOMOD(); let __pe_b3 = useBinding.clone(); let __pe_b4 = instLevel.clone(); let __pe_b5 = context.clone(); let __pe_b6 = None; let __pe_b7 = metamodelica::nil(); move |__pe_a0| instComponent(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
             ()
@@ -1287,12 +1299,12 @@ pub fn redeclareClasses(mut tree: Arc<ClassTree::ClassTree>, mut parent: Arc<Ins
                 r#mod = Class::getModifier(cls.clone());
                 if Modifier::isRedeclare(r#mod.clone()) {
                     let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(r#mod.clone()) {
-                        Deref @ Modifier::REDECLARE { constrainingMod: __pa1, outerMod: __pa2, element: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
+                        Deref @ Modifier::REDECLARE { element: __pa1, outerMod: __pa2, constrainingMod: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    cc_mod = __pa1.clone();
+                    redecl_node = __pa1.clone();
                     r#mod = __pa2.clone();
-                    redecl_node = __pa3.clone();
+                    cc_mod = __pa3.clone();
                     cc_mod = getConstrainingMod(InstNode::definition(cls_node.clone())?, parent.clone(), cc_mod.clone(), instLevel.clone())?;
                     cls_node = redeclareClass(redecl_node.clone(), cls_node.clone(), r#mod.clone(), cc_mod.clone(), context.clone())?;
                     Mutable::update(cls_ptr.clone(), cls_node.clone());
@@ -1470,21 +1482,21 @@ pub fn instComponent(mut node: Arc<InstNode::InstNode>, mut attributes: Arc<Attr
         return Ok(());
     }
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ Component::COMPONENT_DEF { modifier: __pa0, definition: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Component::COMPONENT_DEF { definition: __pa0, modifier: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    outer_mod = __pa0.clone();
-    def = __pa1.clone();
+    def = __pa0.clone();
+    outer_mod = __pa1.clone();
     if Modifier::isRedeclare(outer_mod.clone()) {
         let (__pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(outer_mod.clone()) {
-            Deref @ Modifier::REDECLARE { propagatedSubs: __pa2, constrainingMod: __pa3, outerMod: __pa4, innerMod: __pa5, element: __pa6, .. } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+            Deref @ Modifier::REDECLARE { element: __pa2, innerMod: __pa3, outerMod: __pa4, constrainingMod: __pa5, propagatedSubs: __pa6, .. } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        propagated_subs = __pa2.clone();
-        cc_mod = __pa3.clone();
+        rdcl_node = __pa2.clone();
+        inner_mod = __pa3.clone();
         outer_mod = __pa4.clone();
-        inner_mod = __pa5.clone();
-        rdcl_node = __pa6.clone();
+        cc_mod = __pa5.clone();
+        propagated_subs = __pa6.clone();
         next_context = InstContext::set(context.clone(), InstContext::REDECLARED.clone());
         instComponentDef(def.clone(), crate::NFModifier::Modifier::interned_NOMOD(), inner_mod.clone(), Attributes::DEFAULT_ATTR().clone(), useBinding.clone(), comp_node.clone(), parent.clone(), instLevel.clone(), originalAttr.clone(), metamodelica::nil(), next_context.clone())?;
         cc_mod = getConstrainingMod(def.clone(), parent.clone(), cc_mod.clone(), instLevel.clone())?;
@@ -1623,8 +1635,8 @@ pub fn propagateRedeclaredMod(mut r#mod: Arc<Modifier::Modifier>, mut component:
     let mut outMod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
     let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     outMod = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ InstNode::COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent }, .. } => {
-            let mut parent = (*parent).clone();
+        Deref @ InstNode::COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent: __esc_parent }, .. } => {
+            parent = (*__esc_parent).clone();
             parent = InstNode::getDerivedNode(parent.clone(), true);
             outMod = propagateRedeclaredMod(r#mod.clone(), parent.clone());
             Modifier::propagateBinding(outMod.clone(), parent.clone(), parent.clone())
@@ -1693,8 +1705,9 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
     instComponent(rdcl_node.clone(), outerAttr.clone(), constrainingMod.clone(), true, instLevel.clone(), context.clone(), Some(Component::getAttributes(orig_comp.clone())), propagatedSubs.clone())?;
     rdcl_comp = InstNode::component(rdcl_node.clone())?;
     new_comp = (::match_deref::match_deref! { match &((orig_comp.clone(), rdcl_comp.clone())) {
-        (Deref @ Component::COMPONENT { ty: orig_ty @ Deref @ Type::UNTYPED { .. }, .. }, Deref @ Component::COMPONENT { ty: rdcl_ty @ Deref @ Type::UNTYPED { .. }, .. }) => {
-            let mut rdcl_ty = (*rdcl_ty).clone();
+        (Deref @ Component::COMPONENT { ty: __esc_orig_ty @ Deref @ Type::UNTYPED { .. }, .. }, Deref @ Component::COMPONENT { ty: __esc_rdcl_ty @ Deref @ Type::UNTYPED { .. }, .. }) => {
+            orig_ty = (*__esc_orig_ty).clone();
+            rdcl_ty = (*__esc_rdcl_ty).clone();
             if !(InstNode::isReplaceable(orig_node.clone())?) && !(InstContext::inInstanceAPI(context.clone())) && !(Type::isEqual(Type::arrayElementType(orig_ty.clone()), Type::arrayElementType(rdcl_ty.clone()))?) {
                 Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(InstNode::name(orig_node.clone())?).clone()], list![InstNode::info(orig_node.clone())?, InstNode::info(rdcl_node.clone())?])?;
                 bail!("fail");
@@ -1710,7 +1723,7 @@ pub fn redeclareComponent(mut redeclareNode: Arc<InstNode::InstNode>, mut origin
             condition = var_field!((*orig_comp).condition, Component::NFComponent::COMPONENT).clone();
             attr = var_field!((*rdcl_comp).attributes, Component::NFComponent::COMPONENT).clone();
             if Type::dimensionCount(rdcl_ty.clone()) == 0 {
-                rdcl_ty = Arc::new(Type::NFType::UNTYPED { typeNode: var_field!((*rdcl_ty).typeNode, Type::NFType::UNTYPED).clone(), dimensions: var_field!((**orig_ty).dimensions, Type::NFType::UNTYPED).clone() });
+                rdcl_ty = Arc::new(Type::NFType::UNTYPED { typeNode: var_field!((*rdcl_ty).typeNode, Type::NFType::UNTYPED).clone(), dimensions: var_field!((*orig_ty).dimensions, Type::NFType::UNTYPED).clone() });
             }
             cmt = var_field!((*orig_comp).comment, Component::NFComponent::COMPONENT).clone();
             Arc::new(Component::NFComponent::COMPONENT { classInst: var_field!((*rdcl_comp).classInst, Component::NFComponent::COMPONENT).clone(), ty: rdcl_ty.clone(), binding: binding.clone(), condition: condition.clone(), attributes: attr.clone(), comment: cmt.clone(), state: ComponentState::PartiallyInstantiated.clone(), info: var_field!((*rdcl_comp).info, Component::NFComponent::COMPONENT).clone() })
@@ -1892,8 +1905,8 @@ pub fn instResizable(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expre
             let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
             comp = Pointer::access(var_field!((**node).component, InstNode::InstNode::COMPONENT_NODE).clone());
             let () = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ Component::COMPONENT { attributes: attr, .. } => {
-            let mut attr = (*attr).clone();
+        Deref @ Component::COMPONENT { attributes: __esc_attr, .. } => {
+            attr = (*__esc_attr).clone();
             assign_field!(
                 attr.variability = Variability::NON_STRUCTURAL_PARAMETER.clone(),
                 attr.isResizable = true
@@ -1929,8 +1942,8 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
     let mut connect_breaks: Arc<ConnectBreakTree::Tree> = Arc::new(ConnectBreakTree::Tree::EMPTY);
     let mut local_connect_breaks: Arc<metamodelica::List<Mutable::Mutable<ConnectBreakTree::Entry>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, elements: cls_tree, .. } => {
-            let mut cls_tree = (*cls_tree).clone();
+        Deref @ Class::EXPANDED_CLASS { elements: __esc_cls_tree, restriction: Deref @ Restriction::TYPE, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
             exts = ClassTree::getExtends(cls_tree.clone());
             let __range0 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range0 {
@@ -1949,7 +1962,8 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             InstNode::updateClass(inst_cls.clone(), node.clone())?;
             ()
         },
-        Deref @ Class::EXPANDED_CLASS { elements: cls_tree, .. } => {
+        Deref @ Class::EXPANDED_CLASS { elements: __esc_cls_tree, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
             (connect_breaks, local_connect_breaks) = ConnectBreakTree::appendBreaksInNode(node.clone(), connectBreaks.clone())?;
             if settings.mergeExtendsSections.clone() {
                 let __range0 = ClassTree::getExtends(cls_tree.clone()).borrow().iter().cloned().collect::<Vec<_>>();
@@ -1975,7 +1989,8 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             instComplexType(ty.clone(), context.clone())?;
             ()
         },
-        Deref @ Class::EXPANDED_DERIVED { dims, .. } => {
+        Deref @ Class::EXPANDED_DERIVED { dims: __esc_dims, .. } => {
+            dims = (*__esc_dims).clone();
             sections = instExpressions(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), scope.clone(), sections.clone(), connectBreaks.clone(), context.clone(), settings.clone())?;
             info = InstNode::info(node.clone())?;
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
@@ -1990,7 +2005,8 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             }
             ()
         },
-        Deref @ Class::INSTANCED_BUILTIN { elements: Deref @ ClassTree::FLAT_TREE { components: local_comps, .. }, .. } => {
+        Deref @ Class::INSTANCED_BUILTIN { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_local_comps, .. }, .. } => {
+            local_comps = (*__esc_local_comps).clone();
             let __range0 = local_comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
                 instComponentExpressions(comp.clone(), context.clone(), settings.clone())?;
@@ -2091,7 +2107,8 @@ pub fn instComponentExpressions(mut component: Arc<InstNode::InstNode>, mut cont
     node = InstNode::resolveInner(component.clone());
     c = InstNode::component(node.clone())?;
     let () = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: dims, .. }, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() == ComponentState::PartiallyInstantiated.clone()) => {
+        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: __esc_dims, .. }, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() == ComponentState::PartiallyInstantiated.clone()) => {
+            dims = (*__esc_dims).clone();
             assign_variant_field!(c => Component::NFComponent::COMPONENT; state = ComponentState::FullyInstantiated.clone());
             InstNode::updateComponent(c.clone(), node.clone())?;
             assign_variant_field!(c => Component::NFComponent::COMPONENT;
@@ -2513,7 +2530,10 @@ pub fn instSections(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::
     let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     sections = (::match_deref::match_deref! { match &(el.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. } => instSections2(var_field!((*el).classDef, SCode::Element::CLASS).clone(), scope.clone(), connectBreaks.clone(), context.clone(), sections.clone())?,
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: def @ Deref @ SCode::ClassDef::PARTS { .. }, .. }, .. } => instSections2(def.clone(), scope.clone(), connectBreaks.clone(), context.clone(), sections.clone())?,
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: __esc_def @ Deref @ SCode::ClassDef::PARTS { .. }, .. }, .. } => {
+            def = (*__esc_def).clone();
+            instSections2(def.clone(), scope.clone(), connectBreaks.clone(), context.clone(), sections.clone())?
+        },
         _ => sections.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3163,8 +3183,9 @@ pub fn updateImplicitVariability(mut node: Arc<InstNode::InstNode>, mut parentEv
     let mut cls: Arc<Class::NFClass> = InstNode::getClass(node.clone())?;
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
+            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 updateImplicitVariabilityComp(c.clone(), parentEval.clone(), context.clone())?;
             }
@@ -3179,8 +3200,9 @@ pub fn updateImplicitVariability(mut node: Arc<InstNode::InstNode>, mut parentEv
             updateImplicitVariability(var_field!((*cls).baseClass, Class::NFClass::EXPANDED_DERIVED).clone(), parentEval.clone(), context.clone())?;
             ()
         },
-        Deref @ Class::INSTANCED_BUILTIN { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_BUILTIN { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
+            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 updateImplicitVariabilityComp(c.clone(), parentEval.clone(), context.clone())?;
             }
@@ -3201,7 +3223,7 @@ pub fn updateImplicitVariabilityComp(mut component: Arc<InstNode::InstNode>, mut
     node = InstNode::resolveOuter(component.clone());
     c = InstNode::component(node.clone())?;
     let () = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Component::COMPONENT { condition, binding, .. } => {
+        Deref @ Component::COMPONENT { binding, condition, .. } => {
             let mut opt_eval: Option<bool> = None;
             let mut eval: bool = false;
             opt_eval = Component::getEvaluateAnnotation(c.clone())?;

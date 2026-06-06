@@ -268,7 +268,7 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
             (rhs_1, _) = Types::matchProp(rhs.clone(), rhprop.clone(), lhprop.clone(), true)?;
             t = getPropExpType(lhprop.clone())?;
             let () = (::match_deref::match_deref! { match &(rhs_1.clone()) {
-        Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "listAppend" }, attr: Deref @ DAE::CallAttributes { builtin: true, .. } } if (ExpressionBasics::expEqual(lhs.clone(), e1.clone())?) => {
+        Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: true, .. }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "listAppend" }, expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ } } if (ExpressionBasics::expEqual(lhs.clone(), e1.clone())?) => {
             if Flags::isSet(Flags::LIST_REVERSE_WRONG_ORDER.clone())? && !(({
         let mut __acc: Option<bool> = None;
         for mut comment in (ElementSource::getComments(source.clone())?).into_iter().cloned() {
@@ -364,7 +364,8 @@ pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut pro
             bail!("fail");
             ()
         },
-        DAE::Properties::PROP { type_: ref ty, constFlag: DAE::Const::C_PARAM { .. } } => {
+        DAE::Properties::PROP { type_: ref __esc_ty, constFlag: DAE::Const::C_PARAM { .. } } => {
+            ty = __esc_ty.clone();
             if Types::getFixedVarAttributeParameterOrConstant(ty.clone()) {
                 l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone()), (literal!(")")).clone()]);
                 r = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
@@ -440,7 +441,7 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (expl, lhprops, rhs, DAE::Properties::PROP_TUPLE { tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { .. }, type_: ty @ Deref @ DAE::Type::T_TUPLE { types: tpl, .. } }, _) => {
+                (expl, lhprops, rhs, DAE::Properties::PROP_TUPLE { type_: ty @ Deref @ DAE::Type::T_TUPLE { types: tpl, .. }, tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { .. } }, _) => {
                     let mut lhrtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     checkLHSWritable(expl.clone(), lhprops.clone(), rhs.clone(), source.clone())?;
                     lhrtypes = List::map(lhprops.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>))?;
@@ -694,7 +695,7 @@ pub fn makeFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: 
         let __mc_input = (inIdent.clone(), inExp.clone(), inProperties.clone(), inStatementLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims, ty: t }, .. }, stmts) => {
+                (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
                     let mut isArray: bool = false;
                     isArray = Types::isNonscalarArray(t.clone(), dims.clone())?;
                     Ok(Arc::new(DAE::Statement::STMT_FOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), source: source.clone() }))
@@ -746,7 +747,7 @@ pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inPropertie
         let __mc_input = (inIdent.clone(), inExp.clone(), inProperties.clone(), inStatementLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims, ty: t }, .. }, stmts) => {
+                (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { ty: t, dims }, .. }, stmts) => {
                     let mut isArray: bool = false;
                     isArray = Types::isNonscalarArray(t.clone(), dims.clone())?;
                     Ok(Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars.clone(), source: source.clone() }))

@@ -600,7 +600,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { exp: i_e_exp, cref: i_e_cref, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_e_cref, exp: i_e_exp, .. }) => {
             let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -615,7 +615,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { cons: i_e_cons, exp: i_e_exp, cref: i_e_cref, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { cref: i_e_cref, exp: i_e_exp, cons: i_e_cons, .. }) => {
             let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -635,7 +635,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = CodegenUtil::escapeCComments(txt.clone(), (Tpl::textString(txt_7.clone())?).clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { exp: i_e_exp, lhs: Deref @ DAE::Exp::CREF { componentRef: i_lhs_componentRef, .. }, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { lhs: Deref @ DAE::Exp::CREF { componentRef: i_lhs_componentRef, .. }, exp: i_e_exp, .. }) => {
             let mut txt_9: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -691,7 +691,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = lm_53(txt.clone(), i_e_statements.clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { simJac: i_ls_simJac, beqs: i_ls_beqs, vars: i_ls_vars, .. }, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { vars: i_ls_vars, beqs: i_ls_beqs, simJac: i_ls_simJac, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndex(txt.clone(), i_e.clone())?;
@@ -716,7 +716,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</matrix>")).clone() }))?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { eqs: i_nls_eqs, crefs: i_nls_crefs, indexNonLinearSystem: i_nls_indexNonLinearSystem, .. }, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { indexNonLinearSystem: i_nls_indexNonLinearSystem, crefs: i_nls_crefs, eqs: i_nls_eqs, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndex(txt.clone(), i_e.clone())?;
@@ -735,7 +735,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_MIXED { discVars: i_e_discVars, discEqs: i_e_discEqs, cont: i_e_cont, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_MIXED { cont: i_e_cont, discEqs: i_e_discEqs, discVars: i_e_discVars, .. }) => {
             let mut ret_10: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
@@ -761,7 +761,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</mixed>")).clone() }))?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { linearSystem: i_e_linearSystem, matrix: i_matrix, residual: Deref @ SimCode::OMSIFunction { equations: i_residual_equations, .. }, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_ALGEBRAIC_SYSTEM { residual: Deref @ SimCode::OMSIFunction { equations: i_residual_equations, .. }, matrix: i_matrix, linearSystem: i_e_linearSystem, .. }) => {
             let mut ret_12: i32 = 0;
             let mut l_detailedDescription: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -784,7 +784,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeText(txt.clone(), l_detailedDescription.clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_WHEN { conditions: i_conditions, whenStmtLst: i_whenStmtLst, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_WHEN { whenStmtLst: i_whenStmtLst, conditions: i_conditions, .. }) => {
             let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_body = dumpWhenOps(Tpl::emptyTxt.clone(), i_whenStmtLst.clone())?;
@@ -803,7 +803,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("end when;")).clone() }))?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_IFEQUATION { elsebranch: i_elsebranch, ifbranches: i_ifbranches, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_IFEQUATION { ifbranches: i_ifbranches, elsebranch: i_elsebranch, .. }) => {
             let mut l_elsebr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_branches: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -818,7 +818,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeText(txt.clone(), l_elsebr.clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { exp: i_e_exp, cref: i_e_cref, endIt: i_e_endIt, startIt: i_e_startIt, iter: i_e_iter, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { iter: i_e_iter, startIt: i_e_startIt, endIt: i_e_endIt, cref: i_e_cref, exp: i_e_exp, .. }) => {
             let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_19: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -856,7 +856,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeText(txt.clone(), l_forstatement.clone())?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_EQUATION { body: i_e_body, endIt: i_e_endIt, startIt: i_e_startIt, iter: i_e_iter, .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_FOR_EQUATION { iter: i_e_iter, startIt: i_e_startIt, endIt: i_e_endIt, body: i_e_body, .. }) => {
             let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1035,7 +1035,7 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
         (txt, Deref @ metamodelica::List::Nil, a_columnBuffer) => {
             (txt.clone(), a_columnBuffer.clone())
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { exp: i_equation_exp, cref: i_equation_cref, .. }, tail: rest }, a_columnBuffer) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { cref: i_equation_cref, exp: i_equation_exp, .. }, tail: rest }, a_columnBuffer) => {
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_columnBuffer = (*a_columnBuffer).clone();
@@ -1063,7 +1063,7 @@ pub fn dumpAlgSystemColumn(mut in_txt: Tpl::Text, mut in_a_column: Arc<SimCode::
     let mut out_a_columnBuffer: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_varsBuffer: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_columnBuffer, out_a_varsBuffer) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_column.clone(), in_a_columnBuffer.clone(), in_a_varsBuffer.clone())) {
-        (txt, Deref @ SimCode::OMSIFunction { equations: i_equations, inputVars: i_inputVars, .. }, a_columnBuffer, a_varsBuffer) => {
+        (txt, Deref @ SimCode::OMSIFunction { inputVars: i_inputVars, equations: i_equations, .. }, a_columnBuffer, a_varsBuffer) => {
             let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut a_columnBuffer = (*a_columnBuffer).clone();
             let mut a_varsBuffer = (*a_varsBuffer).clone();
@@ -1087,7 +1087,7 @@ pub fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::Li
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: i_e_right, left: Deref @ DAE::Exp::CREF { componentRef: i_left_componentRef, .. }, .. }, tail: i_rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: Deref @ DAE::Exp::CREF { componentRef: i_left_componentRef, .. }, right: i_e_right, .. }, tail: i_rest }) => {
             let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_restbody: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1100,7 +1100,7 @@ pub fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::Li
             txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: i_e_right, left: i_e_left, .. }, tail: i_rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: i_e_left, right: i_e_right, .. }, tail: i_rest }) => {
             let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_restbody: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1113,7 +1113,7 @@ pub fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::Li
             txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { value: i_e_value, stateVar: i_e_stateVar, .. }, tail: i_rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { stateVar: i_e_stateVar, value: i_e_value, .. }, tail: i_rest }) => {
             let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_restbody: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1127,7 +1127,7 @@ pub fn dumpWhenOps(mut in_txt: Tpl::Text, mut in_a_whenOps: Arc<metamodelica::Li
             txt = Tpl::writeText(txt.clone(), l_restbody.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { level: i_e_level, message: i_e_message, condition: i_e_condition, .. }, tail: i_rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { condition: i_e_condition, message: i_e_message, level: i_e_level, .. }, tail: i_rest }) => {
             let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1365,7 +1365,7 @@ fn lm_82(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
 fn fun_83(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eq.clone())) {
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_LINEAR { alternativeTearing: Some(Deref @ SimCode::LinearSystem { simJac: i_at_simJac, beqs: i_at_beqs, vars: i_at_vars, .. }), .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_LINEAR { alternativeTearing: Some(Deref @ SimCode::LinearSystem { vars: i_at_vars, beqs: i_at_beqs, simJac: i_at_simJac, .. }), .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndexAlternativeTearing(txt.clone(), i_e.clone())?;
@@ -1390,7 +1390,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>) -> Resu
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("</matrix>\n")).clone(), (literal!("\n")).clone(), (literal!("This is the alternative tearing set with casual solvability rules.\n")).clone(), (literal!("If it fails, this function will call the strict tearing set.")).clone()], lastHasNewLine: false }))?;
             txt.clone()
         },
-        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_NONLINEAR { alternativeTearing: Some(Deref @ SimCode::NonlinearSystem { eqs: i_at_eqs, crefs: i_at_crefs, indexNonLinearSystem: i_at_indexNonLinearSystem, .. }), .. }) => {
+        (txt, i_e @ Deref @ SimCode::SimEqSystem::SES_NONLINEAR { alternativeTearing: Some(Deref @ SimCode::NonlinearSystem { indexNonLinearSystem: i_at_indexNonLinearSystem, crefs: i_at_crefs, eqs: i_at_eqs, .. }), .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("equation index: ")).clone() }))?;
             txt = equationIndexAlternativeTearing(txt.clone(), i_e.clone())?;

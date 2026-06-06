@@ -215,10 +215,10 @@ fn addBodyTags(mut tags: Arc<metamodelica::List<Arc<Tag>>>, mut inDoc: Document)
     let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut t: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     t = tags.clone().reverse();
-    let Document { body: __pa0, head: __pa1, docType: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
-    body = __pa0.clone();
+    let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
+    docType = __pa0.clone();
     head = __pa1.clone();
-    docType = __pa2.clone();
+    body = __pa2.clone();
     outDoc = Document { docType: (docType.clone()).clone(), head: head.clone(), body: listAppend(body.clone(), t.clone()) };
     Ok(outDoc)
 }
@@ -227,10 +227,10 @@ fn dumpDocument(mut inDoc: Document, mut name: ArcStr) -> Result<()> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let Document { body: __pa0, head: __pa1, docType: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
-    body = __pa0.clone();
+    let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
+    r#str = __pa0.clone();
     head = __pa1.clone();
-    r#str = __pa2.clone();
+    body = __pa2.clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n<html>\n<head>")); ArcStr::from(__mm_s) }).clone();
     r#str = (List::fold(head.clone().reverse(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (r#str.clone()).clone())?).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n</head>")); ArcStr::from(__mm_s) }).clone();
@@ -246,10 +246,10 @@ fn addHeadTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
     let mut docType: ArcStr = arcstr::literal!("");
     let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let Document { body: __pa0, head: __pa1, docType: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
-    body = __pa0.clone();
+    let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
+    docType = __pa0.clone();
     head = __pa1.clone();
-    docType = __pa2.clone();
+    body = __pa2.clone();
     outDoc = Document { docType: (docType.clone()).clone(), head: metamodelica::cons(tag.clone(), head.clone()), body: body.clone() };
     Ok(outDoc)
 }
@@ -259,10 +259,10 @@ fn addBodyTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
     let mut docType: ArcStr = arcstr::literal!("");
     let mut head: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut body: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    let Document { body: __pa0, head: __pa1, docType: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
-    body = __pa0.clone();
+    let Document { docType: __pa0, head: __pa1, body: __pa2 } = (inDoc.clone()) else { bail!("pattern mismatch") };
+    docType = __pa0.clone();
     head = __pa1.clone();
-    docType = __pa2.clone();
+    body = __pa2.clone();
     outDoc = Document { docType: (docType.clone()).clone(), head: head.clone(), body: metamodelica::cons(tag.clone(), body.clone()) };
     Ok(outDoc)
 }
@@ -270,12 +270,12 @@ fn addBodyTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
 fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
     let mut oBuffer: ArcStr = arcstr::literal!("");
     oBuffer = ((::match_deref::match_deref! { match &(tag.clone()) {
-        Deref @ Tag::HEADING { text: t, stage: i } => {
+        Deref @ Tag::HEADING { stage: i, text: t } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<h")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(">")); __mm_s.push_str(&*t.clone()); __mm_s.push_str(&*literal!("</h")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ Tag::HYPERLINK { text: t2, title: t1, href: t } => {
+        Deref @ Tag::HYPERLINK { href: t, title: t1, text: t2 } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<a href=\"")); __mm_s.push_str(&*t.clone()); __mm_s.push_str(&*literal!("\" title=\"")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">")); __mm_s.push_str(&*t2.clone()); __mm_s.push_str(&*literal!("</a>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
@@ -290,7 +290,7 @@ fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*t.clone()); __mm_s.push_str(&*literal!("<br>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ Tag::DIVISION { tags, style, id: t } => {
+        Deref @ Tag::DIVISION { id: t, style, tags } => {
             let mut t1: ArcStr = arcstr::literal!("");
             let mut t2: ArcStr = arcstr::literal!("");
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -299,12 +299,12 @@ fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<div id=\"")); __mm_s.push_str(&*t.clone()); __mm_s.push_str(&*literal!("\" style=\"")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">\n")); __mm_s.push_str(&*t2.clone()); __mm_s.push_str(&*literal!("\n</div>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ Tag::SCRIPT { text: t2, type_: t1 } => {
+        Deref @ Tag::SCRIPT { type_: t1, text: t2 } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<script type=\"")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">\n")); __mm_s.push_str(&*t2.clone()); __mm_s.push_str(&*literal!("\n</script>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ Tag::SCRIPT_BODY { text: t2, type_: t1 } => {
+        Deref @ Tag::SCRIPT_BODY { type_: t1, text: t2 } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<SCRIPT \"")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">\n")); __mm_s.push_str(&*t2.clone()); __mm_s.push_str(&*literal!("\n</SCRIPT>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
@@ -365,14 +365,14 @@ fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: Ar
     let mut doc: Document = <Document as ::std::default::Default>::default();
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEqSystem.clone()) {
-        Deref @ BackendDAE::EqSystem { matching: __pa0, mT: __pa1, m: __pa2, orderedEqs: __pa3, orderedVars: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, m: __pa2, mT: __pa3, matching: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    matching = __pa0.clone();
-    mT = __pa1.clone();
+    vars1 = __pa0.clone();
+    eqns = __pa1.clone();
     m = __pa2.clone();
-    eqns = __pa3.clone();
-    vars1 = __pa4.clone();
+    mT = __pa3.clone();
+    matching = __pa4.clone();
     (doc, i) = inTpl.clone();
     prefixId = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inPrefixIdstr.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone();
     vars = BackendVariable::varList(vars1.clone())?;

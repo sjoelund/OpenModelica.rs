@@ -160,7 +160,9 @@ pub fn addVarToArrayIndexMapping(mut iVar: SimCodeVar::SimVar, mut iVarType: i32
     let mut numArrayElement: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut arraySubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
     let () = (match iVar.clone() {
-        SimCodeVar::SimVar { numArrayElement: mut numArrayElement, name: mut name, .. } => {
+        SimCodeVar::SimVar { name: mut __esc_name, numArrayElement: mut __esc_numArrayElement, .. } => {
+            name = __esc_name.clone();
+            numArrayElement = __esc_numArrayElement.clone();
             (currentVarIndices, varIdx) = getArrayIdxByVar(iVar.clone(), iVarType.clone(), varToIndexMapping.clone(), currentVarIndices.clone())?;
             varToIndexMapping = BaseHashTable::add((name.clone(), list![varIdx.clone()]), varToIndexMapping.clone())?;
             arraySubscripts = ComponentReference::crefLastSubs(name.clone())?;
@@ -232,13 +234,15 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
     let mut varIdx: i32 = 0;
     let mut tmpCurrentVarIndices: metamodelica::Array<i32> = Default::default();
     oVarIndex = (match (iVar.clone(), iCurrentVarIndices.clone()) {
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, name: mut __esc_name, .. }, mut tmpCurrentVarIndices) => {
+        (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, .. }, mut __esc_tmpCurrentVarIndices) => {
             name = __esc_name.clone();
+            tmpCurrentVarIndices = __esc_tmpCurrentVarIndices.clone();
             (varIdx, tmpCurrentVarIndices) = getVarToArrayIndexByType(iVar.clone(), iVarType.clone(), tmpCurrentVarIndices.clone())?;
             varIdx.clone()
         },
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::NEGATEDALIAS { varName: mut varName }, name: mut __esc_name, .. }, _) => {
+        (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::NEGATEDALIAS { varName: mut __esc_varName }, .. }, _) => {
             name = __esc_name.clone();
+            varName = __esc_varName.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
                 let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
@@ -254,8 +258,9 @@ fn getArrayIdxByVar(mut iVar: SimCodeVar::SimVar, mut iVarType: i32, mut iVarToI
             }
             varIdx.clone()
         },
-        (SimCodeVar::SimVar { aliasvar: SimCodeVar::AliasVariable::ALIAS { varName: mut varName }, name: mut __esc_name, .. }, _) => {
+        (SimCodeVar::SimVar { name: mut __esc_name, aliasvar: SimCodeVar::AliasVariable::ALIAS { varName: mut __esc_varName }, .. }, _) => {
             name = __esc_name.clone();
+            varName = __esc_varName.clone();
             if BaseHashTable::hasKey(varName.clone(), iVarToIndexMapping.clone())? {
                 let __pa0 = ::match_deref::match_deref! { match &(BaseHashTable::get(varName.clone(), iVarToIndexMapping.clone())?) {
                     Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),

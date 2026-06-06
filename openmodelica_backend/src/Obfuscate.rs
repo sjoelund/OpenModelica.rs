@@ -422,8 +422,8 @@ pub fn obfuscateReplaceable(mut repl: Arc<SCode::Replaceable>, mut env: Env) -> 
     let mut repl: Arc<SCode::Replaceable> = repl;
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(cc) } => {
-            let mut cc = (*cc).clone();
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
+            cc = (*__esc_cc).clone();
             assign_field!(
                 cc.constrainingClass = obfuscatePath(cc.constrainingClass.clone(), env.clone(), ElementType::OTHER.clone())?,
                 cc.modifier = obfuscateMod(cc.modifier.clone(), env.clone())?,

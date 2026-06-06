@@ -417,7 +417,7 @@ pub fn dumpStartValueStr(mut inStartValue: Option<Arc<DAE::Exp>>) -> Result<ArcS
 pub fn dumpExtDeclStr(mut inExternalDecl: DAE::ExternalDecl) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inExternalDecl.clone() {
-        DAE::ExternalDecl { language: mut lang, returnArg: mut retty, args: ref extargs, name: mut id, .. } => {
+        DAE::ExternalDecl { name: mut id, args: ref extargs, returnArg: mut retty, language: mut lang, .. } => {
             let mut extargsstr: ArcStr = arcstr::literal!("");
             let mut rettystr: ArcStr = arcstr::literal!("");
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -447,7 +447,7 @@ pub fn dumpExtArgStr(mut inExtArg: DAE::ExtArg) -> Result<ArcStr> {
             crstr = (ExpressionBasics::printExpStr(exp.clone())?).clone();
             crstr.clone()
         },
-        DAE::ExtArg::EXTARGSIZE { exp: ref dim, componentRef: ref cr, .. } => {
+        DAE::ExtArg::EXTARGSIZE { componentRef: ref cr, exp: ref dim, .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut dimstr: ArcStr = arcstr::literal!("");
@@ -465,7 +465,7 @@ fn dumpCompElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMP { comment: c, dAElist: l, ident: n, .. } => {
+                Deref @ DAE::Element::COMP { ident: n, dAElist: l, comment: c, .. } => {
                     Print::printBuf((literal!("class ")).clone())?;
                     Print::printBuf((n.clone()).clone())?;
                     dumpCommentOption(c.clone())?;
@@ -626,7 +626,7 @@ fn dumpUncertaintyStr(mut uncertainty: DAE::Uncertainty) -> Result<ArcStr> {
 fn dumpDistributionStr(mut distribution: Arc<DAE::Distribution>) -> Result<ArcStr> {
     let mut out: ArcStr = arcstr::literal!("");
     out = ((::match_deref::match_deref! { match &(distribution.clone()) {
-        Deref @ DAE::Distribution { paramNames, params, name } => {
+        Deref @ DAE::Distribution { name, params, paramNames } => {
             let mut name_str: ArcStr = arcstr::literal!("");
             let mut params_str: ArcStr = arcstr::literal!("");
             let mut paramNames_str: ArcStr = arcstr::literal!("");
@@ -851,7 +851,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUATION { source: src, scalar: e2, exp: e1 } => {
+                Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: src } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
@@ -867,7 +867,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUEQUATION { source: src, cr2, cr1 } => {
+                Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: src } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("  ")).clone())?;
                     ComponentReference::printComponentRef(cr1.clone())?;
@@ -883,7 +883,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ARRAY_EQUATION { source: src, array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::ARRAY_EQUATION { exp: e1, array: e2, source: src, .. } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
@@ -899,7 +899,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMPLEX_EQUATION { source: src, rhs: e2, lhs: e1 } => {
+                Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
@@ -915,7 +915,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::DEFINE { source: src, exp: e, componentRef: c } => {
+                Deref @ DAE::Element::DEFINE { componentRef: c, exp: e, source: src } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("  ")).clone())?;
                     ComponentReference::printComponentRef(c.clone())?;
@@ -931,7 +931,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ASSERT { source: src, message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::ASSERT { condition: e1, message: e2, source: src, .. } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("assert(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
@@ -948,7 +948,7 @@ fn dumpEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::NORETCALL { source: src, exp: e1 } => {
+                Deref @ DAE::Element::NORETCALL { exp: e1, source: src } => {
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     ExpressionDump::printExp(e1.clone())?;
                     sourceStr = (getSourceInformationStr(src.clone())?).clone();
@@ -978,7 +978,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALEQUATION { exp2: e2, exp1: e1, .. } => {
+                Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, .. } => {
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(" = ")).clone())?;
@@ -991,7 +991,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALDEFINE { exp: e, componentRef: c, .. } => {
+                Deref @ DAE::Element::INITIALDEFINE { componentRef: c, exp: e, .. } => {
                     Print::printBuf((literal!("  ")).clone())?;
                     ComponentReference::printComponentRef(c.clone())?;
                     Print::printBuf((literal!(" ::= ")).clone())?;
@@ -1004,7 +1004,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { exp: e1, array: e2, .. } => {
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(" = ")).clone())?;
@@ -1017,7 +1017,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { rhs: e2, lhs: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1, rhs: e2, .. } => {
                     Print::printBuf((literal!("  ")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(" = ")).clone())?;
@@ -1030,7 +1030,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_IF_EQUATION { equations3: xs2, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: trueBranches }, condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, .. } => {
+                Deref @ DAE::Element::INITIAL_IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: trueBranches }, equations3: xs2, .. } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut r#str: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
                     Print::printBuf((literal!("  if ")).clone())?;
@@ -1050,7 +1050,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ASSERT { source: src, message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ASSERT { condition: e1, message: e2, source: src, .. } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
@@ -1069,7 +1069,7 @@ fn dumpInitialEquation(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_TERMINATE { source: src, message: e1 } => {
+                Deref @ DAE::Element::INITIAL_TERMINATE { message: e1, source: src } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -1113,7 +1113,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUATION { source: src, scalar: e2, exp: e1 } => {
+                Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1131,7 +1131,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUEQUATION { source: src, cr2, cr1 } => {
+                Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1149,7 +1149,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ARRAY_EQUATION { source: src, array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::ARRAY_EQUATION { exp: e1, array: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1167,7 +1167,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMPLEX_EQUATION { source: src, rhs: e2, lhs: e1 } => {
+                Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1185,7 +1185,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::DEFINE { source: src, exp: e, componentRef: c } => {
+                Deref @ DAE::Element::DEFINE { componentRef: c, exp: e, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1209,7 +1209,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ASSERT { source: src, message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::ASSERT { condition: e1, message: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -1227,7 +1227,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::TERMINATE { source: src, message: e1 } => {
+                Deref @ DAE::Element::TERMINATE { message: e1, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -1243,7 +1243,7 @@ pub fn dumpEquationStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::NORETCALL { source: src, exp: e1 } => {
+                Deref @ DAE::Element::NORETCALL { exp: e1, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -1373,7 +1373,7 @@ fn dumpFunction(mut inElement: DAE::Function) -> Result<()> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                DAE::Function::FUNCTION { comment: c, isImpure, type_: t, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, path: fpath, .. } => {
+                DAE::Function::FUNCTION { path: fpath, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, type_: t, isImpure, comment: c, .. } => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let mut parallelism_str: ArcStr = arcstr::literal!("");
                     let mut impureStr: ArcStr = arcstr::literal!("");
@@ -1409,7 +1409,7 @@ fn dumpFunction(mut inElement: DAE::Function) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                DAE::Function::FUNCTION { comment: c, isImpure, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: ext_decl, body: daeElts }, tail: _ }, path: fpath, .. } => {
+                DAE::Function::FUNCTION { path: fpath, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { body: daeElts, externalDecl: ext_decl }, tail: _ }, isImpure, comment: c, .. } => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let mut ext_decl_str: ArcStr = arcstr::literal!("");
                     let mut impureStr: ArcStr = arcstr::literal!("");
@@ -1434,7 +1434,7 @@ fn dumpFunction(mut inElement: DAE::Function) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                DAE::Function::RECORD_CONSTRUCTOR { type_: t, path: fpath, .. } => {
+                DAE::Function::RECORD_CONSTRUCTOR { path: fpath, type_: t, .. } => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let false = (Flags::isSet(Flags::DISABLE_RECORD_CONSTRUCTOR_OUTPUT.clone())?) else { bail!("pattern mismatch") };
                     if Flags::isSet(Flags::PRINT_RECORD_TYPES.clone())? {
@@ -1538,13 +1538,13 @@ fn printRecordConstructorInputStr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inVar.clone()) {
-        Deref @ DAE::Var { binding: __pa0, ty: __pa1, attributes: __pa2, name: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ DAE::Var { name: __pa0, attributes: __pa1, ty: __pa2, binding: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    binding = __pa0.clone();
-    ty = __pa1.clone();
-    attr = __pa2.clone();
-    name = __pa3.clone();
+    name = __pa0.clone();
+    attr = __pa1.clone();
+    ty = __pa2.clone();
+    binding = __pa3.clone();
     attr_str = (printRecordConstructorInputAttrStr(attr.clone())).clone();
     binding_str = (printRecordConstructorBinding(binding.clone())?).clone();
     (ty_str, ty_vars_str) = printTypeStr(ty.clone())?;
@@ -1569,15 +1569,15 @@ fn printRecordConstructorBinding(mut binding: Arc<DAE::Binding>) -> Result<ArcSt
         Deref @ DAE::Binding::UNBOUND { .. } => {
             literal!("")
         },
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. }, exp: e, .. } => {
+        Deref @ DAE::Binding::EQBOUND { exp: e, source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. }, .. } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS { .. }, exp: e, .. } => {
+        Deref @ DAE::Binding::EQBOUND { exp: e, source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS { .. }, .. } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ DAE::Binding::VALBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. }, valBound: v } => {
+        Deref @ DAE::Binding::VALBOUND { valBound: v, source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. } } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ValuesDump::valString(v.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
@@ -1602,7 +1602,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         let __mc_input = (inStatement.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSIGN { source, exp: e, exp1: e2, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSIGN { exp1: e2, exp: e, source, .. }, i) => {
                     indent(i.clone())?;
                     ExpressionDump::printExp(e2.clone())?;
                     Print::printBuf((literal!(" := ")).clone())?;
@@ -1618,7 +1618,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSIGN_ARR { exp: e, lhs: e2, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: e2, exp: e, .. }, i) => {
                     indent(i.clone())?;
                     ExpressionDump::printExp(e2.clone())?;
                     Print::printBuf((literal!(" := ")).clone())?;
@@ -1631,7 +1631,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: e, expExpLst: expl, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: expl, exp: e, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1650,7 +1650,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_IF { else_, statementLst: then_, exp: e, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_IF { exp: e, statementLst: then_, else_, .. }, i) => {
                     let mut i_1: i32 = 0;
                     indent(i.clone())?;
                     Print::printBuf((literal!("if ")).clone())?;
@@ -1668,7 +1668,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_FOR { statementLst: stmts, range: e, iter: id, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_FOR { iter: id, range: e, statementLst: stmts, .. }, i) => {
                     let mut i_1: i32 = 0;
                     indent(i.clone())?;
                     Print::printBuf((literal!("for ")).clone())?;
@@ -1687,7 +1687,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_PARFOR { statementLst: stmts, range: e, iter: id, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_PARFOR { iter: id, range: e, statementLst: stmts, .. }, i) => {
                     let mut i_1: i32 = 0;
                     indent(i.clone())?;
                     Print::printBuf((literal!("parfor ")).clone())?;
@@ -1706,7 +1706,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_WHILE { statementLst: stmts, exp: e, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_WHILE { exp: e, statementLst: stmts, .. }, i) => {
                     let mut i_1: i32 = 0;
                     indent(i.clone())?;
                     Print::printBuf((literal!("while ")).clone())?;
@@ -1752,7 +1752,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSERT { msg, cond, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSERT { cond, msg, .. }, i) => {
                     indent(i.clone())?;
                     Print::printBuf((literal!("assert(")).clone())?;
                     ExpressionDump::printExp(cond.clone())?;
@@ -1786,7 +1786,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_REINIT { value: e2, var: e1, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_REINIT { var: e1, value: e2, .. }, i) => {
                     indent(i.clone())?;
                     Print::printBuf((literal!("reinit(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
@@ -1812,7 +1812,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ARRAY_INIT { ty, name, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ARRAY_INIT { name, ty, .. }, i) => {
                     indent(i.clone())?;
                     Print::printBuf((literal!("/* ")).clone())?;
                     Print::printBuf((name.clone()).clone())?;
@@ -1842,7 +1842,7 @@ fn ppStmt(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<()
 fn ppWhenStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &((inStatement.clone(), inInteger.clone())) {
-        (Deref @ DAE::Statement::STMT_WHEN { elseWhen: None, statementLst: stmts, exp: e, .. }, i) => {
+        (Deref @ DAE::Statement::STMT_WHEN { exp: e, statementLst: stmts, elseWhen: None, .. }, i) => {
             let mut s3: ArcStr = arcstr::literal!("");
             let mut s5: ArcStr = arcstr::literal!("");
             let mut s6: ArcStr = arcstr::literal!("");
@@ -1861,7 +1861,7 @@ fn ppWhenStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
             r#str = (stringAppend((s9.clone()).clone(), (literal!("end when;\n")).clone())).clone();
             r#str.clone()
         },
-        (Deref @ DAE::Statement::STMT_WHEN { elseWhen: Some(stmt), statementLst: stmts, exp: e, .. }, i) => {
+        (Deref @ DAE::Statement::STMT_WHEN { exp: e, statementLst: stmts, elseWhen: Some(stmt), .. }, i) => {
             let mut s3: ArcStr = arcstr::literal!("");
             let mut s4: ArcStr = arcstr::literal!("");
             let mut s5: ArcStr = arcstr::literal!("");
@@ -1895,7 +1895,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         let __mc_input = (inStatement.clone(), inInteger.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSIGN { exp: e, exp1: e2, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSIGN { exp1: e2, exp: e, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1911,7 +1911,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSIGN_ARR { exp: e, lhs: e2, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: e2, exp: e, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1927,7 +1927,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { exp: e, expExpLst: expl, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: expl, exp: e, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1945,7 +1945,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_IF { else_, statementLst: then_, exp: e, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_IF { exp: e, statementLst: then_, else_, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -1979,7 +1979,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_FOR { statementLst: stmts, range: e, iter: id, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_FOR { iter: id, range: e, statementLst: stmts, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
                     let mut s4: ArcStr = arcstr::literal!("");
@@ -1999,7 +1999,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_PARFOR { statementLst: stmts, range: e, iter: id, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_PARFOR { iter: id, range: e, statementLst: stmts, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
                     let mut s4: ArcStr = arcstr::literal!("");
@@ -2019,7 +2019,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_WHILE { statementLst: stmts, exp: e, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_WHILE { exp: e, statementLst: stmts, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -2063,7 +2063,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_ASSERT { msg, cond, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_ASSERT { cond, msg, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut cond_str: ArcStr = arcstr::literal!("");
@@ -2137,7 +2137,7 @@ pub fn ppStmtStr(mut inStatement: Arc<DAE::Statement>, mut inInteger: i32) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Statement::STMT_REINIT { value: e2, var: e1, .. }, i) => {
+                (Deref @ DAE::Statement::STMT_REINIT { var: e1, value: e2, .. }, i) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut e1_str: ArcStr = arcstr::literal!("");
@@ -2234,7 +2234,7 @@ fn ppElse(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<()> {
         (Deref @ DAE::Else::NOELSE { .. }, _) => {
             ()
         },
-        (Deref @ DAE::Else::ELSEIF { else_, statementLst: then_, exp: e }, i) => {
+        (Deref @ DAE::Else::ELSEIF { exp: e, statementLst: then_, else_ }, i) => {
             let mut i_1: i32 = 0;
             indent(i.clone())?;
             Print::printBuf((literal!("elseif ")).clone())?;
@@ -2264,7 +2264,7 @@ fn ppElseStr(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<ArcStr> {
         (Deref @ DAE::Else::NOELSE { .. }, _) => {
             literal!("")
         },
-        (Deref @ DAE::Else::ELSEIF { else_, statementLst: then_, exp: e }, i) => {
+        (Deref @ DAE::Else::ELSEIF { exp: e, statementLst: then_, else_ }, i) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
@@ -2394,7 +2394,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::VAR { comment, variableAttributesOption: dae_var_attr, binding: None, kind: vk, componentRef: cr, .. } => {
+                Deref @ DAE::Element::VAR { componentRef: cr, kind: vk, binding: None, variableAttributesOption: dae_var_attr, comment, .. } => {
                     let mut comment_str: ArcStr = arcstr::literal!("");
                     let mut tmp_str: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("VAR(")).clone())?;
@@ -2414,7 +2414,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::VAR { comment, variableAttributesOption: dae_var_attr, binding: Some(e), kind: vk, componentRef: cr, .. } => {
+                Deref @ DAE::Element::VAR { componentRef: cr, kind: vk, binding: Some(e), variableAttributesOption: dae_var_attr, comment, .. } => {
                     let mut comment_str: ArcStr = arcstr::literal!("");
                     let mut tmp_str: ArcStr = arcstr::literal!("");
                     Print::printBuf((literal!("VAR(")).clone())?;
@@ -2436,7 +2436,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::DEFINE { exp, componentRef: cr, .. } => {
+                Deref @ DAE::Element::DEFINE { componentRef: cr, exp, .. } => {
                     Print::printBuf((literal!("DEFINE(")).clone())?;
                     ComponentReference::printComponentRef(cr.clone())?;
                     Print::printBuf((literal!(", ")).clone())?;
@@ -2449,7 +2449,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALDEFINE { exp, componentRef: cr, .. } => {
+                Deref @ DAE::Element::INITIALDEFINE { componentRef: cr, exp, .. } => {
                     Print::printBuf((literal!("INITIALDEFINE(")).clone())?;
                     ComponentReference::printComponentRef(cr.clone())?;
                     Print::printBuf((literal!(", ")).clone())?;
@@ -2462,7 +2462,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUATION { scalar: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, .. } => {
                     Print::printBuf((literal!("EQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2475,7 +2475,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUEQUATION { cr2, cr1, .. } => {
+                Deref @ DAE::Element::EQUEQUATION { cr1, cr2, .. } => {
                     Print::printBuf((literal!("EQUATION(")).clone())?;
                     ComponentReference::printComponentRef(cr1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2488,7 +2488,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALEQUATION { exp2: e2, exp1: e1, .. } => {
+                Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, .. } => {
                     Print::printBuf((literal!("INITIALEQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2519,7 +2519,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMP { dAElist: l, ident: n, .. } => {
+                Deref @ DAE::Element::COMP { ident: n, dAElist: l, .. } => {
                     Print::printBuf((literal!("COMP(")).clone())?;
                     Print::printBuf((n.clone()).clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2532,7 +2532,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ARRAY_EQUATION { array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::ARRAY_EQUATION { exp: e1, array: e2, .. } => {
                     Print::printBuf((literal!("ARRAY_EQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2545,7 +2545,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { exp: e1, array: e2, .. } => {
                     Print::printBuf((literal!("INITIAL_ARRAY_EQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2558,7 +2558,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMPLEX_EQUATION { rhs: e2, lhs: e1, .. } => {
+                Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, .. } => {
                     Print::printBuf((literal!("COMPLEX_EQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2571,7 +2571,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { rhs: e2, lhs: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1, rhs: e2, .. } => {
                     Print::printBuf((literal!("INITIAL_COMPLEX_EQUATION(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2620,7 +2620,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ASSERT { message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::ASSERT { condition: e1, message: e2, .. } => {
                     Print::printBuf((literal!("ASSERT(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2633,7 +2633,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ASSERT { message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ASSERT { condition: e1, message: e2, .. } => {
                     Print::printBuf((literal!("INITIAL_ASSERT(")).clone())?;
                     ExpressionDump::printExp(e1.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2686,7 +2686,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::SM_COMP { dAElist: l, componentRef: cr } => {
+                Deref @ DAE::Element::SM_COMP { componentRef: cr, dAElist: l } => {
                     Print::printBuf((literal!("SM_COMP(")).clone())?;
                     ComponentReference::printComponentRef(cr.clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2699,7 +2699,7 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::FLAT_SM { dAElist: l, ident: n } => {
+                Deref @ DAE::Element::FLAT_SM { ident: n, dAElist: l } => {
                     Print::printBuf((literal!("FLAT_SM(")).clone())?;
                     Print::printBuf((n.clone()).clone())?;
                     Print::printBuf((literal!(",")).clone())?;
@@ -2848,12 +2848,12 @@ pub fn buildGrStrlist<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica:
 fn buildGrVarStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ DAE::Element::VAR { binding: None, componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { componentRef: cr, binding: None, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             r#str.clone()
         },
-        Deref @ DAE::Element::VAR { binding: Some(exp), componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { componentRef: cr, binding: Some(exp), .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut expstr: ArcStr = arcstr::literal!("");
             let mut str_1: ArcStr = arcstr::literal!("");
@@ -2903,14 +2903,14 @@ fn printExpStrSpecial(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
 fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node>> {
     let mut outNode: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
     outNode = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ DAE::Element::VAR { binding: None, kind: vk, componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { componentRef: cr, kind: vk, binding: None, .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");
             let mut vkstr: ArcStr = arcstr::literal!("");
             crstr = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             vkstr = (dumpKindStr(vk.clone())?).clone();
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("VAR")).clone(), labelLst: list![(crstr.clone()).clone(), (vkstr.clone()).clone()], attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::VAR { binding: Some(exp), kind: vk, componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { componentRef: cr, kind: vk, binding: Some(exp), .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");
             let mut vkstr: ArcStr = arcstr::literal!("");
             let mut expstr: ArcStr = arcstr::literal!("");
@@ -2921,7 +2921,7 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
             expstr_1 = (stringAppend((literal!("= ")).clone(), (expstr.clone()).clone())).clone();
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("VAR")).clone(), labelLst: list![(crstr.clone()).clone(), (vkstr.clone()).clone(), (expstr_1.clone()).clone()], attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::DEFINE { exp, componentRef: cr, .. } => {
+        Deref @ DAE::Element::DEFINE { componentRef: cr, exp, .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");
             let mut expstr: ArcStr = arcstr::literal!("");
             let mut expstr_1: ArcStr = arcstr::literal!("");
@@ -2930,14 +2930,14 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
             expstr_1 = (stringAppend((literal!("= ")).clone(), (expstr.clone()).clone())).clone();
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("DEFINE")).clone(), labelLst: list![(crstr.clone()).clone(), (expstr_1.clone()).clone()], attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::EQUATION { scalar: e2, exp: e1, .. } => {
+        Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, .. } => {
             let mut e1str: ArcStr = arcstr::literal!("");
             let mut e2str: ArcStr = arcstr::literal!("");
             e1str = (printExpStrSpecial(e1.clone())?).clone();
             e2str = (printExpStrSpecial(e2.clone())?).clone();
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("EQUATION")).clone(), labelLst: list![(e1str.clone()).clone(), (literal!("=")).clone(), (e2str.clone()).clone()], attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::EQUEQUATION { cr2, cr1, .. } => {
+        Deref @ DAE::Element::EQUEQUATION { cr1, cr2, .. } => {
             let mut e1str: ArcStr = arcstr::literal!("");
             let mut e2str: ArcStr = arcstr::literal!("");
             e1str = (printExpStrSpecial(Expression::crefExp(cr1.clone())?)?).clone();
@@ -2947,7 +2947,7 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
         Deref @ DAE::Element::ALGORITHM { .. } => {
             Arc::new(Graphviz::Node::NODE { type_: (literal!("ALGORITHM")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::INITIALDEFINE { exp, componentRef: cr, .. } => {
+        Deref @ DAE::Element::INITIALDEFINE { componentRef: cr, exp, .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");
             let mut expstr: ArcStr = arcstr::literal!("");
             let mut expstr_1: ArcStr = arcstr::literal!("");
@@ -2956,7 +2956,7 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
             expstr_1 = (stringAppend((literal!("= ")).clone(), (expstr.clone()).clone())).clone();
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("INITIALDEFINE")).clone(), labelLst: list![(crstr.clone()).clone(), (expstr_1.clone()).clone()], attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::INITIALEQUATION { exp2: e2, exp1: e1, .. } => {
+        Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, .. } => {
             let mut e1str: ArcStr = arcstr::literal!("");
             let mut e2str: ArcStr = arcstr::literal!("");
             e1str = (printExpStrSpecial(e1.clone())?).clone();
@@ -2966,7 +2966,7 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
         Deref @ DAE::Element::INITIALALGORITHM { .. } => {
             Arc::new(Graphviz::Node::NODE { type_: (literal!("INITIALALGORITHM")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() })
         },
-        Deref @ DAE::Element::COMP { dAElist: elts, ident: n, .. } => {
+        Deref @ DAE::Element::COMP { ident: n, dAElist: elts, .. } => {
             let mut nodes: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
             nodes = buildGrList(elts.clone())?;
             Arc::new(Graphviz::Node::LNODE { type_: (literal!("COMP")).clone(), labelLst: list![(n.clone()).clone()], attributes: metamodelica::nil(), children: nodes.clone() })
@@ -3208,7 +3208,7 @@ fn dumpCompElementStream(mut inElement: Arc<DAE::Element>, mut inStream: IOStrea
         let __mc_input = (inElement.clone(), inStream.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Element::COMP { comment: c, dAElist: l, ident: n, .. }, r#str) => {
+                (Deref @ DAE::Element::COMP { ident: n, dAElist: l, comment: c, .. }, r#str) => {
                     let mut r#str = (*r#str).clone();
                     r#str = IOStream::append(r#str.clone(), (literal!("class ")).clone())?;
                     r#str = IOStream::append(r#str.clone(), (n.clone()).clone())?;
@@ -3265,7 +3265,10 @@ pub fn dumpElementsStream(mut l: Arc<metamodelica::List<Arc<DAE::Element>>>, mut
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut cmt in (comments.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Deref @ SCode::Comment { annotation_: ann @ Some(_), .. } => SCodeDump::printCommentStr(Arc::new(SCode::Comment { annotation_: ann.clone(), comment: None }), SCodeDump::defaultOptions.clone())?,
+        Deref @ SCode::Comment { annotation_: __esc_ann @ Some(_), .. } => {
+            ann = (*__esc_ann).clone();
+            SCodeDump::printCommentStr(Arc::new(SCode::Comment { annotation_: ann.clone(), comment: None }), SCodeDump::defaultOptions.clone())?
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3287,7 +3290,7 @@ pub fn dumpCompWithSplitElementsStream(mut inCompLst: Arc<metamodelica::List<Arc
         (Deref @ metamodelica::List::Nil, r#str) => {
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAEDumpTypes::compWithSplitElements { comment, spltElems, name }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAEDumpTypes::compWithSplitElements { name, spltElems, comment }, tail: xs }, r#str) => {
             let mut cstr: ArcStr = arcstr::literal!("");
             let mut v: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut ie: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -3434,7 +3437,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
         (Deref @ metamodelica::List::Nil, r#str) => {
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { source: src, scalar: e2, exp: e1 }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3446,7 +3449,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { source: src, cr2, cr1 }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
@@ -3454,7 +3457,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { source: src, array: e2, exp: e1, dimension: dims }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { dimension: dims, exp: e1, array: e2, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
@@ -3469,7 +3472,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { source: src, rhs: e2, lhs: e1 }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3481,7 +3484,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { source: src, exp: e, componentRef: c }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { componentRef: c, exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3493,7 +3496,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { source: src, level: Deref @ DAE::Exp::ENUM_LITERAL { index: 1, .. }, message: e2, condition: e1 }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { condition: e1, message: e2, level: Deref @ DAE::Exp::ENUM_LITERAL { index: 1, .. }, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3505,7 +3508,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::TERMINATE { source: src, message: e1 }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::TERMINATE { message: e1, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
@@ -3515,7 +3518,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::FOR_EQUATION { source: src, equations: xs1, range: e1, iter: s, .. }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::FOR_EQUATION { iter: s, range: e1, equations: xs1, source: src, .. }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             getSourceInformationStr(src.clone())?;
@@ -3526,10 +3529,10 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { equations3: Deref @ metamodelica::List::Nil, equations2: Deref @ metamodelica::List::Nil, condition1: Deref @ metamodelica::List::Nil, .. }, tail: _ }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Nil, equations2: Deref @ metamodelica::List::Nil, equations3: Deref @ metamodelica::List::Nil, .. }, tail: _ }, r#str) => {
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { source: src, equations3: Deref @ metamodelica::List::Nil, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: tb }, condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds } }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: tb }, equations3: Deref @ metamodelica::List::Nil, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
@@ -3543,7 +3546,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { source: src, equations3: xs2, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: tb }, condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds } }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: tb }, equations3: xs2, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
@@ -3558,7 +3561,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { source: src, elsewhen_: Some(el), equations: xs1, condition: e }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e, equations: xs1, elsewhen_: Some(el), source: src }, tail: xs }, r#str) => {
             let mut r#str = (*r#str).clone();
             getSourceInformationStr(src.clone())?;
             r#str = IOStream::append(r#str.clone(), (literal!("when ")).clone())?;
@@ -3569,7 +3572,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(metamodelica::cons(el.clone(), xs.clone()), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { source: src, elsewhen_: None, equations: xs1, condition: e }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e, equations: xs1, elsewhen_: None, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
@@ -3581,7 +3584,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::REINIT { source: src, exp: e, componentRef: cr }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::REINIT { componentRef: cr, exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3593,7 +3596,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
             r#str.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::NORETCALL { source: src, exp: e }, tail: xs }, r#str) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::NORETCALL { exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
@@ -3652,7 +3655,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALEQUATION { exp2: e2, exp1: e1, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, .. }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -3667,7 +3670,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { array: e2, exp: e1, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { exp: e1, array: e2, .. }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -3682,7 +3685,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { rhs: e2, lhs: e1, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1, rhs: e2, .. }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -3697,7 +3700,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALDEFINE { exp: e, componentRef: c, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIALDEFINE { componentRef: c, exp: e, .. }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -3712,7 +3715,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_FOR_EQUATION { source: src, equations: xs1, range: e1, iter: s2, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_FOR_EQUATION { iter: s2, range: e1, equations: xs1, source: src, .. }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
                     getSourceInformationStr(src.clone())?;
@@ -3728,7 +3731,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_IF_EQUATION { equations3: xs2, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: trueBranches }, condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, .. }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: trueBranches }, equations3: xs2, .. }, tail: xs }, r#str) => {
                     let mut r#str = (*r#str).clone();
                     r#str = IOStream::append(r#str.clone(), (literal!("  if ")).clone())?;
                     r#str = IOStream::append(r#str.clone(), (ExpressionBasics::printExpStr(e.clone())?).clone())?;
@@ -3759,7 +3762,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_ASSERT { source: src, level: Deref @ DAE::Exp::ENUM_LITERAL { index: 1, .. }, message: e2, condition: e1 }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_ASSERT { condition: e1, message: e2, level: Deref @ DAE::Exp::ENUM_LITERAL { index: 1, .. }, source: src }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3776,7 +3779,7 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_TERMINATE { source: src, message: e1 }, tail: xs }, r#str) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::INITIAL_TERMINATE { message: e1, source: src }, tail: xs }, r#str) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -3911,16 +3914,16 @@ pub fn dumpCallAttr(mut ca: Arc<DAE::CallAttributes>) -> Result<()> {
     let mut s1: ArcStr = arcstr::literal!("");
     let mut s2: ArcStr = arcstr::literal!("");
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(ca.clone()) {
-        Deref @ DAE::CallAttributes { tailCall: __pa0, inlineType: __pa1, isFunctionPointerCall: __pa2, isImpure: __pa3, builtin: __pa4, tuple_: __pa5, ty: __pa6 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+        Deref @ DAE::CallAttributes { ty: __pa0, tuple_: __pa1, builtin: __pa2, isImpure: __pa3, isFunctionPointerCall: __pa4, inlineType: __pa5, tailCall: __pa6 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    tailCall = __pa0.clone();
-    iType = __pa1.clone();
-    isFunc = __pa2.clone();
+    ty = __pa0.clone();
+    tpl = __pa1.clone();
+    bi = __pa2.clone();
     impure_ = __pa3.clone();
-    bi = __pa4.clone();
-    tpl = __pa5.clone();
-    ty = __pa6.clone();
+    isFunc = __pa4.clone();
+    iType = __pa5.clone();
+    tailCall = __pa6.clone();
     metamodelica::print((literal!("Call attributes: \n----------------------\n")).clone());
     (s1, s2) = printTypeStr(ty.clone())?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAE-type: ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -3951,7 +3954,7 @@ fn dumpVarStream(mut inElement: Arc<DAE::Element>, mut printTypeDimension: bool,
         let __mc_input = (inElement.clone(), inStream.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Element::VAR { comment: cmt, variableAttributesOption: attr, binding, dims, ty, protection: vis, parallelism: prl, direction: dir, kind, componentRef: id, .. }, r#str) => {
+                (Deref @ DAE::Element::VAR { componentRef: id, kind, direction: dir, parallelism: prl, protection: vis, ty, dims, binding, variableAttributesOption: attr, comment: cmt, .. }, r#str) => {
                     let mut final_str: ArcStr = arcstr::literal!("");
                     let mut kind_str: ArcStr = arcstr::literal!("");
                     let mut dir_str: ArcStr = arcstr::literal!("");
@@ -4130,7 +4133,7 @@ fn dumpFunctionStream(mut inElement: DAE::Function, mut inStream: IOStream::IOSt
         let __mc_input = (inElement.clone(), inStream.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Function::FUNCTION { comment: c, isImpure, type_: t, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, path: fpath, .. }, r#str) => {
+                (DAE::Function::FUNCTION { path: fpath, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_DEF { body: daeElts }, tail: _ }, type_: t, isImpure, comment: c, .. }, r#str) => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let mut impureStr: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
@@ -4162,7 +4165,7 @@ fn dumpFunctionStream(mut inElement: DAE::Function, mut inStream: IOStream::IOSt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Function::FUNCTION { comment: c, isImpure, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: ext_decl, body: daeElts }, tail: _ }, path: fpath, .. }, r#str) => {
+                (DAE::Function::FUNCTION { path: fpath, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { body: daeElts, externalDecl: ext_decl }, tail: _ }, isImpure, comment: c, .. }, r#str) => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let mut ext_decl_str: ArcStr = arcstr::literal!("");
                     let mut impureStr: ArcStr = arcstr::literal!("");
@@ -4186,7 +4189,7 @@ fn dumpFunctionStream(mut inElement: DAE::Function, mut inStream: IOStream::IOSt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Function::RECORD_CONSTRUCTOR { type_: tp, path: fpath, .. }, r#str) => {
+                (DAE::Function::RECORD_CONSTRUCTOR { path: fpath, type_: tp, .. }, r#str) => {
                     let mut fstr: ArcStr = arcstr::literal!("");
                     let mut r#str = (*r#str).clone();
                     let false = (Flags::isSet(Flags::DISABLE_RECORD_CONSTRUCTOR_OUTPUT.clone())?) else { bail!("pattern mismatch") };
@@ -4396,16 +4399,16 @@ pub fn clockKindString(mut cK: Arc<DAE::ClockKind>) -> Result<ArcStr> {
         Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } => {
             literal!("Inferred Clock")
         },
-        Deref @ DAE::ClockKind::RATIONAL_CLOCK { resolution: e2, intervalCounter: e1 } => {
+        Deref @ DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: e1, resolution: e2 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Rational Clock(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!("; ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         Deref @ DAE::ClockKind::REAL_CLOCK { interval: e1 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Real Clock(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        Deref @ DAE::ClockKind::EVENT_CLOCK { startInterval: e2, condition: e1 } => {
+        Deref @ DAE::ClockKind::EVENT_CLOCK { condition: e1, startInterval: e2 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Event Clock(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!("; ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        Deref @ DAE::ClockKind::SOLVER_CLOCK { solverMethod: e2, c: e1 } => {
+        Deref @ DAE::ClockKind::SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solver Clock(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!("; ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4431,7 +4434,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::DEFINE { source: src, componentRef: c, .. } => {
+                Deref @ DAE::Element::DEFINE { componentRef: c, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4447,7 +4450,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALDEFINE { source: src, componentRef: c, .. } => {
+                Deref @ DAE::Element::INITIALDEFINE { componentRef: c, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4463,7 +4466,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUATION { source: src, scalar: e2, exp: e1 } => {
+                Deref @ DAE::Element::EQUATION { exp: e1, scalar: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4481,7 +4484,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EQUEQUATION { source: src, cr2, cr1 } => {
+                Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4499,7 +4502,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ARRAY_EQUATION { source: src, array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::ARRAY_EQUATION { exp: e1, array: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4517,7 +4520,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { source: src, array: e2, exp: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { exp: e1, array: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4535,7 +4538,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMPLEX_EQUATION { source: src, rhs: e2, lhs: e1 } => {
+                Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4553,7 +4556,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { source: src, rhs: e2, lhs: e1 } => {
+                Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4571,7 +4574,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::WHEN_EQUATION { source: src, condition: e1, .. } => {
+                Deref @ DAE::Element::WHEN_EQUATION { condition: e1, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4615,7 +4618,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIALEQUATION { source: src, exp2: e2, exp1: e1 } => {
+                Deref @ DAE::Element::INITIALEQUATION { exp1: e1, exp2: e2, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4661,7 +4664,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::COMP { dAElist: elst, source: src, .. } => {
+                Deref @ DAE::Element::COMP { source: src, dAElist: elst, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4677,7 +4680,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::EXTOBJECTCLASS { source: src, path } => {
+                Deref @ DAE::Element::EXTOBJECTCLASS { path, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4693,7 +4696,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::ASSERT { source: src, message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::ASSERT { condition: e1, message: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4711,7 +4714,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_ASSERT { source: src, message: e2, condition: e1, .. } => {
+                Deref @ DAE::Element::INITIAL_ASSERT { condition: e1, message: e2, source: src, .. } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
@@ -4729,7 +4732,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::TERMINATE { source: src, message: e1 } => {
+                Deref @ DAE::Element::TERMINATE { message: e1, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4745,7 +4748,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::INITIAL_TERMINATE { source: src, message: e1 } => {
+                Deref @ DAE::Element::INITIAL_TERMINATE { message: e1, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -4775,7 +4778,7 @@ pub fn dumpDebugElementStr(mut inElement: Arc<DAE::Element>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Element::NORETCALL { source: src, exp: e1 } => {
+                Deref @ DAE::Element::NORETCALL { exp: e1, source: src } => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut sourceStr: ArcStr = arcstr::literal!("");

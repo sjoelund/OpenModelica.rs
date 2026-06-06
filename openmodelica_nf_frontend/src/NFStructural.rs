@@ -187,7 +187,7 @@ pub fn markDimension(mut dimension: Arc<Dimension::NFDimension>) -> Result<()> {
 pub fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
     use crate::NFComponentRef::Origin;
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, node, .. }, .. } => {
+        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, origin: ComponentRef::Origin::CREF { .. }, .. }, .. } => {
             let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
             if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;

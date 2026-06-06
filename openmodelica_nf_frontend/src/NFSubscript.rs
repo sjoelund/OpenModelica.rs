@@ -173,10 +173,10 @@ pub fn toIndexList(mut subscript: Arc<NFSubscript>, mut length: i32) -> Result<A
         __acc.reverse()
     })
         },
-        Deref @ SLICE { slice: Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: Some(Deref @ Expression::INTEGER { value: step }), start: Deref @ Expression::INTEGER { value: start }, .. } } => {
+        Deref @ SLICE { slice: Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: start }, step: Some(Deref @ Expression::INTEGER { value: step }), stop: Deref @ Expression::INTEGER { value: stop }, .. } } => {
             List::intRange3(start.clone(), step.clone(), stop.clone())?
         },
-        Deref @ SLICE { slice: Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: None, start: Deref @ Expression::INTEGER { value: start }, .. } } => {
+        Deref @ SLICE { slice: Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: start }, step: None, stop: Deref @ Expression::INTEGER { value: stop }, .. } } => {
             List::intRange2(start.clone(), stop.clone())
         },
         _ => {
@@ -283,8 +283,14 @@ pub fn equalsIterator(mut sub: Arc<NFSubscript>, mut iterator: Arc<InstNode::Ins
     let mut res: bool = false;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     res = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ UNTYPED { exp: Deref @ Expression::CREF { cref, .. } } => InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?),
-        Deref @ INDEX { index: Deref @ Expression::CREF { cref, .. } } => InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?),
+        Deref @ UNTYPED { exp: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
+            cref = (*__esc_cref).clone();
+            InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?)
+        },
+        Deref @ INDEX { index: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
+            cref = (*__esc_cref).clone();
+            InstNode::refEqual(iterator.clone(), ComponentRef::node(cref.clone())?)
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -318,7 +324,10 @@ pub fn isBackendIterator(mut sub: Arc<NFSubscript>) -> bool {
     let mut res: bool = false;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     res = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ INDEX { index: Deref @ Expression::CREF { cref, .. } } => ComponentRef::isIterator(cref.clone()),
+        Deref @ INDEX { index: Deref @ Expression::CREF { cref: __esc_cref, .. } } => {
+            cref = (*__esc_cref).clone();
+            ComponentRef::isIterator(cref.clone())
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -410,11 +419,11 @@ pub fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSubscript
             let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             let mut index: i32 = 0;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(subscript2.clone()) {
-                Deref @ SPLIT_INDEX { dimIndex: __pa0, node: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ SPLIT_INDEX { node: __pa0, dimIndex: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            index = __pa0.clone();
-            node = __pa1.clone();
+            node = __pa0.clone();
+            index = __pa1.clone();
             comp = InstNode::refCompare(var_field!((*subscript1).node, NFSubscript::SPLIT_INDEX).clone(), node.clone())?;
             if (comp.clone() == 0) {Util::intCompare(var_field!((*subscript1).dimIndex, NFSubscript::SPLIT_INDEX).clone(), index.clone())} else {comp.clone()}
         },
@@ -1287,11 +1296,11 @@ pub fn splitIndexDimExp(mut sub: Arc<NFSubscript>) -> Result<Arc<Expression::NFE
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut index: i32 = 0;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ SPLIT_INDEX { dimIndex: __pa0, node: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SPLIT_INDEX { node: __pa0, dimIndex: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    index = __pa0.clone();
-    node = __pa1.clone();
+    node = __pa0.clone();
+    index = __pa1.clone();
     exp = Dimension::sizeExp(Type::nthDimension(InstNode::getType(node.clone())?, index.clone())?)?;
     Ok(exp)
 }

@@ -138,7 +138,7 @@ fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Ar
         let __mc_input = inEqn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::Equation::ARRAY_EQUATION { attr, source, right: rhs, left: lhs, .. } => {
+                Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: lhs, right: rhs, source, attr, .. } => {
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ea1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -168,7 +168,7 @@ fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr, source, right: rhs, left: lhs, .. } => {
+                Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: lhs, right: rhs, source, attr, .. } => {
                     let mut ea1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut ea2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();

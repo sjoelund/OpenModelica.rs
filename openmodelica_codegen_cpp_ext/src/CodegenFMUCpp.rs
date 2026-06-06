@@ -62,7 +62,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stateDerVectorName:
 pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUVersion: ArcStr, mut in_a_FMUType: ArcStr, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
-        (txt, i_simCode @ SimCode::SimCode { fileNamePrefix: i_fileNamePrefix, modelInfo: i_modelInfo @ SimCode::ModelInfo { name: _, .. }, .. }, a_FMUVersion, a_FMUType, a_sourceFiles) => {
+        (txt, i_simCode @ SimCode::SimCode { modelInfo: i_modelInfo @ SimCode::ModelInfo { name: _, .. }, fileNamePrefix: i_fileNamePrefix, .. }, a_FMUVersion, a_FMUType, a_sourceFiles) => {
             let mut ret_30: bool = false;
             let mut l_0___1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -173,7 +173,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: Arc
 pub fn fmuCalcHelperMainfile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: _, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             let mut ret_2: bool = false;
             let mut ret_1: bool = false;
             let mut ret_0: bool = false;
@@ -230,7 +230,7 @@ pub fn fmuCalcHelperMainfile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::S
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { simulationSettingsOpt: Some(SimCode::SimulationSettings { startTime: _, .. }), modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { startTime: _, .. }), .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#pragma once\n")).clone(), (literal!("\n")).clone(), (literal!("// Dummy code for FMU that writes no output file\n")).clone(), (literal!("class ")).clone()], lastHasNewLine: false }))?;
             txt = CodegenCpp::lastIdentOfPath(txt.clone(), i_modelInfo_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput  : public IWriteOutput,public ")).clone() }))?;
@@ -380,7 +380,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 fn fun_66(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_simCode.clone())) {
-        (txt, SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name: i_name, .. }, a_simCode) => {
+        (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, .. }, a_simCode) => {
             let mut ret_2: i32 = 0;
             let mut ret_1: i32 = 0;
             let mut ret_0: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
@@ -422,7 +422,7 @@ fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
 fn fun_68(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_simCode.clone())) {
-        (txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::CLOCKED_STATE { previousName: _, .. }, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name: i_name, .. }, a_simCode) => {
+        (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, varKind: BackendDAE::VarKind::CLOCKED_STATE { previousName: _, .. }, .. }, a_simCode) => {
             let mut ret_2: i32 = 0;
             let mut ret_1: i32 = 0;
             let mut ret_0: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
@@ -433,7 +433,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_simC
             txt = Tpl::writeStr(txt.clone(), (intString(ret_2.clone())).clone())?;
             txt.clone()
         },
-        (txt, SimCodeVar::SimVar { causality: Some(SimCodeVar::Causality::OUTPUT { .. }), type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name: i_name, .. }, a_simCode) => {
+        (txt, SimCodeVar::SimVar { name: i_name, type_: Deref @ DAE::Type::T_REAL { varLst: _ }, causality: Some(SimCodeVar::Causality::OUTPUT { .. }), .. }, a_simCode) => {
             let mut ret_5: i32 = 0;
             let mut ret_4: i32 = 0;
             let mut ret_3: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
@@ -478,7 +478,7 @@ pub fn fmuModelCppFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode
     let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (match (in_txt.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_guid.clone(), in_a_FMUVersion.clone()) {
-        (mut txt, ref i_simCode @ SimCode::SimCode { clockedPartitions: ref i_clockedPartitions, initialEquations: ref i_initialEquations, allEquations: ref i_allEquations, modelStructure: _, modelInfo: ref i_modelInfo @ SimCode::ModelInfo { name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { algVars: ref i_algVars, inputVars: ref i_inputVars, .. }, .. }, .. }, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace, mut a_guid, mut a_FMUVersion) => {
+        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: ref i_modelInfo @ SimCode::ModelInfo { vars: SimCodeVar::SimVars { inputVars: ref i_inputVars, algVars: ref i_algVars, .. }, name: ref i_modelInfo_name, .. }, modelStructure: _, allEquations: ref i_allEquations, initialEquations: ref i_initialEquations, clockedPartitions: ref i_clockedPartitions, .. }, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace, mut a_guid, mut a_FMUVersion) => {
             let mut ret_12: bool = false;
             let mut ret_11: bool = false;
             let mut str_10: ArcStr = arcstr::literal!("");
@@ -660,7 +660,7 @@ fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
 pub fn ModelDefineData(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
-        (mut txt, SimCode::ModelInfo { functions: ref i_functions, vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, .. }) => {
+        (mut txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, functions: ref i_functions, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("/* TODO: implement external functions in FMU wrapper for c++ target\n")).clone() }))?;
             System::tmpTickReset(0);
             txt = Tpl::softNewLine(txt.clone())?;
@@ -742,7 +742,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_description: Tpl::T
 pub fn DefineVariables(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_useFlatArrayNotation: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_useFlatArrayNotation.clone()) {
-        (mut txt, SimCodeVar::SimVar { name: ref i_name, comment: mut i_comment, .. }, mut a_useFlatArrayNotation) => {
+        (mut txt, SimCodeVar::SimVar { comment: mut i_comment, name: ref i_name, .. }, mut a_useFlatArrayNotation) => {
             let mut ret_2: bool = false;
             let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -762,7 +762,7 @@ pub fn DefineVariables(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVa
 pub fn defineExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
-        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: i_language, extName: i_extName, dynamicLoad: true, .. }) => {
+        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, extName: i_extName, language: i_language, .. }) => {
             let mut ret_1: i32 = 0;
             let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1011,7 +1011,7 @@ fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
 pub fn setDefaultStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
-        (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stringParamVars: ref i_vars_stringParamVars, boolParamVars: ref i_vars_boolParamVars, intParamVars: ref i_vars_intParamVars, paramVars: ref i_vars_paramVars, stringAlgVars: ref i_vars_stringAlgVars, boolAlgVars: ref i_vars_boolAlgVars, intAlgVars: ref i_vars_intAlgVars, discreteAlgVars: ref i_vars_discreteAlgVars, algVars: ref i_vars_algVars, derivativeVars: ref i_vars_derivativeVars, stateVars: ref i_vars_stateVars, .. }, varInfo: SimCode::VarInfo { numAlgVars: mut i_numAlgVars, numStateVars: mut i_numStateVars, .. }, .. }) => {
+        (mut txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: mut i_numStateVars, numAlgVars: mut i_numAlgVars, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, derivativeVars: ref i_vars_derivativeVars, algVars: ref i_vars_algVars, discreteAlgVars: ref i_vars_discreteAlgVars, intAlgVars: ref i_vars_intAlgVars, boolAlgVars: ref i_vars_boolAlgVars, stringAlgVars: ref i_vars_stringAlgVars, paramVars: ref i_vars_paramVars, intParamVars: ref i_vars_intParamVars, boolParamVars: ref i_vars_boolParamVars, stringParamVars: ref i_vars_stringParamVars, .. }, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("// Set values for all variables that define a start value\n")).clone(), (literal!("void setDefaultStartValues(ModelInstance *comp) {\n")).clone(), (literal!("/*\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_78(txt.clone(), i_vars_stateVars.clone())?;
@@ -1296,7 +1296,7 @@ fn lm_100(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar
 pub fn setStartValues(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
-        (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stringParamVars: ref i_vars_stringParamVars, boolParamVars: ref i_vars_boolParamVars, intParamVars: ref i_vars_intParamVars, paramVars: ref i_vars_paramVars, stringAlgVars: ref i_vars_stringAlgVars, boolAlgVars: ref i_vars_boolAlgVars, intAlgVars: ref i_vars_intAlgVars, discreteAlgVars: ref i_vars_discreteAlgVars, algVars: ref i_vars_algVars, derivativeVars: ref i_vars_derivativeVars, stateVars: ref i_vars_stateVars, .. }, varInfo: SimCode::VarInfo { numAlgVars: mut i_numAlgVars, numStateVars: mut i_numStateVars, .. }, .. }) => {
+        (mut txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: mut i_numStateVars, numAlgVars: mut i_numAlgVars, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, derivativeVars: ref i_vars_derivativeVars, algVars: ref i_vars_algVars, discreteAlgVars: ref i_vars_discreteAlgVars, intAlgVars: ref i_vars_intAlgVars, boolAlgVars: ref i_vars_boolAlgVars, stringAlgVars: ref i_vars_stringAlgVars, paramVars: ref i_vars_paramVars, intParamVars: ref i_vars_intParamVars, boolParamVars: ref i_vars_boolParamVars, stringParamVars: ref i_vars_stringParamVars, .. }, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("// Set values for all variables that define a start value\n")).clone(), (literal!("void setStartValues(ModelInstance *comp) {\n")).clone(), (literal!("/*\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_90(txt.clone(), i_vars_stateVars.clone())?;
@@ -1406,7 +1406,7 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_offset: i32, mut i
 pub fn initVals(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_arrayName: ArcStr, mut in_a_offset: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_arrayName.clone(), in_a_offset.clone()) {
-        (mut txt, SimCodeVar::SimVar { index: mut i_index, name: ref i_name, .. }, mut a_arrayName, mut a_offset) => {
+        (mut txt, SimCodeVar::SimVar { name: ref i_name, index: mut i_index, .. }, mut a_arrayName, mut a_offset) => {
             let mut ret_1: bool = false;
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = CodegenUtil::crefStr(Tpl::emptyTxt.clone(), i_name.clone())?;
@@ -1516,7 +1516,7 @@ fn fun_107(mut in_txt: Tpl::Text, mut in_a_initialValue: Option<Arc<DAE::Exp>>, 
 pub fn initValsDefault(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_arrayName: ArcStr, mut in_a_offset: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_arrayName.clone(), in_a_offset.clone()) {
-        (mut txt, SimCodeVar::SimVar { initialValue: mut i_initialValue, type_: ref i_type__, index: mut i_index, .. }, mut a_arrayName, mut a_offset) => {
+        (mut txt, SimCodeVar::SimVar { index: mut i_index, type_: ref i_type__, initialValue: mut i_initialValue, .. }, mut a_arrayName, mut a_offset) => {
             let mut ret_1: i32 = 0;
             let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->fmuData->modelData.")).clone() }))?;
@@ -1557,7 +1557,7 @@ fn fun_109(mut in_txt: Tpl::Text, mut in_a_initialValue: Option<Arc<DAE::Exp>>, 
 pub fn initParamsDefault(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_arrayName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_arrayName.clone()) {
-        (mut txt, SimCodeVar::SimVar { initialValue: mut i_initialValue, index: mut i_index, .. }, mut a_arrayName) => {
+        (mut txt, SimCodeVar::SimVar { index: mut i_index, initialValue: mut i_initialValue, .. }, mut a_arrayName) => {
             let mut l_str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->fmuData->modelData.")).clone() }))?;
             l_str = Tpl::writeStr(l_str.clone(), (a_arrayName.clone()).clone())?;
@@ -1616,7 +1616,7 @@ pub fn initVal(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -> R
             txt = fun_111(txt.clone(), i_bool.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Exp::ENUM_LITERAL { name: i_name, index: i_index }) => {
+        (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, name: i_name }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/*ENUM:")).clone() }))?;
@@ -1637,7 +1637,7 @@ pub fn initVal(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -> R
 pub fn setExternalFunction(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone()) {
-        (mut txt, SimCode::ModelInfo { functions: ref i_functions, vars: SimCodeVar::SimVars { stateVars: _, .. }, .. }) => {
+        (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: _, .. }, functions: ref i_functions, .. }) => {
             let mut l_externalFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_externalFuncs = setExternalFunctionsSwitch(Tpl::emptyTxt.clone(), i_functions.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("fmiStatus setExternalFunction(ModelInstance* c, const fmiValueReference vr, const void* value){\n")).clone(), (literal!("  switch (vr) {\n")).clone(), (literal!("  /*\n")).clone()], lastHasNewLine: true }))?;
@@ -1686,7 +1686,7 @@ pub fn setExternalFunctionsSwitch(mut txt: Tpl::Text, mut a_functions: Arc<metam
 pub fn setExternalFunctionSwitch(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
-        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: i_language, extName: i_extName, dynamicLoad: true, .. }) => {
+        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, extName: i_extName, language: i_language, .. }) => {
             let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_fname = CodegenUtil::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
@@ -1710,7 +1710,7 @@ pub fn setExternalFunctionSwitch(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCode
 fn fun_117(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_simCode: SimCode::SimCode, mut in_a_direction: ArcStr, mut in_a_modelShortName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone(), in_a_simCode.clone(), in_a_direction.clone(), in_a_modelShortName.clone()) {
-        (mut txt, SimCode::ModelInfo { varInfo: SimCode::VarInfo { numParams: mut i_numParams, numDiscreteReal: mut i_numDiscreteReal, numAlgVars: mut i_numAlgVars, numStateVars: mut i_numStateVars, .. }, vars: SimCodeVar::SimVars { stringAliasVars: ref i_vars_stringAliasVars, stringParamVars: ref i_vars_stringParamVars, stringAlgVars: ref i_vars_stringAlgVars, boolAliasVars: ref i_vars_boolAliasVars, boolParamVars: ref i_vars_boolParamVars, boolAlgVars: ref i_vars_boolAlgVars, intAliasVars: ref i_vars_intAliasVars, intParamVars: ref i_vars_intParamVars, intAlgVars: ref i_vars_intAlgVars, aliasVars: ref i_vars_aliasVars, .. }, .. }, mut a_simCode, mut a_direction, mut a_modelShortName) => {
+        (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { aliasVars: ref i_vars_aliasVars, intAlgVars: ref i_vars_intAlgVars, intParamVars: ref i_vars_intParamVars, intAliasVars: ref i_vars_intAliasVars, boolAlgVars: ref i_vars_boolAlgVars, boolParamVars: ref i_vars_boolParamVars, boolAliasVars: ref i_vars_boolAliasVars, stringAlgVars: ref i_vars_stringAlgVars, stringParamVars: ref i_vars_stringParamVars, stringAliasVars: ref i_vars_stringAliasVars, .. }, varInfo: SimCode::VarInfo { numStateVars: mut i_numStateVars, numAlgVars: mut i_numAlgVars, numDiscreteReal: mut i_numDiscreteReal, numParams: mut i_numParams, .. }, .. }, mut a_simCode, mut a_direction, mut a_modelShortName) => {
             let mut ret_12: i32 = 0;
             let mut ret_11: i32 = 0;
             let mut ret_10: i32 = 0;
@@ -1938,7 +1938,7 @@ fn fun_125(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_cppSign: Tpl::Text
 fn fun_126(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode, mut in_a_direction: ArcStr, mut in_a_offset: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone(), in_a_direction.clone(), in_a_offset.clone()) {
-        (mut txt, ref i_simVar @ SimCodeVar::SimVar { index: ref i_index, comment: ref i_comment, name: ref i_name, .. }, mut a_simCode, mut a_direction, mut a_offset) => {
+        (mut txt, ref i_simVar @ SimCodeVar::SimVar { name: ref i_name, comment: ref i_comment, index: ref i_index, .. }, mut a_simCode, mut a_direction, mut a_offset) => {
             let mut ret_6: bool = false;
             let mut l_cppSign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_cppName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1991,7 +1991,7 @@ fn fun_128(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable, 
 fn fun_129(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCodeVar::SimVar { aliasvar: mut i_aliasvar, name: ref i_name, .. }, mut a_simCode) => {
+        (mut txt, SimCodeVar::SimVar { name: ref i_name, aliasvar: mut i_aliasvar, .. }, mut a_simCode) => {
             let mut l_actualName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             (l_actualName, _, _, _, _, _) = CodegenCppCommon::cref1(Tpl::emptyTxt.clone(), i_name.clone(), a_simCode.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), SimCodeFunction::contextOther().clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), false)?;
             txt = fun_128(txt.clone(), i_aliasvar.clone(), l_actualName.clone(), a_simCode.clone())?;
@@ -2047,7 +2047,7 @@ fn fun_132(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable, 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone()) {
-        (mut txt, SimCodeVar::SimVar { aliasvar: mut i_aliasvar, type_: ref i_type__, .. }) => {
+        (mut txt, SimCodeVar::SimVar { type_: ref i_type__, aliasvar: mut i_aliasvar, .. }) => {
             txt = fun_132(txt.clone(), i_aliasvar.clone(), i_type__.clone())?;
             txt.clone()
         },
@@ -2119,7 +2119,7 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_dimDiscreteStates:
 pub fn directionalDerivativeFunction(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, ref i_simCode @ SimCode::SimCode { modelStructure: ref i_fmiModelStructure, modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }) => {
+        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, modelStructure: ref i_fmiModelStructure, .. }) => {
             let mut ret_2: bool = false;
             let mut l_dimDiscreteStates: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_modelShortName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2241,7 +2241,7 @@ fn fun_144(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_makefileParams_omh
 fn fun_145(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { fmuTargetName: mut i_fmuTargetName, fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: mut i_sopt, makefileParams: SimCodeFunction::MakefileParams { platform: mut i_makefileParams_platform, omhome: mut i_makefileParams_omhome, libs: ref i_makefileParams_libs, .. }, modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, .. }) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, omhome: mut i_makefileParams_omhome, platform: mut i_makefileParams_platform, .. }, simulationSettingsOpt: mut i_sopt, fileNamePrefix: mut i_fileNamePrefix, fmuTargetName: mut i_fmuTargetName, .. }) => {
             let mut ret_7: bool = false;
             let mut ret_6: bool = false;
             let mut ret_5: bool = false;
@@ -2506,7 +2506,7 @@ fn lm_154(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) 
 fn fun_155(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_additionalLinkerFlags__GCC: ArcStr, mut in_a_additionalCFlags__GCC: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_additionalLinkerFlags__GCC.clone(), in_a_additionalCFlags__GCC.clone()) {
-        (mut txt, SimCode::SimCode { fmuTargetName: mut i_fmuTargetName, fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: mut i_sopt, makefileParams: SimCodeFunction::MakefileParams { includes: ref i_makefileParams_includes, dllext: mut i_makefileParams_dllext, cxxcompiler: mut i_makefileParams_cxxcompiler, ccompiler: mut i_makefileParams_ccompiler, omhome: mut i_makefileParams_omhome, platform: mut i_makefileParams_platform, libs: ref i_makefileParams_libs, .. }, modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, .. }, mut a_additionalLinkerFlags__GCC, mut a_additionalCFlags__GCC) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { directory: mut i_modelInfo_directory, .. }, makefileParams: SimCodeFunction::MakefileParams { libs: ref i_makefileParams_libs, platform: mut i_makefileParams_platform, omhome: mut i_makefileParams_omhome, ccompiler: mut i_makefileParams_ccompiler, cxxcompiler: mut i_makefileParams_cxxcompiler, dllext: mut i_makefileParams_dllext, includes: ref i_makefileParams_includes, .. }, simulationSettingsOpt: mut i_sopt, fileNamePrefix: mut i_fileNamePrefix, fmuTargetName: mut i_fmuTargetName, .. }, mut a_additionalLinkerFlags__GCC, mut a_additionalCFlags__GCC) => {
             let mut ret_12: bool = false;
             let mut ret_11: bool = false;
             let mut ret_10: bool = false;

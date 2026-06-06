@@ -189,7 +189,7 @@ pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> 
             }
             bdae.clone()
         },
-        (Partition::Kind::DAE, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, dae: Some(partitions), .. }) => {
+        (Partition::Kind::DAE, Deref @ Jacobian::MAIN { dae: Some(partitions), eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, .. }) => {
             assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; dae = Some(tearingTraverser(partitions.clone(), funcs.clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), eq_index.clone(), kind.clone())?));
             main(bdae.clone(), Partition::Kind::ODE.clone())?
         },
@@ -207,17 +207,17 @@ pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: 
     (comp, dummy, index) = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
             BEquation::Equation::map(Pointer::access(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), (std::sync::Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), idx: index.clone() });
+            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { idx: index.clone(), strict: singleImplicit(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), casual: None, linear: false, mixed: false, homotopy: Pointer::access(homotopy.clone()), status: Solve::Status::IMPLICIT.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
         Deref @ StrongComponent::MULTI_COMPONENT { .. } => {
             BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), (std::sync::Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(Slice::getT(listHead(var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())?), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), idx: index.clone() });
+            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { idx: index.clone(), strict: singleImplicit(Slice::getT(listHead(var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())?), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), casual: None, linear: false, mixed: false, homotopy: Pointer::access(homotopy.clone()), status: Solve::Status::IMPLICIT.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
         Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => {
             BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), (std::sync::Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), idx: index.clone() });
+            new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { idx: index.clone(), strict: singleImplicit(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), casual: None, linear: false, mixed: false, homotopy: Pointer::access(homotopy.clone()), status: Solve::Status::IMPLICIT.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
         _ => (comp.clone(), dummy.clone(), index.clone()),
@@ -227,7 +227,7 @@ pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: 
 }
 
 pub fn singleImplicit(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Arc<NBTearing> {
-    let mut tearingSet: Arc<NBTearing> = Arc::new(NBTearing { jac: None, innerEquations: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), residual_eqns: list![Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() })], iteration_vars: list![Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() })] });
+    let mut tearingSet: Arc<NBTearing> = Arc::new(NBTearing { iteration_vars: list![Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() })], residual_eqns: list![Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() })], innerEquations: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()), jac: None });
     tearingSet
 }
 
@@ -388,7 +388,8 @@ fn initialize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<A
     let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     let init: bool = Partition::kindIsInitial(kind.clone());
     (comp, full, index) = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. } => {
+            strict = (*__esc_strict).clone();
             index = index.clone() + 1;
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; idx = index.clone());
             vars_lst = ({
@@ -430,8 +431,8 @@ fn finalize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adj
     let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>>> = metamodelica::nil();
     let mut dummy_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
-            let mut strict = (*strict).clone();
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. } => {
+            strict = (*__esc_strict).clone();
             acc = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>>> = metamodelica::nil();
         for mut eqn in (strict.residual_eqns.clone()).into_iter().cloned() {
@@ -483,8 +484,8 @@ fn minimal(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adja
     let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     let mut matched_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     comp = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
-            let mut strict = (*strict).clone();
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. } => {
+            strict = (*__esc_strict).clone();
             vars_lst = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut var in (strict.iteration_vars.clone()).into_iter().cloned() {
@@ -606,8 +607,8 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
     let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let staticAsContinuous: bool = Partition::kindIsInitial(kind.clone());
     comp = (::match_deref::match_deref! { match &((comp.clone(), full.clone())) {
-        (Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. }, Deref @ Adjacency::Matrix::FULL { .. }) => {
-            let mut strict = (*strict).clone();
+        (Deref @ StrongComponent::ALGEBRAIC_LOOP { strict: __esc_strict, .. }, Deref @ Adjacency::Matrix::FULL { .. }) => {
+            strict = (*__esc_strict).clone();
             nEqn = metamodelica::arrayLength(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).clone());
             (inner_vars, guru_vars) = List::splitOnTrue(strict.iteration_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = NFBackendExtension::TearingSelect::PREFER.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>); move |__pe_a0| BVariable::hasTearingSelect(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); move |__pe_a0| Slice::check(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             if guru_vars.clone().is_empty() {
@@ -658,7 +659,8 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
                                 }
                             }
                             let () = (::match_deref::match_deref! { match &((solve_opt.clone(), success.clone())) {
-        (Some(solve_cref), true) => {
+        (Some(__esc_solve_cref), true) => {
+            solve_cref = (*__esc_solve_cref).clone();
             stripped = ComponentRef::stripSubscriptsAll(solve_cref.clone());
             solve_var = UnorderedMap::getSafe(stripped.clone(), unsolved_inner_vars.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;
             solve_eqn = UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/3_Post/NBTearing.mo"))?;

@@ -462,7 +462,7 @@ fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
 fn fun_70(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in_a_FMUVersion: ArcStr, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelInfo.clone(), in_a_FMUVersion.clone(), in_a_simCode.clone())) {
-        (txt, i_modelInfo @ SimCode::ModelInfo { vars: SimCodeVar::SimVars { stringAliasVars: i_vars_stringAliasVars, stringParamVars: i_vars_stringParamVars, stringAlgVars: i_vars_stringAlgVars, boolAliasVars: i_vars_boolAliasVars, boolParamVars: i_vars_boolParamVars, boolAlgVars: i_vars_boolAlgVars, intAliasVars: i_vars_intAliasVars, intParamVars: i_vars_intParamVars, intAlgVars: i_vars_intAlgVars, aliasVars: i_vars_aliasVars, paramVars: i_vars_paramVars, discreteAlgVars: i_vars_discreteAlgVars, algVars: i_vars_algVars, derivativeVars: i_vars_derivativeVars, stateVars: i_vars_stateVars @ i_stateVars, .. }, .. }, a_FMUVersion, a_simCode) => {
+        (txt, i_modelInfo @ SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: i_vars_stateVars @ i_stateVars, derivativeVars: i_vars_derivativeVars, algVars: i_vars_algVars, discreteAlgVars: i_vars_discreteAlgVars, paramVars: i_vars_paramVars, aliasVars: i_vars_aliasVars, intAlgVars: i_vars_intAlgVars, intParamVars: i_vars_intParamVars, intAliasVars: i_vars_intAliasVars, boolAlgVars: i_vars_boolAlgVars, boolParamVars: i_vars_boolParamVars, boolAliasVars: i_vars_boolAliasVars, stringAlgVars: i_vars_stringAlgVars, stringParamVars: i_vars_stringParamVars, stringAliasVars: i_vars_stringAliasVars, .. }, .. }, a_FMUVersion, a_simCode) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<ModelVariables>\n")).clone() }))?;
             System::tmpTickReset(0);
@@ -686,7 +686,7 @@ pub fn ScalarVariable(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
         },
-        (txt, i_simVar @ SimCodeVar::SimVar { exportVar: i_exportVar, name: i_name, .. }, a_simCode, a_stateVars, a_FMUVersion) => {
+        (txt, i_simVar @ SimCodeVar::SimVar { name: i_name, exportVar: i_exportVar, .. }, a_simCode, a_stateVars, a_FMUVersion) => {
             let mut ret_2: bool = false;
             let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -726,7 +726,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_comment: ArcStr) -> Result<Tpl::Text> 
 pub fn ScalarVariableAttribute(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone()) {
-        (mut txt, SimCodeVar::SimVar { name: ref i_name, causality: mut i_causality, aliasvar: mut i_aliasvar, comment: mut i_comment, variability: mut i_variability, .. }) => {
+        (mut txt, SimCodeVar::SimVar { variability: mut i_variability, comment: mut i_comment, aliasvar: mut i_aliasvar, causality: mut i_causality, name: ref i_name, .. }) => {
             let mut ret_7: ArcStr = arcstr::literal!("");
             let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_caus: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -978,7 +978,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_initialValue: Option<Arc<DAE::Exp>>, m
 pub fn StartString(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simvar.clone()) {
-        (mut txt, SimCodeVar::SimVar { type_: ref i_type__, causality: mut i_causality, initialValue: mut i_initialValue, .. }) => {
+        (mut txt, SimCodeVar::SimVar { initialValue: mut i_initialValue, causality: mut i_causality, type_: ref i_type__, .. }) => {
             txt = fun_86(txt.clone(), i_initialValue.clone(), i_type__.clone(), i_causality.clone())?;
             txt.clone()
         },
@@ -1082,7 +1082,7 @@ pub fn externalFunctions(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::Mod
 pub fn externalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFunction::Function::Function>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fn.clone())) {
-        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: i_language, extName: i_extName, dynamicLoad: true, .. }) => {
+        (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { dynamicLoad: true, extName: i_extName, language: i_language, .. }) => {
             let mut ret_1: i32 = 0;
             let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1129,7 +1129,7 @@ fn fun_95(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fmistruct_fmiDiscre
 pub fn ModelStructure(mut in_txt: Tpl::Text, mut in_a_fmiModelStructure: Option<SimCode::FmiModelStructure>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fmiModelStructure.clone()) {
-        (mut txt, Some(SimCode::FmiModelStructure { fmiInitialUnknowns: mut i_fmistruct_fmiInitialUnknowns, fmiDiscreteStates: mut i_fmistruct_fmiDiscreteStates, fmiDerivatives: mut i_fmistruct_fmiDerivatives, fmiOutputs: mut i_fmistruct_fmiOutputs, .. })) => {
+        (mut txt, Some(SimCode::FmiModelStructure { fmiOutputs: mut i_fmistruct_fmiOutputs, fmiDerivatives: mut i_fmistruct_fmiDerivatives, fmiDiscreteStates: mut i_fmistruct_fmiDiscreteStates, fmiInitialUnknowns: mut i_fmistruct_fmiInitialUnknowns, .. })) => {
             let mut ret_0: bool = false;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<ModelStructure>\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
@@ -1189,7 +1189,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sres: i32) -> Resul
 fn fun_99(mut in_txt: Tpl::Text, mut in_a_subPartition: SimCode::SubPartition, mut in_a_bi: metamodelica::Real) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_subPartition.clone(), in_a_bi.clone()) {
-        (mut txt, SimCode::SubPartition { subClock: BackendDAE::SubClock::SUBCLOCK { shift: MMath::Rational { denom: mut i_sres, nom: mut i_snom }, factor: MMath::Rational { denom: mut i_fsuper, nom: mut i_fsub }, .. }, .. }, mut a_bi) => {
+        (mut txt, SimCode::SubPartition { subClock: BackendDAE::SubClock::SUBCLOCK { factor: MMath::Rational { nom: mut i_fsub, denom: mut i_fsuper }, shift: MMath::Rational { nom: mut i_snom, denom: mut i_sres }, .. }, .. }, mut a_bi) => {
             let mut ret_5: bool = false;
             let mut ret_4: bool = false;
             let mut ret_3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -1265,7 +1265,7 @@ fn fun_101(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fsuper: i32, mut i
 fn fun_102(mut in_txt: Tpl::Text, mut in_a_subPartition: SimCode::SubPartition, mut in_a_resi: i32, mut in_a_bic: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_subPartition.clone(), in_a_resi.clone(), in_a_bic.clone()) {
-        (mut txt, SimCode::SubPartition { subClock: BackendDAE::SubClock::SUBCLOCK { shift: MMath::Rational { denom: mut i_sres, nom: mut i_snom }, factor: MMath::Rational { denom: mut i_fsuper, nom: mut i_fsub }, .. }, .. }, mut a_resi, mut a_bic) => {
+        (mut txt, SimCode::SubPartition { subClock: BackendDAE::SubClock::SUBCLOCK { factor: MMath::Rational { nom: mut i_fsub, denom: mut i_fsuper }, shift: MMath::Rational { nom: mut i_snom, denom: mut i_sres }, .. }, .. }, mut a_resi, mut a_bic) => {
             let mut ret_4: i32 = 0;
             let mut ret_3: i32 = 0;
             let mut ret_2: bool = false;
@@ -1326,7 +1326,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_baseClock: Arc<DAE::ClockKind>, mut i
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ClockKind::RATIONAL_CLOCK { resolution: Deref @ DAE::Exp::ICONST { integer: i_resi }, intervalCounter: Deref @ DAE::Exp::ICONST { integer: i_bic } }, a_subPartitions) => {
+        (txt, Deref @ DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: Deref @ DAE::Exp::ICONST { integer: i_bic }, resolution: Deref @ DAE::Exp::ICONST { integer: i_resi } }, a_subPartitions) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_103(txt.clone(), a_subPartitions.clone(), i_resi.clone(), i_bic.clone())?;
@@ -1361,7 +1361,7 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_a_baseClock: Arc<DAE::ClockKind>, mut i
 fn fun_105(mut in_txt: Tpl::Text, mut in_a_partition: SimCode::ClockedPartition) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_partition.clone()) {
-        (mut txt, SimCode::ClockedPartition { subPartitions: ref i_subPartitions, baseClock: ref i_baseClock }) => {
+        (mut txt, SimCode::ClockedPartition { baseClock: ref i_baseClock, subPartitions: ref i_subPartitions }) => {
             txt = fun_104(txt.clone(), i_baseClock.clone(), i_subPartitions.clone())?;
             txt.clone()
         },
@@ -1416,7 +1416,7 @@ fn fun_107(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_clocks: Tpl::Tex
 pub fn TypeDefinitionsClocks(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { clockedPartitions: ref i_clockedPartitions, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: _, .. }, clockedPartitions: ref i_clockedPartitions, .. }) => {
             let mut str_1: ArcStr = arcstr::literal!("");
             let mut l_clocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_clocks = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE()), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -1560,7 +1560,7 @@ pub fn ModelStructureUnknowns(mut txt: Tpl::Text, mut a_fmiUnknownsList: Arc<met
 pub fn FmiUnknownAttributes(mut in_txt: Tpl::Text, mut in_a_fmiUnknown: SimCode::FmiUnknown) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fmiUnknown.clone()) {
-        (mut txt, SimCode::FmiUnknown { dependenciesKind: ref i_dependenciesKind, dependencies: ref i_dependencies, index: mut i_index }) => {
+        (mut txt, SimCode::FmiUnknown { index: mut i_index, dependencies: ref i_dependencies, dependenciesKind: ref i_dependenciesKind }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Unknown index=\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(i_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
@@ -1790,7 +1790,7 @@ fn fun_128(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_initial: Tpl::Text
 pub fn ScalarVariableAttribute2(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simVar.clone(), in_a_simCode.clone()) {
-        (mut txt, ref i_simVar @ SimCodeVar::SimVar { causality: ref i_causality, varKind: ref i_varKind, variability: ref i_variability, comment: ref i_comment, exportVar: ref i_exportVar, .. }, mut a_simCode) => {
+        (mut txt, ref i_simVar @ SimCodeVar::SimVar { exportVar: ref i_exportVar, comment: ref i_comment, variability: ref i_variability, varKind: ref i_varKind, causality: ref i_causality, .. }, mut a_simCode) => {
             let mut ret_31: bool = false;
             let mut ret_30: bool = false;
             let mut ret_29: bool = false;
@@ -1999,7 +1999,7 @@ fn fun_134(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_vi_numZeroCrossi
 pub fn getNumberOfEventIndicators(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: mut i_vi_numZeroCrossings, .. }, .. }, zeroCrossings: ref i_zeroCrossings, .. }) => {
+        (mut txt, SimCode::SimCode { zeroCrossings: ref i_zeroCrossings, modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: mut i_vi_numZeroCrossings, .. }, .. }, .. }) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             ret_0 = (Config::simCodeTarget()?).clone();
             txt = fun_134(txt.clone(), (ret_0.clone()).clone(), i_vi_numZeroCrossings.clone(), i_zeroCrossings.clone())?;
@@ -2131,7 +2131,7 @@ fn fun_139(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_
 pub fn DerivativeVarIndex(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::SimVar, mut in_a_stateVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simvar.clone(), in_a_stateVars.clone())) {
-        (txt, SimCodeVar::SimVar { index: i_index, varKind: i_varKind, .. }, a_stateVars) => {
+        (txt, SimCodeVar::SimVar { varKind: i_varKind, index: i_index, .. }, a_stateVars) => {
             let mut txt = (*txt).clone();
             txt = fun_139(txt.clone(), i_varKind.clone(), i_index.clone(), a_stateVars.clone())?;
             txt.clone()
@@ -2498,7 +2498,7 @@ fn fun_153(mut in_txt: Tpl::Text, mut in_a_displayUnit: ArcStr) -> Result<Tpl::T
 pub fn UnitString2(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simvar.clone()) {
-        (mut txt, SimCodeVar::SimVar { displayUnit: mut i_displayUnit, unit: mut i_unit, .. }) => {
+        (mut txt, SimCodeVar::SimVar { unit: mut i_unit, displayUnit: mut i_displayUnit, .. }) => {
             let mut l_displayUnitString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_unitString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_unitString = fun_152(Tpl::emptyTxt.clone(), (i_unit.clone()).clone())?;
@@ -2605,7 +2605,7 @@ pub fn statesnumwithDummy(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List
 pub fn xsdateTime(mut in_txt: Tpl::Text, mut in_a_dt: Util::DateTime) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_dt.clone()) {
-        (mut txt, Util::DateTime { sec: mut i_sec, min: mut i_min, hour: mut i_hour, mday: mut i_mday, mon: mut i_mon, year: mut i_year }) => {
+        (mut txt, Util::DateTime { year: mut i_year, mon: mut i_mon, mday: mut i_mday, hour: mut i_hour, min: mut i_min, sec: mut i_sec }) => {
             let mut ret_4: ArcStr = arcstr::literal!("");
             let mut ret_3: ArcStr = arcstr::literal!("");
             let mut ret_2: ArcStr = arcstr::literal!("");
@@ -2711,7 +2711,7 @@ pub fn UnitDefinitionsHelper(mut in_txt: Tpl::Text, mut in_a_unitDefinitions: Ar
 pub fn UnitDefinitionsHelper1(mut in_txt: Tpl::Text, mut in_a_unitDefinition: SimCode::UnitDefinition) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_unitDefinition.clone()) {
-        (mut txt, SimCode::UnitDefinition { baseUnit: mut i_baseUnit, name: mut i_name }) => {
+        (mut txt, SimCode::UnitDefinition { name: mut i_name, baseUnit: mut i_baseUnit }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Unit ")).clone() }))?;
             txt = unitDefinitionAttribute(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
@@ -2902,7 +2902,7 @@ fn fun_177(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_offset: metamodeli
 pub fn baseUnitAttributes(mut in_txt: Tpl::Text, mut in_a_baseUnit: SimCode::BaseUnit) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_baseUnit.clone()) {
-        (mut txt, SimCode::BaseUnit::BASEUNIT { offset: mut i_offset, factor: mut i_factor, cd: mut i_cd, mol: mut i_mol, K: mut i_K, A: mut i_A, kg: mut i_kg, m: mut i_m, s: mut i_s }) => {
+        (mut txt, SimCode::BaseUnit::BASEUNIT { s: mut i_s, m: mut i_m, kg: mut i_kg, A: mut i_A, K: mut i_K, mol: mut i_mol, cd: mut i_cd, factor: mut i_factor, offset: mut i_offset }) => {
             let mut ret_17: bool = false;
             let mut l_offset__Value: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_15: bool = false;
@@ -3192,7 +3192,7 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_names: Arc<metamod
 pub fn TypeDefinitionType(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type__.clone(), in_a_FMUVersion.clone())) {
-        (txt, Deref @ DAE::Type::T_ENUMERATION { names: i_names, path: i_path, .. }, a_FMUVersion) => {
+        (txt, Deref @ DAE::Type::T_ENUMERATION { path: i_path, names: i_names, .. }, a_FMUVersion) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
             ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
@@ -3255,7 +3255,7 @@ fn fun_192(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stepSize: metamode
 pub fn DefaultExperimentAttribute(mut in_txt: Tpl::Text, mut in_a_simulationSettings: SimCode::SimulationSettings, mut in_a_FMUVersion: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simulationSettings.clone(), in_a_FMUVersion.clone()) {
-        (mut txt, SimCode::SimulationSettings { stepSize: mut i_stepSize, tolerance: mut i_tolerance, stopTime: mut i_stopTime, startTime: mut i_startTime, .. }, mut a_FMUVersion) => {
+        (mut txt, SimCode::SimulationSettings { startTime: mut i_startTime, stopTime: mut i_stopTime, tolerance: mut i_tolerance, stepSize: mut i_stepSize, .. }, mut a_FMUVersion) => {
             let mut ret_0: bool = false;
             ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_192(txt.clone(), ret_0.clone(), i_stepSize.clone(), i_tolerance.clone(), i_stopTime.clone(), i_startTime.clone())?;

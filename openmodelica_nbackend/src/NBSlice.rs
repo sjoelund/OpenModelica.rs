@@ -1189,7 +1189,8 @@ fn resolveSkips(mut index: i32, mut ty: Arc<Type::NFType>, mut skips: Arc<metamo
             let mut field: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
             field = (match BVariable::getParent(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBSlice.mo"))?) {
-        Some(mut parent) => {
+        Some(mut __esc_parent) => {
+            parent = __esc_parent.clone();
             subs = ComponentRef::subscriptsAll(cref.clone());
             crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -1717,7 +1718,8 @@ pub fn getCrefInFrameIndicesLocal(mut subscripted_cref: Arc<ComponentRef::NFComp
     subs = ComponentRef::subscriptsToExpression(subscripted_cref.clone(), true)?;
     ty = Type::arrayElementType(ComponentRef::getComponentType(subscripted_cref.clone()));
     scal_lst = (match Type::complexSize(ty.clone(), false)? {
-        Some(mut complex_size) => {
+        Some(mut __esc_complex_size) => {
+            complex_size = __esc_complex_size.clone();
             scal_lst = metamodelica::nil();
             for mut i in ({let __s=complex_size.clone(); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 scal_lst = listAppend(combineFrames2Indices(var_start.clone(), metamodelica::cons(complex_size.clone(), sizes.clone()), metamodelica::cons(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() }), subs.clone()), frames.clone(), UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1), resize.clone(), metamodelica::nil())?.reverse(), scal_lst.clone());

@@ -141,7 +141,7 @@ pub static FUNCTION_VARIABLE_CONVERSION_SETTINGS: VariableConversionSettings = V
 fn convertVariables(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     let mut settings: VariableConversionSettings = <VariableConversionSettings as ::std::default::Default>::default();
-    settings = VariableConversionSettings { addTypeToSource: Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())?, isFunctionParameter: false };
+    settings = VariableConversionSettings { isFunctionParameter: false, addTypeToSource: Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())? };
     for mut var in &*variables.clone().reverse() {
         let mut var = var.clone();
         elements = metamodelica::cons(convertVariable(var.clone(), settings.clone())?, elements.clone());
@@ -470,7 +470,10 @@ fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> 
     name = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
         Deref @ Expression::CREF { .. } => InstNode::name(ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?,
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: e, .. } } => getStateSelectName(e.clone())?,
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: __esc_e, .. } } => {
+            e = (*__esc_e).clone();
+            getStateSelectName(e.clone())?
+        },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
@@ -504,7 +507,10 @@ fn convertUncertaintyAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<O
     let mut exp: Arc<Expression::NFExpression> = Expression::arrayFirstScalar(Binding::getTypedExp(binding.clone())?)?;
     name = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
-        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node, .. }, .. } => InstNode::name(node.clone())?,
+        Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: __esc_node, .. }, .. } => {
+            node = (*__esc_node).clone();
+            InstNode::name(node.clone())?
+        },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.convertUncertaintyAttribute")); __mm_s.push_str(&*literal!(" got invalid Uncertainty expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
             bail!("fail")
@@ -548,7 +554,7 @@ fn convertEquations(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquati
 fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     elements = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } if (Type::isScalarBuiltin(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())?) => {
+        Deref @ Equation::EQUALITY { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } if (Type::isScalarBuiltin(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())?) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut cr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr1 = ComponentRef::toDAE(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone())?;
@@ -618,13 +624,13 @@ fn convertForEquation(mut forEquation: Arc<Equation::NFEquation>, mut isInitial:
     let mut dbody: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(forEquation.clone()) {
-        Deref @ Equation::FOR { source: __pa0, body: __pa1, range: Some(__pa2), iterator: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ Equation::FOR { iterator: __pa0, range: Some(__pa1), body: __pa2, source: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    source = __pa0.clone();
-    body = __pa1.clone();
-    range = __pa2.clone();
-    iterator = __pa3.clone();
+    iterator = __pa0.clone();
+    range = __pa1.clone();
+    body = __pa2.clone();
+    source = __pa3.clone();
     if isInitial.clone() {
         dbody = convertInitialEquations(body.clone(), metamodelica::nil())?;
     } else {
@@ -892,7 +898,8 @@ fn convertAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<DAE::S
         expl = __pa4.clone();
         daeStmt = (::match_deref::match_deref! { match &(expl.clone()) {
         Deref @ metamodelica::List::Nil => Arc::new(DAE::Statement::STMT_NORETCALL { exp: Expression::toDAE(rhs.clone(), false)?, source: src.clone() }),
-        Deref @ metamodelica::List::Cons { head: lhs, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: __esc_lhs, tail: Deref @ metamodelica::List::Nil } => {
+            lhs = (*__esc_lhs).clone();
             dty = Type::toDAE(ty.clone(), true)?;
             dlhs = Expression::toDAE(lhs.clone(), false)?;
             drhs = Arc::new(DAE::Exp::TSUB { exp: Expression::toDAE(rhs.clone(), false)?, ix: 1, ty: dty.clone() });
@@ -941,14 +948,14 @@ fn convertForStatement(mut forStmt: Arc<Statement::NFStatement>) -> Result<Arc<D
     let mut for_type: Arc<Statement::ForType> = Arc::new(Statement::ForType::NORMAL);
     let mut loop_vars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(forStmt.clone()) {
-        Deref @ Statement::FOR { source: __pa0, forType: __pa1, body: __pa2, range: Some(__pa3), iterator: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ Statement::FOR { iterator: __pa0, range: Some(__pa1), body: __pa2, forType: __pa3, source: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    source = __pa0.clone();
-    for_type = __pa1.clone();
+    iterator = __pa0.clone();
+    range = __pa1.clone();
     body = __pa2.clone();
-    range = __pa3.clone();
-    iterator = __pa4.clone();
+    for_type = __pa3.clone();
+    source = __pa4.clone();
     dbody = convertStatements(body.clone())?;
     ty = InstNode::getType(iterator.clone())?;
     forDAE = (::match_deref::match_deref! { match &(for_type.clone()) {
@@ -1106,13 +1113,14 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
             def = DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: Function::getDerivedFunctionName(func.clone())?, derivedVars: Function::getDerivedInputNames(func.clone())? };
             Function::toDAE(func.clone(), def.clone())?
         },
-        Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::FUNCTION, sections, .. } => {
+        Deref @ Class::INSTANCED_CLASS { sections: __esc_sections, restriction: Deref @ Restriction::FUNCTION, .. } => {
+            sections = (*__esc_sections).clone();
             elems = convertFunctionParams(func.inputs.clone(), metamodelica::nil())?;
             elems = convertFunctionParams(func.outputs.clone(), elems.clone())?;
             elems = convertFunctionParams(func.locals.clone(), elems.clone())?;
             def = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
-            elems = convertAlgorithms(var_field!((**sections).algorithms, Sections::NFSections::SECTIONS).clone(), elems.clone())?;
+            elems = convertAlgorithms(var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone(), elems.clone())?;
             DAE::FunctionDefinition::FUNCTION_DEF { body: elems.clone().reverse() }
         },
         Deref @ Sections::EXTERNAL { .. } => convertExternalDecl(sections.clone(), elems.clone().reverse())?,
@@ -1153,7 +1161,10 @@ fn convertFunctionParam(mut node: Arc<InstNode::InstNode>) -> Result<Arc<DAE::El
     let mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
     comp = InstNode::component(node.clone())?;
     element = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ Component::COMPONENT { attributes: attr, info, ty, .. } => {
+        Deref @ Component::COMPONENT { ty: __esc_ty, info: __esc_info, attributes: __esc_attr, .. } => {
+            ty = (*__esc_ty).clone();
+            info = (*__esc_info).clone();
+            attr = (*__esc_attr).clone();
             cref = ComponentRef::fromNode(node.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone());
             binding = Binding::toDAEExp(var_field!((*comp).binding, Component::NFComponent::COMPONENT).clone())?;
             cls = InstNode::getClass(var_field!((*comp).classInst, Component::NFComponent::COMPONENT).clone())?;
@@ -1209,7 +1220,7 @@ fn convertExternalDeclArg(mut exp: Arc<Expression::NFExpression>) -> Result<DAE:
             dir = Prefixes::directionToAbsyn(Component::direction(InstNode::component(var_field!((**cref).node, ComponentRef::NFComponentRef::CREF).clone())?));
             DAE::ExtArg::EXTARG { componentRef: ComponentRef::toDAE(cref.clone())?, direction: dir.clone(), type_: Type::toDAE(var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), true)? }
         },
-        Deref @ Expression::SIZE { dimIndex: Some(e), exp: Deref @ Expression::CREF { cref: cref @ Deref @ ComponentRef::CREF { .. }, .. } } => {
+        Deref @ Expression::SIZE { exp: Deref @ Expression::CREF { cref: cref @ Deref @ ComponentRef::CREF { .. }, .. }, dimIndex: Some(e) } => {
             DAE::ExtArg::EXTARGSIZE { componentRef: ComponentRef::toDAE(cref.clone())?, type_: Type::toDAE(var_field!((**cref).ty, ComponentRef::NFComponentRef::CREF).clone(), true)?, exp: Expression::toDAE(e.clone(), false)? }
         },
         _ => {

@@ -186,10 +186,10 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
     let mut changed: bool = false;
     match '__try0: {
         (eqn, changed) = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, .. } => {
             (unwrap_break_err!(inlineArrayConstructor(eqn.clone(), var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((**call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0), true)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } => {
             (unwrap_break_err!(inlineArrayConstructor(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((**call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0), true)
         },
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -278,10 +278,10 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
     let mut eqn: Arc<Equation::Equation> = eqn;
     if '__try0: {
         eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ BEquation::Equation::RECORD_EQUATION { rhs: Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CREF { .. }, .. } if (!(inlineSimple.clone())) => {
+        Deref @ BEquation::Equation::RECORD_EQUATION { lhs: Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CREF { .. }, .. } if (!(inlineSimple.clone())) => {
             eqn.clone()
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CREF { .. }, .. } if (!(inlineSimple.clone())) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CREF { .. }, .. } if (!(inlineSimple.clone())) => {
             eqn.clone()
         },
         Deref @ BEquation::Equation::RECORD_EQUATION { ty: Deref @ Type::COMPLEX { .. }, .. } => {
@@ -293,10 +293,10 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
         Deref @ BEquation::Equation::RECORD_EQUATION { .. } => {
             unwrap_break_err!(inlineTupleEquation(eqn.clone(), var_field!((*eqn).lhs, Equation::Equation::RECORD_EQUATION).clone(), var_field!((*eqn).rhs, Equation::Equation::RECORD_EQUATION).clone(), var_field!((*eqn).attr, Equation::Equation::RECORD_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::ARRAY { .. }, lhs: lhs @ Deref @ Expression::ARRAY { .. }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::ARRAY { .. }, rhs: rhs @ Deref @ Expression::ARRAY { .. }, .. } => {
             unwrap_break_err!(inlineArrayEquation(eqn.clone(), var_field!((**lhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::ARRAY { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: rhs @ Deref @ Expression::ARRAY { .. }, .. } => {
             let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
             let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**lhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
@@ -310,7 +310,7 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
     });
             unwrap_break_err!(inlineArrayEquation(eqn.clone(), metamodelica::arrayFromVec(elements.clone().into_iter().cloned().collect()), var_field!((**rhs).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::ARRAY { .. }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::ARRAY { .. }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } => {
             let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
             let mut elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             dim = unwrap_break_err!(listHead(Type::arrayDims(var_field!((**rhs).ty, Expression::NFExpression::CREF).clone())), '__try0);
@@ -324,22 +324,22 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
     });
             unwrap_break_err!(inlineArrayEquation(eqn.clone(), var_field!((**lhs).elements, Expression::NFExpression::ARRAY).clone(), metamodelica::arrayFromVec(elements.clone().into_iter().cloned().collect()), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, .. } => {
             unwrap_break_err!(inlineArrayConstructor(eqn.clone(), var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((**call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, .. } => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } => {
             unwrap_break_err!(inlineArrayConstructor(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((**call).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: Deref @ Expression::CALL { call }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("cat")) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CALL { call }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("cat")) => {
             unwrap_break_err!(inlineCatCall(eqn.clone(), var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), unwrap_break_err!(Call::arguments(call.clone()), '__try0), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CALL { call }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("cat")) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CALL { call }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("cat")) => {
             unwrap_break_err!(inlineCatCall(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), unwrap_break_err!(Call::arguments(call.clone()), '__try0), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: Deref @ Expression::CALL { call }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("promote")) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs: Deref @ Expression::CALL { call }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("promote")) => {
             unwrap_break_err!(inlinePromoteCall(eqn.clone(), var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), unwrap_break_err!(Call::arguments(call.clone()), '__try0), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: Deref @ Expression::CALL { call }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("promote")) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: Deref @ Expression::CALL { call }, rhs: rhs @ Deref @ Expression::CREF { .. }, .. } if (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(Function::nameConsiderBuiltin(unwrap_break_err!(Call::typedFunction(call.clone()), '__try0)), '__try0), (literal!(".")).clone(), true, false), '__try0) == literal!("promote")) => {
             unwrap_break_err!(inlinePromoteCall(eqn.clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), unwrap_break_err!(Call::arguments(call.clone()), '__try0), var_field!((*eqn).attr, Equation::Equation::ARRAY_EQUATION).clone(), iter.clone(), variables.clone(), new_eqns.clone(), set.clone(), index.clone()), '__try0)
         },
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
@@ -605,8 +605,8 @@ fn inlineCatCall(mut eqn: Arc<Equation::Equation>, mut cref: Arc<ComponentRef::N
     for mut arg in &*rest.clone() {
         let mut arg = arg.clone();
         failed = (::match_deref::match_deref! { match &(arg.clone()) {
-        Deref @ Expression::CREF { cref: rhs, .. } if (!(failed.clone())) => {
-            let mut rhs = (*rhs).clone();
+        Deref @ Expression::CREF { cref: __esc_rhs, .. } if (!(failed.clone())) => {
+            rhs = (*__esc_rhs).clone();
             ty = Expression::typeOf(arg.clone());
             if Type::isArray(ty.clone()) {
                 dim = Type::nthDimension(ty.clone(), n.clone())?;
@@ -993,7 +993,8 @@ pub mod InlineRating {
         Deref @ Expression::CREF { .. } => {
             let mut lir: Option<Arc<InlineRating>> = None;
             (::match_deref::match_deref! { match &(UnorderedMap::get(ComponentRef::stripSubscriptsAll(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()), local_map.clone())?) {
-        lir @ Some(_) => {
+        __esc_lir @ Some(_) => {
+            lir = (*__esc_lir).clone();
             Pointer::update(irp.clone(), add(Pointer::access(irp.clone()), Util::getOption(lir.clone())?)?);
             false
         },

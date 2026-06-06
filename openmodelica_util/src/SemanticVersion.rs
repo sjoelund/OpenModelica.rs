@@ -269,7 +269,13 @@ fn compareIdentifierList(mut w1: Arc<metamodelica::List<ArcStr>>, mut w2: Arc<me
         (c, l1, l2) = (::match_deref::match_deref! { match &((l1.clone(), l2.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => (-1, l1.clone(), l2.clone()),
         (Deref @ metamodelica::List::Cons { head: _, tail: _ }, Deref @ metamodelica::List::Nil) => (1, l1.clone(), l2.clone()),
-        (Deref @ metamodelica::List::Cons { head: s1, tail: l1 }, Deref @ metamodelica::List::Cons { head: s2, tail: l2 }) => (compareIdentifier((s1.clone()).clone(), (s2.clone()).clone())?, l1.clone(), l2.clone()),
+        (Deref @ metamodelica::List::Cons { head: __esc_s1, tail: __esc_l1 }, Deref @ metamodelica::List::Cons { head: __esc_s2, tail: __esc_l2 }) => {
+            s1 = (*__esc_s1).clone();
+            l1 = (*__esc_l1).clone();
+            s2 = (*__esc_s2).clone();
+            l2 = (*__esc_l2).clone();
+            (compareIdentifier((s1.clone()).clone(), (s2.clone()).clone())?, l1.clone(), l2.clone())
+        },
         _ => bail!("match: no arm matched"),
     } });
         if c.clone() != 0 {

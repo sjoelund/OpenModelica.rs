@@ -115,15 +115,15 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
         let mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ BEquation::EqData::EQ_DATA_SIM { initials: initialEqs, equations, .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { initials: initialVars, variables, .. }, .. } => {
+        Deref @ BackendDAE::MAIN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { variables: __esc_variables, initials: __esc_initialVars, .. }, eqData: eqData @ Deref @ BEquation::EqData::EQ_DATA_SIM { equations: __esc_equations, initials: __esc_initialEqs, .. }, .. } => {
+            variables = (*__esc_variables).clone();
+            initialVars = (*__esc_initialVars).clone();
+            equations = (*__esc_equations).clone();
+            initialEqs = (*__esc_initialEqs).clone();
             let mut clonedEqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
             let mut clonedVars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
-            let mut eqData = (*eqData).clone();
-            let mut initialEqs = (*initialEqs).clone();
-            let mut equations = (*equations).clone();
             let mut varData = (*varData).clone();
-            let mut initialVars = (*initialVars).clone();
-            let mut variables = (*variables).clone();
+            let mut eqData = (*eqData).clone();
             clonedEqns = unwrap_break_err!(BEquation::EquationPointers::clone(equations.clone(), false), '__try0);
             initialEqs = unwrap_break_err!(BEquation::EquationPointers::addList(unwrap_break_err!(BEquation::EquationPointers::toList(initialEqs.clone()), '__try0), clonedEqns.clone()), '__try0);
             unwrap_break_err!(BEquation::EquationPointers::mapRemovePtr(initialEqs.clone(), (std::sync::Arc::new(fnptr!(BEquation::Equation::isClocked, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>)), '__try0);
@@ -347,7 +347,10 @@ pub fn createStartVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, 
         Some(mut parent) => {
             let mut start_parent: Pointer::Pointer<Arc<Variable::NFVariable>>;
             start_parent = (match (BVariable::getVarStart(parent.clone())).0 {
-        Some(mut start_parent) => start_parent.clone(),
+        Some(mut __esc_start_parent) => {
+            start_parent = __esc_start_parent.clone();
+            start_parent.clone()
+        },
         _ => {
             (_, _, start_parent, _) = createStartVar(parent.clone(), BVariable::getVarName(parent.clone()), metamodelica::nil())?;
             start_parent.clone()
@@ -392,7 +395,10 @@ pub fn createParameterEquation(mut var: Pointer::Pointer<Arc<Variable::NFVariabl
         skip = true;
     } else {
         skip = (match BVariable::getParent(var.clone()) {
-        Some(mut parent) => BVariable::isBound(parent.clone()) && BVariable::isKnownRecord(parent.clone()),
+        Some(mut __esc_parent) => {
+            parent = __esc_parent.clone();
+            BVariable::isBound(parent.clone()) && BVariable::isKnownRecord(parent.clone())
+        },
         _ => BVariable::isRecord(var.clone()) && !(BVariable::isBound(var.clone())),
     });
     }

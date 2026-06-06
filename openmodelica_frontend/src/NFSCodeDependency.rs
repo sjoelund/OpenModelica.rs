@@ -149,13 +149,13 @@ fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossi
             (item, _, env) = NFSCodeLookup::lookupNameSilentNoBuiltin(inPath.clone(), inEnv.clone(), inInfo.clone())?;
             (item.clone(), env.clone())
         },
-        (Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: id }, name: Deref @ "$ce" }, Deref @ metamodelica::List::Cons { head: _, tail: env }, _) => {
+        (Deref @ Absyn::Path::QUALIFIED { name: Deref @ "$ce", path: Deref @ Absyn::Path::IDENT { name: id } }, Deref @ metamodelica::List::Cons { head: _, tail: env }, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env = (*env).clone();
             (item, env) = NFSCodeLookup::lookupInheritedName((id.clone()).clone(), env.clone())?;
             (item.clone(), env.clone())
         },
-        (Deref @ Absyn::Path::QUALIFIED { path: rest_path, name: id }, _, _) => {
+        (Deref @ Absyn::Path::QUALIFIED { name: id, path: rest_path }, _, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilent(Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), inEnv.clone(), inInfo.clone())?;
@@ -183,7 +183,7 @@ fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: E
         (_, Deref @ metamodelica::List::Nil) => {
             (inItem.clone(), inEnv.clone())
         },
-        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, modifications: mods, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: type_path, .. }, .. }, .. }, _) => {
+        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: type_path, .. }, modifications: mods, info, .. }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
             let mut type_env: Env = metamodelica::nil();
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
@@ -195,7 +195,7 @@ fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: E
             (item, env) = lookupNameInItem(inName.clone(), item.clone(), type_env.clone(), inErrorType.clone())?;
             (item.clone(), env.clone())
         },
-        (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, cls: Deref @ SCode::Element::CLASS { info, .. }, .. }, _) => {
+        (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, .. }, env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
@@ -212,7 +212,7 @@ fn checkItemIsClass(mut inItem: Item) -> Result<()> {
         Deref @ NFSCodeEnv::Item::CLASS { .. } => {
             ()
         },
-        Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, name, .. }, .. } => {
+        Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, info, .. }, .. } => {
             Error::addSourceMessage(Error::LOOKUP_TYPE_FOUND_COMP.clone(), list![(name.clone()).clone()], info.clone())?;
             bail!("fail")
         },
@@ -233,7 +233,7 @@ fn analyseItem(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         (Deref @ NFSCodeEnv::Item::CLASS { classType: NFSCodeEnv::ClassType::BASIC_TYPE { .. }, .. }, _) => {
             ()
         },
-        (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, cls: cls @ Deref @ SCode::Element::CLASS { cmt, info, restriction: res, classDef: cdef, .. }, .. }, env) => {
+        (Deref @ NFSCodeEnv::Item::CLASS { cls: cls @ Deref @ SCode::Element::CLASS { classDef: cdef, restriction: res, info, cmt, .. }, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, .. }, env) => {
             let mut env = (*env).clone();
             markItemAsUsed(inItem.clone(), env.clone())?;
             env = NFSCodeEnv::enterFrame(cls_env.clone(), env.clone());
@@ -318,7 +318,7 @@ fn analyseItemNoStopOnUsed(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, cls: cls @ Deref @ SCode::Element::CLASS { cmt, info, restriction: res, classDef: cdef, .. }, .. }, env) => {
+                (Deref @ NFSCodeEnv::Item::CLASS { cls: cls @ Deref @ SCode::Element::CLASS { classDef: cdef, restriction: res, info, cmt, .. }, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, .. }, env) => {
                     let mut env = (*env).clone();
                     markItemAsUsed(inItem.clone(), env.clone())?;
                     env = NFSCodeEnv::enterFrame(cls_env.clone(), env.clone());
@@ -361,7 +361,7 @@ fn markItemAsUsed(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         Deref @ NFSCodeEnv::Item::VAR { isUsed: None, .. } => {
             ()
         },
-        Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { .. }, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, .. } => {
+        Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, cls: Deref @ SCode::Element::CLASS { .. }, .. } => {
             markFrameAsUsed(cls_env.clone());
             markEnvAsUsed(inEnv.clone())?;
             ()
@@ -432,7 +432,7 @@ fn analyseClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inRestriction: SCod
         let __mc_input = (inClassDef.clone(), inEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::ClassDef::PARTS { externalDecl: ext_decl, initialAlgorithmLst: ial, normalAlgorithmLst: nal, initialEquationLst: iel, normalEquationLst: nel, elementLst: el, .. }, _) => {
+                (Deref @ SCode::ClassDef::PARTS { elementLst: el, normalEquationLst: nel, initialEquationLst: iel, normalAlgorithmLst: nal, initialAlgorithmLst: ial, externalDecl: ext_decl, .. }, _) => {
                     analyseElements(el.clone(), inEnv.clone(), inRestriction.clone())?;
                     List::map1_0(nel.clone(), (std::sync::Arc::new(analyseEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> + 'static>), inEnv.clone())?;
                     List::map1_0(iel.clone(), (std::sync::Arc::new(analyseEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> + 'static>), inEnv.clone())?;
@@ -466,7 +466,7 @@ fn analyseClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inRestriction: SCod
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::ClassDef::DERIVED { modifications: mods, typeSpec: ty, .. }, Deref @ metamodelica::List::Cons { head: _, tail: env }) => {
+                (Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, modifications: mods, .. }, Deref @ metamodelica::List::Cons { head: _, tail: env }) => {
                     let mut ty_env: Env = metamodelica::nil();
                     let mut nore_env: Env = metamodelica::nil();
                     let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -717,7 +717,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
         (Deref @ SCode::Element::EXTENDS { baseClassPath: Deref @ Absyn::Path::IDENT { name: Deref @ "ExternalObject" }, .. }, _, _) => {
             bail!("fail")
         },
-        (Deref @ SCode::Element::EXTENDS { info, modifications: mods, .. }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Extends { baseClass: bc, .. }, tail: exts }, _) => {
+        (Deref @ SCode::Element::EXTENDS { modifications: mods, info, .. }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Extends { baseClass: bc, .. }, tail: exts }, _) => {
             let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut ty_env: Env = metamodelica::nil();
             (ty_item, _, ty_env) = NFSCodeLookup::lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
@@ -726,7 +726,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
             analyseModifier(mods.clone(), inEnv.clone(), ty_env.clone(), info.clone())?;
             exts.clone()
         },
-        (Deref @ SCode::Element::COMPONENT { info, prefixes, condition: cond_exp, modifications: mods, typeSpec: ty, attributes: attr, name, .. }, _, _) => {
+        (Deref @ SCode::Element::COMPONENT { name, attributes: attr, typeSpec: ty, modifications: mods, condition: cond_exp, prefixes, info, .. }, _, _) => {
             let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut ty_env: Env = metamodelica::nil();
             let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
@@ -744,51 +744,51 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
             analyseConstrainClass(SCodeUtil::replaceableOptConstraint(SCodeUtil::prefixesReplaceable(prefixes.clone())?)?, inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_OPERATOR { .. }, name, .. }, _, SCode::Restriction::R_RECORD { isOperator: true }) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: SCode::Restriction::R_OPERATOR { .. }, info, .. }, _, SCode::Restriction::R_RECORD { isOperator: true }) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_OPERATOR { .. }, name, .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: SCode::Restriction::R_OPERATOR { .. }, info, .. }, _, _) => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (SCodeDump::restrString(inClassRestriction.clone())?).clone();
             Error::addSourceMessage(Error::OPERATOR_FUNCTION_NOT_EXPECTED.clone(), list![(name.clone()).clone(), (r#str.clone()).clone()], info.clone())?;
             bail!("fail")
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, name, .. }, _, SCode::Restriction::R_RECORD { isOperator: true }) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, info, .. }, _, SCode::Restriction::R_RECORD { isOperator: true }) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, name, .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, info, .. }, _, _) => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = (SCodeDump::restrString(inClassRestriction.clone())?).clone();
             Error::addSourceMessage(Error::OPERATOR_FUNCTION_NOT_EXPECTED.clone(), list![(name.clone()).clone(), (r#str.clone()).clone()], info.clone())?;
             bail!("fail")
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: res, name, .. }, _, SCode::Restriction::R_OPERATOR { .. }) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: res, info, .. }, _, SCode::Restriction::R_OPERATOR { .. }) => {
             let true = (SCodeUtil::isFunctionOrExtFunctionRestriction(res.clone())) else { bail!("pattern mismatch") };
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, restriction: res, name, .. }, _, SCode::Restriction::R_OPERATOR { .. }) => {
+        (Deref @ SCode::Element::CLASS { name, restriction: res, info, .. }, _, SCode::Restriction::R_OPERATOR { .. }) => {
             let mut r#str: ArcStr = arcstr::literal!("");
             let false = (SCodeUtil::isFunctionOrExtFunctionRestriction(res.clone())) else { bail!("pattern mismatch") };
             r#str = (SCodeDump::restrString(res.clone())?).clone();
             Error::addSourceMessage(Error::OPERATOR_FUNCTION_EXPECTED.clone(), list![(name.clone()).clone(), (r#str.clone()).clone()], info.clone())?;
             bail!("fail")
         },
-        (Deref @ SCode::Element::CLASS { info, name: name @ Deref @ "equalityConstraint", .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name: name @ Deref @ "equalityConstraint", info, .. }, _, _) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, info, name, .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name, info, classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. }, _, _) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, prefixes: Deref @ SCode::Prefixes { innerOuter: Absyn::InnerOuter::INNER { .. }, .. }, name, .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { innerOuter: Absyn::InnerOuter::INNER { .. }, .. }, info, .. }, _, _) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
-        (Deref @ SCode::Element::CLASS { info, prefixes: Deref @ SCode::Prefixes { innerOuter: Absyn::InnerOuter::INNER_OUTER { .. }, .. }, name, .. }, _, _) => {
+        (Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { innerOuter: Absyn::InnerOuter::INNER_OUTER { .. }, .. }, info, .. }, _, _) => {
             analyseClass(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), inEnv.clone(), info.clone())?;
             inExtends.clone()
         },
@@ -895,7 +895,7 @@ fn analyseModifier(mut inModifier: Arc<SCode::Mod>, mut inEnv: Env, mut inTypeEn
         Deref @ SCode::Mod::NOMOD { .. } => {
             ()
         },
-        Deref @ SCode::Mod::MOD { binding: bind_exp, subModLst: sub_mods, .. } => {
+        Deref @ SCode::Mod::MOD { subModLst: sub_mods, binding: bind_exp, .. } => {
             List::map2_0(sub_mods.clone(), (std::sync::Arc::new(analyseSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>), SourceInfo) -> Result<()> + 'static>), (inEnv.clone(), inTypeEnv.clone()), inInfo.clone())?;
             analyseModBinding(bind_exp.clone(), inEnv.clone(), inInfo.clone())?;
             ()
@@ -914,7 +914,7 @@ fn analyseRedeclareModifier(mut inElement: Arc<SCode::Element>, mut inEnv: Env, 
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { info, restriction: restr, classDef: cdef, prefixes, .. } => {
+                Deref @ SCode::Element::CLASS { prefixes, classDef: cdef, restriction: restr, info, .. } => {
                     analyseClassDef(cdef.clone(), restr.clone(), inEnv.clone(), true, info.clone())?;
                     analyseConstrainClass(SCodeUtil::replaceableOptConstraint(SCodeUtil::prefixesReplaceable(prefixes.clone())?)?, inEnv.clone(), info.clone())?;
                     Ok(())
@@ -938,7 +938,7 @@ fn analyseRedeclareModifier(mut inElement: Arc<SCode::Element>, mut inEnv: Env, 
 
 fn analyseConstrainClass(mut inCC: Option<Arc<SCode::ConstrainClass>>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inCC.clone()) {
-        Some(Deref @ SCode::ConstrainClass { modifier: r#mod, constrainingClass: path, .. }) => {
+        Some(Deref @ SCode::ConstrainClass { constrainingClass: path, modifier: r#mod, .. }) => {
             let mut env: Env = metamodelica::nil();
             analyseClass(path.clone(), inEnv.clone(), inInfo.clone())?;
             (_, env) = lookupClass(path.clone(), inEnv.clone(), true, inInfo.clone(), Some(Error::LOOKUP_ERROR.clone()))?;
@@ -955,7 +955,7 @@ fn analyseConstrainClass(mut inCC: Option<Arc<SCode::ConstrainClass>>, mut inEnv
 
 fn analyseSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>), mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inSubMod.clone(), inEnv.clone())) {
-        (Deref @ SCode::SubMod { r#mod: m, ident }, (env, ty_env)) => {
+        (Deref @ SCode::SubMod { ident, r#mod: m }, (env, ty_env)) => {
             analyseNameMod((ident.clone()).clone(), env.clone(), ty_env.clone(), m.clone(), inInfo.clone())?;
             ()
         },
@@ -1043,7 +1043,7 @@ fn analyseModBinding(mut inBinding: Option<Arc<Absyn::Exp>>, mut inEnv: Env, mut
 
 fn analyseTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inTypeSpec.clone()) {
-        Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path: type_path } => {
+        Deref @ Absyn::TypeSpec::TPATH { path: type_path, arrayDim: ad } => {
             analyseClass(type_path.clone(), inEnv.clone(), inInfo.clone())?;
             analyseTypeSpecDims(ad.clone(), inEnv.clone(), inInfo.clone())?;
             ()
@@ -1090,11 +1090,11 @@ fn analyseTypeSpecDim(mut inDim: Arc<Absyn::Subscript>, mut inEnv: Env, mut inIn
 
 fn analyseExternalDecl(mut inExtDecl: Option<Arc<SCode::ExternalDecl>>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inExtDecl.clone()) {
-        Some(Deref @ SCode::ExternalDecl { annotation_: None, args, .. }) => {
+        Some(Deref @ SCode::ExternalDecl { args, annotation_: None, .. }) => {
             List::map2_0(args.clone(), (std::sync::Arc::new(analyseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<()> + 'static>), inEnv.clone(), inInfo.clone())?;
             ()
         },
-        Some(Deref @ SCode::ExternalDecl { annotation_: Some(ann), args, .. }) => {
+        Some(Deref @ SCode::ExternalDecl { args, annotation_: Some(ann), .. }) => {
             List::map2_0(args.clone(), (std::sync::Arc::new(analyseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<()> + 'static>), inEnv.clone(), inInfo.clone())?;
             analyseAnnotation(ann.clone(), inEnv.clone(), inInfo.clone())?;
             ()
@@ -1137,7 +1137,7 @@ fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInf
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::SubMod { r#mod: mods, ident: Deref @ "derivative" } => {
+                Deref @ SCode::SubMod { ident: Deref @ "derivative", r#mod: mods } => {
                     analyseModifier(mods.clone(), inEnv.clone(), NFSCodeEnv::emptyEnv.clone(), inInfo.clone())?;
                     Ok(())
                 }
@@ -1146,7 +1146,7 @@ fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInf
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::SubMod { r#mod: mods, ident: Deref @ "inverse" } => {
+                Deref @ SCode::SubMod { ident: Deref @ "inverse", r#mod: mods } => {
                     analyseModifier(mods.clone(), inEnv.clone(), NFSCodeEnv::emptyEnv.clone(), inInfo.clone())?;
                     Ok(())
                 }
@@ -1155,7 +1155,7 @@ fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInf
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::SubMod { r#mod: mods, ident: id } => {
+                Deref @ SCode::SubMod { ident: id, r#mod: mods } => {
                     analyseAnnotationName((id.clone()).clone(), inEnv.clone(), inInfo.clone())?;
                     analyseModifier(mods.clone(), inEnv.clone(), NFSCodeEnv::emptyEnv.clone(), inInfo.clone())?;
                     Ok(())
@@ -1223,7 +1223,7 @@ fn analyseExp2(mut inExp: Arc<Absyn::Exp>, mut inEnv: Env, mut inInfo: SourceInf
             analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
             inEnv.clone()
         },
-        Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { iterators: iters, .. }, function_: cref, .. } => {
+        Deref @ Absyn::Exp::CALL { function_: cref, functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { iterators: iters, .. }, .. } => {
             let mut env: Env = metamodelica::nil();
             analyseCref(cref.clone(), inEnv.clone(), inInfo.clone())?;
             env = NFSCodeEnv::extendEnvWithIterators(iters.clone(), System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), inEnv.clone())?;
@@ -1315,12 +1315,12 @@ fn analyseEquationTraverser(mut eq: Arc<SCode::Equation>, mut env: Env) -> Resul
     let mut eq: Arc<SCode::Equation> = eq;
     let mut env: Env = env;
     (eq, env) = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SCode::Equation::EQ_FOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Equation::EQ_FOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             (eq, _) = SCodeUtil::mapFoldEquationExps(eq.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (eq.clone(), env.clone())
         },
-        Deref @ SCode::Equation::EQ_REINIT { info, cref: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, .. } => {
+        Deref @ SCode::Equation::EQ_REINIT { cref: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, info, .. } => {
             analyseCref(cref1.clone(), env.clone(), info.clone())?;
             (eq, _) = SCodeUtil::mapFoldEquationExps(eq.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (eq.clone(), env.clone())
@@ -1363,12 +1363,12 @@ fn analyseStatementTraverser(mut stmt: Arc<SCode::Statement>, mut env: Env) -> R
     let mut stmt: Arc<SCode::Statement> = stmt;
     let mut env: Env = env;
     (stmt, env) = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ SCode::Statement::ALG_FOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Statement::ALG_FOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (stmt.clone(), env.clone())
         },
-        Deref @ SCode::Statement::ALG_PARFOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Statement::ALG_PARFOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (stmt.clone(), env.clone())
@@ -1402,7 +1402,7 @@ fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> Result<(En
         let __mc_input = (value.clone(), env.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { isUsed: Some(is_used), name: Some(_), .. }, tail: _ }) => {
+                (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(_), isUsed: Some(is_used), .. }, tail: _ }) => {
                     let false = (Mutable::access(is_used.clone())) else { bail!("pattern mismatch") };
                     Ok(false)
                 }
@@ -1411,7 +1411,7 @@ fn analyseAvlValue(mut key: ArcStr, mut value: Item, mut env: Env) -> Result<(En
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ NFSCodeEnv::Item::CLASS { classType: cls_ty, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, cls }, _) => {
+                (Deref @ NFSCodeEnv::Item::CLASS { cls, env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, classType: cls_ty }, _) => {
                     let mut env2: Env = metamodelica::nil();
                     env2 = NFSCodeEnv::enterFrame(cls_env.clone(), env.clone());
                     analyseClassExtendsDef(cls.clone(), cls_ty.clone(), env2.clone())?;
@@ -1439,7 +1439,7 @@ fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFS
         let __mc_input = (inClass.clone(), inClassType.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: bc, .. }, tail: _ }, .. }, name: cls_name, .. }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
+                (Deref @ SCode::Element::CLASS { name: cls_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: bc, .. }, tail: _ }, .. }, info, .. }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
                     let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, _, env) = NFSCodeLookup::lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
@@ -1457,7 +1457,7 @@ fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFS
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Element::CLASS { info, name: cls_name, .. }, NFSCodeEnv::ClassType::USERDEFINED { .. }) => {
+                (Deref @ SCode::Element::CLASS { name: cls_name, info, .. }, NFSCodeEnv::ClassType::USERDEFINED { .. }) => {
                     let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let true = (SCodeUtil::isElementRedeclare(inClass.clone())?) else { bail!("pattern mismatch") };
@@ -1697,7 +1697,7 @@ fn collectUsedElement(mut inElement: Arc<SCode::Element>, mut inEnclosingEnv: En
             (cls, env) = collectUsedClass(inElement.clone(), inEnclosingEnv.clone(), inClsAndVars.clone(), inClassName.clone(), env.clone(), cls_path.clone())?;
             (cls.clone(), env.clone())
         },
-        (Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { variability: SCode::Variability::CONST { .. }, .. }, name, .. }, _) => {
+        (Deref @ SCode::Element::COMPONENT { name, attributes: SCode::Attributes { variability: SCode::Variability::CONST { .. }, .. }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             item = NFSCodeEnv::EnvTree::get(inClsAndVars.clone(), (name.clone()).clone())?;

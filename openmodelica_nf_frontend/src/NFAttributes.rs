@@ -119,7 +119,7 @@ pub fn fromSCode(mut compAttr: SCode::Attributes, mut compPrefs: Arc<SCode::Pref
     let mut redecl: bool = false;
     let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
     attributes = (::match_deref::match_deref! { match &((compAttr.clone(), compPrefs.clone())) {
-        (SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, parallelism: SCode::Parallelism::NON_PARALLEL { .. }, connectorType: SCode::ConnectorType::POTENTIAL { .. }, .. }, Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, redeclarePrefix: SCode::Redeclare::NOT_REDECLARE { .. }, .. }) => DEFAULT_ATTR().clone(),
+        (SCode::Attributes { connectorType: SCode::ConnectorType::POTENTIAL { .. }, parallelism: SCode::Parallelism::NON_PARALLEL { .. }, variability: SCode::Variability::VAR { .. }, direction: Absyn::Direction::BIDIR { .. }, .. }, Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::NOT_REDECLARE { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, .. }) => DEFAULT_ATTR().clone(),
         _ => {
             cty = Prefixes::ConnectorType::fromSCode(compAttr.connectorType.clone())?;
             par = Prefixes::parallelismFromSCode(compAttr.parallelism.clone())?;
@@ -142,7 +142,7 @@ pub fn fromDerivedSCode(mut scodeAttr: SCode::Attributes) -> Result<Arc<NFAttrib
     let mut var: Prefixes::Variability = Prefixes::Variability::CONSTANT;
     let mut dir: Prefixes::Direction = Prefixes::Direction::NONE;
     attributes = (match scodeAttr.clone() {
-        SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, connectorType: SCode::ConnectorType::POTENTIAL { .. }, .. } => DEFAULT_ATTR().clone(),
+        SCode::Attributes { connectorType: SCode::ConnectorType::POTENTIAL { .. }, variability: SCode::Variability::VAR { .. }, direction: Absyn::Direction::BIDIR { .. }, .. } => DEFAULT_ATTR().clone(),
         _ => {
             cty = Prefixes::ConnectorType::fromSCode(scodeAttr.connectorType.clone())?;
             var = Prefixes::variabilityFromSCode(scodeAttr.variability.clone())?;

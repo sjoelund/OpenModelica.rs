@@ -267,13 +267,13 @@ pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::st
 
     let mut outResult: FT = inStartValue.clone();
     outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
@@ -425,8 +425,14 @@ pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     key_comp = keyCompare(inKey.clone(), key.clone())?;
     comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
         (0, _) => true,
-        (1, Deref @ Tree::NODE { right: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
-        ((-1), Deref @ Tree::NODE { left: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
+        (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
+        ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -536,7 +542,7 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Co
 
     let mut outTree: Arc<Tree> = inTree.clone();
     outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = 0;
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -548,7 +554,7 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Co
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = 0;
             new_value = inFunc(key.clone(), value.clone())?;
             if !(((value.clone()) == (new_value.clone()))) {
@@ -570,7 +576,7 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
     let mut outTree: Arc<Tree> = inTree.clone();
     let mut outResult: FT = inStartValue.clone();
     outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = 0;
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -582,7 +588,7 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = 0;
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(((value.clone()) == (new_value.clone()))) {
@@ -620,7 +626,11 @@ pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
-        Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
+            left = (*__esc_left).clone();
+            right = (*__esc_right).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
@@ -719,13 +729,13 @@ pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
 pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>) -> Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>> {
     let mut lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {

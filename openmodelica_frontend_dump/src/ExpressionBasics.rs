@@ -511,11 +511,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::ARRAY { array: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::ARRAY { ty: __pa0, array: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            expl = __pa0.clone();
-            ty = __pa1.clone();
+            ty = __pa0.clone();
+            expl = __pa1.clone();
             comp = valueCompare(var_field!((*inExp1).ty, DAE::Exp::ARRAY).clone(), ty.clone());
             if (0 == comp.clone()) {compareList(var_field!((*inExp1).array, DAE::Exp::ARRAY).clone(), expl.clone())?} else {comp.clone()}
         },
@@ -523,11 +523,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut mexpl: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::MATRIX { matrix: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::MATRIX { ty: __pa0, matrix: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            mexpl = __pa0.clone();
-            ty = __pa1.clone();
+            ty = __pa0.clone();
+            mexpl = __pa1.clone();
             comp = valueCompare(var_field!((*inExp1).ty, DAE::Exp::MATRIX).clone(), ty.clone());
             if (0 == comp.clone()) {compareListList(var_field!((*inExp1).matrix, DAE::Exp::MATRIX).clone(), mexpl.clone())?} else {comp.clone()}
         },
@@ -536,12 +536,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
+            e1 = __pa0.clone();
             op = __pa1.clone();
-            e1 = __pa2.clone();
+            e2 = __pa2.clone();
             comp = operatorCompare(var_field!((*inExp1).operator, DAE::Exp::BINARY).clone(), op.clone())?;
             comp = if (0 == comp.clone()) {compare(var_field!((*inExp1).exp1, DAE::Exp::BINARY).clone(), e1.clone())?} else {comp.clone()};
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp2, DAE::Exp::BINARY).clone(), e2.clone())?} else {comp.clone()}
@@ -551,12 +551,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::LBINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::LBINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
+            e1 = __pa0.clone();
             op = __pa1.clone();
-            e1 = __pa2.clone();
+            e2 = __pa2.clone();
             comp = operatorCompare(var_field!((*inExp1).operator, DAE::Exp::LBINARY).clone(), op.clone())?;
             comp = if (0 == comp.clone()) {compare(var_field!((*inExp1).exp1, DAE::Exp::LBINARY).clone(), e1.clone())?} else {comp.clone()};
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp2, DAE::Exp::LBINARY).clone(), e2.clone())?} else {comp.clone()}
@@ -565,11 +565,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::UNARY { operator: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::UNARY { exp: __pa0, operator: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            op = __pa0.clone();
-            e = __pa1.clone();
+            e = __pa0.clone();
+            op = __pa1.clone();
             comp = operatorCompare(var_field!((*inExp1).operator, DAE::Exp::UNARY).clone(), op.clone())?;
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp, DAE::Exp::UNARY).clone(), e.clone())?} else {comp.clone()}
         },
@@ -577,11 +577,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::LUNARY { operator: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::LUNARY { exp: __pa0, operator: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            op = __pa0.clone();
-            e = __pa1.clone();
+            e = __pa0.clone();
+            op = __pa1.clone();
             comp = operatorCompare(var_field!((*inExp1).operator, DAE::Exp::LUNARY).clone(), op.clone())?;
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp, DAE::Exp::LUNARY).clone(), e.clone())?} else {comp.clone()}
         },
@@ -590,12 +590,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::RELATION { exp2: __pa0, operator: __pa1, exp1: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::RELATION { exp1: __pa0, operator: __pa1, exp2: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
+            e1 = __pa0.clone();
             op = __pa1.clone();
-            e1 = __pa2.clone();
+            e2 = __pa2.clone();
             comp = operatorCompare(var_field!((*inExp1).operator, DAE::Exp::RELATION).clone(), op.clone())?;
             comp = if (0 == comp.clone()) {compare(var_field!((*inExp1).exp1, DAE::Exp::RELATION).clone(), e1.clone())?} else {comp.clone()};
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp2, DAE::Exp::RELATION).clone(), e2.clone())?} else {comp.clone()}
@@ -605,12 +605,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::IFEXP { expElse: __pa0, expThen: __pa1, expCond: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::IFEXP { expCond: __pa0, expThen: __pa1, expElse: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
+            e = __pa0.clone();
             e1 = __pa1.clone();
-            e = __pa2.clone();
+            e2 = __pa2.clone();
             comp = compare(var_field!((*inExp1).expCond, DAE::Exp::IFEXP).clone(), e.clone())?;
             comp = if (0 == comp.clone()) {compare(var_field!((*inExp1).expThen, DAE::Exp::IFEXP).clone(), e1.clone())?} else {comp.clone()};
             if (0 == comp.clone()) {compare(var_field!((*inExp1).expElse, DAE::Exp::IFEXP).clone(), e2.clone())?} else {comp.clone()}
@@ -619,11 +619,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::CALL { expLst: __pa0, path: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::CALL { path: __pa0, expLst: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            expl = __pa0.clone();
-            p = __pa1.clone();
+            p = __pa0.clone();
+            expl = __pa1.clone();
             comp = AbsynUtil::pathCompare(var_field!((*inExp1).path, DAE::Exp::CALL).clone(), p.clone())?;
             if (0 == comp.clone()) {compareList(var_field!((*inExp1).expLst, DAE::Exp::CALL).clone(), expl.clone())?} else {comp.clone()}
         },
@@ -631,11 +631,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::RECORD { exps: __pa0, path: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::RECORD { path: __pa0, exps: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            expl = __pa0.clone();
-            p = __pa1.clone();
+            p = __pa0.clone();
+            expl = __pa1.clone();
             comp = AbsynUtil::pathCompare(var_field!((*inExp1).path, DAE::Exp::RECORD).clone(), p.clone())?;
             if (0 == comp.clone()) {compareList(var_field!((*inExp1).exps, DAE::Exp::RECORD).clone(), expl.clone())?} else {comp.clone()}
         },
@@ -643,11 +643,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::PARTEVALFUNCTION { expList: __pa0, path: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::PARTEVALFUNCTION { path: __pa0, expList: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            expl = __pa0.clone();
-            p = __pa1.clone();
+            p = __pa0.clone();
+            expl = __pa1.clone();
             comp = AbsynUtil::pathCompare(var_field!((*inExp1).path, DAE::Exp::PARTEVALFUNCTION).clone(), p.clone())?;
             if (0 == comp.clone()) {compareList(var_field!((*inExp1).expList, DAE::Exp::PARTEVALFUNCTION).clone(), expl.clone())?} else {comp.clone()}
         },
@@ -656,12 +656,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut oe: Option<Arc<DAE::Exp>> = None;
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::RANGE { stop: __pa0, step: __pa1, start: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::RANGE { start: __pa0, step: __pa1, stop: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
+            e1 = __pa0.clone();
             oe = __pa1.clone();
-            e1 = __pa2.clone();
+            e2 = __pa2.clone();
             comp = compare(var_field!((*inExp1).start, DAE::Exp::RANGE).clone(), e1.clone())?;
             comp = if (0 == comp.clone()) {compare(var_field!((*inExp1).stop, DAE::Exp::RANGE).clone(), e2.clone())?} else {comp.clone()};
             if (0 == comp.clone()) {compareOpt(var_field!((*inExp1).step, DAE::Exp::RANGE).clone(), oe.clone())?} else {comp.clone()}
@@ -679,11 +679,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::CAST { exp: __pa0, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::CAST { ty: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e = __pa0.clone();
-            ty = __pa1.clone();
+            ty = __pa0.clone();
+            e = __pa1.clone();
             comp = valueCompare(var_field!((*inExp1).ty, DAE::Exp::CAST).clone(), ty.clone());
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp, DAE::Exp::CAST).clone(), e.clone())?} else {comp.clone()}
         },
@@ -691,11 +691,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::ASUB { sub: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::ASUB { exp: __pa0, sub: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            subs = __pa0.clone();
-            e = __pa1.clone();
+            e = __pa0.clone();
+            subs = __pa1.clone();
             comp = compare(var_field!((*inExp1).exp, DAE::Exp::ASUB).clone(), e.clone())?;
             if (comp.clone() == 0) {compareSubscriptList(var_field!((*inExp1).sub, DAE::Exp::ASUB).clone(), subs.clone())?} else {comp.clone()}
         },
@@ -705,13 +705,13 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::RSUB { ty: __pa0, fieldName: __pa1, ix: __pa2, exp: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+                Deref @ DAE::Exp::RSUB { exp: __pa0, ix: __pa1, fieldName: __pa2, ty: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            ty = __pa0.clone();
-            s = __pa1.clone();
-            i = __pa2.clone();
-            e = __pa3.clone();
+            e = __pa0.clone();
+            i = __pa1.clone();
+            s = __pa2.clone();
+            ty = __pa3.clone();
             comp = Util::intCompare(var_field!((*inExp1).ix, DAE::Exp::RSUB).clone(), i.clone());
             comp = if (comp.clone() == 0) {valueCompare(var_field!((*inExp1).ty, DAE::Exp::RSUB).clone(), ty.clone())} else {comp.clone()};
             comp = if (comp.clone() == 0) {stringCompare((var_field!((*inExp1).fieldName, DAE::Exp::RSUB).clone()).clone(), (s.clone()).clone())} else {comp.clone()};
@@ -722,12 +722,12 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::TSUB { ty: __pa0, ix: __pa1, exp: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Exp::TSUB { exp: __pa0, ix: __pa1, ty: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            ty = __pa0.clone();
+            e = __pa0.clone();
             i = __pa1.clone();
-            e = __pa2.clone();
+            ty = __pa2.clone();
             comp = Util::intCompare(var_field!((*inExp1).ix, DAE::Exp::TSUB).clone(), i.clone());
             comp = if (0 == comp.clone()) {valueCompare(var_field!((*inExp1).ty, DAE::Exp::TSUB).clone(), ty.clone())} else {comp.clone()};
             if (0 == comp.clone()) {compare(var_field!((*inExp1).exp, DAE::Exp::TSUB).clone(), e.clone())?} else {comp.clone()}
@@ -736,11 +736,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut oe: Option<Arc<DAE::Exp>> = None;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::SIZE { sz: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::SIZE { exp: __pa0, sz: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            oe = __pa0.clone();
-            e = __pa1.clone();
+            e = __pa0.clone();
+            oe = __pa1.clone();
             comp = compare(var_field!((*inExp1).exp, DAE::Exp::SIZE).clone(), e.clone())?;
             if (comp.clone() == 0) {compareOpt(var_field!((*inExp1).sz, DAE::Exp::SIZE).clone(), oe.clone())?} else {comp.clone()}
         },
@@ -760,11 +760,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::CONS { cdr: __pa0, car: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::CONS { car: __pa0, cdr: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            e2 = __pa0.clone();
-            e1 = __pa1.clone();
+            e1 = __pa0.clone();
+            e2 = __pa1.clone();
             comp = compare(var_field!((*inExp1).car, DAE::Exp::CONS).clone(), e1.clone())?;
             if (0 == comp.clone()) {compare(var_field!((*inExp1).cdr, DAE::Exp::CONS).clone(), e2.clone())?} else {comp.clone()}
         },
@@ -790,11 +790,11 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
-                Deref @ DAE::Exp::METARECORDCALL { args: __pa0, path: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Exp::METARECORDCALL { path: __pa0, args: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            expl = __pa0.clone();
-            p = __pa1.clone();
+            p = __pa0.clone();
+            expl = __pa1.clone();
             comp = AbsynUtil::pathCompare(var_field!((*inExp1).path, DAE::Exp::METARECORDCALL).clone(), p.clone())?;
             if (comp.clone() == 0) {compareList(var_field!((*inExp1).args, DAE::Exp::METARECORDCALL).clone(), expl.clone())?} else {comp.clone()}
         },
@@ -915,7 +915,11 @@ fn compareOpt(mut inExp1: Option<Arc<DAE::Exp>>, mut inExp2: Option<Arc<DAE::Exp
         (None, None) => 0,
         (None, _) => -1,
         (_, None) => 1,
-        (Some(e1), Some(e2)) => compare(e1.clone(), e2.clone())?,
+        (Some(__esc_e1), Some(__esc_e2)) => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            compare(e1.clone(), e2.clone())?
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(comp)
@@ -1162,7 +1166,7 @@ pub fn hashExp(mut e: Arc<DAE::Exp>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: expl, path, .. } => {
+                Deref @ DAE::Exp::CALL { path, expLst: expl, .. } => {
                     Ok(7 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
                 }
                 _ => bail!("nomatch"),
@@ -1170,7 +1174,7 @@ pub fn hashExp(mut e: Arc<DAE::Exp>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::RECORD { exps: expl, path, .. } => {
+                Deref @ DAE::Exp::RECORD { path, exps: expl, .. } => {
                     Ok(8 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
                 }
                 _ => bail!("nomatch"),
@@ -1178,7 +1182,7 @@ pub fn hashExp(mut e: Arc<DAE::Exp>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::PARTEVALFUNCTION { expList: expl, path, .. } => {
+                Deref @ DAE::Exp::PARTEVALFUNCTION { path, expList: expl, .. } => {
                     Ok(9 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
                 }
                 _ => bail!("nomatch"),

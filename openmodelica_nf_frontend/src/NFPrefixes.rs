@@ -759,7 +759,9 @@ pub fn accessLevelFromAbsyn(mut exp: Arc<Absyn::Exp>) -> Option<AccessLevel> {
     let mut access: Option<AccessLevel> = None;
     let mut name: ArcStr = arcstr::literal!("");
     access = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, .. }, name: Deref @ "Access", .. } } => (::match_deref::match_deref! { match &(name.clone()) {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { name: Deref @ "Access", componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_name, .. }, .. } } => {
+            name = (*__esc_name).clone();
+            (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "hide" => Some(AccessLevel::HIDE.clone()),
         Deref @ "icon" => Some(AccessLevel::ICON.clone()),
         Deref @ "documentation" => Some(AccessLevel::DOCUMENTATION.clone()),
@@ -770,7 +772,8 @@ pub fn accessLevelFromAbsyn(mut exp: Arc<Absyn::Exp>) -> Option<AccessLevel> {
         Deref @ "packageDuplicate" => Some(AccessLevel::PACKAGE_DUPLICATE.clone()),
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } }),
+    } })
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

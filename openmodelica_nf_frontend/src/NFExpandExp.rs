@@ -240,7 +240,9 @@ pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>
     let mut i: i32 = 0;
     arrayExp = (::match_deref::match_deref! { match &(subs.clone()) {
         Deref @ metamodelica::List::Nil => expandCref3(restSubs.clone(), cref.clone(), crefType.clone(), metamodelica::cons(comb.clone().reverse(), accum.clone()))?,
-        Deref @ metamodelica::List::Cons { head: Deref @ Subscript::EXPANDED_SLICE { indices: slice }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Subscript::EXPANDED_SLICE { indices: __esc_slice }, tail: __esc_rest } => {
+            slice = (*__esc_slice).clone();
+            rest = (*__esc_rest).clone();
             expl = metamodelica::arrayCreate((slice.clone().len() as i32), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
             i = 1;
             for mut idx in &*slice.clone() {
@@ -525,7 +527,7 @@ pub fn expandSize(mut exp: Arc<Expression::NFExpression>) -> (Arc<Expression::NF
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expanded: bool = true;
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::SIZE { dimIndex: None, exp: e } => {
+        Deref @ Expression::SIZE { exp: e, dimIndex: None } => {
             let mut dims: i32 = 0;
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
             let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -584,12 +586,12 @@ pub fn expandBinaryElementWise(mut exp: Arc<Expression::NFExpression>) -> Result
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
+    exp1 = __pa0.clone();
     op = __pa1.clone();
-    exp1 = __pa2.clone();
+    exp2 = __pa2.clone();
     if Type::isArray(Operator::typeOf(op.clone())) {
         (exp1, expanded) = expand(exp1.clone(), false, false)?;
         if expanded.clone() {
@@ -636,12 +638,12 @@ pub fn expandBinaryScalarArray(mut exp: Arc<Expression::NFExpression>, mut scala
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
+    exp1 = __pa0.clone();
     op = __pa1.clone();
-    exp1 = __pa2.clone();
+    exp2 = __pa2.clone();
     (exp2, expanded) = expand(exp2.clone(), false, false)?;
     if expanded.clone() {
         op = Arc::new(Operator::NFOperator { ty: Type::arrayElementType(Operator::typeOf(op.clone())), op: scalarOp.clone() });
@@ -669,12 +671,12 @@ pub fn expandBinaryArrayScalar(mut exp: Arc<Expression::NFExpression>, mut scala
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
+    exp1 = __pa0.clone();
     op = __pa1.clone();
-    exp1 = __pa2.clone();
+    exp2 = __pa2.clone();
     (exp1, expanded) = expand(exp1.clone(), false, false)?;
     if expanded.clone() {
         op = Arc::new(Operator::NFOperator { ty: Type::arrayElementType(Operator::typeOf(op.clone())), op: scalarOp.clone() });
@@ -694,11 +696,11 @@ pub fn expandBinaryVectorMatrix(mut exp: Arc<Expression::NFExpression>) -> Resul
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut m: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, exp1: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, exp2: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
-    exp1 = __pa1.clone();
+    exp1 = __pa0.clone();
+    exp2 = __pa1.clone();
     (exp2, expanded) = expand(exp2.clone(), false, false)?;
     if expanded.clone() {
         let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Expression::transposeArray(exp2.clone())?) {
@@ -735,11 +737,11 @@ pub fn expandBinaryMatrixVector(mut exp: Arc<Expression::NFExpression>) -> Resul
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut n: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, exp1: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, exp2: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
-    exp1 = __pa1.clone();
+    exp1 = __pa0.clone();
+    exp2 = __pa1.clone();
     (exp1, expanded) = expand(exp1.clone(), false, false)?;
     if expanded.clone() {
         let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(exp1.clone()) {
@@ -773,11 +775,11 @@ pub fn expandBinaryDotProduct(mut exp: Arc<Expression::NFExpression>) -> Result<
     let mut exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, exp1: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, exp2: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
-    exp1 = __pa1.clone();
+    exp1 = __pa0.clone();
+    exp2 = __pa1.clone();
     (exp1, expanded) = expand(exp1.clone(), false, false)?;
     if expanded.clone() {
         (exp2, expanded) = expand(exp2.clone(), false, false)?;
@@ -827,11 +829,11 @@ pub fn expandBinaryMatrixProduct(mut exp: Arc<Expression::NFExpression>) -> Resu
     let mut exp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, exp1: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, exp2: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
-    exp1 = __pa1.clone();
+    exp1 = __pa0.clone();
+    exp2 = __pa1.clone();
     (exp1, expanded) = expand(exp1.clone(), false, false)?;
     if expanded.clone() {
         (exp2, expanded) = expand(exp2.clone(), false, false)?;
@@ -899,12 +901,12 @@ pub fn expandBinaryPowMatrix(mut exp: Arc<Expression::NFExpression>, mut resize:
     let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
     let mut n: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::BINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
+    exp1 = __pa0.clone();
     op = __pa1.clone();
-    exp1 = __pa2.clone();
+    exp2 = __pa2.clone();
     (outExp, expanded) = (::match_deref::match_deref! { match &(exp2.clone()) {
         Deref @ Expression::INTEGER { value: 0 } => {
             n = Dimension::size(listHead(Type::arrayDims(Operator::typeOf(op.clone())))?, false)?;
@@ -969,12 +971,12 @@ pub fn expandLogicalBinary(mut exp: Arc<Expression::NFExpression>) -> Result<(Ar
     let mut exp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::LBINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::LBINARY { exp1: __pa0, operator: __pa1, exp2: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
+    exp1 = __pa0.clone();
     op = __pa1.clone();
-    exp1 = __pa2.clone();
+    exp2 = __pa2.clone();
     if Type::isArray(Operator::typeOf(op.clone())) {
         (exp1, expanded) = expand(exp1.clone(), false, false)?;
         if expanded.clone() {
@@ -1035,11 +1037,11 @@ pub fn expandCast(mut castExp: Arc<Expression::NFExpression>) -> Result<(Arc<Exp
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(castExp.clone()) {
-        Deref @ Expression::CAST { ty: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Expression::CAST { exp: __pa0, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ty = __pa0.clone();
-    exp = __pa1.clone();
+    exp = __pa0.clone();
+    ty = __pa1.clone();
     (outExp, expanded) = expand(exp.clone(), false, false)?;
     if expanded.clone() && !(referenceEq(&*(exp.clone()),&*(outExp.clone()))) {
         outExp = Expression::typeCast(outExp.clone(), ty.clone())?;
@@ -1094,7 +1096,9 @@ pub fn expandGeneric2(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Ar
     let mut rest_subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::nil();
     let mut i: i32 = 0;
     outExp = (::match_deref::match_deref! { match &(subs.clone()) {
-        Deref @ metamodelica::List::Cons { head: sub, tail: rest_subs } => {
+        Deref @ metamodelica::List::Cons { head: __esc_sub, tail: __esc_rest_subs } => {
+            sub = (*__esc_sub).clone();
+            rest_subs = (*__esc_rest_subs).clone();
             t = Type::unliftArray(ty.clone())?;
             expl = metamodelica::arrayCreate((sub.clone().len() as i32), exp.clone());
             i = 1;
@@ -1122,8 +1126,8 @@ pub fn expandCallArgs(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expr
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } => {
-            let mut call = (*call).clone();
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { .. } } => {
+            call = (*__esc_call).clone();
             assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone()).into_iter().cloned() {

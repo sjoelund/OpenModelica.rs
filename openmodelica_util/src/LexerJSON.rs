@@ -233,11 +233,11 @@ pub fn printToken(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr = arcstr::literal!("");
     let mut byteOffset: i32 = 0;
     let mut length: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, id: __pa3, .. } = (token.clone()) else { bail!("pattern mismatch") };
-    length = __pa0.clone();
-    byteOffset = __pa1.clone();
-    contents = __pa2.clone();
-    id = __pa3.clone();
+    let Token { id: __pa0, fileContents: __pa1, byteOffset: __pa2, length: __pa3, .. } = (token.clone()) else { bail!("pattern mismatch") };
+    id = __pa0.clone();
+    contents = __pa1.clone();
+    byteOffset = __pa2.clone();
+    length = __pa3.clone();
     contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
     strTk = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[TOKEN:")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", id.clone()))); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*contents.clone()); __mm_s.push_str(&*literal!("' (")); __mm_s.push_str(&*intString(token.lineNumberStart.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberStart.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(token.lineNumberEnd.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(token.columnNumberEnd.clone())); __mm_s.push_str(&*literal!(")]")); ArcStr::from(__mm_s) }).clone();
     Ok(strTk)
@@ -247,10 +247,10 @@ pub fn tokenContent(mut token: Token) -> Result<ArcStr> {
     let mut contents: ArcStr = arcstr::literal!("");
     let mut byteOffset: i32 = 0;
     let mut length: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
-    length = __pa0.clone();
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token.clone()) else { bail!("pattern mismatch") };
+    contents = __pa0.clone();
     byteOffset = __pa1.clone();
-    contents = __pa2.clone();
+    length = __pa2.clone();
     contents = (if (length.clone() > 0) {substring((contents.clone()).clone(), byteOffset.clone(), byteOffset.clone() + length.clone() - 1)?} else {literal!("")}).clone();
     Ok(contents)
 }
@@ -263,14 +263,14 @@ pub fn tokenContentEq(mut token1: Token, mut token2: Token) -> Result<bool> {
     let mut length1: i32 = 0;
     let mut offset2: i32 = 0;
     let mut length2: i32 = 0;
-    let Token { length: __pa0, byteOffset: __pa1, fileContents: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
-    length1 = __pa0.clone();
+    let Token { fileContents: __pa0, byteOffset: __pa1, length: __pa2, .. } = (token1.clone()) else { bail!("pattern mismatch") };
+    contents1 = __pa0.clone();
     offset1 = __pa1.clone();
-    contents1 = __pa2.clone();
-    let Token { length: __pa3, byteOffset: __pa4, fileContents: __pa5, .. } = (token2.clone()) else { bail!("pattern mismatch") };
-    length2 = __pa3.clone();
+    length1 = __pa2.clone();
+    let Token { fileContents: __pa3, byteOffset: __pa4, length: __pa5, .. } = (token2.clone()) else { bail!("pattern mismatch") };
+    contents2 = __pa3.clone();
     offset2 = __pa4.clone();
-    contents2 = __pa5.clone();
+    length2 = __pa5.clone();
     b = if (length1.clone() != length2.clone()) {false} else {0 == System::strcmp_offset((contents1.clone()).clone(), offset1.clone(), length1.clone(), (contents2.clone()).clone(), offset2.clone(), length2.clone())};
     Ok(b)
 }
@@ -504,9 +504,9 @@ fn checkArray<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i3
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
-        lineStart = __pa0.clone();
-        filename = __pa1.clone();
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+        filename = __pa0.clone();
+        lineStart = __pa1.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }
@@ -517,9 +517,9 @@ fn checkArrayModelica(mut arr: metamodelica::Array<i32>, mut index: i32, mut inf
     let mut filename: ArcStr = arcstr::literal!("");
     let mut lineStart: i32 = 0;
     if index.clone() < 1 || index.clone() > metamodelica::arrayLength(arr.clone()) {
-        let SourceInfo { lineNumberStart: __pa0, fileName: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
-        lineStart = __pa0.clone();
-        filename = __pa1.clone();
+        let SourceInfo { fileName: __pa0, lineNumberStart: __pa1, .. } = (info.clone()) else { bail!("pattern mismatch") };
+        filename = __pa0.clone();
+        lineStart = __pa1.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", lineStart.clone()))); __mm_s.push_str(&*literal!("]: checkArray failed: arrayLength=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::arrayLength(arr.clone())))); __mm_s.push_str(&*literal!(" index=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", index.clone()))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         bail!("fail");
     }

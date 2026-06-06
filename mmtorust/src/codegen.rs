@@ -4549,6 +4549,11 @@ fn exp_reads_name(exp: &typedexp::TypedExp, name: &str) -> bool {
                     || c.locals.iter().any(|(_, _, d, _)| d.as_ref().is_some_and(|d| exp_reads_name(d, name)))
                     || stmts_read_name(&c.stmts, name)
                     || exp_reads_name(&c.result, name)
+                    // A nested match binding `name` in a pattern *assigns*
+                    // the enclosing-scope variable (the escaping-binding
+                    // writeback in emit_match), so the enclosing arm needs
+                    // its `let mut` declaration even if nothing reads it.
+                    || typedexp::pat_bindings(&c.pattern).iter().any(|(n, _)| n == name)
             })
         }
         E::Range { start, step, stop, .. } => {
@@ -12896,15 +12901,27 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     let mut v: Vec<String> = ctx.fn_outputs.iter()
                         .filter(|o| binds.contains(*o)).cloned().collect();
                     // Beyond outputs, a pattern that binds a function-scope
-                    // *local* (a `protected` component) but whose arm never
-                    // reads that binding is destructuring purely for code that
-                    // runs *after* the match — the `() := match e case
-                    // C(field = x) then ();` idiom. Rust scopes the pattern
+                    // *local* (a `protected` component) assigns that variable
+                    // in MetaModelica — the binding stays visible after the
+                    // match (`() := match e case C(field = x) then ();` reads
+                    // `x` afterwards, and a comprehension guard's match arm
+                    // assigns variables its *body* reads, e.g.
+                    // FUnitCheck.notification2). Rust scopes the pattern
                     // binding to the arm, so without writeback the outer `x`
-                    // keeps its pre-match (default) value. A binding the arm
-                    // *does* use is consumed in-arm and needs no writeback, so
-                    // restrict to unused bindings to leave the common path
-                    // untouched.
+                    // keeps its pre-match (default) value. The writeback runs
+                    // at the arm-body start, before the locals and user
+                    // statements, so in-arm reads (which resolve to the outer
+                    // name once the pattern binding is renamed away) see the
+                    // matched value too. Only an MM `guard` read forces the
+                    // shadow-binding regime: Rust evaluates the guard before
+                    // the arm body, where the writeback has not happened yet.
+                    // `fn_scope_vars` covers the function's own declarations
+                    // plus the `local` sections of enclosing match arms (each
+                    // arm registers its locals there for the duration of its
+                    // body), which MM scopes identically — e.g.
+                    // SimCodeMain.translateModelCallBackendOB binds the
+                    // matchcontinue-arm local `fmuType` in a nested match
+                    // pattern and reads it after that match.
                     for n in &binds_in_order {
                         if ctx.fn_scope_vars.contains(n)
                             && !ctx.fn_outputs.contains(n)
@@ -12916,7 +12933,11 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                             // scrutinee, not a plain `protected` local.
                             && !matches!(ctx.variant_shapes.get(n), Some(VarShape::RefArc))
                             && !ctx.match_refbound.contains(n)
-                            && !case_uses_local_name(case, n)
+                            // A match-level `local` declaration shadows the
+                            // function variable; the pattern then binds the
+                            // local, not the outer one — no writeback.
+                            && !case.locals.iter().any(|(ln, _, _, _)| ln == n)
+                            && !case.guard.as_ref().is_some_and(|g| exp_reads_name(g, n))
                             && !v.contains(n)
                         {
                             v.push(n.clone());
@@ -12998,6 +13019,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // to see the binding's type (e.g. to decide whether an Array
                 // requires a `.borrow()`). Saved/restored around the arm.
                 let saved_fn_env_vars = ctx.fn_env_vars.clone();
+                let saved_fn_scope_vars_arm = ctx.fn_scope_vars.clone();
                 let saved_uninit_arrays_match = ctx.uninit_arrays.clone();
                 let typed_pat_bindings: Vec<(String, Ty)> =
                     typedexp::pat_bindings_with_scrut_ty_tl(&case.pattern, &input_ty, top_level);
@@ -13021,6 +13043,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     if !matches!(t, Ty::Unknown) {
                         ctx.fn_env_vars.insert(n.clone(), t.clone());
                     }
+                    // Also treat the arm's locals as scope variables for the
+                    // duration of the arm: a *nested* match that binds one in
+                    // a pattern assigns it in MM, so the nested match's
+                    // escaping-binding writeback must recognise it (see the
+                    // `escaping_outputs` collection above). Restored with
+                    // `saved_fn_scope_vars_arm` at the arm's end.
+                    ctx.fn_scope_vars.insert(n.clone());
                 }
                 let user_guard = case.guard.as_ref()
                     .map(|g| emit_exp(g, is_const, ctx, top_level));
@@ -13309,6 +13338,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     format!("        {pat}{guard} => {{\n{body}            {result}\n        }}")
                 };
                 ctx.fn_env_vars = saved_fn_env_vars;
+                ctx.fn_scope_vars = saved_fn_scope_vars_arm;
                 ctx.variants = saved_variants;
                 ctx.variant_shapes = saved_shapes;
                 ctx.uninit_arrays = saved_uninit_arrays_match;
@@ -13531,6 +13561,18 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                         }
                     }
                 }
+                // Register this arm's by-reference pattern bindings so a
+                // *nested* match emitted in the arm's body skips its
+                // escaping-local writeback for them (assigning an owned value
+                // to the `&Arc<T>` shadow would not type-check). Mirror of
+                // the MatchKind::Match path; restored with the other saved
+                // state at the arm's end.
+                let saved_match_refbound_mc = ctx.match_refbound.clone();
+                if arm_needs_match_deref {
+                    let mut arm_deref_names: Vec<String> = Vec::new();
+                    pat_collect_all_bindings(&case.pattern, &mut arm_deref_names);
+                    ctx.match_refbound.extend(arm_deref_names);
+                }
                 // Each matchcontinue arm is lowered to its own closure
                 // (`(|| -> Result<_> { … })()`) whose `Err` makes the arm
                 // fail and the next arm run — exactly MM matchcontinue
@@ -13601,6 +13643,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // local binding. Save/restore around the arm to keep
                 // sibling arms isolated.
                 let saved_fn_env_vars_mc = ctx.fn_env_vars.clone();
+                let saved_fn_scope_vars_mc = ctx.fn_scope_vars.clone();
                 // Each matchcontinue arm is a fresh closure scope. Arm-local
                 // declarations and assignments must not pollute the outer
                 // function's initialised-vars map: a same-named local in arm 1
@@ -13612,6 +13655,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     if !matches!(t, Ty::Unknown) {
                         ctx.fn_env_vars.insert(n.clone(), t.clone());
                     }
+                    // Arm locals are scope variables for nested matches: a
+                    // nested pattern binding one of them assigns it in MM, so
+                    // the nested match's escaping-binding writeback must see
+                    // it (SimCodeMain.translateModelCallBackendOB binds the
+                    // arm local `fmuType` in a nested match and reads it
+                    // after that match to enable the cs-FMU preOpt module).
+                    ctx.fn_scope_vars.insert(n.clone());
                 }
                 for (n, t) in typedexp::pat_bindings_with_scrut_ty(&case.pattern, &input_ty) {
                     // Pattern bindings are guaranteed initialised once the arm body
@@ -13895,9 +13945,11 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 ctx.variants = saved_variants;
                 ctx.variant_shapes = saved_shapes;
                 ctx.fn_env_vars = saved_fn_env_vars_mc;
+                ctx.fn_scope_vars = saved_fn_scope_vars_mc;
                 ctx.fn_initialized_vars = saved_fn_initialized_vars_mc;
                 ctx.mc_arm_writeback = saved_mc_arm_writeback;
                 ctx.mc_arm_result_unit = saved_mc_arm_result_unit;
+                ctx.match_refbound = saved_match_refbound_mc;
             }
             s.push_str("        bail!(\"matchcontinue: no arm matched\")\n");
             s.push_str("    }");

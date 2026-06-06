@@ -390,7 +390,7 @@ fn imp_qual(mut inGraph: Graph, mut inRef: Ref, mut inName: Name, mut inImports:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (g, Deref @ metamodelica::List::Cons { head: Absyn::Import::NAMED_IMPORT { path, name }, tail: _ }) => {
+                (g, Deref @ metamodelica::List::Cons { head: Absyn::Import::NAMED_IMPORT { name, path }, tail: _ }) => {
                     let mut r: Ref = Default::default();
                     let mut g = (*g).clone();
                     let true = (stringEqual((inName.clone()).clone(), (name.clone()).clone())) else { bail!("pattern mismatch") };

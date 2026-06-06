@@ -300,7 +300,7 @@ pub fn DFSLH(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -371,7 +371,7 @@ fn DFSLH2(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
         let __mc_input = (isyst.clone(), match_opts.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }, _) => {
+                (syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }, _) => {
                     let mut ass1_1: metamodelica::Array<i32> = Default::default();
                     let mut ass2_1: metamodelica::Array<i32> = Default::default();
                     let true = (intGe(i.clone(), nv.clone())) else { bail!("pattern mismatch") };
@@ -383,7 +383,7 @@ fn DFSLH2(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { mT: Some(_), m: Some(_), .. }, _) => {
+                (syst @ Deref @ BackendDAE::EqSystem { m: Some(_), mT: Some(_), .. }, _) => {
                     let mut ass1_2: metamodelica::Array<i32> = Default::default();
                     let mut ass2_2: metamodelica::Array<i32> = Default::default();
                     let mut i_1: i32 = 0;
@@ -400,7 +400,7 @@ fn DFSLH2(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }, _) => {
+                (syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }, _) => {
                     let mut ass1_1: metamodelica::Array<i32> = Default::default();
                     let mut ass2_1: metamodelica::Array<i32> = Default::default();
                     let mut ass1_2: metamodelica::Array<i32> = Default::default();
@@ -603,7 +603,7 @@ pub fn BFSB(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::S
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -697,12 +697,12 @@ fn BFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = BFSBphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), metamodelica::nil())?;
             let (__pa0, __pa3, __pa1, __pa2, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
-                (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa1), m: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
+                (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { m: Some(__pa1), mT: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             i_1 = __pa0.clone();
-            mt1 = __pa1.clone();
-            m1 = __pa2.clone();
+            m1 = __pa1.clone();
+            mt1 = __pa2.clone();
             syst = __pa3.clone();
             shared = __pa4.clone();
             nv_1 = __pa5.clone();
@@ -884,7 +884,7 @@ pub fn DFSB(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::S
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -975,12 +975,12 @@ fn DFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = DFSBphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), list![i.clone()])?;
             let (__pa0, __pa3, __pa1, __pa2, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
-                (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa1), m: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
+                (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { m: Some(__pa1), mT: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             i_1 = __pa0.clone();
-            mt1 = __pa1.clone();
-            m1 = __pa2.clone();
+            m1 = __pa1.clone();
+            mt1 = __pa2.clone();
             syst = __pa3.clone();
             shared = __pa4.clone();
             nv_1 = __pa5.clone();
@@ -1130,7 +1130,7 @@ pub fn MC21A(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -1225,13 +1225,13 @@ fn MC21A1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamod
             let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = MC21Aphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), list![i.clone()])?;
             let (__pa0, __pa1, __pa4, __pa2, __pa3, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
-                (__pa0, __pa1, __pa4 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa2), m: Some(__pa3), .. }, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) => (__pa0.clone(), __pa1.clone(), __pa4.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone()),
+                (__pa0, __pa1, __pa4 @ Deref @ BackendDAE::EqSystem { m: Some(__pa2), mT: Some(__pa3), .. }, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) => (__pa0.clone(), __pa1.clone(), __pa4.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             changedEqns = __pa0.clone();
             i_1 = __pa1.clone();
-            mt1 = __pa2.clone();
-            m1 = __pa3.clone();
+            m1 = __pa2.clone();
+            mt1 = __pa3.clone();
             syst = __pa4.clone();
             shared = __pa5.clone();
             nv_1 = __pa6.clone();
@@ -1447,7 +1447,7 @@ pub fn PF(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -1519,7 +1519,7 @@ fn PF1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: me
         (Deref @ metamodelica::List::Nil, _) => {
             (ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (_, Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }) => {
+        (_, Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }) => {
             let mut nv_1: i32 = 0;
             let mut ne_1: i32 = 0;
             let mut i_1: i32 = 0;
@@ -1793,7 +1793,7 @@ pub fn PFPlus(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE:
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -1866,7 +1866,7 @@ fn PFPlus1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks
         (Deref @ metamodelica::List::Nil, _) => {
             (i.clone(), ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (_, syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }) => {
+        (_, syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }) => {
             let mut nv_1: i32 = 0;
             let mut ne_1: i32 = 0;
             let mut i_1: i32 = 0;
@@ -2102,7 +2102,7 @@ pub fn HK(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -2176,7 +2176,7 @@ fn HK1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: me
         (Deref @ metamodelica::List::Nil, _) => {
             (ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (_, syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }) => {
+        (_, syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }) => {
             let mut nv_1: i32 = 0;
             let mut ne_1: i32 = 0;
             let mut i_1: i32 = 0;
@@ -2656,7 +2656,7 @@ pub fn HKDW(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::S
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -2730,7 +2730,7 @@ fn HKDW1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: 
         (Deref @ metamodelica::List::Nil, _) => {
             (ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (_, syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }) => {
+        (_, syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }) => {
             let mut nv_1: i32 = 0;
             let mut ne_1: i32 = 0;
             let mut i_1: i32 = 0;
@@ -2933,7 +2933,7 @@ pub fn ABMP(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::S
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -3011,7 +3011,7 @@ fn ABMP1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: 
         (Deref @ metamodelica::List::Nil, _) => {
             (ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (_, Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }) => {
+        (_, Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }) => {
             let mut nv_1: i32 = 0;
             let mut ne_1: i32 = 0;
             let mut i_1: i32 = 0;
@@ -3585,7 +3585,7 @@ pub fn PR_FIFO_FAIR(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backe
         let __mc_input = isyst.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. } => {
+                Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. } => {
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
                     let mut vec1: metamodelica::Array<i32> = Default::default();
@@ -3665,7 +3665,7 @@ fn PR_FIFO_FAIR1(mut unmatched: Arc<metamodelica::List<i32>>, mut l_label: metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, syst @ Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }, _) => {
+                (_, syst @ Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }, _) => {
                     let mut nv_1: i32 = 0;
                     let mut ne_1: i32 = 0;
                     let mut unmatched1: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5101,7 +5101,7 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
         (Deref @ metamodelica::List::Nil, true, _, _) => {
             (ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inArg.clone())
         },
-        (Deref @ metamodelica::List::Nil, false, Deref @ BackendDAE::EqSystem { mT: Some(mt), m: Some(m), .. }, _) => {
+        (Deref @ metamodelica::List::Nil, false, Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(mt), .. }, _) => {
             let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut m1t: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut unmatched_eqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5112,8 +5112,8 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut ass1_1: metamodelica::Array<i32> = Default::default();
             let mut ass2_1: metamodelica::Array<i32> = Default::default();
-            let mut mt = (*mt).clone();
             let mut m = (*m).clone();
+            let mut mt = (*mt).clone();
             matchingExternalsetAdjacencyMatrix(nv.clone(), ne.clone(), m.clone());
             BackendDAEEXT::matching(nv.clone(), ne.clone(), algIndx.clone(), cheapMatching.clone(), metamodelica::OrderedFloat(1.0_f64), clearMatching.clone());
             BackendDAEEXT::getAssignment(ass1.clone(), ass2.clone())?;
@@ -5130,11 +5130,11 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
                 if changed.clone() {
                     BackendDAEEXT::setAssignment(nv.clone(), ne.clone(), ass1_1.clone(), ass2_1.clone());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
-                        Deref @ BackendDAE::EqSystem { mT: Some(__pa0), m: Some(__pa1), .. } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ BackendDAE::EqSystem { m: Some(__pa0), mT: Some(__pa1), .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    mt = __pa0.clone();
-                    m = __pa1.clone();
+                    m = __pa0.clone();
+                    mt = __pa1.clone();
                     matchingExternalsetAdjacencyMatrix(nv.clone(), ne.clone(), m.clone());
                     BackendDAEEXT::matching(nv.clone(), ne.clone(), algIndx.clone(), cheapMatching.clone(), metamodelica::OrderedFloat(1.0_f64), 0);
                     BackendDAEEXT::getAssignment(ass1_1.clone(), ass2_1.clone())?;
@@ -5822,7 +5822,7 @@ fn getAssignment(mut clearMatching: bool, mut nVars: i32, mut nEqns: i32, mut iS
         let __mc_input = (clearMatching.clone(), iSyst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (false, Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2, ass1, .. }, .. }) => {
+                (false, Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1, ass2, .. }, .. }) => {
                     let true = (intGe(nVars.clone(), metamodelica::arrayLength(ass1.clone()))) else { bail!("pattern mismatch") };
                     let true = (intGe(nEqns.clone(), metamodelica::arrayLength(ass2.clone()))) else { bail!("pattern mismatch") };
                     Ok((ass2.clone(), ass1.clone()))
@@ -5986,7 +5986,7 @@ pub fn testExternMatchingAlgorithm(mut index: i32, mut matchingAlgorithm: i32, m
 fn randSortSystem(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut osyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     osyst = (::match_deref::match_deref! { match &(isyst.clone()) {
-        syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. } => {
+        syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. } => {
             let mut ne: i32 = 0;
             let mut nv: i32 = 0;
             let mut randarr: metamodelica::Array<i32> = Default::default();

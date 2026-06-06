@@ -198,7 +198,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inParentRef: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ SCode::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Nil, .. }, g) => {
+                (_, Deref @ SCode::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, binding: None, .. }, g) => {
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -206,7 +206,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inParentRef: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (name, Deref @ SCode::Mod::MOD { binding: b @ Some(_), subModLst: Deref @ metamodelica::List::Nil, .. }, g) => {
+                (name, Deref @ SCode::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, binding: b @ Some(_), .. }, g) => {
                     let mut n: Node = <FCore::Node as ::std::default::Default>::default();
                     let mut nr: Ref = Default::default();
                     let mut g = (*g).clone();
@@ -221,7 +221,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inParentRef: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (name, Deref @ SCode::Mod::MOD { binding: b, subModLst: sm, .. }, g) => {
+                (name, Deref @ SCode::Mod::MOD { subModLst: sm, binding: b, .. }, g) => {
                     let mut n: Node = <FCore::Node as ::std::default::Default>::default();
                     let mut nr: Ref = Default::default();
                     let mut g = (*g).clone();
@@ -305,7 +305,7 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
         let __mc_input = (inClassDef.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::ClassDef::PARTS { externalDecl, clsattrs, constraintLst, initialAlgorithmLst: ials, normalAlgorithmLst: als, initialEquationLst: ieqs, normalEquationLst: eqs, elementLst: el }, g) => {
+                (Deref @ SCode::ClassDef::PARTS { elementLst: el, normalEquationLst: eqs, initialEquationLst: ieqs, normalAlgorithmLst: als, initialAlgorithmLst: ials, constraintLst, clsattrs, externalDecl }, g) => {
                     let mut g = (*g).clone();
                     g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkEqNode((arcstr::literal!(FNode::eqNodeName)).clone(), eqs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
@@ -321,7 +321,7 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: m, composition: cdef }, g) => {
+                (Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: cdef, modifications: m }, g) => {
                     let mut g = (*g).clone();
                     g = mkClassChildren(cdef.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
@@ -333,7 +333,7 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::ClassDef::DERIVED { modifications: m, typeSpec: ts, .. }, g) => {
+                (Deref @ SCode::ClassDef::DERIVED { typeSpec: ts, modifications: m, .. }, g) => {
                     let mut nr: Ref = Default::default();
                     let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
                     let mut g = (*g).clone();
@@ -389,7 +389,7 @@ pub fn mkElementNode(mut inElement: Arc<SCode::Element>, mut inParentRef: Ref, m
             g = mkClassNode(inElement.clone(), openmodelica_frontend_types::DAE::Prefix::NOPRE, openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), inParentRef.clone(), inKind.clone(), g.clone(), false)?;
             g.clone()
         },
-        (Deref @ SCode::Element::EXTENDS { modifications: m, baseClassPath: p, .. }, g) => {
+        (Deref @ SCode::Element::EXTENDS { baseClassPath: p, modifications: m, .. }, g) => {
             let mut name: ArcStr = arcstr::literal!("");
             let mut n: Node = <FCore::Node as ::std::default::Default>::default();
             let mut nr: Ref = Default::default();
@@ -534,14 +534,14 @@ pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inK
     let mut nd: Data = FCore::Data::TOP;
     let mut i: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inComp.clone()) {
-        Deref @ SCode::Element::COMPONENT { condition: __pa0, modifications: __pa1, typeSpec: __pa2, attributes: SCode::Attributes { arrayDims: __pa3, .. }, name: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ SCode::Element::COMPONENT { name: __pa0, attributes: SCode::Attributes { arrayDims: __pa1, .. }, typeSpec: __pa2, modifications: __pa3, condition: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    cnd = __pa0.clone();
-    m = __pa1.clone();
+    name = __pa0.clone();
+    ad = __pa1.clone();
     ts = __pa2.clone();
-    ad = __pa3.clone();
-    name = __pa4.clone();
+    m = __pa3.clone();
+    cnd = __pa4.clone();
     (nd, i) = FNode::element2Data(inComp.clone(), inKind.clone())?;
     (g, n) = FGraph::node(inGraph.clone(), (name.clone()).clone(), list![inParentRef.clone()], nd.clone());
     nr = FNode::toRef(n.clone());
@@ -760,7 +760,7 @@ pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode:
         (None, g) => {
             g.clone()
         },
-        (Some(ed @ Deref @ SCode::ExternalDecl { args: exps, output_: ocr, .. }), g) => {
+        (Some(ed @ Deref @ SCode::ExternalDecl { output_: ocr, args: exps, .. }), g) => {
             let mut n: Node = <FCore::Node as ::std::default::Default>::default();
             let mut nr: Ref = Default::default();
             let mut oae: Option<Arc<Absyn::Exp>> = None;

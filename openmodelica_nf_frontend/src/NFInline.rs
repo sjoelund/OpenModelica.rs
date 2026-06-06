@@ -100,8 +100,8 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
     } };
     call = __pa0.clone();
     exp = (::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::TYPED_CALL { arguments: args, r#fn, .. } if (!(InstNode::isEmpty(r#fn.node.clone())) && InstNode::isNamed(InstNode::parentScope(r#fn.node.clone(), false)?, (literal!("'constructor'")).clone())) => {
-            let mut args = (*args).clone();
+        Deref @ Call::TYPED_CALL { r#fn, arguments: __esc_args, .. } if (!(InstNode::isEmpty(r#fn.node.clone())) && InstNode::isNamed(InstNode::parentScope(r#fn.node.clone(), false)?, (literal!("'constructor'")).clone())) => {
+            args = (*__esc_args).clone();
             body = Function::getBody(r#fn.clone())?;
             if !(body.clone().is_empty() && r#fn.locals.clone().is_empty()) {
                 exp = callExp.clone();
@@ -127,8 +127,11 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
             }
             exp.clone()
         },
-        Deref @ Call::TYPED_CALL { arguments: args, r#fn: r#fn @ Deref @ Function::FUNCTION { locals, outputs, inputs, .. }, .. } if (Function::hasSingleOrEmptyBody(r#fn.clone())) => {
-            let mut args = (*args).clone();
+        Deref @ Call::TYPED_CALL { r#fn: r#fn @ Deref @ Function::FUNCTION { inputs: __esc_inputs, outputs: __esc_outputs, locals: __esc_locals, .. }, arguments: __esc_args, .. } if (Function::hasSingleOrEmptyBody(r#fn.clone())) => {
+            inputs = (*__esc_inputs).clone();
+            outputs = (*__esc_outputs).clone();
+            locals = (*__esc_locals).clone();
+            args = (*__esc_args).clone();
             body = Function::getBody(r#fn.clone())?;
             body = removeDeadCode(body.clone())?;
             if (body.clone().len() as i32) > 1 || (outputs.clone().len() as i32) != 1 || !(locals.clone().is_empty()) {
@@ -250,11 +253,11 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
     let mut s: Arc<Statement::NFStatement> = Arc::new(<Statement::NFStatement as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::IF { source: __pa0, branches: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Statement::IF { branches: __pa0, source: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    source = __pa0.clone();
-    branches = __pa1.clone();
+    branches = __pa0.clone();
+    source = __pa1.clone();
     let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(branches.clone().reverse()) {
         Deref @ metamodelica::List::Cons { head: (__pa2, __pa3), tail: __pa4 } => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -273,11 +276,11 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
         return Ok(stmt.clone());
     }
     let (__pa5, __pa6) = ::match_deref::match_deref! { match &(s.clone()) {
-        Deref @ Statement::ASSIGNMENT { rhs: __pa5, lhs: __pa6, .. } => (__pa5.clone(), __pa6.clone()),
+        Deref @ Statement::ASSIGNMENT { lhs: __pa5, rhs: __pa6, .. } => (__pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    if_exp = __pa5.clone();
-    output_exp = __pa6.clone();
+    output_exp = __pa5.clone();
+    if_exp = __pa6.clone();
     for mut b in &*branches.clone() {
         let mut b = b.clone();
         let (__pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(branches.clone()) {
@@ -295,12 +298,12 @@ fn convertIfToAssignment(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
             return Ok(stmt.clone());
         }
         let (__pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(s.clone()) {
-            Deref @ Statement::ASSIGNMENT { ty: __pa10, rhs: __pa11, lhs: __pa12, .. } => (__pa10.clone(), __pa11.clone(), __pa12.clone()),
+            Deref @ Statement::ASSIGNMENT { lhs: __pa10, rhs: __pa11, ty: __pa12, .. } => (__pa10.clone(), __pa11.clone(), __pa12.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        ty = __pa10.clone();
+        lhs = __pa10.clone();
         rhs = __pa11.clone();
-        lhs = __pa12.clone();
+        ty = __pa12.clone();
         if !(Expression::isEqual(lhs.clone(), output_exp.clone())?) {
             return Ok(stmt.clone());
         }
@@ -329,7 +332,7 @@ fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<St
 fn getOutputExp(mut stmt: Arc<Statement::NFStatement>, mut outputNode: Arc<InstNode::InstNode>, mut call: Arc<Call::NFCall>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::ASSIGNMENT { lhs: Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { restCref: rest_cr, subscripts: Deref @ metamodelica::List::Nil, node: cr_node, .. }, .. }, .. } if (InstNode::refEqual(outputNode.clone(), cr_node.clone()) && !(ComponentRef::isFromCref(rest_cr.clone()))) => {
+        Deref @ Statement::ASSIGNMENT { lhs: Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: cr_node, subscripts: Deref @ metamodelica::List::Nil, restCref: rest_cr, .. }, .. }, .. } if (InstNode::refEqual(outputNode.clone(), cr_node.clone()) && !(ComponentRef::isFromCref(rest_cr.clone()))) => {
             var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone()
         },
         _ => {

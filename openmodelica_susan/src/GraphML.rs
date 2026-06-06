@@ -629,7 +629,8 @@ pub fn getMainGraph(mut iGraphInfo: GraphInfo) -> Result<Option<(i32, Graph)>> {
     let mut firstGraph: Graph = <Graph as ::std::default::Default>::default();
     oGraph = (match iGraphInfo.clone() {
         GraphInfo::GRAPHINFO { graphCount: 0, .. } => None,
-        GraphInfo::GRAPHINFO { graphs: mut graphs, .. } => {
+        GraphInfo::GRAPHINFO { graphs: mut __esc_graphs, .. } => {
+            graphs = __esc_graphs.clone();
             firstGraph = listHead(graphs.clone())?;
             Some((1, firstGraph.clone()))
         },
@@ -643,11 +644,13 @@ pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTar
     let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
     let mut tmpRes: Option<(Attribute, i32)> = None;
     oAttribute = (match iGraphInfo.clone() {
-        GraphInfo::GRAPHINFO { attributes: mut attributes, .. } => {
+        GraphInfo::GRAPHINFO { attributes: mut __esc_attributes, .. } => {
+            attributes = __esc_attributes.clone();
             tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
             tmpRes.clone()
         },
-        GraphInfo::GRAPHINFO { attributes: mut attributes, .. } => {
+        GraphInfo::GRAPHINFO { attributes: mut __esc_attributes, .. } => {
+            attributes = __esc_attributes.clone();
             tmpRes = getAttributeByNameAndTargetTail(attributes.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
             tmpRes.clone()
         },
@@ -670,7 +673,7 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
         let __mc_input = iList.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: head @ Attribute { attTarget, name, attIdx, .. }, tail: rest } => {
+                Deref @ metamodelica::List::Cons { head: head @ Attribute { attIdx, name, attTarget, .. }, tail: rest } => {
                     let true = (stringEq((name.clone()).clone(), (iAttributeName.clone()).clone())) else { bail!("pattern mismatch") };
                     let true = (compareAttributeTargets(iAttributeTarget.clone(), attTarget.clone())?) else { bail!("pattern mismatch") };
                     Ok(Some((head.clone(), attIdx.clone())))
@@ -773,14 +776,14 @@ pub fn printGraphInfo(mut iGraphInfo: GraphInfo) -> Result<()> {
     let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
     let mut graphNodeKey: ArcStr = arcstr::literal!("");
     let mut graphEdgeKey: ArcStr = arcstr::literal!("");
-    let GraphInfo::GRAPHINFO { graphEdgeKey: __pa0, graphNodeKey: __pa1, attributes: __pa2, nodeCount: __pa3, nodes: __pa4, graphCount: __pa5, graphs: __pa6, .. } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
-    graphEdgeKey = __pa0.clone();
-    graphNodeKey = __pa1.clone();
-    attributes = __pa2.clone();
+    let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, attributes: __pa4, graphNodeKey: __pa5, graphEdgeKey: __pa6, .. } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };
+    graphs = __pa0.clone();
+    graphCount = __pa1.clone();
+    nodes = __pa2.clone();
     nodeCount = __pa3.clone();
-    nodes = __pa4.clone();
-    graphCount = __pa5.clone();
-    graphs = __pa6.clone();
+    attributes = __pa4.clone();
+    graphNodeKey = __pa5.clone();
+    graphEdgeKey = __pa6.clone();
     List::map_0(nodes.clone(), (std::sync::Arc::new(printNode) as std::sync::Arc<dyn ::std::ops::Fn(Node) -> Result<()> + 'static>))?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("nodeCount: ")); __mm_s.push_str(&*intString(nodeCount.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("graphCount: ")); __mm_s.push_str(&*intString(graphCount.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -792,10 +795,10 @@ fn printNode(mut node: Node) -> Result<()> {
     let mut atts: ArcStr = arcstr::literal!("");
     let mut optDesc: Option<ArcStr> = None;
     let mut attValues: Arc<metamodelica::List<(i32, ArcStr)>> = metamodelica::nil();
-    let Node::NODE { attValues: __pa0, optDesc: __pa1, id: __pa2, .. } = (node.clone()) else { bail!("pattern mismatch") };
-    attValues = __pa0.clone();
+    let Node::NODE { id: __pa0, optDesc: __pa1, attValues: __pa2, .. } = (node.clone()) else { bail!("pattern mismatch") };
+    id = __pa0.clone();
     optDesc = __pa1.clone();
-    id = __pa2.clone();
+    attValues = __pa2.clone();
     atts = stringDelimitList(List::map(attValues.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?, (literal!(" | ")).clone());
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("node: ")); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" desc: ")); __mm_s.push_str(&*Util::getOption(optDesc.clone())?); __mm_s.push_str(&*literal!("\n\tatts: ")); __mm_s.push_str(&*atts.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     Ok(())

@@ -392,7 +392,8 @@ fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
             File::write(file.clone(), (literal!(" />")).clone());
             ()
         },
-        Deref @ Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path }, .. } => {
+        Deref @ Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: __esc_path }, .. } => {
+            path = (*__esc_path).clone();
             File::write(file.clone(), (literal!("<ExternalObject path=\"")).clone());
             Dump::writePath(file.clone(), path.clone(), XML.clone(), (literal!(".")).clone(), true)?;
             File::write(file.clone(), (literal!("\" />")).clone());

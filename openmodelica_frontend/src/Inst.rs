@@ -430,7 +430,7 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone(), inImplicit.clone(), inCallingScope.clone(), inGraph.clone());
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, _, store, _, _, Deref @ SCode::Element::CLASS { info, restriction: r, partialPrefix: SCode::Partial::PARTIAL { .. }, name: n, .. }, _, _, _, _) => {
+                (cache, _, _, store, _, _, Deref @ SCode::Element::CLASS { name: n, partialPrefix: SCode::Partial::PARTIAL { .. }, restriction: r, info, .. }, _, _, _, _) => {
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -456,7 +456,7 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { cache = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { info, partialPrefix, restriction: r, encapsulatedPrefix: encflag, name: n, .. }, inst_dims, r#impl, callscope, graph) => {
+                (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, encapsulatedPrefix: encflag, restriction: r, partialPrefix, info, .. }, inst_dims, r#impl, callscope, graph) => {
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut env_3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
@@ -515,7 +515,7 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { cache = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, _, _, _, _, Deref @ SCode::Element::CLASS { info, partialPrefix: SCode::Partial::PARTIAL { .. }, name: n, .. }, _, false, _, _) => {
+                (cache, _, _, _, _, _, Deref @ SCode::Element::CLASS { name: n, partialPrefix: SCode::Partial::PARTIAL { .. }, info, .. }, _, false, _, _) => {
                     if !(Config::getGraphicsExpMode()?) {
                         Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(n.clone()).clone()], info.clone())?;
                     }
@@ -550,7 +550,7 @@ fn instClassBasictype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     let mut outTypeVars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
     let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     (outCache, outEnv, outIH, outStore, outDae, outSets, outType, outTypeVars, outState) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone(), inImplicit.clone())) {
-        (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { restriction: r, encapsulatedPrefix: encflag, name: n, .. }, inst_dims, r#impl) => {
+        (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, encapsulatedPrefix: encflag, restriction: r, .. }, inst_dims, r#impl) => {
             let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut env_3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -624,7 +624,7 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, encapsulatedPrefix: encflag, restriction: r, name: n, .. } => {
+                Deref @ SCode::Element::CLASS { name: n, restriction: r, encapsulatedPrefix: encflag, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -658,7 +658,7 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, name: n, .. } => {
+                Deref @ SCode::Element::CLASS { name: n, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -688,7 +688,7 @@ pub fn instClassIn(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { info, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, name: n, .. } => {
+                Deref @ SCode::Element::CLASS { name: n, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, info, .. } => {
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -1001,7 +1001,7 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, restriction: SCode::Restriction::R_ENUMERATION { .. }, name: n, .. }, _, inst_dims, r#impl, callscope, graph) => {
+                (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_ENUMERATION { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, info, .. }, _, inst_dims, r#impl, callscope, graph) => {
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -1043,7 +1043,7 @@ pub fn instClassIn_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { encapsulatedPrefix, partialPrefix, info, cmt: comment, classDef: d, restriction: r, name: n, .. }, vis, inst_dims, r#impl, callscope, graph) => {
+                (cache, env, ih, store, mods, pre, ci_state, c @ Deref @ SCode::Element::CLASS { name: n, restriction: r, classDef: d, cmt: comment, info, partialPrefix, encapsulatedPrefix, .. }, vis, inst_dims, r#impl, callscope, graph) => {
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ci_state_1: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -1262,7 +1262,7 @@ fn instBasicTypeAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 fn instBasicTypeAttributes2(mut inSubMod: Arc<DAE::SubMod>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inBaseType: Arc<DAE::Type>, mut inTypeFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::Type>, SourceInfo) -> Result<Arc<DAE::Type>> + 'static>) -> Result<Arc<DAE::Var>> {
     let mut outVar: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
     outVar = (::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { info, binding: Some(DAE::EqMod::TYPED { properties: p, modifierAsValue: val, modifierAsExp: exp, .. }), .. }, ident: name } => {
+        Deref @ DAE::SubMod { ident: name, r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: val, properties: p, .. }), info, .. } } => {
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             ty = getRealAttributeType((name.clone()).clone(), inBaseType.clone(), info.clone())?;
             instBuiltinAttribute(inCache.clone(), inEnv.clone(), (name.clone()).clone(), val.clone(), exp.clone(), ty.clone(), p.clone())?
@@ -1628,7 +1628,7 @@ fn instClassdefBasicType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod2.clone(), inPrefix3.clone(), inState5.clone(), inClassDef6.clone(), inInstDims9.clone(), inImplicit.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { initialAlgorithmLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalEquationLst: Deref @ metamodelica::List::Nil, elementLst: els, .. }, inst_dims, r#impl, graph) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialAlgorithmLst: Deref @ metamodelica::List::Nil, .. }, inst_dims, r#impl, graph) => {
                     let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1674,7 +1674,7 @@ fn instClassdefBasicType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::PARTS { initialAlgorithmLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalEquationLst: Deref @ metamodelica::List::Nil, .. }, _, _, _) => {
+                (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::PARTS { normalEquationLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialAlgorithmLst: Deref @ metamodelica::List::Nil, .. }, _, _, _) => {
                     let true = (ErrorExt::isTopCheckpoint((literal!("instClassdefBasicType1")).clone())) else { bail!("pattern mismatch") };
                     ErrorExt::rollBack((literal!("instClassdefBasicType1")).clone());
                     Ok(bail!("fail"))
@@ -1704,7 +1704,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod2.clone(), inPrefix3.clone(), inState5.clone(), inClassDef6.clone(), inRestriction7.clone(), inVisibility.clone(), inPartialPrefix.clone(), inEncapsulatedPrefix.clone(), inInstDims9.clone(), inImplicit.clone(), inCallingScope.clone(), inGraph.clone(), inSets.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { initialAlgorithmLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalEquationLst: Deref @ metamodelica::List::Nil, elementLst: els, .. }, re, vis, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: Deref @ metamodelica::List::Nil, initialEquationLst: Deref @ metamodelica::List::Nil, normalAlgorithmLst: Deref @ metamodelica::List::Nil, initialAlgorithmLst: Deref @ metamodelica::List::Nil, .. }, re, vis, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut extendsclasselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1773,7 +1773,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { externalDecl: ed, clsattrs, constraintLst: constrs, initialAlgorithmLst: initalg, normalAlgorithmLst: alg, initialEquationLst: initeqs, normalEquationLst: eqs, elementLst: els }, re, _, _, _, inst_dims, r#impl, callscope, graph, csets) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::PARTS { elementLst: els, normalEquationLst: eqs, initialEquationLst: initeqs, normalAlgorithmLst: alg, initialAlgorithmLst: initalg, constraintLst: constrs, clsattrs, externalDecl: ed }, re, _, _, _, inst_dims, r#impl, callscope, graph, csets) => {
                     let mut cdefelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut compelts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut extendselts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1893,7 +1893,8 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     ci_state6 = if (isSome(ed.clone())) {ClassInfUtil::assertTrans(ci_state6.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EXT_DECL, info.clone())?} else {ci_state6.clone()};
                     (cache, oty) = InstMeta::fixUniontype(cache.clone(), env5.clone(), ci_state6.clone(), inClassDef6.clone())?;
                     let () = (::match_deref::match_deref! { match &(oty.clone()) {
-        Some(ty @ Deref @ DAE::Type::T_METAUNIONTYPE { typeVars: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
+        Some(__esc_ty @ Deref @ DAE::Type::T_METAUNIONTYPE { typeVars: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
+                    ty = (*__esc_ty).clone();
                     Error::addSourceMessage(Error::UNIONTYPE_MISSING_TYPEVARS.clone(), list![(TypesDump::unparseType(ty.clone())?).clone()], info.clone())?;
                     bail!("fail")
         },
@@ -1907,7 +1908,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { oty = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path: cn } }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
                     let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -1936,13 +1937,13 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let mut graph = (*graph).clone();
                     let false = (Mutable::access(stopInst.clone())) else { bail!("pattern mismatch") };
                     let (__pa0, __pa4, __pa1, __pa2, __pa3, __pa5) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), Some(info.clone()))?) {
-                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { restriction: __pa1 @ SCode::Restriction::R_ENUMERATION { .. }, encapsulatedPrefix: __pa2, name: __pa3, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
+                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { name: __pa1, encapsulatedPrefix: __pa2, restriction: __pa3 @ SCode::Restriction::R_ENUMERATION { .. }, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
-                    r = __pa1.clone();
+                    cn2 = __pa1.clone();
                     enc2 = __pa2.clone();
-                    cn2 = __pa3.clone();
+                    r = __pa3.clone();
                     c = __pa4.clone();
                     cenv = __pa5.clone();
                     env3 = FGraph::openScope(cenv.clone(), enc2.clone(), (cn2.clone()).clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE))?;
@@ -1964,7 +1965,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path: cn } }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -1994,13 +1995,13 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let mut graph = (*graph).clone();
                     let false = (Mutable::access(stopInst.clone())) else { bail!("pattern mismatch") };
                     let (__pa0, __pa4, __pa1, __pa2, __pa3, __pa5) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), Some(info.clone()))?) {
-                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { restriction: __pa1, encapsulatedPrefix: __pa2, name: __pa3, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
+                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { name: __pa1, encapsulatedPrefix: __pa2, restriction: __pa3, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
-                    r = __pa1.clone();
+                    cn2 = __pa1.clone();
                     enc2 = __pa2.clone();
-                    cn2 = __pa3.clone();
+                    r = __pa3.clone();
                     c = __pa4.clone();
                     cenv = __pa5.clone();
                     let true = (InstUtil::checkDerivedRestriction(re.clone(), r.clone(), (cn2.clone()).clone())?) else { bail!("pattern mismatch") };
@@ -2026,7 +2027,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path: cn } }, re, vis, partialPrefix, encapsulatedPrefix, inst_dims, r#impl, callscope, graph, _) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, partialPrefix, encapsulatedPrefix, inst_dims, r#impl, callscope, graph, _) => {
                     let mut parentEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut parentClassEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
@@ -2054,13 +2055,13 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let false = (SCodeUtil::isConnector(re.clone())) else { bail!("pattern mismatch") };
                     let true = (boolOr((ad.clone()).is_none(), ad.clone() == Some(metamodelica::nil()))) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), Some(info.clone()))?) {
-                        (__pa0, Deref @ SCode::Element::CLASS { classDef: __pa1, restriction: __pa2, name: __pa3, .. }, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+                        (__pa0, Deref @ SCode::Element::CLASS { name: __pa1, restriction: __pa2, classDef: __pa3, .. }, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
-                    classDefParent = __pa1.clone();
+                    cn2 = __pa1.clone();
                     r = __pa2.clone();
-                    cn2 = __pa3.clone();
+                    classDefParent = __pa3.clone();
                     parentClassEnv = __pa4.clone();
                     let false = (InstUtil::checkDerivedRestriction(re.clone(), r.clone(), (cn2.clone()).clone())?) else { bail!("pattern mismatch") };
                     if (match r.clone() {
@@ -2088,7 +2089,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path: cn } }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, arrayDim: ad }, modifications: r#mod, attributes: DA }, re, vis, _, _, inst_dims, r#impl, callscope, graph, _) => {
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -2117,13 +2118,13 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let mut graph = (*graph).clone();
                     let false = (Mutable::access(stopInst.clone())) else { bail!("pattern mismatch") };
                     let (__pa0, __pa4, __pa1, __pa2, __pa3, __pa5) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), Some(info.clone()))?) {
-                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { restriction: __pa1, encapsulatedPrefix: __pa2, name: __pa3, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
+                        (__pa0, __pa4 @ Deref @ SCode::Element::CLASS { name: __pa1, encapsulatedPrefix: __pa2, restriction: __pa3, .. }, __pa5) => (__pa0.clone(), __pa4.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
-                    r = __pa1.clone();
+                    cn2 = __pa1.clone();
                     enc2 = __pa2.clone();
-                    cn2 = __pa3.clone();
+                    r = __pa3.clone();
                     c = __pa4.clone();
                     cenv = __pa5.clone();
                     let false = (InstUtil::checkDerivedRestriction(re.clone(), r.clone(), (cn2.clone()).clone())?) else { bail!("pattern mismatch") };
@@ -2147,7 +2148,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, _, mods, _, _, Deref @ SCode::ClassDef::DERIVED { modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { .. }, .. }, _, _, _, _, _, _, _, _, _) => {
+                (_, _, _, _, mods, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { .. }, modifications: r#mod, .. }, _, _, _, _, _, _, _, _, _) => {
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     let false = (Mod::emptyModOrEquality(mods.clone()) && SCodeUtil::emptyModOrEquality(r#mod.clone())) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::META_COMPLEX_TYPE_MOD.clone(), metamodelica::nil(), info.clone())?;
@@ -2158,7 +2159,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut oDA: Option<SCode::Attributes> = None;
@@ -2181,7 +2182,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Option" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Option" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut oDA: Option<SCode::Attributes> = None;
@@ -2210,7 +2211,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tuple" }, typeSpecs: tSpecs, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "tuple" }, typeSpecs: tSpecs, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut oDA: Option<SCode::Attributes> = None;
@@ -2231,7 +2232,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, typeSpecs: Deref @ metamodelica::List::Cons { head: tSpec, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut oDA: Option<SCode::Attributes> = None;
@@ -2260,7 +2261,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, typeSpecs: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::TypeSpec::TPATH { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Any" }, arrayDim: None }, tail: Deref @ metamodelica::List::Nil }, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, typeSpecs: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::TypeSpec::TPATH { path: Deref @ Absyn::Path::IDENT { name: Deref @ "Any" }, arrayDim: None }, tail: Deref @ metamodelica::List::Nil }, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut bc: Option<Arc<DAE::Type>> = None;
                     let mut oDA: Option<SCode::Attributes> = None;
@@ -2278,7 +2279,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, _, mods, _, _, Deref @ SCode::ClassDef::DERIVED { modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, .. }, .. }, _, _, _, _, _, _, _, _, _) => {
+                (_, _, _, _, mods, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, .. }, modifications: r#mod, .. }, _, _, _, _, _, _, _, _, _) => {
                     let true = (Mod::emptyModOrEquality(mods.clone()) && SCodeUtil::emptyModOrEquality(r#mod.clone())) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::META_POLYMORPHIC.clone(), list![(className.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
@@ -2288,7 +2289,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9, __wb10, __wb11)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: r#str }, typeSpecs: tSpecs, arrayDim: None } }, re, vis, partialPrefix, encapsulatedPrefix, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, ci_state, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: r#str }, typeSpecs: tSpecs, arrayDim: None }, modifications: r#mod, attributes: DA }, re, vis, partialPrefix, encapsulatedPrefix, inst_dims, r#impl, _, graph, _) => {
                     let mut r#str = (*r#str).clone();
                     let mut optDerAttr: Option<SCode::Attributes> = optDerAttr.clone();
                     let mut oty: Option<Arc<DAE::Type>> = oty.clone();
@@ -2311,7 +2312,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { optDerAttr = __wb0; oty = __wb1; outCache = __wb2; outDae = __wb3; outEnv = __wb4; outEqualityConstraint = __wb5; outGraph = __wb6; outIH = __wb7; outSets = __wb8; outState = __wb9; outStore = __wb10; outTypesVarLst = __wb11; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { attributes: DA, modifications: r#mod, typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: cn, typeSpecs: tSpecs, arrayDim: None } }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
+                (cache, env, ih, store, mods, pre, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: cn, typeSpecs: tSpecs, arrayDim: None }, modifications: r#mod, attributes: DA }, _, _, _, _, inst_dims, r#impl, _, graph, _) => {
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut new_ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
@@ -2330,13 +2331,13 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let true = (Mod::emptyModOrEquality(mods.clone()) && SCodeUtil::emptyModOrEquality(r#mod.clone())) else { bail!("pattern mismatch") };
                     let false = (listMember((AbsynUtil::pathString(cn.clone(), (literal!(".")).clone(), true, false)?).clone(), list![(literal!("tuple")).clone(), (literal!("Tuple")).clone(), (literal!("array")).clone(), (literal!("Array")).clone(), (literal!("Option")).clone(), (literal!("list")).clone(), (literal!("List")).clone()])) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), cn.clone(), Some(info.clone()))?) {
-                        (__pa0, Deref @ SCode::Element::CLASS { classDef: __pa1, restriction: SCode::Restriction::R_UNIONTYPE { typeVars: __pa2 }, name: __pa3, .. }, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+                        (__pa0, Deref @ SCode::Element::CLASS { name: __pa1, restriction: SCode::Restriction::R_UNIONTYPE { typeVars: __pa2 }, classDef: __pa3, .. }, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
-                    classDef = __pa1.clone();
+                    cn2 = __pa1.clone();
                     typeVars = __pa2.clone();
-                    cn2 = __pa3.clone();
+                    classDef = __pa3.clone();
                     cenv = __pa4.clone();
                     (cache, fq_class) = makeFullyQualifiedIdent(cache.clone(), cenv.clone(), (cn2.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     new_ci_state = ClassInf::State::META_UNIONTYPE { path: fq_class.clone(), typeVars: typeVars.clone() };
@@ -2381,7 +2382,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: tSpec @ Deref @ Absyn::TypeSpec::TCOMPLEX { typeSpecs: tSpecs, path: cn, .. }, .. }, _, _, _, _, _, _, _, _, _) => {
+                (_, _, _, _, _, _, _, Deref @ SCode::ClassDef::DERIVED { typeSpec: tSpec @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: cn, typeSpecs: tSpecs, .. }, .. }, _, _, _, _, _, _, _, _, _) => {
                     let mut cns: ArcStr = arcstr::literal!("");
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
                     let false = (listMember((AbsynUtil::pathString(cn.clone(), (literal!(".")).clone(), true, false)?, (tSpecs.clone().len() as i32) == 1), list![(literal!("tuple"), false), (literal!("array"), true), (literal!("Option"), true), (literal!("list"), true)])) else { bail!("pattern mismatch") };
@@ -2563,7 +2564,7 @@ fn instBasictypeBaseclass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inSCodeElementLst2.clone(), inSCodeElementLst3.clone(), inMod4.clone(), inInstDims5.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { modifications: r#mod, baseClassPath: path, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, mods, inst_dims) => {
+                (cache, env, ih, store, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: path, modifications: r#mod, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, mods, inst_dims) => {
                     let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut m_2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -2651,7 +2652,7 @@ fn instBasictypeBaseclass2(mut inCache: FCore::Cache, mut inEnv1: FCore::Graph, 
         let __mc_input = (inCache.clone(), inEnv1.clone(), inIH.clone(), inSCodeElementLst2.clone(), inSCodeElementLst3.clone(), inInstDims5.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { info, modifications: r#mod, baseClassPath: path, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: _, tail: _ }, inst_dims) => {
+                (cache, env, ih, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: path, modifications: r#mod, info, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: _, tail: _ }, inst_dims) => {
                     let mut m_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut cdef_1: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -2727,7 +2728,7 @@ fn partialInstClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             (outCache, outEnv, outIH, _, _, _, outState, outVars, _, _) = instElementList(outCache.clone(), outEnv.clone(), outIH.clone(), UnitAbsyn::noStore().clone(), r#mod.clone(), inPrefix.clone(), outState.clone(), const_els.clone(), inInstDims.clone(), true, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), false)?;
             (outCache.clone(), outEnv.clone(), outIH.clone(), outState.clone(), outVars.clone())
         },
-        Deref @ SCode::ClassDef::DERIVED { modifications: class_mod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: class_dims, path: class_path }, .. } => {
+        Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: class_path, arrayDim: class_dims }, modifications: class_mod, .. } => {
             let mut class_name: ArcStr = arcstr::literal!("");
             let mut scope_str: ArcStr = arcstr::literal!("");
             let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
@@ -2760,12 +2761,12 @@ fn partialInstClassdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             cls = __pa1.clone();
             cenv = __pa2.clone();
             let (__pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(cls.clone()) {
-                Deref @ SCode::Element::CLASS { restriction: __pa3, encapsulatedPrefix: __pa4, name: __pa5, .. } => (__pa3.clone(), __pa4.clone(), __pa5.clone()),
+                Deref @ SCode::Element::CLASS { name: __pa3, encapsulatedPrefix: __pa4, restriction: __pa5, .. } => (__pa3.clone(), __pa4.clone(), __pa5.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            der_re = __pa3.clone();
+            class_name = __pa3.clone();
             enc = __pa4.clone();
-            class_name = __pa5.clone();
+            der_re = __pa5.clone();
             parent_re = SCodeUtil::getClassRestriction(inClass.clone())?;
             is_basic_type = InstUtil::checkDerivedRestriction(parent_re.clone(), der_re.clone(), (class_name.clone()).clone())?;
             smod = InstUtil::chainRedeclares(inMod.clone(), class_mod.clone())?;
@@ -3064,7 +3065,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, (el @ Deref @ SCode::Element::COMPONENT { typeSpec: Deref @ Absyn::TypeSpec::TPATH { .. }, name, .. }, cmod), inst_dims, r#impl, graph, csets) => {
+                (cache, env, ih, store, mods, pre, ci_state, (el @ Deref @ SCode::Element::COMPONENT { name, typeSpec: Deref @ Absyn::TypeSpec::TPATH { .. }, .. }, cmod), inst_dims, r#impl, graph, csets) => {
                     let mut own_cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut dir: Absyn::Direction = Absyn::Direction::BIDIR;
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -3122,22 +3123,22 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     let mut graph = (*graph).clone();
                     let mut csets = (*csets).clone();
                     let mut outFieldDomOpt: Option<(Arc<Absyn::ComponentRef>, Arc<DAE::ComponentRef>)> = outFieldDomOpt.clone();
-                    let (__pa0, __pa1, __pa2, __pa3, __pa5, __pa4, __pa7, __pa6, __pa10, __pa8, __pa9, __pa11) = ::match_deref::match_deref! { match &(el.clone()) {
-                        Deref @ SCode::Element::COMPONENT { info: __pa0, condition: __pa1, comment: __pa2, modifications: __pa3, typeSpec: __pa5 @ Deref @ Absyn::TypeSpec::TPATH { path: __pa4, .. }, attributes: __pa7 @ SCode::Attributes { arrayDims: __pa6, .. }, prefixes: __pa10 @ Deref @ SCode::Prefixes { innerOuter: __pa8, finalPrefix: __pa9, .. }, name: __pa11 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone(), __pa4.clone(), __pa7.clone(), __pa6.clone(), __pa10.clone(), __pa8.clone(), __pa9.clone(), __pa11.clone()),
+                    let (__pa0, __pa3, __pa1, __pa2, __pa5, __pa4, __pa7, __pa6, __pa8, __pa9, __pa10, __pa11) = ::match_deref::match_deref! { match &(el.clone()) {
+                        Deref @ SCode::Element::COMPONENT { name: __pa0, prefixes: __pa3 @ Deref @ SCode::Prefixes { finalPrefix: __pa1, innerOuter: __pa2, .. }, attributes: __pa5 @ SCode::Attributes { arrayDims: __pa4, .. }, typeSpec: __pa7 @ Deref @ Absyn::TypeSpec::TPATH { path: __pa6, .. }, modifications: __pa8, comment: __pa9, condition: __pa10, info: __pa11 } => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa5.clone(), __pa4.clone(), __pa7.clone(), __pa6.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    info = __pa0.clone();
-                    cond = __pa1.clone();
-                    comment = __pa2.clone();
-                    m = __pa3.clone();
-                    t = __pa4.clone();
-                    ts = __pa5.clone();
-                    ad = __pa6.clone();
-                    attr = __pa7.clone();
-                    io = __pa8.clone();
-                    final_prefix = __pa9.clone();
-                    prefixes = __pa10.clone();
-                    name = __pa11.clone();
+                    name = __pa0.clone();
+                    final_prefix = __pa1.clone();
+                    io = __pa2.clone();
+                    prefixes = __pa3.clone();
+                    ad = __pa4.clone();
+                    attr = __pa5.clone();
+                    t = __pa6.clone();
+                    ts = __pa7.clone();
+                    m = __pa8.clone();
+                    comment = __pa9.clone();
+                    cond = __pa10.clone();
+                    info = __pa11.clone();
                     let true = (if (Config::acceptParModelicaGrammar()?) {InstUtil::checkParallelismWRTEnv(env.clone(), (name.clone()).clone(), attr.clone(), info.clone())?} else {true}) else { bail!("pattern mismatch") };
                     m = SCodeUtil::mergeModifiers(m.clone(), SCodeUtil::getConstrainedByModifiers(prefixes.clone()))?;
                     if SCodeUtil::finalBool(final_prefix.clone())? {
@@ -3171,7 +3172,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     r#mod = Mod::merge(cmod.clone(), r#mod.clone(), (name.clone()).clone(), true)?;
                     r#mod = Mod::merge(r#mod.clone(), var_class_mod.clone(), (name.clone()).clone(), true)?;
                     let (__pa14, __pa15, __pa16, __pa17, __pa19, __pa18, __pa22, __pa20, __pa21, __pa23, __pa24, __pa25) = ::match_deref::match_deref! { match &(redeclareType(cache.clone(), env2.clone(), ih.clone(), r#mod.clone(), comp.clone(), pre.clone(), ci_state.clone(), r#impl.clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD())?) {
-                        (__pa14, __pa15, __pa16, Deref @ SCode::Element::COMPONENT { name: __pa17, prefixes: __pa19 @ Deref @ SCode::Prefixes { innerOuter: __pa18, .. }, attributes: __pa22 @ SCode::Attributes { direction: __pa20, arrayDims: __pa21, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa23, arrayDim: _ }, modifications: _, comment: __pa24, condition: _, info: _ }, __pa25) => (__pa14.clone(), __pa15.clone(), __pa16.clone(), __pa17.clone(), __pa19.clone(), __pa18.clone(), __pa22.clone(), __pa20.clone(), __pa21.clone(), __pa23.clone(), __pa24.clone(), __pa25.clone()),
+                        (__pa14, __pa15, __pa16, Deref @ SCode::Element::COMPONENT { name: __pa17, prefixes: __pa19 @ Deref @ SCode::Prefixes { innerOuter: __pa18, .. }, attributes: __pa22 @ SCode::Attributes { arrayDims: __pa20, direction: __pa21, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa23, arrayDim: _ }, modifications: _, comment: __pa24, condition: _, info: _ }, __pa25) => (__pa14.clone(), __pa15.clone(), __pa16.clone(), __pa17.clone(), __pa19.clone(), __pa18.clone(), __pa22.clone(), __pa20.clone(), __pa21.clone(), __pa23.clone(), __pa24.clone(), __pa25.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa14.clone();
@@ -3180,8 +3181,8 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     name = __pa17.clone();
                     io = __pa18.clone();
                     prefixes = __pa19.clone();
-                    dir = __pa20.clone();
-                    ad = __pa21.clone();
+                    ad = __pa20.clone();
+                    dir = __pa21.clone();
                     attr = __pa22.clone();
                     t = __pa23.clone();
                     comment = __pa24.clone();
@@ -3241,7 +3242,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { outFieldDomOpt = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, mods, pre, ci_state, (comp @ Deref @ SCode::Element::COMPONENT { name, prefixes: prefixes @ Deref @ SCode::Prefixes { innerOuter: io, finalPrefix: final_prefix, .. }, attributes: attr @ SCode::Attributes { connectorType: ct, arrayDims: ad, .. }, typeSpec: ts @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: type_name, .. }, modifications: m, comment, condition: cond, info }, cmod), inst_dims, r#impl, graph, csets) => {
+                (cache, env, ih, store, mods, pre, ci_state, (comp @ Deref @ SCode::Element::COMPONENT { name, prefixes: prefixes @ Deref @ SCode::Prefixes { finalPrefix: final_prefix, innerOuter: io, .. }, attributes: attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, .. }, typeSpec: ts @ Deref @ Absyn::TypeSpec::TCOMPLEX { path: type_name, .. }, modifications: m, comment, condition: cond, info }, cmod), inst_dims, r#impl, graph, csets) => {
                     let mut own_cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut already_declared: bool = false;
                     let mut graph_new: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
@@ -3294,7 +3295,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, _, _, _, pre, ci_state, (Deref @ SCode::Element::COMPONENT { info, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: t, arrayDim: _ }, attributes: SCode::Attributes { variability: vt, .. }, name, .. }, _), _, _, _, _) => {
+                (cache, env, _, _, _, pre, ci_state, (Deref @ SCode::Element::COMPONENT { name, attributes: SCode::Attributes { variability: vt, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: t, arrayDim: _ }, info, .. }, _), _, _, _, _) => {
                     let mut ns: ArcStr = arcstr::literal!("");
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut scope_str: ArcStr = arcstr::literal!("");
@@ -3538,11 +3539,11 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
         return Ok((outCache.clone(), outEnv.clone(), outIH.clone(), outElement.clone(), outMod.clone()));
     }
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::REDECL { r#mod: __pa0, element: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Mod::REDECL { element: __pa0, r#mod: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    redecl_mod = __pa0.clone();
-    redecl_el = __pa1.clone();
+    redecl_el = __pa0.clone();
+    redecl_mod = __pa1.clone();
     redecl_name = (SCodeUtil::elementName(redecl_el.clone())?).clone();
     (outElement, outMod) = 'mc: {
         let __mc_input = (redecl_el.clone(), inElement.clone());
@@ -3566,7 +3567,8 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
                     (outCache, m) = Mod::elabMod(outCache.clone(), outEnv.clone(), outIH.clone(), inPrefix.clone(), r#mod.clone(), inImpl.clone(), Mod::ModScope::COMPONENT { name: (redecl_name.clone()).clone() }, var_field!((*redecl_el).info, SCode::Element::COMPONENT).clone())?;
                     (outCache, old_m) = Mod::elabMod(outCache.clone(), outEnv.clone(), outIH.clone(), inPrefix.clone(), var_field!((*inElement).modifications, SCode::Element::COMPONENT).clone(), inImpl.clone(), Mod::ModScope::COMPONENT { name: (var_field!((*inElement).name, SCode::Element::COMPONENT).clone()).clone() }, var_field!((*inElement).info, SCode::Element::COMPONENT).clone())?;
                     m = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: cc @ Some(_) } => {
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: __esc_cc @ Some(_) } => {
+                    cc = (*__esc_cc).clone();
                     cc_comps = InstUtil::extractConstrainingComps(cc.clone(), inEnv.clone(), inPrefix.clone())?;
                     redecl_mod = InstUtil::keepConstrainingTypeModifersOnly(redecl_mod.clone(), cc_comps.clone())?;
                     old_m = InstUtil::keepConstrainingTypeModifersOnly(old_m.clone(), cc_comps.clone())?;
@@ -3692,7 +3694,7 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), r#mod.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { info, modifications: smod, attributes, prefixes: prefixes @ Deref @ SCode::Prefixes { visibility, .. }, name, .. }, .. }) => {
+                (cache, env, ih, Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { name, prefixes: prefixes @ Deref @ SCode::Prefixes { visibility, .. }, attributes, modifications: smod, info, .. }, .. }) => {
                     let mut n: ArcStr = arcstr::literal!("");
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut ct: SCode::ConnectorType = SCode::ConnectorType::FLOW;
@@ -3844,13 +3846,13 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                     let mut mods = (*mods).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
                     let (__pa0, __pa1, __pa4, __pa2, __pa3, __pa10, __pa5, __pa6, __pa7, __pa8, __pa9, __pa11, __pa12, __pa13, __pa14, __pa15, __pa16) = ::match_deref::match_deref! { match &(Lookup::lookupIdent(cache.clone(), env.clone(), (id.clone()).clone())?) {
-                        (__pa0, _, Deref @ SCode::Element::COMPONENT { name: __pa1, prefixes: __pa4 @ Deref @ SCode::Prefixes { visibility: __pa2, innerOuter: __pa3, .. }, attributes: __pa10 @ SCode::Attributes { arrayDims: __pa5, connectorType: __pa6, parallelism: __pa7, variability: __pa8, direction: __pa9, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa11, arrayDim: _ }, modifications: __pa12, comment: _, condition: __pa13, info: __pa14 }, __pa15, _, __pa16) => (__pa0.clone(), __pa1.clone(), __pa4.clone(), __pa2.clone(), __pa3.clone(), __pa10.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone(), __pa14.clone(), __pa15.clone(), __pa16.clone()),
+                        (__pa0, _, Deref @ SCode::Element::COMPONENT { name: __pa1, prefixes: __pa4 @ Deref @ SCode::Prefixes { innerOuter: __pa2, visibility: __pa3, .. }, attributes: __pa10 @ SCode::Attributes { arrayDims: __pa5, connectorType: __pa6, parallelism: __pa7, variability: __pa8, direction: __pa9, .. }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa11, arrayDim: _ }, modifications: __pa12, comment: _, condition: __pa13, info: __pa14 }, __pa15, _, __pa16) => (__pa0.clone(), __pa1.clone(), __pa4.clone(), __pa2.clone(), __pa3.clone(), __pa10.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone(), __pa14.clone(), __pa15.clone(), __pa16.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     cache = __pa0.clone();
                     n = __pa1.clone();
-                    visibility = __pa2.clone();
-                    io = __pa3.clone();
+                    io = __pa2.clone();
+                    visibility = __pa3.clone();
                     pf = __pa4.clone();
                     ad = __pa5.clone();
                     ct = __pa6.clone();
@@ -4597,7 +4599,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { direction: dir, variability: var1, parallelism: prl1, connectorType: ct, arrayDims: ad, .. }, inst_dims) => {
+                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
                     let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
                     let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -4642,7 +4644,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { direction: dir, variability: var1, parallelism: prl1, connectorType: ct, arrayDims: ad, .. }, inst_dims) => {
+                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
                     let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
                     let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -4687,7 +4689,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { direction: dir, variability: var1, parallelism: prl1, connectorType: ct, arrayDims: ad, .. }, inst_dims) => {
+                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
                     let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
                     let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -4732,7 +4734,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { direction: dir, variability: var1, parallelism: prl1, connectorType: ct, arrayDims: ad, .. }, inst_dims) => {
+                (cache, env, ih, store, cl1, c1 @ Deref @ Absyn::ComponentRef::CREF_IDENT { name: n, .. }, sty, state, attr @ SCode::Attributes { arrayDims: ad, connectorType: ct, parallelism: prl1, variability: var1, direction: dir, .. }, inst_dims) => {
                     let mut cl2: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
                     let mut compenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -4799,7 +4801,7 @@ fn updateComponentsInEnv2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         let mut cr = cr.clone();
         if '__try0: {
             let __pa1 = ::match_deref::match_deref! { match &(cr.clone()) {
-                Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __pa1 } => __pa1.clone(),
+                Deref @ Absyn::ComponentRef::CREF_IDENT { name: __pa1, subscripts: Deref @ metamodelica::List::Nil } => __pa1.clone(),
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             name = __pa1.clone();
@@ -4942,11 +4944,11 @@ pub fn getCachedInstance(mut cache: FCore::Cache, mut env: FCore::Graph, mut nam
     let mut inputs: (Arc<DAE::Mod>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Element>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, bool, Option<Arc<DAE::ComponentRef>>, InstTypes::CallingScope) = (Arc::new(DAE::Mod::NOMOD), DAE::Prefix::NOPRE, <DAE::Connect::Sets as ::std::default::Default>::default(), <ClassInf::State as ::std::default::Default>::default(), Arc::new(<SCode::Element as ::std::default::Default>::default()), metamodelica::nil(), false, None, InstTypes::CallingScope::INNER_CALL);
     let true = (Flags::isSet(Flags::CACHE.clone())?) else { bail!("pattern mismatch") };
     let (__pa2, __pa0, __pa1, __pa3) = ::match_deref::match_deref! { match &(FNode::refData(r#ref.clone())?) {
-        FCore::Data::CL { e: __pa2 @ Deref @ SCode::Element::CLASS { restriction: __pa0, encapsulatedPrefix: __pa1, .. }, pre: __pa3, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
+        FCore::Data::CL { e: __pa2 @ Deref @ SCode::Element::CLASS { encapsulatedPrefix: __pa0, restriction: __pa1, .. }, pre: __pa3, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    res = __pa0.clone();
-    enc = __pa1.clone();
+    enc = __pa0.clone();
+    res = __pa1.clone();
     cls = __pa2.clone();
     prefix = __pa3.clone();
     env2 = FGraph::openScope(env.clone(), enc.clone(), (name.clone()).clone(), FGraph::restrictionToScopeType(res.clone()))?;
@@ -5017,7 +5019,10 @@ fn instFunctionAnnotations(mut comments: Arc<metamodelica::List<Arc<SCode::Comme
             comment = cmt.comment.clone();
         }
         r#mod = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: mod2 }), .. } => SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())?,
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod2 }), .. } => {
+            mod2 = (*__esc_mod2).clone();
+            SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())?
+        },
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

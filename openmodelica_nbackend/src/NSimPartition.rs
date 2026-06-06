@@ -197,14 +197,14 @@ pub fn toStringShort(mut part: Arc<NSimPartition>) -> Result<ArcStr> {
 pub fn convertBase(mut part: Arc<NSimPartition>) -> Result<OldSimCode::ClockedPartition> {
     let mut oldPart: OldSimCode::ClockedPartition = <OldSimCode::ClockedPartition as ::std::default::Default>::default();
     oldPart = (::match_deref::match_deref! { match &(part.clone()) {
-        Deref @ BASE_PARTITION { .. } => OldSimCode::ClockedPartition { subPartitions: ({
+        Deref @ BASE_PARTITION { .. } => OldSimCode::ClockedPartition { baseClock: BClock::convertBase(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())?, subPartitions: ({
         let mut __acc: Arc<metamodelica::List<OldSimCode::SubPartition>> = metamodelica::nil();
         for mut sub in (var_field!((*part).subPartitions, NSimPartition::BASE_PARTITION).clone()).into_iter().cloned() {
             let __x = convertSub(sub.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), baseClock: BClock::convertBase(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())? },
+    }) },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertBase")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -217,10 +217,10 @@ pub fn convertBase(mut part: Arc<NSimPartition>) -> Result<OldSimCode::ClockedPa
 pub fn convertSub(mut part: Arc<NSimPartition>) -> Result<OldSimCode::SubPartition> {
     let mut oldPart: OldSimCode::SubPartition = <OldSimCode::SubPartition as ::std::default::Default>::default();
     oldPart = (::match_deref::match_deref! { match &(part.clone()) {
-        Deref @ SUB_PARTITION { .. } => OldSimCode::SubPartition { holdEvents: var_field!((*part).holdEvents, NSimPartition::SUB_PARTITION).clone(), subClock: BClock::convertSub(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?, removedEquations: ({
-        let mut __acc: Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>> = metamodelica::nil();
-        for mut blck in (var_field!((*part).removedEquations, NSimPartition::SUB_PARTITION).clone()).into_iter().cloned() {
-            let __x = Block::convert(blck.clone())?;
+        Deref @ SUB_PARTITION { .. } => OldSimCode::SubPartition { vars: ({
+        let mut __acc: Arc<metamodelica::List<(SimCodeVar::SimVar, bool)>> = metamodelica::nil();
+        for mut tpl in (var_field!((*part).variables, NSimPartition::SUB_PARTITION).clone()).into_iter().cloned() {
+            let __x = SimVar::convertTpl(tpl.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -231,14 +231,14 @@ pub fn convertSub(mut part: Arc<NSimPartition>) -> Result<OldSimCode::SubPartiti
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), vars: ({
-        let mut __acc: Arc<metamodelica::List<(SimCodeVar::SimVar, bool)>> = metamodelica::nil();
-        for mut tpl in (var_field!((*part).variables, NSimPartition::SUB_PARTITION).clone()).into_iter().cloned() {
-            let __x = SimVar::convertTpl(tpl.clone())?;
+    }), removedEquations: ({
+        let mut __acc: Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>> = metamodelica::nil();
+        for mut blck in (var_field!((*part).removedEquations, NSimPartition::SUB_PARTITION).clone()).into_iter().cloned() {
+            let __x = Block::convert(blck.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }) },
+    }), subClock: BClock::convertSub(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?, holdEvents: var_field!((*part).holdEvents, NSimPartition::SUB_PARTITION).clone() },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimPartition.convertSub")); __mm_s.push_str(&*literal!(" failed for non-base partition:\n")); __mm_s.push_str(&*toString(part.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

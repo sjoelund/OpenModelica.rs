@@ -167,7 +167,7 @@ fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> 
         Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, .. } => {
             ()
         },
-        Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { r#mod, ident: id }, tail: _ }, .. } => {
+        Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SubMod { ident: id, r#mod }, tail: _ }, .. } => {
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
             info = Mod::getModInfo(r#mod.clone());
             Error::addSourceMessage(Error::MISSING_MODIFIED_ELEMENT.clone(), list![(id.clone()).clone(), (inClassName.clone()).clone()], info.clone())?;
@@ -249,7 +249,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     (outCache, outEnv, outIH) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())) {
-        (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { partialPrefix: pPrefix, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, name: n, .. }, inst_dims) => {
+        (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, partialPrefix: pPrefix, .. }, inst_dims) => {
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -261,20 +261,20 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
             let mut c = (*c).clone();
             (cache, c, cenv) = Lookup::lookupRecordConstructorClass(cache.clone(), env.clone(), Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }))?;
             let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(implicitFunctionInstantiation2(cache.clone(), cenv.clone(), ih.clone(), r#mod.clone(), pre.clone(), c.clone(), inst_dims.clone(), true)?) {
-                (__pa0, __pa1, __pa2, Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { source: __pa3, type_: __pa4, path: __pa5, .. }, tail: Deref @ metamodelica::List::Nil }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
+                (__pa0, __pa1, __pa2, Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { path: __pa3, type_: __pa4, source: __pa5, .. }, tail: Deref @ metamodelica::List::Nil }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             cache = __pa0.clone();
             env = __pa1.clone();
             ih = __pa2.clone();
-            source = __pa3.clone();
+            fpath = __pa3.clone();
             ty1 = __pa4.clone();
-            fpath = __pa5.clone();
+            source = __pa5.clone();
             fun = DAE::Function::RECORD_CONSTRUCTOR { path: fpath.clone(), type_: ty1.clone(), source: source.clone() };
             cache = InstUtil::addFunctionsToDAE(cache.clone(), list![fun.clone()], pPrefix.clone())?;
             (cache.clone(), env.clone(), ih.clone())
         },
-        (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { partialPrefix: pPrefix, restriction: r, .. }, inst_dims) => {
+        (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { restriction: r, partialPrefix: pPrefix, .. }, inst_dims) => {
             let mut funs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
@@ -307,7 +307,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: funcRest }, name: n, partialPrefix, prefixes: Deref @ SCode::Prefixes { visibility, .. }, classDef: cd, .. }, inst_dims) => {
+                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { classDef: cd, prefixes: Deref @ SCode::Prefixes { visibility, .. }, partialPrefix, name: n, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: funcRest }, info, .. }, inst_dims) => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -369,7 +369,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { encapsulatedPrefix, info, classDef: cd @ parts @ Deref @ SCode::ClassDef::PARTS { externalDecl: Some(scExtdecl), .. }, restriction: restr @ SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity } }, name: n, prefixes: Deref @ SCode::Prefixes { visibility, .. }, partialPrefix, .. }, inst_dims) => {
+                (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { partialPrefix, prefixes: Deref @ SCode::Prefixes { visibility, .. }, name: n, restriction: restr @ SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity } }, classDef: cd @ parts @ Deref @ SCode::ClassDef::PARTS { externalDecl: Some(scExtdecl), .. }, info, encapsulatedPrefix, .. }, inst_dims) => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -417,7 +417,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, _, pre, Deref @ SCode::Element::CLASS { cmt, classDef: Deref @ SCode::ClassDef::OVERLOAD { pathLst: funcnames }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity } }, prefixes: Deref @ SCode::Prefixes { visibility, .. }, name: n, .. }, _) => {
+                (cache, env, ih, _, pre, Deref @ SCode::Element::CLASS { name: n, prefixes: Deref @ SCode::Prefixes { visibility, .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity } }, classDef: Deref @ SCode::ClassDef::OVERLOAD { pathLst: funcnames }, cmt, .. }, _) => {
                     let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut resfns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut isImpure: bool = false;
@@ -535,7 +535,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inClass.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: _ } }, .. }) => {
+                (cache, env, ih, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: _ } }, classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. }) => {
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut funs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
@@ -549,7 +549,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: extDecl, elementLst: elts, .. }, restriction: r, partialPrefix: p, encapsulatedPrefix: e, prefixes, name: id }) => {
+                (cache, env, ih, Deref @ SCode::Element::CLASS { name: id, prefixes, encapsulatedPrefix: e, partialPrefix: p, restriction: r, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, externalDecl: extDecl, .. }, cmt, info }) => {
                     let mut stripped_class: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
@@ -565,7 +565,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::DERIVED { modifications: mod1, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, .. }, .. }, name: id, .. }) => {
+                (cache, env, ih, Deref @ SCode::Element::CLASS { name: id, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, .. }, modifications: mod1, .. }, info, .. }) => {
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
@@ -719,7 +719,10 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_TUPLE { .. }, .. } => (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false),
         Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL { .. }, .. } => (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false),
-        Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, .. } => (DAE::ExtArg::EXTARG { componentRef: DAEUtil::varCref(List::find(elements.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isOutputVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?)?, direction: openmodelica_ast::Absyn::Direction::OUTPUT, type_: ty.clone() }, true),
+        Deref @ DAE::Type::T_FUNCTION { funcResultType: __esc_ty, .. } => {
+            ty = (*__esc_ty).clone();
+            (DAE::ExtArg::EXTARG { componentRef: DAEUtil::varCref(List::find(elements.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isOutputVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?)?, direction: openmodelica_ast::Absyn::Direction::OUTPUT, type_: ty.clone() }, true)
+        },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("instExtMakeDefaultExternalCall failed for ")); __mm_s.push_str(&*TypesDump::unparseType(funcType.clone())?); ArcStr::from(__mm_s) }).clone(), info.clone())?;
             bail!("fail")
@@ -896,7 +899,7 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
 fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { variability: SCode::Variability::VAR { .. }, direction: Absyn::Direction::BIDIR { .. }, .. }, prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. } => false,
+        Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, attributes: SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, variability: SCode::Variability::VAR { .. }, .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -905,7 +908,7 @@ fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
 
 fn checkExtObjOutput(mut inType: Arc<DAE::Type>, mut info: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, .. } => {
+        Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, path, .. } => {
             ::match_deref::match_deref! { match &(Types::traverseType(ty.clone(), (path.clone(), info.clone(), true), (std::sync::Arc::new(checkExtObjOutputWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool)) -> Result<(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool))> + 'static>))?) {
                 (_, (_, _, true)) => (),
                 _ => bail!("pattern mismatch"),

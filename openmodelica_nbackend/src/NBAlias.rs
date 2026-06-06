@@ -133,9 +133,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     let mut func: Module::aliasInterface;
     func = getModule()?;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
-            let mut eqData = (*eqData).clone();
+        Deref @ BackendDAE::MAIN { varData, eqData, .. } => {
             let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
             (varData, eqData) = aliasClocks(varData.clone(), eqData.clone(), kind.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
@@ -144,9 +144,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
             );
             bdae.clone()
         },
-        Deref @ BackendDAE::HESSIAN { eqData, varData } => {
-            let mut eqData = (*eqData).clone();
+        Deref @ BackendDAE::HESSIAN { varData, eqData } => {
             let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::HESSIAN;
                 varData = varData.clone(),

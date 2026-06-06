@@ -106,7 +106,7 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
                 _ => bail!("pattern mismatch"),
             } };
             jump = __pa3.clone();
-            newBlock = MidCode::Block { terminator: MidCode::Terminator::GOTO { next: jump.clone() }, stmts: oldBlock.stmts.clone(), id: oldBlock.id.clone() };
+            newBlock = MidCode::Block { id: oldBlock.id.clone(), stmts: oldBlock.stmts.clone(), terminator: MidCode::Terminator::GOTO { next: jump.clone() } };
         } else if isPopJmp(oldBlock.terminator.clone()) {
             let __pa4 = ::match_deref::match_deref! { match &(jumps.clone()) {
                 Deref @ metamodelica::List::Cons { head: _, tail: __pa4 } => __pa4.clone(),
@@ -128,7 +128,7 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
         tasks = listAppend(tasks_tmp.clone(), tasks.clone());
     }
     newBody = newBody.clone().reverse();
-    newFunction = MidCode::Function { exitId: oldFunction.exitId.clone(), entryId: oldFunction.entryId.clone(), body: newBody.clone(), outputs: oldFunction.outputs.clone(), inputs: oldFunction.inputs.clone(), localBufPtrs: oldFunction.localBufPtrs.clone(), localBufs: oldFunction.localBufs.clone(), locals: oldFunction.locals.clone(), name: oldFunction.name.clone() };
+    newFunction = MidCode::Function { name: oldFunction.name.clone(), locals: oldFunction.locals.clone(), localBufs: oldFunction.localBufs.clone(), localBufPtrs: oldFunction.localBufPtrs.clone(), inputs: oldFunction.inputs.clone(), outputs: oldFunction.outputs.clone(), body: newBody.clone(), entryId: oldFunction.entryId.clone(), exitId: oldFunction.exitId.clone() };
     Ok(newFunction)
 }
 
@@ -140,7 +140,10 @@ pub fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32
     let mut block_local: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
     block_ = (::match_deref::match_deref! { match &(blocks.clone()) {
         Deref @ metamodelica::List::Cons { head: block_local, tail: _ } if (block_local.id.clone() == id.clone()) => block_local.clone(),
-        Deref @ metamodelica::List::Cons { head: _, tail: blocks_local } => lookupId(blocks_local.clone(), id.clone())?,
+        Deref @ metamodelica::List::Cons { head: _, tail: __esc_blocks_local } => {
+            blocks_local = (*__esc_blocks_local).clone();
+            lookupId(blocks_local.clone(), id.clone())?
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(block_)
@@ -152,21 +155,40 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
     let mut l1: i32 = 0;
     let mut switchList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     neighbours = (match block_.terminator.clone() {
-        MidCode::Terminator::GOTO { next: mut l0 } => list![l0.clone()],
-        MidCode::Terminator::BRANCH { condition: _, onTrue: mut l0, onFalse: mut l1 } => list![l0.clone(), l1.clone()],
-        MidCode::Terminator::CALL { func: _, builtin: _, inputs: _, outputs: _, next: mut l0 } => list![l0.clone()],
+        MidCode::Terminator::GOTO { next: mut __esc_l0 } => {
+            l0 = __esc_l0.clone();
+            list![l0.clone()]
+        },
+        MidCode::Terminator::BRANCH { condition: _, onTrue: mut __esc_l0, onFalse: mut __esc_l1 } => {
+            l0 = __esc_l0.clone();
+            l1 = __esc_l1.clone();
+            list![l0.clone(), l1.clone()]
+        },
+        MidCode::Terminator::CALL { func: _, builtin: _, inputs: _, outputs: _, next: mut __esc_l0 } => {
+            l0 = __esc_l0.clone();
+            list![l0.clone()]
+        },
         MidCode::Terminator::RETURN { .. } => metamodelica::nil(),
-        MidCode::Terminator::SWITCH { condition: _, cases: ref switchList } => ({
+        MidCode::Terminator::SWITCH { condition: _, cases: ref __esc_switchList } => {
+            switchList = __esc_switchList.clone();
+            ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut x in (switchList.clone()).into_iter().cloned() {
             let __x = tupleSnd(x.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
+    })
+        },
         MidCode::Terminator::LONGJMP { .. } => metamodelica::nil(),
-        MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: mut l0 } => list![l0.clone()],
-        MidCode::Terminator::POPJMP { old_buf: _, next: mut l0 } => list![l0.clone()],
+        MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: mut __esc_l0 } => {
+            l0 = __esc_l0.clone();
+            list![l0.clone()]
+        },
+        MidCode::Terminator::POPJMP { old_buf: _, next: mut __esc_l0 } => {
+            l0 = __esc_l0.clone();
+            list![l0.clone()]
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(neighbours)

@@ -856,7 +856,7 @@ impl Default for OMSIFunction {
 pub type OMSI_FUNCTION = OMSIFunction;
 
 
-thread_local! { static __emptyOMSIFunction_TLS: Arc<OMSIFunction> = Arc::new(OMSIFunction { nAlgebraicSystems: 0, context: SimCodeFunction::contextOMSI().clone(), nAllVars: 0, innerVars: metamodelica::nil(), outputVars: metamodelica::nil(), inputVars: metamodelica::nil(), equations: metamodelica::nil() }); }
+thread_local! { static __emptyOMSIFunction_TLS: Arc<OMSIFunction> = Arc::new(OMSIFunction { equations: metamodelica::nil(), inputVars: metamodelica::nil(), outputVars: metamodelica::nil(), innerVars: metamodelica::nil(), nAllVars: 0, context: SimCodeFunction::contextOMSI().clone(), nAlgebraicSystems: 0 }); }
 pub fn emptyOMSIFunction() -> Arc<OMSIFunction> { __emptyOMSIFunction_TLS.with(|__t| __t.clone()) }
 
 /// Represents a single equation or a system of equations that must be solved together.

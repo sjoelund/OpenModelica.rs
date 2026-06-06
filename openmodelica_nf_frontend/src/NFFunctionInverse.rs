@@ -175,7 +175,9 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
     let mut call_aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut call_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     fnInvs = (::match_deref::match_deref! { match &(submod.clone()) {
-        Deref @ SCode::SubMod { r#mod: Deref @ SCode::Mod::MOD { binding: Some(call_aexp @ Deref @ Absyn::Exp::CALL { .. }), subModLst: Deref @ metamodelica::List::Nil, .. }, ident: name } => {
+        Deref @ SCode::SubMod { ident: __esc_name, r#mod: Deref @ SCode::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, binding: Some(__esc_call_aexp @ Deref @ Absyn::Exp::CALL { .. }), .. } } => {
+            name = (*__esc_name).clone();
+            call_aexp = (*__esc_call_aexp).clone();
             aparam = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: metamodelica::nil() });
             match '__try0: {
                 (param, _, _) = unwrap_break_err!(Lookup::lookupLocalCref(aparam.clone(), fnNode.clone(), NFInstContext::RELAXED.clone(), info.clone()), '__try0);

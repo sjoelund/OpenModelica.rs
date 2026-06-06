@@ -132,9 +132,10 @@ fn symSolverUpdateSyst(mut iSyst: Arc<BackendDAE::EqSystem>, mut inKnVars: Backe
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     oSyst = (::match_deref::match_deref! { match &(iSyst.clone()) {
-        syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. } => {
+        syst @ Deref @ BackendDAE::EqSystem { orderedVars: __esc_vars, orderedEqs: __esc_eqns, .. } => {
+            vars = (*__esc_vars).clone();
+            eqns = (*__esc_eqns).clone();
             let mut syst = (*syst).clone();
-            let mut vars = (*vars).clone();
             crlst = metamodelica::nil();
             for mut i in 1..=ExpandableArray::getLastUsedIndex(eqns.clone()) {
                 if ExpandableArray::occupied(i.clone(), eqns.clone()) {
@@ -202,7 +203,7 @@ fn symSolverUpdateStates(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::
     let mut orderedVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     (inTpl, orderedVars) = inTl.clone();
     (outExp, outTl) = (::match_deref::match_deref! { match &((inTpl.clone(), inExp.clone())) {
-        (cr_lst, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }) => {
+        (cr_lst, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;
@@ -240,7 +241,7 @@ fn symSolverUpdateDer(mut inExp: Arc<DAE::Exp>, mut inTpl: Arc<metamodelica::Lis
     let mut cont: bool = true;
     let mut outTpl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outTpl) = (::match_deref::match_deref! { match &((inTpl.clone(), inExp.clone())) {
-        (cr_lst, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }) => {
+        (cr_lst, Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;

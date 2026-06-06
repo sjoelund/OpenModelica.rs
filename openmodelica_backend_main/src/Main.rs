@@ -217,7 +217,7 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
 fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
     res = ((match p.clone() {
-        Absyn::Program { within_: Absyn::Within::WITHIN { path: ref scope }, classes: ref cls } => {
+        Absyn::Program { classes: ref cls, within_: Absyn::Within::WITHIN { path: ref scope } } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
@@ -238,7 +238,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     }), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Absyn::Program { within_: Absyn::Within::TOP { .. }, classes: ref cls } => {
+        Absyn::Program { classes: ref cls, within_: Absyn::Within::TOP { .. } } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();

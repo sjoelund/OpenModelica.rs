@@ -182,14 +182,14 @@ pub fn evaluateExternal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamod
     let mut ann: Option<Arc<SCode::Annotation>> = None;
     let mut ext_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Class::getSections(InstNode::getClass(r#fn.node.clone())?)?) {
-        Deref @ Sections::EXTERNAL { ann: __pa0, language: __pa1, outputRef: __pa2, args: __pa3, name: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ Sections::EXTERNAL { name: __pa0, args: __pa1, outputRef: __pa2, language: __pa3, ann: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ann = __pa0.clone();
-    lang = __pa1.clone();
+    name = __pa0.clone();
+    ext_args = __pa1.clone();
     output_ref = __pa2.clone();
-    ext_args = __pa3.clone();
-    name = __pa4.clone();
+    lang = __pa3.clone();
+    ann = __pa4.clone();
     result = 'mc: {
         let __mc_input = lang.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -363,7 +363,8 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut local_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     result = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_comps, .. }, .. } => {
+            comps = (*__esc_comps).clone();
             bindings = metamodelica::nil();
             local_map = UnorderedMap::new((std::sync::Arc::new(InstNode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), 1);
             let __range0 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -467,7 +468,8 @@ fn applyReplacementCall(mut map: ArgumentMap, mut call: Arc<Call::NFCall>, mut e
                 } };
                 repl_exp = __pa0.clone();
                 outExp = (::match_deref::match_deref! { match &(repl_exp.clone()) {
-        Deref @ Expression::CREF { ty: Deref @ Type::FUNCTION { r#fn, .. }, .. } => {
+        Deref @ Expression::CREF { ty: Deref @ Type::FUNCTION { r#fn: __esc_fn, .. }, .. } => {
+            r#fn = (*__esc_fn).clone();
             assign_variant_field!(call => Call::NFCall::TYPED_CALL;
                 arguments = mergeFunctionApplicationArgs(var_field!((*call).r#fn, Call::NFCall::TYPED_CALL).clone(), var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone(), r#fn.clone(), metamodelica::nil(), metamodelica::nil())?,
                 r#fn = r#fn.clone()
@@ -742,7 +744,8 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
     let mut subs: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     let mut vals: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     result = (::match_deref::match_deref! { match &((arrayExp.clone(), subscripts.clone())) {
-        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::INDEX { index: sub }, tail: rest_subs }) if (Expression::isScalarLiteral(sub.clone())) => {
+        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::INDEX { index: sub }, tail: __esc_rest_subs }) if (Expression::isScalarLiteral(sub.clone())) => {
+            rest_subs = (*__esc_rest_subs).clone();
             idx = Expression::toInteger(sub.clone())?;
             if rest_subs.clone().is_empty() {
                 {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _idx = idx.clone(); let _val = value.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
@@ -751,8 +754,9 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             }
             arrayExp.clone()
         },
-        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::SLICE { slice: sub }, tail: rest_subs }) => {
-            let mut sub = (*sub).clone();
+        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::SLICE { slice: __esc_sub }, tail: __esc_rest_subs }) => {
+            sub = (*__esc_sub).clone();
+            rest_subs = (*__esc_rest_subs).clone();
             subs = Expression::arrayElements(sub.clone())?;
             vals = Expression::arrayElements(value.clone())?;
             if metamodelica::arrayLength(subs.clone()) > metamodelica::arrayLength(vals.clone()) {
@@ -775,7 +779,8 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             }
             arrayExp.clone()
         },
-        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::WHOLE, tail: rest_subs }) => {
+        (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::WHOLE, tail: __esc_rest_subs }) => {
+            rest_subs = (*__esc_rest_subs).clone();
             if rest_subs.clone().is_empty() {
                 assign_variant_field!(arrayExp => Expression::NFExpression::ARRAY; elements = metamodelica::arrayFromVec(Expression::arrayElements(value.clone())?.borrow().clone()));
             } else {
@@ -940,11 +945,11 @@ fn evaluateAssert(mut condition: Arc<Expression::NFExpression>, mut assertStmt: 
     let mut target: Arc<EvalTarget::EvalTarget> = evalTargetFromSource(source.clone(), STATEMENT_CONTEXT.clone(), context.clone());
     if Expression::isFalse(Ceval::evalExp(condition.clone(), target.clone())?) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(assertStmt.clone()) {
-            Deref @ Statement::ASSERT { level: __pa0, message: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            Deref @ Statement::ASSERT { message: __pa0, level: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        lvl = __pa0.clone();
-        msg = __pa1.clone();
+        msg = __pa0.clone();
+        lvl = __pa1.clone();
         msg = Ceval::evalExp(msg.clone(), target.clone())?;
         lvl = Ceval::evalExp(lvl.clone(), target.clone())?;
         let () = (::match_deref::match_deref! { match &((msg.clone(), lvl.clone())) {
@@ -1273,7 +1278,10 @@ fn parseExternalAnnotation(mut name: ArcStr, mut ann: Arc<SCode::Annotation>) ->
     for mut m in &*mods.clone() {
         let mut m = m.clone();
         strl = (::match_deref::match_deref! { match &(m.clone()) {
-        Deref @ SCode::Mod::MOD { binding: Some(exp), .. } => parseExternalAnnotationExp(exp.clone(), strl.clone())?,
+        Deref @ SCode::Mod::MOD { binding: Some(__esc_exp), .. } => {
+            exp = (*__esc_exp).clone();
+            parseExternalAnnotationExp(exp.clone(), strl.clone())?
+        },
         _ => strl.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

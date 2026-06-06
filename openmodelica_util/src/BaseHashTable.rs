@@ -610,7 +610,8 @@ pub fn clear<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable<Key
     ft = __pa6.clone();
     for mut i in 1..=vs.clone() {
         let () = (match metamodelica::arrayGet(vae.clone(), i.clone())? {
-        Some((mut key, _)) => {
+        Some((mut __esc_key, _)) => {
+            key = __esc_key.clone();
             hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
             {let _arr = hv.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = vae.clone(); let _idx = i.clone(); let _val = None; _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
@@ -645,7 +646,8 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
     ft = __pa6.clone();
     for mut i in 1..=ve.clone() {
         let () = (match metamodelica::arrayGet(vae.clone(), i.clone())? {
-        Some((mut key, _)) => {
+        Some((mut __esc_key, _)) => {
+            key = __esc_key.clone();
             if !(workaroundForBug.clone()) {
                 hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
                 {let _arr = hv.clone(); let _idx = hash_idx.clone(); let _val = metamodelica::nil(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};

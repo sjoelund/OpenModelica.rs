@@ -147,9 +147,12 @@ pub fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDele
     for mut eq in &*flatModel.equations.clone() {
         let mut eq = eq.clone();
         eql = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::CONNECT { source, rhs: Deref @ Expression::CREF { cref: rhs, ty: ty2 }, lhs: Deref @ Expression::CREF { cref: lhs, ty: ty1 }, .. } => {
-            let mut rhs = (*rhs).clone();
-            let mut lhs = (*lhs).clone();
+        Deref @ Equation::CONNECT { lhs: Deref @ Expression::CREF { ty: __esc_ty1, cref: __esc_lhs }, rhs: Deref @ Expression::CREF { ty: __esc_ty2, cref: __esc_rhs }, source: __esc_source, .. } => {
+            ty1 = (*__esc_ty1).clone();
+            lhs = (*__esc_lhs).clone();
+            ty2 = (*__esc_ty2).clone();
+            rhs = (*__esc_rhs).clone();
+            source = (*__esc_source).clone();
             lhs = ComponentRef::evaluateSubscripts(lhs.clone())?;
             rhs = ComponentRef::evaluateSubscripts(rhs.clone())?;
             assign_field!(conns.connections = makeConnections(lhs.clone(), ty1.clone(), rhs.clone(), ty2.clone(), source.clone(), isDeleted.clone(), conns.connections.clone())?);

@@ -156,7 +156,7 @@ pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>)
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             inCref.clone()
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() });
             prefixCref(cref.clone(), rest_prefix.clone())?
@@ -174,7 +174,7 @@ pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Re
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             inPath.clone()
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = Arc::new(Absyn::Path::QUALIFIED { name: (name.clone()).clone(), path: inPath.clone() });
             prefixPath(path.clone(), rest_prefix.clone())?
@@ -204,10 +204,10 @@ pub fn prefixStr(mut inString: ArcStr, mut inPrefix: Arc<Prefix>) -> Result<ArcS
 pub fn toCref(mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     outCref = (::match_deref::match_deref! { match &(inPrefix.clone()) {
-        Deref @ Prefix::PREFIX { restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, .. } => {
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() })
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
             prefixCref(cref.clone(), rest_prefix.clone())?
@@ -220,10 +220,10 @@ pub fn toCref(mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
 pub fn toPath(mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
-        Deref @ Prefix::PREFIX { restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
             prefixPath(path.clone(), rest_prefix.clone())?
@@ -286,10 +286,10 @@ pub fn toStr(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             literal!("")
         },
-        Deref @ Prefix::PREFIX { restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, .. } => {
             name.clone()
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toStr(rest_prefix.clone())?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
@@ -310,7 +310,7 @@ pub fn toStrWithEmpty(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E(")); __mm_s.push_str(&*AbsynUtil::pathLastIdent(path.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
+        Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toStrWithEmpty(rest_prefix.clone())?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
             r#str.clone()

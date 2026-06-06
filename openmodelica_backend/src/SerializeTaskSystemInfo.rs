@@ -207,7 +207,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             true
         },
-        Deref @ SimCode::SimEqSystem::SES_LINEAR { alternativeTearing: None, lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, .. } => {
+        Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: None, .. } => {
             let mut i: i32 = 0;
             let mut j: i32 = 0;
             let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
@@ -217,7 +217,11 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             j = (lSystem.simJac.clone().len() as i32);
             eqs = SimCodeUtil::sortEqSystems(lSystem.residual.clone())?;
             jeqs = (::match_deref::match_deref! { match &(lSystem.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -276,7 +280,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("\n]}")).clone());
             true
         },
-        Deref @ SimCode::SimEqSystem::SES_LINEAR { alternativeTearing: Some(atL @ Deref @ SimCode::LinearSystem { .. }), lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, .. } => {
+        Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: lSystem @ Deref @ SimCode::LinearSystem { .. }, alternativeTearing: Some(atL @ Deref @ SimCode::LinearSystem { .. }), .. } => {
             let mut i: i32 = 0;
             let mut j: i32 = 0;
             let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
@@ -293,7 +297,11 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 }
             }
             jeqs = (::match_deref::match_deref! { match &(lSystem.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -355,7 +363,11 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 }
             }
             jeqs = (::match_deref::match_deref! { match &(atL.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -452,13 +464,17 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             true
         },
-        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { alternativeTearing: None, nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, .. } => {
+        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: None, .. } => {
             let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             eqs = SimCodeUtil::sortEqSystems(nlSystem.eqs.clone())?;
             jeqs = (::match_deref::match_deref! { match &(nlSystem.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -502,7 +518,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("\n]}")).clone());
             true
         },
-        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { alternativeTearing: Some(atNL @ Deref @ SimCode::NonlinearSystem { .. }), nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, .. } => {
+        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: nlSystem @ Deref @ SimCode::NonlinearSystem { .. }, alternativeTearing: Some(atNL @ Deref @ SimCode::NonlinearSystem { .. }), .. } => {
             let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut jeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut constantEqns: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
@@ -513,7 +529,11 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), nlSystem.index.clone(), false, if (nlSystem.tornSystem.clone()) {1} else {0})?;
             }
             jeqs = (::match_deref::match_deref! { match &(nlSystem.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -552,7 +572,11 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
                 serializeEquation(file.clone(), e.clone(), (section.clone()).clone(), withOperations.clone(), atNL.index.clone(), false, if (atNL.tornSystem.clone()) {1} else {0})?;
             }
             jeqs = (::match_deref::match_deref! { match &(atNL.jacobianMatrix.clone()) {
-        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { constantEqns, columnEqns: jeqs, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?,
+        Some(Deref @ SimCode::JacobianMatrix { columns: Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianColumn { columnEqns: __esc_jeqs, constantEqns: __esc_constantEqns, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+            jeqs = (*__esc_jeqs).clone();
+            constantEqns = (*__esc_constantEqns).clone();
+            SimCodeUtil::sortEqSystems(listAppend(jeqs.clone(), constantEqns.clone()))?
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -663,7 +687,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             for mut whenOps in &*var_field!((*eq).whenStmtLst, SimCode::SimEqSystem::SES_WHEN).clone() {
                 let mut whenOps = whenOps.clone();
                 let () = (match whenOps.clone() {
-        mut whenOp @ BackendDAE::WhenOperator::ASSIGN { .. } => {
+        mut __esc_whenOp @ BackendDAE::WhenOperator::ASSIGN { .. } => {
+            whenOp = __esc_whenOp.clone();
             File::write(file.clone(), (literal!("\",\"tag\":\"when\",\"defines\":[")).clone());
             serializeExp(file.clone(), var_field!(whenOp.left, BackendDAE::WhenOperator::ASSIGN).clone())?;
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
@@ -675,7 +700,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
-        mut whenOp @ BackendDAE::WhenOperator::REINIT { .. } => {
+        mut __esc_whenOp @ BackendDAE::WhenOperator::REINIT { .. } => {
+            whenOp = __esc_whenOp.clone();
             File::write(file.clone(), (literal!("\",\"tag\":\"when\",\"defines\":[")).clone());
             serializeCref(file.clone(), var_field!(whenOp.stateVar, BackendDAE::WhenOperator::REINIT).clone())?;
             File::write(file.clone(), (literal!("],\"uses\":[")).clone());
@@ -687,7 +713,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
-        mut whenOp @ BackendDAE::WhenOperator::ASSERT { .. } => {
+        mut __esc_whenOp @ BackendDAE::WhenOperator::ASSERT { .. } => {
+            whenOp = __esc_whenOp.clone();
             File::write(file.clone(), (literal!("\",\"tag\":\"when\"")).clone());
             File::write(file.clone(), (literal!(",\"uses\":[")).clone());
             crefs = listAppend(Expression::extractUniqueCrefsFromExpDerPreStart(var_field!(whenOp.condition, BackendDAE::WhenOperator::ASSERT).clone(), true)?, Expression::extractUniqueCrefsFromExpDerPreStart(var_field!(whenOp.message, BackendDAE::WhenOperator::ASSERT).clone(), true)?);
@@ -699,7 +726,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
-        mut whenOp @ BackendDAE::WhenOperator::TERMINATE { .. } => {
+        mut __esc_whenOp @ BackendDAE::WhenOperator::TERMINATE { .. } => {
+            whenOp = __esc_whenOp.clone();
             File::write(file.clone(), (literal!("\",\"tag\":\"when\"")).clone());
             File::write(file.clone(), (literal!(",\"uses\":[")).clone());
             serializeUses(file.clone(), List::union(var_field!((*eq).conditions, SimCode::SimEqSystem::SES_WHEN).clone(), Expression::extractUniqueCrefsFromExpDerPreStart(var_field!(whenOp.message, BackendDAE::WhenOperator::TERMINATE).clone(), true)?))?;
@@ -710,7 +738,8 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (literal!("}")).clone());
             ()
         },
-        mut whenOp @ BackendDAE::WhenOperator::NORETCALL { .. } => {
+        mut __esc_whenOp @ BackendDAE::WhenOperator::NORETCALL { .. } => {
+            whenOp = __esc_whenOp.clone();
             File::write(file.clone(), (literal!("\",\"tag\":\"when\"")).clone());
             File::write(file.clone(), (literal!(",\"uses\":[")).clone());
             serializeUses(file.clone(), List::union(var_field!((*eq).conditions, SimCode::SimEqSystem::SES_WHEN).clone(), Expression::extractUniqueCrefsFromExpDerPreStart(var_field!(whenOp.exp, BackendDAE::WhenOperator::NORETCALL).clone(), true)?))?;

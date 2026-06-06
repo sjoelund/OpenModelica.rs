@@ -82,7 +82,7 @@ pub fn typeConvert(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut
             ival = ((r.clone()).0.floor() as i32);
             metamodelica::cons(Arc::new(Values::Value::INTEGER { integer: ival.clone() }), vallst.clone())
         },
-        (from, to, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: vals }, tail: vrest }) => {
+        (from, to, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, dimLst: dims }, tail: vrest }) => {
             let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut vallst2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             vallst = typeConvert(from.clone(), to.clone(), vals.clone())?;
@@ -539,7 +539,7 @@ pub fn writeToFileAsArgs(mut vallst: Arc<metamodelica::List<Arc<Values::Value>>>
 pub fn addElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: v1lst }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             reslst = addElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
@@ -578,7 +578,7 @@ pub fn addElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 pub fn subElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: v1lst }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             reslst = subElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
@@ -610,7 +610,7 @@ pub fn subElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 pub fn mulElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: v1lst }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             reslst = mulElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
@@ -642,7 +642,7 @@ pub fn mulElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: v1lst }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             reslst = divElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
@@ -678,7 +678,7 @@ pub fn divElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values
 pub fn powElementwiseArrayelt(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValueLst2: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outValueLst = (::match_deref::match_deref! { match &((inValueLst1.clone(), inValueLst2.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: v1lst }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v1lst, dimLst: dims }, tail: rest1 }, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: v2lst, .. }, tail: rest2 }) => {
             let mut reslst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             reslst = powElementwiseArrayelt(v1lst.clone(), v2lst.clone())?;
@@ -777,10 +777,10 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
         Deref @ Values::Value::BOOL { boolean: b } => {
             Arc::new(DAE::Exp::BCONST { bool: b.clone() })
         },
-        Deref @ Values::Value::ENUM_LITERAL { index: i, name: path } => {
+        Deref @ Values::Value::ENUM_LITERAL { name: path, index: i } => {
             Arc::new(DAE::Exp::ENUM_LITERAL { name: path.clone(), index: i.clone() })
         },
-        Deref @ Values::Value::ARRAY { dimLst: int_dims, valueLst: vallist } => {
+        Deref @ Values::Value::ARRAY { valueLst: vallist, dimLst: int_dims } => {
             valueExpArray(vallist.clone(), int_dims.clone(), originalExp.clone())?
         },
         Deref @ Values::Value::TUPLE { valueLst: vallist } => {
@@ -799,7 +799,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             t = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path.clone() }, varLst: varlst.clone(), equalityConstraint: None, usedExternally: false });
             Arc::new(DAE::Exp::RECORD { path: path.clone(), exps: expl.clone(), comp: namelst.clone(), ty: t.clone() })
         },
-        Deref @ Values::Value::ENUM_LITERAL { index: ix, name: path } => {
+        Deref @ Values::Value::ENUM_LITERAL { name: path, index: ix } => {
             Arc::new(DAE::Exp::ENUM_LITERAL { name: path.clone(), index: ix.clone() })
         },
         Deref @ Values::Value::TUPLE { valueLst: vallist } => {
@@ -867,7 +867,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
         Deref @ Values::Value::CODE { A: code } => {
             Arc::new(DAE::Exp::CODE { code: code.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone() })
         },
-        Deref @ Values::Value::EMPTY { ty: valType, tyStr, name, scope } => {
+        Deref @ Values::Value::EMPTY { scope, name, tyStr, ty: valType } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             if isSome(originalExp.clone()) {
@@ -1190,7 +1190,7 @@ pub fn valueNeg(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
             i_1 = -(i.clone());
             Arc::new(Values::Value::INTEGER { integer: i_1.clone() })
         },
-        Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: vlst } => {
+        Deref @ Values::Value::ARRAY { valueLst: vlst, dimLst: dims } => {
             let mut vlst_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             vlst_1 = List::map(vlst.clone(), (std::sync::Arc::new(valueNeg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
             Arc::new(Values::Value::ARRAY { valueLst: vlst_1.clone(), dimLst: dims.clone() })
@@ -1593,12 +1593,12 @@ pub fn multScalarProduct(mut inValueLst1: Arc<metamodelica::List<Arc<Values::Val
                     mat_1 = __pa1.clone();
                     v = multScalarProduct(vlst.clone(), col.clone())?;
                     let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(multScalarProduct(vlst.clone(), mat_1.clone())?) {
-                        Deref @ Values::Value::ARRAY { dimLst: Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 }, valueLst: __pa4 } => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
+                        Deref @ Values::Value::ARRAY { valueLst: __pa2, dimLst: Deref @ metamodelica::List::Cons { head: __pa3, tail: __pa4 } } => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    dim = __pa2.clone();
-                    dims = __pa3.clone();
-                    vals = __pa4.clone();
+                    vals = __pa2.clone();
+                    dim = __pa3.clone();
+                    dims = __pa4.clone();
                     dim = dim.clone() + 1;
                     Ok(Arc::new(Values::Value::ARRAY { valueLst: metamodelica::cons(v.clone(), vals.clone()), dimLst: metamodelica::cons(dim.clone(), dims.clone()) }))
                 }
@@ -1692,7 +1692,7 @@ fn matrixStripFirstColumn(mut inValueLst: Arc<metamodelica::List<Arc<Values::Val
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     let mut outValueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     (outValue, outValueLst) = (::match_deref::match_deref! { match &(inValueLst.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, valueLst: Deref @ metamodelica::List::Cons { head: v1, tail: vrest } }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: v1, tail: vrest }, dimLst: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, tail: rest } => {
             let mut resl: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut resl2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut i: i32 = 0;
@@ -1847,7 +1847,7 @@ pub fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Valu
         let __mc_input = inValue.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: lst } => {
+                Deref @ Values::Value::ARRAY { valueLst: lst, dimLst: dims } => {
                     let mut lst_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut lst_2: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     lst_1 = List::map(lst.clone(), (std::sync::Arc::new(reverseMatrix) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
@@ -2126,7 +2126,7 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
 pub fn fixZeroSizeArray(mut e: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut e: Arc<DAE::Exp> = e;
     e = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, scalar: false, ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, .. } } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty.clone())?)), array: metamodelica::nil() }),
+        Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, .. }, scalar: false, array: Deref @ metamodelica::List::Nil } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty.clone())?)), array: metamodelica::nil() }),
         _ => e.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -107,7 +107,7 @@ fn lm_46(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_METARECORD { path: i_path, fields: i_ty_fields, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_METARECORD { fields: i_ty_fields, path: i_path, .. }, tail: rest }) => {
             let mut ret_9: ArcStr = arcstr::literal!("");
             let mut str_8: ArcStr = arcstr::literal!("");
             let mut l_fieldsDescription: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -200,12 +200,12 @@ fn lm_48(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SCode::
 fn fun_49(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cl.clone())) {
-        (txt, i_c @ Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { name: Deref @ Absyn::Path::IDENT { name: i_name }, moved: true, .. }, .. }) => {
+        (txt, i_c @ Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: Deref @ Absyn::Path::IDENT { name: i_name }, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = elementExternalHeader(txt.clone(), i_c.clone(), (i_name.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ SCode::Element::CLASS { name: i_c_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, .. }) => {
+        (txt, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = lm_48(txt.clone(), i_p_elementLst.clone(), (i_c_name.clone()).clone())?;
             txt.clone()
@@ -234,7 +234,7 @@ pub fn pathString(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Res
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, name: i_name_1 }) => {
+        (txt, Deref @ Absyn::Path::QUALIFIED { name: i_name_1, path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name_1.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
@@ -443,7 +443,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_a_p_elementLst: Arc<metamodelica::List<A
 pub fn elementExternalHeader(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_pack: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_pack.clone())) {
-        (txt, Deref @ SCode::Element::CLASS { name: i_c_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, restriction: SCode::Restriction::R_METARECORD { index: i_r_index, name: i_r_name, moved: true, .. }, .. }, a_pack) => {
+        (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, index: i_r_index, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_pack) => {
             let mut str_11: ArcStr = arcstr::literal!("");
             let mut l_fieldsDescription: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_9: i32 = 0;
@@ -643,7 +643,7 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_a_cl: Arc<SCode::Element>, mut in_a_buf1
     let mut out_a_buf1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_buf2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cl.clone(), in_a_buf1.clone(), in_a_buf2.clone())) {
-        (txt, Deref @ SCode::Element::CLASS { name: i_c_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, .. }, a_buf1, a_buf2) => {
+        (txt, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_buf1, a_buf2) => {
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
             let mut a_buf2 = (*a_buf2).clone();
@@ -849,7 +849,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
     let mut out_a_buf1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_buf2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_buf1, out_a_buf2) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elt.clone(), in_a_buf1.clone(), in_a_buf2.clone(), in_a_pack.clone())) {
-        (txt, Deref @ SCode::Element::CLASS { name: i_c_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }, restriction: SCode::Restriction::R_UNIONTYPE { .. }, .. }, a_buf1, a_buf2, a_pack) => {
+        (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_UNIONTYPE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }, name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
             let mut l_omcname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_buf1 = (*a_buf1).clone();
@@ -875,7 +875,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_elt: Arc<SCode::Element>, mut in_a_buf
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
             (txt.clone(), a_buf1.clone(), a_buf2.clone())
         },
-        (txt, Deref @ SCode::Element::CLASS { name: i_c_name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, restriction: SCode::Restriction::R_METARECORD { name: i_r_name, moved: true, .. }, .. }, a_buf1, a_buf2, a_pack) => {
+        (txt, Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, name: i_r_name, .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: i_p_elementLst, .. }, name: i_c_name, .. }, a_buf1, a_buf2, a_pack) => {
             let mut ret_8: i32 = 0;
             let mut ret_7: ArcStr = arcstr::literal!("");
             let mut l_fullname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();

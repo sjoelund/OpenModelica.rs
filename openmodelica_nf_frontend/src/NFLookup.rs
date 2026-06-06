@@ -234,7 +234,8 @@ pub fn fixExternalObjectCall(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Co
     Inst::expand(node.clone(), InstContext::NO_CONTEXT.clone())?;
     cls = InstNode::getClass(node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::PARTIAL_BUILTIN { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { constructor, .. }, .. }, .. } => {
+        Deref @ Class::PARTIAL_BUILTIN { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { constructor: __esc_constructor, .. }, .. }, .. } => {
+            constructor = (*__esc_constructor).clone();
             cref = ComponentRef::prefixCref(constructor.clone(), crate::NFType::interned_UNKNOWN(), metamodelica::nil(), cref.clone());
             state = crate::NFLookupState::LookupState::interned_FUNC();
             ()
@@ -889,9 +890,9 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
             let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
             comp = InstNode::component(node.clone())?;
             (comp, def) = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ Component::COMPONENT_DEF { definition: def @ Deref @ SCode::Element::COMPONENT { prefixes: prefs, .. }, .. } => {
-            let mut def = (*def).clone();
-            let mut prefs = (*prefs).clone();
+        Deref @ Component::COMPONENT_DEF { definition: __esc_def @ Deref @ SCode::Element::COMPONENT { prefixes: __esc_prefs, .. }, .. } => {
+            def = (*__esc_def).clone();
+            prefs = (*__esc_prefs).clone();
             assign_field!(prefs.innerOuter = openmodelica_ast::Absyn::InnerOuter::INNER);
             assign_variant_field!(def => SCode::Element::COMPONENT; prefixes = prefs.clone());
             assign_variant_field!(comp => Component::NFComponent::COMPONENT_DEF; definition = def.clone());

@@ -485,8 +485,8 @@ pub fn setDirection(mut direction: Prefixes::Direction, mut component: Arc<NFCom
     let mut component: Arc<NFComponent> = component;
     let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: attr, .. } => {
-            let mut attr = (*attr).clone();
+        Deref @ COMPONENT { attributes: __esc_attr, .. } => {
+            attr = (*__esc_attr).clone();
             assign_field!(attr.direction = direction.clone());
             assign_variant_field!(component => NFComponent::COMPONENT; attributes = attr.clone());
             ()
@@ -596,8 +596,8 @@ pub fn setFinal(mut component: Arc<NFComponent>, mut isFinal: bool) -> Arc<NFCom
     let mut component: Arc<NFComponent> = component;
     let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: attr, .. } => {
-            let mut attr = (*attr).clone();
+        Deref @ COMPONENT { attributes: __esc_attr, .. } => {
+            attr = (*__esc_attr).clone();
             assign_field!(attr.isFinal = isFinal.clone());
             assign_variant_field!(component => NFComponent::COMPONENT; attributes = attr.clone());
             ()

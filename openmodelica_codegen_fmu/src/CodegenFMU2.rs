@@ -73,7 +73,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr, mut in_a_FMUType: ArcStr, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUType.clone(), in_a_sourceFiles.clone())) {
-        (txt, i_simCode @ SimCode::SimCode { modelStructure: i_modelStructure, simulationSettingsOpt: i_simulationSettingsOpt, .. }, a_guid, a_FMUType, a_sourceFiles) => {
+        (txt, i_simCode @ SimCode::SimCode { simulationSettingsOpt: i_simulationSettingsOpt, modelStructure: i_modelStructure, .. }, a_guid, a_FMUType, a_sourceFiles) => {
             let mut ret_2: bool = false;
             let mut ret_1: bool = false;
             let mut ret_0: bool = false;
@@ -170,7 +170,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text)
 pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
-        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { license: ref i_modelInfo_license, copyright: ref i_modelInfo_copyright, version: ref i_modelInfo_version, author: ref i_modelInfo_author, description: ref i_modelInfo_description, name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, .. }, .. }, mut a_guid) => {
+        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, description: ref i_modelInfo_description, author: ref i_modelInfo_author, version: ref i_modelInfo_version, copyright: ref i_modelInfo_copyright, license: ref i_modelInfo_license, .. }, .. }, mut a_guid) => {
             let mut ret_20: ArcStr = arcstr::literal!("");
             let mut ret_19: ArcStr = arcstr::literal!("");
             let mut ret_18: bool = false;

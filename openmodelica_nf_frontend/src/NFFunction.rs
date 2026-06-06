@@ -559,7 +559,7 @@ pub mod Function {
             fnNode = Record::instDefaultConstructor(fnPath.clone(), fnNode.clone(), context.clone(), info.clone())?;
             (fnNode.clone(), false)
         },
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_OPERATOR { .. }, .. } => {
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_OPERATOR { .. }, classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
             (fnNode, _) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
             fnNode = OperatorOverloading::instOperatorFunctions(fnNode.clone(), context.clone(), info.clone())?;
             (fnNode.clone(), false)
@@ -642,11 +642,12 @@ pub mod Function {
         let mut enum_name: ArcStr = InstNode::name(enumNode.clone())?;
         elem = InstNode::definition(InstNode::resolveInner(Class::lastBaseClass(enumNode.clone())?))?;
         fn_def = (::match_deref::match_deref! { match &(elem.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: def @ Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: __esc_def @ Deref @ SCode::ClassDef::ENUMERATION { .. }, .. } => {
+            def = (*__esc_def).clone();
             params = list![Arc::new(SCode::Element::COMPONENT { name: (literal!("index")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultInputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Integer")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() }), Arc::new(SCode::Element::COMPONENT { name: (literal!("value")).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultOutputAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (enum_name.clone()).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: info.clone() })];
-            stmts = list![Arc::new(SCode::Statement::ALG_ASSERT { condition: Arc::new(Absyn::Exp::LBINARY { exp1: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::GREATEREQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: 1 }) }), op: openmodelica_ast::Absyn::Operator::AND, exp2: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::LESSEQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: (var_field!((**def).enumLst, SCode::ClassDef::ENUMERATION).clone().len() as i32) }) }) }), message: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::STRING { value: (literal!("Enumeration index '")).clone() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("String")).clone(), subscripts: metamodelica::nil() }), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: list![Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) })], argNames: metamodelica::nil() }), typeVars: metamodelica::nil() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("' out of bounds in call to ")); __mm_s.push_str(&*enum_name.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }) }) }), level: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("AssertionLevel")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("error")).clone(), subscripts: metamodelica::nil() }) }) }), comment: SCode::noComment.clone(), info: info.clone() }), Arc::new(SCode::Statement::ALG_ASSIGN { assignComponent: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("value")).clone(), subscripts: metamodelica::nil() }) }), value: Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: ({
+            stmts = list![Arc::new(SCode::Statement::ALG_ASSERT { condition: Arc::new(Absyn::Exp::LBINARY { exp1: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::GREATEREQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: 1 }) }), op: openmodelica_ast::Absyn::Operator::AND, exp2: Arc::new(Absyn::Exp::RELATION { exp1: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) }), op: openmodelica_ast::Absyn::Operator::LESSEQ, exp2: Arc::new(Absyn::Exp::INTEGER { value: (var_field!((*def).enumLst, SCode::ClassDef::ENUMERATION).clone().len() as i32) }) }) }), message: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::STRING { value: (literal!("Enumeration index '")).clone() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::BINARY { exp1: Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("String")).clone(), subscripts: metamodelica::nil() }), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: list![Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("index")).clone(), subscripts: metamodelica::nil() }) })], argNames: metamodelica::nil() }), typeVars: metamodelica::nil() }), op: openmodelica_ast::Absyn::Operator::ADD, exp2: Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("' out of bounds in call to ")); __mm_s.push_str(&*enum_name.clone()); __mm_s.push_str(&*literal!("()")); ArcStr::from(__mm_s) }).clone() }) }) }), level: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("AssertionLevel")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("error")).clone(), subscripts: metamodelica::nil() }) }) }), comment: SCode::noComment.clone(), info: info.clone() }), Arc::new(SCode::Statement::ALG_ASSIGN { assignComponent: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("value")).clone(), subscripts: metamodelica::nil() }) }), value: Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-        for mut e in (var_field!((**def).enumLst, SCode::ClassDef::ENUMERATION).clone()).into_iter().cloned() {
+        for mut e in (var_field!((*def).enumLst, SCode::ClassDef::ENUMERATION).clone()).into_iter().cloned() {
             let __x = Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (enum_name.clone()).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (e.literal.clone()).clone(), subscripts: metamodelica::nil() }) }) });
             __acc = cons(__x, __acc);
         }
@@ -1143,11 +1144,11 @@ pub mod Function {
         let __range0 = slots.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut s in __range0 {
             let (__pa1, __pa2) = ::match_deref::match_deref! { match &(s.clone()) {
-                Deref @ Slot::SLOT { arg: __pa1, default: __pa2, .. } => (__pa1.clone(), __pa2.clone()),
+                Deref @ Slot::SLOT { default: __pa1, arg: __pa2, .. } => (__pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            arg = __pa1.clone();
-            default = __pa2.clone();
+            default = __pa1.clone();
+            arg = __pa2.clone();
             args = 'mc: {
         let __mc_input = arg.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1256,11 +1257,11 @@ pub mod Function {
         let mut arg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
         let mut cref_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(crefExp.clone()) {
-            Deref @ Expression::CREF { ty: __pa0, cref: __pa1 } => (__pa0.clone(), __pa1.clone()),
+            Deref @ Expression::CREF { cref: __pa0, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        cref_ty = __pa0.clone();
-        cref = __pa1.clone();
+        cref = __pa0.clone();
+        cref_ty = __pa1.clone();
         if !(ComponentRef::isCref(cref.clone())) {
             return Ok(crefExp.clone());
         }
@@ -1348,12 +1349,12 @@ pub mod Function {
         for mut arg in &*args.clone() {
             let mut arg = arg.clone();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(arg.clone()) {
-                Deref @ TypedArg { var: __pa0, ty: __pa1, value: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                Deref @ TypedArg { value: __pa0, ty: __pa1, var: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            arg_var = __pa0.clone();
+            arg_exp = __pa0.clone();
             arg_ty = __pa1.clone();
-            arg_exp = __pa2.clone();
+            arg_var = __pa2.clone();
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(inputs.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa3, tail: __pa4 } => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
@@ -1650,12 +1651,12 @@ pub mod Function {
         let mut slots_arr: metamodelica::Array<Arc<Slot::Slot>> = Default::default();
         let mut ty_arg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-            Deref @ Expression::PARTIAL_FUNCTION_APPLICATION { argNames: __pa0, args: __pa1, r#fn: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+            Deref @ Expression::PARTIAL_FUNCTION_APPLICATION { r#fn: __pa0, args: __pa1, argNames: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        arg_names = __pa0.clone();
+        fn_ref = __pa0.clone();
         args = __pa1.clone();
-        fn_ref = __pa2.clone();
+        arg_names = __pa2.clone();
         let __pa3 = ::match_deref::match_deref! { match &(typeRefCache(fn_ref.clone(), InstContext::FUNCTION.clone())?) {
             Deref @ metamodelica::List::Cons { head: __pa3, tail: _ } => __pa3.clone(),
             _ => bail!("pattern mismatch"),
@@ -2151,7 +2152,8 @@ pub mod Function {
         Error::assertion(InstNode::isClass(node.clone())? || InstNode::isComponent(node.clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.collectParams")); __mm_s.push_str(&*literal!(" got non-class/non-component node")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
         cls = InstNode::getClass(node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_comps, .. }, .. } => {
+            comps = (*__esc_comps).clone();
             for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 n = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 check_vis = !(Flags::getConfigBool(Flags::BASE_MODELICA.clone())?);
@@ -2199,12 +2201,12 @@ pub mod Function {
             bail!("fail");
         }
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Component::getAttributes(comp.clone())) {
-            Deref @ Attributes::ATTRIBUTES { variability: __pa0, direction: __pa1, connectorType: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+            Deref @ Attributes::ATTRIBUTES { connectorType: __pa0, direction: __pa1, variability: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        var = __pa0.clone();
+        cty = __pa0.clone();
         direction = __pa1.clone();
-        cty = __pa2.clone();
+        var = __pa2.clone();
         if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
             Error::addSourceMessage(Error::INNER_OUTER_FORMAL_PARAMETER.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
             bail!("fail");
@@ -2277,7 +2279,10 @@ pub mod Function {
                 comment = cmt.comment.clone();
             }
             r#mod = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: mod2 }), .. } => SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())?,
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod2 }), .. } => {
+            mod2 = (*__esc_mod2).clone();
+            SCodeUtil::mergeModifiers(mod2.clone(), r#mod.clone())?
+        },
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2499,7 +2504,10 @@ pub mod Function {
         let mut fn_body: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
         body = (::match_deref::match_deref! { match &(InstNode::getSections(node.clone())?) {
         Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Nil, .. } => metamodelica::nil(),
-        Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: fn_body, tail: Deref @ metamodelica::List::Nil }, .. } => fn_body.statements.clone(),
+        Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: __esc_fn_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            fn_body = (*__esc_fn_body).clone();
+            fn_body.statements.clone()
+        },
         Deref @ Sections::EMPTY => metamodelica::nil(),
         Deref @ Sections::EXTERNAL { .. } => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.getBody2")); __mm_s.push_str(&*literal!(" got function with external section (not algorithm section)")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFFunction.mo"))?;
@@ -2526,7 +2534,10 @@ pub mod Function {
                 return b.clone();
             }
             b = (::match_deref::match_deref! { match &(unwrap_break_err!(InstNode::getSections(r#fn.node.clone()), '__try0)) {
-        Deref @ Sections::SECTIONS { algorithms, .. } => (algorithms.clone().len() as i32) < 2,
+        Deref @ Sections::SECTIONS { algorithms: __esc_algorithms, .. } => {
+            algorithms = (*__esc_algorithms).clone();
+            (algorithms.clone().len() as i32) < 2
+        },
         Deref @ Sections::EMPTY => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

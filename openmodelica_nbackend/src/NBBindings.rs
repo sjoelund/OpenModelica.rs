@@ -71,7 +71,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         let mut binding_rec: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
         (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, .. } => {
+        Deref @ BackendDAE::MAIN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, .. } => {
             let mut bind_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
             let mut bound_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
             let mut bound_clocks: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -90,7 +90,10 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             for mut var in &*bound_vars.clone() {
                 let mut var = var.clone();
                 skip_record_element = (match BVariable::getParent(var.clone()) {
-        Some(mut parent) => BVariable::isBound(parent.clone()) && BVariable::isUnknownRecord(parent.clone()),
+        Some(mut __esc_parent) => {
+            parent = __esc_parent.clone();
+            BVariable::isBound(parent.clone()) && BVariable::isUnknownRecord(parent.clone())
+        },
         _ => false,
     });
                 if !(skip_record_element.clone()) {

@@ -112,7 +112,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, vars: vindx, eqns: eindex, .. }, tail: comps }) => {
+                (shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eindex, vars: vindx, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, .. }, tail: comps }) => {
                     let mut eorphans: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut vorphans: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2921,7 +2921,7 @@ fn addCrefandParentsToSet(mut inCref: Arc<DAE::ComponentRef>, mut ihs: (metamode
             set = List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ihs.clone())?;
             set.clone()
         },
-        (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: subcr, subscriptLst, identType: ty, ident }, None) => {
+        (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, None) => {
             let mut idcr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut set: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             idcr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
@@ -2930,7 +2930,7 @@ fn addCrefandParentsToSet(mut inCref: Arc<DAE::ComponentRef>, mut ihs: (metamode
             set = BaseHashSet::add(idcr.clone(), set.clone())?;
             addCrefandParentsToSet(subcr.clone(), set.clone(), Some(idcr.clone()))?
         },
-        (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: subcr, subscriptLst, identType: ty, ident }, Some(precr)) => {
+        (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, Some(precr)) => {
             let mut idcr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut set: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             let mut precr = (*precr).clone();
@@ -3070,7 +3070,7 @@ fn vectorMatching(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Vari
         let __mc_input = (eqn.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, dimSize: ds, .. }, _) => {
+                (Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds, left: e1, right: e2, .. }, _) => {
                     let mut size: i32 = 0;
                     let mut tpl: (i32, metamodelica::Array<i32>, metamodelica::Array<i32>) = (0, Default::default(), Default::default());
                     size = List::fold(ds.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
@@ -3082,7 +3082,7 @@ fn vectorMatching(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Vari
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e1, left: e2, dimSize: ds, .. }, _) => {
+                (Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds, left: e2, right: e1, .. }, _) => {
                     let mut size: i32 = 0;
                     let mut tpl: (i32, metamodelica::Array<i32>, metamodelica::Array<i32>) = (0, Default::default(), Default::default());
                     size = List::fold(ds.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
@@ -3094,7 +3094,7 @@ fn vectorMatching(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Vari
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, size, .. }, _) => {
+                (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, .. }, _) => {
                     let mut tpl: (i32, metamodelica::Array<i32>, metamodelica::Array<i32>) = (0, Default::default(), Default::default());
                     tpl = vectorMatching1(e1.clone(), e2.clone(), size.clone(), vars.clone(), inTpl.clone())?;
                     Ok(tpl.clone())
@@ -3104,7 +3104,7 @@ fn vectorMatching(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Vari
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e1, left: e2, size, .. }, _) => {
+                (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e2, right: e1, .. }, _) => {
                     let mut tpl: (i32, metamodelica::Array<i32>, metamodelica::Array<i32>) = (0, Default::default(), Default::default());
                     tpl = vectorMatching1(e2.clone(), e1.clone(), size.clone(), vars.clone(), inTpl.clone())?;
                     Ok(tpl.clone())
@@ -3272,7 +3272,7 @@ fn aliasMatching(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Varia
         let __mc_input = (eqn.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, exp: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, .. }, (id, vec1, vec2)) => {
+                (Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::CREF { componentRef: cr1, .. }, scalar: Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, .. }, (id, vec1, vec2)) => {
                     let mut i: i32 = 0;
                     let mut i1: i32 = 0;
                     let mut i2: i32 = 0;
@@ -3394,7 +3394,7 @@ fn naturalMatching2(mut eqn: Arc<BackendDAE::Equation>, mut vars: BackendDAE::Va
         let __mc_input = (eqn.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, (id, vec1, vec2)) => {
+                (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, (id, vec1, vec2)) => {
                     let mut i: i32 = 0;
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();

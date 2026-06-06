@@ -139,7 +139,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
         let __mc_input = inModifier.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, name, .. } => {
+                Deref @ SCode::Element::CLASS { name, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, .. } => {
                     let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     ty_path = AbsynUtil::typeSpecPath(ty.clone())?;
                     let false = (isSelfReference((name.clone()).clone(), inBaseClass.clone(), ty_path.clone())?) else { bail!("pattern mismatch") };
@@ -150,7 +150,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, name, .. } => {
+                Deref @ SCode::Element::CLASS { name, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, info, .. } => {
                     let mut ty_str: ArcStr = arcstr::literal!("");
                     ty_str = (Dump::unparseTypeSpec(ty.clone())?).clone();
                     Error::addSourceMessage(Error::RECURSIVE_SHORT_CLASS_DEFINITION.clone(), list![(name.clone()).clone(), (ty_str.clone()).clone()], info.clone())?;
@@ -180,7 +180,7 @@ pub fn checkModifierIfRedeclare(mut inItem: Arc<NFSCodeEnv::Item>, mut inModifie
 
 pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inReplacement: Arc<SCode::Element>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inItem.clone(), inReplacement.clone())) {
-        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, typeSpec: ty1, attributes: SCode::Attributes { variability: var, .. }, prefixes: Deref @ SCode::Prefixes { replaceablePrefix: repl, finalPrefix: fin, .. }, name, .. }, .. }, Deref @ SCode::Element::COMPONENT { typeSpec: ty2, prefixes: Deref @ SCode::Prefixes { .. }, .. }) => {
+        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, attributes: SCode::Attributes { variability: var, .. }, typeSpec: ty1, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { .. }, typeSpec: ty2, .. }) => {
             let mut ty: ArcStr = arcstr::literal!("");
             let mut ok: bool = false;
             ty = (literal!("component")).clone();
@@ -190,7 +190,7 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
             let true = (ok.clone()) else { bail!("pattern mismatch") };
             ()
         },
-        (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, restriction: res, prefixes: Deref @ SCode::Prefixes { replaceablePrefix: repl, finalPrefix: fin, .. }, name, .. }, .. }, Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { .. }, .. }) => {
+        (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { finalPrefix: fin, replaceablePrefix: repl, .. }, restriction: res, info, .. }, .. }, Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { .. }, .. }) => {
             let mut ty: ArcStr = arcstr::literal!("");
             let mut ok: bool = false;
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
@@ -199,14 +199,14 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
             let true = (ok.clone()) else { bail!("pattern mismatch") };
             ()
         },
-        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, name, .. }, .. }, Deref @ SCode::Element::CLASS { restriction: res, .. }) => {
+        (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, info, .. }, .. }, Deref @ SCode::Element::CLASS { restriction: res, .. }) => {
             let mut ty: ArcStr = arcstr::literal!("");
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             ty = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("a ")); __mm_s.push_str(&*ty.clone()); ArcStr::from(__mm_s) }).clone();
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("component")).clone(), (name.clone()).clone(), (ty.clone()).clone()], list![inInfo.clone(), info.clone()])?;
             bail!("fail")
         },
-        (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, restriction: res, .. }, .. }, Deref @ SCode::Element::COMPONENT { name, .. }) => {
+        (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { restriction: res, info, .. }, .. }, Deref @ SCode::Element::COMPONENT { name, .. }) => {
             let mut ty: ArcStr = arcstr::literal!("");
             ty = (SCodeDump::restrictionStringPP(res.clone())?).clone();
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(ty.clone()).clone(), (name.clone()).clone(), (literal!("a component")).clone()], list![inInfo.clone(), info.clone()])?;
@@ -482,7 +482,7 @@ pub fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix:
 
 pub fn checkPartialInstance(mut inItem: Arc<NFSCodeEnv::Item>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inItem.clone()) {
-        Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL { .. }, name, .. }, .. } => {
+        Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, partialPrefix: SCode::Partial::PARTIAL { .. }, .. }, .. } => {
             Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(name.clone()).clone()], inInfo.clone())?;
             bail!("fail")
         },

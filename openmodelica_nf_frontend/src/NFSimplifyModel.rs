@@ -242,15 +242,15 @@ pub fn simplifyEqualityEquation(mut eq: Arc<Equation::NFEquation>, mut equations
     let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut scalarize_mode: Equation::ScalarizeMode = Equation::ScalarizeMode::DONT_SCALARIZE;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { scalarizeMode: __pa0, source: __pa1, scope: __pa2, ty: __pa3, rhs: __pa4, lhs: __pa5 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
+        Deref @ Equation::EQUALITY { lhs: __pa0, rhs: __pa1, ty: __pa2, scope: __pa3, source: __pa4, scalarizeMode: __pa5 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    scalarize_mode = __pa0.clone();
-    src = __pa1.clone();
-    scope = __pa2.clone();
-    ty = __pa3.clone();
-    rhs = __pa4.clone();
-    lhs = __pa5.clone();
+    lhs = __pa0.clone();
+    rhs = __pa1.clone();
+    ty = __pa2.clone();
+    scope = __pa3.clone();
+    src = __pa4.clone();
+    scalarize_mode = __pa5.clone();
     ty = Type::mapDims(ty.clone(), (std::sync::Arc::new(simplifyDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
     if Type::isEmptyArray(ty.clone())? {
         return Ok(equations.clone());
@@ -385,13 +385,13 @@ pub fn simplifyAssignment(mut stmt: Arc<Statement::NFStatement>, mut statements:
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::ASSIGNMENT { source: __pa0, ty: __pa1, rhs: __pa2, lhs: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ Statement::ASSIGNMENT { lhs: __pa0, rhs: __pa1, ty: __pa2, source: __pa3 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    src = __pa0.clone();
-    ty = __pa1.clone();
-    rhs = __pa2.clone();
-    lhs = __pa3.clone();
+    lhs = __pa0.clone();
+    rhs = __pa1.clone();
+    ty = __pa2.clone();
+    src = __pa3.clone();
     ty = Type::mapDims(ty.clone(), (std::sync::Arc::new(simplifyDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
     if Type::isEmptyArray(ty.clone())? {
         return Ok(statements.clone());
@@ -502,9 +502,10 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
     for mut branch in &*branches.clone() {
         let mut branch = branch.clone();
         accum = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ Equation::Branch::BRANCH { condition: cond, conditionVar: __esc_var, body } => {
+        Deref @ Equation::Branch::BRANCH { condition: __esc_cond, conditionVar: __esc_var, body: __esc_body } => {
+            cond = (*__esc_cond).clone();
             var = (*__esc_var).clone();
-            let mut cond = (*cond).clone();
+            body = (*__esc_body).clone();
             cond = SimplifyExp::simplify(cond.clone(), false)?;
             if Expression::isTrue(cond.clone()) {
                 if accum.clone().is_empty() {
@@ -524,8 +525,9 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
             }
             accum.clone()
         },
-        Deref @ Equation::Branch::INVALID_BRANCH { branch: Deref @ Equation::Branch::BRANCH { conditionVar: var, condition: cond, .. }, .. } => {
-            let mut cond = (*cond).clone();
+        Deref @ Equation::Branch::INVALID_BRANCH { branch: Deref @ Equation::Branch::BRANCH { condition: __esc_cond, conditionVar: __esc_var, .. }, .. } => {
+            cond = (*__esc_cond).clone();
+            var = (*__esc_var).clone();
             if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() {
                 cond = Ceval::evalExp(cond.clone(), Ceval::noTarget().clone())?;
             }
@@ -585,11 +587,11 @@ pub fn simplifyFunction(mut func: Arc<Function::Function>) -> Result<()> {
         Function::mapExp(func.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, false)?;
         cls = InstNode::getClass(func.node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { sections, .. } => {
-            let mut sections = (*sections).clone();
+        Deref @ Class::INSTANCED_CLASS { sections: __esc_sections, .. } => {
+            sections = (*__esc_sections).clone();
             let () = (::match_deref::match_deref! { match &(sections.clone()) {
-        Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: fn_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut fn_body = (*fn_body).clone();
+        Deref @ Sections::SECTIONS { algorithms: Deref @ metamodelica::List::Cons { head: __esc_fn_body, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            fn_body = (*__esc_fn_body).clone();
             assign_field!(fn_body.statements = simplifyStatements(fn_body.statements.clone())?);
             assign_variant_field!(sections => Sections::NFSections::SECTIONS; algorithms = list![fn_body.clone()]);
             assign_variant_field!(cls => Class::NFClass::INSTANCED_CLASS; sections = sections.clone());

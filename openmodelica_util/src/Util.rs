@@ -481,7 +481,10 @@ pub fn optionToString<T: Clone + 'static>(mut ot: Option<T>, mut f: Arc<dyn ::st
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut t: T;
     r#str = ((match ot.clone() {
-        Some(mut t) => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*f(t.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        Some(mut __esc_t) => {
+            t = __esc_t.clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*f(t.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+        },
         _ => literal!("NONE()"),
     })).clone();
     Ok(r#str)

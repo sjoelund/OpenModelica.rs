@@ -98,7 +98,10 @@ pub fn createElementSource(mut fileInfo: SourceInfo, mut partOf: Option<Arc<Absy
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     source = Arc::new(DAE::ElementSource { info: fileInfo.clone(), partOfLst: (::match_deref::match_deref! { match &(partOf.clone()) {
         None => metamodelica::nil(),
-        Some(path) => list![Absyn::Within::WITHIN { path: path.clone() }],
+        Some(__esc_path) => {
+            path = (*__esc_path).clone();
+            list![Absyn::Within::WITHIN { path: path.clone() }]
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }), instance: (match prefix.clone() {
         DAE::Prefix::NOPRE { .. } => openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE(),

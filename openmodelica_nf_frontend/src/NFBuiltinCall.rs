@@ -177,8 +177,15 @@ pub fn makeSizeExp(mut posArgs: Arc<metamodelica::List<Arc<Expression::NFExpress
     let mut arg2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     assertNoNamedParams((literal!("size")).clone(), namedArgs.clone(), info.clone())?;
     callExp = (::match_deref::match_deref! { match &(posArgs.clone()) {
-        Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Nil } => Arc::new(Expression::NFExpression::SIZE { exp: arg1.clone(), dimIndex: None }),
-        Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } } => Arc::new(Expression::NFExpression::SIZE { exp: arg1.clone(), dimIndex: Some(arg2.clone()) }),
+        Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Nil } => {
+            arg1 = (*__esc_arg1).clone();
+            Arc::new(Expression::NFExpression::SIZE { exp: arg1.clone(), dimIndex: None })
+        },
+        Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Cons { head: __esc_arg2, tail: Deref @ metamodelica::List::Nil } } => {
+            arg1 = (*__esc_arg1).clone();
+            arg2 = (*__esc_arg2).clone();
+            Arc::new(Expression::NFExpression::SIZE { exp: arg1.clone(), dimIndex: Some(arg2.clone()) })
+        },
         _ => {
             Error::addSourceMessage(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("size")); __mm_s.push_str(&*List::toString(posArgs.clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("(")).clone(), (literal!(", ")).clone(), (literal!(")")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), (literal!("size(Any[:, ...]) => Integer[:]\n  size(Any[:, ...], Integer) => Integer")).clone()], info.clone())?;
             bail!("fail")
@@ -485,11 +492,11 @@ fn typeNdimsCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Source
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut arg_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Call::UNTYPED_CALL { arguments: __pa0, named_args: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
-    args = __pa1.clone();
+    args = __pa0.clone();
+    named_args = __pa1.clone();
     assertNoNamedParams((literal!("ndims")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessage(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("ndims(Any) => Integer")).clone()], info.clone())?;
@@ -531,12 +538,12 @@ fn typePreChangeCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut context:
     let mut var: Variability = Variability::CONSTANT;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((name.clone()).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Any) => Any")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -580,12 +587,12 @@ fn typeDerCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceIn
         bail!("fail");
     }
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("der")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("der(Real) => Real")).clone()], info.clone())?;
@@ -697,16 +704,16 @@ fn typeMinMaxCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut context: i3
     let mut pur2: Purity = Purity::PURE;
     let mut mk: TypeCheck::MatchKind = TypeCheck::MatchKind::EXACT;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((name.clone()).clone(), named_args.clone(), info.clone())?;
     (args, ty, var, purity) = (::match_deref::match_deref! { match &(args.clone()) {
-        Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Nil } => {
-            let mut arg1 = (*arg1).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Nil } => {
+            arg1 = (*__esc_arg1).clone();
             (arg1, ty1, var, purity) = Typing::typeExp(arg1.clone(), context.clone(), info.clone(), false)?;
             ty = Type::arrayElementType(ty1.clone());
             if !(Type::isArray(ty1.clone()) && is_valid_type(ty.clone())) {
@@ -718,9 +725,9 @@ fn typeMinMaxCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut context: i3
             }
             (list![arg1.clone()], ty.clone(), var.clone(), purity.clone())
         },
-        Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } } => {
-            let mut arg1 = (*arg1).clone();
-            let mut arg2 = (*arg2).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Cons { head: __esc_arg2, tail: Deref @ metamodelica::List::Nil } } => {
+            arg1 = (*__esc_arg1).clone();
+            arg2 = (*__esc_arg2).clone();
             (arg1, ty1, var1, pur1) = Typing::typeExp(arg1.clone(), context.clone(), info.clone(), false)?;
             (arg2, ty2, var2, pur2) = Typing::typeExp(arg2.clone(), context.clone(), info.clone(), false)?;
             if !(is_valid_type(ty1.clone()) && is_valid_type(ty2.clone())) {
@@ -762,12 +769,12 @@ fn typePromoteCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sour
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     }
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("promote")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("promote(Any[...], Integer) => Any[...]")).clone()], info.clone())?;
@@ -815,12 +822,12 @@ fn typeSmoothCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut mk: TypeCheck::MatchKind = TypeCheck::MatchKind::EXACT;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("smooth")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("smooth(Integer, Any) => Any")).clone()], info.clone())?;
@@ -866,12 +873,12 @@ fn typeFillCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut fill_arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("fill")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) < 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("fill(Any, Integer, ...) => Any[:, ...]")).clone()], info.clone())?;
@@ -948,12 +955,12 @@ fn typeZerosOnesCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut context:
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut fill_arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((name.clone()).clone(), named_args.clone(), info.clone())?;
     if args.clone().is_empty() {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Integer, ...) => Integer[:, ...]")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -976,12 +983,12 @@ fn typeScalarCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut expanded: bool = false;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("scalar")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("scalar(Any[1, ...]) => Any")).clone()], info.clone())?;
@@ -1027,12 +1034,12 @@ fn typeVectorCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut vector_dim: Arc<Dimension::NFDimension> = Dimension::fromInteger(1, Prefixes::Variability::CONSTANT.clone());
     let mut dim_found: bool = false;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("vector")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("vector(Any) => Any[:]\n  vector(Any[:, ...]) => Any[:]")).clone()], info.clone())?;
@@ -1080,12 +1087,12 @@ fn typeMatrixCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut i: i32 = 0;
     let mut ndims: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("matrix")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("matrix(Any) => Any[:]\n  matrix(Any[:, ...]) => Any[:]")).clone()], info.clone())?;
@@ -1142,12 +1149,12 @@ fn typeCatCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceIn
     let mut mk: TypeCheck::MatchKind = TypeCheck::MatchKind::EXACT;
     let mut n: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("cat")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) < 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("cat(Integer, Any[:,:], ...) => Any[:]")).clone()], info.clone())?;
@@ -1195,12 +1202,12 @@ fn typeSymmetricCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: So
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("symmetric")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("symmetric(Any[n, n]) => Any[n, n]")).clone()], info.clone())?;
@@ -1234,12 +1241,12 @@ fn typeTransposeCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: So
     let mut rest_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("transpose")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("transpose(Any[n, m, ...]) => Any[m, n, ...]")).clone()], info.clone())?;
@@ -1247,7 +1254,12 @@ fn typeTransposeCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: So
     }
     (arg, ty, variability, purity) = Typing::typeExp(listHead(args.clone())?, context.clone(), info.clone(), false)?;
     ty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Cons { head: dim2, tail: rest_dims } }, .. } => Arc::new(Type::NFType::ARRAY { elementType: var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), dimensions: metamodelica::cons(dim2.clone(), metamodelica::cons(dim1.clone(), rest_dims.clone())) }),
+        Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: __esc_dim1, tail: Deref @ metamodelica::List::Cons { head: __esc_dim2, tail: __esc_rest_dims } }, .. } => {
+            dim1 = (*__esc_dim1).clone();
+            dim2 = (*__esc_dim2).clone();
+            rest_dims = (*__esc_rest_dims).clone();
+            Arc::new(Type::NFType::ARRAY { elementType: var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), dimensions: metamodelica::cons(dim2.clone(), metamodelica::cons(dim1.clone(), rest_dims.clone())) })
+        },
         _ => {
             Error::addSourceMessage(Error::ARG_TYPE_MISMATCH.clone(), list![(literal!("1")).clone(), (ComponentRef::toString(fn_ref.clone())?).clone(), (literal!("")).clone(), (Expression::toString(arg.clone())?).clone(), (Type::toString(ty.clone())?).clone(), (literal!("Any[:, :, ...]")).clone()], info.clone())?;
             bail!("fail")
@@ -1311,12 +1323,12 @@ fn typeBranchCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("Connections.branch")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Connector, Connector)")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1347,12 +1359,12 @@ fn typeIsRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("Connections.isRoot")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Connector)")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1388,12 +1400,12 @@ fn typePotentialRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info
     let mut name: ArcStr = arcstr::literal!("");
     let mut arg_var: Variability = Variability::CONSTANT;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     for mut narg in &*named_args.clone() {
         let mut narg = narg.clone();
         (name, arg2) = narg.clone();
@@ -1455,12 +1467,12 @@ fn typeRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("Connections.root")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Connector)")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1491,12 +1503,12 @@ fn typeRootedCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut named_args: Arc<metamodelica::List<(ArcStr, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("Connections.rooted")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(Connector)")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1535,12 +1547,12 @@ fn typeUniqueRootCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: S
     let mut name: ArcStr = arcstr::literal!("");
     Error::addSourceMessage(Error::NON_STANDARD_OPERATOR.clone(), list![(literal!("Connections.uniqueRoot")).clone()], info.clone())?;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     for mut narg in &*named_args.clone() {
         let mut narg = narg.clone();
         (name, arg2) = narg.clone();
@@ -1606,12 +1618,12 @@ fn typeUniqueRootIndicesCall(mut call: Arc<Call::NFCall>, mut context: i32, mut 
     let mut ty3: Arc<Type::NFType> = Arc::new(Type::ANY);
     Error::addSourceMessage(Error::NON_STANDARD_OPERATOR.clone(), list![(literal!("Connections.uniqueRootIndices")).clone()], info.clone())?;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     for mut narg in &*named_args.clone() {
         let mut narg = narg.clone();
         (name, arg3) = narg.clone();
@@ -1677,8 +1689,9 @@ fn checkConnectionsArgument(mut arg: Arc<Expression::NFExpression>, mut ty: Arc<
             let mut valid_cref: bool = false;
             let mut isConnector: bool = false;
             (valid_cref, isConnector) = (::match_deref::match_deref! { match &(var_field!((*arg).cref, Expression::NFExpression::CREF).clone()) {
-        Deref @ ComponentRef::CREF { restCref: Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF, ty: ty2, .. }, origin: ComponentRef::Origin::CREF, node, .. } => {
-            let mut ty2 = (*ty2).clone();
+        Deref @ ComponentRef::CREF { node: __esc_node, origin: ComponentRef::Origin::CREF, restCref: Deref @ ComponentRef::CREF { ty: __esc_ty2, origin: ComponentRef::Origin::CREF, .. }, .. } => {
+            node = (*__esc_node).clone();
+            ty2 = (*__esc_ty2).clone();
             ty2 = (::match_deref::match_deref! { match &(ty2.clone()) {
         Deref @ Type::ARRAY { .. } if ((ComponentRef::subscriptsAllFlat(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?.len() as i32) == (var_field!((*ty2).dimensions, Type::NFType::ARRAY).clone().len() as i32)) => var_field!((*ty2).elementType, Type::NFType::ARRAY).clone(),
         _ => ty2.clone(),
@@ -1686,8 +1699,9 @@ fn checkConnectionsArgument(mut arg: Arc<Expression::NFExpression>, mut ty: Arc<
     } });
             (Class::isOverdetermined(InstNode::getClass(node.clone())?), Type::isConnector(ty2.clone()))
         },
-        Deref @ ComponentRef::CREF { ty: ty2, node, .. } => {
-            let mut ty2 = (*ty2).clone();
+        Deref @ ComponentRef::CREF { node: __esc_node, ty: __esc_ty2, .. } => {
+            node = (*__esc_node).clone();
+            ty2 = (*__esc_ty2).clone();
             ty2 = (::match_deref::match_deref! { match &(ty2.clone()) {
         Deref @ Type::ARRAY { .. } if ((ComponentRef::subscriptsAllFlat(var_field!((*arg).cref, Expression::NFExpression::CREF).clone())?.len() as i32) == (var_field!((*ty2).dimensions, Type::NFType::ARRAY).clone().len() as i32)) => var_field!((*ty2).elementType, Type::NFType::ARRAY).clone(),
         _ => ty2.clone(),
@@ -1728,12 +1742,12 @@ fn typeNoEventCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sour
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((literal!("noEvent")).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), (literal!("noEvent(Any) => Any")).clone()], info.clone())?;
@@ -1787,9 +1801,13 @@ fn typeClockCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Source
     args_count = (args.clone().len() as i32);
     callExp = (::match_deref::match_deref! { match &(args.clone()) {
         Deref @ metamodelica::List::Nil => Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(ClockKind::NFClockKind::INFERRED_CLOCK { idx: System::tmpTickIndex(Global::inferredClock_index.clone()) }) }),
-        Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil } => Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(ClockKind::NFClockKind::REAL_CLOCK { interval: e1.clone() }) }),
-        Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } => {
-            let mut e2 = (*e2).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_e1, tail: Deref @ metamodelica::List::Nil } => {
+            e1 = (*__esc_e1).clone();
+            Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(ClockKind::NFClockKind::REAL_CLOCK { interval: e1.clone() }) })
+        },
+        Deref @ metamodelica::List::Cons { head: __esc_e1, tail: Deref @ metamodelica::List::Cons { head: __esc_e2, tail: Deref @ metamodelica::List::Nil } } => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
             e2 = Ceval::evalExp(e2.clone(), Ceval::noTarget().clone())?;
             callExp = (::match_deref::match_deref! { match &(Expression::typeOf(e2.clone())) {
         Deref @ Type::INTEGER => {
@@ -1839,39 +1857,56 @@ fn typeSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     normalSample = __pa3.clone();
     clockedSample = __pa4.clone();
     (callExp, outType, var) = (::match_deref::match_deref! { match &((args.clone(), namedArgs.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::INTEGER, value: e2, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
-            let mut e1 = (*e1).clone();
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e2, ty: Deref @ Type::INTEGER, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            e2 = (*__esc_e2).clone();
             if Type::isInteger(t1.clone())? {
                 e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
             ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e2.clone() })], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::REAL, value: e2, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
-            let mut e1 = (*e1).clone();
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e2, ty: Deref @ Type::REAL, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            e2 = (*__esc_e2).clone();
             if Type::isInteger(t1.clone())? {
                 e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
             ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::REAL, value: e2, name: Some(Deref @ "interval"), .. }, tail: Deref @ metamodelica::List::Nil }) => {
-            let mut e1 = (*e1).clone();
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { name: Some(Deref @ "interval"), value: __esc_e2, ty: Deref @ Type::REAL, .. }, tail: Deref @ metamodelica::List::Nil }) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            e2 = (*__esc_e2).clone();
             if Type::isInteger(t1.clone())? {
                 e1 = Arc::new(Expression::NFExpression::CAST { ty: crate::NFType::interned_REAL(), exp: e1.clone() });
             }
             ty_call = Call::makeTypedCall(normalSample.clone(), list![e1.clone(), e2.clone()], Variability::PARAMETER.clone(), purity.clone(), crate::NFType::interned_BOOLEAN());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), crate::NFType::interned_BOOLEAN(), Variability::PARAMETER.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { var: v1, ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, var: __esc_v1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            v1 = (*__esc_v1).clone();
             ty_call = Call::makeTypedCall(clockedSample.clone(), list![e1.clone(), Arc::new(Expression::NFExpression::CLKCONST { clk: Arc::new(ClockKind::NFClockKind::INFERRED_CLOCK { idx: System::tmpTickIndex(Global::inferredClock_index.clone()) }) })], v1.clone(), purity.clone(), t1.clone());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), t1.clone(), v1.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { var: v1, ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::CLOCK, value: e2, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, var: __esc_v1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e2, ty: Deref @ Type::CLOCK, .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            v1 = (*__esc_v1).clone();
+            e2 = (*__esc_e2).clone();
             ty_call = Call::makeTypedCall(clockedSample.clone(), list![e1.clone(), e2.clone()], v1.clone(), purity.clone(), t1.clone());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), t1.clone(), v1.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { var: v1, ty: t1, value: e1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { ty: Deref @ Type::CLOCK, value: e2, name: Some(Deref @ "c"), .. }, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { value: __esc_e1, ty: __esc_t1, var: __esc_v1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ TypedArg { name: Some(Deref @ "c"), value: __esc_e2, ty: Deref @ Type::CLOCK, .. }, tail: Deref @ metamodelica::List::Nil }) => {
+            e1 = (*__esc_e1).clone();
+            t1 = (*__esc_t1).clone();
+            v1 = (*__esc_v1).clone();
+            e2 = (*__esc_e2).clone();
             ty_call = Call::makeTypedCall(clockedSample.clone(), list![e1.clone(), e2.clone()], v1.clone(), purity.clone(), t1.clone());
             (Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() }), t1.clone(), v1.clone())
         },
@@ -1896,12 +1931,12 @@ fn typeActualInStreamCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut con
     let mut var: Variability = Variability::CONSTANT;
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((name.clone()).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 1 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(stream variable) => Real")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1968,12 +2003,12 @@ fn typeDynamicSelectCall(mut name: ArcStr, mut call: Arc<Call::NFCall>, mut cont
     let mut expStatic: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expDynamic: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ Call::UNTYPED_CALL { named_args: __pa0, arguments: __pa1, r#ref: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::UNTYPED_CALL { r#ref: __pa0, arguments: __pa1, named_args: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    named_args = __pa0.clone();
+    fn_ref = __pa0.clone();
     args = __pa1.clone();
-    fn_ref = __pa2.clone();
+    named_args = __pa2.clone();
     assertNoNamedParams((name.clone()).clone(), named_args.clone(), info.clone())?;
     if (args.clone().len() as i32) != 2 {
         Error::addSourceMessageAndFail(Error::NO_MATCHING_FUNCTION_FOUND_NFINST.clone(), list![(Call::toString(call.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(fn_ref.clone())?); __mm_s.push_str(&*literal!("(static expression, dynamic expression)")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -2033,13 +2068,13 @@ fn typeBackSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: S
     let mut counter: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut resolution: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa4, __pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
-        __pa4 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } } }, .. } => (__pa4.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        __pa4 @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } }, ty: __pa2, var: __pa3, .. } => (__pa4.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    var = __pa0.clone();
-    ty = __pa1.clone();
-    counter = __pa2.clone();
-    resolution = __pa3.clone();
+    counter = __pa0.clone();
+    resolution = __pa1.clone();
+    ty = __pa2.clone();
+    var = __pa3.clone();
     ty_call = __pa4.clone();
     Structural::markExp(counter.clone())?;
     Structural::markExp(resolution.clone())?;
@@ -2056,13 +2091,13 @@ fn typeShiftSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: 
     let mut counter: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut resolution: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa4, __pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
-        __pa4 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } } }, .. } => (__pa4.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        __pa4 @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } }, ty: __pa2, var: __pa3, .. } => (__pa4.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    var = __pa0.clone();
-    ty = __pa1.clone();
-    counter = __pa2.clone();
-    resolution = __pa3.clone();
+    counter = __pa0.clone();
+    resolution = __pa1.clone();
+    ty = __pa2.clone();
+    var = __pa3.clone();
     ty_call = __pa4.clone();
     Structural::markExp(counter.clone())?;
     Structural::markExp(resolution.clone())?;
@@ -2078,12 +2113,12 @@ fn typeSubSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: So
     let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut factor: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa3, __pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
-        __pa3 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } }, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
+        __pa3 @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } }, ty: __pa1, var: __pa2, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    var = __pa0.clone();
+    factor = __pa0.clone();
     ty = __pa1.clone();
-    factor = __pa2.clone();
+    var = __pa2.clone();
     ty_call = __pa3.clone();
     Structural::markExp(factor.clone())?;
     callExp = Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() });
@@ -2098,12 +2133,12 @@ fn typeSuperSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: 
     let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut factor: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa3, __pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
-        __pa3 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } }, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
+        __pa3 @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } }, ty: __pa1, var: __pa2, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    var = __pa0.clone();
+    factor = __pa0.clone();
     ty = __pa1.clone();
-    factor = __pa2.clone();
+    var = __pa2.clone();
     ty_call = __pa3.clone();
     Structural::markExp(factor.clone())?;
     callExp = Arc::new(Expression::NFExpression::CALL { call: ty_call.clone() });
@@ -2118,16 +2153,16 @@ fn typePureCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut c: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
-        Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, ty: __pa1, var: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    var = __pa0.clone();
+    arg = __pa0.clone();
     ty = __pa1.clone();
-    arg = __pa2.clone();
+    var = __pa2.clone();
     callExp = Expression::unbox(arg.clone());
     callExp = (::match_deref::match_deref! { match &(callExp.clone()) {
-        Deref @ Expression::CALL { call: c @ Deref @ Call::TYPED_CALL { .. } } => {
-            let mut c = (*c).clone();
+        Deref @ Expression::CALL { call: __esc_c @ Deref @ Call::TYPED_CALL { .. } } => {
+            c = (*__esc_c).clone();
             assign_variant_field!(c => Call::NFCall::TYPED_CALL; purity = Expression::purityList(var_field!((*c).arguments, Call::NFCall::TYPED_CALL).clone(), Prefixes::Purity::PURE.clone())?);
             Arc::new(Expression::NFExpression::CALL { call: c.clone() })
         },

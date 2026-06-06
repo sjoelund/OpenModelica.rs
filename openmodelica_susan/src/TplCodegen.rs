@@ -35,7 +35,7 @@ fn lm_3(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<TplAbsyn::MM
 pub fn mmPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMPackage) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_it.clone()) {
-        (mut txt, TplAbsyn::MMPackage { annotationFooter: mut i_annotationFooter, mmDeclarations: ref i_mmDeclarations, name: ref i_name }) => {
+        (mut txt, TplAbsyn::MMPackage { name: ref i_name, mmDeclarations: ref i_mmDeclarations, annotationFooter: mut i_annotationFooter }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("encapsulated package ")).clone() }))?;
             txt = pathIdent(txt.clone(), i_name.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -144,7 +144,7 @@ fn fun_9(mut in_txt: Tpl::Text, mut in_a_statements: Arc<metamodelica::List<Arc<
             txt = mmMatchFunBody(txt.clone(), a_mf_inArgs.clone(), a_mf_outArgs.clone(), a_mf_locals.clone(), i_c_matchCases.clone())?;
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ TplAbsyn::MMExp::MM_FOR_LOOP { statements: i_c_statements, eltName: i_c_eltName, arrName: i_c_arrName, idxName: i_c_idxName }, tail: Deref @ metamodelica::List::Nil }, a_mf_locals, a_mf_outArgs, a_mf_inArgs) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ TplAbsyn::MMExp::MM_FOR_LOOP { idxName: i_c_idxName, arrName: i_c_arrName, eltName: i_c_eltName, statements: i_c_statements }, tail: Deref @ metamodelica::List::Nil }, a_mf_locals, a_mf_outArgs, a_mf_inArgs) => {
             let mut txt = (*txt).clone();
             txt = mmForLoopFunBody(txt.clone(), a_mf_inArgs.clone(), a_mf_outArgs.clone(), a_mf_locals.clone(), (i_c_idxName.clone()).clone(), (i_c_arrName.clone()).clone(), (i_c_eltName.clone()).clone(), i_c_statements.clone())?;
             txt.clone()
@@ -190,7 +190,7 @@ pub fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration
         (txt, TplAbsyn::MMDeclaration::MM_IMPORT { packageName: Deref @ TplAbsyn::PathIdent::IDENT { ident: Deref @ "builtin" }, .. }) => {
             txt.clone()
         },
-        (txt, TplAbsyn::MMDeclaration::MM_IMPORT { packageName: i_packageName, isPublic: i_isPublic }) => {
+        (txt, TplAbsyn::MMDeclaration::MM_IMPORT { isPublic: i_isPublic, packageName: i_packageName }) => {
             let mut txt = (*txt).clone();
             txt = mmPublic(txt.clone(), i_isPublic.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" import ")).clone() }))?;
@@ -198,7 +198,7 @@ pub fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, TplAbsyn::MMDeclaration::MM_STR_TOKEN_DECL { value: i_value, name: i_name, isPublic: i_isPublic }) => {
+        (txt, TplAbsyn::MMDeclaration::MM_STR_TOKEN_DECL { isPublic: i_isPublic, name: i_name, value: i_value }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), crate::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = mmPublic(txt.clone(), i_isPublic.clone())?;
@@ -209,7 +209,7 @@ pub fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, TplAbsyn::MMDeclaration::MM_LITERAL_DECL { value: i_value_1, name: i_name, litType: i_litType, isPublic: i_isPublic }) => {
+        (txt, TplAbsyn::MMDeclaration::MM_LITERAL_DECL { isPublic: i_isPublic, litType: i_litType, name: i_name, value: i_value_1 }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), crate::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = mmPublic(txt.clone(), i_isPublic.clone())?;
@@ -222,7 +222,7 @@ pub fn mmDeclaration(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::MMDeclaration
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, TplAbsyn::MMDeclaration::MM_FUN { locals: i_mf_locals, outArgs: i_mf_outArgs, inArgs: i_mf_inArgs, statements: i_statements, name: i_name, isPublic: i_isPublic, .. }) => {
+        (txt, TplAbsyn::MMDeclaration::MM_FUN { isPublic: i_isPublic, name: i_name, statements: i_statements, inArgs: i_mf_inArgs, outArgs: i_mf_outArgs, locals: i_mf_locals, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), crate::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = mmPublic(txt.clone(), i_isPublic.clone())?;
@@ -775,12 +775,12 @@ pub fn pathIdent(mut in_txt: Tpl::Text, mut in_a_path: Arc<TplAbsyn::PathIdent>)
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::PathIdent::PATH_IDENT { path: i_path, ident: Deref @ "builtin" }) => {
+        (txt, Deref @ TplAbsyn::PathIdent::PATH_IDENT { ident: Deref @ "builtin", path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = pathIdent(txt.clone(), i_path.clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::PathIdent::PATH_IDENT { path: i_path, ident: i_ident }) => {
+        (txt, Deref @ TplAbsyn::PathIdent::PATH_IDENT { ident: i_ident, path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
@@ -1022,7 +1022,7 @@ pub fn mmStringTokenConstant(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::String
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\")")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ Tpl::StringToken::ST_STRING_LIST { lastHasNewLine: i_lastHasNewLine, strList: i_strList }) => {
+        (txt, Deref @ Tpl::StringToken::ST_STRING_LIST { strList: i_strList, lastHasNewLine: i_lastHasNewLine }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("Tpl.ST_STRING_LIST({\n")).clone() }))?;
@@ -1193,7 +1193,7 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
 pub fn mmExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MMExp>, mut in_a_assignStr: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone(), in_a_assignStr.clone())) {
-        (txt, Deref @ TplAbsyn::MMExp::MM_ASSIGN { rhs: i_rhs, lhsArgs: i_lhsArgs }, a_assignStr) => {
+        (txt, Deref @ TplAbsyn::MMExp::MM_ASSIGN { lhsArgs: i_lhsArgs, rhs: i_rhs }, a_assignStr) => {
             let mut txt = (*txt).clone();
             txt = fun_52(txt.clone(), i_lhsArgs.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1202,7 +1202,7 @@ pub fn mmExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MMExp>, mut in_a_
             txt = mmExp(txt.clone(), i_rhs.clone(), (a_assignStr.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::MMExp::MM_FN_CALL { args: i_args, fnName: i_fnName }, a_assignStr) => {
+        (txt, Deref @ TplAbsyn::MMExp::MM_FN_CALL { fnName: i_fnName, args: i_args }, a_assignStr) => {
             let mut txt = (*txt).clone();
             txt = pathIdent(txt.clone(), i_fnName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -1311,7 +1311,7 @@ fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<TplAbsy
 pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingExp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
-        (txt, Deref @ TplAbsyn::MatchingExp::BIND_AS_MATCH { matchingExp: i_matchingExp, bindIdent: i_bindIdent }) => {
+        (txt, Deref @ TplAbsyn::MatchingExp::BIND_AS_MATCH { bindIdent: i_bindIdent, matchingExp: i_matchingExp }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_bindIdent.clone()).clone())?;
@@ -1325,7 +1325,7 @@ pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingE
             txt = Tpl::writeStr(txt.clone(), (i_bindIdent.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::MatchingExp::RECORD_MATCH { fieldMatchings: i_fieldMatchings, tagName: i_tagName }) => {
+        (txt, Deref @ TplAbsyn::MatchingExp::RECORD_MATCH { tagName: i_tagName, fieldMatchings: i_fieldMatchings }) => {
             let mut txt = (*txt).clone();
             txt = pathIdent(txt.clone(), i_tagName.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
@@ -1365,7 +1365,7 @@ pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingE
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("}")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::MatchingExp::LIST_CONS_MATCH { rest: i_rest, head: i_head }) => {
+        (txt, Deref @ TplAbsyn::MatchingExp::LIST_CONS_MATCH { head: i_head, rest: i_rest }) => {
             let mut txt = (*txt).clone();
             txt = mmMatchingExp(txt.clone(), i_head.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" :: ")).clone() }))?;
@@ -1468,7 +1468,7 @@ fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<TplAbsyn::A
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: TplAbsyn::ASTDef { types: i_types, importPackage: i_importPackage, isDefault: i_isDefault }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: TplAbsyn::ASTDef { isDefault: i_isDefault, importPackage: i_importPackage, types: i_types }, tail: rest }) => {
             let mut txt = (*txt).clone();
             txt = fun_61(txt.clone(), i_isDefault.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("absyn ")).clone() }))?;
@@ -1521,7 +1521,7 @@ fn lm_64(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(ArcStr, Tp
 pub fn sTemplPackage(mut in_txt: Tpl::Text, mut in_a_it: TplAbsyn::TemplPackage) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_it.clone()) {
-        (mut txt, TplAbsyn::TemplPackage { templateDefs: ref i_templateDefs, astDefs: ref i_astDefs, name: ref i_name, .. }) => {
+        (mut txt, TplAbsyn::TemplPackage { name: ref i_name, astDefs: ref i_astDefs, templateDefs: ref i_templateDefs, .. }) => {
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("spackage ")).clone() }))?;
             txt = pathIdent(txt.clone(), i_name.clone())?;
@@ -1650,7 +1650,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_info: TplAbsyn::TypeInfo, mut in_a_id:
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (mut txt, TplAbsyn::TypeInfo::TI_FUN_TYPE { outArgs: ref i_outArgs, inArgs: ref i_inArgs, .. }, mut a_id) => {
+        (mut txt, TplAbsyn::TypeInfo::TI_FUN_TYPE { inArgs: ref i_inArgs, outArgs: ref i_outArgs, .. }, mut a_id) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_id.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;

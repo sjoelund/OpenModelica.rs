@@ -1045,7 +1045,8 @@ pub fn obfuscateAbsynCref2(mut cref: Arc<Absyn::ComponentRef>, mut nodes: Arc<me
             assign_variant_field!(cref => Absyn::ComponentRef::CREF_FULLYQUALIFIED; componentRef = obfuscateAbsynCref2(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), nodes.clone(), obfuscationMap.clone())?);
             ()
         },
-        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ metamodelica::List::Cons { head: node, tail: rest_nodes }) if (InstNode::name(node.clone())? == var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()) => {
+        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ metamodelica::List::Cons { head: node, tail: __esc_rest_nodes }) if (InstNode::name(node.clone())? == var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()) => {
+            rest_nodes = (*__esc_rest_nodes).clone();
             assign_variant_field!(cref => Absyn::ComponentRef::CREF_QUAL;
                 name = UnorderedMap::getOrDefault(node.clone(), obfuscationMap.clone(), (var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone())?,
                 componentRef = obfuscateAbsynCref2(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), rest_nodes.clone(), obfuscationMap.clone())?

@@ -459,12 +459,12 @@ fn addOuterConnectIfEmpty(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             let mut io2 = (*io2).clone();
             let mut graph = (*graph).clone();
             let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Lookup::lookupVar(cache.clone(), env.clone(), cr1.clone())?) {
-                (__pa0, Deref @ DAE::Attributes { variability: __pa1, connectorType: __pa2, .. }, __pa3, _, _, _, _, _, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+                (__pa0, Deref @ DAE::Attributes { connectorType: __pa1, variability: __pa2, .. }, __pa3, _, _, _, _, _, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             cache = __pa0.clone();
-            vt1 = __pa1.clone();
-            ct = __pa2.clone();
+            ct = __pa1.clone();
+            vt1 = __pa2.clone();
             t1 = __pa3.clone();
             let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(Lookup::lookupVar(cache.clone(), env.clone(), cr2.clone())?) {
                 (__pa4, Deref @ DAE::Attributes { variability: __pa5, .. }, __pa6, _, _, _, _, _, _) => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
@@ -476,15 +476,15 @@ fn addOuterConnectIfEmpty(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             io1 = removeOuter(io1.clone())?;
             io2 = removeOuter(io2.clone())?;
             let (__pa7, __pa8, __pa9, __pa10, __pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(InstSection::connectComponents(cache.clone(), env.clone(), ih.clone(), DAE::Connect::Sets { sets: sets.clone(), setCount: sc.clone(), connections: cl.clone(), outerConnects: metamodelica::nil() }, pre.clone(), cr1.clone(), f1.clone(), t1.clone(), vt1.clone(), cr2.clone(), f2.clone(), t2.clone(), vt2.clone(), ct.clone(), io1.clone(), io2.clone(), graph.clone(), info.clone())?) {
-                (__pa7, __pa8, __pa9, DAE::Connect::Sets { connections: __pa10, setCount: __pa11, sets: __pa12, .. }, _, __pa13) => (__pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
+                (__pa7, __pa8, __pa9, DAE::Connect::Sets { sets: __pa10, setCount: __pa11, connections: __pa12, .. }, _, __pa13) => (__pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone(), __pa13.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             cache = __pa7.clone();
             env = __pa8.clone();
             ih = __pa9.clone();
-            cl = __pa10.clone();
+            sets = __pa10.clone();
             sc = __pa11.clone();
-            sets = __pa12.clone();
+            cl = __pa12.clone();
             graph = __pa13.clone();
             (DAE::Connect::Sets { sets: sets.clone(), setCount: sc.clone(), connections: cl.clone(), outerConnects: oc.clone() }, graph.clone())
         },
@@ -959,7 +959,7 @@ pub fn addClassIfInner(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Pref
         let __mc_input = inClass.clone();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, name, .. } => {
+                Deref @ SCode::Element::CLASS { name, prefixes: Deref @ SCode::Prefixes { innerOuter: io, .. }, .. } => {
                     let mut scopeName: ArcStr = arcstr::literal!("");
                     let mut outIH: Arc<metamodelica::List<TopInstance>> = outIH.clone();
                     let true = (AbsynUtil::isInner(io.clone())) else { bail!("pattern mismatch") };
@@ -1382,7 +1382,7 @@ fn valueArrayList(mut valueArray: ValueArray) -> Result<Arc<metamodelica::List<(
             Ok(metamodelica::nil())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let ValueArray { valueArray: mut arr, numberOfElements: 1 } = __mc_input.clone() else { bail!("nomatch") };
+            let ValueArray { numberOfElements: 1, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             let mut elt: (Arc<DAE::ComponentRef>, InstInner) = (Arc::new(DAE::ComponentRef::WILD), <InstInner as ::std::default::Default>::default());
             let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(0 + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
@@ -1392,7 +1392,7 @@ fn valueArrayList(mut valueArray: ValueArray) -> Result<Arc<metamodelica::List<(
             Ok(list![elt.clone()])
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let ValueArray { valueArray: mut arr, numberOfElements: mut n } = __mc_input.clone() else { bail!("nomatch") };
+            let ValueArray { numberOfElements: mut n, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             let mut lastpos: i32 = 0;
             let mut lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>> = metamodelica::nil();
             lastpos = n.clone() - 1;
@@ -1466,7 +1466,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
     outValueArray = 'mc: {
         let __mc_input = valueArray.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let ValueArray { valueArray: mut arr, numberOfElements: mut n } = __mc_input.clone() else { bail!("nomatch") };
+            let ValueArray { numberOfElements: mut n, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             if !((n.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             let mut n_1: i32 = 0;
             let mut arr_1: metamodelica::Array<Option<(Arc<DAE::ComponentRef>, InstInner)>> = Default::default();
@@ -1475,7 +1475,7 @@ fn valueArrayAdd(mut valueArray: ValueArray, mut entry: (Arc<DAE::ComponentRef>,
             Ok(ValueArray { numberOfElements: n_1.clone(), valueArray: arr_1.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let ValueArray { valueArray: mut arr, numberOfElements: mut n } = __mc_input.clone() else { bail!("nomatch") };
+            let ValueArray { numberOfElements: mut n, valueArray: mut arr } = __mc_input.clone() else { bail!("nomatch") };
             if !((n.clone() < metamodelica::arrayLength(arr.clone()))) { bail!("guard") }
             let mut n_1: i32 = 0;
             let mut size: i32 = 0;
@@ -1549,7 +1549,7 @@ fn valueArrayNth(mut valueArray: ValueArray, mut pos: i32) -> Result<(Key, Value
     let mut key: Key = Arc::new(DAE::ComponentRef::WILD);
     let mut value: Value = <InstInner as ::std::default::Default>::default();
     (key, value) = (match valueArray.clone() {
-        ValueArray { valueArray: mut arr, numberOfElements: mut n } => {
+        ValueArray { numberOfElements: mut n, valueArray: mut arr } => {
             let mut k: Key = Arc::new(DAE::ComponentRef::WILD);
             let mut v: Value = <InstInner as ::std::default::Default>::default();
             let true = (pos.clone() < n.clone()) else { bail!("pattern mismatch") };

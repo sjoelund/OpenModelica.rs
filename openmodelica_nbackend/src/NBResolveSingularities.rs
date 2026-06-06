@@ -132,7 +132,10 @@ pub fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adj
     let mut dummy_slice_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut debug: bool = false;
     mapping = (::match_deref::match_deref! { match &(mapping_opt.clone()) {
-        Some(mapping) => mapping.clone(),
+        Some(__esc_mapping) => {
+            mapping = (*__esc_mapping).clone();
+            mapping.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResolveSingularities.indexReduction")); __mm_s.push_str(&*literal!(" failed because no mapping was provided.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

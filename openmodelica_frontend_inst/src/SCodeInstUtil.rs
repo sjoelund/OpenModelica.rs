@@ -229,7 +229,7 @@ fn expandEnumerationSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inChanged: bool
     let mut outSubMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
     let mut outChanged: bool = false;
     (outSubMod, outChanged) = (::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ SCode::SubMod { r#mod, ident } => {
+        Deref @ SCode::SubMod { ident, r#mod } => {
             let mut mod1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
             mod1 = expandEnumerationMod(r#mod.clone())?;
             if (referenceEq(&*(r#mod.clone()),&*(mod1.clone()))) {(inSubMod.clone(), inChanged.clone())} else {(Arc::new(SCode::SubMod { ident: (ident.clone()).clone(), r#mod: mod1.clone() }), true)}
@@ -254,12 +254,20 @@ pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
     let mut changed: bool = false;
     let mut cmt: Option<ArcStr> = None;
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ SCode::Mod::REDECL { finalPrefix: f, eachPrefix: e, element: el } => {
+        Deref @ SCode::Mod::REDECL { finalPrefix: __esc_f, eachPrefix: __esc_e, element: __esc_el } => {
+            f = (*__esc_f).clone();
+            e = (*__esc_e).clone();
+            el = (*__esc_el).clone();
             el1 = expandEnumerationClass(el.clone())?;
             if (referenceEq(&*(el.clone()),&*(el1.clone()))) {inMod.clone()} else {Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el1.clone() })}
         },
-        Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: submod, binding, comment: cmt, info } => {
-            let mut submod = (*submod).clone();
+        Deref @ SCode::Mod::MOD { finalPrefix: __esc_f, eachPrefix: __esc_e, subModLst: __esc_submod, binding: __esc_binding, comment: __esc_cmt, info: __esc_info } => {
+            f = (*__esc_f).clone();
+            e = (*__esc_e).clone();
+            submod = (*__esc_submod).clone();
+            binding = (*__esc_binding).clone();
+            cmt = (*__esc_cmt).clone();
+            info = (*__esc_info).clone();
             (submod, changed) = List::mapFold(submod.clone(), (std::sync::Arc::new(expandEnumerationSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, bool) -> Result<(Arc<SCode::SubMod>, bool)> + 'static>), false)?;
             if (changed.clone()) {Arc::new(SCode::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: submod.clone(), binding: binding.clone(), comment: cmt.clone(), info: info.clone() })} else {inMod.clone()}
         },
@@ -272,12 +280,12 @@ pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
 pub fn expandEnumerationClass(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, prefixes, restriction: SCode::Restriction::R_TYPE { .. }, name: n, .. } => {
+        Deref @ SCode::Element::CLASS { name: n, restriction: SCode::Restriction::R_TYPE { .. }, prefixes, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, cmt, info, .. } => {
             let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             c = expandEnumeration((n.clone()).clone(), l.clone(), prefixes.clone(), cmt.clone(), info.clone())?;
             c.clone()
         },
-        Deref @ SCode::Element::EXTENDS { info, ann, modifications: m, visibility: v, baseClassPath: p } => {
+        Deref @ SCode::Element::EXTENDS { baseClassPath: p, visibility: v, modifications: m, ann, info } => {
             let mut m1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
             m1 = expandEnumerationMod(m.clone())?;
             if (referenceEq(&*(m.clone()),&*(m1.clone()))) {inElement.clone()} else {Arc::new(SCode::Element::EXTENDS { baseClassPath: p.clone(), visibility: v.clone(), modifications: m1.clone(), ann: ann.clone(), info: info.clone() })}

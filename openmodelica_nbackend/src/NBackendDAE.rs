@@ -983,7 +983,7 @@ fn lowerEquationData(mut eq_lst: Arc<metamodelica::List<Arc<FEquation::NFEquatio
     (simulation_lst, continuous_lst, clocked_lst, discretes_lst, initials_lst, auxiliaries_lst, removed_lst) = BEquation::typeList(BEquation::EquationPointers::toList(equations.clone())?)?;
     equations = BEquation::EquationPointers::removeList(clocked_lst.clone(), equations.clone())?;
     (equations, _) = Resizable::resize(equations.clone(), varData.clone())?;
-    eqData = Arc::new(EqData::EqData::EQ_DATA_SIM { removed: BEquation::EquationPointers::fromList(removed_lst.clone())?, auxiliaries: BEquation::EquationPointers::fromList(auxiliaries_lst.clone())?, initials: BEquation::EquationPointers::fromList(initials_lst.clone())?, discretes: BEquation::EquationPointers::fromList(discretes_lst.clone())?, clocked: BEquation::EquationPointers::fromList(clocked_lst.clone())?, continuous: BEquation::EquationPointers::fromList(continuous_lst.clone())?, simulation: BEquation::EquationPointers::fromList(simulation_lst.clone())?, equations: equations.clone(), uniqueIndex: idx.clone() });
+    eqData = Arc::new(EqData::EqData::EQ_DATA_SIM { uniqueIndex: idx.clone(), equations: equations.clone(), simulation: BEquation::EquationPointers::fromList(simulation_lst.clone())?, continuous: BEquation::EquationPointers::fromList(continuous_lst.clone())?, clocked: BEquation::EquationPointers::fromList(clocked_lst.clone())?, discretes: BEquation::EquationPointers::fromList(discretes_lst.clone())?, initials: BEquation::EquationPointers::fromList(initials_lst.clone())?, auxiliaries: BEquation::EquationPointers::fromList(auxiliaries_lst.clone())?, removed: BEquation::EquationPointers::fromList(removed_lst.clone())? });
     Ok((eqData, varData))
 }
 
@@ -1011,7 +1011,7 @@ fn lowerEquationsAndAlgorithms(mut eq_lst: Arc<metamodelica::List<Arc<FEquation:
 fn lowerEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: bool, mut in_for: bool) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
     let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     backend_equations = (::match_deref::match_deref! { match &(frontend_equation.clone()) {
-        Deref @ FEquation::EQUALITY { source, ty, rhs, lhs, .. } => {
+        Deref @ FEquation::EQUALITY { lhs, rhs, ty, source, .. } => {
             let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
             attr = lowerEquationAttributes(ty.clone(), init.clone())?;
             backend_equations = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -1072,7 +1072,8 @@ fn lowerForEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init:
     let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
     let mut size: i32 = 0;
     backend_equations = (::match_deref::match_deref! { match &(frontend_equation.clone()) {
-        Deref @ FEquation::FOR { range: Some(range), .. } => {
+        Deref @ FEquation::FOR { range: Some(__esc_range), .. } => {
+            range = (*__esc_range).clone();
             if Expression::rangeSize(range.clone(), false)? > 0 {
                 iterator = ComponentRef::fromNode(var_field!((*frontend_equation).iterator, FEquation::NFEquation::FOR).clone(), openmodelica_nf_frontend::NFType::interned_INTEGER(), metamodelica::nil(), ComponentRef::Origin::ITERATOR.clone());
                 for mut eq in &*var_field!((*frontend_equation).body, FEquation::NFEquation::FOR).clone() {
@@ -1098,7 +1099,7 @@ fn lowerForEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init:
                     let mut body_elem_ptr = body_elem_ptr.clone();
                     body_elem = Pointer::access(body_elem_ptr.clone());
                     isAlgorithm = BEquation::Equation::isAlgorithm(body_elem_ptr.clone());
-                    body_elem = Arc::new(Equation::Equation::FOR_EQUATION { attr: BEquation::Equation::getAttributes(body_elem.clone()), source: var_field!((*frontend_equation).source, FEquation::NFEquation::FOR).clone(), body: list![body_elem.clone()], iter: Arc::new(Iterator::Iterator::SINGLE { name: iterator.clone(), range: range.clone(), map: None }), size: Expression::rangeSize(range.clone(), false)? * BEquation::Equation::size(body_elem_ptr.clone(), false)? });
+                    body_elem = Arc::new(Equation::Equation::FOR_EQUATION { size: Expression::rangeSize(range.clone(), false)? * BEquation::Equation::size(body_elem_ptr.clone(), false)?, iter: Arc::new(Iterator::Iterator::SINGLE { name: iterator.clone(), range: range.clone(), map: None }), body: list![body_elem.clone()], source: var_field!((*frontend_equation).source, FEquation::NFEquation::FOR).clone(), attr: BEquation::Equation::getAttributes(body_elem.clone()) });
                     (body_elem, _) = BEquation::Equation::mergeIterators(body_elem.clone(), true)?;
                     body_elem = BEquation::Equation::simplify(body_elem.clone(), (literal!("")).clone(), (literal!("")).clone(), Pointer::create(metamodelica::nil()), Pointer::create(metamodelica::nil()), (std::sync::Arc::new({ let __pe_b1 = true; let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("")).clone(); move |__pe_a0| SimplifyExp::simplifyDump(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                     if isAlgorithm.clone() {
@@ -1136,7 +1137,7 @@ fn lowerForEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init:
 fn lowerIfEquation(mut frontend_equation: Arc<FEquation::NFEquation>, mut init: bool, mut in_for: bool) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
     let mut backend_equations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     backend_equations = (::match_deref::match_deref! { match &(frontend_equation.clone()) {
-        Deref @ FEquation::IF { source, branches, .. } => {
+        Deref @ FEquation::IF { branches, source, .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
             let mut bodies: Arc<metamodelica::List<Arc<IfEquationBody::IfEquationBody>>> = metamodelica::nil();
             if let Ok(__iflet0) = lowerIfEquationBody(branches.clone(), init.clone(), in_for.clone() || FEquation::sizeOf(frontend_equation.clone())? == 0) {
@@ -1273,7 +1274,7 @@ fn lowerWhenEquation(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool
             ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut b in (bodies.clone()).into_iter().cloned() {
-            let __x = Pointer::create(Arc::new(Equation::Equation::WHEN_EQUATION { attr: BEquation::default(if (BEquation::WhenEquationBody::size(b.clone(), false)? > 0) {EquationKind::DISCRETE.clone()} else {EquationKind::EMPTY.clone()}, init.clone(), None, None), source: var_field!((*frontend_eq).source, FEquation::NFEquation::WHEN).clone(), body: b.clone(), size: BEquation::WhenEquationBody::size(b.clone(), false)? }));
+            let __x = Pointer::create(Arc::new(Equation::Equation::WHEN_EQUATION { size: BEquation::WhenEquationBody::size(b.clone(), false)?, body: b.clone(), source: var_field!((*frontend_eq).source, FEquation::NFEquation::WHEN).clone(), attr: BEquation::default(if (BEquation::WhenEquationBody::size(b.clone(), false)? > 0) {EquationKind::DISCRETE.clone()} else {EquationKind::EMPTY.clone()}, init.clone(), None, None) }));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1313,7 +1314,7 @@ fn lowerWhenBranch(mut branch: Arc<FEquation::Branch::Branch>) -> Result<(Arc<me
     let mut stmts: Arc<metamodelica::List<Arc<BEquation::WhenStatement::WhenStatement>>> = metamodelica::nil();
     let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (stmts, cond) = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ FEquation::Branch::BRANCH { body, condition, .. } => {
+        Deref @ FEquation::Branch::BRANCH { condition, body, .. } => {
             (lowerWhenBranchBody(condition.clone(), body.clone(), metamodelica::nil())?, condition.clone())
         },
         Deref @ FEquation::Branch::INVALID_BRANCH { .. } => {
@@ -1403,9 +1404,13 @@ fn lowerWhenBranchIf(mut branch: Arc<FEquation::Branch::Branch>, mut if_map: Arc
             for mut eq in &*var_field!((*branch).body, FEquation::Branch::Branch::BRANCH).clone() {
                 let mut eq = eq.clone();
                 let () = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ FEquation::EQUALITY { lhs: Deref @ Expression::CREF { cref, .. }, .. } => {
+        Deref @ FEquation::EQUALITY { lhs: Deref @ Expression::CREF { cref: __esc_cref, .. }, .. } => {
+            cref = (*__esc_cref).clone();
             exp = (::match_deref::match_deref! { match &(UnorderedMap::get(cref.clone(), if_map.clone())?) {
-        Some(exp) if (!(first.clone())) => Arc::new(Expression::NFExpression::IF { ty: Expression::typeOf(exp.clone()), condition: var_field!((*branch).condition, FEquation::Branch::Branch::BRANCH).clone(), trueBranch: var_field!((*eq).rhs, FEquation::NFEquation::EQUALITY).clone(), falseBranch: exp.clone() }),
+        Some(__esc_exp) if (!(first.clone())) => {
+            exp = (*__esc_exp).clone();
+            Arc::new(Expression::NFExpression::IF { ty: Expression::typeOf(exp.clone()), condition: var_field!((*branch).condition, FEquation::Branch::Branch::BRANCH).clone(), trueBranch: var_field!((*eq).rhs, FEquation::NFEquation::EQUALITY).clone(), falseBranch: exp.clone() })
+        },
         None if (first.clone()) => var_field!((*eq).rhs, FEquation::NFEquation::EQUALITY).clone(),
         Some(_) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerWhenBranchIf")); __mm_s.push_str(&*literal!(" failed because branch has multiple assignments for the same cref:\n")); __mm_s.push_str(&*FEquation::Branch::toString(branch.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
@@ -1671,7 +1676,7 @@ pub fn lowerFunctions(mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc
 pub fn backenddaeinfo(mut bdae: Arc<NBackendDAE>) -> Result<()> {
     if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? {
         let () = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, .. } => {
+        Deref @ MAIN { varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, .. } => {
             let mut p_ode: ArcStr = arcstr::literal!("");
             let mut p_alg: ArcStr = arcstr::literal!("");
             let mut p_ode_e: ArcStr = arcstr::literal!("");

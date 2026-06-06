@@ -227,7 +227,10 @@ fn loadClassFromMps(mut id: ArcStr, mut prios: Arc<metamodelica::List<ArcStr>>, 
         isDir = __pa2.clone();
     } else {
         version = ((::match_deref::match_deref! { match &(prios.clone()) {
-        Deref @ metamodelica::List::Cons { head: version, tail: _ } => version.clone(),
+        Deref @ metamodelica::List::Cons { head: __esc_version, tail: _ } => {
+            version = (*__esc_version).clone();
+            version.clone()
+        },
         _ => literal!("default"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -507,12 +510,12 @@ pub fn parsePackageFile(mut name: ArcStr, mut strategy: LoadFileStrategy, mut ex
         }
     }
     let (__pa5, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(cs.clone()) {
-        Deref @ metamodelica::List::Cons { head: __pa5 @ Deref @ Absyn::Class { info: __pa2, body: __pa3, name: __pa4, .. }, tail: Deref @ metamodelica::List::Nil } => (__pa5.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ metamodelica::List::Cons { head: __pa5 @ Deref @ Absyn::Class { name: __pa2, body: __pa3, info: __pa4, .. }, tail: Deref @ metamodelica::List::Nil } => (__pa5.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    info = __pa2.clone();
+    cname = __pa2.clone();
     body = __pa3.clone();
-    cname = __pa4.clone();
+    info = __pa4.clone();
     class_ = __pa5.clone();
     cl = Some(class_.clone());
     if !(stringEqual((cname.clone()).clone(), (pack.clone()).clone())) {
@@ -551,7 +554,7 @@ fn getPackageContentNames(mut cl: Arc<Absyn::Class>, mut filename: ArcStr, mut m
         let __mc_input = cl.clone();
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Class { info, body: Deref @ Absyn::ClassDef::PARTS { classParts: cp, .. }, .. } => {
+                Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: cp, .. }, info, .. } => {
                     let mut contents: ArcStr = arcstr::literal!("");
                     let mut duplicatesStr: ArcStr = arcstr::literal!("");
                     let mut differencesStr: ArcStr = arcstr::literal!("");
@@ -723,7 +726,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
         (namesToSort, Deref @ metamodelica::List::Nil) => {
             (po.clone(), namesToSort.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: name1, tail: _ }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { info, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: comps, .. }, .. } }, tail: elts }) => {
+        (Deref @ metamodelica::List::Cons { head: name1, tail: _ }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: comps, .. }, info, .. } }, tail: elts }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut compNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut b: bool = false;
@@ -734,7 +737,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             (outOrder, names) = getPackageContentNamesinElts(names.clone(), if (b.clone()) {elts.clone()} else {inElts.clone()}, metamodelica::cons(orderElt.clone(), po.clone()), r#pub.clone())?;
             (outOrder.clone(), names.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: name1, tail: namesToSort }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info, name: name2, .. }, .. }, .. } }, tail: elts }) => {
+        (Deref @ metamodelica::List::Cons { head: name1, tail: namesToSort }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name: name2, info, .. }, .. }, .. } }, tail: elts }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut b: bool = false;
             let mut orderElt: PackageOrder = <PackageOrder as ::std::default::Default>::default();
@@ -746,7 +749,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             (outOrder, names) = getPackageContentNamesinElts(namesToSort.clone(), if (b.clone()) {elts.clone()} else {inElts.clone()}, metamodelica::cons(orderElt.clone(), po.clone()), r#pub.clone())?;
             (outOrder.clone(), names.clone())
         },
-        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info, name: name2, .. }, .. }, .. } }, tail: _ }) => {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { name: name2, info, .. }, .. }, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut load: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             load = makeClassLoad((name2.clone()).clone());
@@ -755,7 +758,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             (outOrder, names) = getPackageContentNamesinElts(metamodelica::cons((name2.clone()).clone(), inNamesToSort.clone()), inElts.clone(), po.clone(), r#pub.clone())?;
             (outOrder.clone(), names.clone())
         },
-        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { info, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. }, tail: _ }, .. }, .. } }, tail: _ }) => {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. }, tail: _ }, .. }, info, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut load: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             load = makeClassLoad((name2.clone()).clone());
@@ -822,7 +825,7 @@ pub fn checkOnLoadMessage(mut p1: Absyn::Program) -> Result<()> {
 fn checkOnLoadMessageWork(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<i32> {
     let mut dummy: i32 = 0;
     dummy = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: r#str }, info }, .. }) => {
+        Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { info, exp: Deref @ Absyn::Exp::STRING { value: r#str } }, .. }) => {
             Error::addSourceMessage(Error::COMPILER_NOTIFICATION_SCRIPTING.clone(), list![(r#str.clone()).clone()], info.clone())?;
             1
         },

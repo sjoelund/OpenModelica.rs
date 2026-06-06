@@ -180,7 +180,8 @@ pub fn typeCall(mut callExp: Arc<Expression::NFExpression>, mut context: i32, mu
     } };
     call = __pa0.clone();
     outExp = (::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ UNTYPED_CALL { r#ref: cref, .. } => {
+        Deref @ UNTYPED_CALL { r#ref: __esc_cref, .. } => {
+            cref = (*__esc_cref).clone();
             if BuiltinCall::needSpecialHandling(call.clone())? {
                 (outExp, ty, var, pur) = BuiltinCall::typeSpecial(call.clone(), context.clone(), info.clone())?;
             } else {
@@ -305,7 +306,8 @@ pub fn unboxArgs(mut call: Arc<NFCall>) -> Arc<NFCall> {
     }));
             ()
         },
-        Deref @ TYPED_ARRAY_CONSTRUCTOR { exp: Deref @ Expression::CALL { call: c }, .. } => {
+        Deref @ TYPED_ARRAY_CONSTRUCTOR { exp: Deref @ Expression::CALL { call: __esc_c }, .. } => {
+            c = (*__esc_c).clone();
             assign_variant_field!(call => NFCall::TYPED_ARRAY_CONSTRUCTOR; exp = Arc::new(Expression::NFExpression::CALL { call: unboxArgs(c.clone()) }));
             ()
         },
@@ -350,12 +352,12 @@ pub fn matchTypedNormalCall(mut call: Arc<NFCall>, mut context: i32, mut info: S
     for mut a in &*typed_args.clone() {
         let mut a = a.clone();
         let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(a.clone()) {
-            Deref @ TypedArg { purity: __pa1, var: __pa2, value: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
+            Deref @ TypedArg { value: __pa1, var: __pa2, purity: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        arg_pur = __pa1.clone();
+        arg_exp = __pa1.clone();
         arg_var = __pa2.clone();
-        arg_exp = __pa3.clone();
+        arg_pur = __pa3.clone();
         args = metamodelica::cons(arg_exp.clone(), args.clone());
         var = Prefixes::variabilityMax(var.clone(), arg_var.clone());
         pur = Prefixes::purityMin(pur.clone(), arg_pur.clone());
@@ -913,7 +915,11 @@ pub fn toFlatStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpre
     let mut rest_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     argsString = ((::match_deref::match_deref! { match &(fnName.clone()) {
         Deref @ "String" => (::match_deref::match_deref! { match &(args.clone()) {
-        Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } } => { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(arg1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", format = ")); __mm_s.push_str(&*Expression::toFlatString(arg2.clone(), format.clone())?); ArcStr::from(__mm_s) },
+        Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Cons { head: __esc_arg2, tail: Deref @ metamodelica::List::Nil } } => {
+            arg1 = (*__esc_arg1).clone();
+            arg2 = (*__esc_arg2).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(arg1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", format = ")); __mm_s.push_str(&*Expression::toFlatString(arg2.clone(), format.clone())?); ArcStr::from(__mm_s) }
+        },
         _ => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(args.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -2224,7 +2230,10 @@ pub fn toArrayConstructor(mut iCall: Arc<NFCall>, mut index_ptr: Pointer::Pointe
                 index = index.clone() + 1;
             }
             (body, iterators) = (::match_deref::match_deref! { match &(body.clone()) {
-        Deref @ Expression::CALL { call: body_call @ Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } } => (var_field!((**body_call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), listAppend(iterators.clone(), var_field!((**body_call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())),
+        Deref @ Expression::CALL { call: __esc_body_call @ Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } } => {
+            body_call = (*__esc_body_call).clone();
+            (var_field!((*body_call).exp, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), listAppend(iterators.clone(), var_field!((*body_call).iters, NFCall::TYPED_ARRAY_CONSTRUCTOR).clone()))
+        },
         _ => (body.clone(), iterators.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2362,11 +2371,11 @@ fn instNamedArg(mut absynArg: Arc<Absyn::NamedArg>, mut scope: Arc<InstNode::Ins
     let mut name: ArcStr = arcstr::literal!("");
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(absynArg.clone()) {
-        Deref @ Absyn::NamedArg { argValue: __pa0, argName: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Absyn::NamedArg { argName: __pa0, argValue: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp = __pa0.clone();
-    name = __pa1.clone();
+    name = __pa0.clone();
+    exp = __pa1.clone();
     arg = (name.clone(), Inst::instExp(exp.clone(), scope.clone(), context.clone(), info.clone())?);
     Ok(arg)
 }
@@ -2670,7 +2679,8 @@ fn checkMatchingFunctions(mut call: Arc<NFCall>, mut context: i32, mut info: Sou
     let mut numerr: i32 = Error::getNumErrorMessages();
     ErrorExt::setCheckpoint((literal!("NFCall:checkMatchingFunctions")).clone());
     matchedFunctions = (::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ ARG_TYPED_CALL { r#ref: Deref @ ComponentRef::CREF { node: fn_node, .. }, .. } => {
+        Deref @ ARG_TYPED_CALL { r#ref: Deref @ ComponentRef::CREF { node: __esc_fn_node, .. }, .. } => {
+            fn_node = (*__esc_fn_node).clone();
             allfuncs = Function::getCachedFuncs(fn_node.clone())?;
             if (allfuncs.clone().len() as i32) > 1 {
                 allfuncs = ({
@@ -2748,8 +2758,8 @@ fn vectorizeCall(mut base_call: Arc<NFCall>, mut mk: Arc<FunctionMatchKind::Func
     let mut call_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut sub: Arc<Subscript::NFSubscript> = Arc::new(Subscript::WHOLE);
     vectorized_call = (::match_deref::match_deref! { match &((base_call.clone(), mk.clone())) {
-        (Deref @ TYPED_CALL { arguments: call_args, .. }, Deref @ FunctionMatchKind::VECTORIZED { .. }) => {
-            let mut call_args = (*call_args).clone();
+        (Deref @ TYPED_CALL { arguments: __esc_call_args, .. }, Deref @ FunctionMatchKind::VECTORIZED { .. }) => {
+            call_args = (*__esc_call_args).clone();
             iters = metamodelica::nil();
             i = 1;
             for mut dim in &*var_field!((*mk).vectDims, FunctionMatchKind::FunctionMatchKind::VECTORIZED).clone() {
@@ -2794,11 +2804,11 @@ fn devectorizeCall(mut call: Arc<NFCall>) -> Result<Arc<Expression::NFExpression
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut iter_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ TYPED_ARRAY_CONSTRUCTOR { iters: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ TYPED_ARRAY_CONSTRUCTOR { exp: __pa0, iters: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    iters = __pa0.clone();
-    exp = __pa1.clone();
+    exp = __pa0.clone();
+    iters = __pa1.clone();
     for mut i in &*iters.clone() {
         let mut i = i.clone();
         (iter_node, iter_exp) = i.clone();
@@ -2943,7 +2953,8 @@ fn resolvePolymorphicReturnType(mut r#fn: Arc<Function::Function>, mut args: Arc
     let mut arg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
     let mut rest_args: Arc<metamodelica::List<Arc<TypedArg>>> = args.clone();
     outType = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::POLYMORPHIC { name } => {
+        Deref @ Type::POLYMORPHIC { name: __esc_name } => {
+            name = (*__esc_name).clone();
             for mut i in &*r#fn.inputs.clone() {
                 let mut i = i.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(rest_args.clone()) {

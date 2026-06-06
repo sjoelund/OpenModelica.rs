@@ -518,29 +518,29 @@ pub mod Partition {
             DoubleEnded::push_back(clocked.clone(), partition.clone());
             partition.association.clone()
         },
-        (Kind::ALG, association @ Deref @ Association::CONTINUOUS { .. }) => {
-            let mut association = (*association).clone();
+        (Kind::ALG, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
+            association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
             DoubleEnded::push_back(alg.clone(), partition.clone());
             association.clone()
         },
-        (Kind::ODE, association @ Deref @ Association::CONTINUOUS { .. }) => {
-            let mut association = (*association).clone();
+        (Kind::ODE, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
+            association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
             DoubleEnded::push_back(ode.clone(), partition.clone());
             association.clone()
         },
-        (Kind::ALG_EVT, association @ Deref @ Association::CONTINUOUS { .. }) => {
-            let mut association = (*association).clone();
+        (Kind::ALG_EVT, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
+            association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
             DoubleEnded::push_back(alg_evt.clone(), partition.clone());
             association.clone()
         },
-        (Kind::ODE_EVT, association @ Deref @ Association::CONTINUOUS { .. }) => {
-            let mut association = (*association).clone();
+        (Kind::ODE_EVT, __esc_association @ Deref @ Association::CONTINUOUS { .. }) => {
+            association = (*__esc_association).clone();
             assign_variant_field!(association => Association::Association::CONTINUOUS; kind = kind.clone());
             assign_field!(partition.association = association.clone());
             DoubleEnded::push_back(ode_evt.clone(), partition.clone());
@@ -663,7 +663,7 @@ pub mod Partition {
         let mut baseClock: Option<Arc<BClock::BClock>> = None;
         let mut holdEvents: bool = false;
         (clock, baseClock, holdEvents) = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CLOCKED { holdEvents: __esc_holdEvents, baseClock: __esc_baseClock, clock: __esc_clock, .. } => {
+        Deref @ Association::CLOCKED { clock: __esc_clock, baseClock: __esc_baseClock, holdEvents: __esc_holdEvents, .. } => {
             clock = (*__esc_clock).clone();
             baseClock = (*__esc_baseClock).clone();
             holdEvents = (*__esc_holdEvents).clone();

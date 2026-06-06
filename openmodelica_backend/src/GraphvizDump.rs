@@ -164,7 +164,7 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { m: i_eqSystem_m, orderedEqs: i_eqSystem_orderedEqs, orderedVars: i_eqSystem_orderedVars, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, m: i_eqSystem_m, .. }, tail: rest }) => {
             let mut x_clusterID: i32 = 0;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut l_eqDeclaration: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -214,7 +214,7 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
 pub fn dumpDependence(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
-        (txt, Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. }, eqs: i_eqs }, a_suffix) => {
+        (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -435,7 +435,7 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { m: i_eqSystem_m, matching: i_eqSystem_matching, orderedEqs: i_eqSystem_orderedEqs, orderedVars: i_eqSystem_orderedVars, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, m: i_eqSystem_m, .. }, tail: rest }) => {
             let mut x_clusterID: i32 = 0;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut l_eqDeclaration: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -485,7 +485,7 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
 pub fn dumpMatching(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
-        (txt, Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. }, eqs: i_eqs }, a_suffix) => {
+        (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
@@ -878,7 +878,7 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { matching: i_eqSystem_matching, orderedEqs: i_eqSystem_orderedEqs, orderedVars: i_eqSystem_orderedVars, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: i_eqSystem_orderedVars, orderedEqs: i_eqSystem_orderedEqs, matching: i_eqSystem_matching, .. }, tail: rest }) => {
             let mut x_clusterID: i32 = 0;
             let mut ret_3: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut l_eqDeclaration: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -925,7 +925,7 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
 pub fn dumpSorting(mut in_txt: Tpl::Text, mut in_a_backendDAE: Arc<BackendDAE::BackendDAE>, mut in_a_suffix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_backendDAE.clone(), in_a_suffix.clone())) {
-        (txt, Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. }, eqs: i_eqs }, a_suffix) => {
+        (txt, Deref @ BackendDAE::BackendDAE { eqs: i_eqs, shared: Deref @ BackendDAE::Shared { info: BackendDAE::ExtraInfo { fileNamePrefix: i_info_fileNamePrefix, .. }, .. } }, a_suffix) => {
             let mut l_systems: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_systems = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;

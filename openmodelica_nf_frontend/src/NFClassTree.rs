@@ -219,9 +219,9 @@ pub mod ClassTree {
         let mut imp: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
         let mut ltree: Arc<LookupTree::Tree> = Arc::new(LookupTree::Tree::EMPTY);
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { imports, tree: ltree, .. } if (!(imports.clone().borrow().is_empty())) => {
+        Deref @ PARTIAL_TREE { tree: __esc_ltree, imports, .. } if (!(imports.clone().borrow().is_empty())) => {
+            ltree = (*__esc_ltree).clone();
             let mut imports = (*imports).clone();
-            let mut ltree = (*ltree).clone();
             init_imports = metamodelica::nil();
             let __range0 = imports.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut imp in __range0 {
@@ -439,11 +439,11 @@ pub mod ClassTree {
             for mut i in 1..=metamodelica::arrayLength(exts.clone()) {
                 node = ({let __elt = exts.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 let (__pa6, __pa7) = ::match_deref::match_deref! { match &(InstNode::nodeType(node.clone())?) {
-                    Deref @ InstNodeType::BASE_CLASS { ty: __pa6, definition: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
+                    Deref @ InstNodeType::BASE_CLASS { definition: __pa6, ty: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
                     _ => bail!("pattern mismatch"),
                 } };
-                inst_ty = __pa6.clone();
-                ext_def = __pa7.clone();
+                ext_def = __pa6.clone();
+                inst_ty = __pa7.clone();
                 node = InstNode::setNodeType(Arc::new(InstNodeType::BASE_CLASS { parent: instance.clone(), definition: ext_def.clone(), ty: inst_ty.clone() }), node.clone());
                 (node, _, cls_count, comp_count) = instantiate(node.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), inst_scope.clone())?;
                 {
@@ -475,7 +475,8 @@ pub mod ClassTree {
             let __range10 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range10 {
                 let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(ext.clone())?)?) {
-        Deref @ INSTANTIATED_TREE { classes: ext_clss, .. } => {
+        Deref @ INSTANTIATED_TREE { classes: __esc_ext_clss, .. } => {
+            ext_clss = (*__esc_ext_clss).clone();
             cls_count = metamodelica::arrayLength(ext_clss.clone());
             if cls_count.clone() > 0 {
                 Array::copyRange(ext_clss.clone(), clss.clone(), 1, cls_count.clone(), cls_idx.clone())?;
@@ -525,15 +526,16 @@ pub mod ClassTree {
             assign_variant_field!(cls => Class::NFClass::EXPANDED_CLASS; elements = Arc::new(ClassTree::INSTANTIATED_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), localComponents: local_comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: dups.clone() }));
             ()
         },
-        Deref @ Class::EXPANDED_DERIVED { baseClass: node, .. } => {
-            let mut node = (*node).clone();
+        Deref @ Class::EXPANDED_DERIVED { baseClass: __esc_node, .. } => {
+            node = (*__esc_node).clone();
             node = InstNode::setNodeType(Arc::new(InstNodeType::BASE_CLASS { parent: clsNode.clone(), definition: InstNode::definition(node.clone())?, ty: InstNode::nodeType(node.clone())? }), node.clone());
             (node, instance, classCount, compCount) = instantiate(node.clone(), instance.clone(), scope.clone())?;
             assign_variant_field!(cls => Class::NFClass::EXPANDED_DERIVED; baseClass = node.clone());
             ()
         },
-        Deref @ Class::PARTIAL_BUILTIN { elements: tree @ Deref @ FLAT_TREE { components: old_comps, .. }, .. } => {
-            let mut tree = (*tree).clone();
+        Deref @ Class::PARTIAL_BUILTIN { elements: __esc_tree @ Deref @ FLAT_TREE { components: __esc_old_comps, .. }, .. } => {
+            tree = (*__esc_tree).clone();
+            old_comps = (*__esc_old_comps).clone();
             instance = if (InstNode::isEmpty(instance.clone())) {clsNode.clone()} else {instance.clone()};
             assign_variant_field!(tree => ClassTree::FLAT_TREE; components = Array::map(old_comps.clone(), (std::sync::Arc::new({ let __pe_b1 = instance.clone(); move |__pe_a0| InstNode::cloneComponent(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> + 'static>))?);
             assign_variant_field!(cls => Class::NFClass::PARTIAL_BUILTIN; elements = tree.clone());
@@ -1194,11 +1196,11 @@ pub mod ClassTree {
         let mut ltree: Arc<LookupTree::Tree> = Arc::new(LookupTree::Tree::EMPTY);
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tree.clone()) {
-            Deref @ FLAT_TREE { components: __pa0, tree: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            Deref @ FLAT_TREE { tree: __pa0, components: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        comps = __pa0.clone();
-        ltree = __pa1.clone();
+        ltree = __pa0.clone();
+        comps = __pa1.clone();
         components = LookupTree::fold(ltree.clone(), (std::sync::Arc::new({ let __pe_b2 = comps.clone(); move |__pe_a0, __pe_a1, __pe_a3| Ok(enumerateComponents2(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<LookupTree::Entry::Entry>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> + 'static>), metamodelica::nil())?;
         Ok(components)
     }
@@ -1338,7 +1340,8 @@ pub mod ClassTree {
         let mut ext_comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut comp_count: i32 = 0;
         let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extNode.clone())?)?) {
-        Deref @ INSTANTIATED_TREE { components: ext_comps_ptrs, .. } => {
+        Deref @ INSTANTIATED_TREE { components: __esc_ext_comps_ptrs, .. } => {
+            ext_comps_ptrs = (*__esc_ext_comps_ptrs).clone();
             comp_count = metamodelica::arrayLength(ext_comps_ptrs.clone());
             if comp_count.clone() > 0 {
                 Array::copyRange(ext_comps_ptrs.clone(), comps.clone(), 1, comp_count.clone(), index.clone())?;
@@ -1346,7 +1349,8 @@ pub mod ClassTree {
             }
             ()
         },
-        Deref @ FLAT_TREE { components: ext_comps, .. } => {
+        Deref @ FLAT_TREE { components: __esc_ext_comps, .. } => {
+            ext_comps = (*__esc_ext_comps).clone();
             comp_count = metamodelica::arrayLength(ext_comps.clone());
             if comp_count.clone() > 0 {
                 for mut i in index.clone()..=index.clone() + comp_count.clone() - 1 {
@@ -1446,11 +1450,11 @@ pub mod ClassTree {
             let mut i: i32 = 0;
             i = 0;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(classTree.clone()) {
-                Deref @ PARTIAL_TREE { exts: __pa0, components: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ PARTIAL_TREE { components: __pa0, exts: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            exts = __pa0.clone();
-            comps = __pa1.clone();
+            comps = __pa0.clone();
+            exts = __pa1.clone();
             let __range2 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range2 {
                 i = (::match_deref::match_deref! { match &(c.clone()) {
@@ -1657,7 +1661,10 @@ pub mod ClassTree {
         let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
         let () = (::match_deref::match_deref! { match &(Class::classTree(InstNode::getClass(extendsNode.clone())?)?) {
-        Deref @ EXPANDED_TREE { exts, components: comps, classes: clss, .. } => {
+        Deref @ EXPANDED_TREE { classes: __esc_clss, components: __esc_comps, exts: __esc_exts, .. } => {
+            clss = (*__esc_clss).clone();
+            comps = (*__esc_comps).clone();
+            exts = (*__esc_exts).clone();
             componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone()) - metamodelica::arrayLength(exts.clone());
             classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
             let __range0 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -1666,7 +1673,9 @@ pub mod ClassTree {
             }
             ()
         },
-        Deref @ FLAT_TREE { components: comps, classes: clss, .. } => {
+        Deref @ FLAT_TREE { classes: __esc_clss, components: __esc_comps, .. } => {
+            clss = (*__esc_clss).clone();
+            comps = (*__esc_comps).clone();
             componentCount = componentCount.clone() + metamodelica::arrayLength(comps.clone());
             classCount = classCount.clone() + metamodelica::arrayLength(clss.clone());
             ()
@@ -2022,15 +2031,18 @@ pub mod ClassTree {
         let mut opt_def: Option<Arc<SCode::Element>> = None;
         opt_def = InstNode::extendsDefinition(extendsNode.clone())?;
         breaks = (::match_deref::match_deref! { match &(opt_def.clone()) {
-        Some(Deref @ SCode::Element::EXTENDS { modifications: r#mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => ({
+        Some(Deref @ SCode::Element::EXTENDS { modifications: __esc_mod @ Deref @ SCode::Mod::MOD { .. }, .. }) => {
+            r#mod = (*__esc_mod).clone();
+            ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-        for mut sm in (var_field!((**r#mod).subModLst, SCode::Mod::MOD).clone()).into_iter().cloned() {
+        for mut sm in (var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone()).into_iter().cloned() {
             if !(SCodeUtil::isBreakComponentSubMod(sm.clone())) { continue; }
             let __x = sm.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
+    })
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

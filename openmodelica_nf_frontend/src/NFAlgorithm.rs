@@ -237,12 +237,12 @@ pub fn isDiscrete(mut alg: Arc<NFAlgorithm>) -> Result<bool> {
 
 fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(statement.clone()) {
-        Deref @ Statement::ASSIGNMENT { rhs, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
+        Deref @ Statement::ASSIGNMENT { lhs: lhs @ Deref @ Expression::CREF { .. }, rhs, .. } => {
             Expression::apply(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = inputs_set.clone(); let __pe_b2 = outputs_set.clone(); move |__pe_a0| expressionInputs(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
             expressionOutput(lhs.clone(), inputs_set.clone(), outputs_set.clone())?;
             ()
         },
-        Deref @ Statement::ASSIGNMENT { rhs, lhs: Deref @ Expression::TUPLE { elements, .. }, .. } => {
+        Deref @ Statement::ASSIGNMENT { lhs: Deref @ Expression::TUPLE { elements, .. }, rhs, .. } => {
             Expression::apply(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = inputs_set.clone(); let __pe_b2 = outputs_set.clone(); move |__pe_a0| expressionInputs(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
             for mut exp in &*elements.clone() {
                 let mut exp = exp.clone();

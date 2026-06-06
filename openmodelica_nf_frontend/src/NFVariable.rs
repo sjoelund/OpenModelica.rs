@@ -143,7 +143,8 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
     }
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::COMPLEX { cls: class_node, .. } => {
+        Deref @ Type::COMPLEX { cls: __esc_class_node, .. } => {
+            class_node = (*__esc_class_node).clone();
             child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?)?;
             children = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
@@ -473,7 +474,7 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
         bail!("matchcontinue: no arm matched")
     };
             }
-            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { info: metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo"), comment: None, binding: None, subModLst: list![Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() })], eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL }) });
+            anno = Arc::new(SCode::Annotation { modification: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() })], binding: None, comment: None, info: metamodelica::sourceInfo!("NFFrontEnd/NFVariable.mo") }) });
             assign_field!(var.comment = SCodeUtil::appendAnnotationToComment(anno.clone(), var.comment.clone(), true)?);
         }
     }

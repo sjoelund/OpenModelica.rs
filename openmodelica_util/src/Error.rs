@@ -1317,7 +1317,10 @@ pub fn updateCurrentComponent(mut component: ArcStr, mut info: SourceInfo, mut f
             { let __v = Some((arrayCreate(1, (component.clone()).clone()), arrayCreate(1, info.clone()), arrayCreate(1, func.clone()))); crate::Globals::currentInstVar.with(|__root| *__root.borrow_mut() = __v) };
             ()
         },
-        Some((mut astr, mut ainfo, mut afunc)) => {
+        Some((mut __esc_astr, mut __esc_ainfo, mut __esc_afunc)) => {
+            astr = __esc_astr.clone();
+            ainfo = __esc_ainfo.clone();
+            afunc = __esc_afunc.clone();
             {let _arr = astr.clone(); let _idx = 1; let _val = (component.clone()).clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = ainfo.clone(); let _idx = 1; let _val = info.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             {let _arr = afunc.clone(); let _idx = 1; let _val = func.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
@@ -1346,7 +1349,10 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
     tpl = crate::Globals::currentInstVar.with(|__root| __root.borrow().clone());
     r#str = ((match tpl.clone() {
         None => literal!(""),
-        Some((mut astr, mut ainfo, mut afunc)) => {
+        Some((mut __esc_astr, mut __esc_ainfo, mut __esc_afunc)) => {
+            astr = __esc_astr.clone();
+            ainfo = __esc_ainfo.clone();
+            afunc = __esc_afunc.clone();
             r#str = (metamodelica::arrayGet(astr.clone(), 1)?).clone();
             if r#str.clone() != literal!("") {
                 func = metamodelica::arrayGet(afunc.clone(), 1)?;
@@ -1393,7 +1399,7 @@ pub fn addMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<
 
 pub fn addSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<metamodelica::List<ArcStr>>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inErrorMsg.clone(), inMessageTokens.clone(), inInfo.clone())) {
-        (ErrorTypes::Message { id: error_id, ty: msg_type, severity, message: msg }, tokens, SourceInfo { columnNumberEnd: ecol, lineNumberEnd: eline, columnNumberStart: scol, lineNumberStart: sline, isReadOnly, fileName: file, .. }) => {
+        (ErrorTypes::Message { id: error_id, ty: msg_type, severity, message: msg }, tokens, SourceInfo { fileName: file, isReadOnly, lineNumberStart: sline, columnNumberStart: scol, lineNumberEnd: eline, columnNumberEnd: ecol, .. }) => {
             let mut msg_str: ArcStr = arcstr::literal!("");
             msg_str = (Gettext::translateContent(msg.clone())?).clone();
             ErrorExt::addSourceMessage(error_id.clone(), msg_type.clone(), severity.clone(), sline.clone(), scol.clone(), eline.clone(), ecol.clone(), isReadOnly.clone(), (Testsuite::friendly((file.clone()).clone())?).clone(), (msg_str.clone()).clone(), tokens.clone());
@@ -1468,9 +1474,9 @@ pub fn addMessageOrSourceMessage(mut inErrorMsg: ErrorTypes::Message, mut inMess
 pub fn addTotalMessage(mut message: ErrorTypes::TotalMessage) -> Result<()> {
     let mut msg: ErrorTypes::Message = <ErrorTypes::Message as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let ErrorTypes::TOTALMESSAGE { info: __pa0, msg: __pa1 } = (message.clone()) else { bail!("pattern mismatch") };
-    info = __pa0.clone();
-    msg = __pa1.clone();
+    let ErrorTypes::TOTALMESSAGE { msg: __pa0, info: __pa1 } = (message.clone()) else { bail!("pattern mismatch") };
+    msg = __pa0.clone();
+    info = __pa1.clone();
     addSourceMessage(msg.clone(), metamodelica::nil(), info.clone())?;
     Ok(())
 }
@@ -1581,7 +1587,7 @@ pub fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr> {
 pub fn infoStr(mut info: SourceInfo) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match info.clone() {
-        SourceInfo { columnNumberEnd: mut col_end, lineNumberEnd: mut line_end, columnNumberStart: mut col_start, lineNumberStart: mut line_start, fileName: mut filename, .. } => {
+        SourceInfo { fileName: mut filename, lineNumberStart: mut line_start, columnNumberStart: mut col_start, lineNumberEnd: mut line_end, columnNumberEnd: mut col_end, .. } => {
             let mut info_str: ArcStr = arcstr::literal!("");
             info_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Testsuite::friendly((filename.clone()).clone())?); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(line_start.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_start.clone())); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*intString(line_end.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*intString(col_end.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
             info_str.clone()

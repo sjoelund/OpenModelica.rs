@@ -185,14 +185,16 @@ pub fn filterDiscrete(mut stmts: Arc<metamodelica::List<Arc<NFStatement>>>, mut 
     let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<NFStatement>>> = metamodelica::nil();
     out_stmts = (::match_deref::match_deref! { match &(stmts.clone()) {
-        Deref @ metamodelica::List::Cons { head: stmt @ Deref @ FOR { .. }, tail: rest } => {
-            let mut stmt = (*stmt).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_stmt @ Deref @ FOR { .. }, tail: __esc_rest } => {
+            stmt = (*__esc_stmt).clone();
+            rest = (*__esc_rest).clone();
             assign_variant_field!(stmt => NFStatement::FOR; body = filterDiscrete(var_field!((*stmt).body, NFStatement::FOR).clone(), metamodelica::nil())?);
             out_stmts = if ((var_field!((*stmt).body, NFStatement::FOR).clone().len() as i32) == 0) {out_stmts.clone()} else {metamodelica::cons(stmt.clone(), out_stmts.clone())};
             filterDiscrete(rest.clone(), out_stmts.clone())?
         },
-        Deref @ metamodelica::List::Cons { head: stmt @ Deref @ IF { .. }, tail: rest } => {
-            let mut stmt = (*stmt).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_stmt @ Deref @ IF { .. }, tail: __esc_rest } => {
+            stmt = (*__esc_stmt).clone();
+            rest = (*__esc_rest).clone();
             assign_variant_field!(stmt => NFStatement::IF; branches = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>> = metamodelica::nil();
         for mut tpl in (var_field!((*stmt).branches, NFStatement::IF).clone()).into_iter().cloned() {
@@ -203,8 +205,15 @@ pub fn filterDiscrete(mut stmts: Arc<metamodelica::List<Arc<NFStatement>>>, mut 
     }));
             filterDiscrete(rest.clone(), metamodelica::cons(stmt.clone(), out_stmts.clone()))?
         },
-        Deref @ metamodelica::List::Cons { head: stmt, tail: rest } if (isDiscrete(stmt.clone())?) => filterDiscrete(rest.clone(), out_stmts.clone())?,
-        Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => filterDiscrete(rest.clone(), metamodelica::cons(stmt.clone(), out_stmts.clone()))?,
+        Deref @ metamodelica::List::Cons { head: stmt, tail: __esc_rest } if (isDiscrete(stmt.clone())?) => {
+            rest = (*__esc_rest).clone();
+            filterDiscrete(rest.clone(), out_stmts.clone())?
+        },
+        Deref @ metamodelica::List::Cons { head: __esc_stmt, tail: __esc_rest } => {
+            stmt = (*__esc_stmt).clone();
+            rest = (*__esc_rest).clone();
+            filterDiscrete(rest.clone(), metamodelica::cons(stmt.clone(), out_stmts.clone()))?
+        },
         _ => out_stmts.clone().reverse(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

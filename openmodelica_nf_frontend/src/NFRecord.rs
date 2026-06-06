@@ -199,7 +199,8 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ ClassTree::FLAT_TREE { components: comps, .. } => {
+        Deref @ ClassTree::FLAT_TREE { components: __esc_comps, .. } => {
+            comps = (*__esc_comps).clone();
             for mut i in ({let __s=metamodelica::arrayLength(comps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 comp = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
@@ -207,7 +208,8 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
             }
             ()
         },
-        Deref @ ClassTree::INSTANTIATED_TREE { components: pcomps, .. } => {
+        Deref @ ClassTree::INSTANTIATED_TREE { components: __esc_pcomps, .. } => {
+            pcomps = (*__esc_pcomps).clone();
             for mut i in ({let __s=metamodelica::arrayLength(pcomps.clone()); let __e=1; (0i32..).map(move |__k| __s + __k * (-1)).take_while(move |&__v| __v >= __e)}) {
                 comp = Mutable::access(({let __elt = pcomps.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;

@@ -247,7 +247,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
         BackendDump::dumpEquationArray(outOtherEqns.clone(), (literal!("Jacobian_other_Equation")).clone())?;
     }
     (simCodeJacobian, shared) = SymbolicJacobian::getSymbolicJacobian(outDiffVars.clone(), outResidualEqns.clone(), outResidualVars.clone(), outOtherEqns.clone(), outOtherVars.clone(), shared.clone(), outOtherVars.clone(), (literal!("F")).clone(), false)?;
-    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { relatedBoundaryConditions: (setBFailedBoundaryConditionEquations.clone().len() as i32), symbolicJacobianH: None, setBVars: Some(BackendVariable::listVar(unMeasuredVariables.clone())?), datareconinputs: outDiffVars.clone(), setcVars: outResidualVars.clone(), symbolicJacobian: simCodeJacobian.clone() }));
+    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { symbolicJacobian: simCodeJacobian.clone(), setcVars: outResidualVars.clone(), datareconinputs: outDiffVars.clone(), setBVars: Some(BackendVariable::listVar(unMeasuredVariables.clone())?), symbolicJacobianH: None, relatedBoundaryConditions: (setBFailedBoundaryConditionEquations.clone().len() as i32) }));
     currentSystem = BackendDAEUtil::setEqSystVars(currentSystem.clone(), BackendVariable::mergeVariables(outResidualVars.clone(), outOtherVars.clone(), true)?)?;
     currentSystem = BackendDAEUtil::setEqSystEqs(currentSystem.clone(), BackendEquation::merge(outResidualEqns.clone(), outOtherEqns.clone())?);
     inputVars = BackendVariable::listVar(List::map1(BackendVariable::varList(outDiffVars.clone())?, (std::sync::Arc::new(fnptr!(BackendVariable::setVarDirection, BackendDAE::Var, DAE::VarDirection)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, DAE::VarDirection) -> Result<BackendDAE::Var> + 'static>), openmodelica_frontend_types::DAE::VarDirection::INPUT)?)?;
@@ -582,7 +582,7 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
         BackendDump::dumpVariables(outOtherVars.clone(), (literal!("Jacobian_outOtherVars")).clone())?;
     }
     (simCodeJacobian, shared) = SymbolicJacobian::getSymbolicJacobian(outDiffVars.clone(), outBoundaryConditionEquations.clone(), outBoundaryConditionVars.clone(), outOtherEqns.clone(), outOtherVars.clone(), shared.clone(), outOtherVars.clone(), (literal!("F")).clone(), false)?;
-    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { relatedBoundaryConditions: (setBFailedBoundaryConditionEquations.clone().len() as i32), symbolicJacobianH: None, setBVars: Some(BackendVariable::listVar(unMeasuredVariables.clone())?), datareconinputs: outDiffVars.clone(), setcVars: outBoundaryConditionVars.clone(), symbolicJacobian: simCodeJacobian.clone() }));
+    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { symbolicJacobian: simCodeJacobian.clone(), setcVars: outBoundaryConditionVars.clone(), datareconinputs: outDiffVars.clone(), setBVars: Some(BackendVariable::listVar(unMeasuredVariables.clone())?), symbolicJacobianH: None, relatedBoundaryConditions: (setBFailedBoundaryConditionEquations.clone().len() as i32) }));
     currentSystem = BackendDAEUtil::setEqSystEqs(currentSystem.clone(), BackendEquation::merge(outBoundaryConditionEquations.clone(), outOtherEqns.clone())?);
     currentSystem = BackendDAEUtil::setEqSystVars(currentSystem.clone(), BackendVariable::mergeVariables(outBoundaryConditionVars.clone(), outOtherVars.clone(), true)?)?;
     inputVars = BackendVariable::listVar(List::map1(BackendVariable::varList(outDiffVars.clone())?, (std::sync::Arc::new(fnptr!(BackendVariable::setVarDirection, BackendDAE::Var, DAE::VarDirection)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, DAE::VarDirection) -> Result<BackendDAE::Var> + 'static>), openmodelica_frontend_types::DAE::VarDirection::INPUT)?)?;
@@ -835,7 +835,7 @@ pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Bac
     }
     (simCodeJacobian, shared) = SymbolicJacobian::getSymbolicJacobian(outDiffVars.clone(), outResidualEqns.clone(), outResidualVars.clone(), outOtherEqns.clone(), outOtherVars.clone(), shared.clone(), outOtherVars.clone(), (literal!("F")).clone(), false)?;
     (simCodeJacobianH, shared) = SymbolicJacobian::getSymbolicJacobian(outDiffVars.clone(), outBoundaryConditionEquations.clone(), outBoundaryConditionVars.clone(), outOtherEqnsSetSPrime.clone(), outOtherVarsSetSPrime.clone(), shared.clone(), outOtherVarsSetSPrime.clone(), (literal!("H")).clone(), false)?;
-    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { relatedBoundaryConditions: numRelatedBoundaryConditions.clone(), symbolicJacobianH: Some(simCodeJacobianH.clone()), setBVars: Some(outBoundaryConditionVars.clone()), datareconinputs: outDiffVars.clone(), setcVars: outResidualVars.clone(), symbolicJacobian: simCodeJacobian.clone() }));
+    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { symbolicJacobian: simCodeJacobian.clone(), setcVars: outResidualVars.clone(), datareconinputs: outDiffVars.clone(), setBVars: Some(outBoundaryConditionVars.clone()), symbolicJacobianH: Some(simCodeJacobianH.clone()), relatedBoundaryConditions: numRelatedBoundaryConditions.clone() }));
     setSPrime_Eq = List::unique(listAppend(setSPrime_Eq.clone(), failedboundaryConditionEquations.clone()));
     setSPrime_Eq = List::unique(listAppend(setSPrime_Eq.clone(), setS_Eq.clone()));
     allDaeEqs = List::unique(listAppend(setSPrime_Eq.clone(), residualEquations.clone()));
@@ -1499,7 +1499,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         BackendDump::dumpEquationArray(outOtherEqns.clone(), (literal!("Jacobian_other_Equation")).clone())?;
     }
     (simCodeJacobian, shared) = SymbolicJacobian::getSymbolicJacobian(outDiffVars.clone(), outResidualEqns.clone(), outResidualVars.clone(), outOtherEqns.clone(), outOtherVars.clone(), shared.clone(), outOtherVars.clone(), (literal!("F")).clone(), false)?;
-    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { relatedBoundaryConditions: 0, symbolicJacobianH: None, setBVars: None, datareconinputs: outDiffVars.clone(), setcVars: outResidualVars.clone(), symbolicJacobian: simCodeJacobian.clone() }));
+    assign_field!(shared.dataReconciliationData = Some(BackendDAE::DataReconciliationData { symbolicJacobian: simCodeJacobian.clone(), setcVars: outResidualVars.clone(), datareconinputs: outDiffVars.clone(), setBVars: None, symbolicJacobianH: None, relatedBoundaryConditions: 0 }));
     currentSystem = BackendDAEUtil::setEqSystVars(currentSystem.clone(), BackendVariable::mergeVariables(outResidualVars.clone(), outOtherVars.clone(), true)?)?;
     currentSystem = BackendDAEUtil::setEqSystEqs(currentSystem.clone(), BackendEquation::merge(outResidualEqns.clone(), outOtherEqns.clone())?);
     inputVars = BackendVariable::listVar(List::map1(BackendVariable::varList(outDiffVars.clone())?, (std::sync::Arc::new(fnptr!(BackendVariable::setVarDirection, BackendDAE::Var, DAE::VarDirection)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, DAE::VarDirection) -> Result<BackendDAE::Var> + 'static>), openmodelica_frontend_types::DAE::VarDirection::INPUT)?)?;
@@ -2944,7 +2944,7 @@ pub fn dumpNonReconciledVars(mut invar: Arc<metamodelica::List<BackendDAE::Var>>
 fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inEquation.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -2953,7 +2953,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
-        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. } => {
+        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -2962,7 +2962,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
-        Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. } => {
+        Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -2971,7 +2971,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             res = stringAppendList(list![(s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone()]);
             res.clone()
         },
-        Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr, .. } => {
+        Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -2994,12 +2994,12 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             res = stringAppendList(list![(s1.clone()).clone(), (literal!("= 0")).clone()]);
             res.clone()
         },
-        Deref @ BackendDAE::Equation::ALGORITHM { source, alg, .. } => {
+        Deref @ BackendDAE::Equation::ALGORITHM { alg, source, .. } => {
             let mut res: ArcStr = arcstr::literal!("");
             res = (DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: alg.clone(), source: source.clone() })])?).clone();
             res.clone()
         },
-        Deref @ BackendDAE::Equation::IF_EQUATION { eqnsfalse, eqnstrue: Deref @ metamodelica::List::Cons { head: eqns, tail: eqnstrue }, conditions: Deref @ metamodelica::List::Cons { head: e1, tail: expl }, .. } => {
+        Deref @ BackendDAE::Equation::IF_EQUATION { conditions: Deref @ metamodelica::List::Cons { head: e1, tail: expl }, eqnstrue: Deref @ metamodelica::List::Cons { head: eqns, tail: eqnstrue }, eqnsfalse, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
@@ -3010,7 +3010,7 @@ fn dumpEquationString(mut inEquation: Arc<BackendDAE::Equation>) -> Result<ArcSt
             res = (BackendDump::ifequationString(expl.clone(), eqnstrue.clone(), eqnsfalse.clone(), (s3.clone()).clone())?).clone();
             res.clone()
         },
-        Deref @ BackendDAE::Equation::FOR_EQUATION { body: eqn, stop, start, iter, .. } => {
+        Deref @ BackendDAE::Equation::FOR_EQUATION { iter, start, stop, body: eqn, .. } => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");

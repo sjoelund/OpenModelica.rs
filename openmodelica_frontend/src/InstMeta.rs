@@ -74,7 +74,10 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         for mut e in (var_field!((*inClassDef).elementLst, SCode::ClassDef::PARTS).clone()).into_iter().cloned() {
             if !((::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { name: utPathOfRestriction, .. }, .. } => AbsynUtil::pathSuffixOf(utPathOfRestriction.clone(), utPath.clone())?,
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { name: __esc_utPathOfRestriction, .. }, .. } => {
+            utPathOfRestriction = (*__esc_utPathOfRestriction).clone();
+            AbsynUtil::pathSuffixOf(utPathOfRestriction.clone(), utPath.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })) { continue; }

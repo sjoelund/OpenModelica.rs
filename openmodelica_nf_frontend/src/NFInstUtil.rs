@@ -264,8 +264,8 @@ pub fn expandSlicedCrefsEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equa
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut eq2: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { rhs: e1, .. } => {
-            let mut e1 = (*e1).clone();
+        Deref @ Equation::EQUALITY { rhs: __esc_e1, .. } => {
+            e1 = (*__esc_e1).clone();
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
@@ -300,8 +300,8 @@ pub fn expandSlicedCrefsStmt(mut stmt: Arc<Statement::NFStatement>) -> Result<Ar
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     stmt = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ Statement::ASSIGNMENT { rhs: e1, .. } => {
-            let mut e1 = (*e1).clone();
+        Deref @ Statement::ASSIGNMENT { rhs: __esc_e1, .. } => {
+            e1 = (*__esc_e1).clone();
             assign_variant_field!(stmt => Statement::NFStatement::ASSIGNMENT; lhs = Expression::map(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -352,8 +352,8 @@ pub fn mergeScalars2(mut cls: Arc<SCode::Element>, mut classPath: Arc<Absyn::Pat
     let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
-            let mut cdef = (*cdef).clone();
+        Deref @ SCode::Element::CLASS { classDef: __esc_cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
+            cdef = (*__esc_cdef).clone();
             elems = mergeScalars3(var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone(), nameMap.clone())?;
             elems = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -452,7 +452,7 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
 pub fn isMergeableComponent(mut element: Arc<SCode::Element>) -> bool {
     let mut isMergeable: bool = false;
     isMergeable = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::COMPONENT { condition: None, prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, redeclarePrefix: SCode::Redeclare::NOT_REDECLARE { .. }, .. }, attributes: SCode::Attributes { arrayDims: Deref @ metamodelica::List::Nil, .. }, .. } => isMergeableType(var_field!((*element).typeSpec, SCode::Element::COMPONENT).clone()) && isMergeableMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone()),
+        Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { arrayDims: Deref @ metamodelica::List::Nil, .. }, prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::NOT_REDECLARE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, .. }, condition: None, .. } => isMergeableType(var_field!((*element).typeSpec, SCode::Element::COMPONENT).clone()) && isMergeableMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone()),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -496,13 +496,13 @@ pub fn getComponentSignature(mut element: Arc<SCode::Element>) -> Result<ArcStr>
     let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::COMPONENT { modifications: __pa0, typeSpec: __pa1, attributes: __pa2, prefixes: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ SCode::Element::COMPONENT { prefixes: __pa0, attributes: __pa1, typeSpec: __pa2, modifications: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    r#mod = __pa0.clone();
-    ty = __pa1.clone();
-    attrs = __pa2.clone();
-    prefs = __pa3.clone();
+    prefs = __pa0.clone();
+    attrs = __pa1.clone();
+    ty = __pa2.clone();
+    r#mod = __pa3.clone();
     signature = stringAppendList(list![(SCodeDump::visibilityStr(prefs.visibility.clone())?).clone(), (SCodeDump::finalStr(prefs.finalPrefix.clone())?).clone(), (SCodeDump::connectorTypeStr(attrs.connectorType.clone())?).clone(), (SCodeDump::variabilityString(attrs.variability.clone())?).clone(), (Dump::unparseDirectionSymbolStr(attrs.direction.clone())?).clone(), (Dump::unparseTypeSpec(ty.clone())?).clone(), (getModSignature(r#mod.clone(), (literal!("")).clone())?).clone()]);
     Ok(signature)
 }
@@ -561,12 +561,12 @@ pub fn mergeComponents(mut components: Arc<metamodelica::List<Arc<SCode::Element
     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(listHead(components.clone())?) {
-        Deref @ SCode::Element::COMPONENT { attributes: __pa0, prefixes: __pa1, typeSpec: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ SCode::Element::COMPONENT { typeSpec: __pa0, prefixes: __pa1, attributes: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    attrs = __pa0.clone();
+    ty = __pa0.clone();
     prefs = __pa1.clone();
-    ty = __pa2.clone();
+    attrs = __pa2.clone();
     attrs.arrayDims = list![AbsynUtil::makeIntegerSubscript((components.clone().len() as i32))];
     mods = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();

@@ -87,10 +87,10 @@ pub fn modeStr(mut mode: InstStateMachineUtil::SMNode) -> Result<ArcStr> {
     let mut edges: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut paths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let InstStateMachineUtil::SMNODE { edges: __pa0, isInitial: __pa1, componentRef: __pa2 } = (mode.clone()) else { bail!("pattern mismatch") };
-    edges = __pa0.clone();
+    let InstStateMachineUtil::SMNODE { componentRef: __pa0, isInitial: __pa1, edges: __pa2 } = (mode.clone()) else { bail!("pattern mismatch") };
+    componentRef = __pa0.clone();
     isInitial = __pa1.clone();
-    componentRef = __pa2.clone();
+    edges = __pa2.clone();
     crefs = BaseHashSet::hashSetList(edges.clone())?;
     paths = List::map(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?;
     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SMNODE(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(componentRef.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*boolString(isInitial.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*literal!("EDGES(")); __mm_s.push_str(&*stringDelimitList(paths.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("))\n")); ArcStr::from(__mm_s) }).clone();

@@ -352,9 +352,18 @@ fn chooseResult(mut res1: UnitAbsyn::UnitCheckResult, mut res2: UnitAbsyn::UnitC
     let mut incon: UnitAbsyn::UnitCheckResult = UnitAbsyn::UnitCheckResult::CONSISTENT;
     resout = (match (res1.clone(), res2.clone(), res3.clone()) {
         (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }) => crate::UnitAbsyn::UnitCheckResult::CONSISTENT,
-        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut incon) => incon.clone(),
-        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut incon, _) => incon.clone(),
-        (mut incon, _, _) => incon.clone(),
+        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut __esc_incon) => {
+            incon = __esc_incon.clone();
+            incon.clone()
+        },
+        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut __esc_incon, _) => {
+            incon = __esc_incon.clone();
+            incon.clone()
+        },
+        (mut __esc_incon, _, _) => {
+            incon = __esc_incon.clone();
+            incon.clone()
+        },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("UnitChecker::chooseResult() failed\n")).clone())?;

@@ -544,7 +544,8 @@ fn transformWhenInnerAsPlain(mut whenEq: Arc<Equation::NFEquation>, mut stateCre
     for mut branch in &*branches.clone() {
         let mut branch = branch.clone();
         let () = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ Equation::Branch::BRANCH { body: branchBody, .. } => {
+        Deref @ Equation::Branch::BRANCH { body: __esc_branchBody, .. } => {
+            branchBody = (*__esc_branchBody).clone();
             transformedBody = metamodelica::nil();
             branchVars = metamodelica::nil();
             for mut eq in &*branchBody.clone() {
@@ -575,17 +576,20 @@ fn transformWhenBranches(mut whenEq: Arc<Equation::NFEquation>, mut stateCref: A
     let mut branchCondVar: Variability = Variability::CONSTANT;
     let mut branchBody: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(whenEq.clone()) {
-        Deref @ Equation::WHEN { source: __pa0, scope: __pa1, branches: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Equation::WHEN { branches: __pa0, scope: __pa1, source: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    whenSource = __pa0.clone();
+    branches = __pa0.clone();
     whenScope = __pa1.clone();
-    branches = __pa2.clone();
+    whenSource = __pa2.clone();
     newBranches = metamodelica::nil();
     for mut branch in &*branches.clone() {
         let mut branch = branch.clone();
         branch = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ Equation::Branch::BRANCH { body: branchBody, conditionVar: branchCondVar, condition: branchCond } => {
+        Deref @ Equation::Branch::BRANCH { condition: __esc_branchCond, conditionVar: __esc_branchCondVar, body: __esc_branchBody } => {
+            branchCond = (*__esc_branchCond).clone();
+            branchCondVar = (*__esc_branchCondVar).clone();
+            branchBody = (*__esc_branchBody).clone();
             transformedBody = metamodelica::nil();
             branchVars = metamodelica::nil();
             for mut eq in &*branchBody.clone() {
@@ -625,22 +629,22 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
     let mut perStateVar: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut prevList: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEq.clone()) {
-        Deref @ Equation::EQUALITY { source: __pa0, scope: __pa1, ty: __pa2, rhs: __pa3, lhs: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ Equation::EQUALITY { lhs: __pa0, rhs: __pa1, ty: __pa2, scope: __pa3, source: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    eqSource = __pa0.clone();
-    eqScope = __pa1.clone();
+    lhs = __pa0.clone();
+    rhs = __pa1.clone();
     lhsTy = __pa2.clone();
-    rhs = __pa3.clone();
-    lhs = __pa4.clone();
+    eqScope = __pa3.clone();
+    eqSource = __pa4.clone();
     stateVarCrefs = UnorderedMap::keyList(crToStart.clone());
     match '__try5: {
         let (__pa6, __pa7) = ::match_deref::match_deref! { match &(lhs.clone()) {
-            Deref @ Expression::CREF { cref: __pa6, ty: __pa7 } => (__pa6.clone(), __pa7.clone()),
+            Deref @ Expression::CREF { ty: __pa6, cref: __pa7 } => (__pa6.clone(), __pa7.clone()),
             _ => break '__try5 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        lhsCref = __pa6.clone();
-        lhsTy = __pa7.clone();
+        lhsTy = __pa6.clone();
+        lhsCref = __pa7.clone();
         (newRhs, _) = unwrap_break_err!(Expression::mapFold(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = stateVarCrefs.clone(); move |__pe_a0, __pe_a2| Ok(subsPreviousCrefs(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false), '__try5);
         eq1 = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: newRhs.clone(), ty: lhsTy.clone(), scope: eqScope.clone(), source: eqSource.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
         isOuterOutput = !(unwrap_break_err!(crefHasPrefix(stateCref.clone(), lhsCref.clone()), '__try5)) && stringEqual((unwrap_break_err!(InstNode::name(eqScope.clone()), '__try5)).clone(), (unwrap_break_err!(ComponentRef::firstName(stateCref.clone(), false), '__try5)).clone());
@@ -702,7 +706,10 @@ fn isPreviousOfCref(mut e: Arc<Expression::NFExpression>, mut varCref: Arc<Compo
             res = false;
             if (args.clone().len() as i32) == 1 {
                 res = (::match_deref::match_deref! { match &(listHead(args.clone())?) {
-        Deref @ Expression::CREF { cref: argCref, .. } => ComponentRef::isEqual(argCref.clone(), varCref.clone())?,
+        Deref @ Expression::CREF { cref: __esc_argCref, .. } => {
+            argCref = (*__esc_argCref).clone();
+            ComponentRef::isEqual(argCref.clone(), varCref.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1032,13 +1039,13 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
         i = i.clone() + 1;
         (_, c3) = tc.clone();
         curT = (sem.t.clone()).get(i.clone())?;
-        let Transition { priority: __pa0, synchronize: __pa1, reset: __pa2, immediate: __pa3, to: __pa4, from: __pa5, .. } = (curT.clone()) else { bail!("pattern mismatch") };
-        curPriority = __pa0.clone();
-        curSynchronize = __pa1.clone();
-        curReset = __pa2.clone();
-        curImmediate = __pa3.clone();
-        curTo = __pa4.clone();
-        curFrom = __pa5.clone();
+        let Transition { from: __pa0, to: __pa1, immediate: __pa2, reset: __pa3, synchronize: __pa4, priority: __pa5, .. } = (curT.clone()) else { bail!("pattern mismatch") };
+        curFrom = __pa0.clone();
+        curTo = __pa1.clone();
+        curImmediate = __pa2.clone();
+        curReset = __pa3.clone();
+        curSynchronize = __pa4.clone();
+        curPriority = __pa5.clone();
         stateRef = metamodelica::arrayGet(sem.smComps.clone(), curFrom.clone())?;
         substTickExp = makeCrefExp(qCref((literal!("$ticksInState")).clone(), crate::NFType::interned_INTEGER(), metamodelica::nil(), stateRef.clone())?, crate::NFType::interned_INTEGER());
         (c4, found) = subsXInState(c3.clone(), (literal!("ticksInState")).clone(), substTickExp.clone())?;
@@ -1235,20 +1242,20 @@ fn wrapInStateActivationConditional(mut inEq: Arc<Equation::NFEquation>, mut sta
     let mut eqScope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut eqSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inEq.clone()) {
-        Deref @ Equation::EQUALITY { source: __pa0, scope: __pa1, ty: __pa2, rhs: __pa3, lhs: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ Equation::EQUALITY { lhs: __pa0, rhs: __pa1, ty: __pa2, scope: __pa3, source: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    eqSource = __pa0.clone();
-    eqScope = __pa1.clone();
+    lhs = __pa0.clone();
+    rhs = __pa1.clone();
     ty = __pa2.clone();
-    rhs = __pa3.clone();
-    lhs = __pa4.clone();
+    eqScope = __pa3.clone();
+    eqSource = __pa4.clone();
     let (__pa5, __pa6) = ::match_deref::match_deref! { match &(lhs.clone()) {
-        Deref @ Expression::CREF { cref: __pa5, ty: __pa6 } => (__pa5.clone(), __pa6.clone()),
+        Deref @ Expression::CREF { ty: __pa5, cref: __pa6 } => (__pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    lhsCref = __pa5.clone();
-    ty = __pa6.clone();
+    ty = __pa5.clone();
+    lhsCref = __pa6.clone();
     activeRef = makeCrefExp(qCref((literal!("active")).clone(), crate::NFType::interned_BOOLEAN(), metamodelica::nil(), stateCref.clone())?, crate::NFType::interned_BOOLEAN());
     if isResetEquation.clone() {
         expElse = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), ty.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref.clone())?), ty.clone());
@@ -1367,11 +1374,11 @@ fn subsPreviousCrefs(mut exp: Arc<Expression::NFExpression>, mut stateVarCrefs: 
         }
         arg1 = unwrap_break_err!(listHead(args.clone()), '__try0);
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(arg1.clone()) {
-            Deref @ Expression::CREF { cref: __pa2, ty: __pa3 } => (__pa2.clone(), __pa3.clone()),
+            Deref @ Expression::CREF { ty: __pa2, cref: __pa3 } => (__pa2.clone(), __pa3.clone()),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        argCref = __pa2.clone();
-        argTy = __pa3.clone();
+        argTy = __pa2.clone();
+        argCref = __pa3.clone();
         for mut svc in &*stateVarCrefs.clone() {
             let mut svc = svc.clone();
             if unwrap_break_err!(ComponentRef::isEqual(svc.clone(), argCref.clone()), '__try0) {
@@ -1571,11 +1578,13 @@ fn isEquationOfState(mut eq: Arc<Equation::NFEquation>, mut stateCref: Arc<Compo
     let mut stateName: ArcStr = arcstr::literal!("");
     stateName = (ComponentRef::firstName(stateCref.clone(), false)?).clone();
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { scope: eqScope, .. } => {
+        Deref @ Equation::EQUALITY { scope: __esc_eqScope, .. } => {
+            eqScope = (*__esc_eqScope).clone();
             res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName.clone()).clone());
             ()
         },
-        Deref @ Equation::WHEN { scope: eqScope, .. } => {
+        Deref @ Equation::WHEN { scope: __esc_eqScope, .. } => {
+            eqScope = (*__esc_eqScope).clone();
             res = stringEqual((InstNode::name(eqScope.clone())?).clone(), (stateName.clone()).clone());
             ()
         },
@@ -1596,7 +1605,8 @@ fn isOuterStateEquation(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<m
     let mut eqScope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut scopeName: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { scope: eqScope, .. } => {
+        Deref @ Equation::EQUALITY { scope: __esc_eqScope, .. } => {
+            eqScope = (*__esc_eqScope).clone();
             scopeName = (InstNode::name(eqScope.clone())?).clone();
             for mut stateCref in &*stateCrefs.clone() {
                 let mut stateCref = stateCref.clone();
@@ -1607,7 +1617,8 @@ fn isOuterStateEquation(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<m
             }
             ()
         },
-        Deref @ Equation::WHEN { scope: eqScope, .. } => {
+        Deref @ Equation::WHEN { scope: __esc_eqScope, .. } => {
+            eqScope = (*__esc_eqScope).clone();
             scopeName = (InstNode::name(eqScope.clone())?).clone();
             for mut stateCref in &*stateCrefs.clone() {
                 let mut stateCref = stateCref.clone();

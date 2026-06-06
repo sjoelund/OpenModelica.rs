@@ -281,7 +281,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
         BackendDump::debugStrEqnStr((literal!("### differentiateEquation\n ")).clone(), inEquation.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReference::crefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
     }
     (outEquation, outFunctionTree) = (::match_deref::match_deref! { match &(inEquation.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { attr: eqAttr, source, scalar: e2, exp: e1 } => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr: eqAttr } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op1: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
@@ -297,7 +297,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             source = List::foldr(list![op1.clone(), op2.clone()], (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), source.clone())?;
             (Arc::new(BackendDAE::Equation::EQUATION { exp: e1_1.clone(), scalar: e2_1.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::SOLVED_EQUATION { attr: eqAttr, source, exp: e2, componentRef: cref } => {
+        Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e2, source, attr: eqAttr } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -315,7 +315,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             source = List::foldr(list![op1.clone(), op2.clone()], (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), source.clone())?;
             (Arc::new(BackendDAE::Equation::EQUATION { exp: e1_1.clone(), scalar: e2_1.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { attr: eqAttr, source, exp: e1 } => {
+        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source, attr: eqAttr } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op1: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -326,7 +326,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             source = List::foldr(list![op1.clone()], (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), source.clone())?;
             (Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1_1.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: eqAttr, source, right: e2, left: e1, size } => {
+        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, source, attr: eqAttr } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op1: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
@@ -342,7 +342,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             source = List::foldr(list![op1.clone(), op2.clone()], (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), source.clone())?;
             (Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: e1_1.clone(), right: e2_1.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::ARRAY_EQUATION { recordSize, attr: eqAttr, source, right: e2, left: e1, dimSize } => {
+        Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize, left: e1, right: e2, source, attr: eqAttr, recordSize } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut op1: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
@@ -358,7 +358,7 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             source = List::foldr(list![op1.clone(), op2.clone()], (std::sync::Arc::new(ElementSource::addSymbolicTransformation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ElementSource>, Arc<DAE::SymbolicOperation>) -> Result<Arc<DAE::ElementSource>> + 'static>), source.clone())?;
             (Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimSize.clone(), left: e1_1.clone(), right: e2_1.clone(), source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::ALGORITHM { attr: eqAttr, expand, source, alg: Deref @ DAE::Algorithm { statementLst }, size } => {
+        Deref @ BackendDAE::Equation::ALGORITHM { size, alg: Deref @ DAE::Algorithm { statementLst }, source, expand, attr: eqAttr } => {
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             let mut alg: Arc<DAE::Algorithm> = Arc::new(<DAE::Algorithm as ::std::default::Default>::default());
             let mut statementLst = (*statementLst).clone();
@@ -366,15 +366,15 @@ pub fn differentiateEquationFragile(mut inEquation: Arc<BackendDAE::Equation>, m
             alg = Arc::new(DAE::Algorithm { statementLst: statementLst.clone() });
             (Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: alg.clone(), source: source.clone(), expand: expand.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::IF_EQUATION { attr: eqAttr, source, eqnsfalse: eqns, eqnstrue: eqnslst, conditions: expExpLst } => {
+        Deref @ BackendDAE::Equation::IF_EQUATION { conditions: expExpLst, eqnstrue: eqnslst, eqnsfalse: eqns, source, attr: eqAttr } => {
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-            let mut eqns = (*eqns).clone();
             let mut eqnslst = (*eqnslst).clone();
+            let mut eqns = (*eqns).clone();
             (eqnslst, funcs) = differentiateEquationsLst(eqnslst.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), metamodelica::nil(), inFunctionTree.clone())?;
             (eqns, funcs) = differentiateEquations(eqns.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), metamodelica::nil(), funcs.clone())?;
             (Arc::new(BackendDAE::Equation::IF_EQUATION { conditions: expExpLst.clone(), eqnstrue: eqnslst.clone(), eqnsfalse: eqns.clone(), source: source.clone(), attr: eqAttr.clone() }), funcs.clone())
         },
-        Deref @ BackendDAE::Equation::WHEN_EQUATION { attr: eqAttr, source, whenEquation: whenEqn, size } => {
+        Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: whenEqn, source, attr: eqAttr } => {
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             let mut whenEqn = (*whenEqn).clone();
             (whenEqn, funcs) = differentiateWhenEquations(whenEqn.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone())?;
@@ -485,12 +485,12 @@ fn differentiateWhenEquations(mut inWhenEquations: Arc<BackendDAE::WhenEquation>
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inWhenEquations.clone()) {
-        Deref @ BackendDAE::WhenEquation { elsewhenPart: __pa0, whenStmtLst: __pa1, condition: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ BackendDAE::WhenEquation { condition: __pa0, whenStmtLst: __pa1, elsewhenPart: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    oelsepart = __pa0.clone();
+    condition = __pa0.clone();
     whenStmtLst = __pa1.clone();
-    condition = __pa2.clone();
+    oelsepart = __pa2.clone();
     funcs = inFunctionTree.clone();
     stmtLst = metamodelica::nil();
     for mut rs in &*whenStmtLst.clone() {
@@ -557,7 +557,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
         Deref @ DAE::Exp::RCONST { .. } => {
             (Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), inFunctionTree.clone())
         },
-        Deref @ DAE::Exp::CREF { ty: tp, componentRef: cref } => {
+        Deref @ DAE::Exp::CREF { componentRef: cref, ty: tp } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             if ComponentReference::isStartCref(cref.clone()) {
@@ -575,7 +575,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             res = ExpressionSimplify::simplifyBinaryExp(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::UNARY { exp: e1, operator: op } => {
+        Deref @ DAE::Exp::UNARY { operator: op, exp: e1 } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res, functionTree) = differentiateExp(e1.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
@@ -592,7 +592,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
         Deref @ DAE::Exp::RELATION { .. } => {
             (inExp.clone(), inFunctionTree.clone())
         },
-        Deref @ DAE::Exp::IFEXP { expElse: e3, expThen: e2, expCond: e1 } => {
+        Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut res2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -603,7 +603,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: actual, tail: Deref @ metamodelica::List::Cons { head: simplified, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. } => {
+        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, expLst: Deref @ metamodelica::List::Cons { head: actual, tail: Deref @ metamodelica::List::Cons { head: simplified, tail: Deref @ metamodelica::List::Nil } }, .. } => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -615,7 +615,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             e3 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: lambda.clone(), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e1.clone() }), operator: DAE::Operator::ADD { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: lambda.clone() }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e2.clone() }) });
             (e3.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: e3, tail: Deref @ metamodelica::List::Nil } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "semiLinear" }, .. } if (Expression::expHasCref(e2.clone(), inDiffwrtCref.clone())? || Expression::expHasCref(e3.clone(), inDiffwrtCref.clone())?) => {
+        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "semiLinear" }, expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: e3, tail: Deref @ metamodelica::List::Nil } } }, .. } if (Expression::expHasCref(e2.clone(), inDiffwrtCref.clone())? || Expression::expHasCref(e3.clone(), inDiffwrtCref.clone())?) => {
             bail!("fail")
         },
         Deref @ DAE::Exp::CALL { .. } => {
@@ -625,7 +625,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::RECORD { ty: tp, comp: strLst, exps: expl, path: p } => {
+        Deref @ DAE::Exp::RECORD { path: p, exps: expl, comp: strLst, ty: tp } => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             let mut sub: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -638,7 +638,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             }
             (Arc::new(DAE::Exp::RECORD { path: p.clone(), exps: sub.clone().reverse(), comp: strLst.clone(), ty: tp.clone() }), functionTree.clone())
         },
-        Deref @ DAE::Exp::ARRAY { array: expl, scalar: b, ty: tp } => {
+        Deref @ DAE::Exp::ARRAY { ty: tp, scalar: b, array: expl } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             let mut expl = (*expl).clone();
@@ -647,7 +647,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::MATRIX { matrix, integer: i, ty: tp } => {
+        Deref @ DAE::Exp::MATRIX { ty: tp, integer: i, matrix } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             let mut dmatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
@@ -668,14 +668,14 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::CAST { exp: e1, ty: tp } => {
+        Deref @ DAE::Exp::CAST { ty: tp, exp: e1 } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res, functionTree) = differentiateExp(e1.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (Arc::new(DAE::Exp::CAST { ty: tp.clone(), exp: res.clone() }), functionTree.clone())
         },
-        Deref @ DAE::Exp::ASUB { sub: subs, exp: e1 } => {
+        Deref @ DAE::Exp::ASUB { exp: e1, sub: subs } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -691,7 +691,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             (res.clone(), functionTree.clone())
         },
-        Deref @ DAE::Exp::TSUB { ty: tp, ix: i, exp: e1 } => {
+        Deref @ DAE::Exp::TSUB { exp: e1, ix: i, ty: tp } => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -723,15 +723,23 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
                 if !(referenceEq(&*(var_field!((*e1).exp, DAE::Exp::RSUB).clone()),&*(res1.clone()))) {
                     match '__try0: {
                         (expl, strLst) = (::match_deref::match_deref! { match &(res1.clone()) {
-        Deref @ DAE::Exp::RECORD { comp: strLst, exps: expl, .. } => (expl.clone(), strLst.clone()),
-        Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path: p2 }, .. }, .. }, expLst: expl, path: p1 } if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => (expl.clone(), ({
+        Deref @ DAE::Exp::RECORD { exps: __esc_expl, comp: __esc_strLst, .. } => {
+            expl = (*__esc_expl).clone();
+            strLst = (*__esc_strLst).clone();
+            (expl.clone(), strLst.clone())
+        },
+        Deref @ DAE::Exp::CALL { path: p1, expLst: __esc_expl, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: p2 }, varLst: __esc_varLst, .. }, .. } } if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
+            expl = (*__esc_expl).clone();
+            varLst = (*__esc_varLst).clone();
+            (expl.clone(), ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (varLst.clone()).into_iter().cloned() {
             let __x = v.name.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })),
+    }))
+        },
         _ => bail!("match: no arm matched"),
     } });
                         res = unwrap_break_err!((expl.clone()).get(unwrap_break_err!(List::position1OnTrue(strLst.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (var_field!((*e1).fieldName, DAE::Exp::RSUB).clone()).clone()), '__try0)), '__try0);
@@ -799,7 +807,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_ASSIGN { source, exp: rhs, exp1: lhs, type_ }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_ASSIGN { type_, exp1: lhs, exp: rhs, source }, tail: restStatements } => {
                     let mut derivedLHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut derivedRHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -822,7 +830,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, exp: rhs, expExpLst: expLst, .. }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: expLst, exp: rhs, source, .. }, tail: restStatements } => {
                     let mut derivedRHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut dexpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -865,7 +873,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, type_, exp: rhs @ Deref @ DAE::Exp::CALL { .. }, expExpLst: expLst }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: expLst, exp: rhs @ Deref @ DAE::Exp::CALL { .. }, type_, source }, tail: restStatements } => {
                     let mut derivedRHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut dexpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -901,7 +909,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_ASSIGN_ARR { source, type_, exp: rhs, lhs }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: currStatement @ Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs, exp: rhs, type_, source }, tail: restStatements } => {
                     let mut derivedLHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut derivedRHS: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -920,7 +928,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { source, statementLst, range: exp, iter: ident, iterIsArray, type_ }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { type_, iterIsArray, iter: ident, range: exp, statementLst, source }, tail: restStatements } => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut inputData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
@@ -941,7 +949,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { source, else_: Deref @ DAE::Else::NOELSE { .. }, statementLst, exp }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp, statementLst, else_: Deref @ DAE::Else::NOELSE { .. }, source }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -956,7 +964,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { source, else_: Deref @ DAE::Else::ELSEIF { else_: elseif_else_, statementLst: elseif_statementLst, exp: elseif_exp }, statementLst, exp }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp, statementLst, else_: Deref @ DAE::Else::ELSEIF { exp: elseif_exp, statementLst: elseif_statementLst, else_: elseif_else_ }, source }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -972,7 +980,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { source, else_: Deref @ DAE::Else::ELSE { statementLst: else_statementLst }, statementLst, exp }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp, statementLst, else_: Deref @ DAE::Else::ELSE { statementLst: else_statementLst }, source }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -988,7 +996,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { source, statementLst, exp }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { exp, statementLst, source }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -1003,7 +1011,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { source, elseWhen: None, statementLst, initialCall, exp, .. }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { exp, initialCall, statementLst, elseWhen: None, source, .. }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -1018,7 +1026,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { source, elseWhen: Some(stmt), statementLst, initialCall, exp, .. }, tail: restStatements } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { exp, initialCall, statementLst, elseWhen: Some(stmt), source, .. }, tail: restStatements } => {
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut dstmt: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
@@ -1195,7 +1203,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         let __mc_input = (inExp.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. } }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
                     cr = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::functionDerivativeNamePrefix)).clone(), cr.clone())?;
@@ -1208,7 +1216,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path }, varLst, .. }, componentRef: cr }, _, _, _) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp @ Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path }, .. } }, _, _, _) => {
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -1223,7 +1231,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { outFunctionTree = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp @ Deref @ DAE::Type::T_ARRAY { .. }, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp @ Deref @ DAE::Type::T_ARRAY { .. } }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
                     cr = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::functionDerivativeNamePrefix)).clone(), cr.clone())?;
@@ -1266,7 +1274,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, _, _) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, _, _) => {
                     let mut one: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let true = (ComponentReferenceBasics::crefEqual(cr.clone(), inDiffwrtCref.clone())?) else { bail!("pattern mismatch") };
                     (one, _) = Expression::makeOneExpression(Expression::arrayDimension(tp.clone()))?;
@@ -1297,7 +1305,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { knownVars: Some(knvars), .. }, _) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { knownVars: Some(knvars), .. }, _) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (var, _) = BackendVariable::getVarSingle(cr.clone(), knvars.clone())?;
@@ -1310,7 +1318,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { allVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { allVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut kind: BackendDAE::VarKind = BackendDAE::VarKind::ALG_STATE;
                     let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let (BackendDAE::VAR { varKind: __pa0, .. }, _) = (BackendVariable::getVarSingle(cr.clone(), timevars.clone())?) else { bail!("pattern mismatch") };
@@ -1324,7 +1332,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
@@ -1339,7 +1347,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+                (e @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     BackendVariable::getVarSingle(cr.clone(), timevars.clone())?;
                     res = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("der")).clone() }), expLst: list![e.clone()], attr: Arc::new(DAE::CallAttributes { ty: tp.clone(), tuple_: false, builtin: true, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL }) });
@@ -1350,7 +1358,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
                     let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     cr1 = ComponentReferenceBasics::crefStripLastSubs(cr.clone())?;
@@ -1363,7 +1371,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
                     let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     BackendVariable::getVar(cr.clone(), timevars.clone())?;
                     (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
@@ -1374,7 +1382,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION { .. }) => {
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
                     cr = ComponentReference::prependStringCref((arcstr::literal!(BackendDAE::functionDerivativeNamePrefix)).clone(), cr.clone())?;
@@ -1397,7 +1405,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), independenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { independenentVars: Some(timevars), matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
                     let mut scalarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut arrayType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1427,7 +1435,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { outFunctionTree = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), allVars: Some(timevars), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { allVars: Some(timevars), matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
@@ -1446,7 +1454,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), dependenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, _, BackendDAE::DifferentiateInputData { dependenentVars: Some(timevars), matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
@@ -1568,14 +1576,14 @@ fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nDifferentiate Exp-Call: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     (outDiffedExp, outFunctionTree) = (::match_deref::match_deref! { match &((inExp.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone())) {
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: actual, tail: Deref @ metamodelica::List::Cons { head: simplified, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. }, _, _, _) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, expLst: Deref @ metamodelica::List::Cons { head: actual, tail: Deref @ metamodelica::List::Cons { head: simplified, tail: Deref @ metamodelica::List::Nil } }, .. }, _, _, _) => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (e1, funcs) = differentiateExp(actual.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone())?;
             (_, funcs) = differentiateExp(simplified.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (e1.clone(), funcs.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty: tp, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), independenentVars: Some(timevars), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, tail: Deref @ metamodelica::List::Nil }, .. }, _, BackendDAE::DifferentiateInputData { independenentVars: Some(timevars), matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { .. }) => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr = (*cr).clone();
             cr = ComponentReferenceBasics::makeCrefQual((arcstr::literal!(DAE::previousNamePrefix)).clone(), tp.clone(), metamodelica::nil(), cr.clone());
@@ -1587,15 +1595,15 @@ fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
             res = Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: tp.clone() });
             (res.clone(), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "der" } }, _, _, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+        (Deref @ DAE::Exp::CALL { path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, attr }, _, _, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
             (Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: list![e.clone(), Arc::new(DAE::Exp::ICONST { integer: 2 })], attr: attr.clone() }), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Nil } }, path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "der" } }, _, _, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+        (Deref @ DAE::Exp::CALL { path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: i }, tail: Deref @ metamodelica::List::Nil } }, attr }, _, _, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
             let mut i = (*i).clone();
             i = i.clone() + 1;
             (Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: list![e.clone(), Arc::new(DAE::Exp::ICONST { integer: i.clone() })], attr: attr.clone() }), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { daeMode: true }) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, BackendDAE::DifferentiationType::GENERIC_GRADIENT { daeMode: true }) => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut cj: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1608,7 +1616,7 @@ fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
             res = Arc::new(DAE::Exp::BINARY { exp1: Expression::makeCrefExp(cj.clone(), DAE::T_REAL_DEFAULT().clone())?, operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: res.clone() });
             (res.clone(), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, _) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }, _, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }, _) => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -1622,26 +1630,26 @@ fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
             }
             (res.clone(), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "$", .. }, _, _) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "$", .. }, _, _) => {
             let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(Expression::r#typeof(e.clone())?))?;
             (zero.clone(), inFunctionTree.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: false, ty: tp, .. }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "$", .. }, _, _) if (!(Expression::isRecordCall(e.clone(), inFunctionTree.clone())?)) => {
+        (e @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: tp, builtin: false, .. }, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "$", .. }, _, _) if (!(Expression::isRecordCall(e.clone(), inFunctionTree.clone())?)) => {
             let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
             (zero.clone(), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, attr: Deref @ DAE::CallAttributes { builtin: true, .. }, path: Deref @ Absyn::Path::IDENT { name } }, _, _, _) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, attr: Deref @ DAE::CallAttributes { builtin: true, .. }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil } }, _, _, _) => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res, funcs) = differentiateCallExp1Arg((name.clone()).clone(), e.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone())?;
             (res.clone(), funcs.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::RCONST { real: __rlit_0 }, tail: Deref @ metamodelica::List::Nil } }, attr: Deref @ DAE::CallAttributes { builtin: true, .. }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" } }, _, _, _) if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" }, attr: Deref @ DAE::CallAttributes { builtin: true, .. }, expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::RCONST { real: __rlit_0 }, tail: Deref @ metamodelica::List::Nil } } }, _, _, _) if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             (e1.clone(), inFunctionTree.clone())
         },
-        (Deref @ DAE::Exp::CALL { expLst: expl @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, attr: attr @ Deref @ DAE::CallAttributes { builtin: true, .. }, path: Deref @ Absyn::Path::IDENT { name } }, _, _, _) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, attr: attr @ Deref @ DAE::CallAttributes { builtin: true, .. }, expLst: expl @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } }, _, _, _) => {
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res, funcs) = differentiateCallExpNArg((name.clone()).clone(), expl.clone(), attr.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone())?;
@@ -1866,7 +1874,7 @@ fn differentiateCallExp1Arg(mut name: ArcStr, mut exp: Arc<DAE::Exp>, mut inDiff
             exp_2 = Expression::makePureBuiltinCall((literal!("sum")).clone(), list![exp_1.clone()], tp.clone());
             (exp_2.clone(), funcs.clone())
         },
-        (Deref @ "max", Deref @ DAE::Exp::ARRAY { ty: tp, array: expl, .. }) => {
+        (Deref @ "max", Deref @ DAE::Exp::ARRAY { array: expl, ty: tp, .. }) => {
             let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -1876,7 +1884,7 @@ fn differentiateCallExp1Arg(mut name: ArcStr, mut exp: Arc<DAE::Exp>, mut inDiff
             (exp_2, funcs) = differentiateExp(exp_1.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFuncs.clone(), maxIter.clone())?;
             (exp_2.clone(), funcs.clone())
         },
-        (Deref @ "min", Deref @ DAE::Exp::ARRAY { ty: tp, array: expl, .. }) => {
+        (Deref @ "min", Deref @ DAE::Exp::ARRAY { array: expl, ty: tp, .. }) => {
             let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2076,7 +2084,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
     let mut outDiffedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outFunctionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     (outDiffedExp, outFunctionTree) = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::ADD { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2084,7 +2092,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::ADD { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::ADD_ARR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD_ARR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2092,7 +2100,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::ADD_ARR { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::ADD_ARRAY_SCALAR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD_ARRAY_SCALAR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2100,7 +2108,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::ADD_ARRAY_SCALAR { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::SUB { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2108,7 +2116,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::SUB_ARR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB_ARR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2116,7 +2124,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::SUB_ARR { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::SUB_SCALAR_ARRAY { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB_SCALAR_ARRAY { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2124,7 +2132,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::SUB_SCALAR_ARRAY { ty: tp.clone() }, exp2: de2.clone() }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2132,7 +2140,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de2.clone() }), operator: DAE::Operator::ADD { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL_ARR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_ARR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2140,7 +2148,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: de2.clone() }), operator: DAE::Operator::ADD { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2148,7 +2156,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: de2.clone() }), operator: DAE::Operator::ADD_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL_SCALAR_PRODUCT { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_SCALAR_PRODUCT { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2156,7 +2164,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_SCALAR_PRODUCT { ty: tp.clone() }, exp2: de2.clone() }), operator: DAE::Operator::ADD { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_SCALAR_PRODUCT { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL_MATRIX_PRODUCT { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL_MATRIX_PRODUCT { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2164,7 +2172,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_MATRIX_PRODUCT { ty: tp.clone() }, exp2: de2.clone() }), operator: DAE::Operator::ADD_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_MATRIX_PRODUCT { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::DIV { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2172,7 +2180,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de2.clone() }) }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::DIV_ARR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2180,7 +2188,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::SUB_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: de2.clone() }) }), operator: DAE::Operator::DIV_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::DIV_ARRAY_SCALAR { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARRAY_SCALAR { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2190,7 +2198,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             tp1 = Expression::r#typeof(e2.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::SUB_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: de2.clone() }) }), operator: DAE::Operator::DIV_ARRAY_SCALAR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL { ty: tp1.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::DIV_SCALAR_ARRAY { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_SCALAR_ARRAY { ty: tp }, exp2: e2 } => {
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2198,7 +2206,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             (de2, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), funcs.clone(), maxIter.clone())?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: de1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::SUB_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::MUL_ARRAY_SCALAR { ty: tp.clone() }, exp2: de2.clone() }) }), operator: DAE::Operator::DIV_ARR { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL_ARR { ty: tp.clone() }, exp2: e2.clone() }) }), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2 @ Deref @ DAE::Exp::RCONST { real: r }, operator: DAE::Operator::POW { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 @ Deref @ DAE::Exp::RCONST { real: r } } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2208,7 +2216,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::POW { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: r.clone() }) }) }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de1.clone() });
             (e.clone(), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2 @ Deref @ DAE::Exp::ICONST { integer: i }, operator: DAE::Operator::POW { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 @ Deref @ DAE::Exp::ICONST { integer: i } } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2218,12 +2226,12 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::POW { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) }) }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de1.clone() });
             (e.clone(), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { operator: DAE::Operator::POW { ty: tp }, exp1: Deref @ DAE::Exp::RCONST { real: __rlit_1 }, .. } if __rlit_1.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
+        Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: __rlit_1 }, operator: DAE::Operator::POW { ty: tp }, .. } if __rlit_1.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
             (zero.clone(), inFunctionTree.clone())
         },
-        e0 @ Deref @ DAE::Exp::BINARY { exp2: e1, operator: DAE::Operator::POW { ty: tp }, exp1: Deref @ DAE::Exp::RCONST { real: r } } => {
+        e0 @ Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: r }, operator: DAE::Operator::POW { ty: tp }, exp2: e1 } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2233,7 +2241,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e0.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: r.clone() }) }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de1.clone() });
             (e.clone(), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, operator: DAE::Operator::POW { ty: tp }, exp1: e1 } if (isParamOrConstant(cr.clone(), inInputData.clone())?) => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. } } if (isParamOrConstant(cr.clone(), inInputData.clone())?) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut etmp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2247,7 +2255,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e2.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::POW { ty: tp.clone() }, exp2: etmp.clone() }) }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de1.clone() });
             (e.clone(), funcs.clone())
         },
-        e0 @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::POW { ty: tp }, exp1: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. } } if (isParamOrConstant(cr.clone(), inInputData.clone())?) => {
+        e0 @ Deref @ DAE::Exp::BINARY { exp1: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, operator: DAE::Operator::POW { ty: tp }, exp2: e2 } if (isParamOrConstant(cr.clone(), inInputData.clone())?) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut etmp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2257,7 +2265,7 @@ fn differentiateBinary(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Com
             e = Expression::addNoEventToRelations(Arc::new(DAE::Exp::IFEXP { expCond: Arc::new(DAE::Exp::RELATION { exp1: e1.clone(), operator: DAE::Operator::EQUAL { ty: tp.clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None }), expThen: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), expElse: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e0.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: etmp.clone() }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: de2.clone() }) }))?;
             (e.clone(), funcs.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::POW { ty: tp }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: tp }, exp2: e2 } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut etmp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut de1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2306,7 +2314,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { tailCall: tc, ty, isImpure, builtin: c, tuple_: b, .. }, expLst: expl, path }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+                (Deref @ DAE::Exp::CALL { path, expLst: expl, attr: Deref @ DAE::CallAttributes { tuple_: b, builtin: c, isImpure, ty, tailCall: tc, .. } }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dexpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -2319,11 +2327,11 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
                     (mapper, tp) = getFunctionMapper(path.clone(), inFunctionTree.clone())?;
                     (dpath, blst) = differentiateFunction1(path.clone(), mapper.clone(), tp.clone(), expl.clone(), (inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone()))?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(inFunctionTree.clone(), dpath.clone())?) {
-                        Some(DAE::Function::FUNCTION { inlineType: __pa0, type_: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
+                        Some(DAE::Function::FUNCTION { type_: __pa0, inlineType: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    dinl = __pa0.clone();
-                    dtp = __pa1.clone();
+                    dtp = __pa0.clone();
+                    dinl = __pa1.clone();
                     ::match_deref::match_deref! { match &(checkDerivativeFunctionInputs(blst.clone(), tp.clone(), dtp.clone())?) {
                         (true, _) => (),
                         _ => bail!("pattern mismatch"),
@@ -2338,7 +2346,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
         })() { outFunctionTree = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: expl, path, .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
+                (Deref @ DAE::Exp::CALL { path, expLst: expl, .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -2392,7 +2400,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CALL { attr, expLst: expl, path }, _) => {
+                (e @ Deref @ DAE::Exp::CALL { path, expLst: expl, attr }, _) => {
                     if !((Expression::isRecordCall(e.clone(), inFunctionTree.clone())?)) { bail!("guard") }
                     let mut dexpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
@@ -2460,7 +2468,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { tailCall: tc, ty, isImpure, builtin: c, tuple_: b, .. }, expLst: expl, path } => {
+                Deref @ DAE::Exp::CALL { path, expLst: expl, attr: Deref @ DAE::CallAttributes { tuple_: b, builtin: c, isImpure, ty, tailCall: tc, .. } } => {
                     let mut diffFuncData: BackendDAE::DifferentiateInputData = <BackendDAE::DifferentiateInputData as ::std::default::Default>::default();
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2478,11 +2486,11 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                     (mapper, tp) = getFunctionMapper(path.clone(), inFunctionTree.clone())?;
                     (dpath, blst) = differentiateFunction1(path.clone(), mapper.clone(), tp.clone(), expl.clone(), (inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone()))?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(inFunctionTree.clone(), dpath.clone())?) {
-                        Some(DAE::Function::FUNCTION { inlineType: __pa0, type_: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
+                        Some(DAE::Function::FUNCTION { type_: __pa0, inlineType: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    dinl = __pa0.clone();
-                    dtp = __pa1.clone();
+                    dtp = __pa0.clone();
+                    dinl = __pa1.clone();
                     ::match_deref::match_deref! { match &(checkDerivativeFunctionInputs(blst.clone(), tp.clone(), dtp.clone())?) {
                         (true, _) => (),
                         _ => bail!("pattern mismatch"),
@@ -2507,7 +2515,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: expl, path, .. } => {
+                Deref @ DAE::Exp::CALL { path, expLst: expl, .. } => {
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
@@ -2542,7 +2550,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                e @ Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { tailCall: tc, ty, isImpure, builtin: false, tuple_: b, .. }, expLst: expl, path } => {
+                e @ Deref @ DAE::Exp::CALL { path, expLst: expl, attr: Deref @ DAE::CallAttributes { tuple_: b, builtin: false, isImpure, ty, tailCall: tc, .. } } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dexpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2710,7 +2718,7 @@ fn createPartialArguments(mut outputType: Arc<DAE::Type>, mut inArgs: Arc<metamo
         let __mc_input = (outputType.clone(), inCall.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path: rPath }, .. }, Deref @ DAE::Exp::CALL { path, .. }) => {
+                (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: rPath }, varLst, .. }, Deref @ DAE::Exp::CALL { path, .. }) => {
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut varNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2738,7 +2746,7 @@ fn createPartialArguments(mut outputType: Arc<DAE::Type>, mut inArgs: Arc<metamo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, Deref @ DAE::Exp::TSUB { exp: Deref @ DAE::Exp::CALL { attr, path, .. }, .. }) => {
+                (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, Deref @ DAE::Exp::TSUB { exp: Deref @ DAE::Exp::CALL { path, attr, .. }, .. }) => {
                     Ok(Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: listAppend(inOrginalExpl.clone(), inArgs.clone()), attr: attr.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2770,7 +2778,7 @@ fn createPartialArguments(mut outputType: Arc<DAE::Type>, mut inArgs: Arc<metamo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ DAE::Exp::CALL { attr, path, .. }) => {
+                (_, Deref @ DAE::Exp::CALL { path, attr, .. }) => {
                     Ok(Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: listAppend(inOrginalExpl.clone(), inArgs.clone()), attr: attr.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2832,7 +2840,7 @@ fn createPartialDifferentiatedExp(mut inDiffExpl: Arc<metamodelica::List<Arc<DAE
     for mut de in &*inDiffExpl.clone() {
         let mut de = de.clone();
         outExp = (::match_deref::match_deref! { match &((de.clone(), inCall.clone())) {
-        (_, Deref @ DAE::Exp::CALL { attr, path, .. }) if (Types::isRecord(Expression::r#typeof(de.clone())?)) => {
+        (_, Deref @ DAE::Exp::CALL { path, attr, .. }) if (Types::isRecord(Expression::r#typeof(de.clone())?)) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut dexpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2841,7 +2849,7 @@ fn createPartialDifferentiatedExp(mut inDiffExpl: Arc<metamodelica::List<Arc<DAE
             e = Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: attr.clone() });
             e.clone()
         },
-        (Deref @ DAE::Exp::ARRAY { array: expl, scalar: b, ty: tp }, _) => {
+        (Deref @ DAE::Exp::ARRAY { ty: tp, scalar: b, array: expl }, _) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut eArray: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut arrayArgs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
@@ -2900,13 +2908,13 @@ fn createPartialSum(mut inArgsLst: Arc<metamodelica::List<Arc<metamodelica::List
         restDiff = __pa1.clone();
         if !(Expression::isZero(de.clone())?) {
             res = (::match_deref::match_deref! { match &(inCall.clone()) {
-        Deref @ DAE::Exp::RSUB { ty, fieldName: name, ix, exp: Deref @ DAE::Exp::CALL { attr, path, .. } } => {
+        Deref @ DAE::Exp::RSUB { exp: Deref @ DAE::Exp::CALL { path, attr, .. }, ix, fieldName: name, ty } => {
             Arc::new(DAE::Exp::RSUB { exp: Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: attr.clone() }), ix: ix.clone(), fieldName: (name.clone()).clone(), ty: ty.clone() })
         },
-        Deref @ DAE::Exp::TSUB { ty, ix, exp: Deref @ DAE::Exp::CALL { attr, path, .. } } => {
+        Deref @ DAE::Exp::TSUB { exp: Deref @ DAE::Exp::CALL { path, attr, .. }, ix, ty } => {
             Arc::new(DAE::Exp::TSUB { exp: Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: attr.clone() }), ix: ix.clone(), ty: ty.clone() })
         },
-        Deref @ DAE::Exp::CALL { attr, path, .. } => {
+        Deref @ DAE::Exp::CALL { path, attr, .. } => {
             Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: attr.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -3077,7 +3085,7 @@ fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Elem
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { binding: Some(binding), ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, componentRef: cref, .. }, tail: rest }, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }) => {
+                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { componentRef: cref, ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, binding: Some(binding), .. }, tail: rest }, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }) => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut elementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -3099,7 +3107,7 @@ fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Elem
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, componentRef: cref, .. }, tail: rest }, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }) => {
+                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { componentRef: cref, ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, .. }, tail: rest }, BackendDAE::DifferentiateInputData { matrixName: Some(matrixName), .. }) => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut elementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -3139,7 +3147,7 @@ fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Elem
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { binding: Some(binding), ty: tp, componentRef: cref, .. }, tail: rest }, _) => {
+                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { componentRef: cref, ty: tp, binding: Some(binding), .. }, tail: rest }, _) => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut elementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -3167,7 +3175,7 @@ fn differentiateElementVars(mut inElements: Arc<metamodelica::List<Arc<DAE::Elem
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { ty: tp, componentRef: cref, .. }, tail: rest }, _) => {
+                (Deref @ metamodelica::List::Cons { head: var1 @ Deref @ DAE::Element::VAR { componentRef: cref, ty: tp, .. }, tail: rest }, _) => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut elementsNoDer: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
@@ -3217,7 +3225,7 @@ fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::F
         let __mc_input = (inMapper.clone(), inTp.clone(), inDiffArgs.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { conditionRefs: cr, derivativeOrder, derivativeFunction: inDFuncName, .. }, Deref @ DAE::Type::T_FUNCTION { funcArg, .. }, _) => {
+                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: inDFuncName, derivativeOrder, conditionRefs: cr, .. }, Deref @ DAE::Type::T_FUNCTION { funcArg, .. }, _) => {
                     if !((intEq(1, derivativeOrder.clone()))) { bail!("guard") }
                     let mut tplst: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut bl: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -3232,7 +3240,7 @@ fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::F
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { conditionRefs: cr, derivativeOrder, derivativeFunction: inDFuncName, .. }, tp, (_, _, _, functions)) => {
+                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivativeFunction: inDFuncName, derivativeOrder, conditionRefs: cr, .. }, tp, (_, _, _, functions)) => {
                     if !((!(intEq(1, derivativeOrder.clone())))) { bail!("guard") }
                     let mut fname: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut bl: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -3253,7 +3261,7 @@ fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::F
         })() { blst = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { lowerOrderDerivatives, defaultDerivative: Some(default), derivativeOrder, derivedFunction: fname, .. }, tp, _) => {
+                (DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivedFunction: fname, derivativeOrder, defaultDerivative: Some(default), lowerOrderDerivatives, .. }, tp, _) => {
                     let mut da: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut bl: Arc<metamodelica::List<bool>> = metamodelica::nil();
                     (da, bl) = differentiateFunction1(inFuncName.clone(), DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivedFunction: fname.clone(), derivativeFunction: default.clone(), derivativeOrder: derivativeOrder.clone(), conditionRefs: metamodelica::nil(), defaultDerivative: Some(default.clone()), lowerOrderDerivatives: lowerOrderDerivatives.clone() }, tp.clone(), expl.clone(), inDiffArgs.clone())?;
@@ -3411,11 +3419,11 @@ pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTree
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut m: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(functions.clone(), fname.clone())?) {
-                        Some(DAE::Function::FUNCTION { type_: __pa0, functions: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
+                        Some(DAE::Function::FUNCTION { functions: __pa0, type_: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    t = __pa0.clone();
-                    flst = __pa1.clone();
+                    flst = __pa0.clone();
+                    t = __pa1.clone();
                     m = getFunctionMapper1(flst.clone())?;
                     Ok((m.clone(), t.clone()))
                 }

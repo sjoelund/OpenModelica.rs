@@ -104,7 +104,7 @@ fn modelicaStringToCStr1(mut inString: ArcStr, mut inReplacePatternLst: Arc<meta
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (r#str, Deref @ metamodelica::List::Cons { head: ReplacePattern { to, from }, tail: res }) => {
+                (r#str, Deref @ metamodelica::List::Cons { head: ReplacePattern { from, to }, tail: res }) => {
                     let mut str_1: ArcStr = arcstr::literal!("");
                     let mut res_str: ArcStr = arcstr::literal!("");
                     str_1 = (modelicaStringToCStr1((r#str.clone()).clone(), res.clone())?).clone();

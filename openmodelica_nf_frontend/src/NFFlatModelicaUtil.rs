@@ -120,7 +120,8 @@ pub fn appendCommentString(mut comment: Arc<SCode::Comment>, mut s: IOStream::IO
     let mut s: IOStream::IOStream = s;
     let mut r#str: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(comment.clone()) {
-        Deref @ SCode::Comment { comment: Some(r#str), .. } => {
+        Deref @ SCode::Comment { comment: Some(__esc_str), .. } => {
+            r#str = (*__esc_str).clone();
             s = IOStream::append(s.clone(), (literal!(" \"")).clone())?;
             s = IOStream::append(s.clone(), (System::escapedString((r#str.clone()).clone(), false)).clone())?;
             s = IOStream::append(s.clone(), (literal!("\"")).clone())?;
@@ -136,8 +137,8 @@ pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType
     let mut s: IOStream::IOStream = s;
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let () = (::match_deref::match_deref! { match &(comment.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: r#mod }), .. } => {
-            let mut r#mod = (*r#mod).clone();
+        Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: __esc_mod }), .. } => {
+            r#mod = (*__esc_mod).clone();
             r#mod = (match elementType.clone() {
         ElementType::ROOT_CLASS { .. } => filterRootClassAnnotations(r#mod.clone())?,
         _ => DAEDumpTypes::filterStructuralMods(r#mod.clone())?,

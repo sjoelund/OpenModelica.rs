@@ -310,7 +310,10 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             let mut res_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut r#fn = (*r#fn).clone();
             res_exp = (::match_deref::match_deref! { match &(UnorderedMap::get(exp.clone(), prev_replacements.clone())?) {
-        Some(res_exp) => res_exp.clone(),
+        Some(__esc_res_exp) => {
+            res_exp = (*__esc_res_exp).clone();
+            res_exp.clone()
+        },
         _ => {
             r#fn = UnorderedMap::getOrFail(r#fn.path.clone(), replacements.clone())?;
             local_replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
@@ -393,11 +396,13 @@ pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expressio
         },
         Deref @ Expression::RECORD { .. } => var_field!((*arg).elements, Expression::NFExpression::RECORD).clone(),
         Deref @ Expression::TUPLE { .. } => var_field!((*arg).elements, Expression::NFExpression::TUPLE).clone(),
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } => {
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { r#fn: __esc_fn, .. } } => {
+            call = (*__esc_call).clone();
+            r#fn = (*__esc_fn).clone();
             if Function::isDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else if Function::isNonDefaultRecordConstructor(r#fn.clone()) {
-                children_args = var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone();
+                children_args = var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone();
             } else {
                 children_args = Expression::getRecordElements(arg.clone())?;
             }

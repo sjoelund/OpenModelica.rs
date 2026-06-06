@@ -99,7 +99,7 @@ pub const AST_CACHE_MAX_SIZE: i32 = 1000;
 pub fn reset() -> Result<()> {
     pub type Program = Absyn::Program;
 
-    { let __v = Arc::new(SymbolTable { cacheIndex: 0, cachedAsts: Vector::new(0), vars: metamodelica::nil(), explodedAst: None, ast: Absyn::Program { classes: metamodelica::nil(), within_: openmodelica_ast::Absyn::Within::TOP } }); crate::Globals::symbolTable.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = Arc::new(SymbolTable { ast: Absyn::Program { classes: metamodelica::nil(), within_: openmodelica_ast::Absyn::Within::TOP }, explodedAst: None, vars: metamodelica::nil(), cachedAsts: Vector::new(0), cacheIndex: 0 }); crate::Globals::symbolTable.with(|__root| *__root.borrow_mut() = __v) };
     updateUriMapping(metamodelica::nil())?;
     Ok(())
 }
@@ -420,7 +420,7 @@ fn addVarToVarList4(mut inFound: bool, mut inCref: Arc<DAE::ComponentRef>, mut i
         (false, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }) => {
             metamodelica::cons(InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue.clone(), type_: ty.clone() }, inVariables.clone())
         },
-        (false, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, ident: id, .. }) => {
+        (false, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
             Error::addMessage(Error::SLICE_ASSIGN_NON_ARRAY.clone(), list![(id.clone()).clone()])?;
             bail!("fail")
         },
@@ -449,7 +449,7 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
     outEnv = 'mc: {
         let __mc_input = (inVariable.clone(), inEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
-            let (InteractiveTypes::Variable { type_: ref tp, value: ref v, varIdent: mut id }, mut env) = __mc_input.clone() else { bail!("nomatch") };
+            let (InteractiveTypes::Variable { varIdent: mut id, value: ref v, type_: ref tp }, mut env) = __mc_input.clone() else { bail!("nomatch") };
             let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
@@ -459,7 +459,7 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
             Ok(env.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let (InteractiveTypes::Variable { type_: ref tp, value: ref v, varIdent: mut id }, mut env) = __mc_input.clone() else { bail!("nomatch") };
+            let (InteractiveTypes::Variable { varIdent: mut id, value: ref v, type_: ref tp }, mut env) = __mc_input.clone() else { bail!("nomatch") };
             let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             empty_env = FGraph::empty();
             env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty_env.clone())?;
@@ -483,8 +483,9 @@ fn updateUriMapping(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> 
         let mut cl = cl.clone();
         let () = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ Absyn::Class { info: SourceInfo { fileName: Deref @ "<interactive>", .. }, .. } => (),
-        Deref @ Absyn::Class { info: SourceInfo { fileName, .. }, name, .. } => {
-            let mut fileName = (*fileName).clone();
+        Deref @ Absyn::Class { name: __esc_name, info: SourceInfo { fileName: __esc_fileName, .. }, .. } => {
+            name = (*__esc_name).clone();
+            fileName = (*__esc_fileName).clone();
             dir = (System::dirname((fileName.clone()).clone())).clone();
             fileName = (System::basename((fileName.clone()).clone())).clone();
             b = stringEq((fileName.clone()).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((fileName.clone()).clone(), (literal!("MetaModelicaBuiltin.mo")).clone()) || stringEq((dir.clone()).clone(), (literal!(".")).clone());

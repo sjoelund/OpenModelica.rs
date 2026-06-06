@@ -973,9 +973,9 @@ pub fn getConfigValue(mut inFlag: ConfigFlag) -> Result<FlagData> {
     let mut index: i32 = 0;
     let mut flags: Flag = Flag::NO_FLAGS;
     let mut name: ArcStr = arcstr::literal!("");
-    let ConfigFlag { index: __pa0, name: __pa1, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
-    index = __pa0.clone();
-    name = __pa1.clone();
+    let ConfigFlag { name: __pa0, index: __pa1, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
+    name = __pa0.clone();
+    index = __pa1.clone();
     flags = getFlags(true);
     let Flag::FLAGS { configFlags: __pa2, .. } = (flags.clone()) else { bail!("pattern mismatch") };
     config_flags = __pa2.clone();

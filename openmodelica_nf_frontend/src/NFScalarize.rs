@@ -390,13 +390,13 @@ pub fn scalarizeEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquati
 pub fn scalarizeEquation(mut eq: Arc<Equation::NFEquation>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut forceScalarize: bool) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     equations = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { source: src, ty, rhs, lhs, .. } if (Type::isArray(ty.clone())) => {
+        Deref @ Equation::EQUALITY { lhs, rhs, ty, source: src, .. } if (Type::isArray(ty.clone())) => {
             let mut lhs_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
             let mut rhs_iter: Arc<ExpressionIterator::NFExpressionIterator> = Arc::new(ExpressionIterator::NONE_ITERATOR);
             let mut scalarize: bool = false;
-            let mut ty = (*ty).clone();
-            let mut rhs = (*rhs).clone();
             let mut lhs = (*lhs).clone();
+            let mut rhs = (*rhs).clone();
+            let mut ty = (*ty).clone();
             if forceScalarize.clone() || var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() == Equation::ScalarizeMode::SCALARIZE.clone() {
                 scalarize = true;
             } else if var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() == Equation::ScalarizeMode::DONT_SCALARIZE.clone() {

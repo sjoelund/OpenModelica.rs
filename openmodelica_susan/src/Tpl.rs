@@ -195,7 +195,7 @@ pub fn writeStr(mut inText: Text, mut inStr: ArcStr) -> Result<Text> {
         (txt, Deref @ "") => {
             txt.clone()
         },
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str) if (-1 == System::stringFind((r#str.clone()).clone(), (literal!("\n")).clone())?) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, r#str) if (-1 == System::stringFind((r#str.clone()).clone(), (literal!("\n")).clone())?) => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, r#str) if (-1 == System::stringFind((r#str.clone()).clone(), (literal!("\n")).clone())?) => {
@@ -219,7 +219,7 @@ pub fn writeTok(mut inText: Text, mut inToken: Arc<StringToken>) -> Result<Text>
         (txt, Deref @ StringToken::ST_STRING { value: Deref @ "" }) => {
             txt.clone()
         },
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, tok) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, tok) => {
             Text::MEM_TEXT { tokens: metamodelica::cons(tok.clone(), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, tok) => {
@@ -237,10 +237,10 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
         (txt, Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
         },
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, Text::MEM_TEXT { tokens: txttoks, blocksStack: Deref @ metamodelica::List::Nil }) => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() }), toks.clone()), blocksStack: blstack.clone() }
         },
-        (Text::FILE_TEXT { .. }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
+        (Text::FILE_TEXT { .. }, Text::MEM_TEXT { tokens: txttoks, blocksStack: Deref @ metamodelica::List::Nil }) => {
             for mut tok in &*txttoks.clone().reverse() {
                 let mut tok = tok.clone();
                 writeTok(inText.clone(), tok.clone())?;
@@ -300,10 +300,10 @@ fn writeLineOrStr(mut inText: Text, mut inStr: ArcStr, mut inIsLine: bool) -> Re
         (txt, Deref @ "", _) => {
             txt.clone()
         },
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str, false) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, r#str, false) => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str, true) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, r#str, true) => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_LINE { line: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, r#str, _) => {
@@ -415,7 +415,7 @@ fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
 pub fn newLine(mut inText: Text) -> Result<Text> {
     let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (match inText.clone() {
-        Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
+        Text::MEM_TEXT { tokens: ref toks, blocksStack: ref blstack } => {
             Text::MEM_TEXT { tokens: metamodelica::cons(crate::Tpl::StringToken::interned_ST_NEW_LINE(), toks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
@@ -429,7 +429,7 @@ pub fn newLine(mut inText: Text) -> Result<Text> {
 pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (match txt.clone() {
-        Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
+        Text::MEM_TEXT { tokens: ref toks, blocksStack: ref blstack } => {
             Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((toks.clone(), inBlockType.clone()), blstack.clone()) }
         },
         Text::FILE_TEXT { .. } => {
@@ -442,23 +442,27 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
             isstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
             Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())?), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
             let () = (::match_deref::match_deref! { match &(inBlockType.clone()) {
-        Deref @ BlockType::BT_INDENT { width: w } => {
+        Deref @ BlockType::BT_INDENT { width: __esc_w } => {
+            w = (*__esc_w).clone();
             Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
             Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind.clone() + w.clone());
             ()
         },
-        Deref @ BlockType::BT_ABS_INDENT { width: w } => {
+        Deref @ BlockType::BT_ABS_INDENT { width: __esc_w } => {
+            w = (*__esc_w).clone();
             if isstart.clone() {
                 Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), 0);
             }
             Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), w.clone());
             ()
         },
-        Deref @ BlockType::BT_REL_INDENT { offset: w } => {
+        Deref @ BlockType::BT_REL_INDENT { offset: __esc_w } => {
+            w = (*__esc_w).clone();
             Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), aind.clone() + w.clone());
             ()
         },
-        Deref @ BlockType::BT_ANCHOR { offset: w } => {
+        Deref @ BlockType::BT_ANCHOR { offset: __esc_w } => {
+            w = (*__esc_w).clone();
             Mutable::update(var_field!(txt.aind, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
             ()
         },
@@ -479,10 +483,10 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
 pub fn popBlock(mut txt: Text) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &(txt.clone()) {
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack }, tokens: Deref @ metamodelica::List::Nil } => {
+        Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, blocksStack: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } } => {
             Text::MEM_TEXT { tokens: stacktoks.clone(), blocksStack: blstack.clone() }
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (stacktoks, blType), tail: blstack }, tokens: toks } => {
+        Text::MEM_TEXT { tokens: toks, blocksStack: Deref @ metamodelica::List::Cons { head: (stacktoks, blType), tail: blstack } } => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
@@ -545,12 +549,12 @@ pub fn popBlock(mut txt: Text) -> Result<Text> {
 pub fn pushIter(mut txt: Text, mut inIterOptions: Arc<IterOptions>) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &((txt.clone(), inIterOptions.clone())) {
-        (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
+        (Text::MEM_TEXT { tokens: toks, blocksStack: blstack }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
             Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::nil(), Arc::new(BlockType::BT_ITER { options: iopts.clone(), index0: Mutable::create(i0.clone()) })), metamodelica::cons((toks.clone(), crate::Tpl::BlockType::interned_BT_TEXT()), blstack.clone())) }
         },
         (Text::FILE_TEXT { .. }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
             let () = (::match_deref::match_deref! { match &(iopts.clone()) {
-        Deref @ IterOptions { wrapWidth: 0, alignNum: 0, .. } => (),
+        Deref @ IterOptions { alignNum: 0, wrapWidth: 0, .. } => (),
         _ => {
             Error::addInternalError((literal!("Tpl.mo FILE_TEXT does not support aligning or wrapping elements")).clone(), metamodelica::sourceInfo!("Template/Tpl.mo"))?;
             bail!("fail")
@@ -573,10 +577,10 @@ pub fn pushIter(mut txt: Text, mut inIterOptions: Arc<IterOptions>) -> Result<Te
 pub fn popIter(mut txt: Text) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &(txt.clone()) {
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (Deref @ metamodelica::List::Nil, _), tail: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } }, tokens: Deref @ metamodelica::List::Nil } => {
+        Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, blocksStack: Deref @ metamodelica::List::Cons { head: (Deref @ metamodelica::List::Nil, _), tail: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } } } => {
             Text::MEM_TEXT { tokens: stacktoks.clone(), blocksStack: blstack.clone() }
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, blType), tail: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } }, tokens: Deref @ metamodelica::List::Nil } => {
+        Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, blType), tail: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } } } => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: itertoks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
@@ -596,19 +600,19 @@ pub fn popIter(mut txt: Text) -> Result<Text> {
 pub fn nextIter(mut txt: Text) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &(txt.clone()) {
-        __esc_txt @ Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (_, Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { empty: None, .. }, .. }), tail: _ }, tokens: Deref @ metamodelica::List::Nil } => {
+        __esc_txt @ Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, blocksStack: Deref @ metamodelica::List::Cons { head: (_, Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { empty: None, .. }, .. }), tail: _ } } => {
             txt = (*__esc_txt).clone();
             txt.clone()
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, options: Deref @ IterOptions { empty: Some(emptok), .. } }), tail: blstack }, tokens: Deref @ metamodelica::List::Nil } => {
+        Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { empty: Some(emptok), .. }, index0: i0 }), tail: blstack } } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
             Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(emptok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack }, tokens: Deref @ metamodelica::List::Cons { head: tok, tail: Deref @ metamodelica::List::Nil } } => {
+        Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Cons { head: tok, tail: Deref @ metamodelica::List::Nil }, blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack } } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
             Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(tok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack }, tokens: toks } => {
+        Text::MEM_TEXT { tokens: toks, blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack } } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
             Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() }), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
@@ -623,7 +627,11 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             let mut haveToken: bool = false;
             let mut septok: Mutable::Mutable<Option<Arc<StringToken>>>;
             let () = (::match_deref::match_deref! { match &((Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())).get(1)?) {
-        BlockTypeFileText { septok, tell, bt: Deref @ BlockType::BT_ITER { index0: i0, options: iopts }, .. } => {
+        BlockTypeFileText { bt: Deref @ BlockType::BT_ITER { options: __esc_iopts, index0: __esc_i0 }, tell: __esc_tell, septok: __esc_septok, .. } => {
+            iopts = (*__esc_iopts).clone();
+            i0 = (*__esc_i0).clone();
+            tell = (*__esc_tell).clone();
+            septok = (*__esc_septok).clone();
             tellpos = textFileTell(txt.clone())?;
             if Mutable::access(tell.clone()) != tellpos.clone() {
                 Mutable::update(tell.clone(), tellpos.clone());
@@ -635,7 +643,8 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             haveToken = false;
             txt.clone()
         },
-        Some(emptok) => {
+        Some(__esc_emptok) => {
+            emptok = (*__esc_emptok).clone();
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
             haveToken = true;
             writeTok(txt.clone(), emptok.clone())?
@@ -672,7 +681,10 @@ pub fn getIteri_i0(mut inText: Text) -> Result<i32> {
         Text::FILE_TEXT { .. } => {
             let mut i0: Mutable::Mutable<i32>;
             (::match_deref::match_deref! { match &((Mutable::access(var_field!(inText.blocksStack, Text::FILE_TEXT).clone())).get(1)?) {
-        BlockTypeFileText { bt: Deref @ BlockType::BT_ITER { index0: i0, .. }, .. } => Mutable::access(i0.clone()),
+        BlockTypeFileText { bt: Deref @ BlockType::BT_ITER { index0: __esc_i0, .. }, .. } => {
+            i0 = (*__esc_i0).clone();
+            Mutable::access(i0.clone())
+        },
         _ => bail!("match: no arm matched"),
     } })
         },
@@ -709,7 +721,7 @@ pub fn textString(mut inText: Text) -> Result<ArcStr> {
 
 pub fn textStringBuf(mut inText: Text) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inText.clone()) {
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: toks } => {
+        Text::MEM_TEXT { tokens: toks, blocksStack: Deref @ metamodelica::List::Nil } => {
             tokensString(toks.clone().reverse(), 0, true, 0)?;
             ()
         },
@@ -790,7 +802,7 @@ fn tokString(mut inStringToken: Arc<StringToken>, mut inActualPositionOnLine: i3
             (nchars, isstart, aind) = stringListString(strLst.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ StringToken::ST_BLOCK { blockType: bt, tokens: toks }, nchars, isstart, aind) => {
+        (Deref @ StringToken::ST_BLOCK { tokens: toks, blockType: bt }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
@@ -873,7 +885,7 @@ fn tokFile(mut file: File::File, mut inStringToken: Arc<StringToken>, mut nchars
             (nchars, isstart, aind) = stringListFile(file.clone(), strLst.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ StringToken::ST_BLOCK { blockType: bt, tokens: toks }, __esc_nchars, __esc_isstart, __esc_aind) => {
+        (Deref @ StringToken::ST_BLOCK { tokens: toks, blockType: bt }, __esc_nchars, __esc_isstart, __esc_aind) => {
             nchars = (*__esc_nchars).clone();
             isstart = (*__esc_isstart).clone();
             aind = (*__esc_aind).clone();
@@ -1076,14 +1088,14 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
         (Deref @ BlockType::BT_ITER { .. }, Deref @ metamodelica::List::Nil, nchars, isstart, aind) => {
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapWidth: 0, alignNum: 0, separator: None, .. }, .. }, toks, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: None, alignNum: 0, wrapWidth: 0, .. }, .. }, toks, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
             (nchars, isstart, aind) = tokensString(toks.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapWidth: 0, alignNum: 0, separator: Some(septok), .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: Some(septok), alignNum: 0, wrapWidth: 0, .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
@@ -1091,7 +1103,7 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             (nchars, isstart) = iterSeparatorString(toks.clone(), septok.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapSeparator: wsep, wrapWidth: wwidth, alignSeparator: asep, alignOfset: aoffset, alignNum: anum, separator: Some(septok), .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: Some(septok), alignNum: anum, alignOfset: aoffset, alignSeparator: asep, wrapWidth: wwidth, wrapSeparator: wsep, .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
@@ -1099,7 +1111,7 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
             (nchars, isstart) = iterSeparatorAlignWrapString(toks.clone(), septok.clone(), 1 + aoffset.clone(), anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapSeparator: wsep, wrapWidth: wwidth, alignSeparator: asep, alignOfset: aoffset, alignNum: anum, separator: None, .. }, .. }, toks, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: None, alignNum: anum, alignOfset: aoffset, alignSeparator: asep, wrapWidth: wwidth, wrapSeparator: wsep, .. }, .. }, toks, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             (nchars, isstart) = iterAlignWrapString(toks.clone(), aoffset.clone(), anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
@@ -1319,14 +1331,14 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
         (Deref @ BlockType::BT_ITER { .. }, Deref @ metamodelica::List::Nil, nchars, isstart, aind) => {
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapWidth: 0, alignNum: 0, separator: None, .. }, .. }, toks, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: None, alignNum: 0, wrapWidth: 0, .. }, .. }, toks, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
             (nchars, isstart, aind) = tokensFile(file.clone(), toks.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapWidth: 0, alignNum: 0, separator: Some(septok), .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: Some(septok), alignNum: 0, wrapWidth: 0, .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
@@ -1334,7 +1346,7 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             (nchars, isstart) = iterSeparatorFile(file.clone(), toks.clone(), septok.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapSeparator: wsep, wrapWidth: wwidth, alignSeparator: asep, alignOfset: aoffset, alignNum: anum, separator: Some(septok), .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: Some(septok), alignNum: anum, alignOfset: aoffset, alignSeparator: asep, wrapWidth: wwidth, wrapSeparator: wsep, .. }, .. }, Deref @ metamodelica::List::Cons { head: tok, tail: toks }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
@@ -1342,7 +1354,7 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
             (nchars, isstart) = iterSeparatorAlignWrapFile(file.clone(), toks.clone(), septok.clone(), 1 + aoffset.clone(), anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { wrapSeparator: wsep, wrapWidth: wwidth, alignSeparator: asep, alignOfset: aoffset, alignNum: anum, separator: None, .. }, .. }, toks, nchars, isstart, aind) => {
+        (Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { separator: None, alignNum: anum, alignOfset: aoffset, alignSeparator: asep, wrapWidth: wwidth, wrapSeparator: wsep, .. }, .. }, toks, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             (nchars, isstart) = iterAlignWrapFile(file.clone(), toks.clone(), aoffset.clone(), anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
@@ -1485,7 +1497,7 @@ pub fn textStrTok(mut inText: Text) -> Result<Arc<StringToken>> {
         Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. } => {
             Arc::new(StringToken::ST_STRING { value: (literal!("")).clone() })
         },
-        Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks } => {
+        Text::MEM_TEXT { tokens: txttoks, blocksStack: Deref @ metamodelica::List::Nil } => {
             Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: crate::Tpl::BlockType::interned_BT_TEXT() })
         },
         _ => {
@@ -1861,9 +1873,11 @@ fn handleTok(mut txt: Text) -> Result<()> {
     let () = (match txt.clone() {
         Text::FILE_TEXT { .. } => {
             let () = (::match_deref::match_deref! { match &(Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())) {
-        Deref @ metamodelica::List::Cons { head: BlockTypeFileText { septok: aseptok, bt: Deref @ BlockType::BT_ITER { .. }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BlockTypeFileText { bt: Deref @ BlockType::BT_ITER { .. }, septok: __esc_aseptok, .. }, tail: _ } => {
+            aseptok = (*__esc_aseptok).clone();
             let () = (::match_deref::match_deref! { match &(Mutable::access(aseptok.clone())) {
-        Some(septok) => {
+        Some(__esc_septok) => {
+            septok = (*__esc_septok).clone();
             Mutable::update(aseptok.clone(), None);
             tokFileText(txt.clone(), septok.clone(), false)?;
             ()

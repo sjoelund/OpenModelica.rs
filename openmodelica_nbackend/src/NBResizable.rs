@@ -219,7 +219,8 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
                         }
                         iterators = UnorderedSet::toList(ite_occurences.clone());
                         let () = (::match_deref::match_deref! { match &(iterators.clone()) {
-        Deref @ metamodelica::List::Cons { head: iter, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: __esc_iter, tail: Deref @ metamodelica::List::Nil } => {
+            iter = (*__esc_iter).clone();
             eval = UnorderedMap::getSafe(iter.clone(), order.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
             if eval.clone() < EvalOrder::FAILED.clone() {
                 args = Differentiate::DifferentiationArguments::simpleCref(iter.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1));
@@ -764,10 +765,11 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
     if !(UnorderedMap::contains(cref.clone(), optimal_values.clone())?) {
         var = Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?);
         value = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
+        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { attributes: __esc_attributes @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, .. }, .. } => {
+            attributes = (*__esc_attributes).clone();
             if UnorderedSet::contains(cref.clone(), min_parameters.clone())? {
-                if isSome(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((**attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                if isSome(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                    let __pa0 = ::match_deref::match_deref! { match &(var_field!((*attributes).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -775,8 +777,8 @@ fn setInitialValues(mut cref: Arc<ComponentRef::NFComponentRef>, mut min_paramet
                 } else {
                     value = Arc::new(Expression::NFExpression::INTEGER { value: 0 });
                 }
-            } else if isSome(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
-                let __pa1 = ::match_deref::match_deref! { match &(var_field!((**attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+            } else if isSome(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
+                let __pa1 = ::match_deref::match_deref! { match &(var_field!((*attributes).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone()) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
@@ -848,7 +850,8 @@ fn fixConstraints(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<Compone
             }
             ()
         },
-        Some(mut value) => {
+        Some(mut __esc_value) => {
+            value = __esc_value.clone();
             if debug.clone() {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(constraint.clone())?); __mm_s.push_str(&*literal!(" || is violated by ")); __mm_s.push_str(&*intString(value.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -859,7 +862,8 @@ fn fixConstraints(mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<Compone
                 (solved_eqn, status, _) = Solve::solveBody(eqn.clone(), cref.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1))?;
                 if status.clone() == Solve::Status::EXPLICIT.clone() {
                     let () = (match checkConstraint(Util::getOption(Equation::getRHS(solved_eqn.clone())?)?, optimal_values.clone())? {
-        Some(mut value) => {
+        Some(mut __esc_value) => {
+            value = __esc_value.clone();
             old_optimal_value = UnorderedMap::getSafe(cref.clone(), optimal_values.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))?;
             UnorderedMap::add(cref.clone(), Arc::new(Expression::NFExpression::INTEGER { value: value.clone() }), optimal_values.clone())?;
             for mut cons in &*UnorderedMap::getSafe(cref.clone(), p2c.clone(), metamodelica::sourceInfo!("NBackEnd/Util/NBResizable.mo"))? {

@@ -216,12 +216,30 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
     min_ = List::minElement(lst.clone(), (std::sync::Arc::new(fnptr!(tplLt, (TypeRestriction, Arc<Type::NFType>), (TypeRestriction, Arc<Type::NFType>))) as std::sync::Arc<dyn ::std::ops::Fn((TypeRestriction, Arc<Type::NFType>), (TypeRestriction, Arc<Type::NFType>)) -> Result<bool> + 'static>))?;
     max_ = List::maxElement(lst.clone(), (std::sync::Arc::new(fnptr!(tplLt, (TypeRestriction, Arc<Type::NFType>), (TypeRestriction, Arc<Type::NFType>))) as std::sync::Arc<dyn ::std::ops::Fn((TypeRestriction, Arc<Type::NFType>), (TypeRestriction, Arc<Type::NFType>)) -> Result<bool> + 'static>))?;
     (sc, ty) = (::match_deref::match_deref! { match &((min_.clone(), max_.clone())) {
-        ((TypeRestriction::SCALAR, _), (TypeRestriction::SCALAR, ty)) => (SizeClassification::SCALAR.clone(), ty.clone()),
-        ((TypeRestriction::SCALAR, _), (_, ty)) => (SizeClassification::SCALAR_ARRAY.clone(), ty.clone()),
-        ((TypeRestriction::VECTOR { .. }, _), (TypeRestriction::VECTOR { .. }, ty)) => (SizeClassification::ELEMENT_WISE.clone(), ty.clone()),
-        ((TypeRestriction::VECTOR { .. }, _), (TypeRestriction::MATRIX { .. }, ty)) => (SizeClassification::VECTOR_MATRIX.clone(), ty.clone()),
-        ((TypeRestriction::MATRIX { .. }, _), (TypeRestriction::MATRIX { .. }, ty)) => (SizeClassification::ELEMENT_WISE.clone(), ty.clone()),
-        ((TypeRestriction::ARRAY { .. }, _), (TypeRestriction::ARRAY { .. }, ty)) => (SizeClassification::ELEMENT_WISE.clone(), ty.clone()),
+        ((TypeRestriction::SCALAR, _), (TypeRestriction::SCALAR, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::SCALAR.clone(), ty.clone())
+        },
+        ((TypeRestriction::SCALAR, _), (_, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::SCALAR_ARRAY.clone(), ty.clone())
+        },
+        ((TypeRestriction::VECTOR { .. }, _), (TypeRestriction::VECTOR { .. }, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::ELEMENT_WISE.clone(), ty.clone())
+        },
+        ((TypeRestriction::VECTOR { .. }, _), (TypeRestriction::MATRIX { .. }, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::VECTOR_MATRIX.clone(), ty.clone())
+        },
+        ((TypeRestriction::MATRIX { .. }, _), (TypeRestriction::MATRIX { .. }, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::ELEMENT_WISE.clone(), ty.clone())
+        },
+        ((TypeRestriction::ARRAY { .. }, _), (TypeRestriction::ARRAY { .. }, __esc_ty)) => {
+            ty = (*__esc_ty).clone();
+            (SizeClassification::ELEMENT_WISE.clone(), ty.clone())
+        },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFOperator.repairMultary")); __mm_s.push_str(&*literal!(" failed because the multary arguments have incompatible sizes: ")); __mm_s.push_str(&*List::toString(types.clone(), (std::sync::Arc::new(Type::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFOperator.mo"))?;
             bail!("fail")

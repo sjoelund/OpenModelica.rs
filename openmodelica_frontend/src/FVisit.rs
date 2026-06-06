@@ -217,7 +217,7 @@ pub fn avlTreeNew() -> AvlTree {
 pub fn avlTreeAdd(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), inKey.clone(), inValue.clone())) {
-        (Deref @ FCore::VAvlTree { right: None, left: None, value: None, .. }, key, value) => {
+        (Deref @ FCore::VAvlTree { value: None, left: None, right: None, .. }, key, value) => {
             Arc::new(FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: key.clone(), value: value.clone() }), height: 1, left: None, right: None })
         },
         (Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), .. }, key, value) => {
@@ -235,17 +235,17 @@ pub fn avlTreeAdd(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: AvlVal
 pub fn avlTreeAdd2(mut inAvlTree: AvlTree, mut keyComp: i32, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), keyComp.clone(), inKey.clone(), inValue.clone())) {
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: Some(FCore::VAvlTreeValue { key: rkey, .. }) }, 0, _, value) => {
+        (Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), height: h, left, right }, 0, _, value) => {
             Arc::new(FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey.clone(), value: value.clone() }), height: h.clone(), left: left.clone(), right: right.clone() })
         },
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: oval }, 1, key, value) => {
+        (Deref @ FCore::VAvlTree { value: oval, height: h, left, right }, 1, key, value) => {
             let mut t_1: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             let mut t: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             t = createEmptyAvlIfNone(right.clone());
             t_1 = avlTreeAdd(t.clone(), key.clone(), value.clone())?;
             Arc::new(FCore::VAvlTree { value: oval.clone(), height: h.clone(), left: left.clone(), right: Some(t_1.clone()) })
         },
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: oval }, (-1), key, value) => {
+        (Deref @ FCore::VAvlTree { value: oval, height: h, left, right }, (-1), key, value) => {
             let mut t_1: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             let mut t: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             t = createEmptyAvlIfNone(left.clone());
@@ -508,7 +508,7 @@ fn rotateRight(mut node: AvlTree) -> Result<AvlTree> {
 fn differenceInHeight(mut node: AvlTree) -> Result<i32> {
     let mut diff: i32 = 0;
     diff = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ FCore::VAvlTree { right: r, left: l, .. } => {
+        Deref @ FCore::VAvlTree { left: l, right: r, .. } => {
             let mut lh: i32 = 0;
             let mut rh: i32 = 0;
             lh = getHeight(l.clone())?;
@@ -569,7 +569,7 @@ fn getOptionStr<Type_a: Clone + 'static>(mut inTypeAOption: Option<Type_a>, mut 
 fn printAvlTreeStr(mut inAvlTree: AvlTree) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inAvlTree.clone()) {
-        Deref @ FCore::VAvlTree { right: r, left: l, value: Some(FCore::VAvlTreeValue { key: _, value: rval }), .. } => {
+        Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: _, value: rval }), left: l, right: r, .. } => {
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -578,7 +578,7 @@ fn printAvlTreeStr(mut inAvlTree: AvlTree) -> Result<ArcStr> {
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*valueStr(rval.clone())?); __mm_s.push_str(&*literal!(",  ")); __mm_s.push_str(&*if (stringEq((s2.clone()).clone(), (literal!("")).clone())) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!(", ")); ArcStr::from(__mm_s) }}); __mm_s.push_str(&*s3.clone()); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Deref @ FCore::VAvlTree { right: r, left: l, value: None, .. } => {
+        Deref @ FCore::VAvlTree { value: None, left: l, right: r, .. } => {
             let mut s2: ArcStr = arcstr::literal!("");
             let mut s3: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -595,7 +595,7 @@ fn printAvlTreeStr(mut inAvlTree: AvlTree) -> Result<ArcStr> {
 fn computeHeight(mut bt: AvlTree) -> Result<AvlTree> {
     let mut outBt: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
     outBt = (::match_deref::match_deref! { match &(bt.clone()) {
-        Deref @ FCore::VAvlTree { right: r, left: l, value: v @ Some(_), .. } => {
+        Deref @ FCore::VAvlTree { value: v @ Some(_), left: l, right: r, .. } => {
             let mut hl: i32 = 0;
             let mut hr: i32 = 0;
             let mut height: i32 = 0;
@@ -634,7 +634,7 @@ fn printAvlTreeStrPP2(mut inTree: Option<Arc<FCore::VAvlTree>>, mut inIndent: Ar
         None => {
             literal!("")
         },
-        Some(Deref @ FCore::VAvlTree { right: r, left: l, value: Some(FCore::VAvlTreeValue { key: rkey, .. }), .. }) => {
+        Some(Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: rkey, .. }), left: l, right: r, .. }) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -645,7 +645,7 @@ fn printAvlTreeStrPP2(mut inTree: Option<Arc<FCore::VAvlTree>>, mut inIndent: Ar
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*inIndent.clone()); __mm_s.push_str(&*keyStr(rkey.clone())); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Some(Deref @ FCore::VAvlTree { right: r, left: l, value: None, .. }) => {
+        Some(Deref @ FCore::VAvlTree { value: None, left: l, right: r, .. }) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -679,16 +679,16 @@ pub fn avlTreeReplace(mut inAvlTree: AvlTree, mut inKey: AvlKey, mut inValue: Av
 fn avlTreeReplace2(mut inAvlTree: AvlTree, mut inKeyComp: i32, mut inKey: AvlKey, mut inValue: AvlValue) -> Result<AvlTree> {
     let mut outAvlTree: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
     outAvlTree = (::match_deref::match_deref! { match &((inAvlTree.clone(), inKeyComp.clone(), inKey.clone(), inValue.clone())) {
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: Some(_) }, 0, key, value) => {
+        (Deref @ FCore::VAvlTree { value: Some(_), height: h, left, right }, 0, key, value) => {
             Arc::new(FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: key.clone(), value: value.clone() }), height: h.clone(), left: left.clone(), right: right.clone() })
         },
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: oval }, 1, key, value) => {
+        (Deref @ FCore::VAvlTree { value: oval, height: h, left, right }, 1, key, value) => {
             let mut t: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             t = createEmptyAvlIfNone(right.clone());
             t = avlTreeReplace(t.clone(), key.clone(), value.clone())?;
             Arc::new(FCore::VAvlTree { value: oval.clone(), height: h.clone(), left: left.clone(), right: Some(t.clone()) })
         },
-        (Deref @ FCore::VAvlTree { right, left, height: h, value: oval }, (-1), key, value) => {
+        (Deref @ FCore::VAvlTree { value: oval, height: h, left, right }, (-1), key, value) => {
             let mut t: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
             t = createEmptyAvlIfNone(left.clone());
             t = avlTreeReplace(t.clone(), key.clone(), value.clone())?;
@@ -707,7 +707,7 @@ pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlT
         Deref @ metamodelica::List::Nil => {
             acc.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Some(Deref @ FCore::VAvlTree { right, left, value, .. }), tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Some(Deref @ FCore::VAvlTree { value, left, right, .. }), tail: rest } => {
             getAvlTreeValues(metamodelica::cons(left.clone(), metamodelica::cons(right.clone(), rest.clone())), List::consOption(value.clone(), acc.clone()))?
         },
         Deref @ metamodelica::List::Cons { head: None, tail: rest } => {

@@ -198,8 +198,14 @@ pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     key_comp = keyCompare(inKey.clone(), key.clone())?;
     comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
         (0, _) => true,
-        (1, Deref @ Tree::NODE { right: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
-        ((-1), Deref @ Tree::NODE { left: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
+        (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
+        ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -388,7 +394,11 @@ pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
     outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
-        Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
+            left = (*__esc_left).clone();
+            right = (*__esc_right).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)

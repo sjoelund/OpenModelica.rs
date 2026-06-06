@@ -190,7 +190,8 @@ pub fn analysePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut used: UseTable) -
 pub fn analyseReplaceable(mut repl: Arc<SCode::Replaceable>, mut used: UseTable) -> Result<()> {
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(cc) } => {
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
+            cc = (*__esc_cc).clone();
             analyseConstrainClass(cc.clone(), used.clone())?;
             ()
         },

@@ -145,7 +145,7 @@ fn addNodes(mut gin: (GraphML::GraphInfo, i32), mut inRefs: Arc<metamodelica::Li
 fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphML::GraphInfo, i32)> {
     let mut gout: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     gout = (::match_deref::match_deref! { match &((gin.clone(), node.clone())) {
-        ((gi, i), FCore::Node { children: kids, parents: Deref @ metamodelica::List::Nil, .. }) => {
+        ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Nil, children: kids, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -162,7 +162,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
             (gi.clone(), i.clone())
         },
-        ((gi, i), FCore::Node { data: FCore::Data::REF { target: Deref @ metamodelica::List::Nil }, children: kids, parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, .. }) => {
+        ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Nil }, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -180,7 +180,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
             (gi.clone(), i.clone())
         },
-        ((gi, i), FCore::Node { data: FCore::Data::REF { target: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, children: kids, parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, .. }) => {
+        ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, data: FCore::Data::REF { target: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -198,10 +198,10 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             (gi, i) = addNodes((gi.clone(), i.clone()), nrefs.clone())?;
             (gi.clone(), i.clone())
         },
-        ((gi, i), FCore::Node { data: FCore::Data::VR { .. }, parents: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }) => {
+        ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: _, tail: _ }, data: FCore::Data::VR { .. }, .. }) => {
             (gi.clone(), i.clone())
         },
-        ((gi, i), FCore::Node { children: kids, parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, .. }) => {
+        ((gi, i), FCore::Node { parents: Deref @ metamodelica::List::Cons { head: nr, tail: _ }, children: kids, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");

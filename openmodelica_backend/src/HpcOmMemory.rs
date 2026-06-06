@@ -313,7 +313,7 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
     (oMemoryMap, oVarToArrayIndexMapping, oVarToIndexMapping) = 'mc: {
         let __mc_input = (iVarToArrayIndexMapping.clone(), iVarToIndexMapping.clone(), iTaskGraphMeta.clone());
         if let Ok(__v) = (|| -> Result<_> {
-            let (mut varToArrayIndexMapping, mut varToIndexMapping, HpcOmTaskGraph::TaskGraphMeta { varCompMapping: mut varCompMapping, eqCompMapping: mut eqCompMapping, .. }) = __mc_input.clone() else { bail!("nomatch") };
+            let (mut varToArrayIndexMapping, mut varToIndexMapping, HpcOmTaskGraph::TaskGraphMeta { eqCompMapping: mut eqCompMapping, varCompMapping: mut varCompMapping, .. }) = __mc_input.clone() else { bail!("nomatch") };
             let mut CACHELINE_SIZE: i32 = CACHELINE_SIZE.clone();
             let mut VARSIZE_BOOLEAN: i32 = VARSIZE_BOOLEAN.clone();
             let mut VARSIZE_FLOAT: i32 = VARSIZE_FLOAT.clone();
@@ -395,24 +395,24 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
             CACHELINE_SIZE = 64;
             let SimCode::MODELINFO { vars: __pa0, .. } = (iModelInfo.clone()) else { bail!("pattern mismatch") };
             simCodeVars = __pa0.clone();
-            let SimCodeVar::SIMVARS { stringParamVars: __pa1, boolParamVars: __pa2, intParamVars: __pa3, paramVars: __pa4, stringAliasVars: __pa5, boolAliasVars: __pa6, intAliasVars: __pa7, aliasVars: __pa8, outputVars: __pa9, inputVars: __pa10, stringAlgVars: __pa11, boolAlgVars: __pa12, intAlgVars: __pa13, discreteAlgVars: __pa14, algVars: __pa15, derivativeVars: __pa16, stateVars: __pa17, .. } = (simCodeVars.clone()) else { bail!("pattern mismatch") };
-            stringParamVars = __pa1.clone();
-            boolParamVars = __pa2.clone();
-            intParamVars = __pa3.clone();
-            paramVars = __pa4.clone();
-            stringAliasVars = __pa5.clone();
-            boolAliasVars = __pa6.clone();
-            intAliasVars = __pa7.clone();
-            aliasVars = __pa8.clone();
+            let SimCodeVar::SIMVARS { stateVars: __pa1, derivativeVars: __pa2, algVars: __pa3, discreteAlgVars: __pa4, intAlgVars: __pa5, boolAlgVars: __pa6, stringAlgVars: __pa7, inputVars: __pa8, outputVars: __pa9, aliasVars: __pa10, intAliasVars: __pa11, boolAliasVars: __pa12, stringAliasVars: __pa13, paramVars: __pa14, intParamVars: __pa15, boolParamVars: __pa16, stringParamVars: __pa17, .. } = (simCodeVars.clone()) else { bail!("pattern mismatch") };
+            stateVars = __pa1.clone();
+            derivativeVars = __pa2.clone();
+            algVars = __pa3.clone();
+            discreteAlgVars = __pa4.clone();
+            intAlgVars = __pa5.clone();
+            boolAlgVars = __pa6.clone();
+            stringAlgVars = __pa7.clone();
+            inputVars = __pa8.clone();
             outputVars = __pa9.clone();
-            inputVars = __pa10.clone();
-            stringAlgVars = __pa11.clone();
-            boolAlgVars = __pa12.clone();
-            intAlgVars = __pa13.clone();
-            discreteAlgVars = __pa14.clone();
-            algVars = __pa15.clone();
-            derivativeVars = __pa16.clone();
-            stateVars = __pa17.clone();
+            aliasVars = __pa10.clone();
+            intAliasVars = __pa11.clone();
+            boolAliasVars = __pa12.clone();
+            stringAliasVars = __pa13.clone();
+            paramVars = __pa14.clone();
+            intParamVars = __pa15.clone();
+            boolParamVars = __pa16.clone();
+            stringParamVars = __pa17.clone();
             allVarsMapping = SimCodeUtil::createIdxSCVarMapping(simCodeVars.clone())?;
             simVarIdxMappingHashTable = HashTableCrILst::emptyHashTableSized(BaseHashTable::biggerBucketSize.clone());
             varCount = 0;
@@ -600,19 +600,22 @@ fn createCacheMapOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
     let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut allTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     (oCacheMap, oScVarCLMapping, oNumCL) = (::match_deref::match_deref! { match &(iSchedule.clone()) {
-        Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, tasksOfLevels } => {
+        Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: __esc_tasksOfLevels, useFixedAssignments: true } => {
+            tasksOfLevels = (*__esc_tasksOfLevels).clone();
             metamodelica::print((literal!("Creating optimized cache map for fixed level scheduler\n")).clone());
             scheduleInfo = HpcOmScheduler::convertScheduleStrucToInfo(iSchedule.clone(), metamodelica::arrayLength(iTaskGraph.clone()))?;
             (cacheMap, scVarCLMapping, numCL) = createCacheMapLevelFixedOptimized(iTaskGraph.clone(), iTaskGraphMeta.clone(), iAllSCVarsMapping.clone(), iSimCodeVarTypes.clone(), iScVarSolvedTaskMapping.clone(), iScVarUnsolvedTaskMapping.clone(), iCacheLineSize.clone(), iAllComponents.clone(), tasksOfLevels.clone(), iNumberOfThreads.clone(), scheduleInfo.clone(), iTaskSolvedVarsMapping.clone(), iTaskUnsolvedVarsMapping.clone(), iScVarInfos.clone())?;
             (cacheMap.clone(), scVarCLMapping.clone(), numCL.clone())
         },
-        Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks, .. } => {
+        Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: __esc_threadTasks, .. } => {
+            threadTasks = (*__esc_threadTasks).clone();
             metamodelica::print((literal!("Creating optimized cache map for thread scheduler\n")).clone());
             scheduleInfo = HpcOmScheduler::convertScheduleStrucToInfo(iSchedule.clone(), metamodelica::arrayLength(iTaskGraph.clone()))?;
             (cacheMap, scVarCLMapping, numCL) = createCacheMapThreadOptimized(iTaskGraph.clone(), iTaskGraphMeta.clone(), iAllSCVarsMapping.clone(), iSimCodeVarTypes.clone(), iScVarSolvedTaskMapping.clone(), iScVarUnsolvedTaskMapping.clone(), iCacheLineSize.clone(), iAllComponents.clone(), threadTasks.clone(), iNumberOfThreads.clone(), scheduleInfo.clone(), iTaskSolvedVarsMapping.clone(), iTaskUnsolvedVarsMapping.clone(), iScVarInfos.clone())?;
             (cacheMap.clone(), scVarCLMapping.clone(), numCL.clone())
         },
-        Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: allTasks, .. } } => {
+        Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: __esc_allTasks, .. } } => {
+            allTasks = (*__esc_allTasks).clone();
             metamodelica::print((literal!("Creating optimized cache map for empty scheduler\n")).clone());
             threadTasks = arrayCreate(1, allTasks.clone());
             scheduleInfo = HpcOmScheduler::convertScheduleStrucToInfo(iSchedule.clone(), metamodelica::arrayLength(iTaskGraph.clone()))?;
@@ -665,9 +668,9 @@ fn createCacheMapLevelOptimized0(mut iLevelTasks: HpcOmSimCode::TaskList, mut iN
     let mut cacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     (cacheLinesPrevLevel, cacheMap, cacheMapMeta, numCL) = iInfo.clone();
     allCL = List::intRange(numCL.clone());
-    let CacheMap::CACHEMAP { cacheLineSize: __pa0, cacheLinesFloat: __pa1, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
-    cacheLineSize = __pa0.clone();
-    cacheLinesFloat = __pa1.clone();
+    let CacheMap::CACHEMAP { cacheLinesFloat: __pa0, cacheLineSize: __pa1, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
+    cacheLinesFloat = __pa0.clone();
+    cacheLineSize = __pa1.clone();
     availableCLold = List::setDifferenceIntN(allCL.clone(), cacheLinesPrevLevel.clone(), numCL.clone())?;
     detailedCacheLineInfo = createDetailedCacheMapInformation(availableCLold.clone(), cacheLinesFloat.clone(), cacheLineSize.clone())?;
     detailedCacheLineInfo = detailedCacheLineInfo.clone().reverse();
@@ -684,7 +687,8 @@ fn createCacheMapLevelOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, mut i
     let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil());
     oInfo = (::match_deref::match_deref! { match &(iTask.clone()) {
-        Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc, .. } => {
+        Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc: __esc_nodeIdc, .. } => {
+            nodeIdc = (*__esc_nodeIdc).clone();
             tmpInfo = List::fold(nodeIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = -1; let __pe_b2 = iNodeSimCodeVarMapping.clone(); move |__pe_a0, __pe_a3| appendNodeVarsToCacheMap(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)> + 'static>), iInfo.clone())?;
             tmpInfo.clone()
         },
@@ -739,9 +743,9 @@ fn createCacheMapLevelFixedOptimizedForLevel(mut iLevelTasks: HpcOmSimCode::Task
     let CacheMap::CACHEMAP { cacheVariables: __pa0, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
     cacheVariables = __pa0.clone();
     allCL = List::intRange(numCL.clone());
-    let CacheMap::CACHEMAP { cacheLineSize: __pa1, cacheLinesFloat: __pa2, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
-    cacheLineSize = __pa1.clone();
-    cacheLinesFloat = __pa2.clone();
+    let CacheMap::CACHEMAP { cacheLinesFloat: __pa1, cacheLineSize: __pa2, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
+    cacheLinesFloat = __pa1.clone();
+    cacheLineSize = __pa2.clone();
     (cacheMap, cacheMapMeta, createdCL) = List::fold(getTaskListTasks(iLevelTasks.clone()), (std::sync::Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iTaskGraphMeta.clone(); let __pe_b3 = iSchedulerInfo.clone(); let __pe_b4 = iNumberOfThreads.clone(); let __pe_b5 = level.clone(); let __pe_b6 = iScVarInfos.clone(); let __pe_b7 = iTaskSolvedVarsMapping.clone(); let __pe_b8 = iTaskUnsolvedVarsMapping.clone(); let __pe_b9 = iHandledVariables.clone(); let __pe_b10 = iThreadCacheLines.clone(); let __pe_b11 = iSharedCacheLines.clone(); move |__pe_a0, __pe_a12| createCacheMapLevelFixedOptimizedForTask(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone(), __pe_b8.clone(), __pe_b9.clone(), __pe_b10.clone(), __pe_b11.clone(), __pe_a12) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> + 'static>), (cacheMap.clone(), cacheMapMeta.clone(), numCL.clone()))?;
     let CacheMap::CACHEMAP { cacheVariables: __pa3, .. } = (cacheMap.clone()) else { bail!("pattern mismatch") };
     cacheVariables = __pa3.clone();
@@ -762,8 +766,13 @@ fn createCacheMapLevelFixedOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, 
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     oInfo = (::match_deref::match_deref! { match &((iTask.clone(), iInfo.clone())) {
-        (Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { threadIdx: Some(threadIdx), nodeIdc, .. }, (cacheMap, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: __esc_allSCVarsMapping, .. }, numNewCL)) => {
+        (Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc: __esc_nodeIdc, threadIdx: Some(__esc_threadIdx), .. }, (__esc_cacheMap, __esc_cacheMapMeta @ CacheMapMeta { allSCVarsMapping: __esc_allSCVarsMapping, .. }, __esc_numNewCL)) => {
+            nodeIdc = (*__esc_nodeIdc).clone();
+            threadIdx = (*__esc_threadIdx).clone();
+            cacheMap = (*__esc_cacheMap).clone();
+            cacheMapMeta = (*__esc_cacheMapMeta).clone();
             allSCVarsMapping = (*__esc_allSCVarsMapping).clone();
+            numNewCL = (*__esc_numNewCL).clone();
             solvedVars = List::flatten(List::map(nodeIdc.clone(), (std::sync::Arc::new({ let __pe_b0 = iTaskSolvedVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<_> + 'static>))?)?;
             unsolvedVars = getUnsolvedVarsByNodeList(nodeIdc.clone(), metamodelica::arrayLength(iScVarInfos.clone()), iTaskUnsolvedVarsMapping.clone())?;
             tmpInfo = List::fold(listAppend(solvedVars.clone(), unsolvedVars.clone()), (std::sync::Arc::new({ let __pe_b1 = threadIdx.clone(); let __pe_b2 = iScVarInfos.clone(); let __pe_b3 = iHandledVariables.clone(); let __pe_b4: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, _, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static> = (std::sync::Arc::new(findMatchingSharedCLLevelfix) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, (i32, i32), metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>); let __pe_b5 = (iLevel.clone(), threadIdx.clone()); let __pe_b6: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, _) -> Result<PartlyFilledCacheLine> + 'static> = (std::sync::Arc::new(createSharedClLevelFix) as std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, (i32, i32)) -> Result<PartlyFilledCacheLine> + 'static>); let __pe_b7 = iThreadCacheLines.clone(); let __pe_b8 = iSharedCacheLines.clone(); move |__pe_a0, __pe_a9| createCacheMapOptimizedForTask1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone(), __pe_b8.clone(), __pe_a9) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> + 'static>), (cacheMap.clone(), cacheMapMeta.clone(), numNewCL.clone()))?;
@@ -771,7 +780,7 @@ fn createCacheMapLevelFixedOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, 
             cacheVariables = __pa0.clone();
             tmpInfo.clone()
         },
-        (Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { threadIdx: None, nodeIdc: __esc_nodeIdc, .. }, _) => {
+        (Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc: __esc_nodeIdc, threadIdx: None, .. }, _) => {
             nodeIdc = (*__esc_nodeIdc).clone();
             metamodelica::print((literal!("createCacheMapLevelOptimized1: Calctask without threadIdx given\n")).clone());
             bail!("fail")
@@ -855,8 +864,13 @@ fn createCacheMapOptimizedForTask<T: Clone + 'static>(mut iTask: Arc<HpcOmSimCod
     let mut tmpInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     oInfo = (::match_deref::match_deref! { match &((iTask.clone(), iInfo.clone())) {
-        (Deref @ HpcOmSimCode::Task::CALCTASK { threadIdx, index: taskIdx, .. }, (cacheMap, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: __esc_allSCVarsMapping, .. }, numOfCLs)) => {
+        (Deref @ HpcOmSimCode::Task::CALCTASK { index: __esc_taskIdx, threadIdx: __esc_threadIdx, .. }, (__esc_cacheMap, __esc_cacheMapMeta @ CacheMapMeta { allSCVarsMapping: __esc_allSCVarsMapping, .. }, __esc_numOfCLs)) => {
+            taskIdx = (*__esc_taskIdx).clone();
+            threadIdx = (*__esc_threadIdx).clone();
+            cacheMap = (*__esc_cacheMap).clone();
+            cacheMapMeta = (*__esc_cacheMapMeta).clone();
             allSCVarsMapping = (*__esc_allSCVarsMapping).clone();
+            numOfCLs = (*__esc_numOfCLs).clone();
             solvedVars = metamodelica::arrayGet(iTaskSolvedVarsMapping.clone(), taskIdx.clone())?;
             unsolvedVars = metamodelica::arrayGet(iTaskUnsolvedVarsMapping.clone(), taskIdx.clone())?;
             vars = List::sort(listAppend(solvedVars.clone(), unsolvedVars.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
@@ -981,15 +995,15 @@ fn addVarsToThreadCL(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iThreadIdx
     let mut threadCacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut threadCacheLinesInt: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut threadCacheLinesBool: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
-    let (CacheMap::CACHEMAP { cacheLinesBool: __pa0, cacheLinesInt: __pa1, cacheLinesFloat: __pa2, cacheVariables: __pa3, cacheLineSize: __pa4 }, CacheMapMeta { scVarCLMapping: __pa5, simCodeVarTypes: __pa6, allSCVarsMapping: __pa7 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
-    cacheLinesBool = __pa0.clone();
-    cacheLinesInt = __pa1.clone();
+    let (CacheMap::CACHEMAP { cacheLineSize: __pa0, cacheVariables: __pa1, cacheLinesFloat: __pa2, cacheLinesInt: __pa3, cacheLinesBool: __pa4 }, CacheMapMeta { allSCVarsMapping: __pa5, simCodeVarTypes: __pa6, scVarCLMapping: __pa7 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
+    cacheLineSize = __pa0.clone();
+    cacheVariables = __pa1.clone();
     cacheLinesFloat = __pa2.clone();
-    cacheVariables = __pa3.clone();
-    cacheLineSize = __pa4.clone();
-    scVarCLMapping = __pa5.clone();
+    cacheLinesInt = __pa3.clone();
+    cacheLinesBool = __pa4.clone();
+    allSCVarsMapping = __pa5.clone();
     simCodeVarTypes = __pa6.clone();
-    allSCVarsMapping = __pa7.clone();
+    scVarCLMapping = __pa7.clone();
     numCLs = __pa8.clone();
     for mut varIdx in &*iNodeVars.clone() {
         let mut varIdx = varIdx.clone();
@@ -1006,20 +1020,20 @@ fn addVarsToThreadCL(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iThreadIdx
             lastCLidx = numCLs.clone() + 1;
             lastCLnumBytesFree = cacheLineSize.clone();
             lastCLentries = metamodelica::nil();
-            lastCL = CacheLineMap { entries: lastCLentries.clone(), numBytesFree: lastCLnumBytesFree.clone(), idx: lastCLidx.clone() };
+            lastCL = CacheLineMap { idx: lastCLidx.clone(), numBytesFree: lastCLnumBytesFree.clone(), entries: lastCLentries.clone() };
             numCLs = numCLs.clone() + 1;
             fullCLs = metamodelica::nil();
         }
-        let CacheLineMap { entries: __pa11, numBytesFree: __pa12, idx: __pa13 } = (lastCL.clone()) else { bail!("pattern mismatch") };
-        lastCLentries = __pa11.clone();
+        let CacheLineMap { idx: __pa11, numBytesFree: __pa12, entries: __pa13 } = (lastCL.clone()) else { bail!("pattern mismatch") };
+        lastCLidx = __pa11.clone();
         lastCLnumBytesFree = __pa12.clone();
-        lastCLidx = __pa13.clone();
+        lastCLentries = __pa13.clone();
         if intLt(lastCLnumBytesFree.clone(), varNumBytesRequired.clone()) {
             fullCLs = metamodelica::cons(lastCL.clone(), fullCLs.clone());
             lastCLidx = numCLs.clone() + 1;
             lastCLnumBytesFree = cacheLineSize.clone();
             lastCLentries = metamodelica::nil();
-            lastCL = CacheLineMap { entries: lastCLentries.clone(), numBytesFree: lastCLnumBytesFree.clone(), idx: lastCLidx.clone() };
+            lastCL = CacheLineMap { idx: lastCLidx.clone(), numBytesFree: lastCLnumBytesFree.clone(), entries: lastCLentries.clone() };
             numCLs = numCLs.clone() + 1;
         }
         let (__pa15, __pa14) = ::match_deref::match_deref! { match &(metamodelica::arrayGet(allSCVarsMapping.clone(), varIdx.clone())?) {
@@ -1030,8 +1044,8 @@ fn addVarsToThreadCL(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iThreadIdx
         cacheVariable = __pa15.clone();
         cacheVariables = metamodelica::cons(cacheVariable.clone(), cacheVariables.clone());
         scVarCLMapping = {let _arr = scVarCLMapping.clone(); let _idx = varIdx.clone(); let _val = (lastCLidx.clone(), varDataType.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-        varEntry = CacheLineEntry { threadOwner: iThreadIdx.clone(), scVarIdx: (cacheVariables.clone().len() as i32), size: varNumBytesRequired.clone(), dataType: varDataType.clone(), start: cacheLineSize.clone() - lastCLnumBytesFree.clone() };
-        lastCL = CacheLineMap { entries: metamodelica::cons(varEntry.clone(), lastCLentries.clone()), numBytesFree: lastCLnumBytesFree.clone() - varNumBytesRequired.clone(), idx: lastCLidx.clone() };
+        varEntry = CacheLineEntry { start: cacheLineSize.clone() - lastCLnumBytesFree.clone(), dataType: varDataType.clone(), size: varNumBytesRequired.clone(), scVarIdx: (cacheVariables.clone().len() as i32), threadOwner: iThreadIdx.clone() };
+        lastCL = CacheLineMap { idx: lastCLidx.clone(), numBytesFree: lastCLnumBytesFree.clone() - varNumBytesRequired.clone(), entries: metamodelica::cons(varEntry.clone(), lastCLentries.clone()) };
         {let _arr = iThreadCacheLines.clone(); let _idx = iThreadIdx.clone(); let _val = contractCacheLineForVarType(varDataType.clone(), threadCacheLinesFloat.clone(), threadCacheLinesInt.clone(), threadCacheLinesBool.clone(), metamodelica::cons(lastCL.clone(), fullCLs.clone())); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
     }
     oInfo = (CacheMap::CACHEMAP { cacheLineSize: cacheLineSize.clone(), cacheVariables: cacheVariables.clone(), cacheLinesFloat: cacheLinesFloat.clone(), cacheLinesInt: cacheLinesInt.clone(), cacheLinesBool: cacheLinesBool.clone() }, CacheMapMeta { allSCVarsMapping: allSCVarsMapping.clone(), simCodeVarTypes: simCodeVarTypes.clone(), scVarCLMapping: scVarCLMapping.clone() }, numCLs.clone());
@@ -1095,14 +1109,14 @@ fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i
     let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut matchedCacheLine: Option<(PartlyFilledCacheLine, i32)> = None;
-    let (ref __pa3 @ CacheMap::CACHEMAP { cacheLinesFloat: ref __pa0, cacheVariables: ref __pa1, cacheLineSize: ref __pa2, .. }, ref __pa7 @ CacheMapMeta { scVarCLMapping: ref __pa4, simCodeVarTypes: ref __pa5, allSCVarsMapping: ref __pa6 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
-    cacheLinesFloat = __pa0.clone();
+    let (ref __pa3 @ CacheMap::CACHEMAP { cacheLineSize: ref __pa0, cacheVariables: ref __pa1, cacheLinesFloat: ref __pa2, .. }, ref __pa7 @ CacheMapMeta { allSCVarsMapping: ref __pa4, simCodeVarTypes: ref __pa5, scVarCLMapping: ref __pa6 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
+    cacheLineSize = __pa0.clone();
     cacheVariables = __pa1.clone();
-    cacheLineSize = __pa2.clone();
+    cacheLinesFloat = __pa2.clone();
     cacheMap = __pa3.clone();
-    scVarCLMapping = __pa4.clone();
+    allSCVarsMapping = __pa4.clone();
     simCodeVarTypes = __pa5.clone();
-    allSCVarsMapping = __pa6.clone();
+    scVarCLMapping = __pa6.clone();
     cacheMapMeta = __pa7.clone();
     numOfCLs = __pa8.clone();
     for mut varIdx in &*iNodeVars.clone() {
@@ -1147,15 +1161,15 @@ fn addVarsToSharedCL0<T: Clone + 'static>(mut iMatchedCacheLine: Option<(PartlyF
     let mut entry: CacheLineEntry = <CacheLineEntry as ::std::default::Default>::default();
     let mut cacheLineMap: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
     let mut cacheVariable: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
-    let (CacheMap::CACHEMAP { cacheLinesBool: __pa0, cacheLinesInt: __pa1, cacheLinesFloat: __pa2, cacheVariables: __pa3, cacheLineSize: __pa4 }, CacheMapMeta { scVarCLMapping: __pa5, simCodeVarTypes: __pa6, allSCVarsMapping: __pa7 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
-    cacheLinesBool = __pa0.clone();
-    cacheLinesInt = __pa1.clone();
+    let (CacheMap::CACHEMAP { cacheLineSize: __pa0, cacheVariables: __pa1, cacheLinesFloat: __pa2, cacheLinesInt: __pa3, cacheLinesBool: __pa4 }, CacheMapMeta { allSCVarsMapping: __pa5, simCodeVarTypes: __pa6, scVarCLMapping: __pa7 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
+    cacheLineSize = __pa0.clone();
+    cacheVariables = __pa1.clone();
     cacheLinesFloat = __pa2.clone();
-    cacheVariables = __pa3.clone();
-    cacheLineSize = __pa4.clone();
-    scVarCLMapping = __pa5.clone();
+    cacheLinesInt = __pa3.clone();
+    cacheLinesBool = __pa4.clone();
+    allSCVarsMapping = __pa5.clone();
     simCodeVarTypes = __pa6.clone();
-    allSCVarsMapping = __pa7.clone();
+    scVarCLMapping = __pa7.clone();
     numOfCLs = __pa8.clone();
     (varDataType, varSize, _) = metamodelica::arrayGet(simCodeVarTypes.clone(), iVarIdx.clone())?;
     (threadPartlyFilledCacheLines, threadFullyFilledCacheLines) = metamodelica::arrayGet(iSharedCacheLines.clone(), iThreadIdx.clone())?;
@@ -1230,7 +1244,7 @@ fn addVarsToSharedCL0<T: Clone + 'static>(mut iMatchedCacheLine: Option<(PartlyF
         }
     }
     {let _arr = iSharedCacheLines.clone(); let _idx = iThreadIdx.clone(); let _val = ((partlyFilledClFloat.clone(), partlyFilledClInt.clone(), partlyFilledClBool.clone()), (fullyFilledClFloat.clone(), fullyFilledClInt.clone(), fullyFilledClBool.clone())); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
-    oInfo = (CacheMap::CACHEMAP { cacheLinesBool: cacheLinesBool.clone(), cacheLinesInt: cacheLinesInt.clone(), cacheLinesFloat: cacheLinesFloat.clone(), cacheVariables: cacheVariables.clone(), cacheLineSize: cacheLineSize.clone() }, CacheMapMeta { scVarCLMapping: scVarCLMapping.clone(), simCodeVarTypes: simCodeVarTypes.clone(), allSCVarsMapping: allSCVarsMapping.clone() }, numOfCLs.clone());
+    oInfo = (CacheMap::CACHEMAP { cacheLineSize: cacheLineSize.clone(), cacheVariables: cacheVariables.clone(), cacheLinesFloat: cacheLinesFloat.clone(), cacheLinesInt: cacheLinesInt.clone(), cacheLinesBool: cacheLinesBool.clone() }, CacheMapMeta { allSCVarsMapping: allSCVarsMapping.clone(), simCodeVarTypes: simCodeVarTypes.clone(), scVarCLMapping: scVarCLMapping.clone() }, numOfCLs.clone());
     Ok(oInfo)
 }
 
@@ -1271,8 +1285,13 @@ fn findMatchingSharedCLLevelfix0(mut iNodeVar: i32, mut iVarSize: i32, mut iLeve
     let mut prefetchLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut writeLevel: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     oMatchedCacheLine = (::match_deref::match_deref! { match &(iSharedCacheLines.clone()) {
-        Deref @ metamodelica::List::Cons { head: head @ PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { writeLevel, prefetchLevel, cacheLineMap: __esc_cacheLineMap @ CacheLineMap { numBytesFree, .. } }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: __esc_head @ PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { cacheLineMap: __esc_cacheLineMap @ CacheLineMap { numBytesFree: __esc_numBytesFree, .. }, prefetchLevel: __esc_prefetchLevel, writeLevel: __esc_writeLevel }, tail: __esc_rest } => {
+            head = (*__esc_head).clone();
             cacheLineMap = (*__esc_cacheLineMap).clone();
+            numBytesFree = (*__esc_numBytesFree).clone();
+            prefetchLevel = (*__esc_prefetchLevel).clone();
+            writeLevel = (*__esc_writeLevel).clone();
+            rest = (*__esc_rest).clone();
             if boolOr(intLt(numBytesFree.clone(), iVarSize.clone()), List::exist1(prefetchLevel.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iLevelIdx.clone())?) {
                 tmpMatchedCacheLine = findMatchingSharedCLLevelfix0(iNodeVar.clone(), iVarSize.clone(), iLevelIdx.clone(), iThreadIdx.clone(), iCurrentListIdx.clone() + 1, rest.clone())?;
             } else {
@@ -1335,11 +1354,11 @@ fn createSharedClLevelFix(mut iOldPartlyFilledCacheLine: Option<PartlyFilledCach
     (levelIdx, threadIdx) = iLevelThreadIdx.clone();
     if isSome(iOldPartlyFilledCacheLine.clone()) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(iOldPartlyFilledCacheLine.clone()) {
-            Some(PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { writeLevel: __pa0, prefetchLevel: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
+            Some(PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { prefetchLevel: __pa0, writeLevel: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        writeLevel = __pa0.clone();
-        prefetchLevel = __pa1.clone();
+        prefetchLevel = __pa0.clone();
+        writeLevel = __pa1.clone();
     } else {
         prefetchLevel = metamodelica::nil();
         writeLevel = metamodelica::nil();
@@ -1435,8 +1454,21 @@ fn createCacheMapDefaultCppRuntime(mut iAllSCVars: metamodelica::Array<Option<Si
     let mut filledCacheLines: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut allVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     (oCacheMap, oScVarCLMapping, oNumCL) = (match iSimCodeVars.clone() {
-        SimCodeVar::SimVars { outputVars: mut outputVars, inputVars: mut inputVars, boolAliasVars: mut boolAliasVars, boolParamVars: mut __esc_boolParamVars, boolAlgVars: mut boolAlgVars, intAliasVars: mut intAliasVars, intParamVars: mut intParamVars, intAlgVars: mut intAlgVars, aliasVars: mut aliasVars, paramVars: mut paramVars, discreteAlgVars: mut discreteAlgVars, algVars: mut algVars, derivativeVars: mut derivativeVars, stateVars: mut stateVars, .. } => {
+        SimCodeVar::SimVars { stateVars: mut __esc_stateVars, derivativeVars: mut __esc_derivativeVars, algVars: mut __esc_algVars, discreteAlgVars: mut __esc_discreteAlgVars, paramVars: mut __esc_paramVars, aliasVars: mut __esc_aliasVars, intAlgVars: mut __esc_intAlgVars, intParamVars: mut __esc_intParamVars, intAliasVars: mut __esc_intAliasVars, boolAlgVars: mut __esc_boolAlgVars, boolParamVars: mut __esc_boolParamVars, boolAliasVars: mut __esc_boolAliasVars, inputVars: mut __esc_inputVars, outputVars: mut __esc_outputVars, .. } => {
+            stateVars = __esc_stateVars.clone();
+            derivativeVars = __esc_derivativeVars.clone();
+            algVars = __esc_algVars.clone();
+            discreteAlgVars = __esc_discreteAlgVars.clone();
+            paramVars = __esc_paramVars.clone();
+            aliasVars = __esc_aliasVars.clone();
+            intAlgVars = __esc_intAlgVars.clone();
+            intParamVars = __esc_intParamVars.clone();
+            intAliasVars = __esc_intAliasVars.clone();
+            boolAlgVars = __esc_boolAlgVars.clone();
             boolParamVars = __esc_boolParamVars.clone();
+            boolAliasVars = __esc_boolAliasVars.clone();
+            inputVars = __esc_inputVars.clone();
+            outputVars = __esc_outputVars.clone();
             currentScVarIdx = 1;
             stateDerVarsStart = (stateVars.clone().len() as i32) + 1;
             scVarCLMapping = arrayCreate(metamodelica::arrayLength(iAllSCVars.clone()), (-1, -1));
@@ -1512,9 +1544,9 @@ fn createCacheMapDefaultCppRuntime0(mut iVariables: Arc<metamodelica::List<SimCo
             }
             entry = CacheLineEntry { start: -1, dataType: varDataType.clone(), size: varSize.clone(), scVarIdx: currentScVarIdx.clone() + iScVarIdxStart.clone(), threadOwner: threadIdx.clone() };
             (entry, lastCacheLineNew, newCacheLineCreated) = createCacheMapDefaultCppRuntime1(entry.clone(), iCacheLineSize.clone(), lastCacheLine.clone())?;
-            let CacheLineMap { entries: __pa1, idx: __pa2, .. } = (lastCacheLineNew.clone()) else { bail!("pattern mismatch") };
-            cachelineEntries = __pa1.clone();
-            varCLIdx = __pa2.clone();
+            let CacheLineMap { idx: __pa1, entries: __pa2, .. } = (lastCacheLineNew.clone()) else { bail!("pattern mismatch") };
+            varCLIdx = __pa1.clone();
+            cachelineEntries = __pa2.clone();
             {let _arr = iScVarCLMapping.clone(); let _idx = currentScVarIdx.clone() + iRealScVarIdxStart.clone(); let _val = (varCLIdx.clone(), varDataType.clone()); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             if newCacheLineCreated.clone() {
                 filledCacheLines = metamodelica::cons(lastCacheLine.clone(), filledCacheLines.clone());
@@ -1649,10 +1681,10 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
         let __mc_input = iInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cacheMap @ CacheMap::CACHEMAP { cacheLinesBool, cacheLinesInt, cacheLinesFloat, cacheVariables, cacheLineSize }, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
+                (cacheMap @ CacheMap::CACHEMAP { cacheLineSize, cacheVariables, cacheLinesFloat, cacheLinesInt, cacheLinesBool }, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
                     let mut cacheMap = (*cacheMap).clone();
-                    let mut cacheLinesFloat = (*cacheLinesFloat).clone();
                     let mut cacheVariables = (*cacheVariables).clone();
+                    let mut cacheLinesFloat = (*cacheLinesFloat).clone();
                     let mut cacheMapMeta = (*cacheMapMeta).clone();
                     let mut iScVarCLMapping = (*iScVarCLMapping).clone();
                     let mut cacheLineCandidates = (*cacheLineCandidates).clone();
@@ -1675,10 +1707,10 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
                     let true = (doesSCVarFitIntoCL(currentCLCandidate.clone(), numBytesRequired.clone())) else { bail!("pattern mismatch") };
                     (currentCLCandidateCLIdx, currentCLCandidateFreeBytes) = currentCLCandidate.clone();
                     cacheLine = (cacheLinesFloat.clone()).get((cacheLinesFloat.clone().len() as i32) - currentCLCandidateCLIdx.clone() + 1)?;
-                    let CacheLineMap { entries: __pa0, numBytesFree: __pa1, idx: __pa2 } = (cacheLine.clone()) else { bail!("pattern mismatch") };
-                    CLentries = __pa0.clone();
+                    let CacheLineMap { idx: __pa0, numBytesFree: __pa1, entries: __pa2 } = (cacheLine.clone()) else { bail!("pattern mismatch") };
+                    clIdx = __pa0.clone();
                     numBytesFree = __pa1.clone();
-                    clIdx = __pa2.clone();
+                    CLentries = __pa2.clone();
                     entryStart = cacheLineSize.clone() - currentCLCandidateFreeBytes.clone();
                     numCacheVars = (cacheVariables.clone().len() as i32) + 1;
                     CLentries = metamodelica::cons(CacheLineEntry { start: entryStart.clone(), dataType: varDataType.clone(), size: numBytesRequired.clone(), scVarIdx: numCacheVars.clone(), threadOwner: iOwnerThread.clone() }, CLentries.clone());
@@ -1703,7 +1735,7 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cacheMap @ CacheMap::CACHEMAP { cacheLinesBool, cacheLinesInt, cacheLinesFloat, cacheVariables, cacheLineSize }, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
+                (cacheMap @ CacheMap::CACHEMAP { cacheLineSize, cacheVariables, cacheLinesFloat, cacheLinesInt, cacheLinesBool }, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
                     let mut numBytesRequired: i32 = numBytesRequired.clone();
                     let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32) = tmpInfo.clone();
                     let mut varDataType: i32 = varDataType.clone();
@@ -1717,10 +1749,10 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cacheMap @ CacheMap::CACHEMAP { cacheLinesBool, cacheLinesInt, cacheLinesFloat, cacheVariables, cacheLineSize }, CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
+                (cacheMap @ CacheMap::CACHEMAP { cacheLineSize, cacheVariables, cacheLinesFloat, cacheLinesInt, cacheLinesBool }, CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
                     let mut cacheMap = (*cacheMap).clone();
-                    let mut cacheLinesFloat = (*cacheLinesFloat).clone();
                     let mut cacheVariables = (*cacheVariables).clone();
+                    let mut cacheLinesFloat = (*cacheLinesFloat).clone();
                     let mut iScVarCLMapping = (*iScVarCLMapping).clone();
                     let mut cacheLineCandidates = (*cacheLineCandidates).clone();
                     let mut writtenCL = (*writtenCL).clone();
@@ -1831,9 +1863,9 @@ fn getNumOfUsedBytesByCacheLine(mut iCacheLineMap: CacheLineMap) -> Result<i32> 
     let CacheLineMap { entries: __pa0, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
     entries = __pa0.clone();
     entries = List::sort(entries.clone(), (std::sync::Arc::new(sortCacheLineEntriesByPos) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineEntry, CacheLineEntry) -> Result<bool> + 'static>))?;
-    let CacheLineEntry { size: __pa1, start: __pa2, .. } = (List::last(entries.clone())?) else { bail!("pattern mismatch") };
-    firstEntrySize = __pa1.clone();
-    firstEntryStart = __pa2.clone();
+    let CacheLineEntry { start: __pa1, size: __pa2, .. } = (List::last(entries.clone())?) else { bail!("pattern mismatch") };
+    firstEntryStart = __pa1.clone();
+    firstEntrySize = __pa2.clone();
     oNumBytes = firstEntryStart.clone() + firstEntrySize.clone();
     Ok(oNumBytes)
 }
@@ -1855,10 +1887,10 @@ fn reverseCacheLineMapEntries(mut iCacheLineMap: CacheLineMap) -> Result<CacheLi
     let mut idx: i32 = 0;
     let mut numBytesFree: i32 = 0;
     let mut entries: Arc<metamodelica::List<CacheLineEntry>> = metamodelica::nil();
-    let CacheLineMap { entries: __pa0, numBytesFree: __pa1, idx: __pa2 } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
-    entries = __pa0.clone();
+    let CacheLineMap { idx: __pa0, numBytesFree: __pa1, entries: __pa2 } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
+    idx = __pa0.clone();
     numBytesFree = __pa1.clone();
-    idx = __pa2.clone();
+    entries = __pa2.clone();
     entries = entries.clone().reverse();
     oCacheLineMap = CacheLineMap { idx: idx.clone(), numBytesFree: numBytesFree.clone(), entries: entries.clone() };
     Ok(oCacheLineMap)
@@ -1904,10 +1936,19 @@ fn convertCacheToVarArrayMapping(mut iCacheMap: CacheMap, mut iCacheLineSize: i3
     let mut notOptimizedVarsString: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut currentVarIndices: metamodelica::Array<i32> = Default::default();
     (oVarToArrayIndexMapping, oVarToIndexMapping, oMemoryMap) = (::match_deref::match_deref! { match &((iCacheMap.clone(), iVarSizes.clone(), iNotOptimizedVars.clone())) {
-        (CacheMap::CACHEMAP { cacheLinesBool, cacheLinesInt, cacheLinesFloat, cacheVariables, cacheLineSize }, (varSizeFloat, varSizeInt, varSizeBool), (notOptimizedVarsFloat, notOptimizedVarsInt, notOptimizedVarsBool, notOptimizedVarsString)) => {
-            let mut varSizeFloat = (*varSizeFloat).clone();
-            let mut varSizeInt = (*varSizeInt).clone();
-            let mut varSizeBool = (*varSizeBool).clone();
+        (CacheMap::CACHEMAP { cacheLineSize: __esc_cacheLineSize, cacheVariables: __esc_cacheVariables, cacheLinesFloat: __esc_cacheLinesFloat, cacheLinesInt: __esc_cacheLinesInt, cacheLinesBool: __esc_cacheLinesBool }, (__esc_varSizeFloat, __esc_varSizeInt, __esc_varSizeBool), (__esc_notOptimizedVarsFloat, __esc_notOptimizedVarsInt, __esc_notOptimizedVarsBool, __esc_notOptimizedVarsString)) => {
+            cacheLineSize = (*__esc_cacheLineSize).clone();
+            cacheVariables = (*__esc_cacheVariables).clone();
+            cacheLinesFloat = (*__esc_cacheLinesFloat).clone();
+            cacheLinesInt = (*__esc_cacheLinesInt).clone();
+            cacheLinesBool = (*__esc_cacheLinesBool).clone();
+            varSizeFloat = (*__esc_varSizeFloat).clone();
+            varSizeInt = (*__esc_varSizeInt).clone();
+            varSizeBool = (*__esc_varSizeBool).clone();
+            notOptimizedVarsFloat = (*__esc_notOptimizedVarsFloat).clone();
+            notOptimizedVarsInt = (*__esc_notOptimizedVarsInt).clone();
+            notOptimizedVarsBool = (*__esc_notOptimizedVarsBool).clone();
+            notOptimizedVarsString = (*__esc_notOptimizedVarsString).clone();
             maxNumElemsFloat = intDiv(iCacheLineSize.clone(), varSizeFloat.clone());
             maxNumElemsInt = intDiv(iCacheLineSize.clone(), varSizeInt.clone());
             maxNumElemsBool = intDiv(iCacheLineSize.clone(), varSizeBool.clone());
@@ -1974,13 +2015,17 @@ fn addCacheLineMapToVarArrayMapping(mut iCacheLineMap: CacheLineMap, mut iCacheL
     let mut dataType: i32 = 0;
     let mut size: i32 = 0;
     oPositionMapping = (match (iCacheLineMap.clone(), iPositionMapping.clone()) {
-        (CacheLineMap { entries: mut entries, idx: mut idx, .. }, (mut varArrayIndexMappingHashTable, mut varIndexMappingHashTable)) => {
+        (CacheLineMap { idx: mut __esc_idx, entries: mut __esc_entries, .. }, (mut __esc_varArrayIndexMappingHashTable, mut __esc_varIndexMappingHashTable)) => {
+            idx = __esc_idx.clone();
+            entries = __esc_entries.clone();
+            varArrayIndexMappingHashTable = __esc_varArrayIndexMappingHashTable.clone();
+            varIndexMappingHashTable = __esc_varIndexMappingHashTable.clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(entries.clone()) {
-                Deref @ metamodelica::List::Cons { head: CacheLineEntry { size: __pa0, dataType: __pa1, .. }, tail: _ } => (__pa0.clone(), __pa1.clone()),
+                Deref @ metamodelica::List::Cons { head: CacheLineEntry { dataType: __pa0, size: __pa1, .. }, tail: _ } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            size = __pa0.clone();
-            dataType = __pa1.clone();
+            dataType = __pa0.clone();
+            size = __pa1.clone();
             (varArrayIndexMappingHashTable, varIndexMappingHashTable) = List::fold(entries.clone(), (std::sync::Arc::new({ let __pe_b1 = dataType.clone(); let __pe_b2 = (idx.clone(), iCacheLineSize.clone()); let __pe_b3 = iVarIdxOffsets.clone(); let __pe_b4 = iCacheVariables.clone(); move |__pe_a0, __pe_a5| addCacheLineEntryToVarArrayMapping(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineEntry, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)))) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>))>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn((Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<ArcStr> + 'static>)), (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)))> + 'static>), iPositionMapping.clone())?;
             {let _arr = iVarIdxOffsets.clone(); let _idx = dataType.clone(); let _val = intAdd(metamodelica::arrayGet(iVarIdxOffsets.clone(), dataType.clone())?, intDiv(iCacheLineSize.clone(), size.clone())); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
             (varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())
@@ -2004,7 +2049,12 @@ fn addCacheLineEntryToVarArrayMapping(mut iCacheLineEntry: CacheLineEntry, mut i
     let mut offset: i32 = 0;
     let mut currentVarIndices: metamodelica::Array<i32> = Default::default();
     oPositionMapping = (match (iCacheLineEntry.clone(), iPositionMapping.clone()) {
-        (CacheLineEntry { size: mut size, start: mut start, scVarIdx: mut scVarIdx, .. }, (mut varArrayIndexMappingHashTable, mut varIndexMappingHashTable)) => {
+        (CacheLineEntry { scVarIdx: mut __esc_scVarIdx, start: mut __esc_start, size: mut __esc_size, .. }, (mut __esc_varArrayIndexMappingHashTable, mut __esc_varIndexMappingHashTable)) => {
+            scVarIdx = __esc_scVarIdx.clone();
+            start = __esc_start.clone();
+            size = __esc_size.clone();
+            varArrayIndexMappingHashTable = __esc_varArrayIndexMappingHashTable.clone();
+            varIndexMappingHashTable = __esc_varIndexMappingHashTable.clone();
             offset = metamodelica::arrayGet(iVarIdxOffsets.clone(), iArrayIdx.clone())?;
             arrayPosition = intDiv(start.clone(), size.clone()) + offset.clone();
             currentVarIndices = arrayCreate(4, arrayPosition.clone());
@@ -2136,18 +2186,18 @@ fn createCacheLineThreadProperties(mut iCacheLine: CacheLineMap, mut iNumberOfTh
     let mut entries: Arc<metamodelica::List<CacheLineEntry>> = metamodelica::nil();
     let mut entry: CacheLineEntry = <CacheLineEntry as ::std::default::Default>::default();
     let mut sizeReal: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let CacheLineMap { numBytesFree: __pa0, entries: __pa1, idx: __pa2 } = (iCacheLine.clone()) else { bail!("pattern mismatch") };
-    numBytesFree = __pa0.clone();
+    let CacheLineMap { idx: __pa0, entries: __pa1, numBytesFree: __pa2 } = (iCacheLine.clone()) else { bail!("pattern mismatch") };
+    cacheLineIdx = __pa0.clone();
     entries = __pa1.clone();
-    cacheLineIdx = __pa2.clone();
+    numBytesFree = __pa2.clone();
     numBytesUnassigned = 0;
     threadProperties = arrayCreate(iNumberOfThreads.clone(), metamodelica::OrderedFloat(0.0_f64));
     bytesPerThread = arrayCreate(iNumberOfThreads.clone(), 0);
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
-        let CacheLineEntry { size: __pa3, threadOwner: __pa4, .. } = (entry.clone()) else { bail!("pattern mismatch") };
-        size = __pa3.clone();
-        threadOwner = __pa4.clone();
+        let CacheLineEntry { threadOwner: __pa3, size: __pa4, .. } = (entry.clone()) else { bail!("pattern mismatch") };
+        threadOwner = __pa3.clone();
+        size = __pa4.clone();
         if intLt(threadOwner.clone(), 0) {
             numBytesUnassigned = numBytesUnassigned.clone() + size.clone();
         } else {
@@ -2256,9 +2306,9 @@ fn fillSimVarHashTable(mut iSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>>
     tmpHashTable = iHt.clone();
     for mut simVar in &*iSimVars.clone() {
         let mut simVar = simVar.clone();
-        let SimCodeVar::SIMVAR { index: __pa0, name: __pa1, .. } = (simVar.clone()) else { bail!("pattern mismatch") };
-        index = __pa0.clone();
-        name = __pa1.clone();
+        let SimCodeVar::SIMVAR { name: __pa0, index: __pa1, .. } = (simVar.clone()) else { bail!("pattern mismatch") };
+        name = __pa0.clone();
+        index = __pa1.clone();
         index = index.clone() + 1;
         tmpHashTable = BaseHashTable::add((name.clone(), list![index.clone(), iOffset.clone(), iType.clone()]), tmpHashTable.clone())?;
     }
@@ -2352,7 +2402,7 @@ fn createMemoryMapTraverse0(mut inExp: Arc<DAE::Exp>, mut inTpl: ((metamodelica:
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (iExp @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (iHashTable, iVarList)) => {
+                (iExp @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (iHashTable, iVarList)) => {
                     let mut iVarList = (*iVarList).clone();
                     let mut oVarList: Arc<metamodelica::List<i32>> = oVarList.clone();
                     let mut varHead: i32 = varHead.clone();
@@ -2540,11 +2590,13 @@ fn getModifiedVarName(mut iVar: BackendDAE::Var) -> Result<Arc<DAE::ComponentRef
     let mut tmpVarName: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut varKind: BackendDAE::VarKind = BackendDAE::VarKind::ALG_STATE;
     oVarName = (match iVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { index: 1, .. }, varName: ref iVarName, .. } => {
+        BackendDAE::Var { varName: ref __esc_iVarName, varKind: BackendDAE::VarKind::STATE { index: 1, .. }, .. } => {
+            iVarName = __esc_iVarName.clone();
             tmpVarName = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (arcstr::literal!(DAE::derivativeNamePrefix)).clone(), identType: Arc::new(DAE::Type::T_REAL { varLst: metamodelica::nil() }), subscriptLst: metamodelica::nil(), componentRef: iVarName.clone() });
             tmpVarName.clone()
         },
-        BackendDAE::Var { varKind: mut __esc_varKind, varName: ref iVarName, .. } => {
+        BackendDAE::Var { varName: ref __esc_iVarName, varKind: mut __esc_varKind, .. } => {
+            iVarName = __esc_iVarName.clone();
             varKind = __esc_varKind.clone();
             tmpVarName = iVarName.clone();
             tmpVarName.clone()
@@ -2851,9 +2903,9 @@ fn appendCacheLineMapToGraph(mut iCacheLineMap: CacheLineMap, mut iCacheVariable
     let mut tmpGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut entryThreadOwner: i32 = 0;
     let mut notOnlyParamters: bool = false;
-    let CacheLineMap { entries: __pa0, idx: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
-    entries = __pa0.clone();
-    idx = __pa1.clone();
+    let CacheLineMap { idx: __pa0, entries: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
+    idx = __pa0.clone();
+    entries = __pa1.clone();
     notOnlyParamters = false;
     for mut entry in &*entries.clone() {
         let mut entry = entry.clone();
@@ -2890,9 +2942,9 @@ fn appendCacheLineEntryToGraph(mut iCacheLineEntry: CacheLineEntry, mut iCacheVa
     let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut iVar: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
     let mut name: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let CacheLineEntry { threadOwner: __pa0, scVarIdx: __pa1, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
-    threadOwner = __pa0.clone();
-    scVarIdx = __pa1.clone();
+    let CacheLineEntry { scVarIdx: __pa0, threadOwner: __pa1, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
+    scVarIdx = __pa0.clone();
+    threadOwner = __pa1.clone();
     (iTopGraphIdx, iAttThreadIdIdx) = iTopGraphAttThreadIdIdx.clone();
     if intGe(metamodelica::arrayLength(iCacheVariables.clone()) - scVarIdx.clone() + 1, 1) {
         iVar = metamodelica::arrayGet(iCacheVariables.clone(), metamodelica::arrayLength(iCacheVariables.clone()) - scVarIdx.clone() + 1)?;
@@ -2933,8 +2985,12 @@ fn printCacheMap(mut iCacheMap: CacheMap) -> Result<()> {
     let mut cacheLines: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let () = (match iCacheMap.clone() {
-        CacheMap::CACHEMAP { cacheLinesBool: mut cacheLinesBool, cacheLinesInt: mut cacheLinesInt, cacheLinesFloat: mut cacheLinesFloat, cacheVariables: mut cacheVariables, cacheLineSize: mut __esc_cacheLineSize } => {
+        CacheMap::CACHEMAP { cacheLineSize: mut __esc_cacheLineSize, cacheVariables: mut __esc_cacheVariables, cacheLinesFloat: mut __esc_cacheLinesFloat, cacheLinesInt: mut __esc_cacheLinesInt, cacheLinesBool: mut __esc_cacheLinesBool } => {
             cacheLineSize = __esc_cacheLineSize.clone();
+            cacheVariables = __esc_cacheVariables.clone();
+            cacheLinesFloat = __esc_cacheLinesFloat.clone();
+            cacheLinesInt = __esc_cacheLinesInt.clone();
+            cacheLinesBool = __esc_cacheLinesBool.clone();
             metamodelica::print((literal!("\n\nCacheMap\n---------------\n")).clone());
             metamodelica::print((literal!("  Variables\n")).clone());
             List::fold(cacheVariables.clone(), (std::sync::Arc::new(printCacheVariable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, i32) -> Result<i32> + 'static>), (cacheVariables.clone().len() as i32))?;
@@ -2946,8 +3002,10 @@ fn printCacheMap(mut iCacheMap: CacheMap) -> Result<()> {
             List::map1_0(cacheLinesBool.clone(), (std::sync::Arc::new(printCacheLineMap) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineMap, Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<()> + 'static>), cacheVariables.clone())?;
             ()
         },
-        CacheMap::UNIFORM_CACHEMAP { cacheLines: mut cacheLines, cacheVariables: mut cacheVariables, cacheLineSize: mut __esc_cacheLineSize } => {
+        CacheMap::UNIFORM_CACHEMAP { cacheLineSize: mut __esc_cacheLineSize, cacheVariables: mut __esc_cacheVariables, cacheLines: mut __esc_cacheLines } => {
             cacheLineSize = __esc_cacheLineSize.clone();
+            cacheVariables = __esc_cacheVariables.clone();
+            cacheLines = __esc_cacheLines.clone();
             metamodelica::print((literal!("\n\nUniform CacheMap\n---------------\n")).clone());
             metamodelica::print((literal!("  Variables.\n")).clone());
             List::map1_0(cacheLines.clone(), (std::sync::Arc::new(printCacheLineMap) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineMap, Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<()> + 'static>), cacheVariables.clone())?;
@@ -2973,9 +3031,9 @@ fn printCacheLineMap(mut iCacheLineMap: CacheLineMap, mut iCacheVariables: Arc<m
     let mut entries: Arc<metamodelica::List<CacheLineEntry>> = metamodelica::nil();
     let mut iVarsString: ArcStr = arcstr::literal!("");
     let mut iBytesString: ArcStr = arcstr::literal!("");
-    let CacheLineMap { entries: __pa0, idx: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
-    entries = __pa0.clone();
-    idx = __pa1.clone();
+    let CacheLineMap { idx: __pa0, entries: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
+    idx = __pa0.clone();
+    entries = __pa1.clone();
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  CacheLineMap ")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((entries.clone().len() as i32))); __mm_s.push_str(&*literal!(" entries)\n")); ArcStr::from(__mm_s) }).clone());
     (iVarsString, iBytesString) = List::fold1(entries.clone(), (std::sync::Arc::new(cacheLineEntryToString) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineEntry, Arc<metamodelica::List<SimCodeVar::SimVar>>, (ArcStr, ArcStr)) -> Result<(ArcStr, ArcStr)> + 'static>), iCacheVariables.clone(), (literal!(""), literal!("")))?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("    ")); __mm_s.push_str(&*iVarsString.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -2989,9 +3047,9 @@ fn printCacheLineMapClean(mut iCacheLineMap: CacheLineMap) -> Result<()> {
     let mut entries: Arc<metamodelica::List<CacheLineEntry>> = metamodelica::nil();
     let mut iVarsString: ArcStr = arcstr::literal!("");
     let mut iBytesString: ArcStr = arcstr::literal!("");
-    let CacheLineMap { entries: __pa0, idx: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
-    entries = __pa0.clone();
-    idx = __pa1.clone();
+    let CacheLineMap { idx: __pa0, entries: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
+    idx = __pa0.clone();
+    entries = __pa1.clone();
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  CacheLineMap ")); __mm_s.push_str(&*intString(idx.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString((entries.clone().len() as i32))); __mm_s.push_str(&*literal!(" entries)\n")); ArcStr::from(__mm_s) }).clone());
     (iVarsString, iBytesString) = List::fold(entries.clone(), (std::sync::Arc::new(cacheLineEntryToStringClean) as std::sync::Arc<dyn ::std::ops::Fn(CacheLineEntry, (ArcStr, ArcStr)) -> Result<(ArcStr, ArcStr)> + 'static>), (literal!(""), literal!("")))?;
     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("    ")); __mm_s.push_str(&*iVarsString.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -3012,11 +3070,11 @@ fn cacheLineEntryToString(mut iCacheLineEntry: CacheLineEntry, mut iCacheVariabl
     let mut iBytesString: ArcStr = arcstr::literal!("");
     let mut iBytesStringNew: ArcStr = arcstr::literal!("");
     (iVarsString, iBytesString) = iString.clone();
-    let CacheLineEntry { scVarIdx: __pa0, size: __pa1, dataType: __pa2, start: __pa3, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
-    scVarIdx = __pa0.clone();
-    size = __pa1.clone();
-    dataType = __pa2.clone();
-    start = __pa3.clone();
+    let CacheLineEntry { start: __pa0, dataType: __pa1, size: __pa2, scVarIdx: __pa3, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
+    start = __pa0.clone();
+    dataType = __pa1.clone();
+    size = __pa2.clone();
+    scVarIdx = __pa3.clone();
     iVar = (iCacheVariables.clone()).get((iCacheVariables.clone().len() as i32) - scVarIdx.clone() + 1)?;
     scVarStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*dumpSimCodeVar(iVar.clone())?); __mm_s.push_str(&*literal!(" [")); __mm_s.push_str(&*intString(scVarIdx.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     iVarsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iVarsString.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*scVarStr.clone()); ArcStr::from(__mm_s) }).clone();
@@ -3043,11 +3101,11 @@ fn cacheLineEntryToStringClean(mut iCacheLineEntry: CacheLineEntry, mut iString:
     let mut iBytesString: ArcStr = arcstr::literal!("");
     let mut iBytesStringNew: ArcStr = arcstr::literal!("");
     (iVarsString, iBytesString) = iString.clone();
-    let CacheLineEntry { scVarIdx: __pa0, size: __pa1, dataType: __pa2, start: __pa3, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
-    scVarIdx = __pa0.clone();
-    size = __pa1.clone();
-    dataType = __pa2.clone();
-    start = __pa3.clone();
+    let CacheLineEntry { start: __pa0, dataType: __pa1, size: __pa2, scVarIdx: __pa3, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };
+    start = __pa0.clone();
+    dataType = __pa1.clone();
+    size = __pa2.clone();
+    scVarIdx = __pa3.clone();
     scVarStr = (intString(scVarIdx.clone())).clone();
     iVarsString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iVarsString.clone()); __mm_s.push_str(&*literal!("| ")); __mm_s.push_str(&*scVarStr.clone()); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone();
     iBytesStringNew = (intString(start.clone())).clone();
@@ -3139,9 +3197,9 @@ fn printScVarInfos(mut iScVarInfos: metamodelica::Array<ScVarInfo>) -> Result<()
     let mut isShared: bool = false;
     metamodelica::print((literal!("--------------------\nScVar - Infos\n--------------------\n")).clone());
     for mut scVarIdx in 1..=metamodelica::arrayLength(iScVarInfos.clone()) {
-        let ScVarInfo { isShared: __pa0, ownerThread: __pa1 } = (metamodelica::arrayGet(iScVarInfos.clone(), scVarIdx.clone())?) else { bail!("pattern mismatch") };
-        isShared = __pa0.clone();
-        ownerThread = __pa1.clone();
+        let ScVarInfo { ownerThread: __pa0, isShared: __pa1 } = (metamodelica::arrayGet(iScVarInfos.clone(), scVarIdx.clone())?) else { bail!("pattern mismatch") };
+        ownerThread = __pa0.clone();
+        isShared = __pa1.clone();
         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ScVar ")); __mm_s.push_str(&*intString(scVarIdx.clone())); __mm_s.push_str(&*literal!(" has thread owner ")); __mm_s.push_str(&*intString(ownerThread.clone())); __mm_s.push_str(&*literal!(" and shared state ")); __mm_s.push_str(&*boolString(isShared.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
@@ -3230,7 +3288,10 @@ fn getDimStringOfDimElement(mut iDim: Arc<DAE::Dimension>) -> ArcStr {
     let mut oDimString: ArcStr = arcstr::literal!("");
     let mut integer: i32 = 0;
     oDimString = ((::match_deref::match_deref! { match &(iDim.clone()) {
-        Deref @ DAE::Dimension::DIM_INTEGER { integer } => intString(integer.clone()),
+        Deref @ DAE::Dimension::DIM_INTEGER { integer: __esc_integer } => {
+            integer = (*__esc_integer).clone();
+            intString(integer.clone())
+        },
         _ => {
             metamodelica::print((literal!("getDimStringOfDimElement: unsupported Dimension-type given!\n")).clone());
             literal!("")
@@ -3247,12 +3308,17 @@ fn removeSubscripts(mut iCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef>
     let mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
     let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     oCref = (::match_deref::match_deref! { match &(iCref.clone()) {
-        Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType, subscriptLst, componentRef } => {
-            let mut componentRef = (*componentRef).clone();
+        Deref @ DAE::ComponentRef::CREF_QUAL { ident: __esc_ident, identType: __esc_identType, subscriptLst: __esc_subscriptLst, componentRef: __esc_componentRef } => {
+            ident = (*__esc_ident).clone();
+            identType = (*__esc_identType).clone();
+            subscriptLst = (*__esc_subscriptLst).clone();
+            componentRef = (*__esc_componentRef).clone();
             componentRef = removeSubscripts(componentRef.clone());
             Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: subscriptLst.clone(), componentRef: componentRef.clone() })
         },
-        Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType, subscriptLst: __esc_subscriptLst } => {
+        Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_ident, identType: __esc_identType, subscriptLst: __esc_subscriptLst } => {
+            ident = (*__esc_ident).clone();
+            identType = (*__esc_identType).clone();
             subscriptLst = (*__esc_subscriptLst).clone();
             Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (ident.clone()).clone(), identType: identType.clone(), subscriptLst: metamodelica::nil() })
         },
@@ -3282,8 +3348,12 @@ fn getCrefDims(mut iCref: Arc<DAE::ComponentRef>) -> i32 {
     let mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
     let mut tmpDims: i32 = 0;
     oDims = (::match_deref::match_deref! { match &(iCref.clone()) {
-        Deref @ DAE::ComponentRef::CREF_QUAL { componentRef, .. } => getCrefDims(componentRef.clone()),
-        Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst, .. } => {
+        Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: __esc_componentRef, .. } => {
+            componentRef = (*__esc_componentRef).clone();
+            getCrefDims(componentRef.clone())
+        },
+        Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: __esc_subscriptLst, .. } => {
+            subscriptLst = (*__esc_subscriptLst).clone();
             tmpDims = (subscriptLst.clone().len() as i32);
             tmpDims.clone()
         },
@@ -3432,8 +3502,14 @@ fn getTaskListTasks(mut iTaskList: HpcOmSimCode::TaskList) -> Arc<metamodelica::
     let mut oTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     oTasks = (match iTaskList.clone() {
-        HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: mut tasks } => tasks.clone(),
-        HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: mut tasks } => tasks.clone(),
+        HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: mut __esc_tasks } => {
+            tasks = __esc_tasks.clone();
+            tasks.clone()
+        },
+        HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: mut __esc_tasks } => {
+            tasks = __esc_tasks.clone();
+            tasks.clone()
+        },
         _ => {
             metamodelica::print((literal!("getTaskListTasks failed!\n")).clone());
             metamodelica::nil()
@@ -3446,8 +3522,14 @@ fn getCacheLineMapOfPartlyFilledCacheLine(mut iPartlyFilledCacheLine: PartlyFill
     let mut oCacheLineMap: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
     let mut cacheLineMap: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
     oCacheLineMap = (match iPartlyFilledCacheLine.clone() {
-        PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { cacheLineMap: mut cacheLineMap, .. } => cacheLineMap.clone(),
-        PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_THREAD { cacheLineMap: mut cacheLineMap } => cacheLineMap.clone(),
+        PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_LEVEL { cacheLineMap: mut __esc_cacheLineMap, .. } => {
+            cacheLineMap = __esc_cacheLineMap.clone();
+            cacheLineMap.clone()
+        },
+        PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_THREAD { cacheLineMap: mut __esc_cacheLineMap } => {
+            cacheLineMap = __esc_cacheLineMap.clone();
+            cacheLineMap.clone()
+        },
     });
     Ok(oCacheLineMap)
 }
@@ -3459,11 +3541,17 @@ fn getAllCacheLinesOfCacheMap(mut iCacheMap: CacheMap) -> Result<Arc<metamodelic
     let mut cacheLinesBool: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut allCacheLines: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     oCacheLines = (match iCacheMap.clone() {
-        CacheMap::CACHEMAP { cacheLinesBool: mut cacheLinesBool, cacheLinesInt: mut cacheLinesInt, cacheLinesFloat: mut cacheLinesFloat, .. } => {
+        CacheMap::CACHEMAP { cacheLinesFloat: mut __esc_cacheLinesFloat, cacheLinesInt: mut __esc_cacheLinesInt, cacheLinesBool: mut __esc_cacheLinesBool, .. } => {
+            cacheLinesFloat = __esc_cacheLinesFloat.clone();
+            cacheLinesInt = __esc_cacheLinesInt.clone();
+            cacheLinesBool = __esc_cacheLinesBool.clone();
             allCacheLines = listAppend(cacheLinesFloat.clone(), listAppend(cacheLinesInt.clone(), cacheLinesBool.clone()));
             allCacheLines.clone()
         },
-        CacheMap::UNIFORM_CACHEMAP { cacheLines: ref allCacheLines, .. } => allCacheLines.clone(),
+        CacheMap::UNIFORM_CACHEMAP { cacheLines: ref __esc_allCacheLines, .. } => {
+            allCacheLines = __esc_allCacheLines.clone();
+            allCacheLines.clone()
+        },
     });
     Ok(oCacheLines)
 }
@@ -3472,8 +3560,14 @@ fn getCacheVariablesOfCacheMap(mut iCacheMap: CacheMap) -> Result<Arc<metamodeli
     let mut oCacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     oCacheVariables = (match iCacheMap.clone() {
-        CacheMap::CACHEMAP { cacheVariables: mut cacheVariables, .. } => cacheVariables.clone(),
-        CacheMap::UNIFORM_CACHEMAP { cacheVariables: mut cacheVariables, .. } => cacheVariables.clone(),
+        CacheMap::CACHEMAP { cacheVariables: mut __esc_cacheVariables, .. } => {
+            cacheVariables = __esc_cacheVariables.clone();
+            cacheVariables.clone()
+        },
+        CacheMap::UNIFORM_CACHEMAP { cacheVariables: mut __esc_cacheVariables, .. } => {
+            cacheVariables = __esc_cacheVariables.clone();
+            cacheVariables.clone()
+        },
     });
     Ok(oCacheVariables)
 }
@@ -3482,8 +3576,14 @@ fn getCacheLineSizeOfCacheMap(mut iCacheMap: CacheMap) -> Result<i32> {
     let mut oCacheLineSize: i32 = 0;
     let mut cacheLineSize: i32 = 0;
     oCacheLineSize = (match iCacheMap.clone() {
-        CacheMap::CACHEMAP { cacheLineSize: mut cacheLineSize, .. } => cacheLineSize.clone(),
-        CacheMap::UNIFORM_CACHEMAP { cacheLineSize: mut cacheLineSize, .. } => cacheLineSize.clone(),
+        CacheMap::CACHEMAP { cacheLineSize: mut __esc_cacheLineSize, .. } => {
+            cacheLineSize = __esc_cacheLineSize.clone();
+            cacheLineSize.clone()
+        },
+        CacheMap::UNIFORM_CACHEMAP { cacheLineSize: mut __esc_cacheLineSize, .. } => {
+            cacheLineSize = __esc_cacheLineSize.clone();
+            cacheLineSize.clone()
+        },
     });
     Ok(oCacheLineSize)
 }

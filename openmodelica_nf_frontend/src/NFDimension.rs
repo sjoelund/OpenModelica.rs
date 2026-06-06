@@ -156,12 +156,16 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
             let mut value_original: i32 = 0;
             exp_simple = SimplifyExp::simplify(exp.clone(), false)?;
             (::match_deref::match_deref! { match &(exp_simple.clone()) {
-        Deref @ Expression::INTEGER { value } => Arc::new(NFDimension::INTEGER { size: value.clone(), var: var.clone() }),
+        Deref @ Expression::INTEGER { value: __esc_value } => {
+            value = (*__esc_value).clone();
+            Arc::new(NFDimension::INTEGER { size: value.clone(), var: var.clone() })
+        },
         _ => {
             e1 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e1 = SimplifyExp::simplify(e1.clone(), false)?;
             (::match_deref::match_deref! { match &(e1.clone()) {
-        Deref @ Expression::INTEGER { value } => {
+        Deref @ Expression::INTEGER { value: __esc_value } => {
+            value = (*__esc_value).clone();
             e2 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameterWithOriginal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = SimplifyExp::simplify(e2.clone(), false)?;
             (::match_deref::match_deref! { match &(e2.clone()) {
@@ -188,8 +192,17 @@ pub fn fromRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<NFDimen
     let mut step: i32 = 0;
     let mut stop: i32 = 0;
     (start, step, stop) = (::match_deref::match_deref! { match &(range.clone()) {
-        Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: None, start: Deref @ Expression::INTEGER { value: start }, .. } => (start.clone(), 1, stop.clone()),
-        Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: Some(Deref @ Expression::INTEGER { value: step }), start: Deref @ Expression::INTEGER { value: start }, .. } => (start.clone(), step.clone(), stop.clone()),
+        Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: __esc_start }, step: None, stop: Deref @ Expression::INTEGER { value: __esc_stop }, .. } => {
+            start = (*__esc_start).clone();
+            stop = (*__esc_stop).clone();
+            (start.clone(), 1, stop.clone())
+        },
+        Deref @ Expression::RANGE { start: Deref @ Expression::INTEGER { value: __esc_start }, step: Some(Deref @ Expression::INTEGER { value: __esc_step }), stop: Deref @ Expression::INTEGER { value: __esc_stop }, .. } => {
+            start = (*__esc_start).clone();
+            step = (*__esc_step).clone();
+            stop = (*__esc_stop).clone();
+            (start.clone(), step.clone(), stop.clone())
+        },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromRange")); __mm_s.push_str(&*literal!(" got non-range expression: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFDimension.mo"))?;
             bail!("fail")
@@ -384,7 +397,11 @@ pub fn isSizeOf(mut dim: Arc<NFDimension>, mut node: Arc<InstNode::InstNode>, mu
     let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut index_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     res = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ EXP { exp: Deref @ Expression::SIZE { dimIndex: Some(index_exp), exp: cref_exp @ Deref @ Expression::CREF { .. } }, .. } => InstNode::refEqual(ComponentRef::node(var_field!((**cref_exp).cref, Expression::NFExpression::CREF).clone())?, node.clone()) && Expression::isEqual(index_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: index.clone() }))?,
+        Deref @ EXP { exp: Deref @ Expression::SIZE { exp: __esc_cref_exp @ Deref @ Expression::CREF { .. }, dimIndex: Some(__esc_index_exp) }, .. } => {
+            cref_exp = (*__esc_cref_exp).clone();
+            index_exp = (*__esc_index_exp).clone();
+            InstNode::refEqual(ComponentRef::node(var_field!((*cref_exp).cref, Expression::NFExpression::CREF).clone())?, node.clone()) && Expression::isEqual(index_exp.clone(), Arc::new(Expression::NFExpression::INTEGER { value: index.clone() }))?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

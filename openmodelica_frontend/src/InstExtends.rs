@@ -181,12 +181,12 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                         } };
                         cls = __pa0.clone();
                         let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(cls.clone()) {
-                            Deref @ SCode::Element::CLASS { cmt: __pa1, encapsulatedPrefix: __pa2, name: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
+                            Deref @ SCode::Element::CLASS { name: __pa1, encapsulatedPrefix: __pa2, cmt: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
                             _ => bail!("pattern mismatch"),
                         } };
-                        cmt = __pa1.clone();
+                        cn = __pa1.clone();
                         encf = __pa2.clone();
-                        cn = __pa3.clone();
+                        cmt = __pa3.clone();
                     } else {
                         if Flags::getConfigBool(Flags::PERMISSIVE.clone())? {
                             bc_str = (AbsynUtil::pathString(var_field!((*el).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -454,7 +454,7 @@ fn instClassExtendsList2(mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut 
         let __mc_input = (inMod.clone(), inName.clone(), inClassExtendsElt.clone(), inElements.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, name: name2, .. }, mod1, b), tail: rest }) => {
+                (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { name: name2, classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. }, mod1, b), tail: rest }) => {
                     let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut compelt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
@@ -549,7 +549,7 @@ fn instClassExtendsList2(mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { .. }, name: name2, .. }, mod1, b), tail: rest }) => {
+                (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { name: name2, classDef: Deref @ SCode::ClassDef::DERIVED { .. }, .. }, mod1, b), tail: rest }) => {
                     let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut compelt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
@@ -696,7 +696,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, _, _, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: extdecl, initialAlgorithmLst: ialg, normalAlgorithmLst: alg, initialEquationLst: ieq, normalEquationLst: eq, elementLst: elt, .. }, name, .. }, _, info, _) => {
+                (cache, env, ih, _, _, Deref @ SCode::Element::CLASS { name, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elt, normalEquationLst: eq, initialEquationLst: ieq, normalAlgorithmLst: alg, initialAlgorithmLst: ialg, externalDecl: extdecl, .. }, .. }, _, info, _) => {
                     Error::assertionOrAddSourceMessage(isNone(extdecl.clone()), Error::EXTENDS_EXTERNAL.clone(), list![(name.clone()).clone()], info.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), elt.clone(), eq.clone(), ieq.clone(), alg.clone(), ialg.clone(), inMod.clone(), list![var_field!((*inClass).cmt, SCode::Element::CLASS).clone()]))
                 }
@@ -705,7 +705,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: dmod, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, .. }, info, .. }, r#impl, _, false) => {
+                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: tp, arrayDim: _ }, modifications: dmod, .. }, .. }, r#impl, _, false) => {
                     let mut elt: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut daeDMOD: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
@@ -732,7 +732,7 @@ fn instDerivedClassesWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         })() { outComments = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst }, prefixes, name: n, .. }, r#impl, _, false) => {
+                (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { name: n, prefixes, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst }, cmt, info, .. }, r#impl, _, false) => {
                     let mut elt: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut eq: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
                     let mut ieq: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -845,11 +845,11 @@ fn updateComponentsAndClassdefs2(mut inComponent: (Arc<SCode::Element>, Arc<DAE:
                     let mut cmod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut mod_rest: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Mod::lookupCompModification(inMod.clone(), (var_field!((*el).name, SCode::Element::CLASS).clone()).clone())?) {
-                        Deref @ DAE::Mod::REDECL { r#mod: __pa0, element: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ DAE::Mod::REDECL { element: __pa0, r#mod: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    cmod = __pa0.clone();
-                    comp = __pa1.clone();
+                    comp = __pa0.clone();
+                    cmod = __pa1.clone();
                     mod_rest = inMod.clone();
                     cmod = Mod::merge(cmod.clone(), r#mod.clone(), (var_field!((*el).name, SCode::Element::CLASS).clone()).clone(), false)?;
                     comp = SCodeUtil::mergeWithOriginal(comp.clone(), el.clone())?;
@@ -1017,15 +1017,15 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
                     let mut comment = (*comment).clone();
                     let mut info = (*info).clone();
                     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(Lookup::lookupClassLocal(env.clone(), (name.clone()).clone())?) {
-                        (Deref @ SCode::Element::CLASS { classDef: __pa0, info: __pa1, cmt: __pa2, restriction: __pa3, partialPrefix: __pa4, prefixes: __pa5, .. }, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+                        (Deref @ SCode::Element::CLASS { prefixes: __pa0, partialPrefix: __pa1, restriction: __pa2, cmt: __pa3, info: __pa4, classDef: __pa5, .. }, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    classDef1 = __pa0.clone();
-                    info = __pa1.clone();
-                    comment = __pa2.clone();
-                    restriction = __pa3.clone();
-                    partialPrefix = __pa4.clone();
-                    prefixes = __pa5.clone();
+                    prefixes = __pa0.clone();
+                    partialPrefix = __pa1.clone();
+                    restriction = __pa2.clone();
+                    comment = __pa3.clone();
+                    info = __pa4.clone();
+                    classDef1 = __pa5.clone();
                     env = __pa6.clone();
                     env = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (name.clone()).clone(), FGraph::restrictionToScopeType(restriction.clone()))?;
                     classDef2 = fixClassdef(inCache.clone(), env.clone(), classDef1.clone(), tree.clone())?;
@@ -1058,15 +1058,15 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
                     let mut comment = (*comment).clone();
                     let mut info = (*info).clone();
                     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(Lookup::lookupClassLocal(env.clone(), (name.clone()).clone())?) {
-                        (Deref @ SCode::Element::CLASS { classDef: __pa0, info: __pa1, cmt: __pa2, restriction: __pa3, partialPrefix: __pa4, prefixes: __pa5, .. }, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+                        (Deref @ SCode::Element::CLASS { prefixes: __pa0, partialPrefix: __pa1, restriction: __pa2, cmt: __pa3, info: __pa4, classDef: __pa5, .. }, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    classDef1 = __pa0.clone();
-                    info = __pa1.clone();
-                    comment = __pa2.clone();
-                    restriction = __pa3.clone();
-                    partialPrefix = __pa4.clone();
-                    prefixes = __pa5.clone();
+                    prefixes = __pa0.clone();
+                    partialPrefix = __pa1.clone();
+                    restriction = __pa2.clone();
+                    comment = __pa3.clone();
+                    info = __pa4.clone();
+                    classDef1 = __pa5.clone();
                     env = __pa6.clone();
                     env = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (name.clone()).clone(), FGraph::restrictionToScopeType(restriction.clone()))?;
                     classDef2 = fixClassdef(inCache.clone(), env.clone(), classDef1.clone(), tree.clone())?;

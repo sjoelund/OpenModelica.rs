@@ -857,7 +857,7 @@ fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPat
         let __mc_input = (inCref.clone(), inEnvPath.clone(), stripPartial.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cref, subscripts: Deref @ metamodelica::List::Nil, name: id1 }, Deref @ Absyn::Path::QUALIFIED { path: env_path, name: id2 }, _) => {
+                (Deref @ Absyn::ComponentRef::CREF_QUAL { name: id1, subscripts: Deref @ metamodelica::List::Nil, componentRef: cref }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: env_path }, _) => {
                     let true = (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(crefStripGraphScopePrefix2(cref.clone(), env_path.clone(), stripPartial.clone())?)
                 }
@@ -866,7 +866,7 @@ fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPat
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cref, subscripts: Deref @ metamodelica::List::Nil, name: id1 }, Deref @ Absyn::Path::IDENT { name: id2 }, _) => {
+                (Deref @ Absyn::ComponentRef::CREF_QUAL { name: id1, subscripts: Deref @ metamodelica::List::Nil, componentRef: cref }, Deref @ Absyn::Path::IDENT { name: id2 }, _) => {
                     let true = (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(cref.clone())
                 }
@@ -875,7 +875,7 @@ fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPat
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, name: id1, .. }, env_path, true) => {
+                (Deref @ Absyn::ComponentRef::CREF_QUAL { name: id1, subscripts: Deref @ metamodelica::List::Nil, .. }, env_path, true) => {
                     let false = (stringEqual((id1.clone()).clone(), (AbsynUtil::pathFirstIdent(env_path.clone())?).clone())) else { bail!("pattern mismatch") };
                     Ok(inCref.clone())
                 }
@@ -926,10 +926,10 @@ pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph,
 fn pathStripGraphScopePrefix2(mut inPath: Arc<Absyn::Path>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((inPath.clone(), inEnvPath.clone(), stripPartial.clone())) {
-        (Deref @ Absyn::Path::QUALIFIED { path, name: id1 }, Deref @ Absyn::Path::QUALIFIED { path: env_path, name: id2 }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
+        (Deref @ Absyn::Path::QUALIFIED { name: id1, path }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: env_path }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
             pathStripGraphScopePrefix2(path.clone(), env_path.clone(), stripPartial.clone())?
         },
-        (Deref @ Absyn::Path::QUALIFIED { path, name: id1 }, Deref @ Absyn::Path::IDENT { name: id2 }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
+        (Deref @ Absyn::Path::QUALIFIED { name: id1, path }, Deref @ Absyn::Path::IDENT { name: id2 }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
             path.clone()
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id1, .. }, env_path, true) if (!(stringEqual((id1.clone()).clone(), (AbsynUtil::pathFirstIdent(env_path.clone())?).clone()))) => {
@@ -1713,9 +1713,9 @@ pub fn makeScopePartial(mut inEnv: Graph) -> Graph {
     if '__try0: {
         node = unwrap_break_err!(FNode::fromRef(unwrap_break_err!(lastScopeRef(inEnv.clone()), '__try0)), '__try0);
         node = (match node.clone() {
-        FCore::Node { data: ref data @ FCore::Data::CL { e: ref el, .. }, .. } => {
-            let mut data = data.clone();
-            let mut el = el.clone();
+        FCore::Node { data: ref __esc_data @ FCore::Data::CL { e: ref __esc_el, .. }, .. } => {
+            data = __esc_data.clone();
+            el = __esc_el.clone();
             el = SCodeUtil::makeClassPartial(el.clone());
             let __owned_variant_e_0 = el.clone();
             if let FCore::Data::CL { e, .. } = &mut data {

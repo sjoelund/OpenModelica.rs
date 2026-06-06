@@ -95,9 +95,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     let mut discFunc: Module::detectDiscreteStatesInterface;
     (mainFunc, contFunc, discFunc) = getModule()?;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
-            let mut eqData = (*eqData).clone();
+        Deref @ BackendDAE::MAIN { varData, eqData, .. } => {
             let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (varData, eqData) = mainFunc(varData.clone(), eqData.clone(), contFunc.clone(), discFunc.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 varData = varData.clone(),
@@ -230,7 +230,7 @@ fn detectDiscreteStatesDefault(mut variables: Arc<VariablePointers::VariablePoin
 fn collectStatesAndDerivatives(mut exp: Arc<Expression::NFExpression>, mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } if (!(BVariable::checkCref(state_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?)) => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil }, .. } } if (!(BVariable::checkCref(state_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?)) => {
             let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut der_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -263,7 +263,7 @@ fn collectStatesAndDerivatives(mut exp: Arc<Expression::NFExpression>, mut acc_s
 fn resolveGeneralDer(mut exp: Arc<Expression::NFExpression>, mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_aux_equations: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>, mut uniqueIndex: Pointer::Pointer<i32>, mut diffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, .. } } => {
             let mut state_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut der_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -341,7 +341,7 @@ fn updateStatesAndDerivatives(mut variables: Arc<VariablePointers::VariablePoint
 fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_clocked_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::BOOLEAN { value: b }, tail: Deref @ metamodelica::List::Nil }, r#fn, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn, arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::BOOLEAN { value: b }, tail: Deref @ metamodelica::List::Nil }, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             new_exp = (::match_deref::match_deref! { match &(r#fn.clone()) {
         Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. } => Arc::new(Expression::NFExpression::BOOLEAN { value: b.clone() }),
@@ -353,7 +353,7 @@ fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previou
     } });
             new_exp.clone()
         },
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut old_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (new_exp, old_exp) = preFromArgs(args.clone(), acc_previous.clone(), scalarized.clone(), (literal!("previous")).clone())?;
@@ -370,18 +370,18 @@ fn collectPreAndPrevious(mut exp: Arc<Expression::NFExpression>, mut acc_previou
     } });
             new_exp.clone()
         },
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (new_exp, _) = preFromArgs(args.clone(), acc_previous.clone(), scalarized.clone(), (literal!("pre")).clone())?;
             new_exp.clone()
         },
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut old_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (new_exp, old_exp) = preFromArgs(args.clone(), acc_previous.clone(), scalarized.clone(), (literal!("edge")).clone())?;
             Arc::new(Expression::NFExpression::LBINARY { exp1: old_exp.clone(), operator: Operator::makeAnd(Expression::typeOf(old_exp.clone())), exp2: Expression::logicNegate(new_exp.clone()) })
         },
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, .. }, arguments: args, .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut old_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (new_exp, old_exp) = preFromArgs(args.clone(), acc_previous.clone(), scalarized.clone(), (literal!("change")).clone())?;
@@ -403,12 +403,14 @@ fn preFromArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>,
     let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut negated: bool = false;
     (state_var, old_exp, negated) = (::match_deref::match_deref! { match &(args.clone()) {
-        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::CREF { cref: __esc_state_cref, .. }, tail: Deref @ metamodelica::List::Nil } => {
             old_exp = (*__esc_old_exp).clone();
+            state_cref = (*__esc_state_cref).clone();
             (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?, old_exp.clone(), false)
         },
-        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::LUNARY { exp: Deref @ Expression::CREF { cref: state_cref, .. }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::LUNARY { exp: Deref @ Expression::CREF { cref: __esc_state_cref, .. }, .. }, tail: Deref @ metamodelica::List::Nil } => {
             old_exp = (*__esc_old_exp).clone();
+            state_cref = (*__esc_state_cref).clone();
             (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?, old_exp.clone(), true)
         },
         _ => {
@@ -550,7 +552,8 @@ pub fn findDiscreteStatesFromWhenBody(mut body: Arc<WhenEquationBody::WhenEquati
             let mut pre_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
             state_var = BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?;
             let () = (match (BVariable::getVarPre(state_var.clone())).0 {
-        Some(mut pre_var) => {
+        Some(mut __esc_pre_var) => {
+            pre_var = __esc_pre_var.clone();
             Pointer::update(acc_previous.clone(), metamodelica::cons(pre_var.clone(), Pointer::access(acc_previous.clone())));
             ()
         },
@@ -573,12 +576,16 @@ pub fn stateOrder(mut eqn: Arc<Equation::Equation>, mut state_order: Arc<Unorder
     let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let () = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ BEquation::Equation::SCALAR_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
-            updateStateOrder(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
+        Deref @ BEquation::Equation::SCALAR_EQUATION { lhs: __esc_lhs @ Deref @ Expression::CREF { .. }, rhs: __esc_rhs @ Deref @ Expression::CREF { .. }, .. } => {
+            lhs = (*__esc_lhs).clone();
+            rhs = (*__esc_rhs).clone();
+            updateStateOrder(var_field!((*lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((*rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
             ()
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } => {
-            updateStateOrder(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((**rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
+        Deref @ BEquation::Equation::ARRAY_EQUATION { lhs: __esc_lhs @ Deref @ Expression::CREF { .. }, rhs: __esc_rhs @ Deref @ Expression::CREF { .. }, .. } => {
+            lhs = (*__esc_lhs).clone();
+            rhs = (*__esc_rhs).clone();
+            updateStateOrder(var_field!((*lhs).cref, Expression::NFExpression::CREF).clone(), var_field!((*rhs).cref, Expression::NFExpression::CREF).clone(), state_order.clone())?;
             ()
         },
         Deref @ BEquation::Equation::FOR_EQUATION { .. } => {
@@ -597,11 +604,13 @@ pub fn stateOrder(mut eqn: Arc<Equation::Equation>, mut state_order: Arc<Unorder
 pub fn updateStateOrder(mut lhs: Arc<ComponentRef::NFComponentRef>, mut rhs: Arc<ComponentRef::NFComponentRef>, mut state_order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let mut state: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let () = (::match_deref::match_deref! { match &((BVariable::getVarKind(BVariable::getVarPointer(lhs.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?), BVariable::getVarKind(BVariable::getVarPointer(rhs.clone(), metamodelica::sourceInfo!("NBackEnd/Modules/2_Pre/NBDetectStates.mo"))?))) {
-        (_, Deref @ VariableKind::STATE_DER { state, .. }) => {
+        (_, Deref @ VariableKind::STATE_DER { state: __esc_state, .. }) => {
+            state = (*__esc_state).clone();
             UnorderedMap::add(BVariable::getVarName(state.clone()), ComponentRef::stripSubscriptsAll(lhs.clone()), state_order.clone())?;
             ()
         },
-        (Deref @ VariableKind::STATE_DER { state, .. }, _) => {
+        (Deref @ VariableKind::STATE_DER { state: __esc_state, .. }, _) => {
+            state = (*__esc_state).clone();
             UnorderedMap::add(BVariable::getVarName(state.clone()), ComponentRef::stripSubscriptsAll(rhs.clone()), state_order.clone())?;
             ()
         },

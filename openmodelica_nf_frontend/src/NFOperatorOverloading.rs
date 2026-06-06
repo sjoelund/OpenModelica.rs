@@ -100,7 +100,8 @@ pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32
     checkOperatorRestrictions(node.clone())?;
     tree = Class::classTree(InstNode::getClass(node.clone())?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ ClassTree::FLAT_TREE { classes: mclss, .. } => {
+        Deref @ ClassTree::FLAT_TREE { classes: __esc_mclss, .. } => {
+            mclss = (*__esc_mclss).clone();
             let __range0 = mclss.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut op in __range0 {
                 Function::instFunctionNode(op.clone(), context.clone(), info.clone())?;
@@ -136,7 +137,8 @@ pub fn lookupOperatorFunctionsInType(mut operatorName: ArcStr, mut ty: Arc<Type:
     let mut fn_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut is_defined: bool = false;
     functions = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::COMPLEX { cls: node, .. } => {
+        Deref @ Type::COMPLEX { cls: __esc_node, .. } => {
+            node = (*__esc_node).clone();
             match '__try0: {
                 fn_ref = unwrap_break_err!(Function::lookupFunctionSimple((operatorName.clone()).clone(), node.clone(), InstContext::NO_CONTEXT.clone()), '__try0);
                 is_defined = true;
@@ -205,7 +207,11 @@ fn patchOperatorRecordConstructorBinding_traverser(mut exp: Arc<Expression::NFEx
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, ty, r#fn, .. } } if (referenceEq(&*(constructorFn.node.clone()),&*(r#fn.node.clone()))) => Expression::makeRecord(Function::name(constructorFn.clone()), ty.clone(), args.clone()),
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn, ty: __esc_ty, arguments: __esc_args, .. } } if (referenceEq(&*(constructorFn.node.clone()),&*(r#fn.node.clone()))) => {
+            ty = (*__esc_ty).clone();
+            args = (*__esc_args).clone();
+            Expression::makeRecord(Function::name(constructorFn.clone()), ty.clone(), args.clone())
+        },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

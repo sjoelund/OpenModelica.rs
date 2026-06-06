@@ -82,7 +82,7 @@ pub fn daeDeclare(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut 
         let __mc_input = (inComponentRef.clone(), inState.clone(), inType.clone(), inAttributes.clone(), visibility.clone(), inBinding.clone(), inInstDims.clone(), inStartValue.clone(), inVarAttr.clone(), inComment.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (vn, ci_state, ty, SCode::Attributes { direction: dir, variability: var, parallelism: prl, connectorType: ct, .. }, vis, e, inst_dims, start, dae_var_attr, comment) => {
+                (vn, ci_state, ty, SCode::Attributes { connectorType: ct, parallelism: prl, variability: var, direction: dir, .. }, vis, e, inst_dims, start, dae_var_attr, comment) => {
                     let mut ct1: Arc<DAE::ConnectorType> = Arc::new(DAE::ConnectorType::FLOW);
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut daeParallelism: DAE::VarParallelism = DAE::VarParallelism::NON_PARALLEL;
@@ -272,7 +272,7 @@ fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (vn, Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { .. }, tail: Deref @ metamodelica::List::Nil } }, ct, kind, dir, daePrl, prot, e, inst_dims, start, dae_var_attr, comment, _) => {
+                (vn, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { .. }, tail: Deref @ metamodelica::List::Nil }, ty: tp }, ct, kind, dir, daePrl, prot, e, inst_dims, start, dae_var_attr, comment, _) => {
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     dae = daeDeclare2(vn.clone(), tp.clone(), ct.clone(), kind.clone(), dir.clone(), daePrl.clone(), prot.clone(), e.clone(), inst_dims.clone(), start.clone(), dae_var_attr.clone(), comment.clone(), io.clone(), source.clone(), declareComplexVars.clone())?;
                     Ok(dae.clone())

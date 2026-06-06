@@ -72,7 +72,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     if '__try0: {
         func = unwrap_break_err!(getModule(), '__try0);
         bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { varData: Deref @ BVariable::VarData::VAR_DATA_SIM { variables, .. }, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, ode, .. } => {
+        Deref @ BackendDAE::MAIN { ode, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, varData: Deref @ BVariable::VarData::VAR_DATA_SIM { variables, .. }, .. } => {
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; dae = Some(unwrap_break_err!(func(ode.clone(), variables.clone(), var_field!((**eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone()), '__try0)));
             bdae.clone()
         },

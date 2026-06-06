@@ -252,8 +252,8 @@ fn addConnectionsToGraph(mut equations: Arc<metamodelica::List<Arc<Equation::NFE
             createConnection(var_field!((*eq).lhs, Equation::NFEquation::CONNECT).clone(), var_field!((*eq).rhs, Equation::NFEquation::CONNECT).clone(), var_field!((*eq).source, Equation::NFEquation::CONNECT).clone(), graph.clone(), vCount.clone(), eCount.clone(), nmvTable.clone())?;
             ()
         },
-        Deref @ Equation::FOR { range: Some(range), .. } => {
-            let mut range = (*range).clone();
+        Deref @ Equation::FOR { range: Some(__esc_range), .. } => {
+            range = (*__esc_range).clone();
             range = Ceval::evalExp(range.clone(), Ceval::EvalTarget::new(Equation::info(eq.clone())?, NFInstContext::ITERATION_RANGE.clone(), None))?;
             body = Equation::replaceIteratorList(var_field!((*eq).body, Equation::NFEquation::FOR).clone(), var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range.clone())?;
             addConnectionsToGraph(body.clone(), graph.clone(), vCount.clone(), eCount.clone(), nmvTable.clone())?;

@@ -295,7 +295,7 @@ fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Elem
         Deref @ metamodelica::List::Nil => {
             (literal!(""), literal!(""))
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: r#mod, path: Deref @ Absyn::Path::IDENT { name: Deref @ "License" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "License" }, modification: r#mod, .. }, tail: _ } => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
             let mut licenseFile: ArcStr = arcstr::literal!("");
             (libraryKey, licenseFile) = getLicenseAnnotationTuple(r#mod.clone())?;
@@ -335,7 +335,7 @@ fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn:
         Deref @ metamodelica::List::Nil => {
             literal!("")
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "libraryKey" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "libraryKey" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), .. }, tail: _ } => {
             s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
@@ -356,7 +356,7 @@ fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn
         Deref @ metamodelica::List::Nil => {
             literal!("")
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "licenseFile" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "licenseFile" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), .. }, tail: _ } => {
             s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
@@ -396,7 +396,7 @@ fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), .. }, tail: _ } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             featuresList = List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?;
             featuresList.clone()

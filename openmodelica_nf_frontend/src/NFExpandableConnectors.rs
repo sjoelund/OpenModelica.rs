@@ -125,11 +125,11 @@ fn sortConnections(mut conns: Arc<metamodelica::List<Arc<Connection::NFConnectio
     for mut conn in &*conns.clone() {
         let mut conn = conn.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(conn.clone()) {
-            Deref @ Connection::CONNECTION { rhs: __pa0, lhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+            Deref @ Connection::CONNECTION { lhs: __pa0, rhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        c2 = __pa0.clone();
-        c1 = __pa1.clone();
+        c1 = __pa0.clone();
+        c2 = __pa1.clone();
         is_undeclared1 = Prefixes::ConnectorType::isUndeclared(c1.cty.clone());
         is_undeclared2 = Prefixes::ConnectorType::isUndeclared(c2.cty.clone());
         is_expandable1 = Prefixes::ConnectorType::isExpandable(c1.cty.clone());
@@ -163,11 +163,11 @@ fn addExpandableConnectorsToSets(mut conns: Arc<metamodelica::List<Arc<Connectio
     for mut conn in &*conns.clone() {
         let mut conn = conn.clone();
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(conn.clone()) {
-            Deref @ Connection::CONNECTION { rhs: __pa0, lhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+            Deref @ Connection::CONNECTION { lhs: __pa0, rhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        c2 = __pa0.clone();
-        c1 = __pa1.clone();
+        c1 = __pa0.clone();
+        c2 = __pa1.clone();
         csets = addConnectionToSets(c1.clone(), c2.clone(), csets.clone())?;
         csets = addNestedExpandableConnectorsToSets(c1.clone(), c2.clone(), csets.clone())?;
     }
@@ -203,7 +203,9 @@ fn getExpandableConnectorsInConnector(mut c1: Arc<Connector::NFConnector>) -> Re
     let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ecl = (::match_deref::match_deref! { match &(c1.clone()) {
-        Deref @ Connector::CONNECTOR { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXPANDABLE_CONNECTOR { expandableConnectors: nodes, .. }, .. }, name: par_name, .. } => {
+        Deref @ Connector::CONNECTOR { name: __esc_par_name, ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXPANDABLE_CONNECTOR { expandableConnectors: __esc_nodes, .. }, .. }, .. } => {
+            par_name = (*__esc_par_name).clone();
+            nodes = (*__esc_nodes).clone();
             ecl = metamodelica::nil();
             for mut n in &*nodes.clone() {
                 let mut n = n.clone();
@@ -227,11 +229,11 @@ fn addUndeclaredConnectorToSets(mut conn: Arc<Connection::NFConnection>, mut cse
     let mut c: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
     let mut ec: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(conn.clone()) {
-        Deref @ Connection::CONNECTION { rhs: __pa0, lhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Connection::CONNECTION { lhs: __pa0, rhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    c2 = __pa0.clone();
-    c1 = __pa1.clone();
+    c1 = __pa0.clone();
+    c2 = __pa1.clone();
     if Prefixes::ConnectorType::isUndeclared(c1.cty.clone()) {
         if Prefixes::ConnectorType::isVirtual(c1.cty.clone()) {
             c1 = makeVirtualConnector(c1.clone(), c2.clone())?;
@@ -416,11 +418,11 @@ fn updateExpandableConnection(mut conn: Arc<Connection::NFConnection>, mut conns
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(conn.clone()) {
-        Deref @ Connection::CONNECTION { rhs: __pa0, lhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Connection::CONNECTION { lhs: __pa0, rhs: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    c2 = __pa0.clone();
-    c1 = __pa1.clone();
+    c1 = __pa0.clone();
+    c2 = __pa1.clone();
     (c1, ty1) = updateExpandableConnector(c1.clone())?;
     (c2, ty2) = updateExpandableConnector(c2.clone())?;
     e1 = Arc::new(Expression::NFExpression::CREF { ty: ty1.clone(), cref: Connector::name(c1.clone()) });
@@ -439,11 +441,11 @@ fn updateExpandableConnector(mut conn: Arc<Connector::NFConnector>) -> Result<(A
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(conn.clone()) {
-        Deref @ Connector::CONNECTOR { ty: __pa0, name: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Connector::CONNECTOR { name: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ty = __pa0.clone();
-    name = __pa1.clone();
+    name = __pa0.clone();
+    ty = __pa1.clone();
     name = ComponentRef::updateNodeType(name.clone())?;
     ty = Type::setArrayElementType(ty.clone(), Type::arrayElementType(ComponentRef::nodeType(name.clone())?));
     conn = Arc::new(Connector::NFConnector { name: name.clone(), ty: ty.clone(), face: conn.face.clone(), cty: conn.cty.clone(), source: conn.source.clone() });

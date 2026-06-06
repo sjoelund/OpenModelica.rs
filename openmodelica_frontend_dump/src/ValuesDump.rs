@@ -179,9 +179,9 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::RECORD { comp: ids, orderd: xs, record_: Deref @ Absyn::Path::IDENT { name: Deref @ "SimulationResult" }, .. } => {
-                    let mut ids = (*ids).clone();
+                Deref @ Values::Value::RECORD { record_: Deref @ Absyn::Path::IDENT { name: Deref @ "SimulationResult" }, orderd: xs, comp: ids, .. } => {
                     let mut xs = (*xs).clone();
+                    let mut ids = (*ids).clone();
                     Print::printBuf((literal!("record SimulationResult\n")).clone())?;
                     (xs, ids) = filterSimulationResults(Flags::isSet(Flags::SHORT_OUTPUT.clone())?, xs.clone(), ids.clone(), metamodelica::nil(), metamodelica::nil())?;
                     valRecordString(xs.clone(), ids.clone())?;
@@ -193,7 +193,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::RECORD { comp: ids, orderd: xs, record_: recordPath, .. } => {
+                Deref @ Values::Value::RECORD { record_: recordPath, orderd: xs, comp: ids, .. } => {
                     let mut recordName: ArcStr = arcstr::literal!("");
                     recordName = AbsynUtil::pathStringNoQual(recordPath.clone(), (literal!(".")).clone(), false, false)?;
                     Print::printBuf(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("record ")); __mm_s.push_str(&*recordName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -288,7 +288,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::ENUM_LITERAL { name: p, index: n } => {
+                Deref @ Values::Value::ENUM_LITERAL { index: n, name: p } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(n.clone())); __mm_s.push_str(&*literal!(" /* ENUM: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" */")); ArcStr::from(__mm_s) }).clone();
                     Print::printBuf((s.clone()).clone())?;
@@ -316,7 +316,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::EMPTY { tyStr, name, scope, .. } => {
+                Deref @ Values::Value::EMPTY { scope, name, tyStr, .. } => {
                     Print::printBuf(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("/* <EMPTY(scope: ")); __mm_s.push_str(&*scope.clone()); __mm_s.push_str(&*literal!(", name: ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(", ty: ")); __mm_s.push_str(&*tyStr.clone()); __mm_s.push_str(&*literal!(")> */")); ArcStr::from(__mm_s) }).clone())?;
                     Ok(())
                 }

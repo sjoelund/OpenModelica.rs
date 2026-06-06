@@ -29,7 +29,7 @@ fn lm_43(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcResultType: i_ty_funcResultType, funcArg: i_ty_funcArg, path: i_path, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
@@ -369,7 +369,7 @@ fn lm_52(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
             let mut txt = (*txt).clone();
             (txt, _) = getInValue(txt.clone(), Tpl::stringText((i_arg_name.clone()).clone()), i_arg_ty.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
@@ -454,7 +454,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input ")).clone() }))?;
             txt = getInType(txt.clone(), i_arg_ty.clone())?;
@@ -597,7 +597,7 @@ fn lm_60(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcResultType: i_ty_funcResultType, funcArg: i_ty_funcArg, path: i_path, .. }, tail: rest }, a_classNameWithColons) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }, a_classNameWithColons) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
@@ -638,7 +638,7 @@ fn lm_62(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcResultType: i_ty_funcResultType, funcArg: i_ty_funcArg, path: i_path, .. }, tail: rest }, a_className) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path: i_path, funcArg: i_ty_funcArg, funcResultType: i_ty_funcResultType, .. }, tail: rest }, a_className) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             ret_0 = (AbsynUtil::pathLastIdent(i_path.clone())?).clone();
@@ -879,7 +879,7 @@ fn lm_69(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
             let mut txt = (*txt).clone();
             txt = getQtType(txt.clone(), i_arg_ty.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1662,7 +1662,7 @@ fn lm_87(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
         (txt, Deref @ metamodelica::List::Nil, a_varDecl) => {
             (txt.clone(), a_varDecl.clone())
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }, a_varDecl) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }, a_varDecl) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
@@ -1689,7 +1689,7 @@ fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: i_arg_ty, name: i_arg_name, .. }, tail: rest }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { name: i_arg_name, ty: i_arg_ty, .. }, tail: rest }) => {
             let mut txt = (*txt).clone();
             (txt, _, _) = getQtCommandLogText(txt.clone(), Tpl::stringText((i_arg_name.clone()).clone()), i_arg_ty.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("commandLog")).clone() })))?;
             txt = Tpl::nextIter(txt.clone())?;

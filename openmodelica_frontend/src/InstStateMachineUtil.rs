@@ -295,11 +295,11 @@ fn mergeVariableDefinitions(mut inFlatSM: Arc<DAE::Element>, mut inIH: Arc<metam
     let mut ident: ArcStr = arcstr::literal!("");
     let mut dAElist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inFlatSM.clone()) {
-        Deref @ DAE::Element::FLAT_SM { dAElist: __pa0, ident: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Element::FLAT_SM { ident: __pa0, dAElist: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dAElist = __pa0.clone();
-    ident = __pa1.clone();
+    ident = __pa0.clone();
+    dAElist = __pa1.clone();
     outerOutputCrefToSMCompCref = List::fold(dAElist.clone(), (std::sync::Arc::new(collectOuterOutputs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), HashTableCG::emptyHashTable())?;
     outerOutputCrefToInnerCref = List::fold1(BaseHashTable::hashTableKeyList(outerOutputCrefToSMCompCref.clone())?, (std::sync::Arc::new(matchOuterWithInner) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<InnerOuter::TopInstance>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), inIH.clone(), HashTableCG::emptyHashTable())?;
     hashEntries_outerOutputCrefToInnerCref = BaseHashTable::hashTableList(outerOutputCrefToInnerCref.clone())?;
@@ -340,7 +340,7 @@ fn mergeVariableDefinitions(mut inFlatSM: Arc<DAE::Element>, mut inIH: Arc<metam
     } else {
         mergeEqns = List::map(BaseHashTable::hashTableList(innerCrefToOuterOutputCrefs.clone())?, (std::sync::Arc::new(freshMergingEqn) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<Arc<DAE::Element>> + 'static>))?;
     }
-    outElementLst = listAppend(inStartElementLst.clone(), metamodelica::cons(Arc::new(DAE::Element::FLAT_SM { dAElist: dAElist.clone(), ident: (ident.clone()).clone() }), mergeEqns.clone()));
+    outElementLst = listAppend(inStartElementLst.clone(), metamodelica::cons(Arc::new(DAE::Element::FLAT_SM { ident: (ident.clone()).clone(), dAElist: dAElist.clone() }), mergeEqns.clone()));
     Ok(outElementLst)
 }
 
@@ -425,7 +425,7 @@ fn traversingCountDer(mut inExp: Arc<DAE::Exp>, mut inCref_HitCount: (Arc<DAE::C
     let mut hitCount: i32 = 0;
     (cref, hitCount) = inCref_HitCount.clone();
     (outExp, outCref_HitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } if (ComponentReferenceBasics::crefEqual(componentRef.clone(), cref.clone())?) => {
+        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, .. } if (ComponentReferenceBasics::crefEqual(componentRef.clone(), cref.clone())?) => {
             (inExp.clone(), (cref.clone(), hitCount.clone() + 1))
         },
         _ => {
@@ -579,7 +579,9 @@ fn collectOuterOutputs(mut inElem: Arc<DAE::Element>, mut inOuterAcc: (metamodel
     let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut dAElist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     outOuterAcc = (::match_deref::match_deref! { match &(inElem.clone()) {
-        Deref @ DAE::Element::SM_COMP { dAElist, componentRef } => {
+        Deref @ DAE::Element::SM_COMP { componentRef: __esc_componentRef, dAElist: __esc_dAElist } => {
+            componentRef = (*__esc_componentRef).clone();
+            dAElist = (*__esc_dAElist).clone();
             outerOutputs = List::filterOnTrue(dAElist.clone(), (std::sync::Arc::new(fnptr!(isOuterOutput, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
             outerOutputCrefs = List::map(outerOutputs.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
             outerOutputCrefToSMCompCref = List::map(outerOutputCrefs.clone(), (std::sync::Arc::new({ let __pe_b1 = componentRef.clone(); move |__pe_a0| Ok(Util::makeTuple(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
@@ -594,10 +596,10 @@ fn collectOuterOutputs(mut inElem: Arc<DAE::Element>, mut inOuterAcc: (metamodel
 fn isOuterOutput(mut inElem: Arc<DAE::Element>) -> bool {
     let mut outB: bool = false;
     outB = (::match_deref::match_deref! { match &(inElem.clone()) {
-        Deref @ DAE::Element::VAR { innerOuter: Absyn::InnerOuter::OUTER { .. }, direction: DAE::VarDirection::OUTPUT { .. }, .. } => {
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT { .. }, innerOuter: Absyn::InnerOuter::OUTER { .. }, .. } => {
             true
         },
-        Deref @ DAE::Element::VAR { innerOuter: Absyn::InnerOuter::INNER_OUTER { .. }, direction: DAE::VarDirection::OUTPUT { .. }, .. } => {
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT { .. }, innerOuter: Absyn::InnerOuter::INNER_OUTER { .. }, .. } => {
             true
         },
         _ => {
@@ -623,10 +625,10 @@ fn isInFlatSM(mut inElement: Arc<DAE::Element>, mut smInitialCref: Arc<DAE::Comp
         Deref @ DAE::Element::SM_COMP { componentRef: cref1, .. } if (BaseHashTable::hasKey(cref1.clone(), smNodeToFlatSMGroup.clone())?) => {
             BaseHashTable::get(cref1.clone(), smNodeToFlatSMGroup.clone())?
         },
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: _ }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, .. }, .. } if (BaseHashTable::hasKey(cref1.clone(), smNodeToFlatSMGroup.clone())?) => {
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: _ }, .. }, .. } if (BaseHashTable::hasKey(cref1.clone(), smNodeToFlatSMGroup.clone())?) => {
             BaseHashTable::get(cref1.clone(), smNodeToFlatSMGroup.clone())?
         },
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, .. }, .. } if (BaseHashTable::hasKey(cref1.clone(), smNodeToFlatSMGroup.clone())?) => {
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } if (BaseHashTable::hasKey(cref1.clone(), smNodeToFlatSMGroup.clone())?) => {
             BaseHashTable::get(cref1.clone(), smNodeToFlatSMGroup.clone())?
         },
         _ => {
@@ -712,9 +714,9 @@ pub fn dumpFlatSMGroupStr(mut flatA: FlatSMGroup) -> Result<ArcStr> {
     let mut statesStrs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut initState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut states: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
-    let FlatSMGroup { states: __pa0, initState: __pa1 } = (flatA.clone()) else { bail!("pattern mismatch") };
-    states = __pa0.clone();
-    initState = __pa1.clone();
+    let FlatSMGroup { initState: __pa0, states: __pa1 } = (flatA.clone()) else { bail!("pattern mismatch") };
+    initState = __pa0.clone();
+    states = __pa1.clone();
     initialStateStr = (ComponentReferenceBasics::printComponentRefStr(initState.clone())?).clone();
     crefs = Arc::new(states.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     statesStrs = List::map(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?;
@@ -919,7 +921,7 @@ fn isSMStatement2(mut inElement: Arc<DAE::Element>) -> Result<bool> {
 fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) -> Result<SMNodeTable> {
     let mut outTable: SMNodeTable = inTable.clone();
     outTable = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref2, .. }, tail: _ } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, .. }, .. } => {
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref2, .. }, tail: _ } }, .. }, .. } => {
             let mut smnode1: SMNode = <SMNode as ::std::default::Default>::default();
             let mut smnode2: SMNode = <SMNode as ::std::default::Default>::default();
             let mut isInitial1: bool = false;
@@ -944,7 +946,7 @@ fn extractSMStates2(mut inElement: Arc<DAE::Element>, mut inTable: SMNodeTable) 
             outTable = BaseHashTable::add((cref2.clone(), smnode2.clone()), outTable.clone())?;
             outTable.clone()
         },
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, .. }, .. } => {
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
             let mut smnode1: SMNode = <SMNode as ::std::default::Default>::default();
             let mut edges1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             smnode1 = if (BaseHashTable::hasKey(cref1.clone(), outTable.clone())?) {BaseHashTable::get(cref1.clone(), outTable.clone())?} else {SMNode { componentRef: cref1.clone(), isInitial: true, edges: HashSet::emptyHashSet() }};
@@ -995,7 +997,7 @@ fn prefixCrefNoContext2(mut inCref: Arc<DAE::ComponentRef>, mut inPre: DAE::Pref
 fn extractInitialSMStates(mut inElement: Arc<SCode::Equation>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outElement: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Nil }, .. }, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "initialState", .. }, .. }, .. } => {
+        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "initialState", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Nil }, .. }, .. }, .. } => {
             cref1.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1006,10 +1008,10 @@ fn extractInitialSMStates(mut inElement: Arc<SCode::Equation>) -> Result<Arc<Abs
 fn extractSMStates(mut inElement: Arc<SCode::Equation>) -> Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> {
     let mut outElement: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref2 }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, .. }, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "transition", .. }, .. }, .. } => {
+        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "transition", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref2 }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }, .. } => {
             list![cref1.clone(), cref2.clone()]
         },
-        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Nil }, .. }, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "initialState", .. }, .. }, .. } => {
+        Deref @ SCode::Equation::EQ_NORETCALL { exp: Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "initialState", .. }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref1 }, tail: Deref @ metamodelica::List::Nil }, .. }, .. }, .. } => {
             list![cref1.clone()]
         },
         _ => {

@@ -588,12 +588,15 @@ pub fn isBuiltinEnumeration(mut ty: Arc<NFType>) -> bool {
     let mut isBuiltin: bool = false;
     let mut name: ArcStr = arcstr::literal!("");
     isBuiltin = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ENUMERATION { typePath: Deref @ Absyn::Path::IDENT { name }, .. } => (::match_deref::match_deref! { match &(name.clone()) {
+        Deref @ ENUMERATION { typePath: Deref @ Absyn::Path::IDENT { name: __esc_name }, .. } => {
+            name = (*__esc_name).clone();
+            (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "StateSelect" => true,
         Deref @ "AssertionLevel" => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } }),
+    } })
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1185,21 +1188,22 @@ pub fn toFlatDeclarationStream(mut ty: Arc<NFType>, mut format: BaseModelica::Ou
             s.clone()
         },
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => Record::toFlatDeclarationStream(var_field!((*ty).cls, NFType::COMPLEX).clone(), format.clone(), (indent.clone()).clone(), s.clone())?,
-        Deref @ COMPLEX { complexTy: complexTy @ Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => {
+        Deref @ COMPLEX { complexTy: __esc_complexTy @ Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => {
+            complexTy = (*__esc_complexTy).clone();
             path = InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?;
             name = (Util::makeQuotedIdentifier((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone())?).clone();
             s = IOStream::append(s.clone(), (indent.clone()).clone())?;
             s = IOStream::append(s.clone(), (literal!("class ")).clone())?;
             s = IOStream::append(s.clone(), (name.clone()).clone())?;
             s = IOStream::append(s.clone(), (literal!("\n  extends ExternalObject;\n\n")).clone())?;
-            let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(var_field!((**complexTy).constructor, ComplexType::NFComplexType::EXTERNAL_OBJECT).clone(), NFInstContext::FUNCTION.clone())?) {
+            let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(var_field!((*complexTy).constructor, ComplexType::NFComplexType::EXTERNAL_OBJECT).clone(), NFInstContext::FUNCTION.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             f = __pa0.clone();
             s = Function::toFlatStream(f.clone(), format.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone(), s.clone(), (literal!("constructor")).clone())?;
             s = IOStream::append(s.clone(), (literal!(";\n\n")).clone())?;
-            let __pa2 = ::match_deref::match_deref! { match &(Function::typeNodeCache(var_field!((**complexTy).destructor, ComplexType::NFComplexType::EXTERNAL_OBJECT).clone(), NFInstContext::FUNCTION.clone())?) {
+            let __pa2 = ::match_deref::match_deref! { match &(Function::typeNodeCache(var_field!((*complexTy).destructor, ComplexType::NFComplexType::EXTERNAL_OBJECT).clone(), NFInstContext::FUNCTION.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } => __pa2.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1282,8 +1286,8 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
     }
     ty = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { dimensions: dims, .. } if (!(failOnError.clone()) && (subs.clone().len() as i32) > (dims.clone().len() as i32)) => crate::NFType::interned_UNKNOWN(),
-        Deref @ ARRAY { dimensions: dims, .. } => {
-            let mut dims = (*dims).clone();
+        Deref @ ARRAY { dimensions: __esc_dims, .. } => {
+            dims = (*__esc_dims).clone();
             for mut sub in &*subs.clone() {
                 let mut sub = sub.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dims.clone()) {
@@ -1472,7 +1476,10 @@ pub fn recordFieldCount(mut recordType: Arc<NFType>) -> i32 {
     let mut fieldCount: i32 = 0;
     let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = Default::default();
     fieldCount = (::match_deref::match_deref! { match &(recordType.clone()) {
-        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } => metamodelica::arrayLength(fields.clone()),
+        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields: __esc_fields, .. }, .. } => {
+            fields = (*__esc_fields).clone();
+            metamodelica::arrayLength(fields.clone())
+        },
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

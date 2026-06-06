@@ -432,7 +432,7 @@ fn parseCall(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut instNo: i
         let __mc_input = in_eq.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Exp::CALL { functionArgs: fargs, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: _ }, .. } => {
+                Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: _ }, functionArgs: fargs, .. } => {
                     let mut elName: ArcStr = arcstr::literal!("");
                     let mut elem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
                     let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();

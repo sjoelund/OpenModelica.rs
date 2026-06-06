@@ -298,7 +298,8 @@ fn createAndExportInitialSystemTaskGraph(mut iInitDae: Option<Arc<BackendDAE::Ba
     let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut schedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     let () = (::match_deref::match_deref! { match &(iInitDae.clone()) {
-        Some(initDAE) => {
+        Some(__esc_initDAE) => {
+            initDAE = (*__esc_initDAE).clone();
             (tmpTaskGraph, tmpTaskGraphMeta) = HpcOmTaskGraph::createTaskGraph(initDAE.clone(), false)?;
             fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*iFileNamePrefix.clone()); __mm_s.push_str(&*literal!("_init.graphml")); ArcStr::from(__mm_s) }).clone();
             schedulerInfo = arrayCreate(metamodelica::arrayLength(tmpTaskGraph.clone()), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
@@ -443,7 +444,11 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
     let mut bigTaskExecTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oContractedLevelfixTasks = (::match_deref::match_deref! { match &((iTaskGraphMeta.clone(), iLevelNodes.clone())) {
-        (HpcOmTaskGraph::TaskGraphMeta { inComps, exeCosts, .. }, Deref @ metamodelica::List::Cons { head: head, tail: rest }) => {
+        (HpcOmTaskGraph::TaskGraphMeta { exeCosts: __esc_exeCosts, inComps: __esc_inComps, .. }, Deref @ metamodelica::List::Cons { head: __esc_head, tail: __esc_rest }) => {
+            exeCosts = (*__esc_exeCosts).clone();
+            inComps = (*__esc_inComps).clone();
+            head = (*__esc_head).clone();
+            rest = (*__esc_rest).clone();
             sortedHead = List::sort(head.clone(), (std::sync::Arc::new({ let __pe_b2 = inComps.clone(); let __pe_b3 = exeCosts.clone(); let __pe_b4 = false; move |__pe_a0, __pe_a1| HpcOmTaskGraph::compareTasksByExecTime(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             sortedHeadArray = metamodelica::arrayFromVec(sortedHead.clone().into_iter().cloned().collect());
             if intGt(metamodelica::arrayLength(sortedHeadArray.clone()), 0) {
@@ -994,11 +999,11 @@ pub fn outputTimeBenchmark(mut graphData: HpcOmTaskGraph::TaskGraphMeta, mut dae
     let mut numCycles: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dae.clone()) {
-        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    shared = __pa0.clone();
-    eqSystems = __pa1.clone();
+    eqSystems = __pa0.clone();
+    shared = __pa1.clone();
     let HpcOmTaskGraph::TASKGRAPHMETA { exeCosts: __pa2, .. } = (graphData.clone()) else { bail!("pattern mismatch") };
     exeCosts = __pa2.clone();
     numCycles = List::mapArray(exeCosts.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;

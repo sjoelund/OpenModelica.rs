@@ -195,11 +195,11 @@ fn detectSparsePatternODE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
             unwrap_break_err!(execStat((literal!("detectSparsePatternODE -> transform backend dae ")).clone()), '__try0);
         }
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(DAE.clone()) {
-            Deref @ BackendDAE::BackendDAE { shared: __pa2, eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: __pa3, .. }, tail: Deref @ metamodelica::List::Nil } } => (__pa2.clone(), __pa3.clone()),
+            Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: __pa2, .. }, tail: Deref @ metamodelica::List::Nil }, shared: __pa3 } => (__pa2.clone(), __pa3.clone()),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        shared = __pa2.clone();
-        v = __pa3.clone();
+        v = __pa2.clone();
+        shared = __pa3.clone();
         states = unwrap_break_err!(BackendVariable::getAllStateVarFromVariables(v.clone()), '__try0);
         if debug.clone() {
             unwrap_break_err!(execStat((literal!("detectSparsePatternODE -> get all vars ")).clone()), '__try0);
@@ -269,11 +269,11 @@ pub fn symbolicJacobianDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Res
             unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.symbolicJacobianDAE")); __mm_s.push_str(&*literal!("-> transform backend dae ")); ArcStr::from(__mm_s) }).clone()), '__try0);
         }
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(DAE.clone()) {
-            Deref @ BackendDAE::BackendDAE { shared: __pa2, eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: __pa3, .. }, tail: Deref @ metamodelica::List::Nil } } => (__pa2.clone(), __pa3.clone()),
+            Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: __pa2, .. }, tail: Deref @ metamodelica::List::Nil }, shared: __pa3 } => (__pa2.clone(), __pa3.clone()),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        shared = __pa2.clone();
-        v = __pa3.clone();
+        v = __pa2.clone();
+        shared = __pa3.clone();
         (_, resVars) = unwrap_break_err!(BackendVariable::traverseBackendDAEVars(v.clone(), (std::sync::Arc::new(BackendVariable::collectVarKindVarinVariables) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, BackendDAE::Variables)) -> Result<(BackendDAE::Var, (Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>, BackendDAE::Variables))> + 'static>), ((std::sync::Arc::new(fnptr!(BackendVariable::isDAEmodeResVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>), emptyVars.clone())), '__try0);
         depVars = unwrap_break_err!(BackendVariable::varList(resVars.clone()), '__try0);
         inDepVars = listAppend(shared.daeModeData.stateVars.clone(), shared.daeModeData.algStateVars.clone());
@@ -333,11 +333,11 @@ fn generateSymbolicJacobianPast(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -
     let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     System::realtimeTick(ClockIndexes::RT_CLOCK_EXECSTAT_JACOBIANS.clone())?;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
-        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    shared = __pa0.clone();
-    eqs = __pa1.clone();
+    eqs = __pa0.clone();
+    shared = __pa1.clone();
     (symJacA, funcs, sparsePattern, sparseColoring, nonlinearPattern) = createSymbolicJacobianforStates(inBackendDAE.clone())?;
     shared = addBackendDAESharedJacobian(symJacA.clone(), sparsePattern.clone(), sparseColoring.clone(), nonlinearPattern.clone(), shared.clone())?;
     functionTree = BackendDAEUtil::getFunctions(shared.clone())?;
@@ -407,11 +407,11 @@ pub fn generateSymbolicSensitivities(mut inBackendDAE: Arc<BackendDAE::BackendDA
     let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     System::realtimeTick(ClockIndexes::RT_CLOCK_EXECSTAT_JACOBIANS.clone())?;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
-        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    shared = __pa0.clone();
-    eqs = __pa1.clone();
+    eqs = __pa0.clone();
+    shared = __pa1.clone();
     (symJacS, funcs, sparsePattern, sparseColoring, nonlinearPattern) = createSymbolicJacobianforParameters(inBackendDAE.clone())?;
     shared = addBackendDAESharedJacobian(symJacS.clone(), sparsePattern.clone(), sparseColoring.clone(), nonlinearPattern.clone(), shared.clone())?;
     functionTree = BackendDAEUtil::getFunctions(shared.clone())?;
@@ -482,11 +482,11 @@ pub fn generateSymbolicLinearizationPast(mut inBackendDAE: Arc<BackendDAE::Backe
                     let mut outBackendDAE: Arc<BackendDAE::BackendDAE> = outBackendDAE.clone();
                     let true = (Flags::getConfigBool(Flags::GENERATE_SYMBOLIC_LINEARIZATION.clone())?) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
-                        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    shared = __pa0.clone();
-                    eqs = __pa1.clone();
+                    eqs = __pa0.clone();
+                    shared = __pa1.clone();
                     (linearModelMatrices, funcs) = createLinearModelMatrices(inBackendDAE.clone(), Config::acceptOptimicaGrammar()?)?;
                     shared = BackendDAEUtil::setSharedSymJacs(shared.clone(), linearModelMatrices.clone())?;
                     functionTree = BackendDAEUtil::getFunctions(shared.clone())?;
@@ -579,7 +579,7 @@ fn traverserExpinputDerivativesUsed(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendD
         let __mc_input = (inExp.clone(), tpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, explst)) => {
+                (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (vars, explst)) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     (var, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
                     let true = (BackendVariable::isVarOnTopLevelAndInput(var.clone())) else { bail!("pattern mismatch") };
@@ -590,7 +590,7 @@ fn traverserExpinputDerivativesUsed(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendD
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, explst)) => {
+                (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (vars, explst)) => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     (var, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
                     let true = (BackendVariable::isVarOnTopLevelAndInput(var.clone())) else { bail!("pattern mismatch") };
@@ -642,12 +642,12 @@ fn replaceStrongComponent(mut systIn: Arc<BackendDAE::EqSystem>, mut idx: i32, m
     let mut assAdd: metamodelica::Array<i32> = Default::default();
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(systIn.clone()) {
-        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa0, ass2: __pa1, ass1: __pa2 }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa0, ass2: __pa1, comps: __pa2 }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    comps = __pa0.clone();
+    ass1 = __pa0.clone();
     ass2 = __pa1.clone();
-    ass1 = __pa2.clone();
+    comps = __pa2.clone();
     if !(compsAdd.clone().is_empty()) {
         assAdd = arrayCreate((compsAdd.clone().len() as i32), 0);
         ass1 = metamodelica::arrayAppend(ass1.clone(), assAdd.clone());
@@ -666,7 +666,7 @@ fn updateAssignment(mut comp: Arc<BackendDAE::StrongComponent>, mut ass1: metamo
         let __mc_input = comp.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var, eqn: eq } => {
+                Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eq, var } => {
                     {let _arr = ass2.clone(); let _idx = eq.clone(); let _val = var.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     {let _arr = ass1.clone(); let _idx = var.clone(); let _val = eq.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                     Ok(())
@@ -709,14 +709,14 @@ fn solveConstJacLinearSystem(mut syst: Arc<BackendDAE::EqSystem>, mut ishared: A
     let mut n: i32 = 0;
     let mut order: metamodelica::Array<i32> = Default::default();
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(syst.clone()) {
-        Deref @ BackendDAE::EqSystem { partitionKind: __pa0, stateSets: __pa1, matching: __pa2, orderedEqs: __pa3, orderedVars: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
+        Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, matching: __pa2, stateSets: __pa3, partitionKind: __pa4, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    partitionKind = __pa0.clone();
-    stateSets = __pa1.clone();
+    vars = __pa0.clone();
+    eqns = __pa1.clone();
     matching = __pa2.clone();
-    eqns = __pa3.clone();
-    vars = __pa4.clone();
+    stateSets = __pa3.clone();
+    partitionKind = __pa4.clone();
     let __pa5 = ::match_deref::match_deref! { match &(ishared.clone()) {
         Deref @ BackendDAE::Shared { functionTree: __pa5, .. } => __pa5.clone(),
         _ => bail!("pattern mismatch"),
@@ -919,9 +919,9 @@ fn constantLinearSystem2(mut b: bool, mut isyst: Arc<BackendDAE::EqSystem>) -> R
         (false, _) => {
             isyst.clone()
         },
-        (true, Deref @ BackendDAE::EqSystem { partitionKind, stateSets, orderedEqs: eqns, orderedVars: vars, .. }) => {
-            let mut eqns = (*eqns).clone();
+        (true, Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, stateSets, partitionKind, .. }) => {
             let mut vars = (*vars).clone();
+            let mut eqns = (*eqns).clone();
             vars = BackendVariable::listVar1(BackendVariable::varList(vars.clone())?)?;
             eqns = BackendEquation::listEquation(BackendEquation::equationList(eqns.clone())?)?;
             BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), stateSets.clone(), partitionKind.clone(), BackendEquation::emptyEqns())
@@ -965,7 +965,7 @@ fn constantLinearSystemWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: A
         let __mc_input = (isyst.clone(), ishared.clone(), comp.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_CONSTANT { .. }, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, vars: vindx, eqns: eindex, .. }) => {
+                (syst, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eindex, vars: vindx, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, jacType: BackendDAE::JacobianType::JAC_CONSTANT { .. }, .. }) => {
                     let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut syst = (*syst).clone();
@@ -980,7 +980,7 @@ fn constantLinearSystemWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, vars: vindx, eqns: eindex, .. }) => {
+                (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eindex, vars: vindx, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, .. }) => {
                     let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut sysIdx: i32 = 0;
@@ -1076,7 +1076,7 @@ fn changeConstantLinearSystemVars(mut inVarLst: Arc<metamodelica::List<BackendDA
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, vars, eqns) => {
             (vars.clone(), eqns.clone(), ishared.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varType: tp, varKind: BackendDAE::VarKind::STATE { .. }, varName: cref, .. }, tail: varlst }, Deref @ metamodelica::List::Cons { head: r, tail: rlst }, Deref @ metamodelica::List::Cons { head: _, tail: slst }, Deref @ metamodelica::List::Cons { head: _, tail: vindxs }, vars, eqns) => {
+        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: cref, varKind: BackendDAE::VarKind::STATE { .. }, varType: tp, .. }, tail: varlst }, Deref @ metamodelica::List::Cons { head: r, tail: rlst }, Deref @ metamodelica::List::Cons { head: _, tail: slst }, Deref @ metamodelica::List::Cons { head: _, tail: vindxs }, vars, eqns) => {
             let mut vars2: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1208,7 +1208,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: syst @ Deref @ BackendDAE::EqSystem { matching: bdaeMatching @ Deref @ BackendDAE::Matching::MATCHING { ass1, comps, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, independentVars, dependentVars) => {
+                (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: syst @ Deref @ BackendDAE::EqSystem { matching: bdaeMatching @ Deref @ BackendDAE::Matching::MATCHING { comps, ass1, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, independentVars, dependentVars) => {
                     let mut syst1: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
                     let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut adjMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -1252,11 +1252,11 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
                     inDepCompRefs = metamodelica::arrayFromVec(inDepCompRefsLst.clone().into_iter().cloned().collect());
                     sizeN = metamodelica::arrayLength(inDepCompRefs.clone());
                     let (__pa2, __pa0, __pa1) = ::match_deref::match_deref! { match &(BackendDAEUtil::addVarsToEqSystem(syst.clone(), jacDiffVars.clone())?) {
-                        __pa2 @ Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone()),
+                        __pa2 @ Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    orderedEqns = __pa0.clone();
-                    varswithDiffs = __pa1.clone();
+                    varswithDiffs = __pa0.clone();
+                    orderedEqns = __pa1.clone();
                     syst1 = __pa2.clone();
                     (adjMatrix, adjMatrixT) = BackendDAEUtil::adjacencyMatrix(syst1.clone(), openmodelica_backend_types::BackendDAE::IndexType::SPARSE, None, BackendDAEUtil::isInitializationDAE(inBackendDAE.shared.clone()))?;
                     adjSize = metamodelica::arrayLength(adjMatrix.clone());
@@ -1472,7 +1472,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
         (Deref @ metamodelica::List::Nil, result) => {
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn, var }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1481,7 +1481,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1498,7 +1498,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrixT.clone(), eqn.clone())?;
@@ -1515,7 +1515,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1532,7 +1532,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1549,7 +1549,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1566,7 +1566,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: solvedVars, eqn }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn, vars: solvedVars }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut result = (*result).clone();
             inputVars = metamodelica::arrayGet(inMatrix.clone(), eqn.clone())?;
@@ -1583,7 +1583,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { vars: solvedVars, eqns, .. }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns, vars: solvedVars, .. }, tail: rest }, result) => {
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut inputVarsLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut result = (*result).clone();
@@ -1602,7 +1602,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result = getSparsePattern(rest.clone(), result.clone(), invarSparse.clone(), inMark.clone(), inUsed.clone(), inmarkValue.clone() + 1, inMatrix.clone(), inMatrixT.clone())?;
             result.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { innerEquations, tearingvars: vars, residualequations: eqns, .. }, .. }, tail: rest }, result) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { residualequations: eqns, tearingvars: vars, innerEquations, .. }, .. }, tail: rest }, result) => {
             let mut vars1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut inputVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2326,7 +2326,7 @@ fn generateSymbolicJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut i
         let __mc_input = (inBackendDAE.clone(), inVars.clone(), inDiffedVars.clone(), inMatrixName.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { functionTree: functions, info: ei, graph, cache, .. }, .. }, Deref @ metamodelica::List::Nil, _, _) => {
+                (Deref @ BackendDAE::BackendDAE { shared: Deref @ BackendDAE::Shared { cache, graph, info: ei, functionTree: functions, .. }, .. }, Deref @ metamodelica::List::Nil, _, _) => {
                     let mut jacobian: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
                     jacobian = Arc::new(BackendDAE::BackendDAE { eqs: list![BackendDAEUtil::createEqSystem(BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendEquation::emptyEqns(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns())], shared: BackendDAEUtil::createEmptyShared(openmodelica_backend_types::BackendDAE::BackendDAEType::JACOBIAN, ei.clone(), cache.clone(), graph.clone())? });
                     Ok((jacobian.clone(), functions.clone()))
@@ -2336,7 +2336,7 @@ fn generateSymbolicJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2, .. }, orderedEqs, orderedVars, .. }, tail: Deref @ metamodelica::List::Nil }, shared: Deref @ BackendDAE::Shared { info: ei, functionTree: functions, graph, cache, globalKnownVars, .. } }, diffVars, diffedVars, matrixName) => {
+                (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars, orderedEqs, matching: Deref @ BackendDAE::Matching::MATCHING { ass2, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, shared: Deref @ BackendDAE::Shared { globalKnownVars, cache, graph, functionTree: functions, info: ei, .. } }, diffVars, diffedVars, matrixName) => {
                     let mut comref_diffvars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut x: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut dummyVarName: ArcStr = arcstr::literal!("");
@@ -2437,7 +2437,7 @@ fn createAllDiffedVarsWork(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>,
         (Deref @ metamodelica::List::Nil, _, _) => {
             iVars.clone().reverse()
         },
-        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, varName: currVar, .. }, tail: restVar }, cref, index) => {
+        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { varName: currVar, varKind: BackendDAE::VarKind::STATE { .. }, .. }, tail: restVar }, cref, index) => {
             let mut r1: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut derivedCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut currVar = (*currVar).clone();
@@ -2626,7 +2626,7 @@ fn calculateEqSystemJacobians(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShare
     let mut outSyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (outSyst, outShared) = (::match_deref::match_deref! { match &((inSyst.clone(), inShared.clone())) {
-        (syst @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1, ass2, comps }, orderedEqs: eqns, orderedVars: vars, .. }, shared) => {
+        (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, matching: Deref @ BackendDAE::Matching::MATCHING { ass1, ass2, comps }, .. }, shared) => {
             let mut syst = (*syst).clone();
             let mut comps = (*comps).clone();
             let mut shared = (*shared).clone();
@@ -2869,7 +2869,7 @@ fn calculateJacobianComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { mixedSystem, vars: iterationvarsInts, eqns: residualequations, jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, .. } => {
+                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, eqns: residualequations, vars: iterationvarsInts, mixedSystem, .. } => {
                     if !((Flags::isSet(Flags::LS_ANALYTIC_JACOBIAN.clone())?)) { bail!("guard") }
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
                     let mut jacobian: Arc<BackendDAE::Jacobian> = Arc::new(BackendDAE::Jacobian::EMPTY_JACOBIAN);
@@ -2892,7 +2892,7 @@ fn calculateJacobianComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { mixedSystem, vars: iterationvarsInts, eqns: residualequations, .. } => {
+                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: residualequations, vars: iterationvarsInts, mixedSystem, .. } => {
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
                     let mut iterationvars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut resVarsLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -2958,7 +2958,7 @@ fn checkNonLinDependecies(mut inComp: Arc<BackendDAE::StrongComponent>, mut inEq
         let () = ({
         let mut eqnIndices: Arc<metamodelica::List<i32>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(inComp.clone()) {
-        Deref @ BackendDAE::StrongComponent::TORNSYSTEM { linear: false, strictTearingSet: BackendDAE::TearingSet { innerEquations, residualequations: resIndices, jac, .. }, .. } => {
+        Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { jac, residualequations: resIndices, innerEquations, .. }, linear: false, .. } => {
             for mut eq in &*innerEquations.clone() {
                 let mut eq = eq.clone();
                 eqnIndices = (match eq.clone() {
@@ -2977,7 +2977,7 @@ fn checkNonLinDependecies(mut inComp: Arc<BackendDAE::StrongComponent>, mut inEq
             printNonLinIterVarsAndEqs(jac.clone(), eqnIndices.clone(), inEqns.clone())?;
             ()
         },
-        Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_NONLINEAR { .. }, jac, eqns: eqnIndices, .. } => {
+        Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eqnIndices, jac, jacType: BackendDAE::JacobianType::JAC_NONLINEAR { .. }, .. } => {
             printNonLinIterVarsAndEqs(jac.clone(), eqnIndices.clone(), inEqns.clone())?;
             ()
         },
@@ -2989,10 +2989,10 @@ fn checkNonLinDependecies(mut inComp: Arc<BackendDAE::StrongComponent>, mut inEq
     });
     } else {
         (existNonLin, name) = (::match_deref::match_deref! { match &(inComp.clone()) {
-        Deref @ BackendDAE::StrongComponent::TORNSYSTEM { linear: false, strictTearingSet: BackendDAE::TearingSet { jac, .. }, .. } => {
+        Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { jac, .. }, linear: false, .. } => {
             existNonLinIterVars(jac.clone())?
         },
-        Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_NONLINEAR { .. }, jac, .. } => {
+        Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jac, jacType: BackendDAE::JacobianType::JAC_NONLINEAR { .. }, .. } => {
             existNonLinIterVars(jac.clone())?
         },
         _ => {
@@ -3307,7 +3307,7 @@ fn calculateEqSystemStateSetsJacobians(mut inSyst: Arc<BackendDAE::EqSystem>, mu
     let mut outSyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (outSyst, outShared) = (::match_deref::match_deref! { match &((inSyst.clone(), inShared.clone())) {
-        (syst @ Deref @ BackendDAE::EqSystem { stateSets, orderedEqs: eqns, orderedVars: vars, .. }, shared) => {
+        (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, stateSets, .. }, shared) => {
             let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
             let mut syst = (*syst).clone();
             let mut stateSets = (*stateSets).clone();
@@ -3345,7 +3345,7 @@ fn calculateStateSetJacobian(mut inStateSet: BackendDAE::StateSet, mut inVars: B
     let mut outStateSet: BackendDAE::StateSet = <BackendDAE::StateSet as ::std::default::Default>::default();
     let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (outStateSet, outShared) = (match inStateSet.clone() {
-        BackendDAE::StateSet { varJ: mut varJ, crJ: mut crJ, oeqns: mut oeqns, eqns: mut eqns, ovars: mut ovars, statescandidates: mut statescandidates, varA: mut varA, crA: mut crA, state: mut state, rang: mut rang, index: mut index, .. } => {
+        BackendDAE::StateSet { index: mut index, rang: mut rang, state: mut state, crA: mut crA, varA: mut varA, statescandidates: mut statescandidates, ovars: mut ovars, eqns: mut eqns, oeqns: mut oeqns, crJ: mut crJ, varJ: mut varJ, .. } => {
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut crstates: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut marked: metamodelica::Array<bool> = Default::default();
@@ -3463,7 +3463,7 @@ fn createResidualSetEquations(mut iEqs: Arc<metamodelica::List<Arc<BackendDAE::E
         let mut __acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
         for mut eq in (iEqs.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { attr: eqAttr, source, scalar: e2, exp: e1 } => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr: eqAttr } => {
             let mut crj: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut expJ: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3475,7 +3475,7 @@ fn createResidualSetEquations(mut iEqs: Arc<metamodelica::List<Arc<BackendDAE::E
             idx = idx.clone() + 1;
             eqn.clone()
         },
-        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { attr: eqAttr, source, exp: e1 } => {
+        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source, attr: eqAttr } => {
             let mut expJ: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             expJ = Expression::crefExp(ComponentReference::subscriptCrefWithInt(crJ.clone(), idx.clone())?)?;
@@ -3559,7 +3559,7 @@ fn calculateJacobianRow<Type_a: Clone + 'static>(mut inEquation: Arc<BackendDAE:
     let mut size: i32 = 0;
     let mut oShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (outLst, size, oShared) = (::match_deref::match_deref! { match &(inEquation.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { source, scalar: e2, exp: e1, .. } => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, .. } => {
             let mut var_indxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut var_indxs_1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
@@ -3570,7 +3570,7 @@ fn calculateJacobianRow<Type_a: Clone + 'static>(mut inEquation: Arc<BackendDAE:
             (eqns, shared) = calculateJacobianRow2(Expression::expSub(e1.clone(), e2.clone())?, vars.clone(), scalar_eqn_indx.clone(), var_indxs_1.clone(), differentiateIfExp.clone(), iShared.clone(), source.clone(), iAcc.clone())?;
             (eqns.clone(), 1, shared.clone())
         },
-        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { source, exp: e, .. } => {
+        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, source, .. } => {
             let mut var_indxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut var_indxs_1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
@@ -3581,7 +3581,7 @@ fn calculateJacobianRow<Type_a: Clone + 'static>(mut inEquation: Arc<BackendDAE:
             (eqns, shared) = calculateJacobianRow2(e.clone(), vars.clone(), scalar_eqn_indx.clone(), var_indxs_1.clone(), differentiateIfExp.clone(), iShared.clone(), source.clone(), iAcc.clone())?;
             (eqns.clone(), 1, shared.clone())
         },
-        Deref @ BackendDAE::Equation::SOLVED_EQUATION { source, exp: e2, componentRef: cr, .. } => {
+        Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, source, .. } => {
             let mut var_indxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut var_indxs_1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
@@ -3594,7 +3594,7 @@ fn calculateJacobianRow<Type_a: Clone + 'static>(mut inEquation: Arc<BackendDAE:
             (eqns, shared) = calculateJacobianRow2(Expression::expSub(e1.clone(), e2.clone())?, vars.clone(), scalar_eqn_indx.clone(), var_indxs_1.clone(), differentiateIfExp.clone(), iShared.clone(), source.clone(), iAcc.clone())?;
             (eqns.clone(), 1, shared.clone())
         },
-        Deref @ BackendDAE::Equation::ARRAY_EQUATION { source, right: e2, left: e1, dimSize: ds, .. } => {
+        Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds, left: e1, right: e2, source, .. } => {
             let mut var_indxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut var_indxs_1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
@@ -3764,8 +3764,15 @@ fn jacobianNonlinear(mut vars: BackendDAE::Variables, mut inTplIntegerIntegerEqu
         let mut tpl = tpl.clone();
         (_, _, eq) = tpl.clone();
         isNonLinear = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => jacobianNonlinearExp(vars.clone(), e1.clone())? || jacobianNonlinearExp(vars.clone(), e2.clone())?,
-        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => jacobianNonlinearExp(vars.clone(), e.clone())?,
+        Deref @ BackendDAE::Equation::EQUATION { exp: __esc_e1, scalar: __esc_e2, .. } => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            jacobianNonlinearExp(vars.clone(), e1.clone())? || jacobianNonlinearExp(vars.clone(), e2.clone())?
+        },
+        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: __esc_e, .. } => {
+            e = (*__esc_e).clone();
+            jacobianNonlinearExp(vars.clone(), e.clone())?
+        },
         _ => bail!("match: no arm matched"),
     } });
         if isNonLinear.clone() {
@@ -3802,7 +3809,7 @@ fn traverserjacobianNonlinearExp(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendDAE:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, _)) => {
+                (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (vars, _)) => {
                     BackendVariable::getVar(cr.clone(), vars.clone())?;
                     Ok((e.clone(), false, (vars.clone(), true)))
                 }
@@ -3849,11 +3856,29 @@ fn jacobianConstant(mut inTplIntegerIntegerEquationLst: Arc<metamodelica::List<(
         let mut tpl = tpl.clone();
         eqn = Util::tuple33(tpl.clone());
         outBoolean = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?,
-        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => Expression::isConst(e.clone())?,
-        Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e, .. } => Expression::isConst(e.clone())?,
-        Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. } => Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?,
-        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. } => Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?,
+        Deref @ BackendDAE::Equation::EQUATION { exp: __esc_e1, scalar: __esc_e2, .. } => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?
+        },
+        Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: __esc_e, .. } => {
+            e = (*__esc_e).clone();
+            Expression::isConst(e.clone())?
+        },
+        Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: __esc_e, .. } => {
+            e = (*__esc_e).clone();
+            Expression::isConst(e.clone())?
+        },
+        Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: __esc_e1, right: __esc_e2, .. } => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?
+        },
+        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: __esc_e1, right: __esc_e2, .. } => {
+            e1 = (*__esc_e1).clone();
+            e2 = (*__esc_e2).clone();
+            Expression::isConst(e1.clone())? && Expression::isConst(e2.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3920,7 +3945,7 @@ fn varsNotInRelations(mut exp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables, b
             (_, tpl) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnsysRhsExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool))> + 'static>), tpl.clone())?;
             (exp.clone(), false, tpl.clone())
         },
-        (Deref @ DAE::Exp::ASUB { sub: subs, exp: e1 }, _) => {
+        (Deref @ DAE::Exp::ASUB { exp: e1, sub: subs }, _) => {
             let mut b: bool = false;
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             expLst = ({
@@ -3967,7 +3992,7 @@ fn rhsConstant2(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Var
         let __mc_input = (inEq.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (eqn @ Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, (vars, b, repl)) => {
+                (eqn @ Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, (vars, b, repl)) => {
                     let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut res: bool = false;
@@ -3981,7 +4006,7 @@ fn rhsConstant2(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Var
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (eqn @ Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. }, (vars, b, repl)) => {
+                (eqn @ Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, (vars, b, repl)) => {
                     let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut res: bool = false;
@@ -3995,7 +4020,7 @@ fn rhsConstant2(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Var
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (eqn @ Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. }, (vars, b, repl)) => {
+                (eqn @ Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, (vars, b, repl)) => {
                     let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut res: bool = false;
@@ -4456,7 +4481,7 @@ pub mod LinearJacobian {
             }.is_err() {
             }
         }
-        linJac = Arc::new(LinearJacobian { eq_marks: arrayCreate((tmp_mat.clone().len() as i32), false), ind: metamodelica::arrayFromVec(tmp_idx.clone().into_iter().cloned().collect()), rhs: metamodelica::arrayFromVec(tmp_rhs.clone().into_iter().cloned().collect()), rows: metamodelica::arrayFromVec(tmp_mat.clone().into_iter().cloned().collect()) });
+        linJac = Arc::new(LinearJacobian { rows: metamodelica::arrayFromVec(tmp_mat.clone().into_iter().cloned().collect()), rhs: metamodelica::arrayFromVec(tmp_rhs.clone().into_iter().cloned().collect()), ind: metamodelica::arrayFromVec(tmp_idx.clone().into_iter().cloned().collect()), eq_marks: arrayCreate((tmp_mat.clone().len() as i32), false) });
         Ok(linJac)
     }
 
@@ -4503,7 +4528,9 @@ pub mod LinearJacobian {
         for mut idx in &*UnorderedMap::keyList(pivot_row.clone()) {
             let mut idx = idx.clone();
             let () = (match (UnorderedMap::get(idx.clone(), row.clone())?, UnorderedMap::get(idx.clone(), pivot_row.clone())?) {
-        (Some(mut val), Some(mut diag_val)) => {
+        (Some(mut __esc_val), Some(mut __esc_diag_val)) => {
+            val = __esc_val.clone();
+            diag_val = __esc_diag_val.clone();
             val = val.clone() * piv_value.clone() - diag_val.clone() * row_value.clone();
             if realAbs(val.clone()) < metamodelica::OrderedFloat(1e-12_f64) {
                 UnorderedMap::remove(idx.clone(), row.clone())?;
@@ -4512,7 +4539,8 @@ pub mod LinearJacobian {
             }
             ()
         },
-        (None, Some(mut diag_val)) => {
+        (None, Some(mut __esc_diag_val)) => {
+            diag_val = __esc_diag_val.clone();
             UnorderedMap::add(idx.clone(), -(diag_val.clone() * row_value.clone()), row.clone())?;
             ()
         },
@@ -4525,7 +4553,8 @@ pub mod LinearJacobian {
         for mut idx in &*UnorderedMap::keyList(row.clone()) {
             let mut idx = idx.clone();
             let () = (match (UnorderedMap::get(idx.clone(), row.clone())?, UnorderedMap::get(idx.clone(), pivot_row.clone())?) {
-        (Some(mut val), None) => {
+        (Some(mut __esc_val), None) => {
+            val = __esc_val.clone();
             val = val.clone() * piv_value.clone();
             UnorderedMap::add(idx.clone(), val.clone(), row.clone())?;
             ()

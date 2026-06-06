@@ -265,12 +265,12 @@ pub fn intervalFromRange(mut e: Arc<Expression::NFExpression>) -> Result<Arc<SBI
     let mut step: i32 = 0;
     let mut hi: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(SimplifyExp::simplify(e.clone(), false)?) {
-        Deref @ Expression::RANGE { stop: __pa0, step: __pa1, start: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::RANGE { start: __pa0, step: __pa1, stop: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    stop = __pa0.clone();
+    start = __pa0.clone();
     ostep = __pa1.clone();
-    start = __pa2.clone();
+    stop = __pa2.clone();
     lo = Expression::toInteger(start.clone())?;
     hi = Expression::toInteger(stop.clone())?;
     if isSome(ostep.clone()) {

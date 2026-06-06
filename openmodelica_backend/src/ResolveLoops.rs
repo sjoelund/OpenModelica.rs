@@ -84,7 +84,7 @@ fn resolveLoops_main(mut inEqSys: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
         let __mc_input = inEqSys.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqs, orderedVars: vars, .. } => {
+                syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqs, .. } => {
                     let mut numSimpEqs: i32 = 0;
                     let mut numVars: i32 = 0;
                     let mut eqMapArr: metamodelica::Array<i32> = Default::default();
@@ -1009,8 +1009,8 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
 fn eqIsConst(mut eq: Arc<BackendDAE::Equation>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CREF { .. }, exp: Deref @ DAE::Exp::RCONST { .. }, .. } => true,
-        Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::RCONST { .. }, exp: Deref @ DAE::Exp::CREF { .. }, .. } => true,
+        Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::RCONST { .. }, scalar: Deref @ DAE::Exp::CREF { .. }, .. } => true,
+        Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::CREF { .. }, scalar: Deref @ DAE::Exp::RCONST { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1264,7 +1264,7 @@ fn varIsUnitCoeff(mut index: i32, mut varMap: metamodelica::Array<i32>, mut daeV
 fn crefHasUnitCoeff(mut cref: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation>) -> Result<bool> {
     let mut isUnit: bool = false;
     isUnit = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
             crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
         },
         _ => {
@@ -1280,19 +1280,19 @@ fn crefHasUnitCoeff(mut cref: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Eq
 fn crefUnitCoeffInExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut isUnit: bool = false;
     isUnit = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::ADD { .. }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD { .. }, exp2: e2 } => {
             crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::SUB { .. }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB { .. }, exp2: e2 } => {
             crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
         },
         Deref @ DAE::Exp::UNARY { exp: e1, .. } => {
             crefUnitCoeffInExp(e1.clone(), cref.clone())?
         },
-        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL { .. }, exp1: Deref @ DAE::Exp::CREF { componentRef: c, .. } } => {
+        Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::CREF { componentRef: c, .. }, operator: DAE::Operator::MUL { .. }, exp2: e2 } => {
             !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e2.clone()) || Expression::isConstMinusOne(e2.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::CREF { componentRef: c, .. }, operator: DAE::Operator::MUL { .. }, exp1: e1 } => {
+        Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CREF { componentRef: c, .. } } => {
             !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e1.clone()) || Expression::isConstMinusOne(e1.clone())
         },
         _ => {
@@ -1724,17 +1724,17 @@ fn sumUp2Equations(mut sumUp: bool, mut eq1: Arc<BackendDAE::Equation>, mut eq2:
     let mut exp3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exp4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eq1.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::Equation::EQUATION { exp: __pa0, scalar: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp2 = __pa0.clone();
-    exp1 = __pa1.clone();
+    exp1 = __pa0.clone();
+    exp2 = __pa1.clone();
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(eq2.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { scalar: __pa2, exp: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
+        Deref @ BackendDAE::Equation::EQUATION { exp: __pa2, scalar: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    exp4 = __pa2.clone();
-    exp3 = __pa3.clone();
+    exp3 = __pa2.clone();
+    exp4 = __pa3.clone();
     exp1 = sumUp2Expressions(sumUp.clone(), exp1.clone(), exp3.clone())?;
     exp2 = sumUp2Expressions(sumUp.clone(), exp2.clone(), exp4.clone())?;
     exp2 = sumUp2Expressions(false, exp2.clone(), exp1.clone())?;
@@ -1748,10 +1748,10 @@ fn sumUp2Equations(mut sumUp: bool, mut eq1: Arc<BackendDAE::Equation>, mut eq2:
 fn simplifyZeroAssignment(mut eIn: Arc<BackendDAE::Equation>) -> Arc<BackendDAE::Equation> {
     let mut eOut: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     eOut = (::match_deref::match_deref! { match &(eIn.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { attr, source, scalar: Deref @ DAE::Exp::BINARY { exp2: e @ Deref @ DAE::Exp::CREF { .. }, operator: DAE::Operator::MUL { .. }, exp1: Deref @ DAE::Exp::RCONST { real: _ } }, exp: Deref @ DAE::Exp::RCONST { real: __rlit_0 } } if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
+        Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::RCONST { real: __rlit_0 }, scalar: Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: _ }, operator: DAE::Operator::MUL { .. }, exp2: e @ Deref @ DAE::Exp::CREF { .. } }, source, attr } if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), scalar: e.clone(), source: source.clone(), attr: attr.clone() })
         },
-        Deref @ BackendDAE::Equation::EQUATION { attr, source, exp: Deref @ DAE::Exp::BINARY { exp2: e @ Deref @ DAE::Exp::CREF { .. }, operator: DAE::Operator::MUL { .. }, exp1: Deref @ DAE::Exp::RCONST { real: _ } }, scalar: Deref @ DAE::Exp::RCONST { real: __rlit_1 } } if __rlit_1.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
+        Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::RCONST { real: __rlit_1 }, exp: Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::RCONST { real: _ }, operator: DAE::Operator::MUL { .. }, exp2: e @ Deref @ DAE::Exp::CREF { .. } }, source, attr } if __rlit_1.eq(&metamodelica::OrderedFloat((0.0) as f64)) => {
             Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), scalar: e.clone(), source: source.clone(), attr: attr.clone() })
         },
         _ => {
@@ -1768,7 +1768,7 @@ fn CRefIsPosOnRHS(mut crefIn: Arc<DAE::ComponentRef>, mut eqIn: Arc<BackendDAE::
         let __mc_input = eqIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => {
+                Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. } => {
                     let mut exists1: bool = false;
                     let mut sign1: bool = false;
                     let mut sign2: bool = false;
@@ -1803,7 +1803,7 @@ fn expIsCref(mut expIn: Arc<DAE::Exp>, mut crefIn: Arc<DAE::ComponentRef>) -> Re
             sameCref = ComponentReferenceBasics::crefEqualNoStringCompare(crefIn.clone(), cref.clone())?;
             (sameCref.clone(), true)
         },
-        Deref @ DAE::Exp::BINARY { exp2, operator: DAE::Operator::SUB { .. }, exp1 } => {
+        Deref @ DAE::Exp::BINARY { exp1, operator: DAE::Operator::SUB { .. }, exp2 } => {
             let mut sign: bool = false;
             let mut sign1: bool = false;
             let mut sign2: bool = false;
@@ -1818,7 +1818,7 @@ fn expIsCref(mut expIn: Arc<DAE::Exp>, mut crefIn: Arc<DAE::ComponentRef>) -> Re
             sign = if (exists2.clone()) {sign2.clone()} else {sign.clone()};
             (exists.clone(), sign.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2, operator: DAE::Operator::ADD { .. }, exp1 } => {
+        Deref @ DAE::Exp::BINARY { exp1, operator: DAE::Operator::ADD { .. }, exp2 } => {
             let mut sign: bool = false;
             let mut sign1: bool = false;
             let mut sign2: bool = false;
@@ -1832,21 +1832,21 @@ fn expIsCref(mut expIn: Arc<DAE::Exp>, mut crefIn: Arc<DAE::ComponentRef>) -> Re
             sign = if (exists2.clone()) {sign2.clone()} else {sign.clone()};
             (exists.clone(), sign.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::RCONST { real: r }, operator: DAE::Operator::MUL { .. }, exp1: exp1 @ Deref @ DAE::Exp::CREF { .. } } => {
+        Deref @ DAE::Exp::BINARY { exp1: exp1 @ Deref @ DAE::Exp::CREF { .. }, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::RCONST { real: r } } => {
             let mut sign: bool = false;
             let mut exists: bool = false;
             (exists, _) = expIsCref(exp1.clone(), crefIn.clone())?;
             sign = r.clone() > metamodelica::OrderedFloat((0) as f64);
             (exists.clone(), sign.clone())
         },
-        Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::CREF { .. }, operator: DAE::Operator::MUL { .. }, exp1: exp1 @ Deref @ DAE::Exp::RCONST { real: r } } => {
+        Deref @ DAE::Exp::BINARY { exp1: exp1 @ Deref @ DAE::Exp::RCONST { real: r }, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CREF { .. } } => {
             let mut sign: bool = false;
             let mut exists: bool = false;
             (exists, _) = expIsCref(exp1.clone(), crefIn.clone())?;
             sign = r.clone() > metamodelica::OrderedFloat((0) as f64);
             (exists.clone(), sign.clone())
         },
-        Deref @ DAE::Exp::UNARY { exp: exp1, operator: DAE::Operator::UMINUS { .. } } => {
+        Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: exp1 } => {
             let mut sign: bool = false;
             let mut exists: bool = false;
             (exists, sign) = expIsCref(exp1.clone(), crefIn.clone())?;
@@ -1905,8 +1905,9 @@ fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
     let mut partitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     (currNumberOut, partitionsOut) = (::match_deref::match_deref! { match &(checkNextIn.clone()) {
         Deref @ metamodelica::List::Cons { head: 0, tail: Deref @ metamodelica::List::Nil } => (currNumberIn.clone() - 1, partitionsIn.clone()),
-        Deref @ metamodelica::List::Cons { head: eq, tail: rest } => {
-            let mut rest = (*rest).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_eq, tail: __esc_rest } => {
+            eq = (*__esc_eq).clone();
+            rest = (*__esc_rest).clone();
             if arrayGetIsNotPositive(eq.clone(), markEqs.clone())? {
                 {let _arr = markEqs.clone(); let _idx = eq.clone(); let _val = currNumberIn.clone(); _arr.borrow_mut()[(_idx-1) as usize] = _val; _arr};
                 if partitionsIn.clone().is_empty() {
@@ -1999,7 +2000,7 @@ fn isAddOrSubExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Varia
         (Deref @ DAE::Exp::RCONST { .. }, (true, vars)) => {
             (inExp.clone(), (true, vars.clone()))
         },
-        (Deref @ DAE::Exp::BINARY { exp2, operator: DAE::Operator::ADD { .. }, exp1 }, (true, vars)) => {
+        (Deref @ DAE::Exp::BINARY { exp1, operator: DAE::Operator::ADD { .. }, exp2 }, (true, vars)) => {
             let mut b: bool = false;
             let (_, (__pa0, _)) = isAddOrSubExp(exp1.clone(), (true, vars.clone()))?;
             b = __pa0.clone();
@@ -2007,7 +2008,7 @@ fn isAddOrSubExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Varia
             b = __pa1.clone();
             (inExp.clone(), (b.clone(), vars.clone()))
         },
-        (Deref @ DAE::Exp::BINARY { exp2, operator: DAE::Operator::SUB { .. }, exp1 }, (true, vars)) => {
+        (Deref @ DAE::Exp::BINARY { exp1, operator: DAE::Operator::SUB { .. }, exp2 }, (true, vars)) => {
             let mut b: bool = false;
             let (_, (__pa0, _)) = isAddOrSubExp(exp1.clone(), (true, vars.clone()))?;
             b = __pa0.clone();
@@ -2015,12 +2016,12 @@ fn isAddOrSubExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Varia
             b = __pa1.clone();
             (inExp.clone(), (b.clone(), vars.clone()))
         },
-        (Deref @ DAE::Exp::BINARY { exp2, operator: DAE::Operator::MUL { .. }, exp1: Deref @ DAE::Exp::CREF { componentRef: cref, .. } }, (true, vars)) => {
+        (Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, operator: DAE::Operator::MUL { .. }, exp2 }, (true, vars)) => {
             let mut b: bool = false;
             b = BackendVariable::isState(cref.clone(), vars.clone())? && Expression::isConst(exp2.clone())?;
             (inExp.clone(), (b.clone(), vars.clone()))
         },
-        (Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, operator: DAE::Operator::MUL { .. }, exp1 }, (true, vars)) => {
+        (Deref @ DAE::Exp::BINARY { exp1, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CREF { componentRef: cref, .. } }, (true, vars)) => {
             let mut b: bool = false;
             b = Expression::isConst(exp1.clone())? && BackendVariable::isState(cref.clone(), vars.clone())?;
             (inExp.clone(), (b.clone(), vars.clone()))
@@ -2349,7 +2350,7 @@ fn reshuffling_post1(mut compIn: Arc<BackendDAE::StrongComponent>, mut shared: A
         let __mc_input = compIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: jacType @ BackendDAE::JacobianType::JAC_LINEAR { .. }, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: ojac }, vars: vIdcs, eqns: eqIdcs, .. } => {
+                Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eqIdcs, vars: vIdcs, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: ojac }, jacType: jacType @ BackendDAE::JacobianType::JAC_LINEAR { .. }, .. } => {
                     let mut eqSys: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
                     (eqSys, _) = reshuffling_post2(eqIdcs.clone(), vIdcs.clone(), systIn.clone(), shared.clone(), ojac.clone(), jacType.clone())?;
                     Ok(eqSys.clone())
@@ -2395,13 +2396,13 @@ fn reshuffling_post2(mut eqIdcs: Arc<metamodelica::List<i32>>, mut varIdcs: Arc<
     let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     size = (varIdcs.clone().len() as i32);
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(dae.clone()) {
-        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2: __pa0, ass1: __pa1, .. }, orderedEqs: __pa2, orderedVars: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ BackendDAE::EqSystem { orderedVars: __pa0, orderedEqs: __pa1, matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa2, ass2: __pa3, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ass2Sys = __pa0.clone();
-    ass1Sys = __pa1.clone();
-    daeEqs = __pa2.clone();
-    daeVars = __pa3.clone();
+    daeVars = __pa0.clone();
+    daeEqs = __pa1.clone();
+    ass1Sys = __pa2.clone();
+    ass2Sys = __pa3.clone();
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
     eqLst = BackendEquation::getList(eqIdcs.clone(), daeEqs.clone())?;
     eqs = BackendEquation::listEquation(eqLst.clone())?;
@@ -2603,19 +2604,19 @@ pub fn resolveEquations(mut eq: Option<Arc<BackendDAE::Equation>>, mut loopIn: A
                     var = (varsIn.clone()).get(sharedVar.clone())?;
                     varExp = Expression::crefExp(BackendVariable::varCref(var.clone())?)?;
                     let (__pa2, __pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(eq1.clone()) {
-                        Deref @ BackendDAE::Equation::EQUATION { attr: __pa2, source: __pa3, scalar: __pa4, exp: __pa5 } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
+                        Deref @ BackendDAE::Equation::EQUATION { exp: __pa2, scalar: __pa3, source: __pa4, attr: __pa5 } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    attr = __pa2.clone();
-                    source = __pa3.clone();
-                    rhs1 = __pa4.clone();
-                    lhs1 = __pa5.clone();
+                    lhs1 = __pa2.clone();
+                    rhs1 = __pa3.clone();
+                    source = __pa4.clone();
+                    attr = __pa5.clone();
                     let (__pa6, __pa7) = ::match_deref::match_deref! { match &(eq2.clone()) {
-                        Deref @ BackendDAE::Equation::EQUATION { scalar: __pa6, exp: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
+                        Deref @ BackendDAE::Equation::EQUATION { exp: __pa6, scalar: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    rhs2 = __pa6.clone();
-                    lhs2 = __pa7.clone();
+                    lhs2 = __pa6.clone();
+                    rhs2 = __pa7.clone();
                     (eqExp, _) = ExpressionSolve::solve(lhs1.clone(), rhs1.clone(), varExp.clone(), None)?;
                     (lhs2, _) = Expression::replaceExp(lhs2.clone(), varExp.clone(), eqExp.clone())?;
                     (rhs2, _) = Expression::replaceExp(rhs2.clone(), varExp.clone(), eqExp.clone())?;
@@ -2690,7 +2691,7 @@ fn solveLinearSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
     outTpl = (runMatching.clone(), offset.clone(), maxSize.clone());
     if runMatching.clone() {
         osyst = (::match_deref::match_deref! { match &(osyst.clone()) {
-        syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. } => {
+        syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. } => {
             let mut syst = (*syst).clone();
             let mut eqns = (*eqns).clone();
             eqns = List::fold(ii.clone(), (std::sync::Arc::new(BackendEquation::delete) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>), eqns.clone())?;
@@ -2716,7 +2717,7 @@ fn solveLinearSystem2(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
         let __mc_input = (isyst.clone(), ishared.clone(), comp.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, vars: vindx, eqns: eindex, .. }) => {
+                (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eindex, vars: vindx, jac: Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: Some(jac) }, jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, .. }) => {
                     let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut toffset: i32 = 0;
@@ -2753,13 +2754,13 @@ fn solveLinearSystem3(mut inSyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Ba
     let mut oshared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut offset_: i32 = 0;
     (osyst, oshared, offset_) = (::match_deref::match_deref! { match &((inSyst.clone(), ishared.clone())) {
-        (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }) => {
+        (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }) => {
             let mut beqs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut names: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut n: i32 = 0;
             let mut syst = (*syst).clone();
-            let mut eqns = (*eqns).clone();
             let mut vars = (*vars).clone();
+            let mut eqns = (*eqns).clone();
             let mut shared = (*shared).clone();
             (beqs, _) = BackendDAEUtil::getEqnSysRhs(BackendEquation::listEquation(eqn_lst.clone())?, BackendVariable::listVar1(var_lst.clone())?, Some(funcs.clone()))?;
             beqs = beqs.clone().reverse();

@@ -323,8 +323,8 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             eqn_ptr = Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone());
             eqn = Pointer::access(eqn_ptr.clone());
             (solved_comp, solve_status) = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ Equation::ALGORITHM { alg, .. } => {
-            let mut alg = (*alg).clone();
+        Deref @ Equation::ALGORITHM { alg: __esc_alg, .. } => {
+            alg = (*__esc_alg).clone();
             solved_crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut var in (var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone()).into_iter().cloned() {
@@ -492,7 +492,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (generic_comp, solve_status, implicit_index) = unwrap_break_err!(solveGenericEquation(comp.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             (list![generic_comp.clone()], solve_status.clone())
         },
-        Deref @ StrongComponent::SLICED_COMPONENT { eqn: eqn_slice, var: var_slice, .. } if (Equation::isArrayEquation(Slice::getT(eqn_slice.clone()))) => {
+        Deref @ StrongComponent::SLICED_COMPONENT { var: var_slice, eqn: eqn_slice, .. } if (Equation::isArrayEquation(Slice::getT(eqn_slice.clone()))) => {
             let mut eqn_slice = (*eqn_slice).clone();
             (eqn_slice, implicit_index, solve_status) = unwrap_break_err!(solveForVarSlice(eqn_slice.clone(), var_slice.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             assign_variant_field!(comp => StrongComponent::NBStrongComponent::SLICED_COMPONENT;
@@ -565,11 +565,11 @@ pub fn solveGenericEquation(mut comp: Arc<StrongComponent::NBStrongComponent>, m
     let mut solve_status: Status = Status::UNPROCESSED;
     let mut implicit_index: i32 = implicit_index;
     (comp, solve_status) = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::SLICED_COMPONENT { eqn: eqn_slice, var: var_slice, .. } if (Equation::isForEquation(Slice::getT(eqn_slice.clone()))) => {
+        Deref @ StrongComponent::SLICED_COMPONENT { var: var_slice, eqn: eqn_slice, .. } if (Equation::isForEquation(Slice::getT(eqn_slice.clone()))) => {
             (comp, solve_status, implicit_index) = solveGenericEquationSlice(var_slice.clone(), eqn_slice.clone(), var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone())?;
             (comp.clone(), solve_status.clone())
         },
-        Deref @ StrongComponent::RESIZABLE_COMPONENT { eqn: eqn_slice, var: var_slice, .. } if (Equation::isForEquation(Slice::getT(eqn_slice.clone()))) => {
+        Deref @ StrongComponent::RESIZABLE_COMPONENT { var: var_slice, eqn: eqn_slice, .. } if (Equation::isForEquation(Slice::getT(eqn_slice.clone()))) => {
             let mut eqn_slice = (*eqn_slice).clone();
             eqn_slice = Slice::apply(eqn_slice.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static> = (std::sync::Arc::new({ let __pe_b1 = var_field!((*comp).order, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone(); move |__pe_a0| Equation::applyForOrder(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>); move |__pe_a0| Pointer::apply(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             (comp, solve_status, implicit_index) = solveGenericEquationSlice(var_slice.clone(), eqn_slice.clone(), var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone())?;
@@ -708,7 +708,8 @@ pub fn solveMultiRecordStrongComponent(mut eqn: Arc<Equation::Equation>, mut var
                 }
             }
             solved_eqn = (::match_deref::match_deref! { match &((UnorderedSet::toList(record_crefs.clone()), status.clone())) {
-        (Deref @ metamodelica::List::Cons { head: var_cref, tail: Deref @ metamodelica::List::Nil }, Status::UNPROCESSED) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_var_cref, tail: Deref @ metamodelica::List::Nil }, Status::UNPROCESSED) => {
+            var_cref = (*__esc_var_cref).clone();
             (solved_eqn, status, _) = solveBody(eqn.clone(), var_cref.clone(), funcMap.clone())?;
             solved_eqn.clone()
         },
@@ -1303,8 +1304,9 @@ fn solveUniqueFindInstructionsCallOneArg(mut ty: Arc<Type::NFType>, mut substExp
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } if (List::hasOneElement(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?)) => {
-            name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?).clone();
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { .. } } if (List::hasOneElement(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?)) => {
+            call = (*__esc_call).clone();
+            name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?).clone();
             argExp = listHead(Call::arguments(call.clone())?)?;
             (crefFoundInRecursion, inverseInstructions, status) = solveUniqueFindInstructions(argExp.clone(), cref.clone(), crefFound.clone(), inverseInstructions.clone())?;
             if status.clone() == Status::IMPLICIT.clone() {
@@ -1360,8 +1362,9 @@ fn solveUniqueFindInstructionsCallTwoArgs(mut ty: Arc<Type::NFType>, mut substEx
     let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } if ((Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.len() as i32) == 2) => {
-            name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?).clone();
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { .. } } if ((Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.len() as i32) == 2) => {
+            call = (*__esc_call).clone();
+            name = (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((*call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?).clone();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Call::arguments(call.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),

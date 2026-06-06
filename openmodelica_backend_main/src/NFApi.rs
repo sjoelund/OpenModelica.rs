@@ -187,7 +187,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         let __mc_input = e.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::ElementArg::MODIFICATION { info, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: eqmod @ Deref @ Absyn::EqMod::EQMOD { exp: absynExp, .. } }), path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
+                Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: eqmod @ Deref @ Absyn::EqMod::EQMOD { exp: absynExp, .. } }), info, .. } => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
                     let mut name: ArcStr = name.clone();
@@ -213,7 +213,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::ElementArg::MODIFICATION { info, modification: Some(Deref @ Absyn::Modification { elementArgLst: r#mod, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
+                Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: Some(Deref @ Absyn::Modification { elementArgLst: r#mod, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), info, .. } => {
                     let mut absynExp: Arc<Absyn::Exp> = absynExp.clone();
                     let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
                     let mut dae: DAE::DAElist = dae.clone();
@@ -279,7 +279,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::ElementArg::MODIFICATION { info, modification: None, path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
+                Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: None, info, .. } => {
                     let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
                     let mut dae: DAE::DAElist = dae.clone();
                     let mut inst_anncls: Arc<InstNode::InstNode> = inst_anncls.clone();
@@ -302,7 +302,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::ElementArg::MODIFICATION { info, path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
+                Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, info, .. } => {
                     let mut r#str: ArcStr = r#str.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("error evaluating: annotation(")); __mm_s.push_str(&*Dump::unparseElementArgStr(e.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     r#str = (Util::escapeQuotes((r#str.clone()).clone())?).clone();
@@ -362,7 +362,7 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
         let __mc_input = i.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { constrainClass: cc, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: items, .. }, .. } => {
+                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: items, .. }, constrainClass: cc, .. } => {
                     let mut el: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>>> = el.clone();
                     el = AbsynUtil::getAnnotationsFromItems(items.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone()));
                     Ok(listAppend(el.clone(), elArgs.clone()))
@@ -380,10 +380,13 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Element::ELEMENT { constrainClass: cc, specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: cmt, .. }, .. }, .. }, .. } => {
+                Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: cmt, .. }, .. }, .. }, constrainClass: cc, .. } => {
                     let mut anns: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = anns.clone();
                     anns = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: anns }), .. }) => anns.clone(),
+        Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: __esc_anns }), .. }) => {
+                    anns = (*__esc_anns).clone();
+                    anns.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -796,7 +799,7 @@ pub fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mu
     match '__try0: {
         context = InstContext::set(InstContext::RELAXED.clone(), InstContext::CLASS.clone());
         context = InstContext::set(context.clone(), InstContext::INSTANCE_API.clone());
-        inst_settings = Arc::new(InstSettings::InstSettings { resizableArrays: false, mergeExtendsSections: false });
+        inst_settings = Arc::new(InstSettings::InstSettings { mergeExtendsSections: false, resizableArrays: false });
         (_, top) = unwrap_break_err!(mkTop(SymbolTable::getAbsyn(), (unwrap_break_err!(AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone()), '__try0);
         r#mod = parseModifier((modifier.clone()).clone(), top.clone());
         cls_node = unwrap_break_err!(Inst::lookupRootClass(classPath.clone(), top.clone(), context.clone()), '__try0);
@@ -948,13 +951,13 @@ pub fn buildInstanceTreeElements(mut classDefinition: Arc<SCode::Element>, mut c
     let mut local_comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(classTree.clone()) {
-        Deref @ ClassTree::INSTANTIATED_TREE { localComponents: __pa0, exts: __pa1, components: __pa2, classes: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+        Deref @ ClassTree::INSTANTIATED_TREE { classes: __pa0, components: __pa1, exts: __pa2, localComponents: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    local_comps = __pa0.clone();
-    exts = __pa1.clone();
-    comps = __pa2.clone();
-    clss = __pa3.clone();
+    clss = __pa0.clone();
+    comps = __pa1.clone();
+    exts = __pa2.clone();
+    local_comps = __pa3.clone();
     scode_elems = SCodeUtil::getClassElements(classDefinition.clone());
     if !(local_comps.clone().is_empty()) {
         let (__pa4, __pa5) = ::match_deref::match_deref! { match &(local_comps.clone()) {
@@ -1069,11 +1072,11 @@ pub fn dumpJSONInstanceTree(mut tree: Arc<InstanceTree>, mut scope: Arc<InstNode
     let mut cmt: Option<Arc<SCode::Comment>> = None;
     let mut def: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ InstanceTree::CLASS { elements: __pa0, node: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ InstanceTree::CLASS { node: __pa0, elements: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    elems = __pa0.clone();
-    node = __pa1.clone();
+    node = __pa0.clone();
+    elems = __pa1.clone();
     node = InstNode::resolveOuter(node.clone());
     def = InstNode::definition(node.clone())?;
     cmt = SCodeUtil::getElementComment(def.clone());
@@ -1118,8 +1121,8 @@ pub fn dumpJSONInstanceAnnotation(mut node: Arc<InstNode::InstNode>, mut filter:
     }
     cmt = SCodeUtil::getElementComment(InstNode::definition(node.clone())?);
     cmt = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Some(Deref @ SCode::Comment { annotation_: Some(ann @ Deref @ SCode::Annotation { .. }), .. }) => {
-            let mut ann = (*ann).clone();
+        Some(Deref @ SCode::Comment { annotation_: Some(__esc_ann @ Deref @ SCode::Annotation { .. }), .. }) => {
+            ann = (*__esc_ann).clone();
             if !(filter.clone().is_empty()) {
                 assign_field!(ann.modification = SCodeUtil::filterSubMods(ann.modification.clone(), (std::sync::Arc::new({ let __pe_b1 = filter.clone(); move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?);
             }
@@ -1447,7 +1450,10 @@ pub fn dumpJSONClassDims(mut node: Arc<InstNode::InstNode>, mut element: Arc<SCo
     ty = InstNode::getType(node.clone())?;
     if Type::isArray(ty.clone()) {
         absyn_dims = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: Some(absyn_dims), .. }, .. }, .. } => absyn_dims.clone(),
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: Some(__esc_absyn_dims), .. }, .. }, .. } => {
+            absyn_dims = (*__esc_absyn_dims).clone();
+            absyn_dims.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1525,9 +1531,10 @@ pub fn dumpJSONClassPrefixes(mut element: Arc<SCode::Element>, mut scope: Arc<In
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     json = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::CLASS { prefixes: _, classDef: cdef, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: __esc_cdef, prefixes: _, .. } => {
+            cdef = (*__esc_cdef).clone();
             json = (::match_deref::match_deref! { match &(cdef.clone()) {
-        Deref @ SCode::ClassDef::DERIVED { .. } => dumpJSONAttributes(var_field!((**cdef).attributes, SCode::ClassDef::DERIVED).clone(), var_field!((*element).prefixes, SCode::Element::CLASS).clone(), scope.clone())?,
+        Deref @ SCode::ClassDef::DERIVED { .. } => dumpJSONAttributes(var_field!((*cdef).attributes, SCode::ClassDef::DERIVED).clone(), var_field!((*element).prefixes, SCode::Element::CLASS).clone(), scope.clone())?,
         _ => dumpJSONSCodePrefixes(var_field!((*element).prefixes, SCode::Element::CLASS).clone(), scope.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1549,7 +1556,8 @@ pub fn dumpJSONReplaceable(mut repl: Arc<SCode::Replaceable>, mut scope: Arc<Ins
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let mut cc: Arc<SCode::ConstrainClass> = Arc::new(<SCode::ConstrainClass as ::std::default::Default>::default());
     json = (::match_deref::match_deref! { match &(repl.clone()) {
-        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(cc) } => {
+        Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(__esc_cc) } => {
+            cc = (*__esc_cc).clone();
             json = JSON::makeNull();
             json = JSON::addPair((literal!("constrainedby")).clone(), dumpJSONPath(cc.constrainingClass.clone())?, json.clone())?;
             json = dumpJSONSCodeMod(cc.modifier.clone(), scope.clone(), json.clone())?;
@@ -1638,18 +1646,19 @@ pub fn dumpJSONAnnotationSubMod(mut subMod: Arc<SCode::SubMod>, mut scope: Arc<I
     let mut absyn_binding: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut j: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(subMod.clone()) {
-        Deref @ SCode::SubMod { r#mod: __pa0, ident: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::SubMod { ident: __pa0, r#mod: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    r#mod = __pa0.clone();
-    name = __pa1.clone();
+    name = __pa0.clone();
+    r#mod = __pa1.clone();
     let () = (::match_deref::match_deref! { match &((name.clone(), r#mod.clone())) {
         (Deref @ "choices", Deref @ SCode::Mod::MOD { .. }) => {
             j = dumpJSONChoicesAnnotation(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone(), scope.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone(), failOnError.clone())?;
             json = JSON::addPairNotNull((name.clone()).clone(), j.clone(), json.clone())?;
             ()
         },
-        (_, Deref @ SCode::Mod::MOD { binding: Some(absyn_binding), .. }) => {
+        (_, Deref @ SCode::Mod::MOD { binding: Some(__esc_absyn_binding), .. }) => {
+            absyn_binding = (*__esc_absyn_binding).clone();
             j = dumpJSONAnnotationExp(absyn_binding.clone(), scope.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone(), failOnError.clone())?;
             json = JSON::addPair((name.clone()).clone(), j.clone(), json.clone())?;
             ()
@@ -1728,8 +1737,14 @@ pub fn dumpJSONAbsynExpression(mut exp: Arc<Absyn::Exp>) -> Result<Arc<JSON::JSO
         Deref @ Absyn::Exp::CREF { .. } => dumpJSONAbsynCref(var_field!((*exp).componentRef, Absyn::Exp::CREF).clone())?,
         Deref @ Absyn::Exp::STRING { .. } => JSON::makeString((var_field!((*exp).value, Absyn::Exp::STRING).clone()).clone()),
         Deref @ Absyn::Exp::BOOL { .. } => JSON::makeBoolean(var_field!((*exp).value, Absyn::Exp::BOOL).clone()),
-        Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::INTEGER { value: i }, op: Absyn::Operator::UMINUS { .. } } => JSON::makeInteger(-(i.clone())),
-        Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::REAL { value: r }, op: Absyn::Operator::UMINUS { .. } } => JSON::makeNumber(-(stringReal((r.clone()).clone())?)),
+        Deref @ Absyn::Exp::UNARY { op: Absyn::Operator::UMINUS { .. }, exp: Deref @ Absyn::Exp::INTEGER { value: __esc_i } } => {
+            i = (*__esc_i).clone();
+            JSON::makeInteger(-(i.clone()))
+        },
+        Deref @ Absyn::Exp::UNARY { op: Absyn::Operator::UMINUS { .. }, exp: Deref @ Absyn::Exp::REAL { value: __esc_r } } => {
+            r = (*__esc_r).clone();
+            JSON::makeNumber(-(stringReal((r.clone()).clone())?))
+        },
         Deref @ Absyn::Exp::CALL { .. } => {
             json = JSON::makeNull();
             json = JSON::addPair((literal!("$kind")).clone(), Arc::new(JSON::JSON::STRING { r#str: (literal!("call")).clone() }), json.clone())?;
@@ -1915,12 +1930,12 @@ pub fn dumpJSONConnection(mut connEq: Arc<Equation::NFEquation>, mut scope: Arc<
     let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(connEq.clone()) {
-        Deref @ Equation::CONNECT { source: __pa0, rhs: __pa1, lhs: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Equation::CONNECT { lhs: __pa0, rhs: __pa1, source: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    src = __pa0.clone();
+    lhs = __pa0.clone();
     rhs = __pa1.clone();
-    lhs = __pa2.clone();
+    src = __pa2.clone();
     json = JSON::addPair((literal!("lhs")).clone(), Expression::toJSON(lhs.clone())?, json.clone())?;
     json = JSON::addPair((literal!("rhs")).clone(), Expression::toJSON(rhs.clone())?, json.clone())?;
     json = dumpJSONCommentAnnotation(ElementSource::getOptComment(src.clone())?, scope.clone(), json.clone(), metamodelica::nil(), false)?;
@@ -1943,8 +1958,10 @@ pub fn dumpJSONStateCall(mut callEq: Arc<Equation::NFEquation>, mut scope: Arc<I
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut j: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
     let () = (::match_deref::match_deref! { match &(callEq.clone()) {
-        Deref @ Equation::NORETCALL { source: src, exp: Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { arguments: args, .. } }, .. } => {
+        Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_CALL { arguments: __esc_args, .. } }, source: __esc_src, .. } => {
             call = (*__esc_call).clone();
+            args = (*__esc_args).clone();
+            src = (*__esc_src).clone();
             j = JSON::emptyArray((args.clone().len() as i32));
             for mut arg in &*args.clone() {
                 let mut arg = arg.clone();
@@ -2174,7 +2191,9 @@ pub fn dumpJSONSCodeClassDef(mut classDef: Arc<SCode::ClassDef>, mut scope: Arc<
     let mut odims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = None;
     let mut derivedNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let () = (::match_deref::match_deref! { match &(classDef.clone()) {
-        Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { arrayDim: odims, path }, .. } => {
+        Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __esc_path, arrayDim: __esc_odims }, .. } => {
+            path = (*__esc_path).clone();
+            odims = (*__esc_odims).clone();
             if qualifyPath.clone() {
                 if '__try0: {
                     (derivedNode, _) = unwrap_break_err!(Lookup::lookupName(path.clone(), scope.clone(), InstContext::RELAXED.clone(), false), '__try0);
@@ -2230,7 +2249,10 @@ pub fn dumpJSONChoicesAnnotation(mut mods: Arc<metamodelica::List<Arc<SCode::Sub
         for mut m in &*choices.clone() {
             let mut m = m.clone();
             m = (::match_deref::match_deref! { match &(m.r#mod.clone()) {
-        Deref @ SCode::Mod::MOD { subModLst: Deref @ metamodelica::List::Cons { head: smod, tail: Deref @ metamodelica::List::Nil }, binding: None, .. } => smod.clone(),
+        Deref @ SCode::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Cons { head: __esc_smod, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            smod = (*__esc_smod).clone();
+            smod.clone()
+        },
         _ => m.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

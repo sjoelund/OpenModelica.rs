@@ -90,9 +90,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
     let mut func: Module::aliasInterface;
     func = getModule()?;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
-            let mut eqData = (*eqData).clone();
+        Deref @ BackendDAE::MAIN { varData, eqData, .. } => {
             let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 varData = varData.clone(),
@@ -100,9 +100,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -
             );
             bdae.clone()
         },
-        Deref @ BackendDAE::HESSIAN { eqData, varData } => {
-            let mut eqData = (*eqData).clone();
+        Deref @ BackendDAE::HESSIAN { varData, eqData } => {
             let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::HESSIAN;
                 varData = varData.clone(),
@@ -618,7 +618,9 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
             aux_opt = UnorderedMap::get(id.clone(), map.clone())?;
             ()
         },
-        (Deref @ Absyn::Path::IDENT { name: Deref @ "promote" }, Deref @ metamodelica::List::Cons { head: arg1, tail: Deref @ metamodelica::List::Cons { head: arg2, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ Absyn::Path::IDENT { name: Deref @ "promote" }, Deref @ metamodelica::List::Cons { head: __esc_arg1, tail: Deref @ metamodelica::List::Cons { head: __esc_arg2, tail: Deref @ metamodelica::List::Nil } }) => {
+            arg1 = (*__esc_arg1).clone();
+            arg2 = (*__esc_arg2).clone();
             assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = list![if (Expression::isLiteral(arg1.clone())? || Expression::isCref(arg1.clone())) {arg1.clone()} else {introduceAlias(arg1.clone(), map.clone(), aux_index.clone(), (aux_name.clone()).clone(), iter.clone(), init.clone())?}, arg2.clone()]);
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
             id = Arc::new(Call_Id::Call_Id { call: exp.clone(), iter: new_iter.clone() });
@@ -637,7 +639,10 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
     } });
         ty = Expression::typeOf(exp.clone());
         exp = (::match_deref::match_deref! { match &((aux_opt.clone(), ty.clone())) {
-        (Some(aux), _) => aux.replacer.clone(),
+        (Some(__esc_aux), _) => {
+            aux = (*__esc_aux).clone();
+            aux.replacer.clone()
+        },
         (_, Deref @ Type::TUPLE { .. }) => {
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -820,7 +825,7 @@ fn collectSlicedStatesAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: A
 fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Arc<Iterator::Iterator>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, .. } } => {
             let mut iter_size: i32 = 0;
             let mut cref_size: i32 = 0;
             let mut var_size: i32 = 0;
@@ -891,7 +896,7 @@ fn introduceSlicedStateAliasEquation(mut eqn: Arc<Equation::Equation>, mut set: 
 fn introduceSlicedStateAliasExp(mut exp: Arc<Expression::NFExpression>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>>, mut iter: Arc<Iterator::Iterator>, mut aux_index: Pointer::Pointer<i32>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } => {
+        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, .. } } => {
             let mut call = (*call).clone();
             assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = list![Expression::map(arg.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = aux_index.clone(); let __pe_b4 = iter.clone(); let __pe_b5 = false; move |__pe_a0| introduceAliasCrefConditional(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?]);
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());

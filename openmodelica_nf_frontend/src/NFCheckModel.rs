@@ -83,12 +83,12 @@ pub fn countVariableSize(mut var: Arc<Variable::NFVariable>, mut variables: i32,
     let mut attr: Arc<Attributes::NFAttributes> = Arc::new(<Attributes::NFAttributes as ::std::default::Default>::default());
     let mut var_size: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ Variable::VARIABLE { attributes: __pa0, binding: __pa1, ty: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Variable::VARIABLE { ty: __pa0, binding: __pa1, attributes: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    attr = __pa0.clone();
+    ty = __pa0.clone();
     binding = __pa1.clone();
-    ty = __pa2.clone();
+    attr = __pa2.clone();
     if attr.variability.clone() < Variability::DISCRETE.clone() {
         return Ok((variables.clone(), equations.clone()));
     }

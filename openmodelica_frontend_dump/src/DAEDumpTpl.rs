@@ -127,7 +127,7 @@ fn fun_19(mut in_txt: Tpl::Text, mut in_a_ann__str: Tpl::Text) -> Result<Tpl::Te
 pub fn dumpComp(mut in_txt: Tpl::Text, mut in_a_fixedDae: Arc<DAEDumpTypes::compWithSplitElements>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fixedDae.clone())) {
-        (txt, Deref @ DAEDumpTypes::compWithSplitElements { spltElems: i_spltElems, name: i_name, comment: i_comment }) => {
+        (txt, Deref @ DAEDumpTypes::compWithSplitElements { comment: i_comment, name: i_name, spltElems: i_spltElems }) => {
             let mut ret_3: bool = false;
             let mut l_name__rep: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -183,7 +183,7 @@ fn lm_21(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAEDump
 pub fn dumpCompStream(mut in_txt: Tpl::Text, mut in_a_elems: Arc<DAEDumpTypes::splitElements>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_elems.clone())) {
-        (txt, Deref @ DAEDumpTypes::splitElements { sm: i_sm, a: i_a, e: i_e, ia: i_ia, ie: i_ie, v: i_v, .. }) => {
+        (txt, Deref @ DAEDumpTypes::splitElements { v: i_v, ie: i_ie, ia: i_ia, e: i_e, a: i_a, sm: i_sm, .. }) => {
             let mut l_sm__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_al__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_eq__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -343,7 +343,7 @@ fn fun_29(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_type__: Arc<DAE::Ty
 pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_function.clone())) {
-        (txt, DAE::Function::FUNCTION { isImpure: i_isImpure, comment: i_comment, path: i_path, functions: i_functions @ Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: _, .. }, tail: Deref @ metamodelica::List::Nil }, .. }) => {
+        (txt, DAE::Function::FUNCTION { functions: i_functions @ Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: _, .. }, tail: Deref @ metamodelica::List::Nil }, path: i_path, comment: i_comment, isImpure: i_isImpure, .. }) => {
             let mut l_impure__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -364,7 +364,7 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, DAE::Function::FUNCTION { functions: i_functions, path: i_path, isImpure: i_isImpure, comment: i_comment, .. }) => {
+        (txt, DAE::Function::FUNCTION { comment: i_comment, isImpure: i_isImpure, path: i_path, functions: i_functions, .. }) => {
             let mut l_impure__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -387,7 +387,7 @@ pub fn dumpFunction(mut in_txt: Tpl::Text, mut in_a_function: DAE::Function) -> 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, DAE::Function::RECORD_CONSTRUCTOR { type_: i_type__, path: i_path, .. }) => {
+        (txt, DAE::Function::RECORD_CONSTRUCTOR { path: i_path, type_: i_type__, .. }) => {
             let mut ret_4: bool = false;
             let mut txt = (*txt).clone();
             ret_4 = Flags::isSet(Flags::PRINT_RECORD_TYPES.clone())?;
@@ -457,7 +457,7 @@ pub fn dumpFunctionDefinition(mut in_txt: Tpl::Text, mut in_a_functions: DAE::Fu
             txt = dumpFunctionBody(txt.clone(), i_body.clone())?;
             txt.clone()
         },
-        (mut txt, DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: mut i_externalDecl, body: ref i_body }) => {
+        (mut txt, DAE::FunctionDefinition::FUNCTION_EXT { body: ref i_body, externalDecl: mut i_externalDecl }) => {
             txt = dumpFunctionBody(txt.clone(), i_body.clone())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
@@ -470,7 +470,7 @@ pub fn dumpFunctionDefinition(mut in_txt: Tpl::Text, mut in_a_functions: DAE::Fu
         (mut txt, DAE::FunctionDefinition::FUNCTION_INVERSE { inputParam: _, .. }) => {
             txt.clone()
         },
-        (mut txt, DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: ref i_derivedFunction, derivedVars: ref i_derivedVars }) => {
+        (mut txt, DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedVars: ref i_derivedVars, derivedFunction: ref i_derivedFunction }) => {
             let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_vars = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             l_vars = lm_33(l_vars.clone(), i_derivedVars.clone())?;
@@ -550,7 +550,7 @@ fn fun_37(mut in_txt: Tpl::Text, mut in_a_ann: Option<Arc<SCode::Annotation>>) -
 pub fn dumpExternalDecl(mut in_txt: Tpl::Text, mut in_a_externalDecl: DAE::ExternalDecl) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_externalDecl.clone()) {
-        (mut txt, DAE::ExternalDecl { ann: mut i_ann, language: mut i_language, returnArg: mut i_returnArg, args: ref i_args, name: mut i_name }) => {
+        (mut txt, DAE::ExternalDecl { name: mut i_name, args: ref i_args, returnArg: mut i_returnArg, language: mut i_language, ann: mut i_ann }) => {
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_lang__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_output__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -622,7 +622,7 @@ pub fn dumpExtArg(mut in_txt: Tpl::Text, mut in_a_arg: DAE::ExtArg) -> Result<Tp
             txt = dumpExp(txt.clone(), i_exp.clone())?;
             txt.clone()
         },
-        (mut txt, DAE::ExtArg::EXTARGSIZE { exp: ref i_exp, componentRef: ref i_componentRef, .. }) => {
+        (mut txt, DAE::ExtArg::EXTARGSIZE { componentRef: ref i_componentRef, exp: ref i_exp, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("size(")).clone() }))?;
             txt = dumpCref(txt.clone(), i_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
@@ -691,7 +691,7 @@ pub fn dumpRecordVars(mut txt: Tpl::Text, mut a_varLst: Arc<metamodelica::List<A
 pub fn dumpRecordVar(mut in_txt: Tpl::Text, mut in_a_v: Arc<DAE::Var>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_v.clone())) {
-        (txt, Deref @ DAE::Var { name: i_name, ty: i_ty, binding: i_binding, attributes: i_attributes, .. }) => {
+        (txt, Deref @ DAE::Var { attributes: i_attributes, binding: i_binding, ty: i_ty, name: i_name, .. }) => {
             let mut l_ty__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1043,7 +1043,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_a_bindingExp: Tpl::Text) -> Result<Tpl::
 pub fn dumpVar(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>, mut in_a_printTypeDimension: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone(), in_a_printTypeDimension.clone())) {
-        (txt, Deref @ DAE::Element::VAR { comment: i_comment, binding: i_binding, componentRef: i_componentRef, dims: i_dims, ty: i_ty, direction: i_direction, kind: i_kind, parallelism: i_parallelism, protection: i_protection, variableAttributesOption: i_variableAttributesOption, .. }, a_printTypeDimension) => {
+        (txt, Deref @ DAE::Element::VAR { variableAttributesOption: i_variableAttributesOption, protection: i_protection, parallelism: i_parallelism, kind: i_kind, direction: i_direction, ty: i_ty, dims: i_dims, componentRef: i_componentRef, binding: i_binding, comment: i_comment, .. }, a_printTypeDimension) => {
             let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_cmt__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1279,7 +1279,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             (txt.clone(), a_attributes.clone())
         },
-        (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, ty: i_ty }, a_attributes) => {
+        (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, dims: i_dims }, a_attributes) => {
             let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_attributes = (*a_attributes).clone();
@@ -1446,7 +1446,7 @@ pub fn dumpArrayType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_attributes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_attributes) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_dims__accum.clone(), in_a_attributes.clone())) {
-        (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, dims: i_dims }, a_dims__accum, a_attributes) => {
+        (txt, Deref @ DAE::Type::T_ARRAY { dims: i_dims, ty: i_ty }, a_dims__accum, a_attributes) => {
             let mut l_dims__accum__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_dims__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
@@ -1527,7 +1527,7 @@ fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 pub fn dumpFunctionType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
-        (txt, Deref @ DAE::Type::T_FUNCTION { funcResultType: i_funcResultType, path: i_path, funcArg: i_funcArg, .. }) => {
+        (txt, Deref @ DAE::Type::T_FUNCTION { funcArg: i_funcArg, path: i_path, funcResultType: i_funcResultType, .. }) => {
             let mut l_res__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_attr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1576,7 +1576,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_defaultBinding: Option<Arc<DAE::Exp>>)
 pub fn dumpFuncArg(mut in_txt: Tpl::Text, mut in_a_arg: Arc<DAE::FuncArg>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_arg.clone())) {
-        (txt, Deref @ DAE::FuncArg { name: i_name, defaultBinding: i_defaultBinding, par: i_par, r#const: i_const, ty: i_ty }) => {
+        (txt, Deref @ DAE::FuncArg { ty: i_ty, r#const: i_const, par: i_par, defaultBinding: i_defaultBinding, name: i_name }) => {
             let mut l_binding__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_p__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_c__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1609,7 +1609,7 @@ pub fn dumpFuncArg(mut in_txt: Tpl::Text, mut in_a_arg: Arc<DAE::FuncArg>) -> Re
 pub fn dumpRecordType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
-        (txt, Deref @ DAE::Type::T_COMPLEX { varLst: i_varLst, complexClassType: i_complexClassType, .. }) => {
+        (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, varLst: i_varLst, .. }) => {
             let mut l_vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut l_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -1721,7 +1721,7 @@ pub fn dumpVarAttributes(mut in_txt: Tpl::Text, mut in_a_literalVarLst: Arc<meta
 pub fn dumpVarAttribute(mut in_txt: Tpl::Text, mut in_a_var: Arc<DAE::Var>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone())) {
-        (txt, Deref @ DAE::Var { name: i_name, binding: Deref @ DAE::Binding::EQBOUND { exp: i_e, .. }, .. }) => {
+        (txt, Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: i_e, .. }, name: i_name, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
@@ -2294,7 +2294,7 @@ fn fun_126(mut in_txt: Tpl::Text, mut in_a_attrs__str: Tpl::Text) -> Result<Tpl:
 pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributesOption: Arc<DAE::VariableAttributes>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_variableAttributesOption.clone())) {
-        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { startOrigin: i_startOrigin, distributionOption: i_distributionOption, uncertainOption: i_uncertainOption, stateSelectOption: i_stateSelectOption, nominal: i_nominal, fixed: i_fixed, start: i_start, max: i_max, min: i_min, displayUnit: i_displayUnit, unit: i_unit, quantity: i_quantity, .. }) => {
+        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { quantity: i_quantity, unit: i_unit, displayUnit: i_displayUnit, min: i_min, max: i_max, start: i_start, fixed: i_fixed, nominal: i_nominal, stateSelectOption: i_stateSelectOption, uncertainOption: i_uncertainOption, distributionOption: i_distributionOption, startOrigin: i_startOrigin, .. }) => {
             let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_dist__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2338,7 +2338,7 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt = fun_101(txt.clone(), l_attrs__str.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_INT { startOrigin: i_startOrigin, distributionOption: i_distributionOption, uncertainOption: i_uncertainOption, fixed: i_fixed, start: i_start, max: i_max, min: i_min, quantity: i_quantity, .. }) => {
+        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_INT { quantity: i_quantity, min: i_min, max: i_max, start: i_start, fixed: i_fixed, uncertainOption: i_uncertainOption, distributionOption: i_distributionOption, startOrigin: i_startOrigin, .. }) => {
             let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_dist__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2370,7 +2370,7 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt = fun_110(txt.clone(), l_attrs__str.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { startOrigin: i_startOrigin, fixed: i_fixed, start: i_start, quantity: i_quantity, .. }) => {
+        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: i_quantity, start: i_start, fixed: i_fixed, startOrigin: i_startOrigin, .. }) => {
             let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2390,7 +2390,7 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt = fun_115(txt.clone(), l_attrs__str.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { startOrigin: i_startOrigin, start: i_start, quantity: i_quantity, .. }) => {
+        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { quantity: i_quantity, start: i_start, startOrigin: i_startOrigin, .. }) => {
             let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_start__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2407,7 +2407,7 @@ pub fn dumpVariableAttributes(mut in_txt: Tpl::Text, mut in_a_variableAttributes
             txt = fun_119(txt.clone(), l_attrs__str.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { startOrigin: i_startOrigin, fixed: i_fixed, start: i_start, max: i_max, min: i_min, quantity: i_quantity, .. }) => {
+        (txt, Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: i_quantity, min: i_min, max: i_max, start: i_start, fixed: i_fixed, startOrigin: i_startOrigin, .. }) => {
             let mut l_attrs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_so__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_fixed__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2583,7 +2583,7 @@ pub fn dumpDistributionAttr(mut txt: Tpl::Text, mut a_distribution: Arc<DAE::Dis
 pub fn dumpDistribution(mut in_txt: Tpl::Text, mut in_a_distribution: Arc<DAE::Distribution>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_distribution.clone())) {
-        (txt, Deref @ DAE::Distribution { paramNames: i_paramNames, params: i_params, name: i_name }) => {
+        (txt, Deref @ DAE::Distribution { name: i_name, params: i_params, paramNames: i_paramNames }) => {
             let mut l_paramnames__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_params__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_name__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -2659,14 +2659,14 @@ fn fun_140(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_componentRef: Arc<
 pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_c: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_c.clone())) {
-        (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_componentRef, subscriptLst: i_subscriptLst, ident: i_ident, .. }) => {
+        (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
             ret_0 = Flags::getConfigBool(Flags::MODELICA_OUTPUT.clone())?;
             txt = fun_140(txt.clone(), ret_0.clone(), i_componentRef.clone(), i_subscriptLst.clone(), (i_ident.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_subscriptLst, ident: i_ident @ Deref @ "$DER", .. }) => {
+        (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident @ Deref @ "$DER", subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("der(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
@@ -2674,7 +2674,7 @@ pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_c: Arc<DAE::ComponentRef>) -> Re
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_subscriptLst, ident: i_ident, .. }) => {
+        (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = dumpSubscripts(txt.clone(), i_subscriptLst.clone())?;
@@ -2934,27 +2934,27 @@ pub fn dumpEquationSection(mut in_txt: Tpl::Text, mut in_a_e: Arc<metamodelica::
 pub fn dumpEquationElement(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
-        (txt, Deref @ DAE::Element::EQUATION { source: i_source, scalar: i_scalar, exp: i_exp }) => {
+        (txt, Deref @ DAE::Element::EQUATION { exp: i_exp, scalar: i_scalar, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_exp.clone(), i_scalar.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::EQUEQUATION { source: i_source, cr2: i_cr2, cr1: i_cr1 }) => {
+        (txt, Deref @ DAE::Element::EQUEQUATION { cr1: i_cr1, cr2: i_cr2, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquEquation(txt.clone(), i_cr1.clone(), i_cr2.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::ARRAY_EQUATION { source: i_source, array: i_array, exp: i_exp, .. }) => {
+        (txt, Deref @ DAE::Element::ARRAY_EQUATION { exp: i_exp, array: i_array, source: i_source, .. }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_exp.clone(), i_array.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::COMPLEX_EQUATION { source: i_source, rhs: i_rhs, lhs: i_lhs }) => {
+        (txt, Deref @ DAE::Element::COMPLEX_EQUATION { lhs: i_lhs, rhs: i_rhs, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_lhs.clone(), i_rhs.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::DEFINE { source: i_source, exp: i_exp, componentRef: i_componentRef }) => {
+        (txt, Deref @ DAE::Element::DEFINE { componentRef: i_componentRef, exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpDefine(txt.clone(), i_componentRef.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
@@ -2969,57 +2969,57 @@ pub fn dumpEquationElement(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element
             txt = dumpForEquation(txt.clone(), i_lst.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::IF_EQUATION { source: i_source, equations3: i_equations3, equations2: i_equations2, condition1: i_condition1 }) => {
+        (txt, Deref @ DAE::Element::IF_EQUATION { condition1: i_condition1, equations2: i_equations2, equations3: i_equations3, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpIfEquation(txt.clone(), i_condition1.clone(), i_equations2.clone(), i_equations3.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::ASSERT { source: i_source, level: i_level, message: i_message, condition: i_condition }) => {
+        (txt, Deref @ DAE::Element::ASSERT { condition: i_condition, message: i_message, level: i_level, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpAssert(txt.clone(), i_condition.clone(), i_message.clone(), i_level.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_ASSERT { source: i_source, level: i_level, message: i_message, condition: i_condition }) => {
+        (txt, Deref @ DAE::Element::INITIAL_ASSERT { condition: i_condition, message: i_message, level: i_level, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpAssert(txt.clone(), i_condition.clone(), i_message.clone(), i_level.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::TERMINATE { source: i_source, message: i_message }) => {
+        (txt, Deref @ DAE::Element::TERMINATE { message: i_message, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpTerminate(txt.clone(), i_message.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_TERMINATE { source: i_source, message: i_message }) => {
+        (txt, Deref @ DAE::Element::INITIAL_TERMINATE { message: i_message, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpTerminate(txt.clone(), i_message.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::REINIT { source: i_source, exp: i_exp, componentRef: i_componentRef }) => {
+        (txt, Deref @ DAE::Element::REINIT { componentRef: i_componentRef, exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpReinit(txt.clone(), i_componentRef.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::NORETCALL { source: i_source, exp: i_exp }) => {
+        (txt, Deref @ DAE::Element::NORETCALL { exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpNoRetCall(txt.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_NORETCALL { source: i_source, exp: i_exp }) => {
+        (txt, Deref @ DAE::Element::INITIAL_NORETCALL { exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpNoRetCall(txt.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIALDEFINE { source: i_source, exp: i_exp, componentRef: i_componentRef }) => {
+        (txt, Deref @ DAE::Element::INITIALDEFINE { componentRef: i_componentRef, exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpDefine(txt.clone(), i_componentRef.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { source: i_source, array: i_array, exp: i_exp, .. }) => {
+        (txt, Deref @ DAE::Element::INITIAL_ARRAY_EQUATION { exp: i_exp, array: i_array, source: i_source, .. }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_exp.clone(), i_array.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { source: i_source, rhs: i_rhs, lhs: i_lhs }) => {
+        (txt, Deref @ DAE::Element::INITIAL_COMPLEX_EQUATION { lhs: i_lhs, rhs: i_rhs, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_lhs.clone(), i_rhs.clone(), i_source.clone())?;
             txt.clone()
@@ -3029,12 +3029,12 @@ pub fn dumpEquationElement(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element
             txt = dumpForEquation(txt.clone(), i_lst.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_IF_EQUATION { source: i_source, equations3: i_equations3, equations2: i_equations2, condition1: i_condition1 }) => {
+        (txt, Deref @ DAE::Element::INITIAL_IF_EQUATION { condition1: i_condition1, equations2: i_equations2, equations3: i_equations3, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpIfEquation(txt.clone(), i_condition1.clone(), i_equations2.clone(), i_equations3.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIALEQUATION { source: i_source, exp2: i_exp2, exp1: i_exp1 }) => {
+        (txt, Deref @ DAE::Element::INITIALEQUATION { exp1: i_exp1, exp2: i_exp2, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpEquation(txt.clone(), i_exp1.clone(), i_exp2.clone(), i_source.clone())?;
             txt.clone()
@@ -3291,7 +3291,7 @@ fn fun_166(mut in_txt: Tpl::Text, mut in_a_elsewhen__str: Tpl::Text, mut in_a_sr
 pub fn dumpWhenEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
-        (txt, Deref @ DAE::Element::WHEN_EQUATION { source: i_source, elsewhen_: i_elsewhen__, equations: i_equations, condition: i_condition }) => {
+        (txt, Deref @ DAE::Element::WHEN_EQUATION { condition: i_condition, equations: i_equations, elsewhen_: i_elsewhen__, source: i_source }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_elsewhen__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -3357,7 +3357,7 @@ fn lm_169(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::E
 pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lst.clone())) {
-        (txt, Deref @ DAE::Element::FOR_EQUATION { iter: i_iter, source: i_source, equations: i_equations, range: i_range, .. }) => {
+        (txt, Deref @ DAE::Element::FOR_EQUATION { range: i_range, equations: i_equations, source: i_source, iter: i_iter, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -3381,7 +3381,7 @@ pub fn dumpForEquation(mut in_txt: Tpl::Text, mut in_a_lst: Arc<DAE::Element>) -
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Element::INITIAL_FOR_EQUATION { iter: i_iter, source: i_source, equations: i_equations, range: i_range, .. }) => {
+        (txt, Deref @ DAE::Element::INITIAL_FOR_EQUATION { range: i_range, equations: i_equations, source: i_source, iter: i_iter, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -3737,7 +3737,7 @@ pub fn dumpStatements(mut txt: Tpl::Text, mut a_stmts: Arc<metamodelica::List<Ar
 pub fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_ASSIGN { source: i_source, exp: i_exp, exp1: i_exp1, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp1: i_exp1, exp: i_exp, source: i_source, .. }) => {
             let mut txt = (*txt).clone();
             txt = dumpAssignment(txt.clone(), i_exp1.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
@@ -3777,12 +3777,12 @@ pub fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) 
             txt = dumpWhenStatement(txt.clone(), i_stmt.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Statement::STMT_ASSERT { source: i_source, level: i_level, msg: i_msg, cond: i_cond }) => {
+        (txt, Deref @ DAE::Statement::STMT_ASSERT { cond: i_cond, msg: i_msg, level: i_level, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpAssert(txt.clone(), i_cond.clone(), i_msg.clone(), i_level.clone(), i_source.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Statement::STMT_TERMINATE { source: i_source, msg: i_msg }) => {
+        (txt, Deref @ DAE::Statement::STMT_TERMINATE { msg: i_msg, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpTerminate(txt.clone(), i_msg.clone(), i_source.clone())?;
             txt.clone()
@@ -3792,7 +3792,7 @@ pub fn dumpStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) 
             txt = dumpReinitStatement(txt.clone(), i_stmt.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Statement::STMT_NORETCALL { source: i_source, exp: i_exp }) => {
+        (txt, Deref @ DAE::Statement::STMT_NORETCALL { exp: i_exp, source: i_source }) => {
             let mut txt = (*txt).clone();
             txt = dumpNoRetCall(txt.clone(), i_exp.clone(), i_source.clone())?;
             txt.clone()
@@ -3886,7 +3886,7 @@ fn lm_191(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::E
 pub fn dumpTupleAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source: i_source, exp: i_exp, expExpLst: i_expExpLst, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { expExpLst: i_expExpLst, exp: i_exp, source: i_source, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -3915,7 +3915,7 @@ pub fn dumpTupleAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::S
 pub fn dumpArrayAssignStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_ASSIGN_ARR { source: i_source, exp: i_exp, lhs: i_lhs, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_ASSIGN_ARR { lhs: i_lhs, exp: i_exp, source: i_source, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_rhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_lhs__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -3961,7 +3961,7 @@ fn lm_194(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::S
 pub fn dumpIfStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_IF { source: i_source, else_: i_else__, statementLst: i_statementLst, exp: i_exp }) => {
+        (txt, Deref @ DAE::Statement::STMT_IF { exp: i_exp, statementLst: i_statementLst, else_: i_else__, source: i_source }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_else__if__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_true__branch__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4038,7 +4038,7 @@ fn lm_197(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::S
 pub fn dumpElseIfStatements(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__.clone())) {
-        (txt, Deref @ DAE::Else::ELSEIF { else_: i_else__, statementLst: i_statementLst, exp: i_exp }) => {
+        (txt, Deref @ DAE::Else::ELSEIF { exp: i_exp, statementLst: i_statementLst, else_: i_else__ }) => {
             let mut l_else__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_elseif__body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_elseif__cond__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4101,7 +4101,7 @@ fn lm_199(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::S
 pub fn dumpForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_FOR { iter: i_iter, source: i_source, statementLst: i_statementLst, range: i_range, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_FOR { range: i_range, statementLst: i_statementLst, source: i_source, iter: i_iter, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_alg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4156,7 +4156,7 @@ fn lm_201(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::S
 pub fn dumpParForStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_PARFOR { iter: i_iter, source: i_source, statementLst: i_statementLst, range: i_range, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_PARFOR { range: i_range, statementLst: i_statementLst, source: i_source, iter: i_iter, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_alg__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_range__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4211,7 +4211,7 @@ fn lm_203(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::S
 pub fn dumpWhileStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_WHILE { source: i_source, statementLst: i_statementLst, exp: i_exp }) => {
+        (txt, Deref @ DAE::Statement::STMT_WHILE { exp: i_exp, statementLst: i_statementLst, source: i_source }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_while__cond: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4315,7 +4315,7 @@ fn fun_207(mut in_txt: Tpl::Text, mut in_a_elsewhen__str: Tpl::Text, mut in_a_sr
 pub fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_WHEN { source: i_source, elseWhen: i_elseWhen, statementLst: i_statementLst, exp: i_exp, .. }) => {
+        (txt, Deref @ DAE::Statement::STMT_WHEN { exp: i_exp, statementLst: i_statementLst, elseWhen: i_elseWhen, source: i_source, .. }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_elsewhen__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_body__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4341,7 +4341,7 @@ pub fn dumpWhenStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statemen
 pub fn dumpReinitStatement(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_REINIT { source: i_source, value: i_value, var: i_var }) => {
+        (txt, Deref @ DAE::Statement::STMT_REINIT { var: i_var, value: i_value, source: i_source }) => {
             let mut l_src__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_new__exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_exp__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -4385,7 +4385,7 @@ fn fun_210(mut in_txt: Tpl::Text, mut in_a_comment: Option<Arc<SCode::Comment>>)
 pub fn dumpStateMachineSection(mut in_txt: Tpl::Text, mut in_a_fixedDae: Arc<DAEDumpTypes::compWithSplitElements>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_fixedDae.clone())) {
-        (txt, Deref @ DAEDumpTypes::compWithSplitElements { spltElems: i_spltElems, name: i_name, comment: i_comment }) => {
+        (txt, Deref @ DAEDumpTypes::compWithSplitElements { comment: i_comment, name: i_name, spltElems: i_spltElems }) => {
             let mut l_kind: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_kind = fun_210(Tpl::emptyTxt.clone(), i_comment.clone())?;

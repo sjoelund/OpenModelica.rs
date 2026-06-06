@@ -81,7 +81,7 @@ pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops:
         __acc.reverse()
     }));
             (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Nil, .. } => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
+        Deref @ SCode::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, binding: None, .. } => openmodelica_frontend_types::SCode::Mod::interned_NOMOD(),
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
@@ -380,12 +380,12 @@ pub fn elementNameInfo(mut element: Arc<SCode::Element>) -> Result<(ArcStr, Sour
     let mut name: ArcStr = arcstr::literal!("");
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     (name, info) = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::COMPONENT { info: __esc_info, name: __esc_name, .. } => {
+        Deref @ SCode::Element::COMPONENT { name: __esc_name, info: __esc_info, .. } => {
             name = (*__esc_name).clone();
             info = (*__esc_info).clone();
             (name.clone(), info.clone())
         },
-        Deref @ SCode::Element::CLASS { info: __esc_info, name: __esc_name, .. } => {
+        Deref @ SCode::Element::CLASS { name: __esc_name, info: __esc_info, .. } => {
             name = (*__esc_name).clone();
             info = (*__esc_info).clone();
             (name.clone(), info.clone())
@@ -483,7 +483,7 @@ pub fn isTypeVar(mut inClass: Arc<SCode::Element>) -> bool {
 pub fn isPolymorphicTypeVar(mut cls: Arc<SCode::Element>) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, .. }, .. }, restriction: SCode::Restriction::R_TYPE { .. }, .. } => true,
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_TYPE { .. }, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -808,7 +808,7 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
         let __mc_input = (ai1.clone(), ai2.clone());
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Statement::ALG_ASSIGN { value: e1, assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr1 }, .. }, Deref @ SCode::Statement::ALG_ASSIGN { value: e2, assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr2 }, .. }) => {
+                (Deref @ SCode::Statement::ALG_ASSIGN { assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr1 }, value: e1, .. }, Deref @ SCode::Statement::ALG_ASSIGN { assignComponent: Deref @ Absyn::Exp::CREF { componentRef: cr2 }, value: e2, .. }) => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut equal: bool = equal.clone();
@@ -822,7 +822,7 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
         })() { equal = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Statement::ALG_ASSIGN { value: e12, assignComponent: e11 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, .. }, Deref @ SCode::Statement::ALG_ASSIGN { value: e22, assignComponent: e21 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, .. }) => {
+                (Deref @ SCode::Statement::ALG_ASSIGN { assignComponent: e11 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, value: e12, .. }, Deref @ SCode::Statement::ALG_ASSIGN { assignComponent: e21 @ Deref @ Absyn::Exp::TUPLE { expressions: _ }, value: e22, .. }) => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut equal: bool = equal.clone();
@@ -873,7 +873,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         let __mc_input = (eq1.clone(), eq2.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_IF { elseBranch: fb1, thenBranch: tb1, condition: ifcond1, .. }, Deref @ SCode::Equation::EQ_IF { elseBranch: fb2, thenBranch: tb2, condition: ifcond2, .. }) => {
+                (Deref @ SCode::Equation::EQ_IF { condition: ifcond1, thenBranch: tb1, elseBranch: fb1, .. }, Deref @ SCode::Equation::EQ_IF { condition: ifcond2, thenBranch: tb2, elseBranch: fb2, .. }) => {
                     let true = (equationEqual2(tb1.clone(), tb2.clone())?) else { bail!("pattern mismatch") };
                     let true = (List::isEqualOnTrue(fb1.clone(), fb2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (List::isEqualOnTrue(ifcond1.clone(), ifcond2.clone(), (std::sync::Arc::new(AbsynUtil::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
@@ -884,7 +884,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_EQUALS { expRight: e12, expLeft: e11, .. }, Deref @ SCode::Equation::EQ_EQUALS { expRight: e22, expLeft: e21, .. }) => {
+                (Deref @ SCode::Equation::EQ_EQUALS { expLeft: e11, expRight: e12, .. }, Deref @ SCode::Equation::EQ_EQUALS { expLeft: e21, expRight: e22, .. }) => {
                     let true = (AbsynUtil::expEqual(e11.clone(), e21.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(e12.clone(), e22.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -894,7 +894,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_PDE { domain: cr1, expRight: e12, expLeft: e11, .. }, Deref @ SCode::Equation::EQ_PDE { domain: cr2, expRight: e22, expLeft: e21, .. }) => {
+                (Deref @ SCode::Equation::EQ_PDE { expLeft: e11, expRight: e12, domain: cr1, .. }, Deref @ SCode::Equation::EQ_PDE { expLeft: e21, expRight: e22, domain: cr2, .. }) => {
                     let true = (AbsynUtil::expEqual(e11.clone(), e21.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(e12.clone(), e22.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::crefEqual(cr1.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
@@ -905,7 +905,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_CONNECT { crefRight: cr12, crefLeft: cr11, .. }, Deref @ SCode::Equation::EQ_CONNECT { crefRight: cr22, crefLeft: cr21, .. }) => {
+                (Deref @ SCode::Equation::EQ_CONNECT { crefLeft: cr11, crefRight: cr12, .. }, Deref @ SCode::Equation::EQ_CONNECT { crefLeft: cr21, crefRight: cr22, .. }) => {
                     let true = (AbsynUtil::crefEqual(cr11.clone(), cr21.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::crefEqual(cr12.clone(), cr22.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -915,7 +915,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql1, range: Some(exp1), index: id1, .. }, Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql2, range: Some(exp2), index: id2, .. }) => {
+                (Deref @ SCode::Equation::EQ_FOR { index: id1, range: Some(exp1), eEquationLst: eql1, .. }, Deref @ SCode::Equation::EQ_FOR { index: id2, range: Some(exp2), eEquationLst: eql2, .. }) => {
                     let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(exp1.clone(), exp2.clone())?) else { bail!("pattern mismatch") };
                     let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
@@ -926,7 +926,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql1, range: None, index: id1, .. }, Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql2, range: None, index: id2, .. }) => {
+                (Deref @ SCode::Equation::EQ_FOR { index: id1, range: None, eEquationLst: eql1, .. }, Deref @ SCode::Equation::EQ_FOR { index: id2, range: None, eEquationLst: eql2, .. }) => {
                     let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -936,7 +936,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_WHEN { eEquationLst: elst1, condition: cond1, .. }, Deref @ SCode::Equation::EQ_WHEN { eEquationLst: elst2, condition: cond2, .. }) => {
+                (Deref @ SCode::Equation::EQ_WHEN { condition: cond1, eEquationLst: elst1, .. }, Deref @ SCode::Equation::EQ_WHEN { condition: cond2, eEquationLst: elst2, .. }) => {
                     let true = (List::isEqualOnTrue(elst1.clone(), elst2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(cond1.clone(), cond2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -946,7 +946,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Equation::EQ_ASSERT { message: m1, condition: c1, .. }, Deref @ SCode::Equation::EQ_ASSERT { message: m2, condition: c2, .. }) => {
+                (Deref @ SCode::Equation::EQ_ASSERT { condition: c1, message: m1, .. }, Deref @ SCode::Equation::EQ_ASSERT { condition: c2, message: m2, .. }) => {
                     let true = (AbsynUtil::expEqual(c1.clone(), c2.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(m1.clone(), m2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1405,11 +1405,11 @@ pub fn makeEnumType(mut inEnum: Arc<SCode::Enum>, mut inInfo: SourceInfo) -> Res
     let mut literal: ArcStr = arcstr::literal!("");
     let mut comment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inEnum.clone()) {
-        Deref @ SCode::Enum { comment: __pa0, literal: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::Enum { literal: __pa0, comment: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    comment = __pa0.clone();
-    literal = __pa1.clone();
+    literal = __pa0.clone();
+    comment = __pa1.clone();
     checkValidEnumLiteral((literal.clone()).clone(), inInfo.clone())?;
     outEnumType = Arc::new(SCode::Element::COMPONENT { name: (literal.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::defaultConstAttr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("EnumType")).clone() }), arrayDim: None }), modifications: openmodelica_frontend_types::SCode::Mod::interned_NOMOD(), comment: comment.clone(), condition: None, info: inInfo.clone() });
     Ok(outEnumType)
@@ -1497,7 +1497,7 @@ pub fn statementToAlgorithmItem(mut stmt: Arc<SCode::Statement>) -> Result<Arc<A
         Deref @ SCode::Statement::ALG_REINIT { .. } => {
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_NORETCALL { functionCall: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("reinit")).clone(), subscripts: metamodelica::nil() }), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: list![var_field!((*stmt).cref, SCode::Statement::ALG_REINIT).clone(), var_field!((*stmt).newValue, SCode::Statement::ALG_REINIT).clone()], argNames: metamodelica::nil() }) }), comment: None, info: var_field!((*stmt).info, SCode::Statement::ALG_REINIT).clone() })
         },
-        Deref @ SCode::Statement::ALG_NORETCALL { exp: Deref @ Absyn::Exp::CALL { functionArgs, function_: functionCall, .. }, comment: _, info } => {
+        Deref @ SCode::Statement::ALG_NORETCALL { exp: Deref @ Absyn::Exp::CALL { function_: functionCall, functionArgs, .. }, comment: _, info } => {
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_NORETCALL { functionCall: functionCall.clone(), functionArgs: functionArgs.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_RETURN { comment: _, info } => {
@@ -1948,15 +1948,15 @@ fn mapFoldComponentRefExps<ArgT: Clone + 'static>(mut inCref: Arc<Absyn::Compone
             (cr, arg) = mapFoldComponentRefExps(cr.clone(), inFunc.clone(), inArg.clone())?;
             (AbsynUtil::crefMakeFullyQualified(cr.clone()), arg.clone())
         },
-        Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr, subscripts: subs, name } => {
+        Deref @ Absyn::ComponentRef::CREF_QUAL { name, subscripts: subs, componentRef: cr } => {
             let mut arg: ArgT;
-            let mut cr = (*cr).clone();
             let mut subs = (*subs).clone();
+            let mut cr = (*cr).clone();
             (cr, arg) = mapFoldComponentRefExps(cr.clone(), inFunc.clone(), inArg.clone())?;
             (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), arg.clone())?;
             (Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (name.clone()).clone(), subscripts: subs.clone(), componentRef: cr.clone() }), arg.clone())
         },
-        Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: subs, name } => {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: subs } => {
             let mut arg: ArgT;
             let mut subs = (*subs).clone();
             (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), inArg.clone())?;
@@ -2270,23 +2270,23 @@ pub static knownExternalCFunctions: std::sync::LazyLock<Arc<metamodelica::List<A
 pub fn isBuiltinFunction(mut cl: Arc<SCode::Element>, mut inVars: Arc<metamodelica::List<ArcStr>>, mut outVars: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &((cl.clone(), outVars.clone())) {
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { name: __esc_name, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: None, lang: Some(Deref @ "builtin"), .. }), .. }, .. }, _) => {
             name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: Some(__esc_name), lang: Some(Deref @ "builtin"), .. }), .. }, .. }, _) => {
             name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { name: __esc_name, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: None, lang: Some(Deref @ "builtin"), .. }), .. }, .. }, _) => {
             name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: Some(__esc_name), lang: Some(Deref @ "builtin"), .. }), .. }, .. }, _) => {
             name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { args, output_: Some(Deref @ Absyn::ComponentRef::CREF_IDENT { name: outVar2, subscripts: Deref @ metamodelica::List::Nil }), lang: Some(Deref @ "C"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, Deref @ metamodelica::List::Cons { head: outVar1, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: Some(__esc_name), lang: Some(Deref @ "C"), output_: Some(Deref @ Absyn::ComponentRef::CREF_IDENT { name: outVar2, subscripts: Deref @ metamodelica::List::Nil }), args, .. }), .. }, .. }, Deref @ metamodelica::List::Cons { head: outVar1, tail: Deref @ metamodelica::List::Nil }) => {
             name = (*__esc_name).clone();
             let mut argsStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let true = (listMember((name.clone()).clone(), knownExternalCFunctions.clone())) else { bail!("pattern mismatch") };
@@ -2295,7 +2295,7 @@ pub fn isBuiltinFunction(mut cl: Arc<SCode::Element>, mut inVars: Arc<metamodeli
             let true = (argsStr.clone() == inVars.clone()) else { bail!("pattern mismatch") };
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "C"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { name: __esc_name, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: None, lang: Some(Deref @ "C"), .. }), .. }, .. }, _) => {
             name = (*__esc_name).clone();
             let true = (listMember((name.clone()).clone(), knownExternalCFunctions.clone())) else { bail!("pattern mismatch") };
             name.clone()
@@ -2725,7 +2725,7 @@ pub fn replaceableEqual(mut r1: Arc<SCode::Replaceable>, mut r2: Arc<SCode::Repl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: m1, constrainingClass: p1, .. }) }, Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: m2, constrainingClass: p2, .. }) }) => {
+                (Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: p1, modifier: m1, .. }) }, Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: p2, modifier: m2, .. }) }) => {
                     let true = (AbsynUtil::pathEqual(p1.clone(), p2.clone())) else { bail!("pattern mismatch") };
                     let true = (modEqual(m1.clone(), m2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -2908,7 +2908,8 @@ pub fn lookupAnnotation(mut ann: Arc<SCode::Annotation>, mut name: ArcStr) -> Re
     let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     let mut id: ArcStr = arcstr::literal!("");
     r#mod = (::match_deref::match_deref! { match &(ann.clone()) {
-        Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: submods, .. } } => {
+        Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: __esc_submods, .. } } => {
+            submods = (*__esc_submods).clone();
             for mut sm in &*submods.clone() {
                 let mut sm = sm.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(sm.clone()) {
@@ -2941,7 +2942,10 @@ pub fn lookupBooleanAnnotation(mut ann: Arc<SCode::Annotation>, mut name: ArcStr
     let mut bval: bool = false;
     binding = lookupAnnotationBinding(ann.clone(), (name.clone()).clone())?;
     value = (::match_deref::match_deref! { match &(binding.clone()) {
-        Some(Deref @ Absyn::Exp::BOOL { value: bval }) => Some(bval.clone()),
+        Some(Deref @ Absyn::Exp::BOOL { value: __esc_bval }) => {
+            bval = (*__esc_bval).clone();
+            Some(bval.clone())
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2954,7 +2958,10 @@ pub fn lookupBooleanAnnotationMod(mut r#mod: Arc<SCode::Mod>) -> Option<bool> {
     let mut bval: bool = false;
     binding = getModifierBinding(r#mod.clone());
     value = (::match_deref::match_deref! { match &(binding.clone()) {
-        Some(Deref @ Absyn::Exp::BOOL { value: bval }) => Some(bval.clone()),
+        Some(Deref @ Absyn::Exp::BOOL { value: __esc_bval }) => {
+            bval = (*__esc_bval).clone();
+            Some(bval.clone())
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2967,7 +2974,8 @@ pub fn lookupAnnotations(mut ann: Arc<SCode::Annotation>, mut name: ArcStr) -> R
     let mut id: ArcStr = arcstr::literal!("");
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     mods = (::match_deref::match_deref! { match &(ann.clone()) {
-        Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: submods, .. } } => {
+        Deref @ SCode::Annotation { modification: Deref @ SCode::Mod::MOD { subModLst: __esc_submods, .. } } => {
+            submods = (*__esc_submods).clone();
             for mut sm in &*submods.clone() {
                 let mut sm = sm.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(sm.clone()) {
@@ -3118,7 +3126,10 @@ pub fn getEvaluateAnnotation(mut cmt: Arc<SCode::Comment>) -> Result<Option<bool
     let mut value: Option<bool> = None;
     let mut ann: Arc<SCode::Annotation> = Arc::new(<SCode::Annotation as ::std::default::Default>::default());
     value = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Deref @ SCode::Comment { annotation_: Some(ann), .. } => lookupBooleanAnnotation(ann.clone(), (literal!("Evaluate")).clone())?,
+        Deref @ SCode::Comment { annotation_: Some(__esc_ann), .. } => {
+            ann = (*__esc_ann).clone();
+            lookupBooleanAnnotation(ann.clone(), (literal!("Evaluate")).clone())?
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3257,8 +3268,8 @@ pub fn makeElementProtected(mut element: Arc<SCode::Element>) -> Arc<SCode::Elem
     let mut element: Arc<SCode::Element> = element;
     let mut prefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::COMPONENT { prefixes: prefixes @ Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC { .. }, .. }, .. } => {
-            let mut prefixes = (*prefixes).clone();
+        Deref @ SCode::Element::COMPONENT { prefixes: __esc_prefixes @ Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC { .. }, .. }, .. } => {
+            prefixes = (*__esc_prefixes).clone();
             assign_field!(prefixes.visibility = openmodelica_frontend_types::SCode::Visibility::PROTECTED);
             assign_variant_field!(element => SCode::Element::COMPONENT; prefixes = prefixes.clone());
             ()
@@ -3567,7 +3578,7 @@ pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> Result<bool> {
         Deref @ SCode::Equation::EQ_REINIT { .. } => {
             true
         },
-        Deref @ SCode::Equation::EQ_WHEN { elseBranches: tpl_el, eEquationLst: eqs, .. } => {
+        Deref @ SCode::Equation::EQ_WHEN { eEquationLst: eqs, elseBranches: tpl_el, .. } => {
             let mut b: bool = false;
             let mut eqs_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>> = metamodelica::nil();
             b = equationsContainReinit(eqs.clone())?;
@@ -3575,7 +3586,7 @@ pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> Result<bool> {
             b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(equationsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone())?;
             b.clone()
         },
-        Deref @ SCode::Equation::EQ_IF { elseBranch: eqs, thenBranch: eqs_lst, .. } => {
+        Deref @ SCode::Equation::EQ_IF { thenBranch: eqs_lst, elseBranch: eqs, .. } => {
             let mut b: bool = false;
             b = equationsContainReinit(eqs.clone())?;
             b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(equationsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone())?;
@@ -3620,7 +3631,7 @@ pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> Result<bool> 
             b = List::applyAndFold(algs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(algorithmsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>), false)?;
             b.clone()
         },
-        Deref @ SCode::Statement::ALG_IF { elseBranch: algs2, elseIfBranch: tpl_alg, trueBranch: algs1, .. } => {
+        Deref @ SCode::Statement::ALG_IF { trueBranch: algs1, elseIfBranch: tpl_alg, elseBranch: algs2, .. } => {
             let mut b: bool = false;
             let mut b1: bool = false;
             let mut b2: bool = false;
@@ -3957,7 +3968,7 @@ pub fn mergeWithOriginal(mut newClass: Arc<SCode::Element>, mut oldClass: Arc<SC
         })() { break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ SCode::Element::CLASS { classDef: cd1, prefixes: prefixes1, .. }, Deref @ SCode::Element::CLASS { classDef: cd2, prefixes: prefixes2, .. }) => {
+                (Deref @ SCode::Element::CLASS { prefixes: prefixes1, classDef: cd1, .. }, Deref @ SCode::Element::CLASS { prefixes: prefixes2, classDef: cd2, .. }) => {
                     let mut mCCNew: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut mCCOld: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut newClass: Arc<SCode::Element> = newClass.clone();
@@ -5650,8 +5661,8 @@ pub fn setAnnotationValue(mut name: ArcStr, mut value: Arc<Absyn::Exp>, mut ann:
     let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     let mut found: bool = false;
     let () = (::match_deref::match_deref! { match &(ann.clone()) {
-        Deref @ SCode::Annotation { modification: r#mod @ Deref @ SCode::Mod::MOD { .. } } => {
-            let mut r#mod = (*r#mod).clone();
+        Deref @ SCode::Annotation { modification: __esc_mod @ Deref @ SCode::Mod::MOD { .. } } => {
+            r#mod = (*__esc_mod).clone();
             (submods, found) = List::findMap(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone(), (std::sync::Arc::new({ let __pe_b0 = (name.clone()).clone(); let __pe_b1 = value.clone(); let __pe_b2 = replace.clone(); move |__pe_a3| Ok(replace_mod(__pe_b0.clone(), __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<(Arc<SCode::SubMod>, bool)> + 'static>))?;
             if !(found.clone()) {
                 submods = metamodelica::cons(Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: makeMod(false, false, metamodelica::nil(), Some(value.clone()), None, Absyn::dummyInfo.clone()) }), submods.clone());

@@ -145,7 +145,7 @@ fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding, name, .. }, tail: _ }, _, _, bind_name) => {
+                (_, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name, binding, .. }, tail: _ }, _, _, bind_name) => {
                     let true = (stringEq((name.clone()).clone(), (bind_name.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(DAEUtil::bindingExp(binding.clone())?)
                 }
@@ -445,13 +445,13 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
                     let mut paramNames: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(instBinding(r#mod.clone(), varLst.clone(), distributionType().clone(), index_list.clone(), (bind_name.clone()).clone(), useConstValue.clone())?) {
-                        Some(Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } }, path: __pa3, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+                        Some(Deref @ DAE::Exp::CALL { path: __pa0, expLst: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } } }, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    name = __pa0.clone();
-                    params = __pa1.clone();
-                    paramNames = __pa2.clone();
-                    path = __pa3.clone();
+                    path = __pa0.clone();
+                    name = __pa1.clone();
+                    params = __pa2.clone();
+                    paramNames = __pa3.clone();
                     let true = (AbsynUtil::pathEqual(path.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Distribution")).clone() }))) else { bail!("pattern mismatch") };
                     Ok(Some(Arc::new(DAE::Distribution { name: name.clone(), params: params.clone(), paramNames: paramNames.clone() })))
                 }
@@ -466,13 +466,13 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
                     let mut paramNames: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(instBinding(r#mod.clone(), varLst.clone(), distributionType().clone(), index_list.clone(), (bind_name.clone()).clone(), useConstValue.clone())?) {
-                        Some(Deref @ DAE::Exp::RECORD { exps: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } }, path: __pa3, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
+                        Some(Deref @ DAE::Exp::RECORD { path: __pa0, exps: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } } }, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    name = __pa0.clone();
-                    params = __pa1.clone();
-                    paramNames = __pa2.clone();
-                    path = __pa3.clone();
+                    path = __pa0.clone();
+                    name = __pa1.clone();
+                    params = __pa2.clone();
+                    paramNames = __pa3.clone();
                     let true = (AbsynUtil::pathEqual(path.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Distribution")).clone() }))) else { bail!("pattern mismatch") };
                     Ok(Some(Arc::new(DAE::Distribution { name: name.clone(), params: params.clone(), paramNames: paramNames.clone() })))
                 }
@@ -528,10 +528,10 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
 fn getUncertainFromExpOption(mut expOption: Option<Arc<DAE::Exp>>) -> Option<DAE::Uncertainty> {
     let mut out: Option<DAE::Uncertainty> = None;
     out = (::match_deref::match_deref! { match &(expOption.clone()) {
-        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "given" }, name: Deref @ "Uncertainty" }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::GIVEN),
-        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sought" }, name: Deref @ "Uncertainty" }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::SOUGHT),
-        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "refine" }, name: Deref @ "Uncertainty" }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::REFINE),
-        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: Deref @ "propagate" }, name: Deref @ "Uncertainty" }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::PROPAGATE),
+        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "given" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::GIVEN),
+        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "sought" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::SOUGHT),
+        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "refine" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::REFINE),
+        Some(Deref @ DAE::Exp::ENUM_LITERAL { name: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Uncertainty", path: Deref @ Absyn::Path::IDENT { name: Deref @ "propagate" } }, .. }) => Some(openmodelica_frontend_types::DAE::Uncertainty::PROPAGATE),
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -564,7 +564,7 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ DAE::Mod::MOD { info, binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: _, properties: prop2, modifierAsAbsynExp: aexp2, .. }), .. }) => {
+                (_, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: _, properties: prop2, modifierAsAbsynExp: aexp2, .. }), info, .. }) => {
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -640,11 +640,11 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                     let mut complex_vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut tpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Types::arrayElementType(inType.clone())) {
-                        Deref @ DAE::Type::T_COMPLEX { varLst: __pa0, complexClassType: ClassInf::State::RECORD { path: __pa1 }, .. } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __pa0 }, varLst: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    complex_vars = __pa0.clone();
-                    tpath = __pa1.clone();
+                    tpath = __pa0.clone();
+                    complex_vars = __pa1.clone();
                     let true = (Types::allHaveBindings(complex_vars.clone())?) else { bail!("pattern mismatch") };
                     binding = makeRecordBinding(cache.clone(), inEnv.clone(), tpath.clone(), inType.clone(), complex_vars.clone(), metamodelica::nil(), inInfo.clone())?;
                     Ok((cache.clone(), binding.clone()))
@@ -691,11 +691,11 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                     let mut complex_vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut tpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Types::arrayElementType(inType.clone())) {
-                        Deref @ DAE::Type::T_COMPLEX { varLst: __pa0, complexClassType: ClassInf::State::RECORD { path: __pa1 }, .. } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __pa0 }, varLst: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    complex_vars = __pa0.clone();
-                    tpath = __pa1.clone();
+                    tpath = __pa0.clone();
+                    complex_vars = __pa1.clone();
                     binding = makeRecordBinding(cache.clone(), inEnv.clone(), tpath.clone(), inType.clone(), complex_vars.clone(), sub_mods.clone(), inInfo.clone())?;
                     Ok((cache.clone(), binding.clone()))
                 }
@@ -751,7 +751,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, Deref @ DAE::Mod::MOD { info, binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: _, properties: prop, modifierAsAbsynExp: _, .. }), .. }, tp) => {
+                (_, _, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: _, properties: prop, modifierAsAbsynExp: _, .. }), info, .. }, tp) => {
                     let mut e_tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_tp_str: ArcStr = arcstr::literal!("");
                     let mut tp_str: ArcStr = arcstr::literal!("");
@@ -811,23 +811,23 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
         for mut var in &*inRecordVars.clone() {
             let mut var = var.clone();
             let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(var.clone()) {
-                Deref @ DAE::Var { binding: __pa1, ty: __pa2, name: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
+                Deref @ DAE::Var { name: __pa1, ty: __pa2, binding: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
-            binding = __pa1.clone();
+            name = __pa1.clone();
             ty = __pa2.clone();
-            name = __pa3.clone();
+            binding = __pa3.clone();
             (mods, opt_mod) = unwrap_break_err!(List::deleteMemberOnTrue((name.clone()).clone(), mods.clone(), (std::sync::Arc::new(fnptr!(InstUtil::isSubModNamed, ArcStr, Arc<DAE::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::SubMod>) -> Result<bool> + 'static>)), '__try0);
             if isSome(opt_mod.clone()) {
                 ty = Types::liftArrayListDims(ty.clone(), dims.clone());
                 (exp, val) = unwrap_break_err!(makeRecordBinding3(opt_mod.clone(), ty.clone(), inInfo.clone()), '__try0);
             } else if DAEUtil::isBound(binding.clone()) {
                 let (__pa4, __pa5) = ::match_deref::match_deref! { match &(binding.clone()) {
-                    Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(__pa4), exp: __pa5, .. } => (__pa4.clone(), __pa5.clone()),
+                    Deref @ DAE::Binding::EQBOUND { exp: __pa4, evaluatedExp: Some(__pa5), .. } => (__pa4.clone(), __pa5.clone()),
                     _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
-                val = __pa4.clone();
-                exp = __pa5.clone();
+                exp = __pa4.clone();
+                val = __pa5.clone();
             } else {
                 ety = unwrap_break_err!(Types::simplifyType(ty.clone()), '__try0);
                 ty = Types::liftArrayListDims(ty.clone(), dims.clone());
@@ -870,7 +870,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         let __mc_input = inSubMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::EACH { .. }, .. }, .. }) => {
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::EACH { .. }, binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: Some(val), .. }), .. }, .. }) => {
                     Ok((exp.clone(), val.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -878,9 +878,9 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH { .. }, .. }, .. }) => {
-                    let mut ty = (*ty).clone();
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::NOT_EACH { .. }, binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: Some(val), properties: DAE::Properties::PROP { type_: ty, .. }, .. }), .. }, .. }) => {
                     let mut exp = (*exp).clone();
+                    let mut ty = (*ty).clone();
                     (exp, ty) = Types::matchType(exp.clone(), ty.clone(), inType.clone(), true)?;
                     Ok((exp.clone(), val.clone()))
                 }
@@ -889,9 +889,9 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: None, modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH { .. }, .. }, .. }) => {
-                    let mut ty = (*ty).clone();
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::NOT_EACH { .. }, binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: None, properties: DAE::Properties::PROP { type_: ty, .. }, .. }), .. }, .. }) => {
                     let mut exp = (*exp).clone();
+                    let mut ty = (*ty).clone();
                     (exp, ty) = Types::matchType(exp.clone(), ty.clone(), inType.clone(), true)?;
                     Ok((exp.clone(), Arc::new(Values::Value::OPTION { some: None })))
                 }
@@ -900,7 +900,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsExp: exp, .. }), .. }, ident }) => {
+                Some(Deref @ DAE::SubMod { ident, r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: exp, properties: DAE::Properties::PROP { type_: ty, .. }, .. }), .. } }) => {
                     let mut binding_str: ArcStr = arcstr::literal!("");
                     let mut expected_type_str: ArcStr = arcstr::literal!("");
                     let mut given_type_str: ArcStr = arcstr::literal!("");
@@ -935,11 +935,11 @@ pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>,
         return Ok(outBinding.clone());
     }
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(oeq_mod.clone()) {
-        Some(DAE::EqMod::TYPED { properties: __pa0, modifierAsExp: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
+        Some(DAE::EqMod::TYPED { modifierAsExp: __pa0, properties: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    p = __pa0.clone();
-    e = __pa1.clone();
+    e = __pa0.clone();
+    p = __pa1.clone();
     if Types::isExternalObject(inType.clone()) {
         outBinding = Some(e.clone());
     } else if Types::isEmptyArray(Types::getPropType(p.clone())?) {

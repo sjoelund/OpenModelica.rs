@@ -159,11 +159,11 @@ pub fn deleteAndReturnMin(mut ts: T) -> Result<(T, Element)> {
     let mut ts1: T = metamodelica::nil();
     let mut ts2: T = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(getMin(ts.clone())?) {
-        (Deref @ Tree { trees: __pa0, elt: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        (Deref @ Tree { elt: __pa0, trees: __pa1, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ts1 = __pa0.clone();
-    elt = __pa1.clone();
+    elt = __pa0.clone();
+    ts1 = __pa1.clone();
     ts2 = __pa2.clone();
     ots = meld(ts1.clone().reverse(), ts2.clone())?;
     Ok((ots, elt))

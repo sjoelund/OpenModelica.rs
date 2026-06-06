@@ -461,11 +461,11 @@ pub mod BipartiteIncidenceList {
         let mut vertToString: VertexStr<VertexT>;
         let mut edgeToString: EdgeStr<EdgeT>;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(il.clone()) {
-            Deref @ BipartiteIncidenceList { edgeToString: __pa0, vertToString: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            Deref @ BipartiteIncidenceList { vertToString: __pa0, edgeToString: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        edgeToString = __pa0.clone();
-        vertToString = __pa1.clone();
+        vertToString = __pa0.clone();
+        edgeToString = __pa1.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((literal!("Set-Based Graph")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StringUtil::headline_3((literal!("F-Vertices")).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (Vector::toList(il.F_vertices.clone())).into_iter().cloned() {

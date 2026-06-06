@@ -225,8 +225,14 @@ pub mod ConstantsSetImpl {
         key_comp = keyCompare(inKey.clone(), key.clone())?;
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
         (0, _) => true,
-        (1, Deref @ Tree::NODE { right: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
-        ((-1), Deref @ Tree::NODE { left: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
+        (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
+        ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -415,7 +421,11 @@ pub mod ConstantsSetImpl {
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
-        Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
+            left = (*__esc_left).clone();
+            right = (*__esc_right).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
@@ -591,7 +601,8 @@ pub fn collectExpConstants_traverser(mut exp: Arc<Expression::NFExpression>, mut
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref: cref @ Deref @ ComponentRef::CREF { .. }, .. } => {
+        Deref @ Expression::CREF { cref: __esc_cref @ Deref @ ComponentRef::CREF { .. }, .. } => {
+            cref = (*__esc_cref).clone();
             if ComponentRef::isPackageConstant(cref.clone())? && !(Expression::isFunctionPointer(exp.clone())) {
                 binding = getPackageConstantBinding(cref.clone())?;
                 constants = ConstantsSetImpl::add(constants.clone(), ComponentRef::stripSubscriptsAll(cref.clone()))?;
@@ -649,18 +660,20 @@ pub fn collectFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     cls = InstNode::getClass(func.node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { sections, elements: Deref @ ClassTree::ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::ClassTree::FLAT_TREE { components: __esc_comps, .. }, sections: __esc_sections, .. } => {
+            comps = (*__esc_comps).clone();
+            sections = (*__esc_sections).clone();
             let __range0 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 constants = collectBindingConstants(Component::getBinding(InstNode::component(c.clone())?), constants.clone())?;
             }
             let () = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
-            constants = Algorithm::foldExpList(var_field!((**sections).algorithms, Sections::NFSections::SECTIONS).clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
+            constants = Algorithm::foldExpList(var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
             ()
         },
         Deref @ Sections::EXTERNAL { .. } => {
-            for mut arg in &*var_field!((**sections).args, Sections::NFSections::EXTERNAL).clone() {
+            for mut arg in &*var_field!((*sections).args, Sections::NFSections::EXTERNAL).clone() {
                 let mut arg = arg.clone();
                 constants = collectExpConstants(arg.clone(), constants.clone())?;
             }
@@ -710,7 +723,10 @@ pub fn replaceExpConstants_traverser(mut exp: Arc<Expression::NFExpression>) -> 
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref: cref @ Deref @ ComponentRef::CREF { .. }, .. } => if (ComponentRef::isPackageConstant(cref.clone())?) {Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?} else {exp.clone()},
+        Deref @ Expression::CREF { cref: __esc_cref @ Deref @ ComponentRef::CREF { .. }, .. } => {
+            cref = (*__esc_cref).clone();
+            if (ComponentRef::isPackageConstant(cref.clone())?) {Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?} else {exp.clone()}
+        },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -727,8 +743,9 @@ pub fn replaceFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::
     let mut eval_binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     cls = InstNode::getClass(func.node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { sections, elements: Deref @ ClassTree::ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
-            let mut sections = (*sections).clone();
+        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::ClassTree::FLAT_TREE { components: __esc_comps, .. }, sections: __esc_sections, .. } => {
+            comps = (*__esc_comps).clone();
+            sections = (*__esc_sections).clone();
             let __range0 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 comp = InstNode::component(c.clone())?;

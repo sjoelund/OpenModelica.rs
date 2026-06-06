@@ -461,15 +461,19 @@ fn checkOverloadedBinaryArrayMul(mut exp1: Arc<Expression::NFExpression>, mut ty
             (outExp, _) = checkOverloadedBinaryArrayScalar(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
             (true, outExp.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: __esc_dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Nil }) => {
             dim11 = (*__esc_dim11).clone();
+            dim12 = (*__esc_dim12).clone();
+            dim21 = (*__esc_dim21).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             outExp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() });
             valid = false;
             (valid.clone(), outExp.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: __esc_dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
             dim11 = (*__esc_dim11).clone();
+            dim12 = (*__esc_dim12).clone();
+            dim21 = (*__esc_dim21).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             outExp = Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() });
             valid = false;
@@ -831,19 +835,31 @@ fn checkBinaryOperationMul(mut exp1: Arc<Expression::NFExpression>, mut type1: A
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => (resultType.clone(), Op::MUL.clone()),
         (Deref @ metamodelica::List::Nil, _) => (Arc::new(Type::NFType::ARRAY { elementType: resultType.clone(), dimensions: dims2.clone() }), Op::MUL_SCALAR_ARRAY.clone()),
         (_, Deref @ metamodelica::List::Nil) => (Arc::new(Type::NFType::ARRAY { elementType: resultType.clone(), dimensions: dims1.clone() }), Op::MUL_ARRAY_SCALAR.clone()),
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Nil }) => {
+            dim11 = (*__esc_dim11).clone();
+            dim21 = (*__esc_dim21).clone();
             valid = Dimension::isEqual(dim11.clone(), dim21.clone())?;
             (resultType.clone(), Op::SCALAR_PRODUCT.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Cons { head: __esc_dim22, tail: Deref @ metamodelica::List::Nil } }) => {
+            dim11 = (*__esc_dim11).clone();
+            dim21 = (*__esc_dim21).clone();
+            dim22 = (*__esc_dim22).clone();
             valid = Dimension::isEqual(dim11.clone(), dim21.clone())?;
             (Arc::new(Type::NFType::ARRAY { elementType: resultType.clone(), dimensions: list![dim22.clone()] }), Op::MUL_VECTOR_MATRIX.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: __esc_dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Nil }) => {
+            dim11 = (*__esc_dim11).clone();
+            dim12 = (*__esc_dim12).clone();
+            dim21 = (*__esc_dim21).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             (Arc::new(Type::NFType::ARRAY { elementType: resultType.clone(), dimensions: list![dim11.clone()] }), Op::MUL_MATRIX_VECTOR.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Cons { head: dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: dim21, tail: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_dim11, tail: Deref @ metamodelica::List::Cons { head: __esc_dim12, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Cons { head: __esc_dim21, tail: Deref @ metamodelica::List::Cons { head: __esc_dim22, tail: Deref @ metamodelica::List::Nil } }) => {
+            dim11 = (*__esc_dim11).clone();
+            dim12 = (*__esc_dim12).clone();
+            dim21 = (*__esc_dim21).clone();
+            dim22 = (*__esc_dim22).clone();
             valid = Dimension::isEqual(dim12.clone(), dim21.clone())?;
             (Arc::new(Type::NFType::ARRAY { elementType: resultType.clone(), dimensions: list![dim11.clone(), dim22.clone()] }), Op::MATRIX_PRODUCT.clone())
         },
@@ -1389,12 +1405,14 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
         opt = setOption(opt.clone(), IGNORE_DIMENSIONS.clone());
     }
     let () = (::match_deref::match_deref! { match &((cls1.clone(), actualType.clone(), cls2.clone(), expectedType.clone())) {
-        (_, Deref @ Type::COMPLEX { complexTy: cty1 @ Deref @ ComplexType::CONNECTOR { .. }, .. }, _, Deref @ Type::COMPLEX { complexTy: cty2 @ Deref @ ComplexType::CONNECTOR { .. }, .. }) => {
-            matchKind = matchComponentList(var_field!((**cty1).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+        (_, Deref @ Type::COMPLEX { complexTy: __esc_cty1 @ Deref @ ComplexType::CONNECTOR { .. }, .. }, _, Deref @ Type::COMPLEX { complexTy: __esc_cty2 @ Deref @ ComplexType::CONNECTOR { .. }, .. }) => {
+            cty1 = (*__esc_cty1).clone();
+            cty2 = (*__esc_cty2).clone();
+            matchKind = matchComponentList(var_field!((*cty1).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).potentials, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
             if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {
-                matchKind = matchComponentList(var_field!((**cty1).flows, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).flows, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+                matchKind = matchComponentList(var_field!((*cty1).flows, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).flows, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
                 if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {
-                    matchKind = matchComponentList(var_field!((**cty1).streams, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((**cty2).streams, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
+                    matchKind = matchComponentList(var_field!((*cty1).streams, ComplexType::NFComplexType::CONNECTOR).clone(), var_field!((*cty2).streams, ComplexType::NFComplexType::CONNECTOR).clone(), options.clone())?;
                 }
             }
             if matchKind.clone() != MatchKind::NOT_COMPATIBLE.clone() {
@@ -1402,7 +1420,10 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
             }
             ()
         },
-        (Deref @ Class::INSTANCED_CLASS { elements: ctree @ Deref @ ClassTree::FLAT_TREE { components: comps1, .. }, .. }, _, Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps2, .. }, .. }, _) => {
+        (Deref @ Class::INSTANCED_CLASS { elements: __esc_ctree @ Deref @ ClassTree::FLAT_TREE { components: __esc_comps1, .. }, .. }, _, Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_comps2, .. }, .. }, _) => {
+            ctree = (*__esc_ctree).clone();
+            comps1 = (*__esc_comps1).clone();
+            comps2 = (*__esc_comps2).clone();
             if metamodelica::arrayLength(comps1.clone()) != metamodelica::arrayLength(comps2.clone()) {
                 matchKind = MatchKind::NOT_COMPATIBLE.clone();
                 return Ok((expression.clone(), compatibleType.clone(), matchKind.clone()));
@@ -1593,19 +1614,19 @@ pub fn matchFunctionTypes(mut actualType: Arc<Type::NFType>, mut expectedType: A
     let mut slot1: Arc<Slot::Slot> = Arc::new(<Slot::Slot as ::std::default::Default>::default());
     let mut slot2: Arc<Slot::Slot> = Arc::new(<Slot::Slot as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(actualType.clone()) {
-        Deref @ Type::FUNCTION { r#fn: Deref @ Function::FUNCTION { slots: __pa0, outputs: __pa1, inputs: __pa2, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Type::FUNCTION { r#fn: Deref @ Function::FUNCTION { inputs: __pa0, outputs: __pa1, slots: __pa2, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    slots1 = __pa0.clone();
+    inputs1 = __pa0.clone();
     outputs1 = __pa1.clone();
-    inputs1 = __pa2.clone();
+    slots1 = __pa2.clone();
     let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(expectedType.clone()) {
-        Deref @ Type::FUNCTION { r#fn: Deref @ Function::FUNCTION { slots: __pa4, outputs: __pa5, inputs: __pa6, .. }, .. } => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
+        Deref @ Type::FUNCTION { r#fn: Deref @ Function::FUNCTION { inputs: __pa4, outputs: __pa5, slots: __pa6, .. }, .. } => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    slots2 = __pa4.clone();
+    inputs2 = __pa4.clone();
     outputs2 = __pa5.clone();
-    inputs2 = __pa6.clone();
+    slots2 = __pa6.clone();
     if (outputs1.clone().len() as i32) != (outputs2.clone().len() as i32) {
         matchKind = MatchKind::NOT_COMPATIBLE.clone();
         return Ok((expression.clone(), compatibleType.clone(), matchKind.clone()));
@@ -1707,17 +1728,17 @@ pub fn matchArrayExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1:
     let mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut dims2: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(type1.clone()) {
-        Deref @ Type::ARRAY { dimensions: __pa0, elementType: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Type::ARRAY { elementType: __pa0, dimensions: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dims1 = __pa0.clone();
-    ety1 = __pa1.clone();
+    ety1 = __pa0.clone();
+    dims1 = __pa1.clone();
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(type2.clone()) {
-        Deref @ Type::ARRAY { dimensions: __pa2, elementType: __pa3 } => (__pa2.clone(), __pa3.clone()),
+        Deref @ Type::ARRAY { elementType: __pa2, dimensions: __pa3 } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dims2 = __pa2.clone();
-    ety2 = __pa3.clone();
+    ety2 = __pa2.clone();
+    dims2 = __pa3.clone();
     (exp1, exp2, compatibleType, matchKind) = matchExpressions(exp1.clone(), ety1.clone(), exp2.clone(), ety2.clone(), options.clone())?;
     (compatibleType, matchKind) = matchArrayDims(dims1.clone(), dims2.clone(), compatibleType.clone(), matchKind.clone(), options.clone())?;
     Ok((exp1, exp2, compatibleType, matchKind))
@@ -1732,17 +1753,17 @@ pub fn matchArrayTypes(mut arrayType1: Arc<Type::NFType>, mut arrayType2: Arc<Ty
     let mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut dims2: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(arrayType1.clone()) {
-        Deref @ Type::ARRAY { dimensions: __pa0, elementType: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Type::ARRAY { elementType: __pa0, dimensions: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dims1 = __pa0.clone();
-    ety1 = __pa1.clone();
+    ety1 = __pa0.clone();
+    dims1 = __pa1.clone();
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(arrayType2.clone()) {
-        Deref @ Type::ARRAY { dimensions: __pa2, elementType: __pa3 } => (__pa2.clone(), __pa3.clone()),
+        Deref @ Type::ARRAY { elementType: __pa2, dimensions: __pa3 } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dims2 = __pa2.clone();
-    ety2 = __pa3.clone();
+    ety2 = __pa2.clone();
+    dims2 = __pa3.clone();
     (expression, compatibleType, matchKind) = matchTypes(ety1.clone(), ety2.clone(), expression.clone(), options.clone())?;
     (compatibleType, matchKind) = matchArrayDims(dims1.clone(), dims2.clone(), compatibleType.clone(), matchKind.clone(), options.clone())?;
     Ok((expression, compatibleType, matchKind))
@@ -1883,12 +1904,12 @@ pub fn matchConditionalArrayExp(mut condExp: Arc<Expression::NFExpression>, mut 
     let mut compat1: bool = false;
     let mut compat2: bool = false;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(condType.clone()) {
-        Deref @ Type::CONDITIONAL_ARRAY { matchedBranch: __pa0, falseType: __pa1, trueType: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Type::CONDITIONAL_ARRAY { trueType: __pa0, falseType: __pa1, matchedBranch: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    branch = __pa0.clone();
+    true_ty = __pa0.clone();
     false_ty = __pa1.clone();
-    true_ty = __pa2.clone();
+    branch = __pa2.clone();
     if branch.clone() == Type::Branch::NONE.clone() {
         (e1_1, e2_1, comp_ty1, mk1) = matchExpressions(condExp.clone(), true_ty.clone(), otherExp.clone(), otherType.clone(), options.clone())?;
         (e1_2, e2_2, comp_ty2, mk2) = matchExpressions(condExp.clone(), false_ty.clone(), otherExp.clone(), otherType.clone(), options.clone())?;
@@ -1940,17 +1961,17 @@ pub fn matchConditionalArrayTypes(mut actualType: Arc<Type::NFType>, mut expecte
     let mut true_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut false_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(actualType.clone()) {
-        Deref @ Type::CONDITIONAL_ARRAY { falseType: __pa0, trueType: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Type::CONDITIONAL_ARRAY { trueType: __pa0, falseType: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    actual_false_ty = __pa0.clone();
-    actual_true_ty = __pa1.clone();
+    actual_true_ty = __pa0.clone();
+    actual_false_ty = __pa1.clone();
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(expectedType.clone()) {
-        Deref @ Type::CONDITIONAL_ARRAY { falseType: __pa2, trueType: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
+        Deref @ Type::CONDITIONAL_ARRAY { trueType: __pa2, falseType: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    expected_false_ty = __pa2.clone();
-    expected_true_ty = __pa3.clone();
+    expected_true_ty = __pa2.clone();
+    expected_false_ty = __pa3.clone();
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::IF { .. } => {
             (true_exp, true_ty, matchKind) = matchTypes(actual_true_ty.clone(), expected_true_ty.clone(), var_field!((*exp).trueBranch, Expression::NFExpression::IF).clone(), options.clone())?;
@@ -1987,12 +2008,12 @@ pub fn matchConditionalArrayTypes_cast(mut condType: Arc<Type::NFType>, mut expe
     let mut mk1: MatchKind = MatchKind::EXACT;
     let mut mk2: MatchKind = MatchKind::EXACT;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(condType.clone()) {
-        Deref @ Type::CONDITIONAL_ARRAY { matchedBranch: __pa0, falseType: __pa1, trueType: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Type::CONDITIONAL_ARRAY { trueType: __pa0, falseType: __pa1, matchedBranch: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    branch = __pa0.clone();
+    true_ty = __pa0.clone();
     false_ty = __pa1.clone();
-    true_ty = __pa2.clone();
+    branch = __pa2.clone();
     if branch.clone() == Type::Branch::NONE.clone() {
         (e1, comp_ty1, mk1) = matchTypes(true_ty.clone(), expectedType.clone(), exp.clone(), options.clone())?;
         (e2, comp_ty2, mk2) = matchTypes(false_ty.clone(), expectedType.clone(), exp.clone(), options.clone())?;
@@ -2344,7 +2365,10 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
         let mut n: Arc<InstNode::InstNode> = InstNode::getDerivedNode(node.clone(), true);
         let mut p: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         res = (::match_deref::match_deref! { match &(n.clone()) {
-        Deref @ InstNode::COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent: p }, .. } => InstNode::refEqual(parent.clone(), n.clone()) || isParent(parent.clone(), p.clone()),
+        Deref @ InstNode::COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent: __esc_p }, .. } => {
+            p = (*__esc_p).clone();
+            InstNode::refEqual(parent.clone(), n.clone()) || isParent(parent.clone(), p.clone())
+        },
         Deref @ InstNode::COMPONENT_NODE { .. } => InstNode::refEqual(parent.clone(), n.clone()) || isParent(parent.clone(), var_field!((*n).parent, InstNode::InstNode::COMPONENT_NODE).clone()),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

@@ -97,7 +97,7 @@ pub fn addSimVarToHashTable(mut simvarIn: SimCodeVar::SimVar, mut inHT: HashTabl
         let __mc_input = simvarIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                sv @ SimCodeVar::SimVar { arrayCref: None, name: cr, .. } => {
+                sv @ SimCodeVar::SimVar { name: cr, arrayCref: None, .. } => {
                     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (FuncHashCref, FuncCrefEqual, FuncCrefStr, FuncExpStr));
                     outHT = BaseHashTable::add((cr.clone(), sv.clone()), inHT.clone())?;
                     Ok(outHT.clone())
@@ -107,7 +107,7 @@ pub fn addSimVarToHashTable(mut simvarIn: SimCodeVar::SimVar, mut inHT: HashTabl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                sv @ SimCodeVar::SimVar { arrayCref: Some(acr), name: cr, .. } => {
+                sv @ SimCodeVar::SimVar { name: cr, arrayCref: Some(acr), .. } => {
                     let mut outHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (FuncHashCref, FuncCrefEqual, FuncCrefStr, FuncExpStr));
                     outHT = BaseHashTable::add((acr.clone(), sv.clone()), inHT.clone())?;
                     outHT = BaseHashTable::add((cr.clone(), sv.clone()), outHT.clone())?;

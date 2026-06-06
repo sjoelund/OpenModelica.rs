@@ -79,7 +79,7 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
         let __mc_input = inClass.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { info, classDef: cdef, name, .. } => {
+                Deref @ SCode::Element::CLASS { name, classDef: cdef, info, .. } => {
                     let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut cls_env: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
@@ -87,11 +87,11 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
                     let mut cls_ty: NFSCodeEnv::ClassType = NFSCodeEnv::ClassType::BASIC_TYPE;
                     let mut cdef = (*cdef).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(NFSCodeLookup::lookupInClass((name.clone()).clone(), inEnv.clone())?) {
-                        (Deref @ NFSCodeEnv::Item::CLASS { classType: __pa0, env: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }, .. }, _) => (__pa0.clone(), __pa1.clone()),
+                        (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, classType: __pa1, .. }, _) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    cls_ty = __pa0.clone();
-                    cls_env = __pa1.clone();
+                    cls_env = __pa0.clone();
+                    cls_ty = __pa1.clone();
                     env = NFSCodeEnv::enterFrame(cls_env.clone(), inEnv.clone());
                     let (__pa3, __pa4, __pa5) = ::match_deref::match_deref! { match &(flattenClassDef(cdef.clone(), env.clone(), info.clone())?) {
                         (__pa3, Deref @ metamodelica::List::Cons { head: __pa4, tail: __pa5 }) => (__pa3.clone(), __pa4.clone(), __pa5.clone()),
@@ -280,7 +280,7 @@ fn flattenAttributes(mut inAttributes: SCode::Attributes, mut inEnv: Env, mut in
 fn flattenTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<Absyn::TypeSpec>> {
     let mut outTypeSpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     outTypeSpec = (::match_deref::match_deref! { match &(inTypeSpec.clone()) {
-        Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path } => {
+        Deref @ Absyn::TypeSpec::TPATH { path, arrayDim: ad } => {
             let mut path = (*path).clone();
             (_, path, _) = NFSCodeLookup::lookupClassName(path.clone(), inEnv.clone(), inInfo.clone())?;
             Arc::new(Absyn::TypeSpec::TPATH { path: path.clone(), arrayDim: ad.clone() })
@@ -288,7 +288,7 @@ fn flattenTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inI
         Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name: Deref @ "polymorphic" }, .. } => {
             inTypeSpec.clone()
         },
-        Deref @ Absyn::TypeSpec::TCOMPLEX { arrayDim: ad, typeSpecs: tys, path } => {
+        Deref @ Absyn::TypeSpec::TCOMPLEX { path, typeSpecs: tys, arrayDim: ad } => {
             let mut tys = (*tys).clone();
             tys = List::map2(tys.clone(), (std::sync::Arc::new(flattenTypeSpec) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::TypeSpec>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<Arc<Absyn::TypeSpec>> + 'static>), inEnv.clone(), inInfo.clone())?;
             Arc::new(Absyn::TypeSpec::TCOMPLEX { path: path.clone(), typeSpecs: tys.clone(), arrayDim: ad.clone() })
@@ -332,12 +332,12 @@ fn flattenEquationTraverser(mut eq: Arc<SCode::Equation>, mut env: Env) -> Resul
     let mut eq: Arc<SCode::Equation> = eq;
     let mut env: Env = env;
     (eq, env) = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SCode::Equation::EQ_FOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Equation::EQ_FOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             (eq, _) = SCodeUtil::mapFoldEquationExps(eq.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (eq.clone(), env.clone())
         },
-        Deref @ SCode::Equation::EQ_REINIT { info, comment: cmt, expReinit: exp, cref: crefExp @ Deref @ Absyn::Exp::CREF { componentRef: cref } } => {
+        Deref @ SCode::Equation::EQ_REINIT { cref: crefExp @ Deref @ Absyn::Exp::CREF { componentRef: cref }, expReinit: exp, comment: cmt, info } => {
             let mut cref = (*cref).clone();
             cref = NFSCodeLookup::lookupComponentRef(cref.clone(), env.clone(), info.clone())?;
             eq = Arc::new(SCode::Equation::EQ_REINIT { cref: crefExp.clone(), expReinit: exp.clone(), comment: cmt.clone(), info: info.clone() });
@@ -395,12 +395,12 @@ fn flattenStatementTraverser(mut stmt: Arc<SCode::Statement>, mut env: Env) -> R
     let mut stmt: Arc<SCode::Statement> = stmt;
     let mut env: Env = env;
     (stmt, env) = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ SCode::Statement::ALG_FOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Statement::ALG_FOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             (stmt, _) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (stmt.clone(), env.clone())
         },
-        Deref @ SCode::Statement::ALG_PARFOR { info, index: iter_name, .. } => {
+        Deref @ SCode::Statement::ALG_PARFOR { index: iter_name, info, .. } => {
             env = NFSCodeEnv::extendEnvWithIterators(list![Arc::new(Absyn::ForIterator { name: (iter_name.clone()).clone(), guardExp: None, range: None })], System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
             (stmt, _) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new(traverseExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (env.clone(), info.clone()))?;
             (stmt.clone(), env.clone())
@@ -458,7 +458,7 @@ fn flattenModOptExp(mut inOptExp: Option<Arc<Absyn::Exp>>, mut inEnv: Env, mut i
 fn flattenSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<SCode::SubMod>> {
     let mut outSubMod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
     outSubMod = (::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ SCode::SubMod { r#mod, ident } => {
+        Deref @ SCode::SubMod { ident, r#mod } => {
             let mut r#mod = (*r#mod).clone();
             r#mod = flattenModifier(r#mod.clone(), inEnv.clone(), inInfo.clone())?;
             Arc::new(SCode::SubMod { ident: (ident.clone()).clone(), r#mod: r#mod.clone() })
@@ -540,9 +540,9 @@ fn flattenExpTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamo
             cref = NFSCodeLookup::lookupComponentRef(cref.clone(), env.clone(), info.clone())?;
             (Arc::new(Absyn::Exp::CREF { componentRef: cref.clone() }), tup.clone())
         },
-        (Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { iterators: iters, iterType, exp }, function_: cref, .. }, (env, info)) => {
-            let mut exp = (*exp).clone();
+        (Deref @ Absyn::Exp::CALL { function_: cref, functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { exp, iterType, iterators: iters }, .. }, (env, info)) => {
             let mut cref = (*cref).clone();
+            let mut exp = (*exp).clone();
             let mut env = (*env).clone();
             cref = NFSCodeLookup::lookupComponentRef(cref.clone(), env.clone(), info.clone())?;
             env = NFSCodeEnv::extendEnvWithIterators(iters.clone(), System::tmpTickIndex(NFSCodeEnv::tmpTickIndex.clone()), env.clone())?;
@@ -552,12 +552,12 @@ fn flattenExpTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamo
         (Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "SOME", .. }, .. }, _) => {
             (inExp.clone(), inTuple.clone())
         },
-        (Deref @ Absyn::Exp::CALL { functionArgs: args, function_: cref, .. }, tup @ (env, info)) => {
+        (Deref @ Absyn::Exp::CALL { function_: cref, functionArgs: args, .. }, tup @ (env, info)) => {
             let mut cref = (*cref).clone();
             cref = NFSCodeLookup::lookupComponentRef(cref.clone(), env.clone(), info.clone())?;
             (Arc::new(Absyn::Exp::CALL { function_: cref.clone(), functionArgs: args.clone(), typeVars: var_field!((*inExp).typeVars, Absyn::Exp::CALL).clone() }), tup.clone())
         },
-        (Deref @ Absyn::Exp::PARTEVALFUNCTION { functionArgs: args, function_: cref }, tup @ (env, info)) => {
+        (Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cref, functionArgs: args }, tup @ (env, info)) => {
             let mut cref = (*cref).clone();
             cref = NFSCodeLookup::lookupComponentRef(cref.clone(), env.clone(), info.clone())?;
             (Arc::new(Absyn::Exp::PARTEVALFUNCTION { function_: cref.clone(), functionArgs: args.clone() }), tup.clone())

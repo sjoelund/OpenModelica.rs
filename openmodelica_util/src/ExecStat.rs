@@ -102,17 +102,17 @@ pub fn execStat(mut name: ArcStr) -> Result<()> {
             }
             t = System::realtimeAccumulate(ClockIndexes::RT_CLOCK_EXECSTAT.clone())?;
             total = System::realtimeAccumulated(ClockIndexes::RT_CLOCK_EXECSTAT.clone())?;
-            let ref __pa4 @ GCExt::PROFSTATS { free_bytes_full: ref __pa0, heapsize_full: ref __pa1, allocd_bytes_before_gc: ref __pa2, bytes_allocd_since_gc: ref __pa3, .. } = (GCExt::getProfStats()) else { bail!("pattern mismatch") };
-            free_bytes_full = __pa0.clone();
-            heapsize_full = __pa1.clone();
-            before = __pa2.clone();
-            since = __pa3.clone();
+            let ref __pa4 @ GCExt::PROFSTATS { bytes_allocd_since_gc: ref __pa0, allocd_bytes_before_gc: ref __pa1, heapsize_full: ref __pa2, free_bytes_full: ref __pa3, .. } = (GCExt::getProfStats()) else { bail!("pattern mismatch") };
+            since = __pa0.clone();
+            before = __pa1.clone();
+            heapsize_full = __pa2.clone();
+            free_bytes_full = __pa3.clone();
             stats = __pa4.clone();
             memory = since.clone() + before.clone();
             oldStats = crate::Globals::gcProfilingIndex.with(|__root| __root.borrow().clone());
-            let GCExt::PROFSTATS { allocd_bytes_before_gc: __pa5, bytes_allocd_since_gc: __pa6, .. } = (oldStats.clone()) else { bail!("pattern mismatch") };
-            before = __pa5.clone();
-            since = __pa6.clone();
+            let GCExt::PROFSTATS { bytes_allocd_since_gc: __pa5, allocd_bytes_before_gc: __pa6, .. } = (oldStats.clone()) else { bail!("pattern mismatch") };
+            since = __pa5.clone();
+            before = __pa6.clone();
             oldMemory = since.clone() + before.clone();
             timeStr = (snprintff(t.clone())?).clone();
             totalTimeStr = (snprintff(total.clone())?).clone();

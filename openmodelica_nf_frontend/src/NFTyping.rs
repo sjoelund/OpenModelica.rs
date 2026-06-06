@@ -161,20 +161,22 @@ pub fn typeComponents(mut cls: Arc<InstNode::InstNode>, mut context: i32, mut pr
     let mut de: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let () = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => (),
-        Deref @ Class::INSTANCED_CLASS { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
             if InstContext::inInstanceAPI(context.clone()) {
-                let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+                let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range0 {
                     typeComponentTry(c.clone(), context.clone())?;
                 }
             } else {
-                let __range1 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+                let __range1 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
                 for mut c in __range1 {
                     typeComponent(c.clone(), context.clone(), true)?;
                 }
             }
             let () = (::match_deref::match_deref! { match &(var_field!((*c).ty, Class::NFClass::INSTANCED_CLASS).clone()) {
-        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: con, .. }, .. } => {
+        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: __esc_con, .. }, .. } => {
+            con = (*__esc_con).clone();
             typeStructor(con.clone())?;
             ()
         },
@@ -196,7 +198,9 @@ pub fn typeComponents(mut cls: Arc<InstNode::InstNode>, mut context: i32, mut pr
             }
             ()
         },
-        Deref @ Class::INSTANCED_BUILTIN { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { destructor: de, constructor: con }, .. }, .. } => {
+        Deref @ Class::INSTANCED_BUILTIN { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { constructor: __esc_con, destructor: __esc_de }, .. }, .. } => {
+            con = (*__esc_con).clone();
+            de = (*__esc_de).clone();
             typeStructor(con.clone())?;
             typeStructor(de.clone())?;
             ()
@@ -217,8 +221,8 @@ pub fn typeStructor(mut node: Arc<InstNode::InstNode>) -> Result<()> {
     let mut context: i32 = 0;
     cache = InstNode::getFuncCache(node.clone())?;
     let () = (::match_deref::match_deref! { match &(cache.clone()) {
-        Deref @ CachedData::FUNCTION { typed: false, funcs: fnl, .. } => {
-            let mut fnl = (*fnl).clone();
+        Deref @ CachedData::FUNCTION { funcs: __esc_fnl, typed: false, .. } => {
+            fnl = (*__esc_fnl).clone();
             context = InstContext::set(InstContext::FUNCTION.clone(), InstContext::RELAXED.clone());
             fnl = ({
         let mut __acc: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
@@ -255,19 +259,23 @@ pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding:
     let mut is_expandable: bool = false;
     cls = InstNode::getClass(clsNode.clone())?;
     ty = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::CONNECTOR { isExpandable: is_expandable }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::CONNECTOR { isExpandable: __esc_is_expandable }, .. } => {
+            is_expandable = (*__esc_is_expandable).clone();
             ty = Arc::new(Type::NFType::COMPLEX { cls: clsNode.clone(), complexTy: makeConnectorType(var_field!((*cls).elements, Class::NFClass::INSTANCED_CLASS).clone(), is_expandable.clone())? });
             assign_variant_field!(cls => Class::NFClass::INSTANCED_CLASS; ty = ty.clone());
             InstNode::updateClass(cls.clone(), clsNode.clone())?;
             ty.clone()
         },
-        Deref @ Class::INSTANCED_CLASS { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: node, .. }, cls: ty_node }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { ty: Deref @ Type::COMPLEX { cls: __esc_ty_node, complexTy: Deref @ ComplexType::RECORD { constructor: __esc_node, .. } }, .. } => {
+            ty_node = (*__esc_ty_node).clone();
+            node = (*__esc_node).clone();
             ty = Arc::new(Type::NFType::COMPLEX { cls: ty_node.clone(), complexTy: makeRecordType(node.clone())? });
             assign_variant_field!(cls => Class::NFClass::INSTANCED_CLASS; ty = ty.clone());
             InstNode::updateClass(cls.clone(), clsNode.clone())?;
             ty.clone()
         },
-        Deref @ Class::INSTANCED_CLASS { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTENDS_TYPE { baseClass: node }, .. }, .. } => {
+        Deref @ Class::INSTANCED_CLASS { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTENDS_TYPE { baseClass: __esc_node }, .. }, .. } => {
+            node = (*__esc_node).clone();
             ty = typeClassType(node.clone(), componentBinding.clone(), context.clone(), instanceNode.clone())?;
             assign_variant_field!(cls => Class::NFClass::INSTANCED_CLASS; ty = ty.clone());
             InstNode::updateClass(cls.clone(), clsNode.clone())?;
@@ -422,7 +430,8 @@ pub fn typeComponent(mut component: Arc<InstNode::InstNode>, mut context: i32, m
     node = InstNode::resolveOuter(component.clone());
     c = InstNode::component(node.clone())?;
     ty = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: dims, .. }, .. } => {
+        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: __esc_dims, .. }, .. } => {
+            dims = (*__esc_dims).clone();
             typeDimensions(dims.clone(), node.clone(), var_field!((*c).binding, Component::NFComponent::COMPONENT).clone(), context.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
             if InstNode::isEmpty(var_field!((*c).classInst, Component::NFComponent::COMPONENT).clone()) {
                 ty = crate::NFType::interned_UNKNOWN();
@@ -502,7 +511,8 @@ pub fn typeIterator(mut iterator: Arc<InstNode::InstNode>, mut range: Arc<Expres
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     (outRange, ty, var) = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Component::ITERATOR { info, .. } => {
+        Deref @ Component::ITERATOR { info: __esc_info, .. } => {
+            info = (*__esc_info).clone();
             (exp, ty, var, purity) = typeExp(range.clone(), InstContext::set(context.clone(), InstContext::ITERATION_RANGE.clone()), info.clone(), false)?;
             if structural.clone() && var.clone() > Variability::PARAMETER.clone() && (!(var.clone() == Variability::NON_STRUCTURAL_PARAMETER.clone()) || Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
                 Error::addSourceMessageAndFail(Error::NON_PARAMETER_ITERATOR_RANGE.clone(), list![(Expression::toString(exp.clone())?).clone()], info.clone())?;
@@ -620,8 +630,8 @@ pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimens
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             dim = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ Dimension::EXP { exp, .. } => {
-            let mut exp = (*exp).clone();
+        Deref @ Dimension::EXP { exp: __esc_exp, .. } => {
+            exp = (*__esc_exp).clone();
             Structural::markExp(exp.clone())?;
             if InstContext::inRelaxed(context.clone()) {
                 exp = Ceval::tryEvalExp(exp.clone(), Ceval::noTarget().clone());
@@ -759,15 +769,17 @@ pub fn typeBindings(mut cls: Arc<InstNode::InstNode>, mut context: i32) -> Resul
     let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     c = InstNode::getClass(cls.clone())?;
     let () = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Class::INSTANCED_CLASS { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_CLASS { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
+            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 typeComponentBinding(c.clone(), context.clone(), true)?;
             }
             ()
         },
-        Deref @ Class::INSTANCED_BUILTIN { elements: cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
-            let __range0 = var_field!((**cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
+        Deref @ Class::INSTANCED_BUILTIN { elements: __esc_cls_tree @ Deref @ ClassTree::FLAT_TREE { .. }, .. } => {
+            cls_tree = (*__esc_cls_tree).clone();
+            let __range0 = var_field!((*cls_tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut c in __range0 {
                 typeComponentBinding(c.clone(), context.clone(), true)?;
             }
@@ -802,8 +814,8 @@ pub fn typeComponentBinding(mut component: Arc<InstNode::InstNode>, mut context:
     c = InstNode::component(node.clone())?;
     let () = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ Component::COMPONENT { .. } if (Component::isDeleted(c.clone())? || Component::isInvalid(c.clone())) => (),
-        Deref @ Component::COMPONENT { attributes: attrs, binding: Deref @ Binding::UNTYPED_BINDING { .. }, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() == ComponentState::Typed.clone()) => {
-            let mut attrs = (*attrs).clone();
+        Deref @ Component::COMPONENT { binding: Deref @ Binding::UNTYPED_BINDING { .. }, attributes: __esc_attrs, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() == ComponentState::Typed.clone()) => {
+            attrs = (*__esc_attrs).clone();
             name = (InstNode::name(component.clone())?).clone();
             binding = var_field!((*c).binding, Component::NFComponent::COMPONENT).clone();
             ErrorExt::setCheckpoint(literal!("NFTyping.typeComponentBinding"));
@@ -856,8 +868,8 @@ pub fn typeComponentBinding(mut component: Arc<InstNode::InstNode>, mut context:
             }
             ()
         },
-        Deref @ Component::COMPONENT { attributes: attrs, binding: Deref @ Binding::UNTYPED_BINDING { .. }, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() < ComponentState::Typed.clone()) => {
-            let mut attrs = (*attrs).clone();
+        Deref @ Component::COMPONENT { binding: Deref @ Binding::UNTYPED_BINDING { .. }, attributes: __esc_attrs, .. } if (var_field!((*c).state, Component::NFComponent::COMPONENT).clone() < ComponentState::Typed.clone()) => {
+            attrs = (*__esc_attrs).clone();
             name = (InstNode::name(component.clone())?).clone();
             binding = typeBinding(var_field!((*c).binding, Component::NFComponent::COMPONENT).clone(), InstContext::set(context.clone(), InstContext::BINDING.clone()))?;
             comp_var = checkComponentBindingVariability((name.clone()).clone(), c.clone(), binding.clone(), context.clone())?;
@@ -995,8 +1007,9 @@ pub fn typeTypeAttribute(mut attribute: Arc<Modifier::Modifier>, mut attrType: A
         },
         Deref @ Modifier::MODIFIER { .. } if (Binding::isUnbound(var_field!((*attribute).binding, Modifier::Modifier::MODIFIER).clone())) => crate::NFModifier::Modifier::interned_NOMOD(),
         Deref @ Modifier::MODIFIER { binding: Deref @ Binding::TYPED_BINDING { .. }, .. } => attribute.clone(),
-        Deref @ Modifier::MODIFIER { binding, name, .. } => {
-            let mut binding = (*binding).clone();
+        Deref @ Modifier::MODIFIER { name: __esc_name, binding: __esc_binding, .. } => {
+            name = (*__esc_name).clone();
+            binding = (*__esc_binding).clone();
             if Binding::isBound(binding.clone()) {
                 binding = typeBinding(binding.clone(), context.clone())?;
                 parent = InstNode::parent(component.clone());
@@ -1486,7 +1499,7 @@ pub fn typeCrefDim(mut cref: Arc<ComponentRef::NFComponentRef>, mut dimIndex: i3
     for mut cr in &*crl.clone() {
         let mut cr = cr.clone();
         let () = (::match_deref::match_deref! { match &(cr.clone()) {
-        Deref @ ComponentRef::CREF { subscripts: _, node: Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
+        Deref @ ComponentRef::CREF { node: Deref @ InstNode::COMPONENT_NODE { .. }, subscripts: _, .. } => {
             node = InstNode::resolveOuter(var_field!((*cr).node, ComponentRef::NFComponentRef::CREF).clone());
             c = InstNode::component(node.clone())?;
             if Class::hasDimensions(InstNode::getClass(Component::classInstance(c.clone()))?)? {
@@ -1494,7 +1507,8 @@ pub fn typeCrefDim(mut cref: Arc<ComponentRef::NFComponentRef>, mut dimIndex: i3
                 c = InstNode::component(node.clone())?;
             }
             dim_count = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: dims, .. }, .. } => {
+        Deref @ Component::COMPONENT { ty: Deref @ Type::UNTYPED { dimensions: __esc_dims, .. }, .. } => {
+            dims = (*__esc_dims).clone();
             dim_count = metamodelica::arrayLength(dims.clone());
             if index.clone() <= dim_count.clone() && index.clone() > 0 {
                 dim = typeDimension(dims.clone(), index.clone(), node.clone(), var_field!((*c).binding, Component::NFComponent::COMPONENT).clone(), context.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
@@ -1713,8 +1727,8 @@ pub fn typeSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut dimension: 
             outSubscript = if (Type::isArray(ty.clone())) {Arc::new(Subscript::NFSubscript::SLICE { slice: e.clone() })} else {Arc::new(Subscript::NFSubscript::INDEX { index: e.clone() })};
             (matched_ty.clone(), variability.clone())
         },
-        Deref @ Subscript::INDEX { index: e } => {
-            let mut e = (*e).clone();
+        Deref @ Subscript::INDEX { index: __esc_e } => {
+            e = (*__esc_e).clone();
             if checkSubscript.clone() {
                 (e, ty) = checkSubscriptType(e.clone(), Expression::typeOf(e.clone()), dimension.clone(), info.clone())?;
             } else {
@@ -1723,8 +1737,8 @@ pub fn typeSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut dimension: 
             outSubscript = Arc::new(Subscript::NFSubscript::INDEX { index: e.clone() });
             (ty.clone(), Expression::variability(e.clone())?)
         },
-        Deref @ Subscript::SLICE { slice: e } => {
-            let mut e = (*e).clone();
+        Deref @ Subscript::SLICE { slice: __esc_e } => {
+            e = (*__esc_e).clone();
             if checkSubscript.clone() {
                 (e, ty) = checkSubscriptType(e.clone(), Type::unliftArray(Expression::typeOf(e.clone()))?, dimension.clone(), info.clone())?;
             } else {
@@ -1962,12 +1976,12 @@ pub fn typeRange(mut rangeExp: Arc<Expression::NFExpression>, mut context: i32, 
     let mut ty_match: MatchKind = MatchKind::EXACT;
     let mut next_context: i32 = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(rangeExp.clone()) {
-        Deref @ Expression::RANGE { stop: __pa0, step: __pa1, start: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::RANGE { start: __pa0, step: __pa1, stop: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    stop_exp = __pa0.clone();
+    start_exp = __pa0.clone();
     ostep_exp = __pa1.clone();
-    start_exp = __pa2.clone();
+    stop_exp = __pa2.clone();
     (start_exp, start_ty, start_var, start_pur) = typeExp(start_exp.clone(), next_context.clone(), info.clone(), false)?;
     (stop_exp, stop_ty, stop_var, stop_pur) = typeExp(stop_exp.clone(), next_context.clone(), info.clone(), false)?;
     variability = Prefixes::variabilityMax(start_var.clone(), stop_var.clone());
@@ -2052,9 +2066,9 @@ pub fn typeSize(mut sizeExp: Arc<Expression::NFExpression>, mut context: i32, mu
     let mut next_context: i32 = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     (sizeExp, sizeType, variability, purity) = (::match_deref::match_deref! { match &(sizeExp.clone()) {
-        Deref @ Expression::SIZE { dimIndex: Some(index), exp } => {
-            let mut index = (*index).clone();
-            let mut exp = (*exp).clone();
+        Deref @ Expression::SIZE { exp: __esc_exp, dimIndex: Some(__esc_index) } => {
+            exp = (*__esc_exp).clone();
+            index = (*__esc_index).clone();
             (index, index_ty, variability, purity) = typeExp(index.clone(), next_context.clone(), info.clone(), false)?;
             (index, _, ty_match) = TypeCheck::matchTypes(index_ty.clone(), crate::NFType::interned_INTEGER(), index.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
             if TypeCheck::isIncompatibleMatch(ty_match.clone()) {
@@ -2165,12 +2179,12 @@ pub fn typeIfExpression(mut ifExp: Arc<Expression::NFExpression>, mut context: i
     let mut fb_pur: Purity = Purity::PURE;
     let mut ty_match: MatchKind = MatchKind::EXACT;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(ifExp.clone()) {
-        Deref @ Expression::IF { falseBranch: __pa0, trueBranch: __pa1, condition: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Expression::IF { condition: __pa0, trueBranch: __pa1, falseBranch: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    fb = __pa0.clone();
+    cond = __pa0.clone();
     tb = __pa1.clone();
-    cond = __pa2.clone();
+    fb = __pa2.clone();
     next_context = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     (cond, cond_ty, cond_var, cond_pur) = typeExp(cond.clone(), next_context.clone(), info.clone(), false)?;
     (cond, _, ty_match) = TypeCheck::matchTypes(cond_ty.clone(), crate::NFType::interned_BOOLEAN(), cond.clone(), TypeCheck::DEFAULT_OPTIONS.clone())?;
@@ -2204,8 +2218,9 @@ pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i3
     cls = InstNode::getClass(classNode.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { .. } if (Type::isBasic(Type::arrayElementType(var_field!((*cls).ty, Class::NFClass::INSTANCED_CLASS).clone()))) => (),
-        Deref @ Class::INSTANCED_CLASS { sections, elements: Deref @ ClassTree::FLAT_TREE { components, .. }, .. } => {
-            let mut sections = (*sections).clone();
+        Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_components, .. }, sections: __esc_sections, .. } => {
+            components = (*__esc_components).clone();
+            sections = (*__esc_sections).clone();
             sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
             initial_context = InstContext::set(context.clone(), InstContext::INITIAL.clone());
@@ -2248,10 +2263,11 @@ pub fn typeFunctionSections(mut classNode: Arc<InstNode::InstNode>, mut context:
     let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
     cls = InstNode::getClass(classNode.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { sections, .. } => {
-            let mut sections = (*sections).clone();
+        Deref @ Class::INSTANCED_CLASS { sections: __esc_sections, .. } => {
+            sections = (*__esc_sections).clone();
             sections = (::match_deref::match_deref! { match &(sections.clone()) {
-        Deref @ Sections::SECTIONS { equations: Deref @ metamodelica::List::Nil, initialEquations: Deref @ metamodelica::List::Nil, algorithms: Deref @ metamodelica::List::Cons { head: alg, tail: Deref @ metamodelica::List::Nil }, initialAlgorithms: Deref @ metamodelica::List::Nil } => {
+        Deref @ Sections::SECTIONS { equations: Deref @ metamodelica::List::Nil, initialEquations: Deref @ metamodelica::List::Nil, algorithms: Deref @ metamodelica::List::Cons { head: __esc_alg, tail: Deref @ metamodelica::List::Nil }, initialAlgorithms: Deref @ metamodelica::List::Nil } => {
+            alg = (*__esc_alg).clone();
             assign_variant_field!(sections => Sections::NFSections::SECTIONS; algorithms = list![typeAlgorithm(alg.clone(), InstContext::set(context.clone(), InstContext::ALGORITHM.clone()))?]);
             sections.clone()
         },
@@ -2556,8 +2572,9 @@ pub fn checkConnector(mut connExp: Arc<Expression::NFExpression>, mut info: Sour
     let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(connExp.clone()) {
-        Deref @ Expression::CREF { cref: cr @ Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, .. }, .. } => {
-            if !(InstNode::isConnector(var_field!((**cr).node, ComponentRef::NFComponentRef::CREF).clone())?) {
+        Deref @ Expression::CREF { cref: __esc_cr @ Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, .. }, .. } => {
+            cr = (*__esc_cr).clone();
+            if !(InstNode::isConnector(var_field!((*cr).node, ComponentRef::NFComponentRef::CREF).clone())?) {
                 Error::addSourceMessageAndFail(Error::INVALID_CONNECTOR_TYPE.clone(), list![(ComponentRef::toString(cr.clone())?).clone()], info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
@@ -2719,7 +2736,9 @@ pub fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i32) -> R
         let mut __acc: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
         for mut br in (var_field!((*st).branches, Statement::NFStatement::IF).clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(br.clone()) {
-        (cond, body) => {
+        (__esc_cond, __esc_body) => {
+            cond = (*__esc_cond).clone();
+            body = (*__esc_body).clone();
             (e1, _, _) = typeCondition(cond.clone(), cond_context.clone(), var_field!((*st).source, Statement::NFStatement::IF).clone(), Error::IF_CONDITION_TYPE_ERROR.clone(), false, false)?;
             sts1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
@@ -2751,7 +2770,9 @@ pub fn typeStatement(mut st: Arc<Statement::NFStatement>, mut context: i32) -> R
         let mut __acc: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)>> = metamodelica::nil();
         for mut br in (var_field!((*st).branches, Statement::NFStatement::WHEN).clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(br.clone()) {
-        (cond, body) => {
+        (__esc_cond, __esc_body) => {
+            cond = (*__esc_cond).clone();
+            body = (*__esc_body).clone();
             (e1, _, _) = typeWhenCondition(cond.clone(), context.clone(), var_field!((*st).source, Statement::NFStatement::WHEN).clone(), false)?;
             sts1 = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
@@ -3182,8 +3203,8 @@ pub fn collectIteratorCrefs2(mut exp: Arc<Expression::NFExpression>, mut iterato
     let mut index: i32 = 0;
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref, .. } => {
-            let mut cref = (*cref).clone();
+        Deref @ Expression::CREF { cref: __esc_cref, .. } => {
+            cref = (*__esc_cref).clone();
             while ComponentRef::isCref(cref.clone()) {
                 (cref, subs) = ComponentRef::stripSubscripts(cref.clone());
                 index = 1;

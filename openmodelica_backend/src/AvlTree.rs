@@ -165,9 +165,9 @@ pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'stat
     let mut hasPrinting: bool = false;
     let mut kf: Option<FuncTypeKeyToStr<Key>> = None;
     let mut vf: Option<FuncTypeValToStr<Val>> = None;
-    let Tree { valStrFuncOpt: __pa0, keyStrFuncOpt: __pa1, .. } = (tree.clone()) else { bail!("pattern mismatch") };
-    vf = __pa0.clone();
-    kf = __pa1.clone();
+    let Tree { keyStrFuncOpt: __pa0, valStrFuncOpt: __pa1, .. } = (tree.clone()) else { bail!("pattern mismatch") };
+    kf = __pa0.clone();
+    vf = __pa1.clone();
     hasPrinting = boolNot(boolOr((kf.clone()).is_none(), (vf.clone()).is_none()));
     Ok(hasPrinting)
 }
@@ -254,7 +254,7 @@ fn addNode<Key: Clone + 'static + PartialEq, Val: Clone + 'static + PartialEq>(m
             n = newLeafNode(Item::ITEM { key: inKey.clone(), val: inVal.clone() }, 1);
             n.clone()
         },
-        (_, Deref @ Node::NODE { right: Deref @ Node::NO_NODE { .. }, left: Deref @ Node::NO_NODE { .. }, item: Item::NO_ITEM { .. }, .. }, key, val) => {
+        (_, Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: Deref @ Node::NO_NODE { .. }, right: Deref @ Node::NO_NODE { .. }, .. }, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = newLeafNode(Item::ITEM { key: key.clone(), val: val.clone() }, 1);
             n.clone()
@@ -316,7 +316,7 @@ fn addNode_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + Par
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, 1, key, val) => {
+                (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, 1, key, val) => {
                     let mut n: Arc<Node<Key, Val>>;
                     n = emptyNodeIfNoNode(r.clone())?;
                     n = addNode(inTree.clone(), n.clone(), key.clone(), val.clone())?;
@@ -327,7 +327,7 @@ fn addNode_dispatch<Key: Clone + 'static + PartialEq, Val: Clone + 'static + Par
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, (-1), key, val) => {
+                (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, (-1), key, val) => {
                     let mut n: Arc<Node<Key, Val>>;
                     n = emptyNodeIfNoNode(l.clone())?;
                     n = addNode(inTree.clone(), n.clone(), key.clone(), val.clone())?;
@@ -419,16 +419,16 @@ pub fn replaceNode<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<
 fn replaceNode_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inKeyComp: i32, mut inKey: Key, mut inVal: Val) -> Result<Arc<Node<Key, Val>>> {
     let mut outNode: Arc<Node<Key, Val>>;
     outNode = (::match_deref::match_deref! { match &((inNode.clone(), inKeyComp.clone(), inKey.clone(), inVal.clone())) {
-        (Deref @ Node::NODE { right: r, left: l, height: h, item: Item::ITEM { .. } }, 0, key, val) => {
+        (Deref @ Node::NODE { item: Item::ITEM { .. }, height: h, left: l, right: r }, 0, key, val) => {
             Arc::new(Node::NODE { item: Item::ITEM { key: key.clone(), val: val.clone() }, height: h.clone(), left: l.clone(), right: r.clone() })
         },
-        (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, 1, key, val) => {
+        (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, 1, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = emptyNodeIfNoNode(r.clone())?;
             n = replaceNode(inTree.clone(), n.clone(), key.clone(), val.clone())?;
             Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n.clone() })
         },
-        (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, (-1), key, val) => {
+        (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, (-1), key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             n = emptyNodeIfNoNode(l.clone())?;
             n = replaceNode(inTree.clone(), n.clone(), key.clone(), val.clone())?;
@@ -643,11 +643,11 @@ fn differenceInHeight<Key: Clone + 'static, Val: Clone + 'static>(mut node: Arc<
     let mut l: Arc<Node<Key, Val>>;
     let mut r: Arc<Node<Key, Val>>;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ Node::NODE { right: __pa0, left: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ Node::NODE { left: __pa0, right: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    r = __pa0.clone();
-    l = __pa1.clone();
+    l = __pa0.clone();
+    r = __pa1.clone();
     diff = getHeight(l.clone())? - getHeight(r.clone())?;
     Ok(diff)
 }
@@ -661,12 +661,12 @@ fn computeHeight<Key: Clone + 'static, Val: Clone + 'static>(mut inNode: Arc<Nod
     let mut hr: i32 = 0;
     let mut height: i32 = 0;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inNode.clone()) {
-        Deref @ Node::NODE { right: __pa0, left: __pa1, item: __pa2 @ Item::ITEM { .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ Node::NODE { item: __pa0 @ Item::ITEM { .. }, left: __pa1, right: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    r = __pa0.clone();
+    i = __pa0.clone();
     l = __pa1.clone();
-    i = __pa2.clone();
+    r = __pa2.clone();
     hl = getHeight(l.clone())?;
     hr = getHeight(r.clone())?;
     height = intMax(hl.clone(), hr.clone()) + 1;
@@ -712,7 +712,7 @@ fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tr
         Deref @ Node::NO_NODE { .. } => {
             literal!("")
         },
-        Deref @ Node::NODE { right: r, left: l, item: Item::NO_ITEM { .. }, .. } => {
+        Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: l, right: r, .. } => {
             let mut indent: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -723,7 +723,7 @@ fn prettyPrintNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tr
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Deref @ Node::NODE { right: r, left: l, item: item @ Item::ITEM { .. }, .. } => {
+        Deref @ Node::NODE { item: item @ Item::ITEM { .. }, left: l, right: r, .. } => {
             let mut indent: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -761,7 +761,7 @@ fn printNodeStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Key
         Deref @ Node::NODE { item: Item::NO_ITEM { .. }, .. } => {
             literal!("")
         },
-        Deref @ Node::NODE { right, left, item: item @ Item::ITEM { .. }, .. } => {
+        Deref @ Node::NODE { item: item @ Item::ITEM { .. }, left, right, .. } => {
             let mut left_str: ArcStr = arcstr::literal!("");
             let mut right_str: ArcStr = arcstr::literal!("");
             let mut item_str: ArcStr = arcstr::literal!("");
@@ -783,7 +783,7 @@ pub fn printItemStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree
         Item::NO_ITEM { .. } => {
             literal!("[]")
         },
-        Item::ITEM { val: mut val, key: mut key } => {
+        Item::ITEM { key: mut key, val: mut val } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut keyStr: ArcStr = arcstr::literal!("");
             let mut valStr: ArcStr = arcstr::literal!("");
@@ -827,7 +827,7 @@ fn getKeyOfValNode<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Node::NODE { left, item: Item::ITEM { key: _, val: v }, .. } => {
+                Deref @ Node::NODE { item: Item::ITEM { key: _, val: v }, left, .. } => {
                     let mut k: Key;
                     let false = (v.clone() == inVal.clone()) else { bail!("pattern mismatch") };
                     k = getKeyOfValNode(inTree.clone(), left.clone(), inVal.clone())?;
@@ -838,7 +838,7 @@ fn getKeyOfValNode<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Node::NODE { right, item: Item::ITEM { key: _, val: v }, .. } => {
+                Deref @ Node::NODE { item: Item::ITEM { key: _, val: v }, right, .. } => {
                     let mut k: Key;
                     let false = (v.clone() == inVal.clone()) else { bail!("pattern mismatch") };
                     k = getKeyOfValNode(inTree.clone(), right.clone(), inVal.clone())?;
@@ -887,7 +887,7 @@ fn addNodeUnique<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree<Ke
             n = newLeafNode(item.clone(), 1);
             (n.clone(), item.clone())
         },
-        (_, Deref @ Node::NODE { right: Deref @ Node::NO_NODE { .. }, left: Deref @ Node::NO_NODE { .. }, item: Item::NO_ITEM { .. }, .. }, key, val) => {
+        (_, Deref @ Node::NODE { item: Item::NO_ITEM { .. }, left: Deref @ Node::NO_NODE { .. }, right: Deref @ Node::NO_NODE { .. }, .. }, key, val) => {
             let mut item: Item<Key, Val>;
             let mut n: Arc<Node<Key, Val>>;
             item = Item::ITEM { key: key.clone(), val: val.clone() };
@@ -921,14 +921,14 @@ fn addNodeUnique_dispatch<Key: Clone + 'static, Val: Clone + 'static>(mut inTree
         (Deref @ Node::NODE { item: i, height: _, left: _, right: _ }, 0, _, _) => {
             (inNode.clone(), i.clone())
         },
-        (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, 1, key, val) => {
+        (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, 1, key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             let mut it: Item<Key, Val>;
             n = emptyNodeIfNoNode(r.clone())?;
             (n, it) = addNodeUnique(inTree.clone(), n.clone(), key.clone(), val.clone())?;
             (Arc::new(Node::NODE { item: i.clone(), height: h.clone(), left: l.clone(), right: n.clone() }), it.clone())
         },
-        (Deref @ Node::NODE { right: r, left: l, height: h, item: i }, (-1), key, val) => {
+        (Deref @ Node::NODE { item: i, height: h, left: l, right: r }, (-1), key, val) => {
             let mut n: Arc<Node<Key, Val>>;
             let mut it: Item<Key, Val>;
             n = emptyNodeIfNoNode(l.clone())?;

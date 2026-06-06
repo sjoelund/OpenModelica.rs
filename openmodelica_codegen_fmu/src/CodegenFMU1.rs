@@ -84,7 +84,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<met
 pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
-        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { description: ref i_modelInfo_description, name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { stateVars: ref i_listStates, .. }, varInfo: SimCode::VarInfo { numStateVars: ref i_vi_numStateVars, .. }, .. }, .. }, mut a_guid) => {
+        (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { varInfo: SimCode::VarInfo { numStateVars: ref i_vi_numStateVars, .. }, vars: SimCodeVar::SimVars { stateVars: ref i_listStates, .. }, name: ref i_modelInfo_name, description: ref i_modelInfo_description, .. }, .. }, mut a_guid) => {
             let mut ret_15: ArcStr = arcstr::literal!("");
             let mut ret_14: ArcStr = arcstr::literal!("");
             let mut ret_13: ArcStr = arcstr::literal!("");

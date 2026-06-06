@@ -678,7 +678,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (txt, Deref @ Statement::ASSIGN { rhs: i_rhs, lhs: i_lhs }) => {
+                (txt, Deref @ Statement::ASSIGN { lhs: i_lhs, rhs: i_rhs }) => {
                     let mut txt = (*txt).clone();
                     txt = exp(txt.clone(), i_lhs.clone())?;
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = ")).clone() }))?;
@@ -691,7 +691,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (txt, Deref @ Statement::WHILE { statements: i_statements, condition: i_condition }) => {
+                (txt, Deref @ Statement::WHILE { condition: i_condition, statements: i_statements }) => {
                     let mut txt = (*txt).clone();
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("while(")).clone() }))?;
                     txt = exp(txt.clone(), i_condition.clone())?;
@@ -747,7 +747,7 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (txt, Deref @ Exp::BINARY { rhs: i_rhs, op: i_op, lhs: i_lhs }) => {
+                (txt, Deref @ Exp::BINARY { lhs: i_lhs, op: i_op, rhs: i_rhs }) => {
                     let mut txt = (*txt).clone();
                     txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
                     txt = exp(txt.clone(), i_lhs.clone())?;

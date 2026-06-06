@@ -189,7 +189,7 @@ fn traversingSubsActiveState(mut inExp: Arc<DAE::Exp>, mut inHitCount: i32) -> R
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outHitCount: i32 = 0;
     (outExp, outHitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "activeState" }, .. } => {
+        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "activeState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             (Arc::new(DAE::Exp::CREF { componentRef: ComponentReference::crefPrependIdent(componentRef.clone(), (literal!("active")).clone(), metamodelica::nil(), DAE::T_BOOL_DEFAULT().clone())?, ty: DAE::T_BOOL_DEFAULT().clone() }), inHitCount.clone() + 1)
         },
         _ => {
@@ -224,11 +224,11 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
     let mut pvars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut peqs: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inFlatSm.clone()) {
-        Deref @ DAE::Element::FLAT_SM { dAElist: __pa0, ident: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Element::FLAT_SM { ident: __pa0, dAElist: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dAElist = __pa0.clone();
-    ident = __pa1.clone();
+    ident = __pa0.clone();
+    dAElist = __pa1.clone();
     (smCompsLst, otherLst1) = List::extractOnTrue(dAElist.clone(), (std::sync::Arc::new(fnptr!(isSMComp, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     (transitionLst, otherLst2) = List::extractOnTrue(otherLst1.clone(), (std::sync::Arc::new(fnptr!(isTransition, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(List::extractOnTrue(otherLst2.clone(), (std::sync::Arc::new(fnptr!(isInitialState, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?) {
@@ -240,7 +240,7 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
     (eqnLst, otherLst4) = List::extractOnTrue(otherLst3.clone(), (std::sync::Arc::new(fnptr!(isEquation, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     assert!(otherLst4.clone().is_empty(), "{}", &*(literal!("Internal compiler error. Unexpected elements in flat state machine.")).clone());
     let __pa5 = ::match_deref::match_deref! { match &(initialStateOp.clone()) {
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa5, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, .. }, .. } => __pa5.clone(),
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "initialState" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa5, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => __pa5.clone(),
         _ => bail!("pattern mismatch"),
     } };
     crefInitialState = __pa5.clone();
@@ -256,12 +256,12 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
     if Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone())? {
         smCompsLst = List::map(smCompsLst.clone(), (std::sync::Arc::new(elabXInStateOps_CT) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::Element>> + 'static>))?;
     }
-    let FlatSmSemantics { peqs: __pa10, pvars: __pa11, eqs: __pa12, knowns: __pa13, vars: __pa14, .. } = (flatSmSemantics.clone()) else { bail!("pattern mismatch") };
-    peqs = __pa10.clone();
-    pvars = __pa11.clone();
+    let FlatSmSemantics { vars: __pa10, knowns: __pa11, eqs: __pa12, pvars: __pa13, peqs: __pa14, .. } = (flatSmSemantics.clone()) else { bail!("pattern mismatch") };
+    vars = __pa10.clone();
+    knowns = __pa11.clone();
     eqs = __pa12.clone();
-    knowns = __pa13.clone();
-    vars = __pa14.clone();
+    pvars = __pa13.clone();
+    peqs = __pa14.clone();
     outElems = List::flatten(list![outElems.clone(), eqnLst.clone(), vars.clone(), knowns.clone(), eqs.clone(), pvars.clone(), peqs.clone()])?;
     outElems = List::fold1(smCompsLst.clone(), (std::sync::Arc::new(smCompToDataFlow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, FlatSmSemantics, Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>), flatSmSemantics.clone(), outElems.clone())?;
     Ok(outElems)
@@ -298,7 +298,7 @@ fn traversingSubsTicksInState(mut inExp: Arc<DAE::Exp>, mut inCref_HitCount: (Ar
     let mut hitCount: i32 = 0;
     (cref, hitCount) = inCref_HitCount.clone();
     (outExp, outCref_HitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty, .. }, expLst: Deref @ metamodelica::List::Nil, path: Deref @ Absyn::Path::IDENT { name: Deref @ "ticksInState" } } => {
+        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "ticksInState" }, expLst: Deref @ metamodelica::List::Nil, attr: Deref @ DAE::CallAttributes { ty, .. } } => {
             let mut crefTicksInState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             crefTicksInState = ComponentReference::joinCrefs(cref.clone(), Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$ticksInState")).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() }))?;
             (Arc::new(DAE::Exp::CREF { componentRef: crefTicksInState.clone(), ty: ty.clone() }), (cref.clone(), hitCount.clone() + 1))
@@ -475,11 +475,11 @@ fn smCompToDataFlow(mut inSMComp: Arc<DAE::Element>, mut inEnclosingFlatSmSemant
     let mut dAElist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut crToExpOpt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (HashTableCrToExpOption::FuncHashCref, HashTableCrToExpOption::FuncCrefEqual, HashTableCrToExpOption::FuncCrefStr, HashTableCrToExpOption::FuncExpStr));
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inSMComp.clone()) {
-        Deref @ DAE::Element::SM_COMP { dAElist: __pa0, componentRef: __pa1 } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Element::SM_COMP { componentRef: __pa0, dAElist: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dAElist = __pa0.clone();
-    componentRef = __pa1.clone();
+    componentRef = __pa0.clone();
+    dAElist = __pa1.clone();
     (varLst1, otherLst1) = List::extractOnTrue(dAElist.clone(), (std::sync::Arc::new(fnptr!(isVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     (equationLst1, otherLst2) = List::extractOnTrue(otherLst1.clone(), (std::sync::Arc::new(fnptr!(isEquationOrWhenEquation, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
     assignedVarLst = List::filterOnTrue(varLst1.clone(), (std::sync::Arc::new({ let __pe_b0 = equationLst1.clone(); let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(isVarAtLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>); move |__pe_a2| List::exist1(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static>))?;
@@ -505,7 +505,10 @@ fn addStateActivationAndReset(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCom
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     outEqnsVars = (::match_deref::match_deref! { match &(inEqn.clone()) {
         Deref @ DAE::Element::EQUATION { .. } => addStateActivationAndReset1(inEqn.clone(), inEnclosingSMComp.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone(), accEqnsVars.clone())?,
-        Deref @ DAE::Element::WHEN_EQUATION { condition, equations, elsewhen_: None, source } => {
+        Deref @ DAE::Element::WHEN_EQUATION { condition: __esc_condition, equations: __esc_equations, elsewhen_: None, source: __esc_source } => {
+            condition = (*__esc_condition).clone();
+            equations = (*__esc_equations).clone();
+            source = (*__esc_source).clone();
             (equations1, vars1) = List::fold3(equations.clone(), (std::sync::Arc::new(addStateActivationAndReset) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, FlatSmSemantics, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)), (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)> + 'static>), inEnclosingSMComp.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone(), (metamodelica::nil(), metamodelica::nil()))?;
             (metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: condition.clone(), equations: equations1.clone(), elsewhen_: None, source: source.clone() }), Util::tuple21(accEqnsVars.clone())), listAppend(vars1.clone(), Util::tuple22(accEqnsVars.clone())))
         },
@@ -550,19 +553,19 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
     scalar = __pa1.clone();
     source = __pa2.clone();
     let (__pa3, __pa4) = ::match_deref::match_deref! { match &(inEnclosingSMComp.clone()) {
-        Deref @ DAE::Element::SM_COMP { dAElist: __pa3, componentRef: __pa4 } => (__pa3.clone(), __pa4.clone()),
+        Deref @ DAE::Element::SM_COMP { componentRef: __pa3, dAElist: __pa4 } => (__pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    dAElist = __pa3.clone();
-    enclosingStateRef = __pa4.clone();
+    enclosingStateRef = __pa3.clone();
+    dAElist = __pa4.clone();
     stateVarCrefs = BaseHashTable::hashTableKeyList(crToExpOpt.clone())?;
     match '__try5: {
         let (__pa6, __pa7) = ::match_deref::match_deref! { match &(exp.clone()) {
-            Deref @ DAE::Exp::CREF { ty: __pa6, componentRef: __pa7 } => (__pa6.clone(), __pa7.clone()),
+            Deref @ DAE::Exp::CREF { componentRef: __pa6, ty: __pa7 } => (__pa6.clone(), __pa7.clone()),
             _ => break '__try5 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        tyLHS = __pa6.clone();
-        crefLHS = __pa7.clone();
+        crefLHS = __pa6.clone();
+        tyLHS = __pa7.clone();
         let (__pa8, (_, __pa9)) = unwrap_break_err!(Expression::traverseExpTopDown(scalar.clone(), (std::sync::Arc::new(traversingSubsPreviousCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool))> + 'static>), (stateVarCrefs.clone(), false)), '__try5);
         scalarNew = __pa8.clone();
         found = __pa9.clone();
@@ -586,11 +589,11 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
             match '__try10: {
                 if unwrap_break_err!(Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone()), '__try10) {
                     let (__pa11, __pa12, __pa13) = ::match_deref::match_deref! { match &(exp.clone()) {
-                        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty: __pa11, componentRef: __pa12 }, tail: Deref @ metamodelica::List::Nil }, attr: __pa13 } => (__pa11.clone(), __pa12.clone(), __pa13.clone()),
+                        Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa11, ty: __pa12 }, tail: Deref @ metamodelica::List::Nil }, attr: __pa13 } => (__pa11.clone(), __pa12.clone(), __pa13.clone()),
                         _ => break '__try10 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
-                    tyLHS = __pa11.clone();
-                    crefLHS = __pa12.clone();
+                    crefLHS = __pa11.clone();
+                    tyLHS = __pa12.clone();
                     attr = __pa13.clone();
                     if let Ok(__iflet16) = List::find1(dAElist.clone(), (std::sync::Arc::new(isCrefInVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), crefLHS.clone()) {
                         varDecl = __iflet16;
@@ -646,15 +649,16 @@ fn isVarAtLHS(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>) -> Result<
     let mut equations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut elsewhen_: Option<Arc<DAE::Element>> = None;
     res = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ DAE::Element::EQUATION { exp, scalar: _, source: _ } => {
+        Deref @ DAE::Element::EQUATION { exp: __esc_exp, scalar: _, source: _ } => {
+            exp = (*__esc_exp).clone();
             cref = DAEUtil::varCref(var.clone())?;
             match '__try0: {
                 let (__pa1, __pa2) = ::match_deref::match_deref! { match &(exp.clone()) {
-                    Deref @ DAE::Exp::CREF { ty: __pa1, componentRef: __pa2 } => (__pa1.clone(), __pa2.clone()),
+                    Deref @ DAE::Exp::CREF { componentRef: __pa1, ty: __pa2 } => (__pa1.clone(), __pa2.clone()),
                     _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
-                tyLHS = __pa1.clone();
-                crefLHS = __pa2.clone();
+                crefLHS = __pa1.clone();
+                tyLHS = __pa2.clone();
                 res = unwrap_break_err!(ComponentReferenceBasics::crefEqual(crefLHS.clone(), cref.clone()), '__try0);
                 Ok::<_, anyhow::Error>((res.clone(),))
             } {
@@ -667,7 +671,10 @@ fn isVarAtLHS(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>) -> Result<
             }
             res.clone()
         },
-        Deref @ DAE::Element::WHEN_EQUATION { elsewhen_: None, equations, .. } => List::exist1(equations.clone(), (std::sync::Arc::new(isVarAtLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>), var.clone())?,
+        Deref @ DAE::Element::WHEN_EQUATION { equations: __esc_equations, elsewhen_: None, .. } => {
+            equations = (*__esc_equations).clone();
+            List::exist1(equations.clone(), (std::sync::Arc::new(isVarAtLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>), var.clone())?
+        },
         Deref @ DAE::Element::WHEN_EQUATION { elsewhen_: Some(_), .. } => {
             Error::addCompilerError((literal!("Encountered elsewhen part in a when clause of a clocked state machine.\n")).clone())?;
             bail!("fail")
@@ -688,13 +695,17 @@ fn isPreviousAppliedToVar(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>
     let mut equations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut elsewhen_: Option<Arc<DAE::Element>> = None;
     found = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ DAE::Element::EQUATION { exp: _, scalar, source: _ } => {
+        Deref @ DAE::Element::EQUATION { exp: _, scalar: __esc_scalar, source: _ } => {
+            scalar = (*__esc_scalar).clone();
             cref = DAEUtil::varCref(var.clone())?;
             let (_, (_, __pa0)) = Expression::traverseExpTopDown(scalar.clone(), (std::sync::Arc::new(traversingFindPreviousCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> + 'static>), (cref.clone(), false))?;
             found = __pa0.clone();
             found.clone()
         },
-        Deref @ DAE::Element::WHEN_EQUATION { elsewhen_: None, equations, .. } => List::exist1(equations.clone(), (std::sync::Arc::new(isPreviousAppliedToVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>), var.clone())?,
+        Deref @ DAE::Element::WHEN_EQUATION { equations: __esc_equations, elsewhen_: None, .. } => {
+            equations = (*__esc_equations).clone();
+            List::exist1(equations.clone(), (std::sync::Arc::new(isPreviousAppliedToVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>), var.clone())?
+        },
         Deref @ DAE::Element::WHEN_EQUATION { elsewhen_: Some(_), .. } => {
             Error::addCompilerError((literal!("Encountered elsewhen part in a when clause of a clocked state machine.\n")).clone())?;
             bail!("fail")
@@ -950,11 +961,11 @@ fn wrapInStateActivationConditionalCT(mut inEqn: Arc<DAE::Element>, mut inStateC
     source = __pa2.clone();
     match '__try3: {
         let (__pa4, __pa5) = ::match_deref::match_deref! { match &(exp.clone()) {
-            Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty: __pa4, componentRef: __pa5 }, tail: Deref @ metamodelica::List::Nil }, attr: _ } => (__pa4.clone(), __pa5.clone()),
+            Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa4, ty: __pa5 }, tail: Deref @ metamodelica::List::Nil }, attr: _ } => (__pa4.clone(), __pa5.clone()),
             _ => break '__try3 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
-        ty = __pa4.clone();
-        cref = __pa5.clone();
+        cref = __pa4.clone();
+        ty = __pa5.clone();
         Ok::<_, anyhow::Error>((cref.clone(), ty.clone()))
     } {
         Ok((__try3_o0, __try3_o1)) => {
@@ -1017,11 +1028,11 @@ fn getStartAttrOption(mut inElt: Arc<DAE::Element>) -> Result<Option<Arc<DAE::Ex
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut varAttrOpt: Option<Arc<DAE::VariableAttributes>> = None;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inElt.clone()) {
-        Deref @ DAE::Element::VAR { ty: __pa0, variableAttributesOption: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Element::VAR { variableAttributesOption: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ty = __pa0.clone();
-    varAttrOpt = __pa1.clone();
+    varAttrOpt = __pa0.clone();
+    ty = __pa1.clone();
     if isSome(varAttrOpt.clone()) {
         start = DAEUtil::getStartAttr(varAttrOpt.clone(), ty.clone())?;
         outExpOpt = Some(start.clone());
@@ -1073,14 +1084,14 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
     let mut enclosingFlatSMInitStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut posOfEnclosingSMComp: i32 = 0;
     let mut nStates: i32 = 0;
-    let FlatSmSemantics { eqs: __pa0, knowns: __pa1, vars: __pa2, c: __pa3, t: __pa4, smComps: __pa5, ident: __pa6, .. } = (inFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
-    smeqs = __pa0.clone();
-    smknowns = __pa1.clone();
-    smvars = __pa2.clone();
+    let FlatSmSemantics { ident: __pa0, smComps: __pa1, t: __pa2, c: __pa3, vars: __pa4, knowns: __pa5, eqs: __pa6, .. } = (inFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
+    ident = __pa0.clone();
+    smComps = __pa1.clone();
+    t = __pa2.clone();
     c = __pa3.clone();
-    t = __pa4.clone();
-    smComps = __pa5.clone();
-    ident = __pa6.clone();
+    smvars = __pa4.clone();
+    smknowns = __pa5.clone();
+    smeqs = __pa6.clone();
     let __pa7 = ::match_deref::match_deref! { match &(metamodelica::arrayGet(smComps.clone(), 1)?) {
         Deref @ DAE::Element::SM_COMP { componentRef: __pa7, .. } => __pa7.clone(),
         _ => bail!("pattern mismatch"),
@@ -1167,11 +1178,11 @@ fn createTimeInStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateAct
     timeInStateVar = setVarFixedStartValue(timeInStateVar.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((0) as f64) }))?;
     timeInStateExp = Arc::new(DAE::Exp::CREF { componentRef: timeInStateRef.clone(), ty: DAE::T_REAL_DEFAULT().clone() });
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(timeEnteredStateVar.clone()) {
-        Deref @ DAE::Element::VAR { ty: __pa0, componentRef: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ DAE::Element::VAR { componentRef: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    ty = __pa0.clone();
-    timeEnteredStateRef = __pa1.clone();
+    timeEnteredStateRef = __pa0.clone();
+    ty = __pa1.clone();
     timeEnteredStateExp = Arc::new(DAE::Exp::CREF { componentRef: timeEnteredStateRef.clone(), ty: ty.clone() });
     stateActiveExp = Expression::crefExp(stateActiveRef.clone())?;
     expCond = Expression::crefExp(stateActiveRef.clone())?;
@@ -1647,7 +1658,7 @@ fn createTransition(mut transitionElem: Arc<DAE::Element>, mut states: Arc<metam
     let mut synchronize: bool = false;
     let mut priority: i32 = 1;
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(transitionElem.clone()) {
-        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa0, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa1, .. }, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa3 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa4 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa5 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: __pa6 }, tail: Deref @ metamodelica::List::Nil } } } } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+        Deref @ DAE::Element::NORETCALL { exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "transition" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa0, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: __pa1, .. }, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa3 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa4 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BCONST { bool: __pa5 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ICONST { integer: __pa6 }, tail: Deref @ metamodelica::List::Nil } } } } } } }, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),
     } };
     crefFrom = __pa0.clone();

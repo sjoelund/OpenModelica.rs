@@ -375,7 +375,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         })() { traverserArgs = __wb0; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: eq @ Deref @ BackendDAE::Equation::ALGORITHM { expand: crefExpand, source, alg, .. }, tail: Deref @ metamodelica::List::Nil }, false, false, _) => {
+                (Deref @ metamodelica::List::Cons { head: eq @ Deref @ BackendDAE::Equation::ALGORITHM { alg, source, expand: crefExpand, .. }, tail: Deref @ metamodelica::List::Nil }, false, false, _) => {
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     let true = (CheckModel::isCrefListAlgorithmOutput(varCrefLst.clone(), alg.clone(), source.clone(), crefExpand.clone())?) else { bail!("pattern mismatch") };

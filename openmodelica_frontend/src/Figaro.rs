@@ -148,7 +148,7 @@ fn fcElement(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         let __mc_input = (inFigaroBase.clone(), inFigaroType.clone(), inProgram.clone(), inClassName.clone(), inElement.clone(), env.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { modifications: m, baseClassPath: bcp, .. }, e) => {
+                (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { baseClassPath: bcp, modifications: m, .. }, e) => {
                     let mut tn: ArcStr = arcstr::literal!("");
                     let true = (fb.clone() == getLastIdent(bcp.clone())?) else { bail!("pattern mismatch") };
                     tn = (fcMod1(m.clone())?).clone();
@@ -159,7 +159,7 @@ fn fcElement(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { modifications: m, baseClassPath: bcp, .. }, e) => {
+                (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { baseClassPath: bcp, modifications: m, .. }, e) => {
                     let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut tn: ArcStr = arcstr::literal!("");
                     cdef = FBuiltin::getElementWithPathCheckBuiltin(e.clone(), bcp.clone())?;
@@ -172,7 +172,7 @@ fn fcElement(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (fb, ft, program, _, Deref @ SCode::Element::CLASS { classDef: cd, name: n, .. }, e) => {
+                (fb, ft, program, _, Deref @ SCode::Element::CLASS { name: n, classDef: cd, .. }, e) => {
                     Ok(fcClassDef((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), (n.clone()).clone(), cd.clone(), e.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -191,7 +191,7 @@ fn fcExtends(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         let __mc_input = (inFigaroBase.clone(), inFigaroType.clone(), inProgram.clone(), inClassName.clone(), inElement.clone(), env.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (fb, ft, program, _, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: el, .. }, name: n, .. }, e) => {
+                (fb, ft, program, _, Deref @ SCode::Element::CLASS { name: n, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: el, .. }, .. }, e) => {
                     Ok(fcElementListExt((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), Some((n.clone()).clone()), el.clone(), e.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -281,7 +281,7 @@ fn fcClassDef(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: 
         (fb, ft, program, cn, Deref @ SCode::ClassDef::PARTS { elementLst: el, .. }, e) => {
             fcElementList((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), Some((cn.clone()).clone()), el.clone(), e.clone())?
         },
-        (fb, ft, program, cn, Deref @ SCode::ClassDef::DERIVED { modifications: m, typeSpec: ts, .. }, e) => {
+        (fb, ft, program, cn, Deref @ SCode::ClassDef::DERIVED { typeSpec: ts, modifications: m, .. }, e) => {
             let mut p: Path = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut tn: ArcStr = arcstr::literal!("");
             p = AbsynUtil::typeSpecPath(ts.clone())?;
@@ -385,7 +385,7 @@ fn fcSubModList(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -
 fn fcSubMod(mut inSubMod: Arc<SCode::SubMod>) -> Result<ArcStr> {
     let mut outTypeName: ArcStr = arcstr::literal!("");
     outTypeName = ((::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ SCode::SubMod { r#mod: m, ident: n } => {
+        Deref @ SCode::SubMod { ident: n, r#mod: m } => {
             let true = (n.clone() == literal!("fullClassName")) else { bail!("pattern mismatch") };
             fcMod2(m.clone())?
         },
@@ -427,7 +427,7 @@ fn foElement(mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>, mut in
         (fcl, Deref @ SCode::Element::CLASS { classDef: cd, .. }) => {
             foClassDef(fcl.clone(), cd.clone())?
         },
-        (fcl, Deref @ SCode::Element::COMPONENT { modifications: m, typeSpec: ts, name: n, .. }) => {
+        (fcl, Deref @ SCode::Element::COMPONENT { name: n, typeSpec: ts, modifications: m, .. }) => {
             let mut p: Path = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut tn: ArcStr = arcstr::literal!("");
             let mut c: ArcStr = arcstr::literal!("");
@@ -537,7 +537,7 @@ fn findFigaroTypeName(mut inClassPath: Path, mut inFigaroClassList: Arc<metamode
 fn getFigaroTypeName(mut inClassPath: Path, mut inFigaroClass: FigaroClass) -> Result<ArcStr> {
     let mut outTypeName: ArcStr = arcstr::literal!("");
     outTypeName = ((::match_deref::match_deref! { match &((inClassPath.clone(), inFigaroClass.clone())) {
-        (p, FigaroClass { typeName: tn, className: cn }) => {
+        (p, FigaroClass { className: cn, typeName: tn }) => {
             let true = (getLastIdent(p.clone())? == cn.clone()) else { bail!("pattern mismatch") };
             tn.clone()
         },
@@ -598,7 +598,7 @@ fn foSubModList(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
 fn foSubMod(mut inSubMod: Arc<SCode::SubMod>, mut name: ArcStr) -> Result<ArcStr> {
     let mut outCode: ArcStr = arcstr::literal!("");
     outCode = ((::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ SCode::SubMod { r#mod: m, ident: n } => {
+        Deref @ SCode::SubMod { ident: n, r#mod: m } => {
             let true = (n.clone() == name.clone()) else { bail!("pattern mismatch") };
             foMod2(m.clone())?
         },
@@ -672,7 +672,7 @@ fn figaroObjectListToString(mut inFigaroObjectList: Arc<metamodelica::List<Figar
 fn figaroObjectToString(mut inFigaroObject: FigaroObject) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inFigaroObject.clone() {
-        FigaroObject { figaroCode: mut fc, typeName: mut tn, objectName: mut on } => {
+        FigaroObject { objectName: mut on, typeName: mut tn, figaroCode: mut fc } => {
             let mut middle: ArcStr = arcstr::literal!("");
             middle = (if (fc.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*fc.clone()); ArcStr::from(__mm_s) }}).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OBJECT ")); __mm_s.push_str(&*on.clone()); __mm_s.push_str(&*literal!(" IS_A ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!(";")); __mm_s.push_str(&*middle.clone()); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }
@@ -1298,7 +1298,7 @@ fn printFigaroClassList(mut inFigaroClassList: Arc<metamodelica::List<FigaroClas
 
 fn printFigaroClass(mut inFigaroClass: FigaroClass) -> Result<()> {
     let () = (match inFigaroClass.clone() {
-        FigaroClass { typeName: mut tn, className: mut cn } => {
+        FigaroClass { className: mut cn, typeName: mut tn } => {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*cn.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             ()
         },

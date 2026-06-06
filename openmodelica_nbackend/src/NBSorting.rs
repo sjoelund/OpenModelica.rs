@@ -407,17 +407,17 @@ pub mod LoopIdentifier {
 
     pub fn fromSCC(mut scc: Arc<metamodelica::List<i32>>, mut mapping: Arc<Adjacency::Mapping::Mapping>, mut matching: Arc<Matching::NBMatching>) -> Result<Arc<LoopIdentifier>> {
         let mut li: Arc<LoopIdentifier> = Arc::new(<LoopIdentifier as ::std::default::Default>::default());
-        li = Arc::new(LoopIdentifier { vars: UnorderedSet::fromList(({
-        let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut i in (scc.clone()).into_iter().cloned() {
-            let __x = ({let __elt = mapping.var_StA.borrow()[(({let __elt = matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
-            __acc = cons(__x, __acc);
-        }
-        __acc.reverse()
-    }), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, eqns: UnorderedSet::fromList(({
+        li = Arc::new(LoopIdentifier { eqns: UnorderedSet::fromList(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (scc.clone()).into_iter().cloned() {
             let __x = ({let __elt = mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone(); __elt});
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, vars: UnorderedSet::fromList(({
+        let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        for mut i in (scc.clone()).into_iter().cloned() {
+            let __x = ({let __elt = mapping.var_StA.borrow()[(({let __elt = matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

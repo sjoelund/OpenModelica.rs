@@ -372,7 +372,11 @@ fn insertListSorted1<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>,
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => inResultList.clone(),
         (Deref @ metamodelica::List::Nil, _) => append_reverse(inList2.clone(), inResultList.clone()),
         (_, Deref @ metamodelica::List::Nil) => append_reverse(inList.clone(), inResultList.clone()),
-        (Deref @ metamodelica::List::Cons { head: listHead, tail: listRest }, Deref @ metamodelica::List::Cons { head: listHead2, tail: listRest2 }) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_listHead, tail: __esc_listRest }, Deref @ metamodelica::List::Cons { head: __esc_listHead2, tail: __esc_listRest2 }) => {
+            listHead = (*__esc_listHead).clone();
+            listRest = (*__esc_listRest).clone();
+            listHead2 = (*__esc_listHead2).clone();
+            listRest2 = (*__esc_listRest2).clone();
             if inCompFunc(listHead.clone(), listHead2.clone())? {
                 tmpResultList = metamodelica::cons(listHead.clone(), inResultList.clone());
                 tmpResultList = insertListSorted1(listRest.clone(), inList2.clone(), inCompFunc.clone(), tmpResultList.clone())?;
@@ -628,7 +632,8 @@ pub fn sortedListAllUnique<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T
         Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
             metamodelica::nil()
         },
-        Deref @ metamodelica::List::Cons { head: e1, tail: rest @ Deref @ metamodelica::List::Cons { head: e2, tail: _ } } => {
+        Deref @ metamodelica::List::Cons { head: e1, tail: __esc_rest @ Deref @ metamodelica::List::Cons { head: e2, tail: _ } } => {
+            rest = (*__esc_rest).clone();
             if compareFn(e1.clone(), e2.clone())? {
                 return Ok(allUnique.clone());
             }

@@ -386,15 +386,15 @@ fn inlineWhenEq(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut fns: (Opt
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut inlined: bool = false;
     (outWhenEquation, outSource, inlined) = (::match_deref::match_deref! { match &(inWhenEquation.clone()) {
-        Deref @ BackendDAE::WhenEquation { elsewhenPart: oelsewe, whenStmtLst, condition: cond } => {
+        Deref @ BackendDAE::WhenEquation { condition: cond, whenStmtLst, elsewhenPart: oelsewe } => {
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
             let mut b1: bool = false;
             let mut b2: bool = false;
             let mut b3: bool = false;
             let mut elsewe: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
-            let mut oelsewe = (*oelsewe).clone();
-            let mut whenStmtLst = (*whenStmtLst).clone();
             let mut cond = (*cond).clone();
+            let mut whenStmtLst = (*whenStmtLst).clone();
+            let mut oelsewe = (*oelsewe).clone();
             (cond, source, b1, _) = Inline::inlineExp(cond.clone(), fns.clone(), inSource.clone())?;
             (whenStmtLst, b2) = inlineWhenOps(whenStmtLst.clone(), fns.clone())?;
             if isSome(oelsewe.clone()) {
@@ -422,49 +422,49 @@ fn inlineWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOperator>
     for mut whenOp in &*inWhenOps.clone() {
         let mut whenOp = whenOp.clone();
         let () = (match whenOp.clone() {
-        BackendDAE::WhenOperator::ASSIGN { source: mut source, right: ref e2, left: ref e1 } => {
+        BackendDAE::WhenOperator::ASSIGN { left: ref e1, right: ref e2, source: mut source } => {
             let mut b: bool = false;
-            let mut source = source.clone();
             let mut e2 = e2.clone();
+            let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone())?;
             outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::ASSIGN { left: e1.clone(), right: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
             inlined = inlined.clone() || b.clone();
             ()
         },
-        BackendDAE::WhenOperator::REINIT { source: mut source, value: ref e2, stateVar: ref cr } => {
+        BackendDAE::WhenOperator::REINIT { stateVar: ref cr, value: ref e2, source: mut source } => {
             let mut b: bool = false;
-            let mut source = source.clone();
             let mut e2 = e2.clone();
+            let mut source = source.clone();
             (e2, source, b, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone())?;
             outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::REINIT { stateVar: cr.clone(), value: e2.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
             inlined = inlined.clone() || b.clone();
             ()
         },
-        BackendDAE::WhenOperator::ASSERT { source: mut source, level: mut level, message: ref e2, condition: ref e1 } => {
+        BackendDAE::WhenOperator::ASSERT { condition: ref e1, message: ref e2, level: mut level, source: mut source } => {
             let mut b: bool = false;
             let mut b2: bool = false;
-            let mut source = source.clone();
-            let mut e2 = e2.clone();
             let mut e1 = e1.clone();
+            let mut e2 = e2.clone();
+            let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone())?;
             (e2, source, b2, _) = Inline::inlineExp(e2.clone(), fns.clone(), source.clone())?;
             outWhenOps = metamodelica::cons(if (b.clone() || b2.clone()) {BackendDAE::WhenOperator::ASSERT { condition: e1.clone(), message: e2.clone(), level: level.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
             inlined = inlined.clone() || b.clone() || b2.clone();
             ()
         },
-        BackendDAE::WhenOperator::TERMINATE { source: mut source, message: ref e1 } => {
+        BackendDAE::WhenOperator::TERMINATE { message: ref e1, source: mut source } => {
             let mut b: bool = false;
-            let mut source = source.clone();
             let mut e1 = e1.clone();
+            let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone())?;
             outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::TERMINATE { message: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
             inlined = inlined.clone() || b.clone();
             ()
         },
-        BackendDAE::WhenOperator::NORETCALL { source: mut source, exp: ref e1 } => {
+        BackendDAE::WhenOperator::NORETCALL { exp: ref e1, source: mut source } => {
             let mut b: bool = false;
-            let mut source = source.clone();
             let mut e1 = e1.clone();
+            let mut source = source.clone();
             (e1, source, b, _) = Inline::inlineExp(e1.clone(), fns.clone(), source.clone())?;
             outWhenOps = metamodelica::cons(if (b.clone()) {BackendDAE::WhenOperator::NORETCALL { exp: e1.clone(), source: source.clone() }} else {whenOp.clone()}, outWhenOps.clone());
             inlined = inlined.clone() || b.clone();
@@ -561,7 +561,7 @@ fn inlineEventInfo(mut inEventInfo: BackendDAE::EventInfo, mut fns: (Option<Arc<
     let () = 'mc: {
         let __mc_input = inEventInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let BackendDAE::EventInfo { relations: mut relations, zeroCrossings: mut zclst, .. } = __mc_input.clone() else { bail!("nomatch") };
+            let BackendDAE::EventInfo { zeroCrossings: mut zclst, relations: mut relations, .. } = __mc_input.clone() else { bail!("nomatch") };
             inlineZeroCrossings(zclst.zc.clone(), fns.clone())?;
             inlineZeroCrossings(relations.clone(), fns.clone())?;
             Ok(())
@@ -753,13 +753,13 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr, source, right: e2, left: e1, .. } => {
+                Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, source, attr, .. } => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut b3: bool = false;
-                    let mut source = (*source).clone();
-                    let mut e2 = (*e2).clone();
                     let mut e1 = (*e1).clone();
+                    let mut e2 = (*e2).clone();
+                    let mut source = (*source).clone();
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
@@ -775,13 +775,13 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
         })() { outEqs = __wb0; shared = __wb1; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ BackendDAE::Equation::ARRAY_EQUATION { attr, source, right: e2, left: e1, .. } => {
+                Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, source, attr, .. } => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut b3: bool = false;
-                    let mut source = (*source).clone();
-                    let mut e2 = (*e2).clone();
                     let mut e1 = (*e1).clone();
+                    let mut e2 = (*e2).clone();
+                    let mut source = (*source).clone();
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
@@ -1102,11 +1102,12 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     for mut r#fn in &*fns.clone() {
         let mut r#fn = r#fn.clone();
         let () = (::match_deref::match_deref! { match &(r#fn.clone()) {
-        Deref @ DAE::Element::VAR { kind: DAE::VarKind::VARIABLE { .. }, direction: DAE::VarDirection::INPUT { .. }, componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { componentRef: __esc_cr, direction: DAE::VarDirection::INPUT { .. }, kind: DAE::VarKind::VARIABLE { .. }, .. } => {
+            cr = (*__esc_cr).clone();
             fnInputs = metamodelica::cons(cr.clone(), fnInputs.clone());
             ()
         },
-        Deref @ DAE::Element::VAR { kind: DAE::VarKind::VARIABLE { .. }, direction: DAE::VarDirection::OUTPUT { .. }, componentRef: cr, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?)) && ComponentReference::crefDepth(cr.clone())? > 0) => {
+        Deref @ DAE::Element::VAR { componentRef: cr, direction: DAE::VarDirection::OUTPUT { .. }, kind: DAE::VarKind::VARIABLE { .. }, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?)) && ComponentReference::crefDepth(cr.clone())? > 0) => {
             let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             (crVar, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
@@ -1114,7 +1115,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             oOutput = metamodelica::cons(crVar.clone(), oOutput.clone());
             ()
         },
-        Deref @ DAE::Element::VAR { binding: None, protection: DAE::VarVisibility::PROTECTED { .. }, componentRef: cr, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
+        Deref @ DAE::Element::VAR { componentRef: cr, protection: DAE::VarVisibility::PROTECTED { .. }, binding: None, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             (_, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
             varLst = ({
@@ -1128,7 +1129,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone())?;
             ()
         },
-        Deref @ DAE::Element::VAR { binding: Some(eBind), protection: DAE::VarVisibility::PROTECTED { .. }, componentRef: cr, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
+        Deref @ DAE::Element::VAR { componentRef: cr, protection: DAE::VarVisibility::PROTECTED { .. }, binding: Some(eBind), .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
             let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut eVar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);

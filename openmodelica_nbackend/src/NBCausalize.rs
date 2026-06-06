@@ -94,11 +94,11 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) 
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut func: Module::causalizeInterface = getModule()?;
     bdae = (::match_deref::match_deref! { match &((kind.clone(), bdae.clone())) {
-        (BPartition::Kind::ODE, Deref @ BackendDAE::MAIN { eqData, varData, clocked, ode: partitions, .. }) => {
-            let mut eqData = (*eqData).clone();
-            let mut varData = (*varData).clone();
-            let mut clocked = (*clocked).clone();
+        (BPartition::Kind::ODE, Deref @ BackendDAE::MAIN { ode: partitions, clocked, varData, eqData, .. }) => {
             let mut partitions = (*partitions).clone();
+            let mut clocked = (*clocked).clone();
+            let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (partitions, varData, eqData) = applyModule(partitions.clone(), kind.clone(), varData.clone(), eqData.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), func.clone())?;
             (clocked, varData, eqData) = applyModule(clocked.clone(), kind.clone(), varData.clone(), eqData.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), func.clone())?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
@@ -109,10 +109,10 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) 
             );
             bdae.clone()
         },
-        (_, Deref @ BackendDAE::MAIN { eqData, varData, init: partitions, .. }) if (BPartition::kindIsInitial(kind.clone())) => {
-            let mut eqData = (*eqData).clone();
-            let mut varData = (*varData).clone();
+        (_, Deref @ BackendDAE::MAIN { init: partitions, varData, eqData, .. }) if (BPartition::kindIsInitial(kind.clone())) => {
             let mut partitions = (*partitions).clone();
+            let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             if Flags::isSet(Flags::INITIALIZATION.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1((literal!("Balance Initialization")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -128,10 +128,10 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: BPartition::Kind) 
             );
             bdae.clone()
         },
-        (BPartition::Kind::DAE, Deref @ BackendDAE::MAIN { eqData, varData, dae: Some(partitions), .. }) => {
-            let mut eqData = (*eqData).clone();
-            let mut varData = (*varData).clone();
+        (BPartition::Kind::DAE, Deref @ BackendDAE::MAIN { dae: Some(partitions), varData, eqData, .. }) => {
             let mut partitions = (*partitions).clone();
+            let mut varData = (*varData).clone();
+            let mut eqData = (*eqData).clone();
             (partitions, varData, eqData) = applyModule(partitions.clone(), kind.clone(), varData.clone(), eqData.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), (std::sync::Arc::new(fnptr!(causalizeDAEMode, Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>) -> Result<(Arc<Partition::Partition>, Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>))?;
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 dae = Some(partitions.clone()),

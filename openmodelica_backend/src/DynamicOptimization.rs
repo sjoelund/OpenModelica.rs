@@ -78,11 +78,11 @@ pub fn createDynamicOptimization(mut dae: Arc<BackendDAE::BackendDAE>) -> Result
     } };
     syst = __pa0.clone();
     let (__pa2, __pa3) = ::match_deref::match_deref! { match &(syst.clone()) {
-        Deref @ BackendDAE::EqSystem { orderedEqs: __pa2, orderedVars: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
+        Deref @ BackendDAE::EqSystem { orderedVars: __pa2, orderedEqs: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    eqns = __pa2.clone();
-    vars = __pa3.clone();
+    vars = __pa2.clone();
+    eqns = __pa3.clone();
     (vars, eqns, shared) = addOptimizationVarsEqns(vars.clone(), eqns.clone(), shared.clone())?;
     assign_field!(
         syst.orderedVars = vars.clone(),
@@ -144,7 +144,7 @@ fn getOptimicaArgs(mut inClassAttr: Arc<metamodelica::List<Arc<DAE::ClassAttribu
     let mut startTimeE: Option<Arc<DAE::Exp>> = None;
     let mut finalTimeE: Option<Arc<DAE::Exp>> = None;
     (mayer, lagrange, startTimeE, finalTimeE) = (::match_deref::match_deref! { match &(inClassAttr.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::ClassAttributes { finalTimeE: finalTimeE_, startTimeE: startTimeE_, objectiveIntegrandE: lagrange_, objetiveE: mayer_ }, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::ClassAttributes { objetiveE: mayer_, objectiveIntegrandE: lagrange_, startTimeE: startTimeE_, finalTimeE: finalTimeE_ }, tail: Deref @ metamodelica::List::Nil } => {
             (mayer_.clone(), lagrange_.clone(), startTimeE_.clone(), finalTimeE_.clone())
         },
         _ => {
@@ -437,7 +437,7 @@ fn traverserExpinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut tpl: (Bac
         let __mc_input = (inExp.clone(), tpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, lst, lst1, varLst)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (vars, lst, lst1, varLst)) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -523,11 +523,11 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
         let __mc_input = (isyst.clone(), ishared.clone(), icomp.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType, vars: vindx, eqns: eindex, .. }) => {
+                (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared, Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: eindex, vars: vindx, jacType, .. }) => {
                     if !((l2p_all.clone() || if (l2p_l.clone()) {isConstOrlinear(jacType.clone())} else {!(isConstOrlinear(jacType.clone()))})) { bail!("guard") }
                     let mut syst = (*syst).clone();
-                    let mut eqns = (*eqns).clone();
                     let mut vars = (*vars).clone();
+                    let mut eqns = (*eqns).clone();
                     let mut shared = (*shared).clone();
                     (eqns, vars, shared) = res2Con(eqns.clone(), vars.clone(), eindex.clone(), vindx.clone(), shared.clone())?;
                     assign_field!(
@@ -541,11 +541,11 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared, Deref @ BackendDAE::StrongComponent::TORNSYSTEM { linear, strictTearingSet: BackendDAE::TearingSet { tearingvars: vindx, residualequations: eindex, .. }, .. }) => {
+                (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared, Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { residualequations: eindex, tearingvars: vindx, .. }, linear, .. }) => {
                     if !((l2p_all.clone() || if (l2p_l.clone()) {linear.clone()} else {!(linear.clone())})) { bail!("guard") }
                     let mut syst = (*syst).clone();
-                    let mut eqns = (*eqns).clone();
                     let mut vars = (*vars).clone();
+                    let mut eqns = (*eqns).clone();
                     let mut shared = (*shared).clone();
                     (eqns, vars, shared) = res2Con(eqns.clone(), vars.clone(), eindex.clone(), vindx.clone(), shared.clone())?;
                     assign_field!(
@@ -559,7 +559,7 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }, Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: vindx_, eqn: eindex_ }) => {
+                (syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }, Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eindex_, var: vindx_ }) => {
                     if !((l2p_all.clone() || !(l2p_l.clone()))) { bail!("guard") }
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -567,15 +567,15 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut syst = (*syst).clone();
-                    let mut eqns = (*eqns).clone();
                     let mut vars = (*vars).clone();
+                    let mut eqns = (*eqns).clone();
                     let mut shared = (*shared).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex_.clone())?) {
-                        Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                        Deref @ BackendDAE::Equation::EQUATION { exp: __pa0, scalar: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    e2 = __pa0.clone();
-                    e1 = __pa1.clone();
+                    e1 = __pa0.clone();
+                    e2 = __pa1.clone();
                     let ref __pa3 @ BackendDAE::VAR { varName: ref __pa2, .. } = (BackendVariable::getVarAt(vars.clone(), vindx_.clone())?) else { bail!("pattern mismatch") };
                     cr = __pa2.clone();
                     v = __pa3.clone();
@@ -744,20 +744,20 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         systlst = __pa0.clone();
         shared = __pa1.clone();
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(shared.clone()) {
-            Deref @ BackendDAE::Shared { globalKnownVars: __pa2, functionTree: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
+            Deref @ BackendDAE::Shared { functionTree: __pa2, globalKnownVars: __pa3, .. } => (__pa2.clone(), __pa3.clone()),
             _ => bail!("pattern mismatch"),
         } };
-        globalKnownVars = __pa2.clone();
-        funcs = __pa3.clone();
+        funcs = __pa2.clone();
+        globalKnownVars = __pa3.clone();
         for mut syst in &*systlst.clone() {
             let mut syst = syst.clone();
             let (__pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(syst.clone()) {
-                Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa4, .. }, orderedEqs: __pa5, orderedVars: __pa6, .. } => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
+                Deref @ BackendDAE::EqSystem { orderedVars: __pa4, orderedEqs: __pa5, matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa6, .. }, .. } => (__pa4.clone(), __pa5.clone(), __pa6.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            comps = __pa4.clone();
+            vars = __pa4.clone();
             eqns = __pa5.clone();
-            vars = __pa6.clone();
+            comps = __pa6.clone();
             b = false;
             '__loop8: for mut comp in &*comps.clone() {
                 let mut comp = comp.clone();
@@ -767,21 +767,21 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }) {
                     let (__pa9, __pa10) = ::match_deref::match_deref! { match &(comp.clone()) {
-                        Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: __pa9, eqn: __pa10 } => (__pa9.clone(), __pa10.clone()),
+                        Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: __pa9, var: __pa10 } => (__pa9.clone(), __pa10.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    vindx = __pa9.clone();
-                    eindex = __pa10.clone();
+                    eindex = __pa9.clone();
+                    vindx = __pa10.clone();
                     var_con = BackendVariable::getVarAt(vars.clone(), vindx.clone())?;
                     b3 = BackendVariable::isRealOptimizeConstraintsVars(var_con.clone());
                     if b3.clone() {
                         if '__try11: {
                             let (__pa14, __pa12, __pa13) = ::match_deref::match_deref! { match &(unwrap_break_err!(BackendEquation::get(eqns.clone(), eindex.clone()), '__try11)) {
-                                __pa14 @ Deref @ BackendDAE::Equation::EQUATION { scalar: __pa12, exp: __pa13, .. } => (__pa14.clone(), __pa12.clone(), __pa13.clone()),
+                                __pa14 @ Deref @ BackendDAE::Equation::EQUATION { exp: __pa12, scalar: __pa13, .. } => (__pa14.clone(), __pa12.clone(), __pa13.clone()),
                                 _ => break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                             } };
-                            e2 = __pa12.clone();
-                            e1 = __pa13.clone();
+                            e1 = __pa12.clone();
+                            e2 = __pa13.clone();
                             eqn_ = __pa14.clone();
                             let true = (unwrap_break_err!(ExpressionBasics::expEqual(e1.clone(), unwrap_break_err!(BackendVariable::varExp(var_con.clone()), '__try11)), '__try11)) else { break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                             Ok::<(), anyhow::Error>(())

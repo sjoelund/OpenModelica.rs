@@ -184,7 +184,7 @@ pub fn handleOverconstrainedConnections(mut inGraph: ConnectionGraph, mut modelN
 pub fn addDefiniteRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoot.clone())) {
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, root) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, root) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addDefiniteRoot(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
@@ -198,7 +198,7 @@ pub fn addDefiniteRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::Compon
 pub fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::ComponentRef>, mut inPriority: metamodelica::Real) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoot.clone(), inPriority.clone())) {
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, root, priority) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, root, priority) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addPotentialRoot(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*realString(priority.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
@@ -214,7 +214,7 @@ pub fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::Compo
 pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, mut inMessage: Arc<DAE::Exp>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoots.clone())) {
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addUniqueRoots(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inMessage.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
@@ -223,7 +223,7 @@ pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, 
         (ConnectionGraph { .. }, Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: Deref @ metamodelica::List::Nil }) => {
             inGraph.clone()
         },
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, Deref @ DAE::Exp::ARRAY { ty, scalar, array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }, tail: rest } }) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, Deref @ DAE::Exp::ARRAY { ty, scalar, array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }, tail: rest } }) => {
             let mut graph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addUniqueRoots(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inMessage.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
@@ -243,7 +243,7 @@ pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, 
 pub fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRef1.clone(), inRef2.clone())) {
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, ref1, ref2) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, ref1, ref2) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addBranch(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(ref1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(ref2.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
@@ -257,7 +257,7 @@ pub fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef
 pub fn addConnection(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>, mut inDae: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<ConnectionGraph> {
     let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRef1.clone(), inRef2.clone(), inDae.clone())) {
-        (ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, updateGraph }, ref1, ref2, dae) => {
+        (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, ref1, ref2, dae) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addConnection(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(ref1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(ref2.clone())?); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone())?;
             }
@@ -615,7 +615,7 @@ fn findResultGraph(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr)
         let __mc_input = inGraph.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                ConnectionGraph { connections: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, definiteRoots: Deref @ metamodelica::List::Nil, .. } => {
+                ConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. } => {
                     Ok((metamodelica::nil(), metamodelica::nil(), metamodelica::nil()))
                 }
                 _ => bail!("nomatch"),
@@ -623,7 +623,7 @@ fn findResultGraph(mut inGraph: ConnectionGraph, mut modelNameQualified: ArcStr)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                ConnectionGraph { connections, branches, uniqueRoots, potentialRoots, definiteRoots, .. } => {
+                ConnectionGraph { definiteRoots, potentialRoots, uniqueRoots, branches, connections, .. } => {
                     let mut finalRoots: DefiniteRoots = metamodelica::nil();
                     let mut orderedPotentialRoots: PotentialRoots = metamodelica::nil();
                     let mut broken: DaeEdges = metamodelica::nil();
@@ -923,7 +923,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         let __mc_input = (inExp.clone(), inRoots.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "rooted" }, .. }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rooted" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (rooted, roots, graph)) => {
                     if Flags::isSet(Flags::CGRAPH.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.evalConnectionsOperatorsHelper: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" = false")); ArcStr::from(__mm_s) }).clone())?;
                     }
@@ -934,7 +934,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "rooted" }, .. }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "rooted" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (rooted, roots, graph)) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut result: bool = false;
                     let mut branches: Edges = metamodelica::nil();
@@ -962,7 +962,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, .. }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (rooted, roots, graph)) => {
                     if Flags::isSet(Flags::CGRAPH.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.evalConnectionsOperatorsHelper: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" = false")); ArcStr::from(__mm_s) }).clone())?;
                     }
@@ -973,7 +973,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: _ }, exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, .. } }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: _ }, exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, tail: Deref @ metamodelica::List::Nil }, .. } }, (rooted, roots, graph)) => {
                     if Flags::isSet(Flags::CGRAPH.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.evalConnectionsOperatorsHelper: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!(" = false")); ArcStr::from(__mm_s) }).clone())?;
                     }
@@ -984,7 +984,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, .. }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, (rooted, roots, graph)) => {
                     let mut result: bool = false;
                     result = List::isMemberOnTrue(cref.clone(), roots.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
                     if Flags::isSet(Flags::CGRAPH.clone())? {
@@ -997,7 +997,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: _ }, exp: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, .. } }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: _ }, exp: Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "isRoot" } }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref, .. }, tail: Deref @ metamodelica::List::Nil }, .. } }, (rooted, roots, graph)) => {
                     let mut result: bool = false;
                     result = List::isMemberOnTrue(cref.clone(), roots.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
                     result = boolNot(result.clone());
@@ -1011,7 +1011,7 @@ fn evalConnectionsOperatorsHelper(mut inExp: Arc<DAE::Exp>, mut inRoots: ((metam
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: uroots @ Deref @ DAE::Exp::ARRAY { array: lst, .. }, tail: Deref @ metamodelica::List::Cons { head: nodes, tail: Deref @ metamodelica::List::Cons { head: message, tail: Deref @ metamodelica::List::Nil } } }, path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "uniqueRootIndices" } }, .. }, (rooted, roots, graph)) => {
+                (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "Connections", path: Deref @ Absyn::Path::IDENT { name: Deref @ "uniqueRootIndices" } }, expLst: Deref @ metamodelica::List::Cons { head: uroots @ Deref @ DAE::Exp::ARRAY { array: lst, .. }, tail: Deref @ metamodelica::List::Cons { head: nodes, tail: Deref @ metamodelica::List::Cons { head: message, tail: Deref @ metamodelica::List::Nil } } }, .. }, (rooted, roots, graph)) => {
                     let mut lst = (*lst).clone();
                     if Flags::isSet(Flags::CGRAPH.clone())? {
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.evalConnectionsOperatorsHelper: Connections.uniqueRootsIndicies(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(uroots.clone())?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*ExpressionBasics::printExpStr(nodes.clone())?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*ExpressionBasics::printExpStr(message.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
@@ -1165,7 +1165,7 @@ fn printDaeEdges(mut inEdges: DaeEdges) -> Result<()> {
 
 fn printConnectionGraph(mut inGraph: ConnectionGraph) -> Result<()> {
     let () = (match inGraph.clone() {
-        ConnectionGraph { branches: mut branches, connections: mut connections, .. } => {
+        ConnectionGraph { connections: mut connections, branches: mut branches, .. } => {
             metamodelica::print((literal!("Connections:\n")).clone());
             printDaeEdges(connections.clone())?;
             metamodelica::print((literal!("Branches:\n")).clone());
@@ -1232,7 +1232,7 @@ pub fn merge(mut inGraph1: ConnectionGraph, mut inGraph2: ConnectionGraph) -> Re
         let __mc_input = (inGraph1.clone(), inGraph2.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, ConnectionGraph { connections: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, definiteRoots: Deref @ metamodelica::List::Nil, .. }) => {
+                (_, ConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }) => {
                     Ok(inGraph1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1240,7 +1240,7 @@ pub fn merge(mut inGraph1: ConnectionGraph, mut inGraph2: ConnectionGraph) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (ConnectionGraph { connections: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, definiteRoots: Deref @ metamodelica::List::Nil, .. }, _) => {
+                (ConnectionGraph { definiteRoots: Deref @ metamodelica::List::Nil, potentialRoots: Deref @ metamodelica::List::Nil, uniqueRoots: Deref @ metamodelica::List::Nil, branches: Deref @ metamodelica::List::Nil, connections: Deref @ metamodelica::List::Nil, .. }, _) => {
                     Ok(inGraph2.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1257,7 +1257,7 @@ pub fn merge(mut inGraph1: ConnectionGraph, mut inGraph2: ConnectionGraph) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (ConnectionGraph { connections: connections1, branches: branches1, uniqueRoots: uniqueRoots1, potentialRoots: potentialRoots1, definiteRoots: definiteRoots1, updateGraph: updateGraph1 }, ConnectionGraph { connections: connections2, branches: branches2, uniqueRoots: uniqueRoots2, potentialRoots: potentialRoots2, definiteRoots: definiteRoots2, updateGraph: updateGraph2 }) => {
+                (ConnectionGraph { updateGraph: updateGraph1, definiteRoots: definiteRoots1, potentialRoots: potentialRoots1, uniqueRoots: uniqueRoots1, branches: branches1, connections: connections1 }, ConnectionGraph { updateGraph: updateGraph2, definiteRoots: definiteRoots2, potentialRoots: potentialRoots2, uniqueRoots: uniqueRoots2, branches: branches2, connections: connections2 }) => {
                     let mut updateGraph: bool = false;
                     let mut definiteRoots: DefiniteRoots = metamodelica::nil();
                     let mut uniqueRoots: UniqueRoots = metamodelica::nil();

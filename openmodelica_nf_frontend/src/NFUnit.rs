@@ -263,7 +263,7 @@ pub fn unit2string(mut unit: Unit) -> Result<ArcStr> {
 pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = (match (inUnit1.clone(), inUnit2.clone()) {
-        (Unit::UNIT { .. }, Unit::UNIT { .. }) => Unit::UNIT { factor: var_field!(inUnit1.factor, Unit::UNIT).clone() * var_field!(inUnit2.factor, Unit::UNIT).clone(), cd: var_field!(inUnit1.cd, Unit::UNIT).clone() + var_field!(inUnit2.cd, Unit::UNIT).clone(), mol: var_field!(inUnit1.mol, Unit::UNIT).clone() + var_field!(inUnit2.mol, Unit::UNIT).clone(), K: var_field!(inUnit1.K, Unit::UNIT).clone() + var_field!(inUnit2.K, Unit::UNIT).clone(), A: var_field!(inUnit1.A, Unit::UNIT).clone() + var_field!(inUnit2.A, Unit::UNIT).clone(), g: var_field!(inUnit1.g, Unit::UNIT).clone() + var_field!(inUnit2.g, Unit::UNIT).clone(), m: var_field!(inUnit1.m, Unit::UNIT).clone() + var_field!(inUnit2.m, Unit::UNIT).clone(), s: var_field!(inUnit1.s, Unit::UNIT).clone() + var_field!(inUnit2.s, Unit::UNIT).clone() },
+        (Unit::UNIT { .. }, Unit::UNIT { .. }) => Unit::UNIT { s: var_field!(inUnit1.s, Unit::UNIT).clone() + var_field!(inUnit2.s, Unit::UNIT).clone(), m: var_field!(inUnit1.m, Unit::UNIT).clone() + var_field!(inUnit2.m, Unit::UNIT).clone(), g: var_field!(inUnit1.g, Unit::UNIT).clone() + var_field!(inUnit2.g, Unit::UNIT).clone(), A: var_field!(inUnit1.A, Unit::UNIT).clone() + var_field!(inUnit2.A, Unit::UNIT).clone(), K: var_field!(inUnit1.K, Unit::UNIT).clone() + var_field!(inUnit2.K, Unit::UNIT).clone(), mol: var_field!(inUnit1.mol, Unit::UNIT).clone() + var_field!(inUnit2.mol, Unit::UNIT).clone(), cd: var_field!(inUnit1.cd, Unit::UNIT).clone() + var_field!(inUnit2.cd, Unit::UNIT).clone(), factor: var_field!(inUnit1.factor, Unit::UNIT).clone() * var_field!(inUnit2.factor, Unit::UNIT).clone() },
         _ => bail!("match: no arm matched"),
     });
     Ok(outUnit)
@@ -272,7 +272,7 @@ pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
 pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
     let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = (match (inUnit1.clone(), inUnit2.clone()) {
-        (Unit::UNIT { .. }, Unit::UNIT { .. }) => Unit::UNIT { factor: var_field!(inUnit1.factor, Unit::UNIT).clone() / var_field!(inUnit2.factor, Unit::UNIT).clone(), cd: var_field!(inUnit1.cd, Unit::UNIT).clone() - var_field!(inUnit2.cd, Unit::UNIT).clone(), mol: var_field!(inUnit1.mol, Unit::UNIT).clone() - var_field!(inUnit2.mol, Unit::UNIT).clone(), K: var_field!(inUnit1.K, Unit::UNIT).clone() - var_field!(inUnit2.K, Unit::UNIT).clone(), A: var_field!(inUnit1.A, Unit::UNIT).clone() - var_field!(inUnit2.A, Unit::UNIT).clone(), g: var_field!(inUnit1.g, Unit::UNIT).clone() - var_field!(inUnit2.g, Unit::UNIT).clone(), m: var_field!(inUnit1.m, Unit::UNIT).clone() - var_field!(inUnit2.m, Unit::UNIT).clone(), s: var_field!(inUnit1.s, Unit::UNIT).clone() - var_field!(inUnit2.s, Unit::UNIT).clone() },
+        (Unit::UNIT { .. }, Unit::UNIT { .. }) => Unit::UNIT { s: var_field!(inUnit1.s, Unit::UNIT).clone() - var_field!(inUnit2.s, Unit::UNIT).clone(), m: var_field!(inUnit1.m, Unit::UNIT).clone() - var_field!(inUnit2.m, Unit::UNIT).clone(), g: var_field!(inUnit1.g, Unit::UNIT).clone() - var_field!(inUnit2.g, Unit::UNIT).clone(), A: var_field!(inUnit1.A, Unit::UNIT).clone() - var_field!(inUnit2.A, Unit::UNIT).clone(), K: var_field!(inUnit1.K, Unit::UNIT).clone() - var_field!(inUnit2.K, Unit::UNIT).clone(), mol: var_field!(inUnit1.mol, Unit::UNIT).clone() - var_field!(inUnit2.mol, Unit::UNIT).clone(), cd: var_field!(inUnit1.cd, Unit::UNIT).clone() - var_field!(inUnit2.cd, Unit::UNIT).clone(), factor: var_field!(inUnit1.factor, Unit::UNIT).clone() / var_field!(inUnit2.factor, Unit::UNIT).clone() },
         _ => bail!("match: no arm matched"),
     });
     Ok(outUnit)
@@ -281,7 +281,7 @@ pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
 pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
     let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = (match inUnit.clone() {
-        Unit::UNIT { .. } => Unit::UNIT { factor: (var_field!(inUnit.factor, Unit::UNIT).clone()).powf(metamodelica::OrderedFloat((inExp.clone()) as f64)), cd: var_field!(inUnit.cd, Unit::UNIT).clone() * inExp.clone(), mol: var_field!(inUnit.mol, Unit::UNIT).clone() * inExp.clone(), K: var_field!(inUnit.K, Unit::UNIT).clone() * inExp.clone(), A: var_field!(inUnit.A, Unit::UNIT).clone() * inExp.clone(), g: var_field!(inUnit.g, Unit::UNIT).clone() * inExp.clone(), m: var_field!(inUnit.m, Unit::UNIT).clone() * inExp.clone(), s: var_field!(inUnit.s, Unit::UNIT).clone() * inExp.clone() },
+        Unit::UNIT { .. } => Unit::UNIT { s: var_field!(inUnit.s, Unit::UNIT).clone() * inExp.clone(), m: var_field!(inUnit.m, Unit::UNIT).clone() * inExp.clone(), g: var_field!(inUnit.g, Unit::UNIT).clone() * inExp.clone(), A: var_field!(inUnit.A, Unit::UNIT).clone() * inExp.clone(), K: var_field!(inUnit.K, Unit::UNIT).clone() * inExp.clone(), mol: var_field!(inUnit.mol, Unit::UNIT).clone() * inExp.clone(), cd: var_field!(inUnit.cd, Unit::UNIT).clone() * inExp.clone(), factor: (var_field!(inUnit.factor, Unit::UNIT).clone()).powf(metamodelica::OrderedFloat((inExp.clone()) as f64)) },
         _ => bail!("match: no arm matched"),
     });
     Ok(outUnit)
@@ -371,7 +371,8 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
         return Ok(outString.clone());
     }
     outString = ((match inUnit.clone() {
-        mut unit @ Unit::UNIT { .. } => {
+        mut __esc_unit @ Unit::UNIT { .. } => {
+            unit = __esc_unit.clone();
             s = (if (var_field!(unit.factor, Unit::UNIT).clone() == metamodelica::OrderedFloat(1.0_f64)) {literal!("")} else {prefix2String(var_field!(unit.factor, Unit::UNIT).clone())}).clone();
             b = false;
             sExponent = (if (intEq(var_field!(unit.mol, Unit::UNIT).clone(), 1)) {literal!("")} else {intString(var_field!(unit.mol, Unit::UNIT).clone())}).clone();

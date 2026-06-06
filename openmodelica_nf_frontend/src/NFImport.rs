@@ -163,12 +163,12 @@ pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(imp.clone()) {
-        Deref @ UNRESOLVED_IMPORT { info: __pa0, scope: __pa1, imp: Absyn::Import::UNQUAL_IMPORT { path: __pa2 } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ UNRESOLVED_IMPORT { imp: Absyn::Import::UNQUAL_IMPORT { path: __pa0 }, scope: __pa1, info: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    info = __pa0.clone();
+    path = __pa0.clone();
     scope = __pa1.clone();
-    path = __pa2.clone();
+    info = __pa2.clone();
     node = Lookup::lookupImport(path.clone(), scope.clone(), info.clone())?;
     node = Inst::instPackage(node.clone(), NFInstContext::NO_CONTEXT.clone())?;
     tree = Class::classTree(InstNode::getClass(node.clone())?)?;

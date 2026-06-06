@@ -47,7 +47,7 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
 pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: Some(SimCode::SimulationSettings { outputFormat: mut i_s_outputFormat, .. }), .. }) => {
+        (mut txt, SimCode::SimCode { simulationSettingsOpt: Some(SimCode::SimulationSettings { outputFormat: mut i_s_outputFormat, .. }), fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#!/usr/bin/nodejs --max-old-space-size=8192\n")).clone(), (literal!("var fs = require('fs');\n")).clone(), (literal!("\n")).clone(), (literal!("var initXML = fs.readFileSync('./")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("_init.xml');\n")).clone(), (literal!("\n")).clone(), (literal!("var mod = require('./")).clone()], lastHasNewLine: false }))?;
@@ -75,7 +75,7 @@ pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
 pub fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { tolerance: mut i_s_tolerance, numberOfIntervals: mut i_s_numberOfIntervals, stopTime: mut i_s_stopTime, .. }), modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, functions: _, .. }, .. }) => {
+        (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { functions: _, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, vars: SimCodeVar::SimVars { stateVars: _, .. }, name: ref i_modelInfo_name, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { stopTime: mut i_s_stopTime, numberOfIntervals: mut i_s_numberOfIntervals, tolerance: mut i_s_tolerance, .. }), makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, fileNamePrefix: mut i_fileNamePrefix, .. }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# OpenModelica simulation example\n")).clone(), (literal!("## ")).clone()], lastHasNewLine: false }))?;

@@ -204,11 +204,11 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
     (outExp, outChanged) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
             let (__pa2, __pa0, __pa1, __pa3) = ::match_deref::match_deref! { match &(Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?) {
-                (__pa2 @ Deref @ Expression::CREF { ty: __pa0, cref: __pa1 }, __pa3) => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
+                (__pa2 @ Deref @ Expression::CREF { cref: __pa0, ty: __pa1 }, __pa3) => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            ty = __pa0.clone();
-            cref = __pa1.clone();
+            cref = __pa0.clone();
+            ty = __pa1.clone();
             outExp = __pa2.clone();
             outChanged = __pa3.clone();
             var = ComponentRef::nodeVariability(cref.clone())?;
@@ -430,9 +430,9 @@ pub fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equatio
 pub fn evaluateEqBranch(mut branch: Arc<Branch::Branch>, mut info: SourceInfo) -> Result<Arc<Branch::Branch>> {
     let mut outBranch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
     outBranch = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ Equation::Branch::BRANCH { body, condition, .. } => {
-            let mut body = (*body).clone();
+        Deref @ Equation::Branch::BRANCH { condition, body, .. } => {
             let mut condition = (*condition).clone();
+            let mut body = (*body).clone();
             condition = evaluateExp(condition.clone(), info.clone())?;
             body = evaluateEquations(body.clone())?;
             Arc::new(Branch::Branch::BRANCH { condition: condition.clone(), conditionVar: var_field!((*branch).conditionVar, Branch::Branch::BRANCH).clone(), body: body.clone() })

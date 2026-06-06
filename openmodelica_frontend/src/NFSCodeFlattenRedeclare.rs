@@ -312,7 +312,7 @@ pub fn replaceRedeclaredElementsInEnv(mut inRedeclares: Arc<metamodelica::List<A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ NFSCodeEnv::Item::CLASS { classType: cls_ty, env: Deref @ metamodelica::List::Cons { head: item_env, tail: Deref @ metamodelica::List::Nil }, cls }) => {
+                (_, Deref @ NFSCodeEnv::Item::CLASS { cls, env: Deref @ metamodelica::List::Cons { head: item_env, tail: Deref @ metamodelica::List::Nil }, classType: cls_ty }) => {
                     let mut env: Env = metamodelica::nil();
                     let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
                     let mut repl: Replacements = metamodelica::nil();
@@ -569,12 +569,12 @@ pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut
 fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Result<Item> {
     let mut outNewItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     outNewItem = (::match_deref::match_deref! { match &((inOriginalItem.clone(), inNewItem.clone())) {
-        (Deref @ NFSCodeEnv::Item::VAR { var: el1, .. }, Deref @ NFSCodeEnv::Item::VAR { isUsed: iu2, var: el2 }) => {
+        (Deref @ NFSCodeEnv::Item::VAR { var: el1, .. }, Deref @ NFSCodeEnv::Item::VAR { var: el2, isUsed: iu2 }) => {
             let mut el2 = (*el2).clone();
             el2 = propagateAttributesVar(el1.clone(), el2.clone())?;
             Arc::new(NFSCodeEnv::Item::VAR { var: el2.clone(), isUsed: iu2.clone() })
         },
-        (Deref @ NFSCodeEnv::Item::CLASS { cls: el1, .. }, Deref @ NFSCodeEnv::Item::CLASS { classType: ty2, env: env2, cls: el2 }) => {
+        (Deref @ NFSCodeEnv::Item::CLASS { cls: el1, .. }, Deref @ NFSCodeEnv::Item::CLASS { cls: el2, env: env2, classType: ty2 }) => {
             let mut el2 = (*el2).clone();
             el2 = propagateAttributesClass(el1.clone(), el2.clone())?;
             Arc::new(NFSCodeEnv::Item::CLASS { cls: el2.clone(), env: env2.clone(), classType: ty2.clone() })
@@ -588,7 +588,7 @@ fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Resul
         (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, .. }, _) => {
             propagateItemPrefixes(item.clone(), inNewItem.clone())?
         },
-        (_, Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { declaredEnv: env1, item }) => {
+        (_, Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env1 }) => {
             let mut item = (*item).clone();
             item = propagateItemPrefixes(inOriginalItem.clone(), item.clone())?;
             Arc::new(NFSCodeEnv::Item::REDECLARED_ITEM { item: item.clone(), declaredEnv: env1.clone() })
@@ -615,11 +615,11 @@ pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewV
     let mut cond: Option<Arc<Absyn::Exp>> = None;
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inOriginalVar.clone()) {
-        Deref @ SCode::Element::COMPONENT { attributes: __pa0, prefixes: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::Element::COMPONENT { prefixes: __pa0, attributes: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    attr1 = __pa0.clone();
-    pref1 = __pa1.clone();
+    pref1 = __pa0.clone();
+    attr1 = __pa1.clone();
     let (__pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(inNewVar.clone()) {
         Deref @ SCode::Element::COMPONENT { name: __pa2, prefixes: __pa3, attributes: __pa4, typeSpec: __pa5, modifications: __pa6, comment: __pa7, condition: __pa8, info: __pa9 } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
         _ => bail!("pattern mismatch"),
@@ -681,11 +681,11 @@ fn propagatePrefixes(mut inOriginalPrefixes: Arc<SCode::Prefixes>, mut inNewPref
     let mut fp: SCode::Final = SCode::Final::FINAL;
     let mut rpp: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inOriginalPrefixes.clone()) {
-        Deref @ SCode::Prefixes { innerOuter: __pa0, visibility: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ SCode::Prefixes { visibility: __pa0, innerOuter: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    io1 = __pa0.clone();
-    vis1 = __pa1.clone();
+    vis1 = __pa0.clone();
+    io1 = __pa1.clone();
     let (__pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(inNewPrefixes.clone()) {
         Deref @ SCode::Prefixes { visibility: __pa2, redeclarePrefix: __pa3, finalPrefix: __pa4, innerOuter: __pa5, replaceablePrefix: __pa6 } => (__pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
         _ => bail!("pattern mismatch"),

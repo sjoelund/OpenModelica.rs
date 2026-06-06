@@ -270,7 +270,7 @@ fn getDerivativeAnnotations(mut definition: Arc<SCode::Element>) -> Result<Arc<m
 fn instDerivativeMod(mut r#mod: Arc<SCode::Mod>, mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>, mut scope: Arc<InstNode::InstNode>, mut fnDers: Arc<metamodelica::List<Arc<NFFunctionDerivative>>>) -> Result<Arc<metamodelica::List<Arc<NFFunctionDerivative>>>> {
     let mut fnDers: Arc<metamodelica::List<Arc<NFFunctionDerivative>>> = fnDers;
     fnDers = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: acref }), subModLst: attrs, .. } => {
+        Deref @ SCode::Mod::MOD { subModLst: attrs, binding: Some(Deref @ Absyn::Exp::CREF { componentRef: acref }), .. } => {
             let mut der_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             let mut order: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut conds: Arc<metamodelica::List<(i32, ArcStr, Condition)>> = metamodelica::nil();
@@ -308,19 +308,22 @@ fn getDerivativeAttributes(mut attrs: Arc<metamodelica::List<Arc<SCode::SubMod>>
         id = __pa0.clone();
         r#mod = __pa1.clone();
         let () = (::match_deref::match_deref! { match &((id.clone(), r#mod.clone())) {
-        (Deref @ "order", Deref @ SCode::Mod::MOD { binding: Some(aexp), .. }) => {
+        (Deref @ "order", Deref @ SCode::Mod::MOD { binding: Some(__esc_aexp), .. }) => {
+            aexp = (*__esc_aexp).clone();
             if !(Expression::isEmpty(order.clone())) {
                 Error::addSourceMessage(Error::DUPLICATE_MODIFICATIONS.clone(), list![(id.clone()).clone(), (literal!("derivative")).clone()], info.clone())?;
             }
             order = Inst::instExp(aexp.clone(), scope.clone(), InstContext::NO_CONTEXT.clone(), info.clone())?;
             ()
         },
-        (Deref @ "noDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, .. } }), .. }) => {
+        (Deref @ "noDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_id, .. } }), .. }) => {
+            id = (*__esc_id).clone();
             index = getInputIndex((id.clone()).clone(), r#fn.clone(), info.clone())?;
             conditions = metamodelica::cons((index.clone(), id.clone(), Condition::NO_DERIVATIVE.clone()), conditions.clone());
             ()
         },
-        (Deref @ "zeroDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, .. } }), .. }) => {
+        (Deref @ "zeroDerivative", Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: __esc_id, .. } }), .. }) => {
+            id = (*__esc_id).clone();
             index = getInputIndex((id.clone()).clone(), r#fn.clone(), info.clone())?;
             conditions = metamodelica::cons((index.clone(), id.clone(), Condition::ZERO_DERIVATIVE.clone()), conditions.clone());
             ()

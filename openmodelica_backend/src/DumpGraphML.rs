@@ -94,7 +94,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             GraphML::dumpGraph(graphInfo.clone(), (filename.clone()).clone())?;
             ()
         },
-        (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, mT: Some(_), m: Some(m), .. }, None) => {
+        (Deref @ BackendDAE::EqSystem { m: Some(m), mT: Some(_), matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, .. }, None) => {
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
@@ -119,7 +119,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             GraphML::dumpGraph(graphInfo.clone(), (filename.clone()).clone())?;
             ()
         },
-        (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: Deref @ metamodelica::List::Nil, ass2: vec2, ass1: vec1 }, .. }, None) => {
+        (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: vec1, ass2: vec2, comps: Deref @ metamodelica::List::Nil }, .. }, None) => {
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -149,7 +149,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             GraphML::dumpGraph(graphInfo.clone(), (filename.clone()).clone())?;
             ()
         },
-        (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: Deref @ metamodelica::List::Nil, ass2: vec2, .. }, .. }, Some(vec3)) => {
+        (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2: vec2, comps: Deref @ metamodelica::List::Nil, .. }, .. }, Some(vec3)) => {
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -342,7 +342,9 @@ fn addEqnGraph(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<A
     let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut labelText: ArcStr = arcstr::literal!("");
     outGraph = (match (numberMode.clone(), inGraph.clone()) {
-        (false, (mut graphInfo, mut graph)) => {
+        (false, (mut __esc_graphInfo, mut __esc_graph)) => {
+            graphInfo = __esc_graphInfo.clone();
+            graph = __esc_graph.clone();
             eqn = BackendEquation::get(eqns.clone(), ({let __elt = mapIncRowEqn.borrow()[(inNode.clone()-1) as usize].clone(); __elt}))?;
             r#str = (BackendDump::equationString(eqn.clone())?).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(inNode.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); ArcStr::from(__mm_s) }).clone();
@@ -351,7 +353,9 @@ fn addEqnGraph(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<A
             (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(inNode.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, None, metamodelica::nil(), graph.clone(), graphInfo.clone())?;
             (graphInfo.clone(), graph.clone())
         },
-        (true, (mut graphInfo, mut graph)) => {
+        (true, (mut __esc_graphInfo, mut __esc_graph)) => {
+            graphInfo = __esc_graphInfo.clone();
+            graph = __esc_graph.clone();
             eqn = BackendEquation::get(eqns.clone(), ({let __elt = mapIncRowEqn.borrow()[(inNode.clone()-1) as usize].clone(); __elt}))?;
             r#str = (BackendDump::equationString(eqn.clone())?).clone();
             r#str = (Util::xmlEscape((r#str.clone()).clone())?).clone();

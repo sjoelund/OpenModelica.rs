@@ -823,7 +823,7 @@ fn dumpCrefIdxLst2(mut crefIdxLst: Arc<metamodelica::List<BackendDAE::CrefIndex>
         Deref @ metamodelica::List::Nil => {
             ()
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::CrefIndex { index: index_c, cref: cref_c }, tail: crefIndexList } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::CrefIndex { cref: cref_c, index: index_c }, tail: crefIndexList } => {
             let mut cref: ArcStr = arcstr::literal!("");
             cref = (ComponentReference::crefStr(cref_c.clone())?).clone();
             dumpStrOpenTagAttr((arcstr::literal!(ELEMENT)).clone(), (arcstr::literal!(ID)).clone(), (intString(index_c.clone())).clone())?;
@@ -1003,7 +1003,7 @@ pub fn dumpBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut addOrig
 
 fn dumpEventInfo(mut inEventInfo: BackendDAE::EventInfo, mut addMML: bool) -> Result<()> {
     let () = (match inEventInfo.clone() {
-        BackendDAE::EventInfo { zeroCrossings: mut zc, timeEvents: mut timeEvents, .. } => {
+        BackendDAE::EventInfo { timeEvents: mut timeEvents, zeroCrossings: mut zc, .. } => {
             dumpTimeEvents(timeEvents.clone(), (stringAppend((arcstr::literal!(SAMPLES)).clone(), (arcstr::literal!(LIST_)).clone())).clone(), addMML.clone())?;
             dumpZeroCrossing(ZeroCrossings::toList(zc.clone()), (stringAppend((arcstr::literal!(ZERO_CROSSING)).clone(), (arcstr::literal!(LIST_)).clone())).clone(), addMML.clone())?;
             ()
@@ -1034,12 +1034,12 @@ fn getOrderedEqsandVars(mut syst: Arc<BackendDAE::EqSystem>, mut inEqnsVars: Arc
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(syst.clone()) {
-        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa0, .. }, orderedVars: __pa1, orderedEqs: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa2, .. }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    comps = __pa0.clone();
+    eqns = __pa0.clone();
     vars = __pa1.clone();
-    eqns = __pa2.clone();
+    comps = __pa2.clone();
     outEqnsVars = getOrderedEqs2(comps.clone(), eqns.clone(), vars.clone(), inEqnsVars.clone())?;
     Ok(outEqnsVars)
 }
@@ -1052,7 +1052,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
         Deref @ metamodelica::List::Nil => {
             inAccum.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: v, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: e, var: v }, tail: rest } => {
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1062,7 +1062,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { vars: vlst, eqns: elst, .. }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: elst, vars: vlst, .. }, tail: rest } => {
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1072,7 +1072,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { vars: vlst, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1082,7 +1082,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: vlst, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1092,7 +1092,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { vars: vlst, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1102,7 +1102,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { vars: vlst, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1112,7 +1112,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { vars: vlst, eqn: e }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
@@ -1122,7 +1122,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { innerEquations, residualequations: elst, tearingvars: vlst, .. }, .. }, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: vlst, residualequations: elst, innerEquations, .. }, .. }, tail: rest } => {
             let mut vlst1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut elst1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut vlst1Lst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -1416,7 +1416,7 @@ fn dumpEqns2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>
 
 fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: ArcStr, mut addMathMLCode: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inEquation.clone(), inIndexNumber.clone(), addMathMLCode.clone())) {
-        (Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, indexS, true) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1437,7 +1437,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1449,7 +1449,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. }, _, true) => {
+        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, _, true) => {
             let mut s: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -1469,7 +1469,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(ARRAY_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1481,7 +1481,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(ARRAY_OF_EQUATIONS)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. }, _, true) => {
+        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, _, true) => {
             let mut s: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -1501,7 +1501,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(COMPLEX_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. }, indexS, _) => {
+        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, indexS, _) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1513,7 +1513,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(COMPLEX_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, indexS, true) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1534,7 +1534,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(SOLVED)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -1546,7 +1546,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(SOLVED)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst, condition: e1, .. }, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { condition: e1, whenStmtLst, .. }, .. }, indexS, true) => {
             let mut is: ArcStr = arcstr::literal!("");
             is = (printExpStr(e1.clone())?).clone();
             dumpStrOpenTagAttr((stringAppend((arcstr::literal!(WHEN)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone(), (arcstr::literal!(ID)).clone(), (indexS.clone()).clone())?;
@@ -1559,7 +1559,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(WHEN)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst, condition: e1, .. }, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { condition: e1, whenStmtLst, .. }, .. }, indexS, false) => {
             let mut is: ArcStr = arcstr::literal!("");
             is = (printExpStr(e1.clone())?).clone();
             dumpStrOpenTagAttr((stringAppend((arcstr::literal!(WHEN)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone(), (arcstr::literal!(ID)).clone(), (indexS.clone()).clone())?;
@@ -1597,7 +1597,7 @@ fn dumpEquation(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(RESIDUAL)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ALGORITHM { source, alg: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, indexS, _) => {
+        (Deref @ BackendDAE::Equation::ALGORITHM { alg: Deref @ DAE::Algorithm { statementLst: stmts }, source, .. }, indexS, _) => {
             dumpStrOpenTagAttr((arcstr::literal!(ALGORITHM)).clone(), (arcstr::literal!(ID)).clone(), (indexS.clone()).clone())?;
             Print::printBuf((Util::xmlEscape((DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts.clone() }), source: source.clone() })])?).clone())?).clone())?;
             dumpStrCloseTag((arcstr::literal!(ALGORITHM)).clone())?;
@@ -1774,7 +1774,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::RELATION { exp2: e2, operator: op, exp1: e1, .. } => {
+                Deref @ DAE::Exp::RELATION { exp1: e1, operator: op, exp2: e2, .. } => {
                     let mut sym: ArcStr = arcstr::literal!("");
                     sym = (relopSymbol(op.clone())?).clone();
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
@@ -1808,7 +1808,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((literal!("diff")).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1820,7 +1820,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLArccos)).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1832,7 +1832,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLArcsin)).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1844,7 +1844,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLArctan)).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1856,7 +1856,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan2" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrOpenTag((arcstr::literal!(MathMLOperator)).clone())?;
                     Print::printBuf((literal!("atan2")).clone())?;
@@ -1877,7 +1877,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLLn)).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1889,7 +1889,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, .. } => {
+                Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, expLst: args, .. } => {
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLLog)).clone())?;
                     dumpList(args.clone(), (std::sync::Arc::new(dumpExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
@@ -1901,7 +1901,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CALL { expLst: args, path: fcn, .. } => {
+                Deref @ DAE::Exp::CALL { path: fcn, expLst: args, .. } => {
                     let mut fs: ArcStr = arcstr::literal!("");
                     fs = AbsynUtil::pathStringNoQual(fcn.clone(), (literal!(".")).clone(), false, false)?;
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
@@ -1996,7 +1996,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { exp: Deref @ DAE::Exp::ICONST { integer: ival }, ty: Deref @ DAE::Type::T_REAL { .. } } => {
+                Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: Deref @ DAE::Exp::ICONST { integer: ival } } => {
                     let mut res: ArcStr = arcstr::literal!("");
                     let mut rval: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let false = (Config::modelicaOutput()?) else { bail!("pattern mismatch") };
@@ -2010,7 +2010,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { exp: Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::ICONST { integer: ival }, operator: DAE::Operator::UMINUS { .. } }, ty: Deref @ DAE::Type::T_REAL { .. } } => {
+                Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::ICONST { integer: ival } } } => {
                     let mut res: ArcStr = arcstr::literal!("");
                     let mut rval: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let false = (Config::modelicaOutput()?) else { bail!("pattern mismatch") };
@@ -2027,7 +2027,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { exp: e, ty: Deref @ DAE::Type::T_REAL { .. } } => {
+                Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: e } => {
                     let false = (Config::modelicaOutput()?) else { bail!("pattern mismatch") };
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
                     dumpStrVoidTag((arcstr::literal!(MathMLReal)).clone())?;
@@ -2040,7 +2040,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { exp: e, ty: Deref @ DAE::Type::T_REAL { .. } } => {
+                Deref @ DAE::Exp::CAST { ty: Deref @ DAE::Type::T_REAL { .. }, exp: e } => {
                     let true = (Config::modelicaOutput()?) else { bail!("pattern mismatch") };
                     dumpExp2(e.clone())?;
                     Ok(())
@@ -2050,7 +2050,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CAST { exp: e, ty: tp } => {
+                Deref @ DAE::Exp::CAST { ty: tp, exp: e } => {
                     let mut r#str: ArcStr = arcstr::literal!("");
                     r#str = (TypesDump::unparseType(tp.clone())?).clone();
                     dumpStrOpenTag((arcstr::literal!(MathMLApply)).clone())?;
@@ -2074,7 +2074,7 @@ fn dumpExp2(mut inExp: Arc<DAE::Exp>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::ASUB { sub: subs, exp: e1 } => {
+                Deref @ DAE::Exp::ASUB { exp: e1, sub: subs } => {
                     let mut args: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     args = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -3292,7 +3292,7 @@ fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteg
             dumpVars2(xs.clone(), varno.clone(), addMMLCode.clone())?;
             ()
         },
-        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { connectorType: ct, comment, values: dae_var_attr, source, bindExp: e, varType: var_type, varDirection: dir, varKind: kind, varName: cr, .. }, tail: xs }, varno, addMMLCode) => {
+        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { varName: cr, varKind: kind, varDirection: dir, varType: var_type, bindExp: e, source, values: dae_var_attr, comment, connectorType: ct, .. }, tail: xs }, varno, addMMLCode) => {
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             let mut var_1: i32 = 0;
             dumpVariable((intString(varno.clone())).clone(), (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone(), (dumpKind(kind.clone())?).clone(), (dumpDirectionStr(dir.clone())?).clone(), (dumpTypeStr(var_type.clone())?).clone(), (getIndex(kind.clone())).clone(), (getDerName(kind.clone())?).clone(), (boolString(BackendVariable::varFixed(v.clone()))).clone(), (dumpFlowStr(ct.clone())?).clone(), (dumpStreamStr(ct.clone())?).clone(), (unparseCommentOptionNoAnnotation(comment.clone())?).clone())?;
@@ -3315,7 +3315,7 @@ fn dumpVarsAdds2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut cre
         (Deref @ metamodelica::List::Nil, _) => {
             ()
         },
-        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { connectorType: ct, comment, values: dae_var_attr, source, bindExp: e, varType: var_type, varDirection: dir, varKind: kind, varName: cr, .. }, tail: xs }, varno) => {
+        (Deref @ metamodelica::List::Cons { head: v @ BackendDAE::Var { varName: cr, varKind: kind, varDirection: dir, varType: var_type, bindExp: e, source, values: dae_var_attr, comment, connectorType: ct, .. }, tail: xs }, varno) => {
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             let mut var_1: i32 = 0;
             dumpVariable((intString(varno.clone())).clone(), (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone(), (dumpKind(kind.clone())?).clone(), (dumpDirectionStr(dir.clone())?).clone(), (dumpTypeStr(var_type.clone())?).clone(), (getIndex(kind.clone())).clone(), (getDerName(kind.clone())?).clone(), (boolString(BackendVariable::varFixed(v.clone()))).clone(), (dumpFlowStr(ct.clone())?).clone(), (dumpStreamStr(ct.clone())?).clone(), (DAEDumpTypes::dumpCommentAnnotationStr(comment.clone())?).clone())?;
@@ -3531,7 +3531,7 @@ fn dumpZcLst(mut inZeroCrossingLst: Arc<metamodelica::List<BackendDAE::ZeroCross
         (Deref @ metamodelica::List::Nil, _) => {
             ()
         },
-        (Deref @ metamodelica::List::Cons { head: BackendDAE::ZeroCrossing { occurEquLst: eq, relation_: e, .. }, tail: zcLst }, addMMLCode) => {
+        (Deref @ metamodelica::List::Cons { head: BackendDAE::ZeroCrossing { relation_: e, occurEquLst: eq, .. }, tail: zcLst }, addMMLCode) => {
             dumpStrOpenTagAttr((stringAppend((arcstr::literal!(ZERO_CROSSING)).clone(), (arcstr::literal!(ELEMENT_)).clone())).clone(), (arcstr::literal!(EXP_STRING)).clone(), (printExpStr(e.clone())?).clone())?;
             dumpExp(e.clone(), addMMLCode.clone())?;
             dumpLstIntAttr(eq.clone(), (stringAppend((arcstr::literal!(INVOLVED)).clone(), (arcstr::literal!(EQUATIONS_)).clone())).clone(), (stringAppend((arcstr::literal!(EQUATION)).clone(), (arcstr::literal!(ID_)).clone())).clone())?;
@@ -3615,7 +3615,7 @@ fn relopSymbol(mut inOperator: DAE::Operator) -> Result<ArcStr> {
 
 fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: ArcStr, mut addMathMLCode: bool) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inEquation.clone(), inIndexNumber.clone(), addMathMLCode.clone())) {
-        (Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, indexS, true) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3640,7 +3640,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3652,7 +3652,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. }, _, true) => {
+        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, _, true) => {
             let mut s: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -3676,7 +3676,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(ARRAY_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e2, left: e1, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::ARRAY_EQUATION { left: e1, right: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3688,7 +3688,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(ARRAY_OF_EQUATIONS)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. }, _, true) => {
+        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, _, true) => {
             let mut s: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
@@ -3712,7 +3712,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(COMPLEX_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e2, left: e1, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::COMPLEX_EQUATION { left: e1, right: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3724,7 +3724,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((arcstr::literal!(COMPLEX_EQUATION)).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, indexS, true) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3749,7 +3749,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(SOLVED)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e2, componentRef: cr, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cr, exp: e2, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3761,7 +3761,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(SOLVED)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: e2, left: e, .. }, tail: Deref @ metamodelica::List::Nil }, condition: e1, .. }, .. }, indexS, true) => {
+        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { condition: e1, whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: e, right: e2, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. }, indexS, true) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3793,7 +3793,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(WHEN)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: e2, left: e, .. }, tail: Deref @ metamodelica::List::Nil }, condition: e1, .. }, .. }, indexS, false) => {
+        (Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { condition: e1, whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: e, right: e2, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. }, indexS, false) => {
             let mut s1: ArcStr = arcstr::literal!("");
             let mut s2: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -3837,7 +3837,7 @@ fn dumpResidual(mut inEquation: Arc<BackendDAE::Equation>, mut inIndexNumber: Ar
             dumpStrCloseTag((stringAppend((arcstr::literal!(RESIDUAL)).clone(), (arcstr::literal!(EQUATION_)).clone())).clone())?;
             ()
         },
-        (Deref @ BackendDAE::Equation::ALGORITHM { source, alg: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, indexS, _) => {
+        (Deref @ BackendDAE::Equation::ALGORITHM { alg: Deref @ DAE::Algorithm { statementLst: stmts }, source, .. }, indexS, _) => {
             dumpStrOpenTagAttr((arcstr::literal!(ALGORITHM)).clone(), (arcstr::literal!(ID)).clone(), (indexS.clone()).clone())?;
             Print::printBuf((Util::xmlEscape((DAEDump::dumpAlgorithmsStr(list![Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: stmts.clone() }), source: source.clone() })])?).clone())?).clone())?;
             dumpStrCloseTag((arcstr::literal!(ALGORITHM)).clone())?;

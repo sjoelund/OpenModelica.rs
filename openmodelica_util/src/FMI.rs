@@ -243,12 +243,12 @@ pub fn getFMIModelIdentifier(mut inFMIInfo: Info) -> Result<ArcStr> {
 pub fn getFMIType(mut inFMIInfo: Info) -> Result<ArcStr> {
     let mut fmiType: ArcStr = arcstr::literal!("");
     fmiType = ((::match_deref::match_deref! { match &(inFMIInfo.clone()) {
-        Info { fmiType: 0, fmiVersion: Deref @ "1.0", .. } => literal!("me"),
-        Info { fmiType: 1, fmiVersion: Deref @ "1.0", .. } => literal!("cs_st"),
-        Info { fmiType: 2, fmiVersion: Deref @ "1.0", .. } => literal!("cs_tool"),
-        Info { fmiType: 1, fmiVersion: Deref @ "2.0", .. } => literal!("me"),
-        Info { fmiType: 2, fmiVersion: Deref @ "2.0", .. } => literal!("cs"),
-        Info { fmiType: 3, fmiVersion: Deref @ "2.0", .. } => literal!("me_cs"),
+        Info { fmiVersion: Deref @ "1.0", fmiType: 0, .. } => literal!("me"),
+        Info { fmiVersion: Deref @ "1.0", fmiType: 1, .. } => literal!("cs_st"),
+        Info { fmiVersion: Deref @ "1.0", fmiType: 2, .. } => literal!("cs_tool"),
+        Info { fmiVersion: Deref @ "2.0", fmiType: 1, .. } => literal!("me"),
+        Info { fmiVersion: Deref @ "2.0", fmiType: 2, .. } => literal!("cs"),
+        Info { fmiVersion: Deref @ "2.0", fmiType: 3, .. } => literal!("me_cs"),
         _ => bail!("match: no arm matched"),
     } })).clone();
     Ok(fmiType)

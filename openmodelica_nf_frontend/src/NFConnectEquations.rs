@@ -151,10 +151,10 @@ pub fn evaluateOperators(mut exp: Arc<Expression::NFExpression>, mut sets: Conne
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
         },
-        Deref @ Expression::BINARY { exp2: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp1: Deref @ Expression::CREF { .. } } if (AbsynUtil::isNamedPathIdent(Function::name(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone()), (literal!("actualStream")).clone())) => {
+        Deref @ Expression::BINARY { exp1: Deref @ Expression::CREF { .. }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } } if (AbsynUtil::isNamedPathIdent(Function::name(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone()), (literal!("actualStream")).clone())) => {
             evaluateActualStreamMul(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), listHead(var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone())?, var_field!((*exp).operator, Expression::NFExpression::BINARY).clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?
         },
-        Deref @ Expression::BINARY { exp2: Deref @ Expression::CREF { .. }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp1: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } } if (AbsynUtil::isNamedPathIdent(Function::name(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone()), (literal!("actualStream")).clone())) => {
+        Deref @ Expression::BINARY { exp1: Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } }, operator: Deref @ Operator::OPERATOR { op: Operator::Op::MUL, .. }, exp2: Deref @ Expression::CREF { .. } } if (AbsynUtil::isNamedPathIdent(Function::name(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone()), (literal!("actualStream")).clone())) => {
             evaluateActualStreamMul(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), listHead(var_field!((**call).arguments, Call::NFCall::TYPED_CALL).clone())?, var_field!((*exp).operator, Expression::NFExpression::BINARY).clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?
         },
         _ => {
@@ -407,7 +407,11 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
     equations = (::match_deref::match_deref! { match &((inside.clone(), outside.clone())) {
         (Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil) => metamodelica::nil(),
         (Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil) => metamodelica::nil(),
-        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src1, name: cr1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src2, name: cr2, .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { name: __esc_cr1, source: __esc_src1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { name: __esc_cr2, source: __esc_src2, .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+            cr1 = (*__esc_cr1).clone();
+            src1 = (*__esc_src1).clone();
+            cr2 = (*__esc_cr2).clone();
+            src2 = (*__esc_src2).clone();
             cref1 = Expression::fromCref(cr1.clone(), false)?;
             cref2 = Expression::fromCref(cr2.clone(), false)?;
             e1 = makeInStreamCall(cref2.clone())?;
@@ -415,7 +419,11 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
             list![Equation::makeEquality(cref1.clone(), e1.clone(), crate::NFType::interned_REAL(), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone()), Equation::makeEquality(cref2.clone(), e2.clone(), crate::NFType::interned_REAL(), src.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), Equation::ScalarizeMode::NO_PREFERENCE.clone())]
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src1, name: cr1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { source: src2, name: cr2, .. }, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { name: __esc_cr1, source: __esc_src1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: Deref @ Connector::CONNECTOR { name: __esc_cr2, source: __esc_src2, .. }, tail: Deref @ metamodelica::List::Nil }) => {
+            cr1 = (*__esc_cr1).clone();
+            src1 = (*__esc_src1).clone();
+            cr2 = (*__esc_cr2).clone();
+            src2 = (*__esc_src2).clone();
             src = ElementSource::mergeSources(src1.clone(), src2.clone())?;
             list![Equation::makeCrefEquality(cr1.clone(), cr2.clone(), crate::NFInstNode::InstNode::interned_EMPTY_NODE(), src.clone())?]
         },
@@ -634,9 +642,10 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut iter_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     evalExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
-            ty = Expression::typeOf(var_field!((**call).exp, Call::NFCall::TYPED_REDUCTION).clone());
-            for mut iter in &*var_field!((**call).iters, Call::NFCall::TYPED_REDUCTION).clone() {
+        Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_REDUCTION { .. } } => {
+            call = (*__esc_call).clone();
+            ty = Expression::typeOf(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone());
+            for mut iter in &*var_field!((*call).iters, Call::NFCall::TYPED_REDUCTION).clone() {
                 let mut iter = iter.clone();
                 (iter_node, iter_exp) = iter.clone();
                 if Component::variability(InstNode::component(iter_node.clone())?)? > Variability::PARAMETER.clone() {
@@ -648,8 +657,8 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
                 iters = metamodelica::cons((iter_node.clone(), iter_exp.clone()), iters.clone());
             }
             iters = metamodelica::Dangerous::listReverseInPlace(iters.clone());
-            (arg, _) = ExpandExp::expandArrayConstructor(var_field!((**call).exp, Call::NFCall::TYPED_REDUCTION).clone(), ty.clone(), iters.clone())?;
-            Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(var_field!((**call).r#fn, Call::NFCall::TYPED_REDUCTION).clone(), list![arg.clone()], var_field!((**call).var, Call::NFCall::TYPED_REDUCTION).clone(), Purity::PURE.clone(), var_field!((**call).ty, Call::NFCall::TYPED_REDUCTION).clone()) })
+            (arg, _) = ExpandExp::expandArrayConstructor(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone(), ty.clone(), iters.clone())?;
+            Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(var_field!((*call).r#fn, Call::NFCall::TYPED_REDUCTION).clone(), list![arg.clone()], var_field!((*call).var, Call::NFCall::TYPED_REDUCTION).clone(), Purity::PURE.clone(), var_field!((*call).ty, Call::NFCall::TYPED_REDUCTION).clone()) })
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -854,9 +863,19 @@ fn evaluateFlowDirection(mut flowCref: Arc<ComponentRef::NFComponentRef>, mut va
     omax = Util::applyOption(omax.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     direction = (::match_deref::match_deref! { match &((omin.clone(), omax.clone())) {
         (None, None) => 0,
-        (Some(Deref @ Expression::REAL { value: min_val }), None) => if (min_val.clone() >= metamodelica::OrderedFloat((0) as f64)) {1} else {0},
-        (None, Some(Deref @ Expression::REAL { value: max_val })) => if (max_val.clone() <= metamodelica::OrderedFloat((0) as f64)) {-1} else {0},
-        (Some(Deref @ Expression::REAL { value: min_val }), Some(Deref @ Expression::REAL { value: max_val })) => if (min_val.clone() >= metamodelica::OrderedFloat((0) as f64) && max_val.clone() >= min_val.clone()) {1} else if (max_val.clone() <= metamodelica::OrderedFloat((0) as f64) && min_val.clone() <= max_val.clone()) {-1} else {0},
+        (Some(Deref @ Expression::REAL { value: __esc_min_val }), None) => {
+            min_val = (*__esc_min_val).clone();
+            if (min_val.clone() >= metamodelica::OrderedFloat((0) as f64)) {1} else {0}
+        },
+        (None, Some(Deref @ Expression::REAL { value: __esc_max_val })) => {
+            max_val = (*__esc_max_val).clone();
+            if (max_val.clone() <= metamodelica::OrderedFloat((0) as f64)) {-1} else {0}
+        },
+        (Some(Deref @ Expression::REAL { value: __esc_min_val }), Some(Deref @ Expression::REAL { value: __esc_max_val })) => {
+            min_val = (*__esc_min_val).clone();
+            max_val = (*__esc_max_val).clone();
+            if (min_val.clone() >= metamodelica::OrderedFloat((0) as f64) && max_val.clone() >= min_val.clone()) {1} else if (max_val.clone() <= metamodelica::OrderedFloat((0) as f64) && min_val.clone() <= max_val.clone()) {-1} else {0}
+        },
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -889,13 +908,16 @@ fn associatedFlowCref(mut streamCref: Arc<ComponentRef::NFComponentRef>) -> Resu
     let mut rest_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut flow_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(streamCref.clone()) {
-        Deref @ ComponentRef::CREF { restCref: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ ComponentRef::CREF { ty: __pa0, restCref: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    rest_cr = __pa0.clone();
-    ty = __pa1.clone();
+    ty = __pa0.clone();
+    rest_cr = __pa1.clone();
     flowCref = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
-        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::CONNECTOR { flows: Deref @ metamodelica::List::Cons { head: flow_node, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => ComponentRef::prefixCref(flow_node.clone(), InstNode::getType(flow_node.clone())?, metamodelica::nil(), streamCref.clone()),
+        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::CONNECTOR { flows: Deref @ metamodelica::List::Cons { head: __esc_flow_node, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
+            flow_node = (*__esc_flow_node).clone();
+            ComponentRef::prefixCref(flow_node.clone(), InstNode::getType(flow_node.clone())?, metamodelica::nil(), streamCref.clone())
+        },
         _ => associatedFlowCref(rest_cr.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

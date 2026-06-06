@@ -251,7 +251,7 @@ pub fn string(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp1: Ar
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inExp1.clone())) {
-        (cache, env, Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: nargs, args: Deref @ metamodelica::List::Cons { head: exp1, tail: restargs } }, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "String", subscripts: _ }, .. }) => {
+        (cache, env, Deref @ Absyn::Exp::CALL { function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "String", subscripts: _ }, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: exp1, tail: restargs }, argNames: nargs }, .. }) => {
             let mut str1: ArcStr = arcstr::literal!("");
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut operNames: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
@@ -357,7 +357,7 @@ fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<A
         let __mc_input = (inTypeList.clone(), inAcc.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, .. }, tail: restArgs } }, functionAttributes: attr, funcResultType: ty, path }, tail: types }, acc) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, .. }, tail: restArgs } } }, tail: types }, acc) => {
                     let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -448,7 +448,7 @@ fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Ar
         let __mc_input = (inTypeList.clone(), inAcc.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: restArgs }, functionAttributes: attr, funcResultType: ty, path }, tail: types }, acc) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: ty, functionAttributes: attr, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, .. }, tail: restArgs } }, tail: types }, acc) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut acc = (*acc).clone();
@@ -577,11 +577,11 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut iterName: ArcStr = arcstr::literal!("");
             let mut op: Absyn::Operator = Absyn::Operator::ADD;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1 = __pa0.clone();
-            newType1 = __pa1.clone();
+            newType1 = __pa0.clone();
+            dim1 = __pa1.clone();
             op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
             iterName = (Util::getTempVariableIndex()).clone();
             foldName = (Util::getTempVariableIndex()).clone();
@@ -605,11 +605,11 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut op: Absyn::Operator = Absyn::Operator::ADD;
             op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW)])?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType2.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: _ } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim2 = __pa0.clone();
-            newType2 = __pa1.clone();
+            newType2 = __pa0.clone();
+            dim2 = __pa1.clone();
             iterName = (Util::getTempVariableIndex()).clone();
             foldName = (Util::getTempVariableIndex()).clone();
             resultName = (Util::getTempVariableIndex()).clone();
@@ -655,23 +655,23 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut zeroConstructor: Option<Arc<Values::Value>> = None;
             let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1_1 = __pa0.clone();
-            newType1_1 = __pa1.clone();
+            newType1_1 = __pa0.clone();
+            dim1_1 = __pa1.clone();
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(newType1_1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil }, ty: __pa4 } => (__pa3.clone(), __pa4.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa3, dims: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1_2 = __pa3.clone();
-            newType1 = __pa4.clone();
+            newType1 = __pa3.clone();
+            dim1_2 = __pa4.clone();
             let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Nil }, ty: __pa7 } => (__pa6.clone(), __pa7.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa6, dims: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } => (__pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim2 = __pa6.clone();
-            newType2 = __pa7.clone();
+            newType2 = __pa6.clone();
+            dim2 = __pa7.clone();
             let true = (Expression::dimensionsEqual(dim1_2.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
             foldName1 = (Util::getTempVariableIndex()).clone();
             resultName1 = (Util::getTempVariableIndex()).clone();
@@ -742,29 +742,29 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut zeroConstructor: Option<Arc<Values::Value>> = None;
             let mut zeroTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1_1 = __pa0.clone();
-            newType1_1 = __pa1.clone();
+            newType1_1 = __pa0.clone();
+            dim1_1 = __pa1.clone();
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(newType1_1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil }, ty: __pa4 } => (__pa3.clone(), __pa4.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa3, dims: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1_2 = __pa3.clone();
-            newType1 = __pa4.clone();
+            newType1 = __pa3.clone();
+            dim1_2 = __pa4.clone();
             let (__pa6, __pa7) = ::match_deref::match_deref! { match &(inType2.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa6, tail: Deref @ metamodelica::List::Nil }, ty: __pa7 } => (__pa6.clone(), __pa7.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa6, dims: Deref @ metamodelica::List::Cons { head: __pa7, tail: Deref @ metamodelica::List::Nil } } => (__pa6.clone(), __pa7.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim2_1 = __pa6.clone();
-            newType2_1 = __pa7.clone();
+            newType2_1 = __pa6.clone();
+            dim2_1 = __pa7.clone();
             let (__pa9, __pa10) = ::match_deref::match_deref! { match &(newType2_1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa9, tail: Deref @ metamodelica::List::Nil }, ty: __pa10 } => (__pa9.clone(), __pa10.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa9, dims: Deref @ metamodelica::List::Cons { head: __pa10, tail: Deref @ metamodelica::List::Nil } } => (__pa9.clone(), __pa10.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim2_2 = __pa9.clone();
-            newType2 = __pa10.clone();
+            newType2 = __pa9.clone();
+            dim2_2 = __pa10.clone();
             let true = (Expression::dimensionsEqual(dim1_2.clone(), dim2_1.clone())?) else { bail!("pattern mismatch") };
             transposed = Expression::makePureBuiltinCall((literal!("transpose")).clone(), list![inExp2.clone()], Types::liftArray(Types::liftArray(newType2.clone(), dim2_1.clone()), dim2_2.clone()));
             iterName1 = (Util::getTempVariableIndex()).clone();
@@ -823,17 +823,17 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             let mut op: Absyn::Operator = Absyn::Operator::ADD;
             op = Util::assoc(inOper.clone(), list![(openmodelica_ast::Absyn::Operator::ADD, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::ADD_EW, openmodelica_ast::Absyn::Operator::ADD_EW), (openmodelica_ast::Absyn::Operator::SUB, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::SUB_EW, openmodelica_ast::Absyn::Operator::SUB_EW), (openmodelica_ast::Absyn::Operator::MUL_EW, openmodelica_ast::Absyn::Operator::MUL_EW), (openmodelica_ast::Absyn::Operator::DIV_EW, openmodelica_ast::Absyn::Operator::DIV_EW), (openmodelica_ast::Absyn::Operator::POW_EW, openmodelica_ast::Absyn::Operator::POW_EW), (openmodelica_ast::Absyn::Operator::AND, openmodelica_ast::Absyn::Operator::AND), (openmodelica_ast::Absyn::Operator::OR, openmodelica_ast::Absyn::Operator::OR)])?;
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType1.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, ty: __pa1 } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa0, dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim1 = __pa0.clone();
-            newType1 = __pa1.clone();
+            newType1 = __pa0.clone();
+            dim1 = __pa1.clone();
             let (__pa3, __pa4) = ::match_deref::match_deref! { match &(inType2.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil }, ty: __pa4 } => (__pa3.clone(), __pa4.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa3, dims: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } => (__pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim2 = __pa3.clone();
-            newType2 = __pa4.clone();
+            newType2 = __pa3.clone();
+            dim2 = __pa4.clone();
             let true = (Expression::dimensionsEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
             foldName = (Util::getTempVariableIndex()).clone();
             resultName = (Util::getTempVariableIndex()).clone();
@@ -1334,7 +1334,7 @@ fn buildOperatorTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut 
         (Deref @ metamodelica::List::Nil, _) => {
             metamodelica::nil()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcResultType: tp, funcArg: args, .. }, tail: tps }, funcname) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcArg: args, funcResultType: tp, .. }, tail: tps }, funcname) => {
             let mut argtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
             argtypes = List::map(args.clone(), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
@@ -1658,13 +1658,13 @@ pub mod AvlTreePathPathEnv {
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
@@ -1816,8 +1816,14 @@ pub mod AvlTreePathPathEnv {
         key_comp = keyCompare(inKey.clone(), key.clone())?;
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
         (0, _) => true,
-        (1, Deref @ Tree::NODE { right: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
-        ((-1), Deref @ Tree::NODE { left: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
+        (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
+        ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1927,7 +1933,7 @@ pub mod AvlTreePathPathEnv {
 
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -1939,7 +1945,7 @@ pub mod AvlTreePathPathEnv {
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
@@ -1961,7 +1967,7 @@ pub mod AvlTreePathPathEnv {
         let mut outTree: Arc<Tree> = inTree.clone();
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -1973,7 +1979,7 @@ pub mod AvlTreePathPathEnv {
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
@@ -2011,7 +2017,11 @@ pub mod AvlTreePathPathEnv {
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
-        Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
+            left = (*__esc_left).clone();
+            right = (*__esc_right).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
@@ -2110,13 +2120,13 @@ pub mod AvlTreePathPathEnv {
     pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<Absyn::Path>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
@@ -2355,13 +2365,13 @@ pub mod AvlTreePathOperatorTypes {
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
@@ -2513,8 +2523,14 @@ pub mod AvlTreePathOperatorTypes {
         key_comp = keyCompare(inKey.clone(), key.clone())?;
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
         (0, _) => true,
-        (1, Deref @ Tree::NODE { right: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
-        ((-1), Deref @ Tree::NODE { left: tree, .. }) => hasKey(tree.clone(), inKey.clone())?,
+        (1, Deref @ Tree::NODE { right: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
+        ((-1), Deref @ Tree::NODE { left: __esc_tree, .. }) => {
+            tree = (*__esc_tree).clone();
+            hasKey(tree.clone(), inKey.clone())?
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2624,7 +2640,7 @@ pub mod AvlTreePathOperatorTypes {
 
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -2636,7 +2652,7 @@ pub mod AvlTreePathOperatorTypes {
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = metamodelica::nil();
             new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
@@ -2658,7 +2674,7 @@ pub mod AvlTreePathOperatorTypes {
         let mut outTree: Arc<Tree> = inTree.clone();
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -2670,7 +2686,7 @@ pub mod AvlTreePathOperatorTypes {
             }
             outTree.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             let mut new_value: Value = metamodelica::nil();
             (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&*(value.clone()),&*(new_value.clone()))) {
@@ -2708,7 +2724,11 @@ pub mod AvlTreePathOperatorTypes {
         outString = ((::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
-        Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
+        Deref @ Tree::NODE { left: __esc_left, right: __esc_right, .. } => {
+            left = (*__esc_left).clone();
+            right = (*__esc_right).clone();
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) }
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
@@ -2807,13 +2827,13 @@ pub mod AvlTreePathOperatorTypes {
     pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> {
         let mut lst: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>)>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::NODE { value, key, .. } => {
+        Deref @ Tree::NODE { key, value, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
-        Deref @ Tree::LEAF { value, key } => {
+        Deref @ Tree::LEAF { key, value } => {
             metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
@@ -2916,13 +2936,13 @@ fn checkOperatorFunctionOneOutput(mut ty: Arc<DAE::Type>, mut opType: Arc<DAE::T
         Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_TUPLE { .. }, .. } => {
             false
         },
-        Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, ty: ty1, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, ty: ty2, .. }, tail: _ } }, .. } => {
+        Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty2, defaultBinding: None, .. }, tail: _ } }, .. } => {
             let mut b: bool = false;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone())? || Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty2.clone()), opType.clone())?;
             checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
             b.clone()
         },
-        Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, ty: ty1, .. }, tail: _ }, .. } => {
+        Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { ty: ty1, defaultBinding: None, .. }, tail: _ }, .. } => {
             let mut b: bool = false;
             b = Types::equivtypesOrRecordSubtypeOf(Types::arrayElementType(ty1.clone()), opType.clone())?;
             checkOperatorFunctionOneOutputError(b.clone(), opType.clone(), ty.clone(), info.clone())?;
@@ -3004,7 +3024,7 @@ fn isOperatorUnaryFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
 fn getZeroConstructorExpression(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut result: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     result = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { path, functionAttributes: attr, funcArg: args, .. } => {
+        Deref @ DAE::Type::T_FUNCTION { funcArg: args, functionAttributes: attr, path, .. } => {
             result = makeCallFillRestDefaults(path.clone(), metamodelica::nil(), args.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
             result.clone()
         },

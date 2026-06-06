@@ -103,10 +103,10 @@ pub fn printStateStr(mut inState: ClassInf::State) -> ArcStr {
         ClassInf::State::TYPE_CLOCK { .. } => {
             literal!("Clock")
         },
-        ClassInf::State::HAS_RESTRICTIONS { hasConstraints: false, hasAlgorithms: false, hasEquations: false, .. } => {
+        ClassInf::State::HAS_RESTRICTIONS { hasEquations: false, hasAlgorithms: false, hasConstraints: false, .. } => {
             literal!("new def")
         },
-        ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: mut b2, hasEquations: mut b1, .. } => {
+        ClassInf::State::HAS_RESTRICTIONS { hasEquations: mut b1, hasAlgorithms: mut b2, .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("has")); __mm_s.push_str(&*if (b1.clone()) {literal!(" equations")} else {literal!("")}); __mm_s.push_str(&*if (b2.clone()) {literal!(" algorithms")} else {literal!("")}); __mm_s.push_str(&*if (b1.clone()) {literal!(" constraints")} else {literal!("")}); ArcStr::from(__mm_s) }
         },
         ClassInf::State::EXTERNAL_OBJ { .. } => {
@@ -182,7 +182,7 @@ pub fn printState(mut inState: ClassInf::State) -> Result<()> {
             Print::printBuf((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone())?;
             ()
         },
-        ClassInf::State::FUNCTION { isImpure: true, path: ref p } => {
+        ClassInf::State::FUNCTION { path: ref p, isImpure: true } => {
             Print::printBuf((literal!("IMPURE FUNCTION ")).clone())?;
             Print::printBuf((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone())?;
             ()
@@ -556,13 +556,13 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasAlgorithms: mut b2, path: ref p, .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
+        (ClassInf::State::HAS_RESTRICTIONS { path: ref p, hasAlgorithms: mut b2, hasConstraints: mut b3, .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: true, hasAlgorithms: b2.clone(), hasConstraints: b3.clone() }
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: mut b2, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
+        (ClassInf::State::HAS_RESTRICTIONS { path: ref p, hasEquations: mut b1, hasAlgorithms: mut b2, .. }, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: b1.clone(), hasAlgorithms: b2.clone(), hasConstraints: true }
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
+        (ClassInf::State::HAS_RESTRICTIONS { path: ref p, hasEquations: mut b1, hasConstraints: mut b3, .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: b1.clone(), hasAlgorithms: true, hasConstraints: b3.clone() }
         },
         (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_EXT_DECL { .. }) => {
@@ -595,13 +595,13 @@ pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction
         (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL { .. }) => (),
         (ClassInf::State::RECORD { .. }, SCode::Restriction::R_RECORD { isOperator: _ }) => (),
         (ClassInf::State::RECORD { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_RECORD { isOperator: _ }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { hasEquations: false, hasConstraints: false, hasAlgorithms: false, .. }, SCode::Restriction::R_RECORD { isOperator: _ }) => (),
         (ClassInf::State::BLOCK { .. }, SCode::Restriction::R_BLOCK { .. }) => (),
         (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL { .. }) => (),
         (ClassInf::State::CONNECTOR { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::CONNECTOR { isExpandable: false, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: false }) => (),
         (ClassInf::State::CONNECTOR { isExpandable: true, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: true }) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { hasEquations: false, hasConstraints: false, hasAlgorithms: false, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::TYPE_INTEGER { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::TYPE_REAL { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::TYPE_STRING { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
@@ -619,9 +619,9 @@ pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction
         (ClassInf::State::TYPE_ENUM { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::ENUMERATION { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::PACKAGE { .. }, SCode::Restriction::R_PACKAGE { .. }) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_PACKAGE { .. }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { hasEquations: false, hasConstraints: false, hasAlgorithms: false, .. }, SCode::Restriction::R_PACKAGE { .. }) => (),
         (ClassInf::State::FUNCTION { .. }, SCode::Restriction::R_FUNCTION { functionRestriction: _ }) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_FUNCTION { functionRestriction: _ }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { hasEquations: false, hasConstraints: false, .. }, SCode::Restriction::R_FUNCTION { functionRestriction: _ }) => (),
         (ClassInf::State::META_TUPLE { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::META_LIST { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::META_OPTION { .. }, SCode::Restriction::R_TYPE { .. }) => (),

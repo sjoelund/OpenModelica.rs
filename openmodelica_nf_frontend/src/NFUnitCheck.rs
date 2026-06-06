@@ -206,7 +206,8 @@ fn notification2(mut inLt1: Arc<metamodelica::List<(Arc<ComponentRef::NFComponen
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut t1 in (inLt1.clone()).into_iter().cloned() {
             if !((::match_deref::match_deref! { match &(t1.clone()) {
-        (cr1, Unit::Unit::MASTER { .. }) => {
+        (__esc_cr1, Unit::Unit::MASTER { .. }) => {
+            cr1 = (*__esc_cr1).clone();
             let mut b: bool = false;
             b = false;
             if '__try0: {
@@ -284,7 +285,7 @@ fn foldEquation(mut eq: Arc<Equation::NFEquation>, mut htCr2U: Arc<UnorderedMap:
 fn foldEquation2(mut eq: Arc<Equation::NFEquation>, mut dumpEqInitStruct: bool, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>> {
     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
     inconsistentUnits = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CALL { .. }, lhs: lhs @ Deref @ Expression::TUPLE { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
+        Deref @ Equation::EQUALITY { lhs: lhs @ Deref @ Expression::TUPLE { .. }, rhs: rhs @ Deref @ Expression::CALL { .. }, .. } if (!(Function::isBuiltin(Call::typedFunction(var_field!((**rhs).call, Expression::NFExpression::CALL).clone())?))) => {
             let mut icu1: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
             let mut icu2: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
             let mut fn_name: ArcStr = arcstr::literal!("");
@@ -1332,7 +1333,10 @@ fn getUnitStringFromExp(mut unitExp: Arc<Expression::NFExpression>) -> Result<Ar
     unitString = ((::match_deref::match_deref! { match &(unitExp.clone()) {
         Deref @ Expression::STRING { .. } => var_field!((*unitExp).value, Expression::NFExpression::STRING).clone(),
         Deref @ Expression::ARRAY { literal: true, .. } if (Expression::isLiteral(unitExp.clone())? && !(Type::isEmptyArray(Expression::typeOf(unitExp.clone()))?)) => getUnitStringFromExp(Expression::arrayFirstScalar(unitExp.clone())?)?,
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: exp, tail: _ }, .. } } if (Call::isNamed(var_field!((*unitExp).call, Expression::NFExpression::CALL).clone(), (literal!("fill")).clone())?) => getUnitStringFromExp(exp.clone())?,
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: __esc_exp, tail: _ }, .. } } if (Call::isNamed(var_field!((*unitExp).call, Expression::NFExpression::CALL).clone(), (literal!("fill")).clone())?) => {
+            exp = (*__esc_exp).clone();
+            getUnitStringFromExp(exp.clone())?
+        },
         _ if (!(Expression::isLiteral(unitExp.clone())?)) => {
             exp = Ceval::tryEvalExp(unitExp.clone(), Ceval::noTarget().clone());
             if (Expression::isLiteral(exp.clone())?) {getUnitStringFromExp(exp.clone())?} else {literal!("")}

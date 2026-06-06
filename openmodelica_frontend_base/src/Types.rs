@@ -596,7 +596,7 @@ pub fn getRecordPath(mut tp: Arc<DAE::Type>) -> Result<Arc<Absyn::Path>> {
 pub fn isRecordWithOnlyReals(mut tp: Arc<DAE::Type>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(tp.clone()) {
-        Deref @ DAE::Type::T_COMPLEX { varLst, complexClassType: ClassInf::State::RECORD { path: _ }, .. } => {
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, varLst, .. } => {
             List::all(List::map(varLst.clone(), (std::sync::Arc::new(getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?, (std::sync::Arc::new(fnptr!(isReal, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?
         },
         _ => {
@@ -972,7 +972,7 @@ pub fn numberOfDimensions(mut inType: Arc<DAE::Type>) -> Result<i32> {
         let __mc_input = inType.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { dims, ty: t } => {
+                Deref @ DAE::Type::T_ARRAY { ty: t, dims } => {
                     let mut n: i32 = 0;
                     n = numberOfDimensions(t.clone())?;
                     n = n.clone() + (dims.clone().len() as i32);
@@ -1012,7 +1012,7 @@ pub fn dimensionsKnown(mut inType: Arc<DAE::Type>) -> Result<bool> {
         let __mc_input = inType.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Cons { head: d, tail: dims } } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d, tail: dims }, ty: tp } => {
                     let true = (Expression::dimensionKnown(d.clone())) else { bail!("pattern mismatch") };
                     let true = (dimensionsKnown(Arc::new(DAE::Type::T_ARRAY { ty: tp.clone(), dims: dims.clone() }))?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1022,7 +1022,7 @@ pub fn dimensionsKnown(mut inType: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Nil } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Nil, ty: tp } => {
                     let true = (dimensionsKnown(tp.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1066,7 +1066,7 @@ pub fn getDimensionSizes(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica:
         let __mc_input = inType.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Cons { head: d, tail: dims } } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d, tail: dims }, ty: tp } => {
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut i: i32 = 0;
                     i = Expression::dimensionSize(d.clone())?;
@@ -1078,7 +1078,7 @@ pub fn getDimensionSizes(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Cons { head: _, tail: dims } } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: dims }, ty: tp } => {
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     res = getDimensionSizes(Arc::new(DAE::Type::T_ARRAY { ty: tp.clone(), dims: dims.clone() }))?;
                     Ok(metamodelica::cons(0, res.clone()))
@@ -1088,7 +1088,7 @@ pub fn getDimensionSizes(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica:
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: tp, dims: Deref @ metamodelica::List::Nil } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Nil, ty: tp } => {
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     res = getDimensionSizes(tp.clone())?;
                     Ok(res.clone())
@@ -1123,7 +1123,7 @@ pub fn getDimensionSizes(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica:
 pub fn getDimensionProduct(mut inType: Arc<DAE::Type>) -> Result<i32> {
     let mut sz: i32 = 0;
     sz = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_ARRAY { ty: tp, dims } => {
+        Deref @ DAE::Type::T_ARRAY { dims, ty: tp } => {
             ({
         let mut __acc: i32 = 1;
         for mut d in (dims.clone()).into_iter().cloned() {
@@ -1163,7 +1163,7 @@ pub fn getDimensionNth(mut inType: Arc<DAE::Type>, mut inDim: i32) -> Result<Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { dims, ty: t }, d) => {
+                (Deref @ DAE::Type::T_ARRAY { ty: t, dims }, d) => {
                     let mut dc: i32 = 0;
                     dc = (dims.clone().len() as i32);
                     let true = (d.clone() > dc.clone()) else { bail!("pattern mismatch") };
@@ -1188,10 +1188,10 @@ pub fn getDimensionNth(mut inType: Arc<DAE::Type>, mut inDim: i32) -> Result<Arc
 pub fn setDimensionNth(mut inType: Arc<DAE::Type>, mut inDim: Arc<DAE::Dimension>, mut inDimNth: i32) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = (::match_deref::match_deref! { match &((inType.clone(), inDimNth.clone())) {
-        (Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, 1) => {
+        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty }, 1) => {
             Arc::new(DAE::Type::T_ARRAY { ty: ty.clone(), dims: list![inDim.clone()] })
         },
-        (Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, _) => {
+        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty }, _) => {
             let mut ty = (*ty).clone();
             let true = (inDimNth.clone() > 1) else { bail!("pattern mismatch") };
             ty = setDimensionNth(ty.clone(), inDim.clone(), inDimNth.clone() - 1)?;
@@ -1289,7 +1289,7 @@ pub fn typeOfValue(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::ENUM_LITERAL { index, name: path } => {
+                Deref @ Values::Value::ENUM_LITERAL { name: path, index } => {
                     let mut path = (*path).clone();
                     path = AbsynUtil::pathPrefix(path.clone())?;
                     Ok(Arc::new(DAE::Type::T_ENUMERATION { index: Some(index.clone()), path: path.clone(), names: metamodelica::nil(), literalVarLst: metamodelica::nil(), attributeLst: metamodelica::nil() }))
@@ -1329,7 +1329,7 @@ pub fn typeOfValue(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::RECORD { index: (-1), comp: ids, orderd: vl, record_: cname } => {
+                Deref @ Values::Value::RECORD { record_: cname, orderd: vl, comp: ids, index: (-1) } => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     vars = valuesToVars(vl.clone(), ids.clone())?;
                     Ok(Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: cname.clone() }, varLst: vars.clone(), equalityConstraint: None, usedExternally: false }))
@@ -1339,7 +1339,7 @@ pub fn typeOfValue(mut inValue: Arc<Values::Value>) -> Result<Arc<DAE::Type>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::RECORD { index, comp: ids, orderd: vl, record_: cname } => {
+                Deref @ Values::Value::RECORD { record_: cname, orderd: vl, comp: ids, index } => {
                     let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut utPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let true = (index.clone() >= 0) else { bail!("pattern mismatch") };
@@ -1692,7 +1692,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: dlst1 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: dlst2 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } } }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: dlst1 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { dims: dlst2 @ Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, ty: t2 }) => {
                     let true = (Expression::dimsEqual(dlst1.clone(), dlst2.clone())?) else { bail!("pattern mismatch") };
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1702,7 +1702,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: dlst2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: dlst2 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, ty: t2 }) => {
                     let true = (Expression::dimensionsEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
                     let true = (subtype(t1.clone(), Arc::new(DAE::Type::T_ARRAY { ty: t2.clone(), dims: dlst2.clone() }), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1712,7 +1712,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: dlst1 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } } }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: dlst1 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: t2 }) => {
                     let true = (Expression::dimensionsEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
                     let true = (subtype(Arc::new(DAE::Type::T_ARRAY { ty: t1.clone(), dims: dlst1.clone() }), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1722,7 +1722,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, .. }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Type::T_ARRAY { ty: t1, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }) => {
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1731,7 +1731,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: t2, .. }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { ty: t2, .. }) => {
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1740,7 +1740,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }) => {
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1749,7 +1749,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, .. }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Type::T_ARRAY { ty: t1, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }) => {
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1758,7 +1758,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: t2, .. }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_EXP { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { ty: t2, .. }) => {
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1767,7 +1767,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: t2 }) => {
                     let true = (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
                     let true = (subtype(t1.clone(), t2.clone(), requireRecordNamesEqual.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -1785,7 +1785,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_COMPLEX { varLst: els1, complexClassType: st1, .. }, Deref @ DAE::Type::T_COMPLEX { varLst: els2, complexClassType: st2, .. }) => {
+                (Deref @ DAE::Type::T_COMPLEX { complexClassType: st1, varLst: els1, .. }, Deref @ DAE::Type::T_COMPLEX { complexClassType: st2, varLst: els2, .. }) => {
                     let true = (classTypeEqualIfRecord(st1.clone(), st2.clone()) || !(requireRecordNamesEqual.clone())) else { bail!("pattern mismatch") };
                     let true = ((els1.clone().len() as i32) == (els2.clone().len() as i32)) else { bail!("pattern mismatch") };
                     let true = (subtypeVarlist(els1.clone(), els2.clone())?) else { bail!("pattern mismatch") };
@@ -1917,7 +1917,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_FUNCTION { funcResultType: t1, funcArg: farg1, .. }, Deref @ DAE::Type::T_FUNCTION { funcResultType: t2, funcArg: farg2, .. }) => {
+                (Deref @ DAE::Type::T_FUNCTION { funcArg: farg1, funcResultType: t1, .. }, Deref @ DAE::Type::T_FUNCTION { funcArg: farg2, funcResultType: t2, .. }) => {
                     let mut tList1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut tList2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut t1 = (*t1).clone();
@@ -1973,7 +1973,7 @@ pub fn subtype(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mut req
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_METARECORD { utPath: p1, knownSingleton: b1, .. }, Deref @ DAE::Type::T_METAUNIONTYPE { path: p2, knownSingleton: b2, .. }) => {
+                (Deref @ DAE::Type::T_METARECORD { knownSingleton: b1, utPath: p1, .. }, Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: b2, path: p2, .. }) => {
                     Ok(if (AbsynUtil::pathEqual(p1.clone(), p2.clone()) && (b1.clone() || b2.clone())) {subtypeTypelist(var_field!((*inType1).typeVars, DAE::Type::T_METARECORD).clone(), var_field!((*inType2).typeVars, DAE::Type::T_METAUNIONTYPE).clone(), requireRecordNamesEqual.clone())?} else {false})
                 }
                 _ => bail!("nomatch"),
@@ -2084,7 +2084,7 @@ fn subtypeVarlist(mut inVarLst1: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inV
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (l, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { ty: t2, name: n, .. }, tail: vs }) => {
+                (l, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: n, ty: t2, .. }, tail: vs }) => {
                     let mut t1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let __pa0 = ::match_deref::match_deref! { match &(varlistLookup(l.clone(), (n.clone()).clone())?) {
                         Deref @ DAE::Var { ty: __pa0, .. } => __pa0.clone(),
@@ -2166,7 +2166,7 @@ pub fn lookupComponent(mut inType: Arc<DAE::Type>, mut inIdent: ArcStr) -> Resul
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { varLst: cs, .. }, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, id) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_COMPLEX { varLst: cs, .. } }, id) => {
                     let mut v: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
                     v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
                     assign_field!(v.ty = Arc::new(DAE::Type::T_ARRAY { ty: v.ty.clone(), dims: list![dim.clone()] }));
@@ -2177,7 +2177,7 @@ pub fn lookupComponent(mut inType: Arc<DAE::Type>, mut inIdent: ArcStr) -> Resul
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_SUBTYPE_BASIC { varLst: cs, .. }, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, id) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_SUBTYPE_BASIC { varLst: cs, .. } }, id) => {
                     let mut v: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
                     v = lookupComponent2(cs.clone(), (id.clone()).clone())?;
                     assign_field!(v.ty = Arc::new(DAE::Type::T_ARRAY { ty: v.ty.clone(), dims: list![dim.clone()] }));
@@ -2443,7 +2443,7 @@ pub fn liftArrayRight(mut inType: Arc<DAE::Type>, mut inIntegerOption: Arc<DAE::
         let __mc_input = (inType.clone(), inIntegerOption.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, d) => {
+                (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty }, d) => {
                     let mut ty_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     ty_1 = liftArrayRight(ty.clone(), d.clone())?;
                     Ok(Arc::new(DAE::Type::T_ARRAY { ty: ty_1.clone(), dims: list![dim.clone()] }))
@@ -2504,7 +2504,7 @@ pub fn unliftArrayOrList(mut inType: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, 
         Deref @ DAE::Type::T_METAARRAY { ty } => {
             (boxIfUnboxedType(ty.clone())?, openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN())
         },
-        Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: __esc_dim, tail: Deref @ metamodelica::List::Nil } } => {
+        Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __esc_dim, tail: Deref @ metamodelica::List::Nil }, ty } => {
             dim = (*__esc_dim).clone();
             (ty.clone(), dim.clone())
         },
@@ -2654,10 +2654,10 @@ pub fn makeEnumerationType(mut inPath: Arc<Absyn::Path>, mut inType: Arc<DAE::Ty
         let __mc_input = inType.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { attributeLst: attrs, literalVarLst: vars, names, path: p, index: None } => {
+                Deref @ DAE::Type::T_ENUMERATION { index: None, path: p, names, literalVarLst: vars, attributeLst: attrs } => {
                     let mut attr_names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut attrs = (*attrs).clone();
                     let mut vars = (*vars).clone();
+                    let mut attrs = (*attrs).clone();
                     vars = makeEnumerationType1(p.clone(), vars.clone(), names.clone(), 1)?;
                     attr_names = List::map(vars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
                     attrs = makeEnumerationType1(p.clone(), attrs.clone(), attr_names.clone(), 1)?;
@@ -2743,7 +2743,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         let __mc_input = tp.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2751,7 +2751,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2759,7 +2759,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_REAL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2777,7 +2777,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { fixed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2785,7 +2785,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2793,7 +2793,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_INTEGER { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2811,7 +2811,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { fixed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::VALBOUND { valBound: Deref @ Values::Value::BOOL { boolean: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2819,7 +2819,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { evaluatedExp: Some(Deref @ Values::Value::BOOL { boolean: fixed }), .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2827,7 +2827,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, name: Deref @ "fixed", .. }, tail: _ } } => {
+                Deref @ DAE::Type::T_BOOL { varLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: Deref @ "fixed", binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::BCONST { bool: fixed }, .. }, .. }, tail: _ } } => {
                     Ok(fixed.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2861,7 +2861,7 @@ pub fn getFixedVarAttribute(mut tp: Arc<DAE::Type>) -> Result<bool> {
 pub fn getConnectorVars(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
     let mut outVars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
     outVars = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_COMPLEX { varLst: vars, complexClassType: ClassInf::State::CONNECTOR { .. }, .. } => {
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::CONNECTOR { .. }, varLst: vars, .. } => {
             vars.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -3001,7 +3001,7 @@ pub fn getBindingExp(mut inVar: Arc<DAE::Var>, mut inPath: Arc<Absyn::Path>) -> 
         Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp, .. }, .. } => {
             exp.clone()
         },
-        Deref @ DAE::Var { binding: Deref @ DAE::Binding::UNBOUND { .. }, name, .. } => {
+        Deref @ DAE::Var { name, binding: Deref @ DAE::Binding::UNBOUND { .. }, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Record '")); __mm_s.push_str(&*AbsynUtil::pathString(inPath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("' member '")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("' has no default value and is not modifiable by a constructor function.\n")); ArcStr::from(__mm_s) }).clone();
             Error::addCompilerWarning((r#str.clone()).clone())?;
@@ -3021,7 +3021,7 @@ pub fn makeFargsList(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result
 fn makeFarg(mut variable: Arc<DAE::Var>) -> Result<Arc<DAE::FuncArg>> {
     let mut farg: Arc<DAE::FuncArg> = Arc::new(<DAE::FuncArg as ::std::default::Default>::default());
     farg = (::match_deref::match_deref! { match &(variable.clone()) {
-        Deref @ DAE::Var { binding: bnd, ty, attributes: Deref @ DAE::Attributes { parallelism: par, variability: var, .. }, name: n, .. } => {
+        Deref @ DAE::Var { name: n, attributes: Deref @ DAE::Attributes { variability: var, parallelism: par, .. }, ty, binding: bnd, .. } => {
             let mut c: DAE::Const = DAE::Const::C_CONST;
             let mut p: DAE::VarParallelism = DAE::VarParallelism::NON_PARALLEL;
             let mut oexp: Option<Arc<DAE::Exp>> = None;
@@ -3110,7 +3110,7 @@ fn makeReturnTypeSingle(mut inVar: Arc<DAE::Var>) -> Result<Arc<DAE::Type>> {
 
 pub fn isParameterVar(mut inVar: Arc<DAE::Var>) -> Result<()> {
     ::match_deref::match_deref! { match &(inVar.clone()) {
-        Deref @ DAE::Var { attributes: Deref @ DAE::Attributes { visibility: SCode::Visibility::PUBLIC { .. }, variability: SCode::Variability::PARAM { .. }, .. }, .. } => (),
+        Deref @ DAE::Var { attributes: Deref @ DAE::Attributes { variability: SCode::Variability::PARAM { .. }, visibility: SCode::Visibility::PUBLIC { .. }, .. }, .. } => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -3429,11 +3429,11 @@ pub fn propTupleFirstProp(mut inTupleProp: DAE::Properties) -> Result<DAE::Prope
     let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inTupleProp.clone()) {
-        DAE::Properties::PROP_TUPLE { tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::TupleConst::SINGLE_CONST { r#const: __pa0 }, tail: _ } }, type_: Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: __pa1, tail: _ }, .. } } => (__pa0.clone(), __pa1.clone()),
+        DAE::Properties::PROP_TUPLE { type_: Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, .. }, tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::TupleConst::SINGLE_CONST { r#const: __pa1 }, tail: _ } } } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
-    c = __pa0.clone();
-    ty = __pa1.clone();
+    ty = __pa0.clone();
+    c = __pa1.clone();
     outFirstProp = DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() };
     Ok(outFirstProp)
 }
@@ -3441,7 +3441,7 @@ pub fn propTupleFirstProp(mut inTupleProp: DAE::Properties) -> Result<DAE::Prope
 pub fn propTuplePropList(mut prop_tuple: DAE::Properties) -> Result<Arc<metamodelica::List<DAE::Properties>>> {
     let mut prop_list: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     prop_list = (::match_deref::match_deref! { match &(prop_tuple.clone()) {
-        DAE::Properties::PROP_TUPLE { tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: cl }, type_: Deref @ DAE::Type::T_TUPLE { types: tl, .. } } => {
+        DAE::Properties::PROP_TUPLE { type_: Deref @ DAE::Type::T_TUPLE { types: tl, .. }, tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: cl } } => {
             let mut pl: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
             pl = propTuplePropList2(tl.clone(), cl.clone())?;
             pl.clone()
@@ -3858,17 +3858,17 @@ pub fn typesElabEquivalent(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Ty
 fn ttypesElabEquivalent(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>) -> Result<bool> {
     let mut isEqual: bool = false;
     isEqual = (::match_deref::match_deref! { match &((inType1.clone(), inType2.clone())) {
-        (Deref @ DAE::Type::T_COMPLEX { varLst: vars1, complexClassType: cty1, .. }, Deref @ DAE::Type::T_COMPLEX { varLst: vars2, complexClassType: cty2, .. }) => {
+        (Deref @ DAE::Type::T_COMPLEX { complexClassType: cty1, varLst: vars1, .. }, Deref @ DAE::Type::T_COMPLEX { complexClassType: cty2, varLst: vars2, .. }) => {
             let true = (AbsynUtil::pathEqual(ClassInfUtil::getStateName(cty1.clone()), ClassInfUtil::getStateName(cty2.clone()))) else { bail!("pattern mismatch") };
             let true = (List::isEqualOnTrue(vars1.clone(), vars2.clone(), (std::sync::Arc::new(varsElabEquivalent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::Var>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
             true
         },
-        (Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: ad1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: ad2, tail: Deref @ metamodelica::List::Nil } }) => {
+        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: ad1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: ad2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
             let true = (ad1.clone() == ad2.clone()) else { bail!("pattern mismatch") };
             let true = (typesElabEquivalent(ty1.clone(), ty2.clone())) else { bail!("pattern mismatch") };
             true
         },
-        (Deref @ DAE::Type::T_ENUMERATION { names: names1, path: p1, .. }, Deref @ DAE::Type::T_ENUMERATION { names: names2, path: p2, .. }) => {
+        (Deref @ DAE::Type::T_ENUMERATION { path: p1, names: names1, .. }, Deref @ DAE::Type::T_ENUMERATION { path: p2, names: names2, .. }) => {
             let true = (AbsynUtil::pathEqual(p1.clone(), p2.clone())) else { bail!("pattern mismatch") };
             let true = (List::isEqualOnTrue(names1.clone(), names2.clone(), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
             true
@@ -3893,7 +3893,7 @@ fn varsElabEquivalent(mut inVar1: Arc<DAE::Var>, mut inVar2: Arc<DAE::Var>) -> R
         let __mc_input = (inVar1.clone(), inVar2.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Var { ty: ty1, name: id1, .. }, Deref @ DAE::Var { ty: ty2, name: id2, .. }) => {
+                (Deref @ DAE::Var { name: id1, ty: ty1, .. }, Deref @ DAE::Var { name: id2, ty: ty2, .. }) => {
                     let true = (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     let true = (typesElabEquivalent(ty1.clone(), ty2.clone())) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -3921,7 +3921,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
         let __mc_input = (inExp.clone(), inActualType.clone(), inExpectedType.clone(), printFailtrace.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP { constFlag: c1, type_: gt }, DAE::Properties::PROP { constFlag: c2, type_: et }, _) => {
+                (e, DAE::Properties::PROP { type_: gt, constFlag: c1 }, DAE::Properties::PROP { type_: et, constFlag: c2 }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
@@ -3934,7 +3934,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP_TUPLE { tupleConst: tc1, type_: gt }, DAE::Properties::PROP_TUPLE { tupleConst: tc2, type_: et }, _) => {
+                (e, DAE::Properties::PROP_TUPLE { type_: gt, tupleConst: tc1 }, DAE::Properties::PROP_TUPLE { type_: et, tupleConst: tc2 }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut tc: TupleConst = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
@@ -3947,7 +3947,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP_TUPLE { tupleConst: tc1, type_: gt @ Deref @ DAE::Type::T_TUPLE { .. } }, DAE::Properties::PROP { constFlag: c2, type_: et @ Deref @ DAE::Type::T_METATUPLE { .. } }, _) => {
+                (e, DAE::Properties::PROP_TUPLE { type_: gt @ Deref @ DAE::Type::T_TUPLE { .. }, tupleConst: tc1 }, DAE::Properties::PROP { type_: et @ Deref @ DAE::Type::T_METATUPLE { .. }, constFlag: c2 }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
@@ -3963,7 +3963,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, DAE::Properties::PROP_TUPLE { tupleConst: tc1, type_: gt @ Deref @ DAE::Type::T_TUPLE { .. } }, DAE::Properties::PROP { constFlag: c2, type_: et @ Deref @ DAE::Type::T_METABOXED { .. } }, _) => {
+                (e, DAE::Properties::PROP_TUPLE { type_: gt @ Deref @ DAE::Type::T_TUPLE { .. }, tupleConst: tc1 }, DAE::Properties::PROP { type_: et @ Deref @ DAE::Type::T_METABOXED { .. }, constFlag: c2 }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
@@ -4158,11 +4158,11 @@ fn vectorizableType2(mut inExp: Arc<DAE::Exp>, mut inExpType: Arc<DAE::Type>, mu
         }
         Err(_) => {
             let (__pa1, __pa2) = ::match_deref::match_deref! { match &(inCurrentType.clone()) {
-                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }, ty: __pa2 } => (__pa1.clone(), __pa2.clone()),
+                Deref @ DAE::Type::T_ARRAY { ty: __pa1, dims: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } => (__pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            dim = __pa1.clone();
-            cur_type = __pa2.clone();
+            cur_type = __pa1.clone();
+            dim = __pa2.clone();
             (outExp, outType, outDims, outBindings) = vectorizableType2(inExp.clone(), inExpType.clone(), cur_type.clone(), metamodelica::cons(dim.clone(), inDims.clone()), inExpectedType.clone(), fnPath.clone())?;
         }
     }
@@ -4292,7 +4292,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::ARRAY { array: elist, .. }, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, ty0 @ Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::ARRAY { array: elist, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, ty0 @ Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut elist_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut sc: bool = false;
@@ -4309,7 +4309,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::ARRAY { array: elist, .. }, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::ARRAY { array: elist, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut elist_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut sc: bool = false;
                     let mut a: bool = false;
@@ -4332,7 +4332,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::RANGE { stop, step: Some(step), start: begin, .. }, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::RANGE { start: begin, step: Some(step), stop, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut begin_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut step_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4349,7 +4349,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::RANGE { stop, step: None, start: begin, .. }, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::RANGE { start: begin, step: None, stop, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut begin_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut stop_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4364,7 +4364,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::MATRIX { matrix: ell, integer: nmax, .. }, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil } }, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, ty0 @ Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil } }, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::MATRIX { integer: nmax, matrix: ell, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil }, ty: t1 } }, ty0 @ Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil }, ty: t2 } }) => {
                     let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ell_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
                     let true = (Expression::dimensionsKnownAndEqual(dim1.clone(), dim2.clone())?) else { bail!("pattern mismatch") };
@@ -4378,7 +4378,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::MATRIX { matrix: ell, integer: nmax, .. }, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil } }, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil } }, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (Deref @ DAE::Exp::MATRIX { integer: nmax, matrix: ell, .. }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim11, tail: Deref @ metamodelica::List::Nil }, ty: t1 } }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim22, tail: Deref @ metamodelica::List::Nil }, ty: t2 } }) => {
                     if !((!(Expression::dimensionKnown(dim2.clone())))) { bail!("guard") }
                     let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
@@ -4394,7 +4394,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (e, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut t_2: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4409,7 +4409,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
+                (e, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (e_1, t_1) = typeConvert(e.clone(), ty1.clone(), ty2.clone(), printFailtrace.clone())?;
@@ -4421,7 +4421,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
+                (e, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (e_1, t_1) = typeConvert(e.clone(), ty1.clone(), ty2.clone(), printFailtrace.clone())?;
@@ -4433,7 +4433,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, Deref @ DAE::Type::T_ARRAY { ty: ty1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: ty2, dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil } }) => {
+                (e, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: ty1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim2, tail: Deref @ metamodelica::List::Nil }, ty: ty2 }) => {
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let false = (Expression::dimensionKnown(dim1.clone())) else { bail!("pattern mismatch") };
@@ -4458,7 +4458,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (exp @ Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_INTEGER { .. }, t2 @ Deref @ DAE::Type::T_ENUMERATION { names: l, path: tp, .. }) => {
+                (exp @ Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_INTEGER { .. }, t2 @ Deref @ DAE::Type::T_ENUMERATION { path: tp, names: l, .. }) => {
                     let mut name: ArcStr = arcstr::literal!("");
                     let mut tp = (*tp).clone();
                     let true = (Config::intEnumConversion()?) else { bail!("pattern mismatch") };
@@ -4502,7 +4502,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, Deref @ DAE::Type::T_COMPLEX { varLst: els1, complexClassType: ClassInf::State::RECORD { path: p1 }, .. }, t2 @ Deref @ DAE::Type::T_COMPLEX { varLst: els2, complexClassType: ClassInf::State::RECORD { path: p2 }, .. }) => {
+                (e, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: p1 }, varLst: els1, .. }, t2 @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: p2 }, varLst: els2, .. }) => {
                     let mut e = (*e).clone();
                     let false = (AbsynUtil::pathEqual(p1.clone(), p2.clone())) else { bail!("pattern mismatch") };
                     let true = (Flags::isSet(Flags::ALLOW_RECORD_TOO_MANY_FIELDS.clone())? || (els1.clone().len() as i32) == (els2.clone().len() as i32)) else { bail!("pattern mismatch") };
@@ -4730,7 +4730,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CALL { expLst: elist, path: path1, .. }, t1 @ Deref @ DAE::Type::T_COMPLEX { varLst: v, complexClassType: ClassInf::State::RECORD { path: path2 }, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
+                (Deref @ DAE::Exp::CALL { path: path1, expLst: elist, .. }, t1 @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path2 }, varLst: v, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tys1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -4752,7 +4752,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::RECORD { exps: elist, path: path1, .. }, t1 @ Deref @ DAE::Type::T_COMPLEX { varLst: v, complexClassType: ClassInf::State::RECORD { path: path2 }, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
+                (Deref @ DAE::Exp::RECORD { path: path1, exps: elist, .. }, t1 @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path2 }, varLst: v, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tys1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -4774,7 +4774,7 @@ fn typeConvert(mut inExp1: Arc<DAE::Exp>, mut actual: Arc<DAE::Type>, mut expect
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { componentRef: cref, ty: _ }, t1 @ Deref @ DAE::Type::T_COMPLEX { varLst: v, complexClassType: ClassInf::State::RECORD { path }, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
+                (Deref @ DAE::Exp::CREF { componentRef: cref, ty: _ }, t1 @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path }, varLst: v, .. }, Deref @ DAE::Type::T_METABOXED { ty: t2 }) => {
                     let mut elist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tys1: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -5042,7 +5042,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil } } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, havereal) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: t2 }, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
@@ -5057,7 +5057,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: t1 }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: 1 }, tail: Deref @ metamodelica::List::Nil } } }, havereal) => {
+                (DAE::Properties::PROP { type_: t1, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: 1 }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t1.clone())) else { bail!("pattern mismatch") };
@@ -5071,7 +5071,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: t1 }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_ENUM { size: 1, .. }, tail: Deref @ metamodelica::List::Nil } } }, havereal) => {
+                (DAE::Properties::PROP { type_: t1, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_ENUM { size: 1, .. }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t1.clone())) else { bail!("pattern mismatch") };
@@ -5085,7 +5085,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: t1 }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_ARRAY { ty: t2, dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil } } }, havereal) => {
+                (DAE::Properties::PROP { type_: t1, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t2 }, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t1.clone())) else { bail!("pattern mismatch") };
@@ -5099,7 +5099,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: 1 }, tail: Deref @ metamodelica::List::Nil } } }, DAE::Properties::PROP { constFlag: c2, type_: t2 }, havereal) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: 1 }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, constFlag: c1 }, DAE::Properties::PROP { type_: t2, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t2.clone())) else { bail!("pattern mismatch") };
@@ -5113,7 +5113,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_ENUM { size: 1, .. }, tail: Deref @ metamodelica::List::Nil } } }, DAE::Properties::PROP { constFlag: c2, type_: t2 }, havereal) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_ENUM { size: 1, .. }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, constFlag: c1 }, DAE::Properties::PROP { type_: t2, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t2.clone())) else { bail!("pattern mismatch") };
@@ -5127,7 +5127,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_ARRAY { ty: t1, dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil } } }, DAE::Properties::PROP { constFlag: c2, type_: t2 }, havereal) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim @ Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: t1 }, constFlag: c1 }, DAE::Properties::PROP { type_: t2, constFlag: c2 }, havereal) => {
                     let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t2.clone())) else { bail!("pattern mismatch") };
@@ -5141,7 +5141,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: t1 }, DAE::Properties::PROP { constFlag: c2, type_: t2 }, false) => {
+                (DAE::Properties::PROP { type_: t1, constFlag: c1 }, DAE::Properties::PROP { type_: t2, constFlag: c2 }, false) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     let false = (isArray(t1.clone())) else { bail!("pattern mismatch") };
                     let false = (isArray(t2.clone())) else { bail!("pattern mismatch") };
@@ -5154,7 +5154,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: t @ Deref @ DAE::Type::T_ENUMERATION { .. } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_ENUMERATION { .. } }, false) => {
+                (DAE::Properties::PROP { type_: t @ Deref @ DAE::Type::T_ENUMERATION { .. }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ENUMERATION { .. }, constFlag: c2 }, false) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     c = constAnd(c1.clone(), c2.clone());
                     Ok(DAE::Properties::PROP { type_: t.clone(), constFlag: c.clone() })
@@ -5164,7 +5164,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_REAL { varLst: v } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_REAL { .. } }, true) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_REAL { varLst: v }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_REAL { .. }, constFlag: c2 }, true) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     c = constAnd(c1.clone(), c2.clone());
                     Ok(DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_REAL { varLst: v.clone() }), constFlag: c.clone() })
@@ -5174,7 +5174,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_INTEGER { .. } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_REAL { varLst: v } }, true) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_INTEGER { .. }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_REAL { varLst: v }, constFlag: c2 }, true) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     c = constAnd(c1.clone(), c2.clone());
                     Ok(DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_REAL { varLst: v.clone() }), constFlag: c.clone() })
@@ -5184,7 +5184,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_REAL { varLst: v } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_INTEGER { .. } }, true) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_REAL { varLst: v }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_INTEGER { .. }, constFlag: c2 }, true) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     c = constAnd(c1.clone(), c2.clone());
                     Ok(DAE::Properties::PROP { type_: Arc::new(DAE::Type::T_REAL { varLst: v.clone() }), constFlag: c.clone() })
@@ -5194,7 +5194,7 @@ pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: D
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (DAE::Properties::PROP { constFlag: c1, type_: Deref @ DAE::Type::T_INTEGER { .. } }, DAE::Properties::PROP { constFlag: c2, type_: Deref @ DAE::Type::T_INTEGER { .. } }, true) => {
+                (DAE::Properties::PROP { type_: Deref @ DAE::Type::T_INTEGER { .. }, constFlag: c1 }, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_INTEGER { .. }, constFlag: c2 }, true) => {
                     let mut c: Const = DAE::Const::C_CONST;
                     c = constAnd(c1.clone(), c2.clone());
                     Ok(DAE::Properties::PROP { type_: DAE::T_REAL_DEFAULT().clone(), constFlag: c.clone() })
@@ -5313,7 +5313,7 @@ pub fn constIsConst(mut c: DAE::Const) -> bool {
 pub fn printPropStr(mut inProperties: DAE::Properties) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inProperties.clone() {
-        DAE::Properties::PROP { constFlag: mut r#const, type_: ref ty } => {
+        DAE::Properties::PROP { type_: ref ty, constFlag: mut r#const } => {
             let mut ty_str: ArcStr = arcstr::literal!("");
             let mut const_str: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -5322,7 +5322,7 @@ pub fn printPropStr(mut inProperties: DAE::Properties) -> Result<ArcStr> {
             res = stringAppendList(list![(literal!("DAE.PROP(")).clone(), (ty_str.clone()).clone(), (literal!(", ")).clone(), (const_str.clone()).clone(), (literal!(")")).clone()]);
             res.clone()
         },
-        DAE::Properties::PROP_TUPLE { tupleConst: ref tconst, type_: ref ty } => {
+        DAE::Properties::PROP_TUPLE { type_: ref ty, tupleConst: ref tconst } => {
             let mut ty_str: ArcStr = arcstr::literal!("");
             let mut const_str: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
@@ -5358,7 +5358,7 @@ pub fn flowVariables(mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { ty, attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. }, name: id, .. }, tail: vs }, cr) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: id, attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. }, ty, .. }, tail: vs }, cr) => {
                     let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut res: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -5401,7 +5401,7 @@ pub fn streamVariables(mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { ty, attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::STREAM { .. }, .. }, name: id, .. }, tail: vs }, cr) => {
+                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: id, attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::STREAM { .. }, .. }, ty, .. }, tail: vs }, cr) => {
                     let mut cr_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut res: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -5482,7 +5482,7 @@ fn getAllExpsTt(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { attributeLst: attrs, literalVarLst: vars, .. } => {
+                Deref @ DAE::Type::T_ENUMERATION { literalVarLst: vars, attributeLst: attrs, .. } => {
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut tyexps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exps = getAllExpsVars(vars.clone())?;
@@ -5519,7 +5519,7 @@ fn getAllExpsTt(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, funcArg: fargs, .. } => {
+                Deref @ DAE::Type::T_FUNCTION { funcArg: fargs, funcResultType: ty, .. } => {
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut tyexps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut explists: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
@@ -5645,7 +5645,7 @@ fn getAllExpsVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Ar
 fn getAllExpsVar(mut inVar: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExpExpLst = (::match_deref::match_deref! { match &(inVar.clone()) {
-        Deref @ DAE::Var { binding: bnd, ty, .. } => {
+        Deref @ DAE::Var { ty, binding: bnd, .. } => {
             let mut tyexps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut bndexp: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -6020,7 +6020,7 @@ pub fn superType(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>) -> Re
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_METARECORD { utPath: path1, knownSingleton: false, .. }, Deref @ DAE::Type::T_METARECORD { utPath: path2, knownSingleton: false, .. }) => {
+                (Deref @ DAE::Type::T_METARECORD { knownSingleton: false, utPath: path1, .. }, Deref @ DAE::Type::T_METARECORD { knownSingleton: false, utPath: path2, .. }) => {
                     let true = (AbsynUtil::pathEqual(path1.clone(), path2.clone())) else { bail!("pattern mismatch") };
                     Ok(Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inType1).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: false, singletonType: openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON(), path: path1.clone() }))
                 }
@@ -6464,31 +6464,40 @@ fn getAllInnerTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in
             outTypes = metamodelica::cons(t.clone(), outTypes.clone());
         }
         tys = (::match_deref::match_deref! { match &(t.clone()) {
-        Deref @ DAE::Type::T_ARRAY { ty, .. } => {
+        Deref @ DAE::Type::T_ARRAY { ty: __esc_ty, .. } => {
+            ty = (*__esc_ty).clone();
             list![ty.clone()]
         },
-        Deref @ DAE::Type::T_METALIST { ty } => {
+        Deref @ DAE::Type::T_METALIST { ty: __esc_ty } => {
+            ty = (*__esc_ty).clone();
             list![ty.clone()]
         },
-        Deref @ DAE::Type::T_METAARRAY { ty } => {
+        Deref @ DAE::Type::T_METAARRAY { ty: __esc_ty } => {
+            ty = (*__esc_ty).clone();
             list![ty.clone()]
         },
-        Deref @ DAE::Type::T_METABOXED { ty } => {
+        Deref @ DAE::Type::T_METABOXED { ty: __esc_ty } => {
+            ty = (*__esc_ty).clone();
             list![ty.clone()]
         },
-        Deref @ DAE::Type::T_METAOPTION { ty } => {
+        Deref @ DAE::Type::T_METAOPTION { ty: __esc_ty } => {
+            ty = (*__esc_ty).clone();
             list![ty.clone()]
         },
-        Deref @ DAE::Type::T_TUPLE { types: tys, .. } => {
+        Deref @ DAE::Type::T_TUPLE { types: __esc_tys, .. } => {
+            tys = (*__esc_tys).clone();
             tys.clone()
         },
-        Deref @ DAE::Type::T_METATUPLE { types: tys } => {
+        Deref @ DAE::Type::T_METATUPLE { types: __esc_tys } => {
+            tys = (*__esc_tys).clone();
             tys.clone()
         },
-        Deref @ DAE::Type::T_METAUNIONTYPE { typeVars: tys, .. } => {
+        Deref @ DAE::Type::T_METAUNIONTYPE { typeVars: __esc_tys, .. } => {
+            tys = (*__esc_tys).clone();
             tys.clone()
         },
-        Deref @ DAE::Type::T_METARECORD { fields, typeVars: tys, .. } => {
+        Deref @ DAE::Type::T_METARECORD { typeVars: __esc_tys, fields, .. } => {
+            tys = (*__esc_tys).clone();
             listAppend(tys.clone(), List::map(fields.clone(), (std::sync::Arc::new(getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?)
         },
         Deref @ DAE::Type::T_COMPLEX { varLst: fields, .. } => {
@@ -6497,7 +6506,8 @@ fn getAllInnerTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in
         Deref @ DAE::Type::T_SUBTYPE_BASIC { varLst: fields, .. } => {
             List::map(fields.clone(), (std::sync::Arc::new(getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?
         },
-        Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, funcArg: funcArgs, .. } => {
+        Deref @ DAE::Type::T_FUNCTION { funcArg: funcArgs, funcResultType: __esc_ty, .. } => {
+            ty = (*__esc_ty).clone();
             metamodelica::cons(ty.clone(), List::map(funcArgs.clone(), (std::sync::Arc::new(funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?)
         },
         _ => {
@@ -6671,7 +6681,7 @@ pub fn getRealOrIntegerDimensions(mut inType: Arc<DAE::Type>) -> Result<Arc<meta
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
             getRealOrIntegerDimensions(ty.clone())?
         },
-        Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: d @ Deref @ DAE::Dimension::DIM_INTEGER { integer: _ }, tail: Deref @ metamodelica::List::Nil } } => {
+        Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d @ Deref @ DAE::Dimension::DIM_INTEGER { integer: _ }, tail: Deref @ metamodelica::List::Nil }, ty } => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             dims = getRealOrIntegerDimensions(ty.clone())?;
             metamodelica::cons(d.clone(), dims.clone())
@@ -7894,7 +7904,7 @@ pub fn typeToValue(mut inType: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ENUMERATION { path, index: iOpt, .. } => {
+                Deref @ DAE::Type::T_ENUMERATION { index: iOpt, path, .. } => {
                     let mut i: i32 = 0;
                     i = optInteger(iOpt.clone());
                     Ok(Arc::new(Values::Value::ENUM_LITERAL { name: path.clone(), index: i.clone() }))
@@ -7904,7 +7914,7 @@ pub fn typeToValue(mut inType: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_COMPLEX { varLst: vars, complexClassType: st, .. } => {
+                Deref @ DAE::Type::T_COMPLEX { complexClassType: st, varLst: vars, .. } => {
                     let mut comp: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut ordered: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -7927,7 +7937,7 @@ pub fn typeToValue(mut inType: Arc<DAE::Type>) -> Result<Arc<Values::Value>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_ARRAY { ty: t, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil } } => {
+                Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil }, ty: t } => {
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut valueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     v = typeToValue(t.clone())?;
@@ -7990,7 +8000,7 @@ pub fn varsToValues(mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Res
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { ty: tp, name: id, .. }, tail: rest } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: id, ty: tp, .. }, tail: rest } => {
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut restVals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut restIds: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -8199,7 +8209,7 @@ fn makeDummyExpFromType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
         Deref @ DAE::Type::T_ENUMERATION { .. } => {
             getNthEnumLiteral(inType.clone(), 1)?
         },
-        Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil }, ty } => {
+        Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } } => {
             let mut idim: i32 = 0;
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -8236,7 +8246,7 @@ pub fn isUnknownType(mut inType: Arc<DAE::Type>) -> bool {
 pub fn isOverdeterminedType(mut inType: Arc<DAE::Type>) -> Result<bool> {
     let mut outIsOverdetermined: bool = false;
     outIsOverdetermined = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_COMPLEX { equalityConstraint: Some(_), complexClassType: cct, .. } => {
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: cct, equalityConstraint: Some(_), .. } => {
             ClassInfUtil::isTypeOrRecord(cct.clone())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { equalityConstraint: Some(_), .. } => {
@@ -8283,15 +8293,15 @@ pub fn ifExpMakeDimsUnknown(mut ty1: Arc<DAE::Type>, mut ty2: Arc<DAE::Type>) ->
     let mut oty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut oty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     (oty1, oty2) = (::match_deref::match_deref! { match &((ty1.clone(), ty2.clone())) {
-        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
+        (Deref @ DAE::Type::T_ARRAY { ty: inner1, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: inner2, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
             (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }))
         },
-        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
+        (Deref @ DAE::Type::T_ARRAY { ty: inner1, dims: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: inner2, dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil } }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
             (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: metamodelica::cons(openmodelica_frontend_types::DAE::Dimension::interned_DIM_UNKNOWN(), metamodelica::nil()) }))
         },
-        (Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d1, tail: Deref @ metamodelica::List::Nil }, ty: inner1 }, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d2, tail: Deref @ metamodelica::List::Nil }, ty: inner2 }) => {
+        (Deref @ DAE::Type::T_ARRAY { ty: inner1, dims: Deref @ metamodelica::List::Cons { head: d1, tail: Deref @ metamodelica::List::Nil } }, Deref @ DAE::Type::T_ARRAY { ty: inner2, dims: Deref @ metamodelica::List::Cons { head: d2, tail: Deref @ metamodelica::List::Nil } }) => {
             (oty1, oty2) = ifExpMakeDimsUnknown(inner1.clone(), inner2.clone());
             (Arc::new(DAE::Type::T_ARRAY { ty: inner1.clone(), dims: list![d1.clone()] }), Arc::new(DAE::Type::T_ARRAY { ty: inner2.clone(), dims: list![d2.clone()] }))
         },
@@ -8495,7 +8505,7 @@ fn typeConvertIntToEnumCheck(mut exp: Arc<DAE::Exp>, mut expected: Arc<DAE::Type
         let __mc_input = (exp.clone(), expected.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_ENUMERATION { names: l, path: tp, .. }) => {
+                (Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_ENUMERATION { path: tp, names: l, .. }) => {
                     let mut pathStr: ArcStr = arcstr::literal!("");
                     let mut intStr: ArcStr = arcstr::literal!("");
                     let mut enumConst: ArcStr = arcstr::literal!("");
@@ -8511,7 +8521,7 @@ fn typeConvertIntToEnumCheck(mut exp: Arc<DAE::Exp>, mut expected: Arc<DAE::Type
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_ENUMERATION { names: l, path: tp, .. }) => {
+                (Deref @ DAE::Exp::ICONST { integer: oi }, Deref @ DAE::Type::T_ENUMERATION { path: tp, names: l, .. }) => {
                     let mut pathStr: ArcStr = arcstr::literal!("");
                     let mut intStr: ArcStr = arcstr::literal!("");
                     let mut lengthStr: ArcStr = arcstr::literal!("");
@@ -8567,7 +8577,7 @@ fn selectVar(mut var: Arc<DAE::Var>, mut id: ArcStr) -> bool {
 pub fn getUniontypeIfMetarecord(mut inTy: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = (::match_deref::match_deref! { match &(inTy.clone()) {
-        Deref @ DAE::Type::T_METARECORD { knownSingleton: b, utPath: p, .. } => {
+        Deref @ DAE::Type::T_METARECORD { utPath: p, knownSingleton: b, .. } => {
             Arc::new(DAE::Type::T_METAUNIONTYPE { paths: metamodelica::nil(), typeVars: var_field!((*inTy).typeVars, DAE::Type::T_METARECORD).clone(), knownSingleton: b.clone(), singletonType: if (b.clone()) {Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: inTy.clone() })} else {openmodelica_frontend_types::DAE::EvaluateSingletonType::interned_NOT_SINGLETON()}, path: p.clone() })
         },
         _ => {
@@ -8967,11 +8977,11 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inType2.clone()) {
-                Deref @ DAE::Type::T_FUNCTION { funcArg: __pa0, funcResultType: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+                Deref @ DAE::Type::T_FUNCTION { funcResultType: __pa0, funcArg: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
-            args = __pa0.clone();
-            ty = __pa1.clone();
+            ty = __pa0.clone();
+            args = __pa1.clone();
             (outExp1, outExp2, outCompatType, outCompatible) = checkTypeCompat(inExp1.clone(), var_field!((*inType1).funcResultType, DAE::Type::T_FUNCTION).clone(), inExp2.clone(), ty.clone(), false)?;
             if outCompatible.clone() {
                 tys = ({
