@@ -3661,7 +3661,11 @@ fn for_or_expression_list(input: &mut TokenInput) -> ModalResult<Absyn::Function
         checkpoint = input.checkpoint();
         exp = arg_expression(input)?;
     }
-    Ok(Absyn::FunctionArgs::FUNCTIONARGS { args: args.reverse(), argNames: arg_names.reverse() })
+    // `args` is cons-built back to front and needs the reverse; `arg_names`
+    // comes from `named_arguments`, which already returns source order
+    // (interactive-API unparsing is sensitive to it, e.g.
+    // `annotate=Placement(transformation(origin=..., extent=...))`).
+    Ok(Absyn::FunctionArgs::FUNCTIONARGS { args: args.reverse(), argNames: arg_names })
 }
 
 fn named_argument(input: &mut TokenInput) -> ModalResult<Absyn::NamedArg> {
