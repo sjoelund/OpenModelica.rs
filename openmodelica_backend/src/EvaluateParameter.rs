@@ -735,40 +735,21 @@ fn replaceCrefWithBindStartExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDA
 }
 
 fn traverseParameterSorted(mut inComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inGlobalKnownVars: BackendDAE::Variables, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inIEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut iCache: FCore::Cache, mut graph: FCore::Graph, mut iMark: i32, mut markarr: metamodelica::Array<i32>, mut repl: BackendVarTransform::VariableReplacements, mut replEvaluate: BackendVarTransform::VariableReplacements, mut isInitial: bool) -> Result<(BackendDAE::Variables, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements, FCore::Cache, i32)> {
-    let mut oKnVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut oRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    let mut oReplEvaluate: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    let mut oCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut oMark: i32 = 0;
-    (oKnVars, oRepl, oReplEvaluate, oCache, oMark) = (::match_deref::match_deref! { match &(inComps.clone()) {
-        Deref @ metamodelica::List::Nil => {
-            (inGlobalKnownVars.clone(), repl.clone(), replEvaluate.clone(), iCache.clone(), iMark.clone())
-        },
-        Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: i, tail: Deref @ metamodelica::List::Nil }, tail: rest } => {
-            let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-            let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-            let mut repl1: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut evrepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut mark: i32 = 0;
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            v = BackendVariable::getVarAt(inGlobalKnownVars.clone(), i.clone())?;
-            (v, globalKnownVars, cache, mark, repl1) = evaluateFixedAttribute(v.clone(), true, inGlobalKnownVars.clone(), m.clone(), inIEqns.clone(), iCache.clone(), graph.clone(), iMark.clone(), markarr.clone(), isInitial.clone(), repl.clone())?;
-            (globalKnownVars, repl1, evrepl) = evaluateParameterBindings(v.clone(), i.clone(), globalKnownVars.clone(), cache.clone(), graph.clone(), repl1.clone(), replEvaluate.clone())?;
-            (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(rest.clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), repl1.clone(), evrepl.clone(), isInitial.clone())?;
-            (globalKnownVars.clone(), repl1.clone(), evrepl.clone(), cache.clone(), mark.clone())
-        },
-        Deref @ metamodelica::List::Cons { head: ilst, tail: rest } => {
-            let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-            let mut repl1: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut evrepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut mark: i32 = 0;
-            let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(List::map(ilst.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?, inGlobalKnownVars.clone(), m.clone(), inIEqns.clone(), iCache.clone(), graph.clone(), iMark.clone(), markarr.clone(), repl.clone(), replEvaluate.clone(), isInitial.clone())?;
-            (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(rest.clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), repl1.clone(), evrepl.clone(), isInitial.clone())?;
-            (globalKnownVars.clone(), repl1.clone(), evrepl.clone(), cache.clone(), mark.clone())
-        },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+    let mut oKnVars: BackendDAE::Variables = inGlobalKnownVars.clone();
+    let mut oRepl: BackendVarTransform::VariableReplacements = repl.clone();
+    let mut oReplEvaluate: BackendVarTransform::VariableReplacements = replEvaluate.clone();
+    let mut oCache: FCore::Cache = iCache.clone();
+    let mut oMark: i32 = iMark.clone();
+    let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+    for mut ilst in &*inComps.clone() {
+        let mut ilst = ilst.clone();
+        for mut i in &*ilst.clone() {
+            let mut i = i.clone();
+            v = BackendVariable::getVarAt(oKnVars.clone(), i.clone())?;
+            (v, oKnVars, oCache, oMark, oRepl) = evaluateFixedAttribute(v.clone(), true, oKnVars.clone(), m.clone(), inIEqns.clone(), oCache.clone(), graph.clone(), oMark.clone(), markarr.clone(), isInitial.clone(), oRepl.clone())?;
+            (oKnVars, oRepl, oReplEvaluate) = evaluateParameterBindings(v.clone(), i.clone(), oKnVars.clone(), oCache.clone(), graph.clone(), oRepl.clone(), oReplEvaluate.clone())?;
+        }
+    }
     Ok((oKnVars, oRepl, oReplEvaluate, oCache, oMark))
 }
 

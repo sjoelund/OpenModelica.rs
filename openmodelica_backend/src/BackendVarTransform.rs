@@ -455,16 +455,22 @@ fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
 }
 
 fn addExtendReplacement(mut extendrepl: CrefSet, mut cr: Arc<DAE::ComponentRef>, mut preCr: Option<Arc<DAE::ComponentRef>>) -> Result<CrefSet> {
-    let mut outExtendrepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
-    outExtendrepl = 'mc: {
-        let __mc_input = (cr.clone(), preCr.clone());
+    let mut outExtendrepl: CrefSet = extendrepl.clone();
+    let mut worklist: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>)>> = list![(cr.clone(), preCr.clone())];
+    let mut wcr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+    let mut wpre: Option<Arc<DAE::ComponentRef>> = None;
+    while !(worklist.clone().is_empty()) {
+        (wcr, wpre) = listHead(worklist.clone())?;
+        worklist = listRest(worklist.clone())?;
+        let _ = 'mc: {
+        let __mc_input = (wcr.clone(), wpre.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType: ty @ Deref @ DAE::Type::T_ARRAY { .. }, .. }, None) => {
                     let mut precr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
-                    UnorderedSet::addUnique(precr.clone(), extendrepl.clone())?;
-                    Ok(extendrepl.clone())
+                    UnorderedSet::add(precr.clone(), extendrepl.clone())?;
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -476,49 +482,59 @@ fn addExtendReplacement(mut extendrepl: CrefSet, mut cr: Arc<DAE::ComponentRef>,
                     let mut precr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
                     precr1 = ComponentReference::joinCrefs(pcr.clone(), precr.clone())?;
-                    UnorderedSet::addUnique(precr1.clone(), extendrepl.clone())?;
-                    Ok(extendrepl.clone())
+                    UnorderedSet::add(precr1.clone(), extendrepl.clone())?;
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType: ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, varLst, .. }, .. }, None) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
                     let mut precr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
+                    let mut worklist: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>)>> = worklist.clone();
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
-                    UnorderedSet::addUnique(precr.clone(), extendrepl.clone())?;
-                    crefs = List::map(varLst.clone(), (std::sync::Arc::new(ComponentReference::creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-                    erepl = List::fold1r(crefs.clone(), (std::sync::Arc::new(addExtendReplacement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>, Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>> + 'static>), Some(precr.clone()), extendrepl.clone())?;
-                    Ok(erepl.clone())
+                    if !(UnorderedSet::contains(precr.clone(), extendrepl.clone())?) {
+                        UnorderedSet::add(precr.clone(), extendrepl.clone())?;
+                        crefs = List::map(varLst.clone(), (std::sync::Arc::new(ComponentReference::creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
+                        for mut c in &*crefs.clone() {
+                            let mut c = c.clone();
+                            worklist = metamodelica::cons((c.clone(), Some(precr.clone())), worklist.clone());
+                        }
+                    }
+                    Ok(((), worklist.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { worklist = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType: ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, varLst, .. }, .. }, Some(pcr)) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
+                (Deref @ DAE::ComponentRef::CREF_IDENT { identType: ty @ Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, varLst, .. }, .. }, Some(pcr)) => {
                     let mut precr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    precr1 = ComponentReference::joinCrefs(pcr.clone(), cr.clone())?;
-                    UnorderedSet::addUnique(precr1.clone(), extendrepl.clone())?;
-                    crefs = List::map(varLst.clone(), (std::sync::Arc::new(ComponentReference::creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
-                    erepl = List::fold1r(crefs.clone(), (std::sync::Arc::new(addExtendReplacement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>, Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>> + 'static>), Some(precr1.clone()), extendrepl.clone())?;
-                    Ok(erepl.clone())
+                    let mut worklist: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>)>> = worklist.clone();
+                    precr1 = ComponentReference::joinCrefs(pcr.clone(), wcr.clone())?;
+                    if !(UnorderedSet::contains(precr1.clone(), extendrepl.clone())?) {
+                        UnorderedSet::add(precr1.clone(), extendrepl.clone())?;
+                        crefs = List::map(varLst.clone(), (std::sync::Arc::new(ComponentReference::creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
+                        for mut c in &*crefs.clone() {
+                            let mut c = c.clone();
+                            worklist = metamodelica::cons((c.clone(), Some(precr1.clone())), worklist.clone());
+                        }
+                    }
+                    Ok(((), worklist.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { worklist = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { ident, identType: ty, subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, None) => {
                     let mut precr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
-                    UnorderedSet::addUnique(precr.clone(), extendrepl.clone())?;
-                    Ok(extendrepl.clone())
+                    UnorderedSet::add(precr.clone(), extendrepl.clone())?;
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -530,8 +546,8 @@ fn addExtendReplacement(mut extendrepl: CrefSet, mut cr: Arc<DAE::ComponentRef>,
                     let mut precr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
                     precr1 = ComponentReference::joinCrefs(pcr.clone(), precr.clone())?;
-                    UnorderedSet::addUnique(precr1.clone(), extendrepl.clone())?;
-                    Ok(extendrepl.clone())
+                    UnorderedSet::add(precr1.clone(), extendrepl.clone())?;
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -539,85 +555,60 @@ fn addExtendReplacement(mut extendrepl: CrefSet, mut cr: Arc<DAE::ComponentRef>,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, _) => {
-                    Ok(extendrepl.clone())
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, None) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
                     let mut precr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut precrn: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut worklist: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>)>> = worklist.clone();
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
-                    UnorderedSet::addUnique(precr.clone(), extendrepl.clone())?;
+                    UnorderedSet::add(precr.clone(), extendrepl.clone())?;
                     precrn = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), subscriptLst.clone());
-                    erepl = addExtendReplacement(extendrepl.clone(), subcr.clone(), Some(precrn.clone()))?;
-                    Ok(erepl.clone())
+                    worklist = metamodelica::cons((subcr.clone(), Some(precrn.clone())), worklist.clone());
+                    Ok(((), worklist.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { worklist = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, Some(pcr)) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
                     let mut precr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut precr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut precrn: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut precrn1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+                    let mut worklist: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Option<Arc<DAE::ComponentRef>>)>> = worklist.clone();
                     precr = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), metamodelica::nil());
                     precr1 = ComponentReference::joinCrefs(pcr.clone(), precr.clone())?;
-                    UnorderedSet::addUnique(precr1.clone(), extendrepl.clone())?;
+                    UnorderedSet::add(precr1.clone(), extendrepl.clone())?;
                     precrn = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), subscriptLst.clone());
                     precrn1 = ComponentReference::joinCrefs(pcr.clone(), precrn.clone())?;
-                    erepl = addExtendReplacement(extendrepl.clone(), subcr.clone(), Some(precrn1.clone()))?;
-                    Ok(erepl.clone())
+                    worklist = metamodelica::cons((subcr.clone(), Some(precrn1.clone())), worklist.clone());
+                    Ok(((), worklist.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, None) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
-                    let mut precrn: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    precrn = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), subscriptLst.clone());
-                    erepl = addExtendReplacement(extendrepl.clone(), subcr.clone(), Some(precrn.clone()))?;
-                    Ok(erepl.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, Some(pcr)) => {
-                    let mut erepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
-                    let mut precrn: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut precrn1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    precrn = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), ty.clone(), subscriptLst.clone());
-                    precrn1 = ComponentReference::joinCrefs(pcr.clone(), precrn.clone())?;
-                    erepl = addExtendReplacement(extendrepl.clone(), subcr.clone(), Some(precrn1.clone()))?;
-                    Ok(erepl.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
+        })() { worklist = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    s = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
+                    s = (ComponentReferenceBasics::printComponentRefStr(wcr.clone())?).clone();
                     Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendVarTransform.addExtendReplacement failed for ")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone())?;
-                    Ok(extendrepl.clone())
+                    Ok(())
                 }
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
+    }
     Ok(outExtendrepl)
 }
 
