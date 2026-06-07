@@ -3559,6 +3559,7 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
             let (paren_line, paren_col) = next_pos(input);
             next_tok(input)?;
             let (exprs, is_tuple) = output_expression_list(input)?;
+            let before_subs: TokenInput = *input;
             let raw_subs = opt(array_subscripts).parse_next(input)?;
             if let Some(subs) = raw_subs {
                 // `(e)[subs]` stores the bare expression; the dump re-adds
@@ -3567,9 +3568,17 @@ fn primary(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
                 // (recorded there as a non-fatal c_add_source_message; we
                 // abort, which yields the same observable diagnostic).
                 if is_tuple {
-                    let (l2, c2) = match input.first() {
-                        Some(t) => (t.line, t.col),
-                        None => (paren_line, paren_col),
+                    // The grammar anchors the span's end at the closing `]` of
+                    // the subscripts (the last consumed token), not at the next
+                    // unconsumed token — so the end column lands on the `]`,
+                    // matching omc (e.g. `(1,2,3)[2]` reports `…-l:c` at the
+                    // `]`, not the following `;`).
+                    let consumed = before_subs.len() - input.len();
+                    let (l2, c2) = if consumed >= 1 {
+                        let last = &before_subs[consumed - 1];
+                        (last.line, last.col)
+                    } else {
+                        (paren_line, paren_col)
                     };
                     add_syntax_message(
                         SyntaxSeverity::Error,
