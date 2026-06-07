@@ -1124,23 +1124,14 @@ fn blockString(mut inBlockType: Arc<BlockType>, mut inTokens: Tokens, mut inActu
 }
 
 fn iterSeparatorString(mut inTokens: Tokens, mut inSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool)> {
-    let mut outActualPositionOnLine: i32 = 0;
-    let mut outAtStartOfLine: bool = false;
-    (outActualPositionOnLine, outAtStartOfLine) = (::match_deref::match_deref! { match &((inTokens.clone(), inSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
-        (Deref @ metamodelica::List::Nil, _, pos, isstart, _) => {
-            (pos.clone(), isstart.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, septok, pos, isstart, aind) => {
-            let mut pos = (*pos).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
-            (pos, isstart, aind) = tokString(septok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart, aind) = tokString(tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterSeparatorString(toks.clone(), septok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
-        },
-        _ => bail!("match: no arm matched"),
-    } });
+    let mut outActualPositionOnLine: i32 = inActualPositionOnLine.clone();
+    let mut outAtStartOfLine: bool = inAtStartOfLine.clone();
+    let mut aind: i32 = inAfterNewLineIndent.clone();
+    for mut tok in &*inTokens.clone() {
+        let mut tok = tok.clone();
+        (outActualPositionOnLine, outAtStartOfLine, aind) = tokString(inSeparator.clone(), outActualPositionOnLine.clone(), outAtStartOfLine.clone(), aind.clone())?;
+        (outActualPositionOnLine, outAtStartOfLine, aind) = tokString(tok.clone(), outActualPositionOnLine.clone(), outAtStartOfLine.clone(), aind.clone())?;
+    }
     Ok((outActualPositionOnLine, outAtStartOfLine))
 }
 
@@ -1181,44 +1172,29 @@ fn iterSeparatorAlignWrapString(mut inTokens: Tokens, mut inSeparator: Arc<Strin
 fn iterAlignWrapString(mut inTokens: Tokens, mut inActualIndex: i32, mut inAlignNum: i32, mut inAlignSeparator: Arc<StringToken>, mut inWrapWidth: i32, mut inWrapSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool)> {
     let mut outActualPositionOnLine: i32 = 0;
     let mut outAtStartOfLine: bool = false;
-    (outActualPositionOnLine, outAtStartOfLine) = (::match_deref::match_deref! { match &((inTokens.clone(), inActualIndex.clone(), inAlignNum.clone(), inAlignSeparator.clone(), inWrapWidth.clone(), inWrapSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
-        (Deref @ metamodelica::List::Nil, _, _, _, _, _, pos, isstart, _) => {
-            (pos.clone(), isstart.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) if (idx.clone() > 0 && intMod(idx.clone(), anum.clone()) == 0) => {
-            let mut pos = (*pos).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
-            (pos, isstart, aind) = tokString(asep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart, aind) = tryWrapString(wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart, aind) = tokString(tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapString(toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) if (wwidth.clone() > 0 && pos.clone() >= wwidth.clone()) => {
-            let mut pos = (*pos).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
-            (pos, isstart, aind) = tokString(wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart, aind) = tokString(tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapString(toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) => {
-            let mut pos = (*pos).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
-            (pos, isstart, aind) = tokString(tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapString(toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
-        },
-        _ => {
-            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::trace((literal!("-!!!Tpl.iterAlignWrapString failed.\n")).clone())?;
-            bail!("fail")
-        },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
+    let mut toks: Tokens = inTokens.clone();
+    let mut tok: Arc<StringToken> = Arc::new(StringToken::ST_NEW_LINE);
+    let mut idx: i32 = inActualIndex.clone();
+    let mut pos: i32 = inActualPositionOnLine.clone();
+    let mut isstart: bool = inAtStartOfLine.clone();
+    let mut aind: i32 = inAfterNewLineIndent.clone();
+    while !(toks.clone().is_empty()) {
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(toks.clone()) {
+            Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
+            _ => bail!("pattern mismatch"),
+        } };
+        tok = __pa0.clone();
+        toks = __pa1.clone();
+        if idx.clone() > 0 && intMod(idx.clone(), inAlignNum.clone()) == 0 {
+            (pos, isstart, aind) = tokString(inAlignSeparator.clone(), pos.clone(), isstart.clone(), aind.clone())?;
+            (pos, isstart, aind) = tryWrapString(inWrapWidth.clone(), inWrapSeparator.clone(), pos.clone(), isstart.clone(), aind.clone())?;
+        } else if inWrapWidth.clone() > 0 && pos.clone() >= inWrapWidth.clone() {
+            (pos, isstart, aind) = tokString(inWrapSeparator.clone(), pos.clone(), isstart.clone(), aind.clone())?;
+        }
+        (pos, isstart, aind) = tokString(tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
+        idx = idx.clone() + 1;
+    }
+    (outActualPositionOnLine, outAtStartOfLine) = (pos.clone(), isstart.clone());
     Ok((outActualPositionOnLine, outAtStartOfLine))
 }
 

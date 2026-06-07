@@ -1112,6 +1112,43 @@ impl<T: Clone> Default for List<T> {
         List::Nil
     }
 }
+
+// Without this, dropping a list is recursive in its length (each node's
+// `Arc<List>` field drops the next node from inside its own drop call), so
+// releasing a list of a few hundred thousand elements overflows the stack —
+// the C runtime never had this problem because its GC frees cells without
+// walking the list. Iteratively unlink instead: detach each uniquely-owned
+// tail before its node is dropped, so every node drop sees a Nil tail.
+impl<T: Clone> Drop for List<T> {
+    fn drop(&mut self) {
+        // Fast path: Nil, or a node whose tail is already Nil — in
+        // particular every node the unlink loop below has detached, so the
+        // nested drop it triggers neither allocates nor recurses.
+        let List::Cons { tail, .. } = self else { return };
+        if matches!(&**tail, List::Nil) {
+            return;
+        }
+        // One shared Nil per unlink walk; replacing a tail with a clone of
+        // it is just a refcount increment.
+        let nil: Arc<List<T>> = Arc::new(List::Nil);
+        let mut cur = std::mem::replace(tail, nil.clone());
+        loop {
+            match Arc::get_mut(&mut cur) {
+                // Sole owner of this node (strong count 1, no weak refs):
+                // nothing else can observe the detached tail. Take it, then
+                // let the node drop through the fast path above.
+                Some(List::Cons { tail, .. }) => {
+                    let next = std::mem::replace(tail, nil.clone());
+                    cur = next;
+                }
+                // Nil, or a node shared with another live list: dropping our
+                // reference only decrements the refcount and must leave the
+                // suffix intact, so stop here.
+                _ => break,
+            }
+        }
+    }
+}
 use List::{Cons, Nil};
 
 #[macro_export]
