@@ -379,23 +379,13 @@ pub fn lookupMetarecordsRecursive(mut inCache: FCore::Cache, mut inEnv: FCore::G
 }
 
 fn lookupMetarecordsRecursive2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inUniontypePaths: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut inAcc: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<(FCore::Cache, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Type>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
-    let mut outMetarecordTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-    (outCache, outHt, outMetarecordTypes) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inUniontypePaths.clone(), inHt.clone(), inAcc.clone())) {
-        (cache, _, Deref @ metamodelica::List::Nil, ht, acc) => {
-            (cache.clone(), ht.clone(), acc.clone())
-        },
-        (cache, env, Deref @ metamodelica::List::Cons { head: first, tail: rest }, ht, acc) => {
-            let mut cache = (*cache).clone();
-            let mut ht = (*ht).clone();
-            let mut acc = (*acc).clone();
-            (cache, ht, acc) = lookupMetarecordsRecursive3(cache.clone(), env.clone(), first.clone(), (AbsynUtil::pathString(first.clone(), (literal!(".")).clone(), true, false)?).clone(), ht.clone(), acc.clone())?;
-            (cache, ht, acc) = lookupMetarecordsRecursive2(cache.clone(), env.clone(), rest.clone(), ht.clone(), acc.clone())?;
-            (cache.clone(), ht.clone(), acc.clone())
-        },
-        _ => bail!("match: no arm matched"),
-    } });
+    let mut outCache: FCore::Cache = inCache.clone();
+    let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr)) = inHt.clone();
+    let mut outMetarecordTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = inAcc.clone();
+    for mut first in &*inUniontypePaths.clone() {
+        let mut first = first.clone();
+        (outCache, outHt, outMetarecordTypes) = lookupMetarecordsRecursive3(outCache.clone(), inEnv.clone(), first.clone(), (AbsynUtil::pathString(first.clone(), (literal!(".")).clone(), true, false)?).clone(), outHt.clone(), outMetarecordTypes.clone())?;
+    }
     Ok((outCache, outHt, outMetarecordTypes))
 }
 
