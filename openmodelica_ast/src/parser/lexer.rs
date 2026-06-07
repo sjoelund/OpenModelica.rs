@@ -594,7 +594,11 @@ impl<'s> Lexer<'s> {
             "connector"     => TokenKind::Connector,
             "constant"      => TokenKind::Constant,
             "constrainedby" => TokenKind::Constrainedby,
-            "der"           if !meta => TokenKind::Der,
+            // DER/INNER/OUTER live in BaseModelica_Lexer.g: keywords in every
+            // grammar. `der` is readmitted as an identifier where Modelica.g's
+            // `identifier` rule applies (see `t_ident`), e.g. `function der`
+            // in ModelicaBuiltin.mo; `inner`/`outer` are never identifiers.
+            "der"           => TokenKind::Der,
             "discrete"      => TokenKind::Discrete,
             "each"          => TokenKind::Each,
             "else"          => TokenKind::Else,
@@ -616,14 +620,17 @@ impl<'s> Lexer<'s> {
             "import"        => TokenKind::Import,
             "in"            => TokenKind::In,
             "initial"       => TokenKind::Initial,
-            "inner"         if !meta => TokenKind::Inner,
+            "inner"         => TokenKind::Inner,
             "input"         => TokenKind::Input,
             "loop"          => TokenKind::Loop,
             "model"         => TokenKind::Model,
             "not"           => TokenKind::Not,
-            "operator"      if m3 => TokenKind::Operator,
+            // OPERATOR lives in BaseModelica_Lexer.g: a keyword in every
+            // grammar (the parser re-admits it as an identifier in component
+            // references, declarations and named arguments, like Modelica.g).
+            "operator"      => TokenKind::Operator,
             "or"            => TokenKind::Or,
-            "outer"         if !meta => TokenKind::Outer,
+            "outer"         => TokenKind::Outer,
             "output"        => TokenKind::Output,
             "package"       => TokenKind::Package,
             "parameter"     => TokenKind::Parameter,
@@ -666,7 +673,8 @@ impl<'s> Lexer<'s> {
             "__"            if meta => TokenKind::Allwild,
 
             // ---- Modelica 3.x keywords ----
-            "stream"  if m3 => TokenKind::Stream,
+            // (MetaModelica_Lexer.g also declares STREAM.)
+            "stream"  if m3 || meta => TokenKind::Stream,
             "pure"    if m3 => TokenKind::Pure,
             "impure"  if m3 || meta => TokenKind::Impure,
 

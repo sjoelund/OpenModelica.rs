@@ -3051,13 +3051,20 @@ fn component_reference(input: &mut TokenInput) -> ModalResult<Absyn::ComponentRe
 }
 
 fn component_reference2(input: &mut TokenInput) -> ModalResult<Absyn::ComponentRef> {
-    let name     = t_ident(input)?;
+    // Modelica.g admits `operator` as a component name here
+    // (`id=IDENT | id=OPERATOR`) — record fields like `DAE.BINARY.operator`.
+    let name = if matches!(peek_kind(input), Some(TK::Operator)) {
+        next_tok(input)?;
+        literal!("operator")
+    } else {
+        t_ident(input)?
+    };
     let raw_subs = opt(array_subscripts).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
     let mut subscripts: Arc<List<Arc<Absyn::Subscript>>> = Arc::new(List::Nil);
     for s in &*raw_subs.reverse() { subscripts = cons(s.clone(), subscripts); }
     if input.len() >= 2
         && input[0].kind == TK::Dot
-        && matches!(&input[1].kind, TK::Ident(_))
+        && matches!(&input[1].kind, TK::Ident(_) | TK::Operator)
     {
         *input = &input[1..]; // consume Dot
         let rest = component_reference2(input)?;
