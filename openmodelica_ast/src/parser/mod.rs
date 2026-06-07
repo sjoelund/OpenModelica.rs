@@ -721,9 +721,21 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
     // ANTLR `composition` rule. Emitting one part per element made
     // `Dump.unparseStr` print a spurious `public` keyword before every
     // element after the first.
+    //
+    // The leading `public` part is ALWAYS present, even when empty: the ANTLR
+    // `composition` rule is `el=element_list els=composition2 ... { ast =
+    // PUBLIC(el) :: els }`, so every PARTS body begins with `PUBLIC(el)` where
+    // `el` is the (possibly empty) leading element list. Omitting it when the
+    // body starts directly with a section (`protected`/`equation`/…) or is
+    // empty diverged from the reference AST and broke `save`: its
+    // `removeInnerDiffFiledClass` → `ProgramUtil.replacePublicList` *appends* a
+    // fresh empty `PUBLIC` at the end (index ≠ 0) when no public part exists,
+    // which the dump renders as a spurious trailing `public` keyword (whereas
+    // replacing the leading one at index 0 renders nothing).
     let mut pending: Vec<Arc<ElementItem>> = Vec::new();
-    fn flush(pending: &mut Vec<Arc<ElementItem>>, res: &mut Arc<List<Arc<ClassPart>>>) {
-        if pending.is_empty() {
+    let mut leading_public_emitted = false;
+    fn flush(pending: &mut Vec<Arc<ElementItem>>, res: &mut Arc<List<Arc<ClassPart>>>, force: bool) {
+        if pending.is_empty() && !force {
             return;
         }
         let mut contents: Arc<List<Arc<ElementItem>>> = Arc::new(List::Nil);
@@ -742,7 +754,12 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
                 pending.push(Arc::new(ElementItem::LEXER_COMMENT { comment: text.clone() }));
                 continue;
             }
-            _ => flush(&mut pending, &mut res),
+            // Force-emit the leading `public` part (even if empty) before the
+            // first section, so every PARTS body opens with `PUBLIC(el)`.
+            _ => {
+                flush(&mut pending, &mut res, !leading_public_emitted);
+                leading_public_emitted = true;
+            }
         }
         let converted = match item {
             ClassBodyItem::Section { section, items } => {
@@ -772,7 +789,10 @@ fn body_items_to_classparts(items: Arc<List<ClassBodyItem>>) -> Arc<List<Arc<Cla
         };
         res = cons(Arc::new(converted), res);
     }
-    flush(&mut pending, &mut res);
+    // Trailing flush: if no section was ever seen (body is only leading
+    // elements, or entirely empty) this emits the always-present leading
+    // `public` part; otherwise it flushes any straggling elements.
+    flush(&mut pending, &mut res, !leading_public_emitted);
     res.reverse()
 }
 
