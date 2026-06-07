@@ -359,6 +359,47 @@ fn format_g(x: f64) -> String {
     }
 }
 
+/// C `%.*g` with `sig` significant digits: fixed notation when the decimal
+/// exponent is in `[-4, sig)`, exponential (`e±NN`, two-digit exponent)
+/// otherwise, with trailing zeros stripped in both forms. Used for the data
+/// values (sig=15, i.e. `%.15g`) and tolerance text (sig=2) of the HTML report.
+fn format_g_prec(x: f64, sig: usize) -> String {
+    if !x.is_finite() {
+        return format_g(x);
+    }
+    if x == 0.0 {
+        return "0".to_string();
+    }
+    let sig = sig.max(1);
+    let exp = x.abs().log10().floor() as i32;
+    if exp < -4 || exp >= sig as i32 {
+        // Exponential. Rust prints `8.00e-7`; C `%g` prints `8e-07`: strip the
+        // mantissa's trailing zeros and pad the exponent to two digits.
+        let s = format!("{:.*e}", sig - 1, x);
+        let (mant, e) = s.split_once('e').unwrap();
+        let mant = if mant.contains('.') {
+            mant.trim_end_matches('0').trim_end_matches('.')
+        } else {
+            mant
+        };
+        let e: i32 = e.parse().unwrap_or(0);
+        format!("{mant}e{}{:02}", if e < 0 { '-' } else { '+' }, e.abs())
+    } else {
+        let decimals = (sig as i32 - 1 - exp).max(0) as usize;
+        let s = format!("{:.*}", decimals, x);
+        if s.contains('.') {
+            s.trim_end_matches('0').trim_end_matches('.').to_string()
+        } else {
+            s
+        }
+    }
+}
+
+/// `%.15g`, the format C uses for the numeric data/time values in the report.
+fn format_g_prec15(x: f64) -> String {
+    format_g_prec(x, 15)
+}
+
 // ---------------------------------------------------------------------------
 // Result comparison (port of SimulationResultsCmp.c)
 //
@@ -1503,10 +1544,11 @@ fn validate(
     }
 }
 
-/// C `cmpDataTubes` for the `isResultCmp=0`, non-HTML path: returns whether the
-/// variable differs (left the reference tube). `time`/`data` are the actual
-/// trajectory, `reftime`/`refdata` the reference (mutated in place by the tube
-/// construction, as in the C code).
+/// C `cmpDataTubes` for the `isResultCmp=0` path: returns whether the variable
+/// differs (left the reference tube). `time`/`data` are the actual trajectory,
+/// `reftime`/`refdata` the reference (mutated in place by the tube construction,
+/// as in the C code). When `html_out` is `Some`, the dygraph HTML report is
+/// appended to it (the `isHtml=1` branch, used by `diffSimulationResultsHtml`).
 #[allow(clippy::too_many_arguments)]
 fn cmp_data_tubes(
     time: &[f64],
@@ -1516,6 +1558,8 @@ fn cmp_data_tubes(
     reltol: f64,
     range_delta: f64,
     reltol_diff_max_min: f64,
+    var_name: &str,
+    html_out: Option<&mut String>,
 ) -> bool {
     let with_tubes = range_delta == 0.0;
     let ref_size = reftime.len();
@@ -1540,7 +1584,141 @@ fn cmp_data_tubes(
     add_relative_tolerance(&mut high, refdata, n, reltol, abstol, 1);
     add_relative_tolerance(&mut low, refdata, n, reltol, abstol, -1);
 
-    validate(n, reftime, refdata, &mut low, &mut high, &calibrated_values, reltol, abstol, xabstol).is_some()
+    let error = validate(n, reftime, refdata, &mut low, &mut high, &calibrated_values, reltol, abstol, xabstol);
+
+    if let Some(html) = html_out {
+        write_tube_html(
+            html, var_name, time, reftime, refdata, data, &calibrated_values,
+            &high, &low, error.as_deref(), n, reltol, abstol, reltol_diff_max_min, range_delta,
+        );
+    }
+
+    error.is_some()
+}
+
+/// Build the dygraph HTML report for one variable, mirroring the `isHtml=1`
+/// output of C `cmpDataTubes` (SimulationResultsCmpTubes.c): a `<html>` page
+/// embedding a Dygraph fed an array of `[time,reference,actual,high,low,error,
+/// actual(original)]` rows. `error` is `None` when the variable stayed inside
+/// the tube (the error column is then `null` everywhere).
+#[allow(clippy::too_many_arguments)]
+fn write_tube_html(
+    html: &mut String,
+    var_name: &str,
+    time: &[f64],
+    reftime: &[f64],
+    refdata: &[f64],
+    data: &[f64],
+    calibrated_values: &[f64],
+    high: &[f64],
+    low: &[f64],
+    error: Option<&[f64]>,
+    n: usize,
+    reltol: f64,
+    abstol: f64,
+    reltol_diff_max_min: f64,
+    range_delta: f64,
+) {
+    let ref_size = reftime.len();
+    // `concat!` preserves the exact leading whitespace of each line (the CSS
+    // block is indented); a `\`-continued string literal would strip it.
+    html.push_str(concat!(
+        "<html>\n",
+        "<head>\n",
+        "<script type=\"text/javascript\" src=\"dygraph-combined.js\"></script>\n",
+        "    <style type=\"text/css\">\n",
+        "    #graphdiv {\n",
+        "      position: absolute;\n",
+        "      left: 10px;\n",
+        "      right: 10px;\n",
+        "      top: 40px;\n",
+        "      bottom: 10px;\n",
+        "    }\n",
+        "    </style>\n",
+        "</head>\n",
+        "<body>\n",
+        "<div id=\"graphdiv\"></div>\n",
+        "<p><input type=checkbox id=\"0\" checked onClick=\"change(this)\">\n",
+        "<label for=\"0\">reference</label>\n",
+        "<input type=checkbox id=\"1\" checked onClick=\"change(this)\">\n",
+        "<label for=\"1\">actual</label>\n",
+        "<input type=checkbox id=\"2\" checked onClick=\"change(this)\">\n",
+        "<label for=\"2\">high</label>\n",
+        "<input type=checkbox id=\"3\" checked onClick=\"change(this)\">\n",
+        "<label for=\"3\">low</label>\n",
+        "<input type=checkbox id=\"4\" checked onClick=\"change(this)\">\n",
+        "<label for=\"4\">error</label>\n",
+        "<input type=checkbox id=\"5\" onClick=\"change(this)\">\n",
+        "<label for=\"5\">actual (original)</label>\n",
+    ));
+    html.push_str(&format!(
+        "Reference time: {} to {}, actual time: {} to {}. Parameters used for the comparison: \
+Relative tolerance {}. Absolute tolerance {} ({} relative). Range delta {}.",
+        format_g_prec15(reftime[0]),
+        format_g_prec15(reftime[ref_size - 1]),
+        format_g_prec15(time[0]),
+        format_g_prec15(time[time.len() - 1]),
+        format_g_prec(reltol, 2),
+        format_g_prec(abstol, 2),
+        format_g_prec(reltol_diff_max_min, 2),
+        format_g_prec(range_delta, 2),
+    ));
+    html.push_str(
+        "</p>\n\
+<script type=\"text/javascript\">\n\
+g = new Dygraph(document.getElementById(\"graphdiv\"),\n\
+[\n",
+    );
+
+    let mut j = 0usize;
+    for i in 0..ref_size {
+        html.push_str(&format!("[{},{},", format_g_prec15(reftime[i]), format_g_prec15(refdata[i])));
+        if i < n {
+            match error {
+                Some(e) if !e[i].is_nan() => html.push_str(&format!(
+                    "{},{},{},{}",
+                    format_g_prec15(calibrated_values[i]), format_g_prec15(high[i]), format_g_prec15(low[i]), format_g_prec15(e[i])
+                )),
+                _ => html.push_str(&format!(
+                    "{},{},{},null",
+                    format_g_prec15(calibrated_values[i]), format_g_prec15(high[i]), format_g_prec15(low[i])
+                )),
+            }
+            if j < data.len() && reftime[i] == time[j] {
+                html.push_str(&format!(",{}],\n", format_g_prec15(data[j])));
+                j += 1;
+            } else {
+                html.push_str(",null],\n");
+            }
+        } else {
+            html.push_str("null,null,null,null,null],\n");
+        }
+        while j < data.len() && reftime[i] > time[j] {
+            html.push_str(&format!(
+                "[{},null,null,null,null,null,{}],\n",
+                format_g_prec15(time[j]), format_g_prec15(data[j])
+            ));
+            j += 1;
+        }
+    }
+    html.push_str("],\n");
+    html.push_str(&format!(
+        "{{title: '{var_name}',\n\
+legend: 'always',\n\
+xlabel: ['time'],\n\
+connectSeparatedPoints: true,\n\
+labels: ['time','reference','actual','high','low','error','actual (original)'],\n\
+y2label: ['error'],\n\
+series : {{ 'error': {{ axis: 'y2' }} }},\n\
+colors: ['blue','red','teal','lightblue','orange','black'],\n\
+visibility: [true,true,true,true,true,false]\n\
+}});\n\
+function change(el) {{\n  g.setVisibility(parseInt(el.id), el.checked);\n\
+}}\n\
+</script>\n\
+</body>\n\
+</html>\n"
+    ));
 }
 
 pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, mut reffilename: ArcStr, mut prefix: ArcStr, mut refTol: metamodelica::Real, mut relTolDiffMaxMin: metamodelica::Real, mut rangeDelta: metamodelica::Real, mut vars: Arc<metamodelica::List<ArcStr>>, mut keepEqualResults: bool) -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> {
@@ -1646,7 +1824,7 @@ pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, m
         // cmp_data_tubes mutates the reference timeline; give it a private copy
         // so each variable's comparison sees the unmodified timeline.
         let mut timeref_work = timeref.clone();
-        if cmp_data_tubes(&time, &mut timeref_work, &dataref, &data, reltol, range_delta, reltol_diff_max_min) {
+        if cmp_data_tubes(&time, &mut timeref_work, &dataref, &data, reltol, range_delta, reltol_diff_max_min, var1.as_str(), None) {
             // C prepends to the diff list (reverse processing order).
             diff_vars.insert(0, var.clone());
         }
@@ -1657,8 +1835,82 @@ pub fn diffSimulationResults(mut runningTestsuite: bool, mut filename: ArcStr, m
 }
 
 pub fn diffSimulationResultsHtml(mut runningTestsuite: bool, mut filename: ArcStr, mut reffilename: ArcStr, mut refTol: metamodelica::Real, mut relTolDiffMaxMin: metamodelica::Real, mut rangeDelta: metamodelica::Real, mut var: ArcStr) -> Result<ArcStr> {
-    // C: SimulationResults_diffSimulationResultsHtml (SimulationResultsCmpTubes.c).
-    todo!("SimulationResults.diffSimulationResultsHtml: result comparison not yet ported")
+    // C: SimulationResults_diffSimulationResultsHtml ->
+    //    SimulationResultsCmp_compareResults(isResultCmp=0, isHtml=1) on a single
+    //    variable, returning the dygraph HTML page (or "" on failure).
+    let reltol = refTol.into_inner();
+    let reltol_diff_max_min = relTolDiffMaxMin.into_inner();
+    let range_delta = rangeDelta.into_inner();
+
+    let mut reader_c = match MatReader::open(filename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_FILE, [filename.clone()])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+    let mut reader_ref = match MatReader::open(reffilename.as_str()) {
+        Ok(r) => r,
+        Err(_) => {
+            err(&ERROR_OPEN_REFFILE, [reffilename.clone()])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+
+    let allvars = read_vars_filter_aliases(&reader_c);
+    let allvarsref = read_vars_filter_aliases(&reader_ref);
+
+    let c_file = display_filename(runningTestsuite, &filename);
+    let ref_file = display_filename(runningTestsuite, &reffilename);
+    let time_name = get_time_var_name(&allvars);
+    let timeref_name = get_time_var_name(&allvarsref);
+    let time = match get_data(&mut reader_c, time_name, &c_file)? {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME, [])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+    let timeref = match get_data(&mut reader_ref, timeref_name, &ref_file)? {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            err(&ERROR_GET_TIME_REF, [])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+
+    let offset = leading_dup_count(&time);
+    let offset_ref = leading_dup_count(&timeref);
+
+    let var1 = strip_quotes(var.as_str());
+    let mut dataref = match get_data(&mut reader_ref, var1.as_str(), &ref_file)? {
+        Some(d) if !d.is_empty() => d,
+        _ => {
+            err(&ERROR_GET_DATA_FAILED, [var.clone(), ref_file.clone()])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+    let mut data = match get_data(&mut reader_c, var1.as_str(), &c_file)? {
+        Some(d) if !d.is_empty() => d,
+        _ => {
+            err(&ERROR_GET_DATA_FAILED, [var.clone(), c_file.clone()])?;
+            return Ok(ArcStr::from(""));
+        }
+    };
+    for j in (1..=offset).rev() {
+        data[j - 1] = data[j];
+    }
+    for j in (1..=offset_ref).rev() {
+        dataref[j - 1] = dataref[j];
+    }
+
+    let mut timeref_work = timeref.clone();
+    let mut html = String::new();
+    cmp_data_tubes(
+        &time, &mut timeref_work, &dataref, &data, reltol, range_delta,
+        reltol_diff_max_min, var1.as_str(), Some(&mut html),
+    );
+    Ok(ArcStr::from(html))
 }
 
 pub fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>, mut numberOfIntervals: i32, mut removeDescription: bool, mut hintReadAllVars: bool) -> Result<bool> {
