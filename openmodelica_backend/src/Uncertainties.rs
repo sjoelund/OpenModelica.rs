@@ -1830,8 +1830,6 @@ fn getEquationsWithApproximatedAnnotation(mut dae: Arc<BackendDAE::BackendDAE>) 
     Ok(outEqs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getEquationsWithApproximatedAnnotation2(mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut index: i32) -> Result<Arc<metamodelica::List<i32>>> {
     let mut listOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     listOut = 'mc: {
@@ -1886,8 +1884,6 @@ fn isApproximatedEquation(mut eqn: Arc<BackendDAE::Equation>) -> Result<bool> {
     Ok(out)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isApproximatedEquation2(mut commentIn: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Result<bool> {
     let mut out: bool = false;
     out = 'mc: {
@@ -2130,8 +2126,6 @@ fn printVarReduction2(mut elem: (Arc<metamodelica::List<i32>>, Arc<metamodelica:
     Ok(out)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn pickReductionCandidates(mut elems: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut elemsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     elemsOut = 'mc: {
@@ -2222,8 +2216,6 @@ fn reduceVariables(mut m: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List
     Ok(mOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn reduceVariablesInMatrix(mut m: ExtAdjacencyMatrix, mut candidates: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut count: i32) -> Result<ExtAdjacencyMatrix> {
     let mut mOut: ExtAdjacencyMatrix = metamodelica::nil();
     mOut = 'mc: {
@@ -2276,8 +2268,8 @@ fn reduceVariablesInMatrix(mut m: ExtAdjacencyMatrix, mut candidates: Arc<metamo
     Ok(mOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn findReductionCantidates(mut variables: Arc<metamodelica::List<i32>>, mut occurrences: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut acc: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>> {
     let mut out: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     out = (::match_deref::match_deref! { match &((variables.clone(), occurrences.clone())) {
@@ -2337,8 +2329,6 @@ fn findReductionCantidates2(mut var: i32, mut occurrence: Arc<metamodelica::List
     Ok(accOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn eliminateOutputVariables(mut mIn: ExtAdjacencyMatrix, mut outputs: Arc<metamodelica::List<i32>>) -> Result<ExtAdjacencyMatrix> {
     let mut mOut: ExtAdjacencyMatrix = metamodelica::nil();
     mOut = 'mc: {
@@ -2380,8 +2370,6 @@ fn eliminateOutputVariables(mut mIn: ExtAdjacencyMatrix, mut outputs: Arc<metamo
     Ok(mOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn occurrencesOfVariable(mut m: ExtAdjacencyMatrix, mut var: i32) -> Result<Arc<metamodelica::List<i32>>> {
     let mut out: Arc<metamodelica::List<i32>> = metamodelica::nil();
     out = 'mc: {
@@ -2630,8 +2618,6 @@ fn removeVarsNotInSet(mut m: ExtAdjacencyMatrix, mut set: Arc<metamodelica::List
     Ok(mOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeEquations(mut m: ExtAdjacencyMatrix, mut eqns: Arc<metamodelica::List<i32>>) -> Result<ExtAdjacencyMatrix> {
     let mut mOut: ExtAdjacencyMatrix = metamodelica::nil();
     mOut = 'mc: {
@@ -2951,8 +2937,8 @@ fn getExtAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>
     mOut
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getExtAdjacencyMatrix2(mut i: i32, mut m: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut acc: ExtAdjacencyMatrix) -> ExtAdjacencyMatrix {
     let mut mOut: ExtAdjacencyMatrix = metamodelica::nil();
     mOut = (::match_deref::match_deref! { match &(m.clone()) {
@@ -3093,8 +3079,6 @@ fn findArraysPartiallyIndexed(mut inEqs: Arc<metamodelica::List<Arc<BackendDAE::
     Ok(ht)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findArraysPartiallyIndexed1(mut inEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     outHt = 'mc: {
@@ -3144,8 +3128,8 @@ fn findArraysPartiallyIndexed1(mut inEqs: Arc<metamodelica::List<Arc<BackendDAE:
     Ok(outHt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn findArraysPartiallyIndexed2(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut indubRef: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     outHt = (::match_deref::match_deref! { match &((inRef.clone(), indubRef.clone(), inht.clone())) {
@@ -3178,8 +3162,6 @@ fn findArraysPartiallyIndexed2(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>
     Ok(outHt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findArrayVariables(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     outHt = 'mc: {
@@ -3259,8 +3241,6 @@ fn findArraysPartiallyIndexedRecordsExpVisitor(mut inExp: Arc<DAE::Exp>, mut inH
     Ok((e, ht))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findArraysInRecordLst(mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut recordCr: Arc<DAE::ComponentRef>, mut invarLst: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     outHt = 'mc: {
@@ -3734,8 +3714,8 @@ fn removeSimpleEquationsUC(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     Ok(daeOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCrefsToHashTable(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut table: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
     let mut out: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
     out = (::match_deref::match_deref! { match &(crefs.clone()) {

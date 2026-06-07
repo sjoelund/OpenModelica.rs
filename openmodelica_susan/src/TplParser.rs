@@ -391,8 +391,8 @@ pub mod CacheTree {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> {
         let mut value: Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> = None;
         let mut k: Key = arcstr::literal!("");
@@ -413,8 +413,8 @@ pub mod CacheTree {
         value
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -720,8 +720,8 @@ pub mod CacheTree {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = arcstr::literal!("");
         key = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -1115,8 +1115,8 @@ pub fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     Ok((outChars, outLineInfo))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outChars = (::match_deref::match_deref! { match &((inChars.clone(), inKeywordChars.clone())) {
@@ -6224,8 +6224,6 @@ pub fn onNewLine(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::Exp
     Ok((outExpressionList, outIndentStack, outActualIndent, outError))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn onTemplEnd(mut inDropLastNewLine: bool, mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>, mut inIndentStack: Arc<metamodelica::List<(i32, Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>)>>, mut inActualIndent: i32, mut inLineIndent: i32, mut inAccStringChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
     outExpressionList = 'mc: {
@@ -6487,8 +6485,6 @@ pub fn addAccStringChars(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAb
     Ok(outExpressionList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn finalizeLastStringToken(mut inExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>) -> Result<Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>>> {
     let mut outExpressionList: Arc<metamodelica::List<(Arc<TplAbsyn::ExpressionBase>, SourceInfo)>> = metamodelica::nil();
     outExpressionList = 'mc: {

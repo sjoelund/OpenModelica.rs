@@ -227,8 +227,8 @@ pub fn initExpandedClass(mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     Ok(cls)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getSections(mut cls: Arc<NFClass>) -> Result<Arc<Sections::NFSections>> {
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     sections = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -332,8 +332,8 @@ pub fn isOnlyBuiltin(mut cls: Arc<NFClass>) -> bool {
     builtin
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBuiltin(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut isBuiltin: bool = false;
     isBuiltin = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -347,8 +347,8 @@ pub fn isBuiltin(mut cls: Arc<NFClass>) -> Result<bool> {
     Ok(isBuiltin)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn classTree(mut cls: Arc<NFClass>) -> Result<Arc<ClassTree::ClassTree>> {
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -590,8 +590,8 @@ pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Mo
     attributes
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -703,8 +703,8 @@ pub fn isFunction(mut cls: Arc<NFClass>) -> bool {
     isFunction
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEnumeration(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut isEnum: bool = false;
     isEnum = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -718,8 +718,8 @@ pub fn isEnumeration(mut cls: Arc<NFClass>) -> Result<bool> {
     Ok(isEnum)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
     let mut isExtFunc: bool = false;
     isExtFunc = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -758,8 +758,8 @@ pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
     isOverdetermined
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPrefixes(mut cls: Arc<NFClass>) -> Result<Arc<Prefixes::Prefixes>> {
     let mut prefs: Arc<Prefixes::Prefixes> = Arc::new(<Prefixes::Prefixes as ::std::default::Default>::default());
     prefs = (::match_deref::match_deref! { match &(cls.clone()) {

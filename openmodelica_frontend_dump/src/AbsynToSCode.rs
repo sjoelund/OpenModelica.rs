@@ -483,8 +483,8 @@ fn translateEnumlist(mut inAbsynEnumLiteralLst: Arc<metamodelica::List<Arc<Absyn
     Ok(outEnumLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outElementLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -515,8 +515,8 @@ pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List
     Ok(outElementLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefEquations(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
     outEquationLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -542,8 +542,8 @@ fn translateClassdefEquations(mut inAbsynClassPartLst: Arc<metamodelica::List<Ar
     Ok(outEquationLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefInitialequations(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
     outEquationLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -569,8 +569,8 @@ fn translateClassdefInitialequations(mut inAbsynClassPartLst: Arc<metamodelica::
     Ok(outEquationLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>> {
     let mut outAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
     outAlgorithmLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -601,8 +601,8 @@ fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<A
     Ok(outAlgorithmLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefConstraints(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<SCode::ConstraintSection>>> {
     let mut outConstraintLst: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
     outConstraintLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -631,8 +631,8 @@ fn translateClassdefConstraints(mut inAbsynClassPartLst: Arc<metamodelica::List<
     Ok(outConstraintLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefInitialalgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>> {
     let mut outAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
     outAlgorithmLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -801,8 +801,8 @@ fn translateAlgBranches(mut inBranches: Arc<metamodelica::List<(Arc<Absyn::Exp>,
     Ok(outBranches)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefExternaldecls(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Option<Arc<SCode::ExternalDecl>>> {
     let mut outAbsynExternalDeclOption: Option<Arc<SCode::ExternalDecl>> = None;
     outAbsynExternalDeclOption = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -901,8 +901,8 @@ pub fn translateElement(mut inElement: Arc<Absyn::Element>, mut inVisibility: SC
     Ok(outElementLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateDefineunitParam(mut inArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inArg: ArcStr) -> Result<Option<ArcStr>> {
     let mut expOpt: Option<ArcStr> = None;
     expOpt = (::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
@@ -920,8 +920,8 @@ fn translateDefineunitParam(mut inArgs: Arc<metamodelica::List<Arc<Absyn::NamedA
     Ok(expOpt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateDefineunitParam2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inArg: ArcStr) -> Result<Option<metamodelica::Real>> {
     let mut weightOpt: Option<metamodelica::Real> = None;
     weightOpt = (::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
@@ -1087,8 +1087,8 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
     Ok(outElementLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateImports(mut imp: Absyn::Import, mut visibility: SCode::Visibility, mut info: SourceInfo) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut elts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     elts = (::match_deref::match_deref! { match &(imp.clone()) {
@@ -1253,8 +1253,8 @@ fn getInfoAnnotationOrDefault(mut comment: Arc<SCode::Comment>, mut default: Sou
     info
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getInfoAnnotationOrDefault2(mut lst: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut default: SourceInfo) -> SourceInfo {
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     info = (::match_deref::match_deref! { match &(lst.clone()) {

@@ -513,8 +513,8 @@ fn xsdateTime(mut file: File::File, mut dt: Util::DateTime) -> () {
     ()
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn expString(mut exp: Arc<Exp>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(exp.clone()) {

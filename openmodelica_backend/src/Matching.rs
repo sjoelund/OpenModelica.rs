@@ -736,8 +736,8 @@ fn BFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
     Ok((outAss1, outAss2, osyst, oshared, outArg))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn BFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut parentcolum: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextQueue: Arc<metamodelica::List<i32>>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outVisitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outVisitedColums = (::match_deref::match_deref! { match &((queue.clone(), nextQueue.clone())) {
@@ -1033,8 +1033,6 @@ fn DFSBphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mu
     Ok(outVisitedColums)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn DFSBtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outVisitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outVisitedColums = 'mc: {
@@ -1340,8 +1338,6 @@ fn MC21Achecklookahead(mut dolookahaed: bool, mut rows: Arc<metamodelica::List<i
     Ok(outVisitedColums)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn MC21AtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mut l: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outVisitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outVisitedColums = 'mc: {
@@ -1378,8 +1374,6 @@ fn MC21AtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1:
     Ok(outVisitedColums)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn MC21AtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outVisitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outVisitedColums = 'mc: {
@@ -1687,8 +1681,6 @@ fn PFchecklookahead(mut dolookahaed: bool, mut rows: Arc<metamodelica::List<i32>
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PFtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mut l: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -1725,8 +1717,6 @@ fn PFtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1: Ar
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PFtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -1996,8 +1986,6 @@ fn PFPluschecklookahead(mut dolookahaed: bool, mut rows: Arc<metamodelica::List<
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PFPlustraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mut l: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut reverseRows: bool) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -2034,8 +2022,6 @@ fn PFPlustraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PFPlustraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut lookahead: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut reverseRows: bool) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -2305,8 +2291,6 @@ fn HKphase(mut i: i32, mut U: Arc<metamodelica::List<i32>>, mut nv: i32, mut ne:
     Ok((outI, outunMatched))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn HKgetUnmatched(mut U: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut inUnmatched: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outUnmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outUnmatched = 'mc: {
@@ -2341,8 +2325,8 @@ fn HKgetUnmatched(mut U: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::A
     Ok(outUnmatched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn HKBFS(mut colums: Arc<metamodelica::List<i32>>, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut i: i32, mut level: metamodelica::Array<i32>, mut lowestL: Option<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inRows: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
     let mut outRows: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     outRows = (::match_deref::match_deref! { match &(colums.clone()) {
@@ -2502,8 +2486,8 @@ fn HKBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<meta
     Ok((outEqnqueue, outRows, unmarowFound))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn HKDFS(mut unmatchedRows: Arc<metamodelica::List<(i32, i32)>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut collummarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inUnmatchedRows: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outUnmatchedRows: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outUnmatchedRows = (::match_deref::match_deref! { match &(unmatchedRows.clone()) {
@@ -2546,8 +2530,6 @@ fn HKDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32, m
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn HKDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut l: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut collummarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inMatched: bool) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -2853,8 +2835,6 @@ fn HKDWDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32,
     Ok(matched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn HKDWDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut collummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inMatched: bool) -> Result<bool> {
     let mut matched: bool = false;
     matched = 'mc: {
@@ -3179,8 +3159,8 @@ fn ABMPphase2(mut U: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32, mut n
     Ok(unMatched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn ABMPBFSphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32, mut lim: i32, mut lim1: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextqueue: Arc<metamodelica::List<i32>>, mut unMatched: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outunMatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outunMatched = (::match_deref::match_deref! { match &((queue.clone(), nextqueue.clone())) {
@@ -3790,8 +3770,6 @@ fn PR_Global_Relabel_init_l_label(mut i: i32, mut ne: i32, mut max: i32, mut l_l
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PR_Global_Relabel_init_r_label(mut i: i32, mut nv: i32, mut max: i32, mut r_label: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inQueue: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outQueue: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outQueue = 'mc: {
@@ -3868,8 +3846,6 @@ fn PR_Global_Relabel1(mut queue: Arc<metamodelica::List<i32>>, mut l_label: meta
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn PR_Global_Relabel_traverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut max: i32, mut r: i32, mut l_label: metamodelica::Array<i32>, mut r_label: metamodelica::Array<i32>, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextqueue: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outQueue: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outQueue = 'mc: {
@@ -4157,8 +4133,6 @@ fn cheapmatchingalgorithm1(mut algorithmid: i32, mut nv: i32, mut ne: i32, mut m
     Ok(outUnMatched)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn cheapmatching(mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inUnMatched: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outUnMatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outUnMatched = 'mc: {
@@ -4359,8 +4333,6 @@ fn ks_rand_cheapmatching3(mut e_id: i32, mut rows: Arc<metamodelica::List<i32>>,
     Ok((outonerows, outR))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn ks_rand_cheapmatching4(mut cols: Arc<metamodelica::List<i32>>, mut count: i32, mut col_degrees: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut inStack: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outStack: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outStack = 'mc: {
@@ -4408,10 +4380,10 @@ fn ks_rand_cheapmatching4(mut cols: Arc<metamodelica::List<i32>>, mut count: i32
 }
 
 fn getOneRows(mut n: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut degrees: metamodelica::Array<i32>, mut inOneRows: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outOneRows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outOneRows = (match n.clone() {
+    '__tco: loop {
+        match n.clone() {
         0 => {
-            inOneRows.clone().reverse()
+            return Ok(inOneRows.clone().reverse())
         },
         _ => {
             let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4421,10 +4393,10 @@ fn getOneRows(mut n: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>
             l = (lst.clone().len() as i32);
             metamodelica::arrayUpdate(degrees.clone(), n.clone(), l.clone())?;
             onerows = List::consOnTrue(intEq(l.clone(), 1), n.clone(), inOneRows.clone());
-            getOneRows(n.clone() - 1, m.clone(), degrees.clone(), onerows.clone())?
+            { (n, m, degrees, inOneRows) = (n.clone() - 1, m.clone(), degrees.clone(), onerows.clone()); continue '__tco; }
         },
-    });
-    Ok(outOneRows)
+    }
+    }
 }
 
 fn setrandArray(mut n: i32, mut randarr: metamodelica::Array<i32>) -> Result<()> {
@@ -4534,8 +4506,6 @@ fn ks_rand_match(mut stack1: Arc<metamodelica::List<i32>>, mut stack2: Arc<metam
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn ks_rand_match1(mut i: i32, mut entries: Arc<metamodelica::List<i32>>, mut stack: Arc<metamodelica::List<i32>>, mut degrees1: metamodelica::Array<i32>, mut degrees2: metamodelica::Array<i32>, mut adjacency: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outStack: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outStack = 'mc: {
@@ -4574,8 +4544,6 @@ fn ks_rand_match1(mut i: i32, mut entries: Arc<metamodelica::List<i32>>, mut sta
     Ok(outStack)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn ks_rand_match_degree(mut entries: Arc<metamodelica::List<i32>>, mut degrees: metamodelica::Array<i32>, mut ass: metamodelica::Array<i32>, mut inStack: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outStack: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outStack = 'mc: {
@@ -5480,40 +5448,43 @@ pub fn isUnAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {
     b
 }
 
-#[tailcall::tailcall]
 pub fn getMarked(mut ne: i32, mut mark: i32, mut markArr: metamodelica::Array<i32>, mut iMarked: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
-    match ne.clone() {
+    '__tco: loop {
+        match ne.clone() {
         0 => {
-            iMarked.clone()
+            return iMarked.clone()
         },
         _ => {
             let mut marked: Arc<metamodelica::List<i32>> = metamodelica::nil();
             marked = List::consOnTrue(intEq(({let __elt = markArr.borrow()[(ne.clone()-1) as usize].clone(); __elt}), mark.clone()), ne.clone(), iMarked.clone());
-            tailcall::call!{ getMarked(ne.clone() - 1, mark.clone(), markArr.clone(), marked.clone()) }
+            { (ne, mark, markArr, iMarked) = (ne.clone() - 1, mark.clone(), markArr.clone(), marked.clone()); continue '__tco; }
         },
+    }
     }
 }
 
-#[tailcall::tailcall]
 pub fn getUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut inUnassigned: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
-    match ne.clone() {
+    '__tco: loop {
+        match ne.clone() {
         0 => {
-            inUnassigned.clone()
+            return inUnassigned.clone()
         },
         _ => {
             let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
             unassigned = List::consOnTrue(intLt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 1), ne.clone(), inUnassigned.clone());
-            tailcall::call!{ getUnassigned(ne.clone() - 1, ass.clone(), unassigned.clone()) }
+            { (ne, ass, inUnassigned) = (ne.clone() - 1, ass.clone(), unassigned.clone()); continue '__tco; }
         },
+    }
     }
 }
 
-#[tailcall::tailcall]
 pub fn anyUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>) -> bool {
-    match ne.clone() {
-        0 => false,
-        _ if (intLt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 1)) => true,
-        _ => tailcall::call!{ anyUnassigned(ne.clone() - 1, ass.clone()) },
+    '__tco: loop {
+        match ne.clone() {
+        0 => return false,
+        _ if (intLt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 1)) => return true,
+        _ => { (ne, ass) = (ne.clone() - 1, ass.clone()); continue '__tco; },
+    }
     }
 }
 
@@ -5529,17 +5500,18 @@ pub fn getAssignedArray(mut ass: metamodelica::Array<i32>) -> Result<metamodelic
     Ok(outIsAssigned)
 }
 
-#[tailcall::tailcall]
 pub fn getAssigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut inAssigned: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
-    match ne.clone() {
+    '__tco: loop {
+        match ne.clone() {
         0 => {
-            inAssigned.clone()
+            return inAssigned.clone()
         },
         _ => {
             let mut assigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
             assigned = List::consOnTrue(intGt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 0), ne.clone(), inAssigned.clone());
-            tailcall::call!{ getAssigned(ne.clone() - 1, ass.clone(), assigned.clone()) }
+            { (ne, ass, inAssigned) = (ne.clone() - 1, ass.clone(), assigned.clone()); continue '__tco; }
         },
+    }
     }
 }
 
@@ -5564,8 +5536,8 @@ pub fn getEqnsforIndexReduction(mut U: Arc<metamodelica::List<i32>>, mut neqns: 
     Ok(eqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeEmptySubsets(mut index: i32, mut length: i32, mut subsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> {
     let mut oAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     oAcc = (::match_deref::match_deref! { match &(iAcc.clone()) {
@@ -5594,8 +5566,8 @@ fn appendNonEmpty(mut eqns: Arc<metamodelica::List<i32>>, mut iAcc: Arc<metamode
     oAcc
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut outSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outSubsets = (::match_deref::match_deref! { match &(U.clone()) {
@@ -5620,8 +5592,8 @@ fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamod
     Ok(outSubsets)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReductionphase(mut elst: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inEqns: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outEqns = (::match_deref::match_deref! { match &(elst.clone()) {
@@ -5643,8 +5615,8 @@ fn getEqnsforIndexReductionphase(mut elst: Arc<metamodelica::List<i32>>, mut m: 
     Ok(outEqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut nextColums: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inEqns: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outEqns = (::match_deref::match_deref! { match &((rows.clone(), nextColums.clone())) {
@@ -5783,8 +5755,6 @@ fn assignmentsArrayBooleanExpand(mut ass: metamodelica::Array<bool>, mut needed:
     Ok(outAss)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn checkAssignment(mut indx: i32, mut ne: i32, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inUnassigned: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outUnassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outUnassigned = 'mc: {
@@ -6015,20 +5985,20 @@ fn randSortSystem1<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut index: 
 
     pub type setFunc<Type_b: Clone + 'static, Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_b, Type_a) -> Result<Type_a> + 'static>;
 
-    let mut outTypeA: Type_a;
-    outTypeA = (match index.clone() {
+    '__tco: loop {
+        match index.clone() {
         0 => {
-            newTypeA.clone()
+            return Ok(newTypeA.clone())
         },
         _ => {
             let mut tb: Type_b;
             let mut ta: Type_a;
             tb = get(oldTypeA.clone(), ({let __elt = randarr.borrow()[(index.clone()-1) as usize].clone(); __elt}) + offset.clone())?;
             ta = set(tb.clone(), newTypeA.clone())?;
-            randSortSystem1(index.clone() - 1, offset.clone(), randarr.clone(), oldTypeA.clone(), ta.clone(), get.clone(), set.clone())?
+            { (index, offset, randarr, oldTypeA, newTypeA, get, set) = (index.clone() - 1, offset.clone(), randarr.clone(), oldTypeA.clone(), ta.clone(), get.clone(), set.clone()); continue '__tco; }
         },
-    });
-    Ok(outTypeA)
+    }
+    }
 }
 
 fn singularSystemError(mut eqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut actualEqn: i32, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut inAssignments1: metamodelica::Array<i32>, mut inAssignments2: metamodelica::Array<i32>, mut inArg: (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)) -> Result<()> {

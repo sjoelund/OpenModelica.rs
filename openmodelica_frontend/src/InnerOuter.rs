@@ -618,8 +618,6 @@ pub fn outerConnection(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -
     isOuter
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lookupInnerInIH(mut inTIH: TopInstance, mut inPrefix: DAE::Prefix, mut inComponentIdent: ArcStr) -> Result<InstInner> {
     let mut outInstInner: InstInner = <InstInner as ::std::default::Default>::default();
     outInstInner = 'mc: {
@@ -889,8 +887,8 @@ pub fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: Ins
     Ok(outInstInner)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inInnerOuter: Absyn::InnerOuter, mut inInstInner: InstInner) -> Result<InstHierarchy> {
     let mut outIH: InstHierarchy = metamodelica::nil();
     outIH = (::match_deref::match_deref! { match &((inIH.clone(), inInstInner.clone())) {

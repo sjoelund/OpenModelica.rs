@@ -3231,8 +3231,8 @@ fn removeLastTokenInTrees(mut ts: Arc<metamodelica::List<Arc<ParseTree>>>) -> Re
     Ok(ts)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn firstTokenInTree(mut t: Arc<ParseTree>) -> Result<Token> {
     let mut token: Token = <Token as ::std::default::Default>::default();
     token = (::match_deref::match_deref! { match &(t.clone()) {
@@ -3247,8 +3247,8 @@ fn firstTokenInTree(mut t: Arc<ParseTree>) -> Result<Token> {
     Ok(token)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn lastToken(mut t: Arc<ParseTree>) -> Result<Token> {
     let mut token: Token = <Token as ::std::default::Default>::default();
     token = (::match_deref::match_deref! { match &(t.clone()) {

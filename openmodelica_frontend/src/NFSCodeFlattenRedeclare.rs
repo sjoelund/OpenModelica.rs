@@ -523,8 +523,8 @@ fn pushRedeclareIntoExtends2(mut inName: ArcStr, mut inRedeclare: Item, mut inBa
     Ok(outExtends)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn pushRedeclareIntoExtends3(mut inRedeclare: Item, mut inName: ArcStr, mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inOutRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
     let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
     outRedeclares = (::match_deref::match_deref! { match &(inRedeclares.clone()) {
@@ -564,8 +564,8 @@ pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut
     Ok(outEnv)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Result<Item> {
     let mut outNewItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     outNewItem = (::match_deref::match_deref! { match &((inOriginalItem.clone(), inNewItem.clone())) {

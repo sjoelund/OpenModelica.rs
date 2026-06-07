@@ -1890,8 +1890,8 @@ pub mod Function {
     }
 
     pub fn isNonDefaultRecordConstructor(mut r#fn: Arc<Function>) -> bool {
-        // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-        // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+        // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+        // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
         pub fn isNonDefaultRecordConstructorPath(mut path: Arc<Absyn::Path>) -> bool {
             let mut b: bool = false;
             b = (::match_deref::match_deref! { match &(path.clone()) {
@@ -2425,8 +2425,8 @@ pub mod Function {
         Ok(())
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     fn isValidParamType(mut ty: Arc<Type::NFType>) -> Result<bool> {
         let mut isValid: bool = false;
         isValid = (::match_deref::match_deref! { match &(ty.clone()) {

@@ -810,8 +810,6 @@ pub fn getKeyOfVal<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut i
     Ok(outKey)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getKeyOfValNode<Key: Clone + 'static, Val: Clone + 'static + PartialEq>(mut inTree: Tree<Key, Val>, mut inNode: Arc<Node<Key, Val>>, mut inVal: Val) -> Result<Key> {
     let mut outKey: Key;
     outKey = 'mc: {

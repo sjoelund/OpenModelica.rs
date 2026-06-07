@@ -2060,8 +2060,6 @@ fn translateArrayList(mut inElement: i32, mut inIndex: i32, mut inFoldArg: Arc<m
     outFoldArg
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     outStmts = 'mc: {
@@ -2485,8 +2483,6 @@ fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<Avl
     Ok((outExp, funcs))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getEquationBlock(mut inInteger: i32, mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>) -> Result<Arc<BackendDAE::StrongComponent>> {
     let mut outComp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     outComp = 'mc: {
@@ -3136,8 +3132,8 @@ fn adjacencyRowAlgorithm(mut exp: Arc<DAE::Exp>, mut row: Arc<AvlSetInt::Tree>, 
     Ok(row)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn adjacencyRow1<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static>(mut inList: Arc<metamodelica::List<Type_a>>, mut inFunc: Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>, mut inArg: Type_b, mut inArg1: Type_c, mut inArg2: Type_d, mut inArg3: Type_e, mut inArg4: Type_f) -> Result<Type_c> {
     pub type FuncType<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>;
 
@@ -4044,8 +4040,8 @@ pub fn traversingadjacencyRowExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Bac
     Ok((outExp, cont, outTpl))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowExp1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inVarIndxLst: Arc<AvlSetInt::Tree>, mut diffindex: i32) -> Result<Arc<AvlSetInt::Tree>> {
     let mut outVarIndxLst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     outVarIndxLst = (::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
@@ -4076,8 +4072,8 @@ fn adjacencyRowExp1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut 
     Ok(outVarIndxLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowExp1DiscreteOrArray(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inVarIndxLst: Arc<AvlSetInt::Tree>) -> Result<Arc<AvlSetInt::Tree>> {
     let mut outVarIndxLst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     outVarIndxLst = (::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
@@ -4577,8 +4573,6 @@ fn getOldVars(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut pos:
     oldvars
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outAdjacencyMatrixT = 'mc: {
@@ -4635,8 +4629,6 @@ fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::L
     Ok(outAdjacencyMatrixT)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outAdjacencyMatrixT = 'mc: {
@@ -5254,8 +5246,6 @@ fn adjacencyMatrixDispatchEnhanced(mut vars: BackendDAE::Variables, mut eqArr: A
     Ok((outAdjacencyArray, outAdjacencyArrayT))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fillincAdjacencyMatrixTEnhanced(mut eqns: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut eqnsindxs: Arc<metamodelica::List<i32>>, mut inAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>> {
     let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
     outAdjacencyArrayT = 'mc: {
@@ -5530,8 +5520,8 @@ fn adjacencyRowEnhancedEqnLst(mut iEqns: Arc<metamodelica::List<Arc<BackendDAE::
     Ok((outRow, oSize))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmOutputs(mut algOutputs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVariables: BackendDAE::Variables, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
     let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     outRow = (::match_deref::match_deref! { match &(algOutputs.clone()) {
@@ -5550,8 +5540,8 @@ fn adjacencyRowAlgorithmOutputs(mut algOutputs: Arc<metamodelica::List<Arc<DAE::
     Ok(outRow)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmOutputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
     let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     outRow = (::match_deref::match_deref! { match &(vindx.clone()) {
@@ -5597,8 +5587,8 @@ fn adjacencyRowAlgorithmInputs(mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendDAE::
     Ok((outExp, oTpl))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmInputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
     let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     outRow = (::match_deref::match_deref! { match &(vindx.clone()) {
@@ -5688,8 +5678,6 @@ fn markNegativ(mut indx: i32, mut rowmark: metamodelica::Array<i32>, mut mark: i
     Ok(oMark)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut inRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut trytosolve: bool, mut size: i32, mut shared: Arc<BackendDAE::Shared>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
     let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     outRow = 'mc: {
@@ -6447,8 +6435,6 @@ fn transformSolvabilityForCasualTearingSet(mut inSolvab: BackendDAE::Solvability
     outSolvab
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn expCrefLstHasCref(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCr: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut outB: bool = false;
     outB = 'mc: {
@@ -7059,8 +7045,6 @@ fn getIfExpBranchVarOccurency(mut inExp: Arc<DAE::Exp>, mut inBt: Arc<BinaryTree
     Ok((outExp, cont, bt))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut vars: Arc<metamodelica::List<i32>>, mut notinder: bool, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut unsolvable: bool) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outIntegerLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outIntegerLst = 'mc: {
@@ -7412,8 +7396,6 @@ pub fn getArrayEquationSub(mut Index: i32, mut inAD: Arc<metamodelica::List<Opti
     Ok((outSubs, outList))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn containAnyVar(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVariables: BackendDAE::Variables) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = 'mc: {
@@ -7448,8 +7430,6 @@ pub fn containAnyVar(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::C
     Ok(outBoolean)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn containAnyVarWithoutStates(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVariables: BackendDAE::Variables) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = 'mc: {
@@ -7928,8 +7908,8 @@ fn traverseBackendDAEExpsJacobianEqn<Type_a: Clone + 'static>(mut inJacEntry: Ar
     Ok(outTypeA)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn traverseStateSetsJacobiansExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inStateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
@@ -9017,8 +8997,6 @@ pub fn getIndexReductionMethod(mut ostrIndexReductionMethod: Option<ArcStr>) -> 
     Ok(IndexReductionMethod)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn selectIndexReductionMethod<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut strIndexReductionMethod: ArcStr, mut inIndexReductionMethods: Arc<metamodelica::List<(Type_a, ArcStr, Type_b, ArcStr)>>) -> Result<(Type_a, ArcStr, Type_b, ArcStr)> {
     let mut outIndexReductionMethod: (Type_a, ArcStr, Type_b, ArcStr);
     outIndexReductionMethod = 'mc: {
@@ -9078,8 +9056,6 @@ pub fn getMatchingAlgorithm(mut ostrMatchingAlgorithm: Option<ArcStr>) -> Result
     Ok(matchingAlgorithm)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn selectMatchingAlgorithm<Type_a: Clone + 'static>(mut strMatchingAlgorithm: ArcStr, mut inMatchingAlgorithms: Arc<metamodelica::List<(Type_a, ArcStr)>>) -> Result<(Type_a, ArcStr)> {
     let mut outMatchingAlgorithm: (Type_a, ArcStr);
     outMatchingAlgorithm = 'mc: {
@@ -9371,8 +9347,8 @@ fn getModuleIndexes(mut inModuleName: ArcStr, mut inModuleList: Arc<metamodelica
     Ok(outIndexes)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn selectOptModules1(mut strOptModule: ArcStr, mut inOptModules: Arc<metamodelica::List<(Arc<dyn ::std::ops::Fn(Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> + 'static>, ArcStr)>>) -> Result<(Arc<dyn ::std::ops::Fn(Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> + 'static>, ArcStr)> {
     let mut outOptModule: (BackendDAEFunc::optimizationModule, ArcStr);
     outOptModule = (::match_deref::match_deref! { match &(inOptModules.clone()) {

@@ -779,8 +779,8 @@ pub fn make3Tuple<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>
     outTuple
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>, mut inAccum: i32) -> Result<i32> {
     let mut outResult: i32 = 0;
     outResult = (::match_deref::match_deref! { match &(inList.clone()) {
@@ -936,12 +936,12 @@ pub fn buildMapStr(mut inLst1: Arc<metamodelica::List<ArcStr>>, mut inLst2: Arc<
 }
 
 pub fn assoc<Key: Clone + 'static + PartialEq, Val: Clone + 'static>(mut inKey: Key, mut inList: Arc<metamodelica::List<(Key, Val)>>) -> Result<Val> {
-    let mut outValue: Val;
-    let mut k: Key;
-    let mut v: Val;
-    (k, v) = listHead(inList.clone())?;
-    outValue = if (inKey.clone() == k.clone()) {v.clone()} else {assoc(inKey.clone(), listRest(inList.clone())?)?};
-    Ok(outValue)
+    '__tco: loop {
+        let mut k: Key;
+        let mut v: Val;
+        (k, v) = listHead(inList.clone())?;
+        if (inKey.clone() == k.clone()) {return Ok(v.clone())} else {{ (inKey, inList) = (inKey.clone(), listRest(inList.clone())?); continue '__tco; }}
+    }
 }
 
 pub fn boolInt(mut inBoolean: bool) -> i32 {
@@ -1031,9 +1031,10 @@ pub fn nextPrime(mut inN: i32) -> i32 {
     outNextPrime
 }
 
-#[tailcall::tailcall]
 fn nextPrime2(mut inN: i32) -> i32 {
-    if (nextPrime_isPrime(inN.clone())) {inN.clone()} else {tailcall::call!{ nextPrime2(inN.clone() + 2) }}
+    '__tco: loop {
+        if (nextPrime_isPrime(inN.clone())) {return inN.clone()} else {{ inN = inN.clone() + 2; continue '__tco; }}
+    }
 }
 
 fn nextPrime_isPrime(mut inN: i32) -> bool {
@@ -1374,9 +1375,10 @@ pub fn referenceCompare<T1: Clone + 'static, T2: Clone + 'static>(mut ref1: T1, 
     result
 }
 
-#[tailcall::tailcall]
 pub fn gcd(mut a: i32, mut b: i32) -> i32 {
-    if (b.clone() == 0) {a.clone()} else {tailcall::call!{ gcd(b.clone(), intMod(a.clone(), b.clone())) }}
+    '__tco: loop {
+        if (b.clone() == 0) {return a.clone()} else {{ (a, b) = (b.clone(), intMod(a.clone(), b.clone())); continue '__tco; }}
+    }
 }
 
 pub fn lcm(mut a: i32, mut b: i32) -> i32 {

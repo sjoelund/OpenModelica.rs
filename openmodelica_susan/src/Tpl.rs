@@ -257,8 +257,8 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
     Ok(outText)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<Text> {
     let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inChars.clone())) {
@@ -387,8 +387,8 @@ fn isAtStartOfLine(mut text: Text) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(inTok.clone()) {

@@ -462,8 +462,8 @@ fn convertStateSelectAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<O
     Ok(stateSelect)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);

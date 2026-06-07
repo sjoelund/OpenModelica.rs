@@ -716,8 +716,8 @@ pub fn importDeclarations(mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Res
     Ok(outMMDecls)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn transformTemplateDefs(mut inTemplateDefsRest: Arc<metamodelica::List<(ArcStr, TemplateDef)>>, mut inTplPackage: TemplPackage, mut inAccMMDecls: Arc<metamodelica::List<MMDeclaration>>) -> Result<Arc<metamodelica::List<MMDeclaration>>> {
     let mut outMMDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
     outMMDecls = (::match_deref::match_deref! { match &((inTemplateDefsRest.clone(), inTplPackage.clone(), inAccMMDecls.clone())) {
@@ -2604,8 +2604,6 @@ pub fn mmEnsureNonFunctionArg(mut inMMArg: Arc<MMExp>, mut inTargetType: Arc<Typ
     Ok((outMMArg, outStmts, outLocals))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn elabOutTextArgs(mut inMMArguments: Arc<metamodelica::List<Arc<MMExp>>>, mut inInArgs: TypedIdents, mut inOutArgs: TypedIdents, mut inTplPackage: TemplPackage) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outLhsArgs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outLhsArgs = 'mc: {
@@ -3510,8 +3508,6 @@ pub fn elabMatchCases(mut inItArgVal: (Arc<MMExp>, Arc<TypeSignature>), mut inIm
     Ok((outMMMCases, outLocals, outScopeEnv, outMMDecls, outAssignedIdents))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getAssignedIdents(mut inStatements: Arc<metamodelica::List<Arc<MMExp>>>, mut inAssignedIdents: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outAssignedIdents: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outAssignedIdents = 'mc: {
@@ -5013,8 +5009,6 @@ pub fn updateLocalsForMatchingExp(mut inIdent: Ident, mut inEncIdent: Ident, mut
     Ok((outLocalIdent, outLocalNames, outLocals))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn usedInImmediateLetScope(mut inIdent: Ident, mut inFreshIdent: Ident, mut inScopeEnv: ScopeEnv) -> Result<bool> {
     let mut outIsUsed: bool = false;
     outIsUsed = 'mc: {
@@ -5866,8 +5860,6 @@ pub fn getTypeInfo(mut inTypePackageOpt: Option<Arc<PathIdent>>, mut inTypeIdent
     Ok((outTypePackage, outTypeInfo))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<Arc<TypeSignature>> {
     let mut outType: Arc<TypeSignature> = Arc::new(TypeSignature::BOOLEAN_TYPE);
     outType = 'mc: {
@@ -5902,8 +5894,6 @@ fn deAliasedType(mut inType: Arc<TypeSignature>, mut inASTDefs: Arc<metamodelica
     Ok(outType)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn typesEqual(mut inType: Arc<TypeSignature>, mut inTypeConcrete: Arc<TypeSignature>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut inSetTypeVars: TypedIdents, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<TypedIdents> {
     let mut outSetTypeVars: TypedIdents = metamodelica::nil();
     outSetTypeVars = 'mc: {
@@ -6075,8 +6065,8 @@ fn typesEqualConcrete(mut inTypeA: Arc<TypeSignature>, mut inTypeB: Arc<TypeSign
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn typesEqualList(mut inTypeAList: Arc<metamodelica::List<Arc<TypeSignature>>>, mut inTypeBList: Arc<metamodelica::List<Arc<TypeSignature>>>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut inSetTypeVars: TypedIdents, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<TypedIdents> {
     let mut outSetTypeVars: TypedIdents = metamodelica::nil();
     outSetTypeVars = (::match_deref::match_deref! { match &((inTypeAList.clone(), inTypeBList.clone(), inTypeVars.clone(), inSetTypeVars.clone(), inASTDefs.clone())) {
@@ -6730,8 +6720,6 @@ pub fn fullyQualifyTemplateTypeSignature(mut inTemplateTypeSignature: Arc<TypeSi
     Ok(outFullyQualifiedTypeSignature)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lookupTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static>(mut inList: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inItemA: Type_a) -> Result<Type_b> {
     let mut outItemB: Type_b;
     outItemB = 'mc: {
@@ -6814,8 +6802,6 @@ fn lookupDeleteTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 's
     Ok((outItemB, outList))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn alignTupleList<Type_a: Clone + 'static + PartialEq, Type_b: Clone + 'static, Type_c: Clone + 'static>(mut inListToAlign: Arc<metamodelica::List<(Type_a, Type_b)>>, mut inListAlignBy: Arc<metamodelica::List<(Type_a, Type_c)>>) -> Result<Arc<metamodelica::List<(Type_a, Type_b)>>> {
     let mut outAlignedList: Arc<metamodelica::List<(Type_a, Type_b)>> = metamodelica::nil();
     outAlignedList = 'mc: {
@@ -6911,8 +6897,6 @@ fn addSusanNotification(mut inErrMsg: ArcStr, mut inInfo: SourceInfo) -> Result<
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
     let mut outCanBeUnquoted: bool = false;
     outCanBeUnquoted = 'mc: {
@@ -6950,8 +6934,8 @@ pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -
     Ok(outCanBeUnquoted)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn canBeEscapedUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>) -> bool {
     let mut outCanBeUnquoted: bool = false;
     outCanBeUnquoted = (::match_deref::match_deref! { match &(inChars.clone()) {

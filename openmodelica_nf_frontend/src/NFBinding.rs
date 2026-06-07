@@ -452,8 +452,8 @@ pub fn getInfo(mut binding: Arc<NFBinding>) -> SourceInfo {
     info
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut binding: Arc<NFBinding>) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(binding.clone()) {
@@ -492,8 +492,8 @@ pub fn isTyped(mut binding: Arc<NFBinding>) -> bool {
     isTyped
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toString(mut binding: Arc<NFBinding>, mut prefix: ArcStr) -> Result<ArcStr> {
     let mut string: ArcStr = arcstr::literal!("");
     string = ((::match_deref::match_deref! { match &(binding.clone()) {

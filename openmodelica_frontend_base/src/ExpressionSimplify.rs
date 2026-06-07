@@ -2239,8 +2239,6 @@ fn simplifyCatArg(mut arg: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     Ok(outArg)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn simplifyCat2(mut dim: i32, mut ies: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut changed: bool) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut oes: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     oes = 'mc: {
@@ -2670,8 +2668,6 @@ fn simplifyCref(mut origExp: Arc<DAE::Exp>, mut inCREF: ComponentRef, mut inType
     Ok(exp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn simplifyCref2(mut inExp: Arc<DAE::Exp>, mut inSsl: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
@@ -2798,8 +2794,6 @@ fn simplifyCrefMM1(mut ident: ArcStr, mut ty: Arc<DAE::Type>, mut ssl: Arc<metam
     outExp
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn simplify2(mut inExp: Arc<DAE::Exp>, mut simplifyAddOrSub: bool, mut simplifyMulOrDiv: bool) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4123,8 +4117,6 @@ fn simplifyAsubCref(mut cr: Arc<DAE::ComponentRef>, mut sub: Arc<DAE::Exp>) -> R
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
@@ -6618,19 +6610,20 @@ pub fn simplifyRangeReal(mut inStart: metamodelica::Real, mut inStep: metamodeli
     Ok(outValues)
 }
 
-#[tailcall::tailcall]
 fn simplifyRangeReal2(mut inStart: metamodelica::Real, mut inStep: metamodelica::Real, mut inSteps: i32, mut inValues: Arc<metamodelica::List<metamodelica::Real>>) -> Arc<metamodelica::List<metamodelica::Real>> {
-    match inSteps.clone() {
+    '__tco: loop {
+        match inSteps.clone() {
         (-1) => {
-            inValues.clone()
+            return inValues.clone()
         },
         _ => {
             let mut next: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut vals: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
             next = inStart.clone() + inStep.clone() * intReal(inSteps.clone());
             vals = metamodelica::cons(next.clone(), inValues.clone());
-            tailcall::call!{ simplifyRangeReal2(inStart.clone(), inStep.clone(), inSteps.clone() - 1, vals.clone()) }
+            { (inStart, inStep, inSteps, inValues) = (inStart.clone(), inStep.clone(), inSteps.clone() - 1, vals.clone()); continue '__tco; }
         },
+    }
     }
 }
 
@@ -6943,8 +6936,8 @@ fn simplifyReductionFoldPhase2(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>
     Ok(exp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasZeroLengthIterator(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(inIters.clone()) {

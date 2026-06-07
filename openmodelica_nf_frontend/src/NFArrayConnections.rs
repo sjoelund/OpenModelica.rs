@@ -203,8 +203,8 @@ fn collect(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel:
     Ok((flatModel, conns))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isConnection(mut eq: Arc<Equation::NFEquation>) -> bool {
     let mut isConn: bool = false;
     isConn = (::match_deref::match_deref! { match &(eq.clone()) {

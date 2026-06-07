@@ -244,8 +244,6 @@ pub fn clone(mut inGraph: Graph) -> Result<Graph> {
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn updateComp(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = 'mc: {
@@ -347,8 +345,6 @@ pub fn updateInstance(mut inRef: Ref, mut inVar: Arc<DAE::Var>) -> Result<Ref> {
     Ok(outRef)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<DAE::Mod>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = 'mc: {
@@ -408,8 +404,6 @@ fn updateVarAndMod(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inMod: Arc<
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn updateClass(mut inGraph: Graph, mut inElement: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, mut inMod: Arc<DAE::Mod>, mut instStatus: FCore::Status, mut inTargetGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = 'mc: {
@@ -849,8 +843,6 @@ pub fn crefStripGraphScopePrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv
     Ok(outCref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn crefStripGraphScopePrefix2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     outCref = 'mc: {
@@ -921,8 +913,8 @@ pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph,
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn pathStripGraphScopePrefix2(mut inPath: Arc<Absyn::Path>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((inPath.clone(), inEnvPath.clone(), stripPartial.clone())) {
@@ -1118,8 +1110,6 @@ pub fn getScopeName(mut inGraph: Graph) -> Result<Name> {
     Ok(name)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn checkScopeType(mut inScope: Scope, mut inScopeType: Option<FCore::ScopeType>) -> Result<bool> {
     let mut yes: bool = false;
     yes = 'mc: {
@@ -1178,8 +1168,6 @@ pub fn lastScopeRestriction(mut inGraph: Graph) -> Result<SCode::Restriction> {
     Ok(outRestriction)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getScopeRestriction(mut inScope: Scope) -> Result<SCode::Restriction> {
     let mut outRestriction: SCode::Restriction = SCode::Restriction::R_BLOCK;
     outRestriction = 'mc: {
@@ -1604,8 +1592,8 @@ pub fn graphPrefixOf(mut inPrefixEnv: Graph, mut inEnv: Graph) -> Result<bool> {
     Ok(outIsPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn graphPrefixOf2(mut inPrefixEnv: Scope, mut inEnv: Scope) -> Result<bool> {
     let mut outIsPrefix: bool = false;
     outIsPrefix = (::match_deref::match_deref! { match &((inPrefixEnv.clone(), inEnv.clone())) {

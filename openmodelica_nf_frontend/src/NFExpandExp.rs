@@ -229,8 +229,8 @@ pub fn expandCref3(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<S
     Ok(arrayExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut comb: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut restSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
     let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();

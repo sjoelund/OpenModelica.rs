@@ -133,8 +133,8 @@ pub fn addRedeclareAsElementsToExtends(mut inElements: Arc<metamodelica::List<Ar
     Ok(outExtendsElements)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
     let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     outSubMods = (::match_deref::match_deref! { match &((inFinal.clone(), inEach.clone(), inElements.clone())) {

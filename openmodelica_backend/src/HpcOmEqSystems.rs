@@ -883,8 +883,6 @@ fn updateIndicesInComp(mut compIn: Arc<BackendDAE::StrongComponent>, mut varOffs
     Ok(compOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn buildNewResidualEquation(mut resIdx: i32, mut aCoeffLst: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>>, mut a0CoeffLst: Arc<metamodelica::List<BackendDAE::Var>>, mut tvars: Arc<metamodelica::List<BackendDAE::Var>>, mut resEqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut resEqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     resEqsOut = 'mc: {
@@ -941,8 +939,6 @@ fn buildNewResidualEquation(mut resIdx: i32, mut aCoeffLst: Arc<metamodelica::Li
     Ok(resEqsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn buildNewResidualEquation2(mut idx: i32, mut coeffs: Arc<metamodelica::List<BackendDAE::Var>>, mut tVars: Arc<metamodelica::List<BackendDAE::Var>>, mut expIn: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut expOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     expOut = 'mc: {
@@ -1705,8 +1701,6 @@ fn ChiosCondensation2(mut systemIn: EqSys, mut iterIdx: i32, mut addEqsIn: Arc<m
     Ok((addEqsOut, addVarsOut))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn generateCramerEqs(mut varIdcs: Arc<metamodelica::List<i32>>, mut dim: i32, mut vectorX: metamodelica::Array<BackendDAE::Var>, mut vectorB: metamodelica::Array<Arc<DAE::Exp>>, mut matrixA: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut eqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     eqsOut = 'mc: {

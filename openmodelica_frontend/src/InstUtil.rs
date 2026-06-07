@@ -716,8 +716,8 @@ pub fn isBuiltInClass(mut className: ArcStr) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn equalityConstraintOutputDimension(mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> i32 {
     let mut outDimension: i32 = 0;
     outDimension = (::match_deref::match_deref! { match &(inElements.clone()) {
@@ -1367,8 +1367,6 @@ fn removeExtBindings(mut elements: Arc<metamodelica::List<(Arc<SCode::Element>, 
     outElements
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getModsForDep(mut inDepCref: Arc<Absyn::ComponentRef>, mut inElems: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>) -> Result<Arc<DAE::Mod>> {
     let mut omods: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     omods = 'mc: {
@@ -1489,8 +1487,8 @@ fn printGraph(mut env: FCore::Graph, mut g: Arc<metamodelica::List<((Arc<SCode::
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getDepsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAllElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut inDependencies: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut isFunction: bool) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>> {
     let mut outDependencies: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
     outDependencies = (::match_deref::match_deref! { match &((inExps.clone(), inDependencies.clone())) {
@@ -1663,8 +1661,6 @@ pub fn getExpsFromMod(mut inMod: Arc<SCode::Mod>) -> Result<(Arc<metamodelica::L
     Ok((outBindingExp, outSubsExps))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getCrefFromDim(mut inArrayDim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outAbsynComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outAbsynComponentRefLst = 'mc: {
@@ -1841,8 +1837,6 @@ fn getExpsFromExternalDecl(mut inExternalDecl: Option<Arc<SCode::ExternalDecl>>)
     Ok(outExps)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getExpsFromDefaults(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inAcc: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Exp>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     outExps = 'mc: {
@@ -2217,8 +2211,8 @@ algorithm
   end match;
 end extendsElts;
 */
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn componentElts(mut inSCodeElementLst: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
     let mut outSCodeElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outSCodeElementLst = (::match_deref::match_deref! { match &(inSCodeElementLst.clone()) {
@@ -2426,8 +2420,6 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
     Ok((cache, env, ih))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getCrefsFromCompdims(mut inComponents: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outCrefs = 'mc: {
@@ -2900,8 +2892,8 @@ pub fn removeOptCrefFromCrefs(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::Com
     Ok(outCrefs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removeCrefFromCrefs(mut inAbsynComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outAbsynComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outAbsynComponentRefLst = (::match_deref::match_deref! { match &((inAbsynComponentRefLst.clone(), inComponentRef.clone())) {
@@ -2952,8 +2944,8 @@ pub fn keepConstrainingTypeModifersOnly(mut inMod: Arc<DAE::Mod>, mut elems: Arc
     Ok(filteredMod)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn keepConstrainingTypeModifersOnly2(mut isubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut elems: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Arc<DAE::SubMod>>>> {
     let mut osubs: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
     osubs = (::match_deref::match_deref! { match &((isubs.clone(), elems.clone())) {
@@ -2974,8 +2966,6 @@ fn keepConstrainingTypeModifersOnly2(mut isubs: Arc<metamodelica::List<Arc<DAE::
     Ok(osubs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn extractConstrainingComps(mut cc: Option<Arc<SCode::ConstrainClass>>, mut env: FCore::Graph, mut pre: DAE::Prefix) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     elems = 'mc: {
@@ -4085,8 +4075,6 @@ fn elabArraydimType(mut inType: Arc<DAE::Type>, mut inArrayDim: Arc<metamodelica
     Ok(outDimensions)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn elabArraydimType2(mut inType: Arc<DAE::Type>, mut inArrayDim: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
     let mut outDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     outDimensions = 'mc: {
@@ -4231,8 +4219,6 @@ fn getDeriveAnnotation2(mut ann: Arc<SCode::Annotation>, mut elemDecl: Arc<metam
     Ok(element)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getDeriveAnnotation3(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut elemDecl: Arc<metamodelica::List<Arc<SCode::Element>>>, mut baseFunc: Arc<Absyn::Path>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<Arc<metamodelica::List<DAE::FunctionDefinition>>> {
     let mut element: Arc<metamodelica::List<DAE::FunctionDefinition>> = metamodelica::nil();
     element = 'mc: {
@@ -4356,8 +4342,6 @@ fn getDeriveCondition(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
     Ok(outconds)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn setFunctionInputIndex(mut inElemDecl: Arc<metamodelica::List<Arc<SCode::Element>>>, mut r#str: ArcStr, mut currPos: i32) -> Result<i32> {
     let mut index: i32 = 0;
     index = 'mc: {
@@ -4425,8 +4409,6 @@ fn extractNameAndExp(mut m: Arc<DAE::SubMod>) -> (ArcStr, DAE::derivativeCond) {
     (inputVar, cond)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getDerivativeSubModsOptDefault(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPrefix: DAE::Prefix) -> Result<Option<Arc<Absyn::Path>>> {
     let mut defaultDerivative: Option<Arc<Absyn::Path>> = None;
     defaultDerivative = 'mc: {
@@ -5164,8 +5146,6 @@ pub fn makeDaeDirection(mut inDirection: Absyn::Direction) -> Result<DAE::VarDir
     Ok(outDirection)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn mktype(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::State, mut inTypesVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inTypesTypeOption: Option<Arc<DAE::Type>>, mut inEqualityConstraint: Option<(Arc<Absyn::Path>, i32, DAE::InlineType)>, mut inClass: Arc<SCode::Element>, mut inheritedComment: Arc<SCode::Comment>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = 'mc: {
@@ -5355,8 +5335,8 @@ pub fn mktype(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::State, mut in
     Ok(outType)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn arrayTTypeToClassInfState(mut arrayType: Arc<DAE::Type>) -> Result<ClassInf::State> {
     let mut classInfState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     classInfState = (::match_deref::match_deref! { match &(arrayType.clone()) {
@@ -7161,8 +7141,8 @@ pub fn redeclareBasicType(mut r#mod: Arc<DAE::Mod>) -> Result<bool> {
     Ok(isRedeclareOfBasicType)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn optimizeFunctionCheckForLocals(mut path: Arc<Absyn::Path>, mut inElts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut oalg: Option<Arc<DAE::Element>>, mut acc: Arc<metamodelica::List<Arc<DAE::Element>>>, mut invars: Arc<metamodelica::List<ArcStr>>, mut outvars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut outElts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     outElts = (::match_deref::match_deref! { match &((inElts.clone(), oalg.clone())) {
@@ -7202,8 +7182,8 @@ pub fn optimizeFunctionCheckForLocals(mut path: Arc<Absyn::Path>, mut inElts: Ar
     Ok(outElts)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn optimizeLastStatementTail(mut path: Arc<Absyn::Path>, mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut invars: Arc<metamodelica::List<ArcStr>>, mut outvars: Arc<metamodelica::List<ArcStr>>, mut acc: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut ostmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     ostmts = (::match_deref::match_deref! { match &(inStmts.clone()) {
@@ -7400,8 +7380,6 @@ fn optimizeStatementTail3(mut path: Arc<Absyn::Path>, mut rhs: Arc<DAE::Exp>, mu
     Ok((orhs, isTailRecursive))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn optimizeStatementTailMatchCases(mut path: Arc<Absyn::Path>, mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut changed: bool, mut inAcc: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut vars: Arc<metamodelica::List<ArcStr>>, mut lhsVars: Arc<metamodelica::List<ArcStr>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<DAE::MatchCase>>>> {
     let mut ocases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
     ocases = 'mc: {
@@ -7538,8 +7516,8 @@ pub fn checkFunctionDefUse(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>,
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn checkFunctionDefUse2(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut alg: Option<Arc<metamodelica::List<Arc<DAE::Statement>>>>, mut inUnbound: Arc<metamodelica::List<ArcStr>>, mut inOutputs: Arc<metamodelica::List<ArcStr>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outUnbound: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outUnbound = (::match_deref::match_deref! { match &((elts.clone(), alg.clone(), inUnbound.clone(), inOutputs.clone())) {
@@ -7788,8 +7766,8 @@ fn checkFunctionDefUseElse(mut inElse: Arc<DAE::Else>, mut inUnbound: Arc<metamo
     Ok(outUnbound)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn crefFiltering(mut inExp: Arc<DAE::Exp>, mut inUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outUnbound: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outUnbound = (::match_deref::match_deref! { match &((inExp.clone(), inUnbound.clone())) {
@@ -7959,8 +7937,6 @@ pub fn checkParallelismWRTEnv(mut inEnv: FCore::Graph, mut inName: ArcStr, mut i
     Ok(isValid)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn instDimsHasZeroDims(mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>) -> Result<bool> {
     let mut outHasZeroDims: bool = false;
     outHasZeroDims = 'mc: {

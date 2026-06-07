@@ -1286,8 +1286,8 @@ pub mod SimVars {
         Ok(part_vars)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getStrongComponentVars(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
         let mut part_vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         part_vars = (::match_deref::match_deref! { match &(comp.clone()) {

@@ -912,8 +912,8 @@ pub fn hasDiscreteVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE:
     outBoolean
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasContinuousVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inBackendDAEVarLst.clone()) {

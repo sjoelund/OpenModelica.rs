@@ -159,8 +159,8 @@ fn makeLabel(mut sl: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
     Ok(s2)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeLabelReq(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut inString: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inStringLst.clone()) {
@@ -248,8 +248,8 @@ fn makeAttr(mut l: Arc<metamodelica::List<Attribute>>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeAttrReq(mut inAttributeLst: Arc<metamodelica::List<Attribute>>, mut inString: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inAttributeLst.clone()) {

@@ -148,8 +148,8 @@ pub fn firstName(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     outCref = (::match_deref::match_deref! { match &(inPrefix.clone()) {
@@ -166,8 +166,8 @@ pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>)
     Ok(outCref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
@@ -239,8 +239,8 @@ pub fn fromPath(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Prefix>> {
     Ok(outPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn fromPath2(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
     let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
     outPrefix = (::match_deref::match_deref! { match &(inPath.clone()) {
@@ -264,8 +264,8 @@ pub fn fromStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<Pre
     outPrefix
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn fromStringList2(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut inPrefix: Arc<Prefix>) -> Arc<Prefix> {
     let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
     outPrefix = (::match_deref::match_deref! { match &(inStrings.clone()) {
@@ -320,8 +320,8 @@ pub fn toStrWithEmpty(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isPackagePrefix(mut inPrefix: Arc<Prefix>) -> bool {
     let mut outIsPackagePrefix: bool = false;
     outIsPackagePrefix = (::match_deref::match_deref! { match &(inPrefix.clone()) {

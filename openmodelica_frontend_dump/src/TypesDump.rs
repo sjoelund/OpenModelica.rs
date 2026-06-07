@@ -103,8 +103,8 @@ pub fn unparseOptionEqMod(mut eq: Option<DAE::EqMod>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inType.clone()) {
@@ -1092,8 +1092,6 @@ pub fn printFargStr(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -1326,8 +1324,8 @@ pub fn printCodeTypeStr(mut ct: DAE::CodeType) -> ArcStr {
     r#str
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getDimensions(mut inType: Arc<DAE::Type>) -> Arc<metamodelica::List<Arc<DAE::Dimension>>> {
     let mut outDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     outDimensions = (::match_deref::match_deref! { match &(inType.clone()) {

@@ -295,8 +295,6 @@ pub fn checkDuplicateRedeclarations(mut inRedeclare: Arc<NFSCodeEnv::Redeclarati
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn checkDuplicateRedeclarations2(mut inRedeclareName: ArcStr, mut inRedeclareInfo: SourceInfo, mut inRedeclarations: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<bool> {
     let mut outIsDuplicate: bool = false;
     outIsDuplicate = 'mc: {

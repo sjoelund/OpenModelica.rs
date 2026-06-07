@@ -2649,8 +2649,6 @@ fn getElementDependenciesTraverserExit(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc
     Ok((outExp, outArg))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn compareIterators(mut inRiters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut inIters: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outIters: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outIters = 'mc: {

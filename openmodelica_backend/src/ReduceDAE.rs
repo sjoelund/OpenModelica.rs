@@ -179,8 +179,6 @@ fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<me
     Ok(outVarRepl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn meanValueReplacements2(mut inVarRepl: BackendVarTransform::VariableReplacements, mut inVarList: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut inValuesList: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outVarRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     outVarRepl = 'mc: {
@@ -2675,8 +2673,8 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
     Ok((outVariables, outString))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inList: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outList = (::match_deref::match_deref! { match &((expLst.clone(), inList.clone())) {

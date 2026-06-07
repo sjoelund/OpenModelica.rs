@@ -128,8 +128,8 @@ pub fn fromOption<T: Clone + 'static>(mut inElement: Option<T>) -> Arc<metamodel
     outList
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEqual<T: Clone + 'static + PartialEq>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>, mut inEqualLength: bool) -> bool {
     let mut outIsEqual: bool = false;
     outIsEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone(), inEqualLength.clone())) {
@@ -153,8 +153,8 @@ pub fn isEqual<T: Clone + 'static + PartialEq>(mut inList1: Arc<metamodelica::Li
     outIsEqual
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEqualOnTrue<T1: Clone + 'static, T2: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>) -> Result<bool> {
     pub type CompFunc<T1: Clone + 'static, T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>;
 
@@ -198,8 +198,8 @@ pub fn allEqual<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut 
     Ok(outAllEqual)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn compareLength<T1: Clone + 'static, T2: Clone + 'static>(mut list1: Arc<metamodelica::List<T1>>, mut list2: Arc<metamodelica::List<T2>>) -> Result<i32> {
     let mut res: i32 = 0;
     res = (::match_deref::match_deref! { match &((list1.clone(), list2.clone())) {
@@ -239,8 +239,8 @@ pub fn compare<T1: Clone + 'static, T2: Clone + 'static>(mut list1: Arc<metamode
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isPrefixOnTrue<T1: Clone + 'static, T2: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>) -> Result<bool> {
     pub type CompFunc<T1: Clone + 'static, T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<bool> + 'static>;
 
@@ -713,8 +713,8 @@ pub fn sortedUniqueOnlyDuplicates<T: Clone + 'static>(mut inList: Arc<metamodeli
     Ok(outDuplicateElements)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn merge<T: Clone + 'static>(mut inLeft: Arc<metamodelica::List<T>>, mut inRight: Arc<metamodelica::List<T>>, mut inCompFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<T>>) -> Result<Arc<metamodelica::List<T>>> {
     pub type CompareFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
@@ -2621,8 +2621,8 @@ pub fn thread3MapFold<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'sta
     Ok((outList, outArg))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn threadFold1<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, FT: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inFoldFunc: Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, FT) -> Result<FT> + 'static>, mut inArg1: ArgT1, mut inFoldArg: FT) -> Result<FT> {
     pub type FoldFunc<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, FT) -> Result<FT> + 'static>;
 
@@ -2641,8 +2641,8 @@ pub fn threadFold1<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'sta
     Ok(outFoldArg)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn threadFold2<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inFoldFunc: Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, ArgT2, FT) -> Result<FT> + 'static>, mut inArg1: ArgT1, mut inArg2: ArgT2, mut inFoldArg: FT) -> Result<FT> {
     pub type FoldFunc<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, ArgT2, FT) -> Result<FT> + 'static>;
 
@@ -2661,8 +2661,8 @@ pub fn threadFold2<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'sta
     Ok(outFoldArg)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn threadFold3<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, ArgT3: Clone + 'static, FT: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inFoldFunc: Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, ArgT2, ArgT3, FT) -> Result<FT> + 'static>, mut inArg1: ArgT1, mut inArg2: ArgT2, mut inArg3: ArgT3, mut inFoldArg: FT) -> Result<FT> {
     pub type FoldFunc<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, ArgT3: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2, ArgT1, ArgT2, ArgT3, FT) -> Result<FT> + 'static>;
 
@@ -2681,8 +2681,8 @@ pub fn threadFold3<T1: Clone + 'static, T2: Clone + 'static, ArgT1: Clone + 'sta
     Ok(outFoldArg)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn threadFold<T1: Clone + 'static, T2: Clone + 'static, FT: Clone + 'static>(mut inList1: Arc<metamodelica::List<T1>>, mut inList2: Arc<metamodelica::List<T2>>, mut inFoldFunc: Arc<dyn ::std::ops::Fn(T1, T2, FT) -> Result<FT> + 'static>, mut inFoldArg: FT) -> Result<FT> {
     pub type FoldFunc<T1: Clone + 'static, T2: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2, FT) -> Result<FT> + 'static>;
 
@@ -3682,8 +3682,8 @@ fn combinationMap_tail<TI: Clone + 'static, TO: Clone + 'static>(mut inElements:
     Ok(outElements)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn allReferenceEq<T: Clone + 'static + metamodelica::ReferenceEq>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> bool {
     let mut outEqual: bool = false;
     outEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
@@ -3896,8 +3896,8 @@ fn allCombinations2<T: Clone + 'static>(mut ilst: Arc<metamodelica::List<Arc<met
     out
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn allCombinations3<T: Clone + 'static>(mut ilst1: Arc<metamodelica::List<T>>, mut ilst2: Arc<metamodelica::List<Arc<metamodelica::List<T>>>>, mut iacc: Arc<metamodelica::List<Arc<metamodelica::List<T>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<T>>>> {
     let mut out: Arc<metamodelica::List<Arc<metamodelica::List<T>>>> = metamodelica::nil();
     out = (::match_deref::match_deref! { match &(ilst1.clone()) {

@@ -396,8 +396,8 @@ pub fn isTrue(mut exp: Arc<NFExpression>) -> bool {
     isTrue
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isAllTrue(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut isTrue: bool = false;
     isTrue = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -1169,8 +1169,8 @@ pub fn compareList(mut expl1: Arc<metamodelica::List<Arc<NFExpression>>>, mut ex
     Ok(comp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn typeOf(mut exp: Arc<NFExpression>) -> Arc<Type::NFType> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -2369,8 +2369,8 @@ pub fn toStringTyped(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toString(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut t: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -2467,8 +2467,8 @@ pub fn toString(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toFlatString(mut exp: Arc<NFExpression>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut t: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -2643,8 +2643,8 @@ pub fn multaryFlatString(mut arguments: Arc<metamodelica::List<Arc<NFExpression>
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn priority(mut exp: Arc<NFExpression>, mut lhs: bool) -> Result<i32> {
     let mut priority: i32 = 0;
     priority = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -2689,8 +2689,8 @@ pub fn isNonAssociativeExp(mut exp: Arc<NFExpression>) -> bool {
     isAssociative
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getName(mut exp: Arc<NFExpression>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &(exp.clone()) {
@@ -2768,8 +2768,8 @@ pub fn computeNominal(mut exp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     Ok(exp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toAbsyn(mut exp: Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> {
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     aexp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -2914,8 +2914,8 @@ pub fn toAbsyn(mut exp: Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> {
     Ok(aexp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toDAE(mut exp: Arc<NFExpression>, mut allowEmpty: bool) -> Result<Arc<DAE::Exp>> {
     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     dexp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -3179,8 +3179,8 @@ pub fn toDAEValueRecord(mut ty: Arc<Type::NFType>, mut path: Arc<Path>, mut args
     Ok(value)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dimensionCount(mut exp: Arc<NFExpression>) -> Result<i32> {
     let mut dimCount: i32 = 0;
     dimCount = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -4937,8 +4937,8 @@ pub fn containsShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops:
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayFirstScalar(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = Arc::new(NFExpression::END);
     exp = (::match_deref::match_deref! { match &(arrayExp.clone()) {
@@ -5074,8 +5074,8 @@ pub fn isSubstitute(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isZero(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5095,8 +5095,8 @@ pub fn isNonZero(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isOne(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5111,8 +5111,8 @@ pub fn isOne(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isMinusOne(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut isOne: bool = false;
     isOne = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5136,8 +5136,8 @@ pub fn isNaN(mut nan: Arc<NFExpression>) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut positive: bool = false;
     positive = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5152,8 +5152,8 @@ pub fn isPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(positive)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut negative: bool = false;
     negative = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5168,8 +5168,8 @@ pub fn isNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(negative)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNonPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5184,8 +5184,8 @@ pub fn isNonPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNonNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5200,8 +5200,8 @@ pub fn isNonNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isGreaterOrEqual(mut lhs: Arc<NFExpression>, mut rhs: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
@@ -5259,8 +5259,8 @@ pub fn isLiteral(mut exp: Arc<NFExpression>) -> Result<bool> {
     Ok(literal)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isLiteralXML(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut literal: bool = false;
     literal = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5345,8 +5345,8 @@ pub fn isReal(mut exp: Arc<NFExpression>) -> bool {
     isReal
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isConstNumber(mut exp: Arc<NFExpression>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -5664,8 +5664,8 @@ pub fn unbox(mut boxedExp: Arc<NFExpression>) -> Arc<NFExpression> {
     exp
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNegated(mut exp: Arc<NFExpression>) -> bool {
     let mut negated: bool = false;
     negated = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -6196,8 +6196,8 @@ pub fn enumIndexExp(mut enumExp: Arc<NFExpression>) -> Result<Arc<NFExpression>>
     Ok(indexExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toScalar(mut exp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {

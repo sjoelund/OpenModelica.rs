@@ -1016,8 +1016,8 @@ pub fn subscriptIndexExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE
     Ok(outExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn subscriptEqual(mut inSubscriptLst1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscriptLst2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &((inSubscriptLst1.clone(), inSubscriptLst2.clone())) {

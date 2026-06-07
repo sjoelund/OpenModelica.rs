@@ -123,8 +123,8 @@ impl Default for NFDimension {
     fn default() -> Self { Self::BOOLEAN }
 }
 pub use self::NFDimension::{RAW_DIM,UNTYPED,INTEGER,BOOLEAN,ENUM,EXP,RESIZABLE,UNKNOWN};
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> Result<Arc<NFDimension>> {
     let mut dim: Arc<NFDimension> = Arc::new(NFDimension::BOOLEAN);
     dim = (::match_deref::match_deref! { match &(exp.clone()) {

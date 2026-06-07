@@ -57,8 +57,8 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::DoubleEnded;
 use openmodelica_util_datatypes_basic::List;
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn buildWithin(mut inPath: Arc<Absyn::Path>) -> Result<Absyn::Within> {
     let mut outWithin: Absyn::Within = Absyn::Within::TOP;
     outWithin = (::match_deref::match_deref! { match &(inPath.clone()) {
@@ -89,8 +89,8 @@ pub fn updateProgram(mut inNewProgram: Absyn::Program, mut inOldProgram: Absyn::
     Ok(outProgram)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut w: Absyn::Within, mut inOldProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
     let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     outProgram = (::match_deref::match_deref! { match &((inNewClasses.clone(), w.clone(), inOldProgram.clone())) {
@@ -118,8 +118,6 @@ pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>
     Ok(outProgram)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getClassnamesInParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outStringLst = 'mc: {
@@ -627,8 +625,8 @@ pub fn replaceProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
     Ok(outAbsynClassPartLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn deletePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
     let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outAbsynClassPartLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -650,8 +648,8 @@ pub fn deletePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absy
     outAbsynClassPartLst
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn deleteProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
     let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outAbsynClassPartLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -673,8 +671,8 @@ pub fn deleteProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<A
     outAbsynClassPartLst
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     outAbsynElementItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -698,8 +696,8 @@ pub fn getPublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::
     outAbsynElementItemLst
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
     let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     outAbsynElementItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -782,8 +780,8 @@ pub fn getPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram: Absy
     Ok(outClass)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPathedClassInProgramWork(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut enclOnErr: bool) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &(inPath.clone()) {
@@ -803,8 +801,6 @@ pub fn getPathedClassInProgramWork(mut inPath: Arc<Absyn::Path>, mut inProgram: 
     Ok(outClass)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getPathedClassInClass(mut inPath: Arc<Absyn::Path>, mut inClass: Arc<Absyn::Class>, mut enclOnError: bool) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = 'mc: {
@@ -1042,8 +1038,6 @@ pub fn mergeElement(mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>,
     Ok(outEls)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn mergeElements(mut inEls1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inEls2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
     let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     outEls = 'mc: {
@@ -1080,8 +1074,8 @@ pub fn mergeElements(mut inEls1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
     Ok(outEls)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn excludeElementsFromFile(mut inFile: ArcStr, mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
     let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     outEls = ({
@@ -1378,8 +1372,6 @@ pub fn getBasePathFromUri(mut scheme: ArcStr, mut iname: ArcStr, mut program: Ab
     Ok(basePath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn findModelicaPath(mut imps: Arc<metamodelica::List<ArcStr>>, mut names: Arc<metamodelica::List<ArcStr>>, mut version: ArcStr) -> Result<ArcStr> {
     let mut basePath: ArcStr = arcstr::literal!("");
     basePath = ('mc: {
@@ -1405,8 +1397,6 @@ pub fn findModelicaPath(mut imps: Arc<metamodelica::List<ArcStr>>, mut names: Ar
     Ok(basePath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn findModelicaPath2(mut mp: ArcStr, mut inames: Arc<metamodelica::List<ArcStr>>, mut version: ArcStr, mut b: bool) -> Result<ArcStr> {
     let mut basePath: ArcStr = arcstr::literal!("");
     basePath = ('mc: {

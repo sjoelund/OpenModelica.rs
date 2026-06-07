@@ -951,8 +951,6 @@ fn getEventNodeEqs(mut systIn: Arc<BackendDAE::EqSystem>, mut eventInfoIn: (Arc<
     Ok(eventInfoOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getEventNodeEqs1(mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut offset: i32, mut eventEqsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut eventEqsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     eventEqsOut = 'mc: {
@@ -1195,8 +1193,8 @@ fn getUnsolvedVarsBySCC1(mut iVarIdx: (i32, i32), mut orderedVars: BackendDAE::V
     Ok(oUnsolvedVars)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), mut iUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
     let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut intVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1804,8 +1802,6 @@ fn getAllStateNodes(mut systIn: Arc<BackendDAE::EqSystem>, mut varCompMapping: m
     Ok(stateInfoOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getStates(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut stateVarsIn: Arc<metamodelica::List<i32>>, mut Idx: i32) -> Result<Arc<metamodelica::List<i32>>> {
     let mut stateVarsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     stateVarsOut = 'mc: {
@@ -2070,8 +2066,8 @@ pub fn getAllSuccessors(mut nodes: Arc<metamodelica::List<i32>>, mut graph: Task
     Ok(successors)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getAllSuccessors2(mut nodes: Arc<metamodelica::List<i32>>, mut graph: TaskGraph, mut alreadyVisited: metamodelica::Array<bool>, mut successorsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut successorsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     successorsOut = (::match_deref::match_deref! { match &(nodes.clone()) {
@@ -2248,8 +2244,8 @@ pub fn getLevelNodes(mut iTaskGraph: TaskGraph) -> Result<Arc<metamodelica::List
     Ok(oLevelNodes)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLevelNodes0(mut iTaskGraph: TaskGraph, mut iRefCounter: metamodelica::Array<i32>, mut iNodesWithRefZero: Arc<metamodelica::List<i32>>, mut iLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut oLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut tmpLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -2323,8 +2319,8 @@ fn createRefCounter(mut iTaskGraph: TaskGraph) -> Result<metamodelica::Array<i32
     Ok(oRefCounter)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn createRefCounter0(mut iChildNodes: Arc<metamodelica::List<i32>>, mut iRefCounter: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     let mut oRefCounter: metamodelica::Array<i32> = Default::default();
     let mut tmpRefCounter: metamodelica::Array<i32> = Default::default();
@@ -2748,8 +2744,6 @@ fn getDiscreteNodesEqs(mut systIn: Arc<BackendDAE::EqSystem>, mut eventInfoIn: (
     Ok(eventInfoOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getDiscreteNodesEqs1(mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut offset: i32, mut iOrderedVars: BackendDAE::Variables, mut discreteEqsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut discreteEqsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     discreteEqsOut = 'mc: {
@@ -4001,8 +3995,6 @@ pub fn getExeCost(mut iNodeIdx: i32, mut iGraphData: TaskGraphMeta) -> Result<(i
     Ok(oExeCost)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getHighestExecCost(mut iExecCosts: Arc<metamodelica::List<(i32, metamodelica::Real)>>, mut iHighestTuple: (i32, metamodelica::Real)) -> Result<(i32, metamodelica::Real)> {
     let mut oHighestTuple: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut highestCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4206,15 +4198,15 @@ fn getContractedNodeChildren(mut iParentTask: i32, mut iRefValue: i32, mut iTask
 }
 
 fn getRealTaskIdxOfTask(mut iTaskIdx: i32, mut iContractedTasks: metamodelica::Array<i32>) -> Result<i32> {
-    let mut oTaskIdx: i32 = 0;
-    let mut contractionMark: i32 = 0;
-    contractionMark = metamodelica::arrayGet(iContractedTasks.clone(), iTaskIdx.clone())?;
-    if intLt(contractionMark.clone(), 0) {
-        oTaskIdx = getRealTaskIdxOfTask(intMul(contractionMark.clone(), -1), iContractedTasks.clone())?;
-    } else {
-        oTaskIdx = iTaskIdx.clone();
+    '__tco: loop {
+        let mut contractionMark: i32 = 0;
+        contractionMark = metamodelica::arrayGet(iContractedTasks.clone(), iTaskIdx.clone())?;
+        if intLt(contractionMark.clone(), 0) {
+            { (iTaskIdx, iContractedTasks) = (intMul(contractionMark.clone(), -1), iContractedTasks.clone()); continue '__tco; }
+        } else {
+            return Ok(iTaskIdx.clone())
+        }
     }
-    Ok(oTaskIdx)
 }
 
 pub fn setInCompsInMeta(mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: TaskGraphMeta) -> Result<TaskGraphMeta> {
@@ -4476,8 +4468,8 @@ fn updateInComps2(mut iNodeIdx: i32, mut inCompLstIn: Arc<metamodelica::List<Arc
     Ok(inCompLstOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn equalLists(mut inList1: Arc<metamodelica::List<i32>>, mut inList2: Arc<metamodelica::List<i32>>) -> bool {
     let mut outIsEqual: bool = false;
     outIsEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
@@ -4501,8 +4493,6 @@ pub fn equalLists(mut inList1: Arc<metamodelica::List<i32>>, mut inList2: Arc<me
     outIsEqual
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: TaskGraph, mut doNotMerge: Arc<metamodelica::List<i32>>, mut lstIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inPath: i32, mut contrNodes: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut lstOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     lstOut = 'mc: {
@@ -5006,8 +4996,6 @@ pub fn convertNodeListToEdgeTuples(mut iNodeList: Arc<metamodelica::List<i32>>) 
     Ok(oEdgeList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn convertNodeListToEdgeTuples0(mut iNodeList: Arc<metamodelica::List<i32>>, mut iNodeIdx: i32, mut iEdgeList: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
     let mut oEdgeList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut tmpEdgeList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -5293,8 +5281,8 @@ pub fn validateTaskGraphMeta(mut iMeta: TaskGraphMeta, mut iDae: Arc<BackendDAE:
     Ok(valid)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn validateTaskGraphMeta0(mut iEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)> {
     let mut oCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
     let mut currentIdx: i32 = 0;
@@ -5724,8 +5712,6 @@ fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskG
     Ok(criticalPathOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getCriticalPath2(mut iCriticalPaths: Arc<metamodelica::List<(metamodelica::Real, Arc<metamodelica::List<i32>>)>>, mut iListIdx: i32, mut iLongestPath: metamodelica::Real, mut iLongestPathIndex: i32) -> Result<i32> {
     let mut oLongestPathIndex: i32 = 0;
     let mut cpCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -5763,8 +5749,8 @@ fn getCriticalPath2(mut iCriticalPaths: Arc<metamodelica::List<(metamodelica::Re
     Ok(oLongestPathIndex)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addUpExeCostsForNode(mut iNodeComps: Arc<metamodelica::List<i32>>, mut iExeCosts: metamodelica::Array<(i32, metamodelica::Real)>, mut iExeCost: metamodelica::Real) -> Result<metamodelica::Real> {
     let mut oExeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut head: i32 = 0;
@@ -5914,8 +5900,6 @@ fn getYCoordForNode(mut compIdx: i32, mut parallelSets: Arc<metamodelica::List<A
     Ok(nodeCoordsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getParallelSetForComp(mut compIn: i32, mut setIdx: i32, mut parallelSets: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<i32> {
     let mut parallelSetOut: i32 = 0;
     parallelSetOut = 'mc: {
@@ -6069,8 +6053,6 @@ fn getCommunicationCost(mut childIdx: i32, mut parentIdx: i32, mut commCosts: me
     Ok(oComm)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getCommunicationByChildIdx(mut iComms: Communications, mut iChildIdx: i32) -> Result<Communication> {
     let mut oComm: Communication = <Communication as ::std::default::Default>::default();
     oComm = 'mc: {
@@ -6181,8 +6163,6 @@ fn getCommCostBetweenNodes1(mut iCommCost: Communication, mut iChildComps: Arc<m
     Ok(oResult)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getHighestCommCost(mut iCommCosts: Communications, mut iHighestTuple: Communication) -> Result<Communication> {
     let mut oHighestTuple: Communication = <Communication as ::std::default::Default>::default();
     let mut highestCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -6908,8 +6888,6 @@ pub fn setUpHpcOmMapping(mut daeIn: Arc<BackendDAE::BackendDAE>, mut simCodeIn: 
     Ok((simeqCompMapping, sccSimEqMapping, daeSccSimEqMapping))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findHighestSccIdxInMapping(mut iEquationSccMapping: Arc<metamodelica::List<(i32, i32)>>, mut iHighestIndex: i32) -> Result<i32> {
     let mut oIndex: i32 = 0;
     let mut eqIdx: i32 = 0;
@@ -7077,8 +7055,6 @@ fn getSimCodeEqByIndexAndMapping1(mut iSimEqSystem: Option<Arc<SimCode::SimEqSys
     Ok(oSimEqSystem)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getSimCodeEqByIndex(mut iEqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut iIdx: i32) -> Result<Arc<SimCode::SimEqSystem>> {
     let mut oEq: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();

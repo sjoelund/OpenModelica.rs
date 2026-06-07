@@ -2452,8 +2452,8 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
     Ok(cseOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sysIn: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut sysOut: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     sysOut = (::match_deref::match_deref! { match &((tplsIn.clone(), sysIn.clone())) {
@@ -2567,8 +2567,8 @@ fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, 
     Ok(sysOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasAlgebraicOperationsOnly(mut exp: Arc<DAE::Exp>) -> bool {
     let mut isAlgOut: bool = false;
     isAlgOut = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -2618,8 +2618,6 @@ fn cancelExpressions(mut e1In: Arc<DAE::Exp>, mut e2In: Arc<DAE::Exp>) -> Result
     Ok((canceled, e1Out, e2Out))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getTopLevelFactors(mut exp: Arc<DAE::Exp>, mut lstIn: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut lstOut: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     lstOut = 'mc: {

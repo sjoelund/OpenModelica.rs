@@ -253,8 +253,6 @@ pub fn prefixFirstCref(mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRe
     Ok(outCref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn prefixLast(mut inPrefix: DAE::Prefix) -> Result<DAE::Prefix> {
     let mut outPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
     outPrefix = 'mc: {
@@ -311,8 +309,8 @@ fn compPreStripLast(mut inCompPrefix: Arc<DAE::ComponentPrefix>) -> Result<Arc<D
     Ok(outCompPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: DAE::Prefix) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((inPath.clone(), inPrefix.clone())) {
@@ -433,8 +431,8 @@ pub fn prefixToCrefOpt(mut pre: DAE::Prefix) -> Result<Option<Arc<DAE::Component
     Ok(cref_1)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixToCrefOpt2(mut inPrefix: DAE::Prefix, mut inExpComponentRefOption: Option<Arc<DAE::ComponentRef>>) -> Result<Option<Arc<DAE::ComponentRef>>> {
     let mut outComponentRefOpt: Option<Arc<DAE::ComponentRef>> = None;
     outComponentRefOpt = (::match_deref::match_deref! { match &((inPrefix.clone(), inExpComponentRefOption.clone())) {
@@ -1316,8 +1314,8 @@ pub fn prefixHashWork(mut inPrefix: Arc<DAE::ComponentPrefix>, mut hash: i32) ->
     hash
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn componentPrefixPathEqual(mut pre1: Arc<DAE::ComponentPrefix>, mut pre2: Arc<DAE::ComponentPrefix>) -> bool {
     let mut eq: bool = false;
     eq = (::match_deref::match_deref! { match &((pre1.clone(), pre2.clone())) {
@@ -1357,8 +1355,8 @@ pub fn writeComponentPrefix(mut file: File::File, mut pre: Arc<DAE::ComponentPre
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasSubs(mut pre: Arc<DAE::ComponentPrefix>) -> bool {
     let mut ob: bool = false;
     ob = (::match_deref::match_deref! { match &(pre.clone()) {
@@ -1395,8 +1393,8 @@ fn removeCompPrefixFromCrefExp(mut inExp: Arc<DAE::Exp>, mut inB: bool, mut inCo
     Ok((outExp, b))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removePrefixFromCref(mut inCref: Arc<DAE::ComponentRef>, mut inCompPref: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     outCref = (::match_deref::match_deref! { match &((inCref.clone(), inCompPref.clone())) {

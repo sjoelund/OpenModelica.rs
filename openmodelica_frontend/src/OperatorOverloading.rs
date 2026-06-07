@@ -349,8 +349,6 @@ pub fn realtypes() -> Arc<metamodelica::List<Arc<DAE::Type>>> { __realtypes_TLS.
 thread_local! { static __stringtypes_TLS: Arc<metamodelica::List<Arc<DAE::Type>>> = list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()]; }
 pub fn stringtypes() -> Arc<metamodelica::List<Arc<DAE::Type>>> { __stringtypes_TLS.with(|__t| __t.clone()) }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<DAE::Exp>, mut lhsType: Arc<DAE::Type>, mut rhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     let mut outExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
     outExps = 'mc: {
@@ -402,8 +400,8 @@ fn overloadFoldType(mut inType1: Arc<DAE::Type>, mut inType2: Arc<DAE::Type>, mu
     Ok(optType)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn deoverloadBinaryUserdefNoConstructorListLhs(mut types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inRhs: Arc<DAE::Exp>, mut rhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     let mut outExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
     outExps = (::match_deref::match_deref! { match &((inLhs.clone(), inAcc.clone())) {
@@ -421,8 +419,8 @@ fn deoverloadBinaryUserdefNoConstructorListLhs(mut types: Arc<metamodelica::List
     Ok(outExps)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn deoverloadBinaryUserdefNoConstructorListRhs(mut types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut lhsType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>>> {
     let mut outExps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
     outExps = (::match_deref::match_deref! { match &((inRhs.clone(), inAcc.clone())) {
@@ -440,8 +438,6 @@ fn deoverloadBinaryUserdefNoConstructorListRhs(mut types: Arc<metamodelica::List
     Ok(outExps)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExps = 'mc: {
@@ -1775,8 +1771,8 @@ pub mod AvlTreePathPathEnv {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<Absyn::Path>>> {
         let mut value: Option<Arc<Absyn::Path>> = None;
         let mut k: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -1797,8 +1793,8 @@ pub mod AvlTreePathPathEnv {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -2104,8 +2100,8 @@ pub mod AvlTreePathPathEnv {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         key = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -2482,8 +2478,8 @@ pub mod AvlTreePathOperatorTypes {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<metamodelica::List<Arc<DAE::Type>>>>> {
         let mut value: Option<Arc<metamodelica::List<Arc<DAE::Type>>>> = None;
         let mut k: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -2504,8 +2500,8 @@ pub mod AvlTreePathOperatorTypes {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -2811,8 +2807,8 @@ pub mod AvlTreePathOperatorTypes {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         key = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -3640,8 +3636,8 @@ fn computeReturnType(mut inOperator: DAE::Operator, mut inTypesTypeLst: Arc<meta
     Ok(outType)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn nDims(mut inType: Arc<DAE::Type>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = (::match_deref::match_deref! { match &(inType.clone()) {
@@ -3678,8 +3674,8 @@ fn isValidMatrixProductDims(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Di
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = (::match_deref::match_deref! { match &(inType.clone()) {

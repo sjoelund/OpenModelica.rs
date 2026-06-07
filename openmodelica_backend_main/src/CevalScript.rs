@@ -2303,8 +2303,8 @@ pub fn evalCodeTypeName(mut val: Arc<Values::Value>, mut env: FCore::Graph) -> R
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getVariableNames(mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut acc: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut ovars: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     ovars = (::match_deref::match_deref! { match &(vars.clone()) {
@@ -2558,8 +2558,8 @@ fn matchQualifiedCalls(mut inExp: Arc<DAE::Exp>, mut inAcc: Arc<metamodelica::Li
     (outExp, outAcc)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn instantiateDaeFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut ipaths: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<FCore::Cache> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     outCache = (::match_deref::match_deref! { match &((icache.clone(), ienv.clone(), ipaths.clone())) {
@@ -3098,8 +3098,8 @@ fn isSimpleAPIFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isSimpleAPIFunctionArg(mut ty: Arc<DAE::Type>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -3641,8 +3641,8 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeThreadDataRecord(mut inRecs: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>, mut inAcc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> {
     let mut outRecs: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
     outRecs = (::match_deref::match_deref! { match &(inRecs.clone()) {
@@ -3669,8 +3669,8 @@ fn removeThreadDataRecord(mut inRecs: Arc<metamodelica::List<SimCodeFunction::Re
     outRecs
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeThreadDataFunction(mut inFuncs: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut inAcc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> {
     let mut outFuncs: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
     outFuncs = (::match_deref::match_deref! { match &(inFuncs.clone()) {

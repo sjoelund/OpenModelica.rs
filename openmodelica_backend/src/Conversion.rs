@@ -518,8 +518,8 @@ pub mod ImportTreeImpl {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<ImportData> {
         let mut value: Option<ImportData> = None;
         let mut k: Key = arcstr::literal!("");
@@ -540,8 +540,8 @@ pub mod ImportTreeImpl {
         value
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -847,8 +847,8 @@ pub mod ImportTreeImpl {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = arcstr::literal!("");
         key = ((::match_deref::match_deref! { match &(tree.clone()) {

@@ -680,8 +680,6 @@ fn checkPartialScope(mut inEnv: FCore::Graph, mut inParentEnv: FCore::Graph, mut
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getConstrainingClass(mut inClass: Arc<SCode::Element>, mut inEnv: FCore::Graph, mut inCache: FCore::Cache) -> Result<ArcStr> {
     let mut outPath: ArcStr = arcstr::literal!("");
     outPath = ('mc: {
@@ -748,8 +746,6 @@ fn lookupPrevFrames(mut id: ArcStr, mut inPrevFrames: Arc<metamodelica::List<met
     Ok((outFrame, outPrevFrames))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lookupQualifiedImportedVarInFrame(mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut ident: ArcStr) -> Result<Arc<DAE::ComponentRef>> {
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     outCref = 'mc: {
@@ -3087,8 +3083,6 @@ fn lookupVar2(mut inBinTree: Arc<FCore::RefTree::Tree>, mut inIdent: ArcStr, mut
     Ok((outVar, outElement, outMod, instStatus, outEnv))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn checkSubscripts(mut inType: Arc<DAE::Type>, mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = 'mc: {

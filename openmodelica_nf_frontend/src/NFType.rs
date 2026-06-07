@@ -298,8 +298,8 @@ pub fn unliftArrayN(mut N: i32, mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
     Ok(ty)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isInteger(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isInteger: bool = false;
     isInteger = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -311,8 +311,8 @@ pub fn isInteger(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isReal(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isReal: bool = false;
     isReal = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -324,8 +324,8 @@ pub fn isReal(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isReal)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBoolean(mut ty: Arc<NFType>) -> bool {
     let mut isBool: bool = false;
     isBool = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -337,8 +337,8 @@ pub fn isBoolean(mut ty: Arc<NFType>) -> bool {
     isBool
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isString(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isString: bool = false;
     isString = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -350,8 +350,8 @@ pub fn isString(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClock(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isClock: bool = false;
     isClock = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -502,8 +502,8 @@ pub fn simplifyConditionalArray(mut ty: Arc<NFType>) -> Arc<NFType> {
     outType
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isVector(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isVector: bool = false;
     isVector = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -515,8 +515,8 @@ pub fn isVector(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isVector)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isMatrix(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isMatrix: bool = false;
     isMatrix = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -528,8 +528,8 @@ pub fn isMatrix(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isMatrix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isSquareMatrix(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isSquareMatrix: bool = false;
     isSquareMatrix = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -547,8 +547,8 @@ pub fn isSquareMatrix(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isSquareMatrix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEmptyArray(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isEmpty: bool = false;
     isEmpty = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -699,8 +699,8 @@ pub fn isRecord(mut ty: Arc<NFType>) -> bool {
     isRecord
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBasic(mut ty: Arc<NFType>) -> bool {
     let mut isNumeric: bool = false;
     isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -728,8 +728,8 @@ pub fn isBasicNumeric(mut ty: Arc<NFType>) -> bool {
     isNumeric
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNumeric(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isNumeric: bool = false;
     isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -741,8 +741,8 @@ pub fn isNumeric(mut ty: Arc<NFType>) -> Result<bool> {
     Ok(isNumeric)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isScalarBuiltin: bool = false;
     isScalarBuiltin = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -832,8 +832,8 @@ pub fn nthTupleType(mut ty: Arc<NFType>, mut n: i32) -> Result<Arc<NFType>> {
     Ok(outTy)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayElementType(mut ty: Arc<NFType>) -> Arc<NFType> {
     let mut elementTy: Arc<NFType> = Arc::new(NFType::ANY);
     elementTy = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -857,8 +857,8 @@ pub fn setArrayElementType(mut arrayTy: Arc<NFType>, mut elementTy: Arc<NFType>)
     ty
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn elementType(mut ty: Arc<NFType>) -> Arc<NFType> {
     let mut elementTy: Arc<NFType> = Arc::new(NFType::ANY);
     elementTy = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -877,8 +877,8 @@ pub fn copyElementType(mut dstType: Arc<NFType>, mut srcType: Arc<NFType>) -> Ar
     ty
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayDims(mut ty: Arc<NFType>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     dims = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -951,8 +951,8 @@ pub fn applyToDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dim
     Ok(ty)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nthDimension(mut ty: Arc<NFType>, mut index: i32) -> Result<Arc<Dimension::NFDimension>> {
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     dim = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -964,8 +964,8 @@ pub fn nthDimension(mut ty: Arc<NFType>, mut index: i32) -> Result<Arc<Dimension
     Ok(dim)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dimensionCount(mut ty: Arc<NFType>) -> i32 {
     let mut dimCount: i32 = 0;
     dimCount = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -985,8 +985,8 @@ pub fn dimensionDiff(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> i32 {
     diff
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasKnownSize(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isKnown: bool = false;
     isKnown = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -1087,8 +1087,8 @@ pub fn nthEnumLiteral(mut ty: Arc<NFType>, mut index: i32) -> Result<ArcStr> {
     Ok(literal)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toString(mut ty: Arc<NFType>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
@@ -1118,8 +1118,8 @@ pub fn toString(mut ty: Arc<NFType>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
@@ -1443,8 +1443,8 @@ pub fn hashContinue(mut ty: Arc<NFType>, mut hash: i32) -> Result<i32> {
     Ok(hash)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDiscrete(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isDiscrete: bool = false;
     isDiscrete = (::match_deref::match_deref! { match &(ty.clone()) {
@@ -1664,8 +1664,8 @@ pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
     Ok(sz)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn complexSize(mut ty: Arc<NFType>, mut resize: bool) -> Result<Option<i32>> {
     let mut sz: Option<i32> = None;
     sz = (::match_deref::match_deref! { match &(ty.clone()) {

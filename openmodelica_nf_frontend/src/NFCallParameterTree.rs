@@ -383,8 +383,8 @@ pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
     Ok(value)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<NFExpression::NFExpression>> {
     let mut value: Option<Arc<NFExpression::NFExpression>> = None;
     let mut k: Key = arcstr::literal!("");
@@ -405,8 +405,8 @@ pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<NFExpression::NFE
     value
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
     let mut key: Key = arcstr::literal!("");
@@ -712,8 +712,8 @@ pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
     let mut key: Key = arcstr::literal!("");
     key = ((::match_deref::match_deref! { match &(tree.clone()) {

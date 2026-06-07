@@ -149,8 +149,6 @@ pub fn findCycles<NodeType: Clone + 'static>(mut inGraph: Arc<metamodelica::List
     Ok(outCycles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn findCycles2<NodeType: Clone + 'static>(mut inNodes: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<NodeType>>>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -236,8 +234,6 @@ fn findCycleForNode<NodeType: Clone + 'static>(mut inNode: (NodeType, Arc<metamo
     Ok(outCycle)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findCycleForNode2<NodeType: Clone + 'static>(mut inNodes: Arc<metamodelica::List<NodeType>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inVisitedNodes: Arc<metamodelica::List<NodeType>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<NodeType>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -275,8 +271,6 @@ fn findCycleForNode2<NodeType: Clone + 'static>(mut inNodes: Arc<metamodelica::L
     Ok(outCycle)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findNodeInGraph<NodeType: Clone + 'static>(mut inNode: NodeType, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<(NodeType, Arc<metamodelica::List<NodeType>>)> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -305,8 +299,6 @@ fn findNodeInGraph<NodeType: Clone + 'static>(mut inNode: NodeType, mut inGraph:
     Ok(outNode)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findIndexofNodeInGraph<NodeType: Clone + 'static>(mut inNode: NodeType, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>, mut inIndex: i32) -> Result<i32> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -335,8 +327,6 @@ fn findIndexofNodeInGraph<NodeType: Clone + 'static>(mut inNode: NodeType, mut i
     Ok(outIndex)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeNodesFromGraph<NodeType: Clone + 'static>(mut inNodes: Arc<metamodelica::List<NodeType>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -388,8 +378,6 @@ fn removeNodesFromGraph<NodeType: Clone + 'static>(mut inNodes: Arc<metamodelica
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn transposeGraph<NodeType: Clone + 'static + PartialEq>(mut intmpGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -484,8 +472,6 @@ pub fn allReachableNodes<NodeType: Clone + 'static>(mut intmpstorage: (Arc<metam
     Ok(reachableNodes)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn allReachableNodesWork<NodeType: Clone + 'static>(mut intmpstorage: (Arc<metamodelica::List<NodeType>>, Arc<metamodelica::List<NodeType>>), mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<Option<Arc<metamodelica::List<NodeType>>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -539,8 +525,6 @@ fn allReachableNodesWork<NodeType: Clone + 'static>(mut intmpstorage: (Arc<metam
     Ok(reachableNodes)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn partialDistance2color<NodeType: Clone + 'static>(mut toColorNodes: Arc<metamodelica::List<NodeType>>, mut inforbiddenColor: metamodelica::Array<Option<Arc<metamodelica::List<NodeType>>>>, mut inColors: Arc<metamodelica::List<i32>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inGraphT: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inColored: metamodelica::Array<i32>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>, mut inPrintFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<NodeType>>, ArcStr) -> Result<()> + 'static>) -> Result<metamodelica::Array<i32>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -590,8 +574,6 @@ pub fn partialDistance2color<NodeType: Clone + 'static>(mut toColorNodes: Arc<me
     Ok(outColored)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addForbiddenColors<NodeType: Clone + 'static>(mut inNode: NodeType, mut inNodes: Arc<metamodelica::List<NodeType>>, mut inColored: metamodelica::Array<i32>, mut inForbiddenColor: metamodelica::Array<Option<Arc<metamodelica::List<NodeType>>>>, mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>, mut inPrintFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<NodeType>>, ArcStr) -> Result<()> + 'static>) -> Result<metamodelica::Array<Option<Arc<metamodelica::List<NodeType>>>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
@@ -949,8 +931,8 @@ pub fn merge<NodeType: Clone + 'static>(mut graph1: Arc<metamodelica::List<(Node
     Ok(graph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn merge2<NodeType: Clone + 'static>(mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut eqFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>, mut inAcc: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>) -> Result<Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 

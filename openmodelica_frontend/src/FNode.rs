@@ -1021,8 +1021,8 @@ pub fn isIn(mut inNode: Node, mut inFunctionRefIs: Arc<dyn ::std::ops::Fn(metamo
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nonImplicitRefFromScope(mut inScope: Scope) -> Result<Ref> {
     let mut outRef: Ref = Default::default();
     outRef = (::match_deref::match_deref! { match &(inScope.clone()) {
@@ -1047,19 +1047,19 @@ pub fn namesUpToParentName(mut inRef: Ref, mut inName: Name) -> Result<Names> {
 }
 
 fn namesUpToParentName_dispatch(mut inRef: Ref, mut inName: Name, mut acc: Names) -> Result<Names> {
-    let mut outNames: Names = metamodelica::nil();
-    outNames = (match (inRef.clone(), inName.clone()) {
+    '__tco: loop {
+        match (inRef.clone(), inName.clone()) {
         (mut r, _) if (isRefTop(r.clone())?) => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         (mut r, _) if (stringEq((inName.clone()).clone(), (refName(r.clone())?).clone())) => {
-            acc.clone()
+            return Ok(acc.clone())
         },
         (mut r, mut name) => {
-            namesUpToParentName_dispatch(original(refParents(r.clone())?)?, (name.clone()).clone(), metamodelica::cons((refName(r.clone())?).clone(), acc.clone()))?
+            { (inRef, inName, acc) = (original(refParents(r.clone())?)?, (name.clone()).clone(), metamodelica::cons((refName(r.clone())?).clone(), acc.clone())); continue '__tco; }
         },
-    });
-    Ok(outNames)
+    }
+    }
 }
 
 pub fn getModifierTarget(mut inRef: Ref) -> Result<Ref> {
@@ -1097,8 +1097,8 @@ pub fn originalScope(mut inRef: Ref) -> Result<Scope> {
     Ok(outScope)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn originalScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
     let mut outScope: Scope = metamodelica::nil();
     outScope = (::match_deref::match_deref! { match &(inAcc.clone()) {
@@ -1127,8 +1127,8 @@ pub fn contextualScope(mut inRef: Ref) -> Result<Scope> {
     Ok(outScope)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn contextualScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
     let mut outScope: Scope = metamodelica::nil();
     outScope = (::match_deref::match_deref! { match &(inAcc.clone()) {
@@ -1184,8 +1184,8 @@ pub fn lookupRef(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     Ok(outRef)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     let mut outRef: Ref = Default::default();
     outRef = (::match_deref::match_deref! { match &(inScope.clone()) {

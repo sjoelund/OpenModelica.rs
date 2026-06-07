@@ -2342,8 +2342,6 @@ pub fn makeTmpEqnForExp(mut iExp: Arc<DAE::Exp>, mut name: ArcStr, mut offset: i
     Ok((oExp, oeqns, ovars, oshared, update, para))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeTmpEqnForExp_rule(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     let mut allowed: bool = false;
     if Expression::isCref(inExp.clone()) || Expression::isConst(inExp.clone())? || Expression::isUnaryCref(inExp.clone()) {
@@ -2641,8 +2639,8 @@ fn aliasEquation2(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut inTpls: Ar
     Ok(outTpls)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn aliasRecord(mut cr: Arc<DAE::ComponentRef>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTpls: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>> {
     let mut outTpls: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>> = metamodelica::nil();
     outTpls = (::match_deref::match_deref! { match &((varLst.clone(), explst.clone())) {
@@ -3087,8 +3085,8 @@ fn markDifferentiated2(mut attr: BackendDAE::EquationAttributes) -> BackendDAE::
     attr
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDifferentiated(mut inEqn: Arc<BackendDAE::Equation>) -> Result<bool> {
     let mut diffed: bool = false;
     diffed = (::match_deref::match_deref! { match &(inEqn.clone()) {
@@ -3206,8 +3204,8 @@ pub fn scalarComplexEquations(mut inEquation: Arc<BackendDAE::Equation>, mut fun
     Ok(outEquations)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn allAlgorithmsLst(mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(eqn_lst.clone()) {

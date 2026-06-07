@@ -475,8 +475,6 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: StringToUnitT
     Ok(outUnit)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: StringToUnitTable) -> Result<Unit> {
     let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = 'mc: {

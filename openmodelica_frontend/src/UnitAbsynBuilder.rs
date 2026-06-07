@@ -768,8 +768,6 @@ pub fn buildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist) -> Result<(A
     Ok((terms, store, ht))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>) -> Result<UnitAbsyn::InstStore> {
     let mut outStore: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
     outStore = 'mc: {

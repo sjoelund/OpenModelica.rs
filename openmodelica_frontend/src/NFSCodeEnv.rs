@@ -576,8 +576,8 @@ pub mod EnvTree {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Item>> {
         let mut value: Option<Arc<Item>> = None;
         let mut k: Key = arcstr::literal!("");
@@ -598,8 +598,8 @@ pub mod EnvTree {
         value
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -905,8 +905,8 @@ pub mod EnvTree {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = arcstr::literal!("");
         key = ((::match_deref::match_deref! { match &(tree.clone()) {
@@ -1003,8 +1003,8 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
     Ok(outEnv)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn enterScopePath(mut inEnv: Env, mut inPath: Arc<Absyn::Path>) -> Result<Env> {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = (::match_deref::match_deref! { match &(inPath.clone()) {
@@ -1322,8 +1322,8 @@ pub fn setImportsInItemHidden(mut inItem: Arc<Item>, mut inHidden: bool) -> Resu
     Ok(outItem)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isItemUsed(mut inItem: Arc<Item>) -> bool {
     let mut isUsed: bool = false;
     isUsed = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -1369,8 +1369,8 @@ pub fn linkItemUsage(mut inSrcItem: Arc<Item>, mut inDestItem: Arc<Item>) -> Arc
     outDestItem
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClassItem(mut inItem: Arc<Item>) -> bool {
     let mut outIsClass: bool = false;
     outIsClass = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -1388,8 +1388,8 @@ pub fn isClassItem(mut inItem: Arc<Item>) -> bool {
     outIsClass
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isVarItem(mut inItem: Arc<Item>) -> bool {
     let mut outIsVar: bool = false;
     outIsVar = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -1407,8 +1407,8 @@ pub fn isVarItem(mut inItem: Arc<Item>) -> bool {
     outIsVar
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClassExtendsItem(mut inItem: Arc<Item>) -> bool {
     let mut outIsClassExtends: bool = false;
     outIsClassExtends = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -1781,8 +1781,8 @@ fn compareQualifiedImportNames(mut inImport1: Import, mut inImport2: Import) -> 
     outEqual
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn extendEnvWithEnumLiterals(mut inEnum: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut inEnumPath: Arc<Absyn::Path>, mut inNextValue: i32, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Env> {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = (::match_deref::match_deref! { match &(inEnum.clone()) {
@@ -1898,8 +1898,8 @@ pub fn getEnvName(mut inEnv: Env) -> Result<ArcStr> {
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inEnv.clone()) {
@@ -1923,8 +1923,8 @@ pub fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getScopeName(mut inEnv: Env) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inEnv.clone()) {
@@ -1945,8 +1945,6 @@ pub fn envPrefixOf(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
     Ok(outIsPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn envPrefixOf2(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
     let mut outIsPrefix: bool = false;
     outIsPrefix = 'mc: {
@@ -1995,8 +1993,8 @@ pub fn envScopeNames(mut inEnv: Env) -> Result<Arc<metamodelica::List<ArcStr>>> 
     Ok(outNames)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn envScopeNames2(mut inEnv: Env, mut inAccumNames: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outNames = (::match_deref::match_deref! { match &(inEnv.clone()) {
@@ -2022,8 +2020,6 @@ pub fn envEqualPrefix(mut inEnv1: Env, mut inEnv2: Env) -> Result<Env> {
     Ok(outPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) -> Result<Env> {
     let mut outPrefix: Env = metamodelica::nil();
     outPrefix = 'mc: {
@@ -2060,8 +2056,8 @@ pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) ->
     Ok(outPrefix)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemInfo(mut inItem: Arc<Item>) -> Result<SourceInfo> {
     let mut outInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     outInfo = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2143,8 +2139,8 @@ pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
     Ok(outName)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemName(mut inItem: Arc<Item>) -> Result<ArcStr> {
     let mut outName: ArcStr = arcstr::literal!("");
     outName = ((::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2165,8 +2161,8 @@ pub fn getItemName(mut inItem: Arc<Item>) -> Result<ArcStr> {
     Ok(outName)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemEnv(mut inItem: Arc<Item>) -> Result<Env> {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2181,8 +2177,6 @@ pub fn getItemEnv(mut inItem: Arc<Item>) -> Result<Env> {
     Ok(outEnv)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getItemEnvNoFail(mut inItem: Arc<Item>) -> Result<Env> {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = 'mc: {
@@ -2222,8 +2216,8 @@ pub fn getItemEnvNoFail(mut inItem: Arc<Item>) -> Result<Env> {
     Ok(outEnv)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn setItemEnv(mut inItem: Arc<Item>, mut inNewEnv: Env) -> Result<Arc<Item>> {
     let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2238,8 +2232,8 @@ pub fn setItemEnv(mut inItem: Arc<Item>, mut inNewEnv: Env) -> Result<Arc<Item>>
     Ok(outItem)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mergeItemEnv(mut inItem: Arc<Item>, mut inEnv: Env) -> Env {
     let mut outEnv: Env = metamodelica::nil();
     outEnv = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2271,8 +2265,8 @@ pub fn unmergeItemEnv(mut inItem: Arc<Item>, mut inEnv: Env) -> Env {
     outEnv
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemPrefixes(mut inItem: Arc<Item>) -> Result<Arc<SCode::Prefixes>> {
     let mut outPrefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     outPrefixes = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2497,8 +2491,8 @@ pub fn prefixIdentWithEnv(mut inIdent: ArcStr, mut inEnv: Env) -> Result<Arc<Abs
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRedeclarationElement(mut inRedeclare: Arc<Redeclaration>) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &(inRedeclare.clone()) {

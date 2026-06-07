@@ -900,8 +900,8 @@ fn compareCrefStreamSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut element
     Ok(matches)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn associatedFlowCref(mut streamCref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut flowCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);

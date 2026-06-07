@@ -2276,8 +2276,8 @@ fn isClockExp(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     Ok(out)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
     let mut out: bool = false;
     out = (::match_deref::match_deref! { match &(inEq.clone()) {

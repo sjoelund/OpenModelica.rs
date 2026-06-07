@@ -132,8 +132,8 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
     Ok(newFunction)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32) -> Result<MidCode::Block> {
     let mut block_: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
     let mut blocks_local: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();

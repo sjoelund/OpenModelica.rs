@@ -2873,8 +2873,8 @@ fn createArrayTempVar(mut name: Arc<DAE::ComponentRef>, mut dims: Arc<metamodeli
     Ok(otempvars)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn createTempVarsforCrefs(mut inTmpCrefsLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut itempvars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Arc<metamodelica::List<SimCodeVar::SimVar>>> {
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     otempvars = (::match_deref::match_deref! { match &(inTmpCrefsLst.clone()) {
@@ -2911,8 +2911,8 @@ fn createTempVarsforCrefs(mut inTmpCrefsLst: Arc<metamodelica::List<Arc<DAE::Exp
     Ok(otempvars)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn createTempVars(mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inCrefPrefix: Arc<DAE::ComponentRef>, mut itempvars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Arc<metamodelica::List<SimCodeVar::SimVar>>> {
     let mut otempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     otempvars = (::match_deref::match_deref! { match &(varLst.clone()) {
@@ -3716,8 +3716,8 @@ fn createTornSystem(mut linear: bool, mut skipDiscInAlgorithm: bool, mut genDisc
     Ok((equations_, ouniqueEqIndex, otempvars))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn solveInnerEquations(mut innerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>>, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inVars: BackendDAE::Variables, mut ishared: Arc<BackendDAE::Shared>, mut inRepl: BackendVarTransform::VariableReplacements) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     outRepl = (::match_deref::match_deref! { match &(innerEquations.clone()) {
@@ -3853,8 +3853,8 @@ fn solveInnerEquations(mut innerEquations: Arc<metamodelica::List<BackendDAE::In
     Ok(outRepl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn solveInnerEquations1(mut iExps1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExps2: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inVars: BackendDAE::Variables, mut ishared: Arc<BackendDAE::Shared>, mut inRepl: BackendVarTransform::VariableReplacements) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     outRepl = (::match_deref::match_deref! { match &((iExps1.clone(), iExps2.clone(), iVars.clone())) {
@@ -10986,8 +10986,6 @@ fn setVariableDerIndex2(mut inDlow: Arc<BackendDAE::BackendDAE>, mut syst: Arc<B
     Ok(outOrder)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn flattenEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut dlow: Arc<BackendDAE::BackendDAE>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut oeqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     oeqns = 'mc: {
@@ -11074,8 +11072,6 @@ fn flattenEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut
     Ok(oeqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeCallDerExp(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outDerExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outDerExps = 'mc: {
@@ -11493,8 +11489,6 @@ pub fn compareSimVarTupleIndexGt<anyT: Clone + 'static>(mut var1: (SimCodeVar::S
     Ok(result)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn countDynamicExternalFunctions(mut inFncLst: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Result<i32> {
     let mut outDynLoadFuncs: i32 = 0;
     outDynLoadFuncs = 'mc: {
@@ -11552,8 +11546,8 @@ fn getFilesFromSimVars(mut inSimVars: SimCodeVar::SimVars, mut inFiles: Arc<meta
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromFunctions(mut functions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((functions.clone(), inFiles.clone())) {
@@ -11680,8 +11674,8 @@ fn getFilesFromSimEqSystems(mut inSimEqSystems: Arc<metamodelica::List<Arc<metam
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromStatementsElse(mut inElse: Arc<DAE::Else>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((inElse.clone(), inFiles.clone())) {
@@ -11718,8 +11712,8 @@ fn getFilesFromStatementsElseWhen(mut inStatementOpt: Option<Arc<DAE::Statement>
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromStatements(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((inStatements.clone(), inFiles.clone())) {
@@ -11829,8 +11823,8 @@ fn getFilesFromStatements(mut inStatements: Arc<metamodelica::List<Arc<DAE::Stat
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromWhenOperators(mut inWhenOperators: Arc<metamodelica::List<BackendDAE::WhenOperator>>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((inWhenOperators.clone(), inFiles.clone())) {
@@ -11878,8 +11872,8 @@ fn getFilesFromExtObjInfo(mut inExtObjInfo: SimCode::ExtObjInfo, mut inFiles: Ar
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromJacobianMatrices(mut inJacobianMatrices: Arc<metamodelica::List<Arc<SimCode::JacobianMatrix>>>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((inJacobianMatrices.clone(), inFiles.clone())) {
@@ -11897,8 +11891,8 @@ fn getFilesFromJacobianMatrices(mut inJacobianMatrices: Arc<metamodelica::List<A
     Ok(outFiles)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFilesFromJacobianMatrix(mut inJacobianMatrices: Arc<metamodelica::List<Arc<SimCode::JacobianColumn>>>, mut inFiles: Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<Arc<metamodelica::List<SimCode::FileInfo>>> {
     let mut outFiles: Arc<metamodelica::List<SimCode::FileInfo>> = metamodelica::nil();
     outFiles = (::match_deref::match_deref! { match &((inJacobianMatrices.clone(), inFiles.clone())) {
@@ -12972,8 +12966,8 @@ fn getSimVarIndex(mut var: SimCodeVar::SimVar, mut varInfo: SimCode::VarInfo, mu
     Ok(idx)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeVarMapTuple(mut sVar: Arc<metamodelica::List<i32>>, mut bVar: Arc<metamodelica::List<i32>>, mut foldIn: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
     let mut foldOut: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     foldOut = (::match_deref::match_deref! { match &((sVar.clone(), bVar.clone())) {
@@ -14423,8 +14417,8 @@ fn isFmiUnknown(mut index: i32, mut inFMIUnknown: SimCode::FmiUnknown) -> bool {
     out
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateSparsePatterInts2FMIUnknown(mut inSparsePattern: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>, mut inAccum: Arc<metamodelica::List<SimCode::FmiUnknown>>) -> Arc<metamodelica::List<SimCode::FmiUnknown>> {
     let mut outFmiUnknown: Arc<metamodelica::List<SimCode::FmiUnknown>> = metamodelica::nil();
     outFmiUnknown = (::match_deref::match_deref! { match &(inSparsePattern.clone()) {
@@ -14462,8 +14456,8 @@ fn translateSparsePatterCref2DerCref(mut sparsePattern: Arc<metamodelica::List<(
     Ok((outSparsePattern, outDerCrefs))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn mergeSparsePatter(mut inA: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, mut inB: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, mut inAccum: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>> {
     let mut out: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>> = metamodelica::nil();
     out = (::match_deref::match_deref! { match &((inA.clone(), inB.clone())) {
@@ -14869,8 +14863,6 @@ fn createSimVarsForSensitivities(mut inStateSimVars: Arc<metamodelica::List<SimC
         FMU EXPERIMENTAL
         author: F. Bergero. 12/10/2015
 *****************************************************************************************************/
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNLSysRHS(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut res: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut unknowns: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     unknowns = 'mc: {
@@ -14921,8 +14913,6 @@ fn getNLSysRHS(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut 
     Ok(unknowns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn computeDependenciesHelper(mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut unknowns: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut res: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>> {
     let mut deps: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
     deps = 'mc: {
@@ -15352,8 +15342,8 @@ pub fn getNumContinuousEquations(mut eqns: Arc<metamodelica::List<Arc<SimCode::S
     n
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getNumContinuousEquationsSingleEq(mut eqn: Arc<SimCode::SimEqSystem>) -> i32 {
     let mut n: i32 = 0;
     n = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -15741,8 +15731,8 @@ pub fn getCMakeVersion(mut pathToCMake: ArcStr) -> Result<SemanticVersion::Versi
     Ok(cmakeVersion)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getExpNominal(mut expr: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut nominal: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     nominal = (::match_deref::match_deref! { match &(expr.clone()) {

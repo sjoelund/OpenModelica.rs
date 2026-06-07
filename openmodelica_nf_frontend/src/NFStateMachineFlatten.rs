@@ -1820,14 +1820,14 @@ fn getStartValue(mut var: Arc<Variable::NFVariable>) -> Result<Arc<Expression::N
 // ComponentRef prefix check
 // ============================================================
 fn crefHasPrefix(mut prefix: Arc<ComponentRef::NFComponentRef>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
-    let mut res: bool = false;
-    if ComponentRef::isEqual(prefix.clone(), cref.clone())? {
-        res = true;
-    } else if ComponentRef::isEmpty(cref.clone()) {
-        res = false;
-    } else {
-        res = crefHasPrefix(prefix.clone(), ComponentRef::rest(cref.clone())?)?;
+    '__tco: loop {
+        if ComponentRef::isEqual(prefix.clone(), cref.clone())? {
+            return Ok(true)
+        } else if ComponentRef::isEmpty(cref.clone()) {
+            return Ok(false)
+        } else {
+            { (prefix, cref) = (prefix.clone(), ComponentRef::rest(cref.clone())?); continue '__tco; }
+        }
     }
-    Ok(res)
 }
 

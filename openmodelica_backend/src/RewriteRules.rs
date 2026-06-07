@@ -1262,8 +1262,8 @@ pub fn getAllRules() -> Result<Rules> {
     Ok(outRules)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
     let mut outRules: Rules = metamodelica::nil();
     outRules = (::match_deref::match_deref! { match &(inRules.clone()) {
@@ -1283,8 +1283,8 @@ pub fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
     outRules
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRulesBackEnd(mut inRules: Rules) -> Rules {
     let mut outRules: Rules = metamodelica::nil();
     outRules = (::match_deref::match_deref! { match &(inRules.clone()) {
@@ -1304,8 +1304,6 @@ pub fn getRulesBackEnd(mut inRules: Rules) -> Rules {
     outRules
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, mut inAcc: Rules) -> Result<Rules> {
     let mut outRules: Rules = metamodelica::nil();
     outRules = 'mc: {

@@ -115,8 +115,8 @@ pub fn expTypeSimple(mut tp: Arc<DAE::Type>) -> bool {
     isSimple
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn expTypeElementType(mut tp: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut eltTp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     eltTp = (::match_deref::match_deref! { match &(tp.clone()) {
@@ -1177,8 +1177,8 @@ pub fn setElementVarBinding(mut elt: Arc<DAE::Element>, mut binding: Option<Arc<
     e
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn setProtectedAttr(mut attr: Option<Arc<DAE::VariableAttributes>>, mut isProtected: bool) -> Result<Option<Arc<DAE::VariableAttributes>>> {
     let mut outAttr: Option<Arc<DAE::VariableAttributes>> = None;
     outAttr = (::match_deref::match_deref! { match &(attr.clone()) {
@@ -1430,8 +1430,6 @@ pub fn getMatchingElements(mut elist: Arc<metamodelica::List<Arc<DAE::Element>>>
     Ok(oelist)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getAllMatchingElements(mut elist: Arc<metamodelica::List<Arc<DAE::Element>>>, mut cond: Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<()> + 'static>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     pub type FuncTypeElementTo = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<()> + 'static>;
 
@@ -1895,8 +1893,6 @@ pub fn isFunctionInlineFalse(mut inElement: DAE::Function) -> bool {
     res
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn findElement(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inFuncTypeElementTo: Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<()> + 'static>) -> Result<Option<Arc<DAE::Element>>> {
     pub type FuncTypeElementTo = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<()> + 'static>;
 
@@ -2151,8 +2147,6 @@ pub fn daeParallelismEqual(mut inParallelism1: DAE::VarParallelism, mut inParall
     equal
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getFlowVariables(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     outExpComponentRefLst = 'mc: {
@@ -2224,8 +2218,6 @@ fn getFlowVariables2(mut inExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::C
     Ok(outExpComponentRefLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getStreamVariables(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outExpComponentRefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     outExpComponentRefLst = 'mc: {
@@ -3130,8 +3122,8 @@ fn verifyBoolWhenEquation(mut inCond: Arc<DAE::Exp>, mut inEqs: Arc<metamodelica
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn collectWhenEquationBranches(mut inElseWhen: Option<Arc<DAE::Element>>, mut inWhenBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>)>>> {
     let mut outWhenBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Element>>>)>> = metamodelica::nil();
     outWhenBranches = (::match_deref::match_deref! { match &(inElseWhen.clone()) {
@@ -3161,8 +3153,8 @@ fn verifyBoolWhenEquationBranch(mut inCond: Arc<DAE::Exp>, mut inEqs: Arc<metamo
     Ok(crefs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn verifyBoolWhenEquation1(mut inElems: Arc<metamodelica::List<Arc<DAE::Element>>>, mut initCond: bool, mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     outCrefs = (::match_deref::match_deref! { match &(inElems.clone()) {
@@ -5259,8 +5251,8 @@ fn getUniontypePathsFunctions(mut elements: Arc<metamodelica::List<DAE::Function
     Ok(outPaths)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getUniontypePathsElements(mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut acc: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     outPaths = (::match_deref::match_deref! { match &(elements.clone()) {
@@ -5680,8 +5672,6 @@ pub fn isCompleteFunction(mut f: DAE::Function) -> Result<bool> {
     Ok(isComplete)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn isCompleteFunctionBody(mut functions: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<bool> {
     let mut isComplete: bool = false;
     isComplete = 'mc: {
@@ -6365,8 +6355,8 @@ pub fn moveElementToInitialSection(mut elt: Arc<DAE::Element>) -> Arc<DAE::Eleme
     elt
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getParameters(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut acc: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Arc<metamodelica::List<Arc<DAE::Element>>> {
     let mut params: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     params = (::match_deref::match_deref! { match &(elts.clone()) {

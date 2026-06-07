@@ -352,8 +352,8 @@ fn applyReplacementsDim(mut map: ArgumentMap, mut dim: Arc<Dimension::NFDimensio
     Ok(dim)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: ArgumentMap, mut mutableParams: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut cls_node: Arc<InstNode::InstNode> = InstNode::classScope(recordNode.clone());

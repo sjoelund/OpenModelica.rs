@@ -1039,8 +1039,8 @@ pub fn inOutArgs(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcSt
     Ok(out_txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathIdent(mut in_txt: Tpl::Text, mut in_a_path: Arc<TplAbsyn::PathIdent>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
@@ -1431,8 +1431,8 @@ fn lm_68(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<TplAbsyn::MME
     Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mmExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MMExp>, mut in_a_assignStr: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone(), in_a_assignStr.clone())) {
@@ -1537,8 +1537,8 @@ fn lm_72(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<TplAbsyn::Mat
     Ok(txt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingExp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {

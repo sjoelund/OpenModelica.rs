@@ -203,8 +203,8 @@ pub fn updatePackage(mut in_class: Arc<Absyn::Class>, mut ag_elems: Arc<metamode
     Ok(out_class)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn populateModel(mut element_defs: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>, mut autoVal: i32, mut elements_in: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
     let mut elements_out: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     elements_out = (::match_deref::match_deref! { match &(element_defs.clone()) {
@@ -223,8 +223,8 @@ fn populateModel(mut element_defs: Arc<metamodelica::List<(Arc<SCode::Element>, 
     Ok(elements_out)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getAllElementsOfType(mut element_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: Ident, mut pathInProg: ArcStr, mut elements_in: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>> {
     let mut elements_out: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> = metamodelica::nil();
     elements_out = (::match_deref::match_deref! { match &(element_defs.clone()) {
@@ -305,8 +305,6 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
     Ok(res_elem)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: ArcStr) -> Result<bool> {
     let mut result: bool = false;
     result = 'mc: {
@@ -341,8 +339,8 @@ fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeNam
     Ok(result)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn inferBindingClientList(mut client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program) -> Result<Arc<Absyn::Class>> {
     let mut out_vmodel: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     out_vmodel = (::match_deref::match_deref! { match &(client_list.clone()) {
@@ -397,8 +395,8 @@ fn inferBindingClient(mut client_e: Arc<Client_e>, mut vmodel: Arc<Absyn::Class>
     Ok(out_vmodel)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toExpList(mut e_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut in_es: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
     let mut out_es: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     out_es = (::match_deref::match_deref! { match &(e_list.clone()) {
@@ -517,8 +515,6 @@ fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mu
     Ok(out_elems)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut typeSp: ArcStr, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut preferred: Arc<metamodelica::List<Preferred>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
     let mut out_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     out_elems = 'mc: {
@@ -558,8 +554,6 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
     Ok(out_elems)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getPreferredBinding(mut ename: ArcStr, mut elems: Arc<metamodelica::List<Preferred>>) -> Result<ArcStr> {
     let mut cl_name: ArcStr = arcstr::literal!("");
     cl_name = ('mc: {
@@ -594,8 +588,6 @@ fn getPreferredBinding(mut ename: ArcStr, mut elems: Arc<metamodelica::List<Pref
     Ok(cl_name)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyModifierPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut typeSp: ArcStr, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut ename: ArcStr) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> {
     let mut out_comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
     out_comps = 'mc: {
@@ -632,8 +624,6 @@ fn applyModifierPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Component
     Ok(out_comps)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut finalPrefix: bool, mut redeclareKeywords: Option<Absyn::RedeclareKeywords>, mut innerOuter: Absyn::InnerOuter, mut info: SourceInfo, mut constrainClass: Option<Arc<Absyn::ConstrainClass>>, mut attributes: Absyn::ElementAttributes, mut tSpec: TypeSpec, mut newName: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
     let mut out_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     out_elems = 'mc: {
@@ -671,8 +661,6 @@ fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
     Ok(out_elems)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyModifier(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut exp: Arc<Absyn::Exp>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut counter: i32, mut newName: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> {
     let mut out_comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
     out_comps = 'mc: {
@@ -833,8 +821,8 @@ fn parseAggregator(mut in_eq: Arc<Absyn::Exp>, mut fargs: Arc<Absyn::FunctionArg
     out_eq
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
     let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
     out_es = (::match_deref::match_deref! { match &(providers.clone()) {
@@ -863,8 +851,6 @@ pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel
     Ok(out_es)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
     let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
     out_es = 'mc: {
@@ -900,8 +886,6 @@ fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Ar
     Ok(out_es)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn applyTemplate2(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
     let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
     out_es = 'mc: {
@@ -993,8 +977,6 @@ fn parseExpression(mut in_eq: Arc<Absyn::Exp>, mut fargs: ArcStr) -> Result<Arc<
     Ok(out_eq)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Result<Arc<Absyn::ComponentRef>> {
     let mut out_componentRef: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     out_componentRef = 'mc: {
@@ -1046,8 +1028,6 @@ fn updateCRF(mut componentRef: Arc<Absyn::ComponentRef>, mut name: ArcStr) -> Re
     Ok(out_componentRef)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>> {
     let mut out_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> = metamodelica::nil();
     out_components = 'mc: {
@@ -1096,8 +1076,6 @@ fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_it
     Ok(out_components)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, mut in_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut pathInClass: ArcStr) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>> {
     let mut out_components: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> = metamodelica::nil();
     out_components = 'mc: {
@@ -1151,8 +1129,8 @@ fn buildInstList2(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut pre
     Ok(client_list)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isAlreadyInList(mut ts: Arc<Absyn::TypeSpec>, mut predecessors: Arc<metamodelica::List<Arc<Client_e>>>) -> Result<bool> {
     let mut val: bool = false;
     val = (::match_deref::match_deref! { match &(predecessors.clone()) {
@@ -1167,8 +1145,6 @@ fn isAlreadyInList(mut ts: Arc<Absyn::TypeSpec>, mut predecessors: Arc<metamodel
     Ok(val)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>> = metamodelica::nil();
     client_list = 'mc: {
@@ -1235,8 +1211,6 @@ fn getComponentNames(mut l: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>) 
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut rootType: TypeSpec) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>> = metamodelica::nil();
     client_list = 'mc: {
@@ -1363,8 +1337,8 @@ fn isClientInMediator(mut ci_name: ArcStr, mut clients: Arc<metamodelica::List<C
     Ok((isClient, iname))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getMediatorDefsElements(mut mediator_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut mediators_in: Arc<metamodelica::List<Mediator>>) -> Result<Arc<metamodelica::List<Mediator>>> {
     let mut mediators_out: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
     mediators_out = (::match_deref::match_deref! { match &(mediator_defs.clone()) {
@@ -1460,8 +1434,8 @@ fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelic
     Ok(mediator)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getPreferredList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Preferred>>) -> Result<Arc<metamodelica::List<Preferred>>> {
     let mut n_val: Arc<metamodelica::List<Preferred>> = metamodelica::nil();
     n_val = (::match_deref::match_deref! { match &(e.clone()) {
@@ -1480,8 +1454,8 @@ fn getPreferredList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Ar
     Ok(n_val)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getClientList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Client>>) -> Result<Arc<metamodelica::List<Client>>> {
     let mut n_val: Arc<metamodelica::List<Client>> = metamodelica::nil();
     n_val = (::match_deref::match_deref! { match &(e.clone()) {
@@ -1510,8 +1484,8 @@ fn getClientList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<m
     Ok(n_val)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Provider>>) -> Result<Arc<metamodelica::List<Provider>>> {
     let mut n_val: Arc<metamodelica::List<Provider>> = metamodelica::nil();
     n_val = (::match_deref::match_deref! { match &(e.clone()) {
@@ -1532,8 +1506,6 @@ fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc
     Ok(n_val)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getArg(mut argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut name: ArcStr) -> Result<ArcStr> {
     let mut val: ArcStr = arcstr::literal!("");
     val = ('mc: {
@@ -1618,8 +1590,6 @@ fn getValue(mut r#mod: Arc<SCode::Mod>, mut name: Ident, mut retype: ArcStr) -> 
     Ok(val)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getValueR(mut smod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut name: Ident, mut retype: ArcStr) -> Result<Arc<Absyn::Exp>> {
     let mut val: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     val = 'mc: {

@@ -1094,8 +1094,8 @@ fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
     Ok((outRepl, outSrc, outDst))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut repl: VariableReplacements, mut singleRepl: VariableReplacements) -> Result<VariableReplacements> {
     let mut outRepl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
     outRepl = (::match_deref::match_deref! { match &((lst.clone(), repl.clone())) {

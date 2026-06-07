@@ -327,8 +327,8 @@ fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     Ok(license)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> ArcStr {
     let mut libraryKey: ArcStr = arcstr::literal!("");
     libraryKey = ((::match_deref::match_deref! { match &(eltArgs.clone()) {
@@ -348,8 +348,8 @@ fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn:
     libraryKey
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> ArcStr {
     let mut licenseFile: ArcStr = arcstr::literal!("");
     licenseFile = ((::match_deref::match_deref! { match &(eltArgs.clone()) {
@@ -388,8 +388,8 @@ fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     Ok(features)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     features = (::match_deref::match_deref! { match &(eltArgs.clone()) {

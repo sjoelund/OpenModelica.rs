@@ -1325,8 +1325,8 @@ fn convertUnitStringToUnit(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<U
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getUnitStringFromExp(mut unitExp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
     let mut unitString: ArcStr = arcstr::literal!("");
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);

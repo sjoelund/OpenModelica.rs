@@ -128,8 +128,6 @@ fn readCalcTimesFromJson(mut fileName: ArcStr) -> Result<Arc<metamodelica::List<
     Ok(calcTimes)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut iTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>) -> Result<Arc<metamodelica::List<(i32, i32, metamodelica::Real)>>> {
     let mut oTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
     let mut eqIdx: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);

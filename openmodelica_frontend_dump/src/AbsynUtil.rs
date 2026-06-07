@@ -863,8 +863,8 @@ pub fn crefExp(mut cr: Arc<Absyn::ComponentRef>) -> Arc<Absyn::Exp> {
     exp
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathEqual(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
@@ -878,8 +878,8 @@ pub fn pathEqual(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bo
     equal
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathEqualCaseInsensitive(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
@@ -1178,8 +1178,8 @@ pub fn stringListPathReversed(mut inStrings: Arc<metamodelica::List<ArcStr>>) ->
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathLastIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(path.clone()) {
@@ -1213,8 +1213,8 @@ pub fn pathLast(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     Ok(path)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathFirstIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(path.clone()) {
@@ -1237,8 +1237,8 @@ pub fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Resul
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathFirstPath(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(path.clone()) {
@@ -1250,8 +1250,8 @@ pub fn pathFirstPath(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathSecondIdent(mut inPath: Arc<Absyn::Path>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(inPath.clone()) {
@@ -1332,8 +1332,8 @@ pub fn pathStripSamePrefix(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPrefix(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut prefix: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     prefix = (::match_deref::match_deref! { match &(path.clone()) {
@@ -1372,8 +1372,6 @@ pub fn suffixPath(mut inPath: Arc<Absyn::Path>, mut inSuffix: ArcStr) -> Result<
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn pathSuffixOf(mut suffix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Result<bool> {
     let mut res: bool = false;
     res = 'mc: {
@@ -1428,8 +1426,8 @@ pub fn pathToStringList(mut path: Arc<Absyn::Path>) -> Result<Arc<metamodelica::
     Ok(outPaths)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathToStringListReverse(mut path: Arc<Absyn::Path>, mut acc: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outPaths = (::match_deref::match_deref! { match &(path.clone()) {
@@ -1498,8 +1496,8 @@ pub fn crefReplaceFirstIdent(mut icref: Arc<Absyn::ComponentRef>, mut replPath: 
     Ok(outCref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPrefixOf(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> bool {
     let mut isPrefix: bool = false;
     isPrefix = (::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
@@ -1526,8 +1524,8 @@ pub fn pathPrefixOf(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>
     isPrefix
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removePrefix(mut prefix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut newPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     newPath = (::match_deref::match_deref! { match &((prefix_path.clone(), path.clone())) {
@@ -1547,8 +1545,8 @@ pub fn removePrefix(mut prefix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path
     Ok(newPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removePrefixOpt(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Option<Arc<Absyn::Path>> {
     let mut outPath: Option<Arc<Absyn::Path>> = None;
     outPath = (::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
@@ -1561,8 +1559,6 @@ pub fn removePrefixOpt(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Pa
     outPath
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = 'mc: {
@@ -1624,8 +1620,8 @@ pub fn getCrefsFromSubs(mut isubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>
     Ok(crefs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outComponentRefLst = (::match_deref::match_deref! { match &(inExp.clone()) {
@@ -1888,8 +1884,8 @@ fn getCrefFromNarg(mut inNamedArg: Arc<Absyn::NamedArg>, mut includeSubs: bool, 
     Ok(outComponentRefLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn joinPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((inPath1.clone(), inPath2.clone())) {
@@ -2113,8 +2109,8 @@ pub fn pathToCrefWithSubs(mut inPath: Arc<Absyn::Path>, mut inSubs: Arc<metamode
     Ok(outComponentRef)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(cref.clone()) {
@@ -2126,8 +2122,8 @@ pub fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     Ok(outIdent)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstIdentNoSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(cref.clone()) {
@@ -2160,8 +2156,8 @@ pub fn crefIsQual(mut inComponentRef: Arc<Absyn::ComponentRef>) -> bool {
     outIsQual
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
     subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2173,8 +2169,8 @@ pub fn crefFirstSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodel
     Ok(subscripts)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
     subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2226,8 +2222,8 @@ pub fn crefSetLastSubs(mut cref: Arc<Absyn::ComponentRef>, mut inSubscripts: Arc
     Ok(cref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefHasSubscripts(mut cref: Arc<Absyn::ComponentRef>) -> bool {
     let mut hasSubscripts: bool = false;
     hasSubscripts = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2297,8 +2293,8 @@ fn stripCommentExpressionsHelper(mut exp: Arc<Absyn::Exp>, mut onlyComments: boo
     (exp, onlyComments)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefGetLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut ident: ArcStr = arcstr::literal!("");
     ident = ((::match_deref::match_deref! { match &(cref.clone()) {
@@ -2310,8 +2306,8 @@ pub fn crefGetLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     Ok(ident)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefGetLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
     subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
@@ -2371,8 +2367,8 @@ pub fn joinCrefs(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut inComponentR
     Ok(outComponentRef)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstIdent(mut inCref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(inCref.clone()) {
@@ -2405,8 +2401,8 @@ pub fn crefSetFirstIdent(mut cref: Arc<Absyn::ComponentRef>, mut ident: ArcStr) 
     cref
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefSecondIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     let mut ident: ArcStr = arcstr::literal!("");
     ident = ((::match_deref::match_deref! { match &(cref.clone()) {
@@ -2417,8 +2413,8 @@ pub fn crefSecondIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
     Ok(ident)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstCref(mut inCref: Arc<Absyn::ComponentRef>) -> Arc<Absyn::ComponentRef> {
     let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
@@ -2430,8 +2426,8 @@ pub fn crefFirstCref(mut inCref: Arc<Absyn::ComponentRef>) -> Arc<Absyn::Compone
     outCref
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStripFirst(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outComponentRef: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
@@ -2557,8 +2553,8 @@ pub fn setClassBody(mut inClass: Arc<Absyn::Class>, mut inBody: Arc<Absyn::Class
     Ok(outClass)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefEqual(mut cref1: Arc<Absyn::ComponentRef>, mut cref2: Arc<Absyn::ComponentRef>) -> Result<bool> {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((cref1.clone(), cref2.clone())) {
@@ -2600,8 +2596,8 @@ pub fn subscriptsEqual(mut inSubList1: Arc<metamodelica::List<Arc<Absyn::Subscri
     Ok(outIsEqual)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefEqualNoSubs(mut cr1: Arc<Absyn::ComponentRef>, mut cr2: Arc<Absyn::ComponentRef>) -> bool {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
@@ -2943,8 +2939,6 @@ pub fn canonIfExp(mut inExp: Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> {
     Ok(outExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<bool> {
     let mut onlyLiterals: bool = false;
     onlyLiterals = 'mc: {
@@ -3988,8 +3982,6 @@ pub fn getArrayDimOptAsList(mut inArrayDim: Option<Arc<metamodelica::List<Arc<Ab
     outArrayDim
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn removeCrefFromCrefs(mut inAbsynComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
     let mut outAbsynComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outAbsynComponentRefLst = 'mc: {
@@ -4174,8 +4166,6 @@ pub fn getNamedAnnotationInClass<T: Clone + 'static>(mut inClass: Arc<Absyn::Cla
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNamedAnnotationStr<T: Clone + 'static>(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut id: Arc<Absyn::Path>, mut f: Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>) -> Result<Option<T>> {
     pub type ModFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<T> + 'static>;
 
@@ -4687,8 +4677,8 @@ pub fn makeIntegerSubscript(mut n: i32) -> Arc<Absyn::Subscript> {
     sub
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefExplode(mut inCref: Arc<Absyn::ComponentRef>, mut inAccum: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>) -> Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> {
     let mut outCrefParts: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
     outCrefParts = (::match_deref::match_deref! { match &(inCref.clone()) {
@@ -5061,8 +5051,8 @@ pub fn isInvariantExpNoTraverse(mut e: Arc<Absyn::Exp>, mut b: bool) -> (Arc<Abs
     (e, b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPartCount(mut path: Arc<Absyn::Path>, mut partsAccum: i32) -> Result<i32> {
     let mut parts: i32 = 0;
     parts = (::match_deref::match_deref! { match &(path.clone()) {
@@ -5285,8 +5275,6 @@ fn classHasLocalClasses(mut cl: Arc<Absyn::Class>) -> Result<bool> {
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<bool> {
     let mut res: bool = false;
     res = 'mc: {
@@ -5330,8 +5318,6 @@ fn partsHasLocalClass(mut inParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn eltsHasLocalClass(mut inElts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<bool> {
     let mut res: bool = false;
     res = 'mc: {
@@ -5814,8 +5800,8 @@ pub fn pathReplaceFirst(mut path: Arc<Absyn::Path>, mut prefix: Arc<Absyn::Path>
     Ok(outPath)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathContains(mut path: Arc<Absyn::Path>, mut name: ArcStr) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(path.clone()) {

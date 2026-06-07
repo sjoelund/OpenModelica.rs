@@ -124,9 +124,10 @@ pub mod Rational {
         r
     }
 
-    #[tailcall::tailcall]
     fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
-        if (i2.clone() == 0) {i1.clone()} else {tailcall::call!{ intGcd(i2.clone(), intMod(i1.clone(), i2.clone())) }}
+        '__tco: loop {
+            if (i2.clone() == 0) {return i1.clone()} else {{ (i1, i2) = (i2.clone(), intMod(i1.clone(), i2.clone())); continue '__tco; }}
+        }
     }
 
 }

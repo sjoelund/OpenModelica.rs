@@ -133,8 +133,8 @@ fn treeGet2(mut inBinTree: Arc<BinTree>, mut ikey: Key) -> Result<i32> {
     Ok(compResult)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn treeGet3(mut inBinTree: Arc<BinTree>, mut ikey: Key, mut inCompResult: i32) -> Result<Value> {
     let mut outValue: Value = 0;
     outValue = (::match_deref::match_deref! { match &((inBinTree.clone(), inCompResult.clone())) {
@@ -156,8 +156,8 @@ fn treeGet3(mut inBinTree: Arc<BinTree>, mut ikey: Key, mut inCompResult: i32) -
     Ok(outValue)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<i32>>) -> Result<Arc<BinTree>> {
     let mut outBinTree: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
     outBinTree = (::match_deref::match_deref! { match &((inBinTree.clone(), inKeyLst.clone())) {

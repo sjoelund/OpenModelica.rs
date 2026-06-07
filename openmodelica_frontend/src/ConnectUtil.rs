@@ -434,8 +434,6 @@ fn daeVarToCrefs(mut var: Arc<DAE::Var>) -> Result<Arc<metamodelica::List<Arc<DA
     Ok(crefs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn expandArrayCref(mut cref: Arc<DAE::ComponentRef>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut accumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     crefs = 'mc: {
@@ -2268,8 +2266,8 @@ fn sizeOfVariableList(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
     Ok(size)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
     let mut size: i32 = 0;
     size = (::match_deref::match_deref! { match &(ty.clone()) {

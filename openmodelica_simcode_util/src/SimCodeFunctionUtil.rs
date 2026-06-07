@@ -98,8 +98,8 @@ pub fn crefSubIsScalar(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     Ok(isScalar)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn subsToScalar(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inExpSubscriptLst.clone()) {
@@ -322,8 +322,6 @@ pub fn hackArrayReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFunc
     Ok(outExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isArrayExpansion(mut inArrayElems: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCref: Arc<DAE::ComponentRef>, mut index: i32) -> Result<bool> {
     let mut isExpanded: bool = false;
     isExpanded = 'mc: {
@@ -405,8 +403,6 @@ pub fn hackMatrixReverseToCref(mut inExp: Arc<DAE::Exp>, mut context: SimCodeFun
     Ok(outExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isMatrixExpansion(mut rows: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inCref: Arc<DAE::ComponentRef>, mut rowIndex: i32, mut colIndex: i32) -> Result<bool> {
     let mut isExpanded: bool = false;
     isExpanded = 'mc: {
@@ -2863,8 +2859,6 @@ fn generateExtFunctionDynamicLoad(mut inMod: Arc<SCode::Mod>) -> Result<bool> {
     Ok(outDynamicLoad)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     outExpLst = 'mc: {
@@ -2910,8 +2904,8 @@ pub fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DA
     Ok(outExpLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getCalledFunctionsInFunctions(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     outHt = (::match_deref::match_deref! { match &((paths.clone(), inHt.clone())) {

@@ -2604,8 +2604,8 @@ pub fn checkConnector(mut connExp: Arc<Expression::NFExpression>, mut info: Sour
     Ok(deleted)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn checkConnectorForm(mut cref: Arc<ComponentRef::NFComponentRef>, mut isConnector: bool) -> Result<bool> {
     let mut valid: bool = false;
     valid = (::match_deref::match_deref! { match &(cref.clone()) {

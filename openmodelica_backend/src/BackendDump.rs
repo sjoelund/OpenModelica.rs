@@ -2326,8 +2326,8 @@ pub fn dumpEqnsStr(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn dumpEqnsStr2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inInteger: i32, mut inAcc: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     strs = (::match_deref::match_deref! { match &((inEquationLst.clone(), inInteger.clone(), inAcc.clone())) {
@@ -2352,8 +2352,8 @@ fn dumpEqnsStr2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equati
     Ok(strs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut eqnstrue: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut eqnsfalse: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iString: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &((conditions.clone(), eqnstrue.clone(), eqnsfalse.clone())) {

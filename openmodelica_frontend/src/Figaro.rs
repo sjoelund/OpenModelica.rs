@@ -183,8 +183,6 @@ fn fcElement(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
     Ok(outFigaroClassList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fcExtends(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: Arc<SCode::Element>, mut inClassName: Option<ArcStr>, mut inElement: Arc<SCode::Element>, mut env: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<bool> {
     let mut doExtend: bool = false;
     doExtend = 'mc: {
@@ -229,8 +227,6 @@ fn fcExtends(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
     Ok(doExtend)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fcElementListExt(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: Arc<SCode::Element>, mut inClassName: Option<ArcStr>, mut inElementList: Arc<metamodelica::List<Arc<SCode::Element>>>, mut env: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<bool> {
     let mut res: bool = false;
     res = 'mc: {
@@ -294,8 +290,6 @@ fn fcClassDef(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: 
     Ok(outFigaroClassList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fcElementList(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: Arc<SCode::Element>, mut inClassName: Option<ArcStr>, mut inElementList: Arc<metamodelica::List<Arc<SCode::Element>>>, mut env: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<FigaroClass>>> {
     let mut outFigaroClassList: Arc<metamodelica::List<FigaroClass>> = metamodelica::nil();
     outFigaroClassList = 'mc: {
@@ -347,8 +341,6 @@ fn fcMod1(mut inMod: Arc<SCode::Mod>) -> Result<ArcStr> {
     Ok(outTypeName)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fcSubModList(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> Result<ArcStr> {
     let mut outTypeName: ArcStr = arcstr::literal!("");
     outTypeName = ('mc: {
@@ -456,8 +448,6 @@ fn foClassDef(mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>, mut i
     Ok(outFigaroObjectList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn foElementList(mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>, mut inElementList: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<FigaroObject>>> {
     let mut outFigaroObjectList: Arc<metamodelica::List<FigaroObject>> = metamodelica::nil();
     outFigaroObjectList = 'mc: {
@@ -495,8 +485,6 @@ fn foElementList(mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>, mu
     Ok(outFigaroObjectList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn findFigaroTypeName(mut inClassPath: Path, mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>) -> Result<ArcStr> {
     let mut outTypeName: ArcStr = arcstr::literal!("");
     outTypeName = ('mc: {
@@ -560,8 +548,6 @@ fn foMod1(mut inMod: Arc<SCode::Mod>, mut name: ArcStr) -> Result<ArcStr> {
     Ok(outCode)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn foSubModList(mut inSubModList: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut name: ArcStr) -> Result<ArcStr> {
     let mut outCode: ArcStr = arcstr::literal!("");
     outCode = ('mc: {
@@ -632,8 +618,8 @@ fn foExp(mut inExp: Arc<Absyn::Exp>) -> Result<ArcStr> {
     Ok(outCode)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLastIdent(mut inPath: Path) -> Result<Ident> {
     let mut outIdent: Ident = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(inPath.clone()) {
@@ -775,8 +761,6 @@ fn interpret(mut inString: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     Ok(outStringList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Token>>> {
     let mut outTokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
     outTokenList = 'mc: {
@@ -843,8 +827,6 @@ fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamod
     Ok(outTokenList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn scanDeclaration(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outStringList = 'mc: {
@@ -933,8 +915,6 @@ fn scanText(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inText: ArcSt
 /* These functions walk over the token sequence from the lexer and throw away tokens that will not
 be usable. E. g., if a tag is not known, the tokens associated with it will be thrown away.
 The purpose of this step is to return a very simple sequence for the parser to work on. */
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeTokens(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<Arc<metamodelica::List<Token>>> {
     let mut outTokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
     outTokenList = 'mc: {
@@ -1007,8 +987,6 @@ fn removeFirstIfText(mut inTokenList: Arc<metamodelica::List<Token>>) -> Arc<met
     outTokenList
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeUnknown(mut inTokenList: Arc<metamodelica::List<Token>>, mut inTagName: ArcStr) -> Result<Arc<metamodelica::List<Token>>> {
     let mut outTokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
     outTokenList = 'mc: {
@@ -1179,8 +1157,6 @@ fn parseInfo(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<(ArcStr,
     Ok((outString, outTokenList))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isToBeReported(mut inStringTupleList: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<bool> {
     let mut outBoolean: bool = false;
     let mut errorsToReport: Arc<metamodelica::List<ArcStr>> = list![(literal!("FATAL")).clone()];
@@ -1216,8 +1192,6 @@ fn isToBeReported(mut inStringTupleList: Arc<metamodelica::List<(ArcStr, ArcStr)
     Ok(outBoolean)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getMessage(mut inStringTupleList: Arc<metamodelica::List<(ArcStr, ArcStr)>>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {

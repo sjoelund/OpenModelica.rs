@@ -582,8 +582,6 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
 //         {};
 //   end matchcontinue;
 // end adjacencyRowStmts;
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outStringLst = 'mc: {

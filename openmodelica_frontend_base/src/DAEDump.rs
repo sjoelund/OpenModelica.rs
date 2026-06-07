@@ -1509,8 +1509,8 @@ pub fn dumpInlineTypeBackendStr(mut inlineType: DAE::InlineType) -> ArcStr {
     r#str
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn printRecordConstructorInputsStr(mut itp: Arc<DAE::Type>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(itp.clone()) {
@@ -2976,8 +2976,6 @@ fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node
     Ok(outNode)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn unparseType(mut tp: Arc<DAE::Type>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ('mc: {
@@ -3282,8 +3280,8 @@ pub fn dumpElementsStream(mut l: Arc<metamodelica::List<Arc<DAE::Element>>>, mut
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dumpCompWithSplitElementsStream(mut inCompLst: Arc<metamodelica::List<Arc<DAEDumpTypes::compWithSplitElements>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = (::match_deref::match_deref! { match &((inCompLst.clone(), inStream.clone())) {
@@ -3347,8 +3345,6 @@ pub fn dumpCompWithSplitElementsStream(mut inCompLst: Arc<metamodelica::List<Arc
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn dumpAlgorithmsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = 'mc: {
@@ -3388,8 +3384,6 @@ pub fn dumpAlgorithmsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::El
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn dumpInitialAlgorithmsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = 'mc: {
@@ -3429,8 +3423,8 @@ fn dumpInitialAlgorithmsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE:
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = (::match_deref::match_deref! { match &((inElementLst.clone(), inStream.clone())) {
@@ -3617,8 +3611,8 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn dumpIfEquationsStream(mut iconds: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut itbs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = (::match_deref::match_deref! { match &((iconds.clone(), itbs.clone(), inStream.clone())) {
@@ -3639,8 +3633,6 @@ fn dumpIfEquationsStream(mut iconds: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = 'mc: {
@@ -3807,8 +3799,6 @@ fn dumpInitialEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::
     Ok(outStream)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn dumpConstraintStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = 'mc: {
@@ -3863,8 +3853,8 @@ pub fn dumpDAEElementsStr(mut d: DAE::DAElist) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dumpVarsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut printTypeDimension: bool, mut inStream: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut outStream: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
     outStream = (::match_deref::match_deref! { match &((inElementLst.clone(), inStream.clone())) {

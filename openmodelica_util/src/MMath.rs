@@ -176,11 +176,12 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
     Ok(r)
 }
 
-#[tailcall::tailcall]
 pub fn intGcd(mut i1: i32, mut i2: i32) -> i32 {
-    match i2.clone() {
-        0 => i1.clone(),
-        _ => tailcall::call!{ intGcd(i2.clone(), intMod(i1.clone(), i2.clone())) },
+    '__tco: loop {
+        match i2.clone() {
+        0 => return i1.clone(),
+        _ => { (i1, i2) = (i2.clone(), intMod(i1.clone(), i2.clone())); continue '__tco; },
+    }
     }
 }
 

@@ -2200,8 +2200,6 @@ fn cevalBuiltinSize(mut inCache: FCore::Cache, mut inEnv1: FCore::Graph, mut inE
     Ok((outCache, outValue))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn cevalBuiltinSize2(mut inValue: Arc<Values::Value>, mut inInteger: i32) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outValue = 'mc: {
@@ -5672,8 +5670,8 @@ fn filterReductionIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outVals))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn extendFrameForIterators(mut inEnv: FCore::Graph, mut inNames: Arc<metamodelica::List<ArcStr>>, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inTys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     outEnv = (::match_deref::match_deref! { match &((inEnv.clone(), inNames.clone(), inVals.clone(), inTys.clone())) {
@@ -5720,8 +5718,8 @@ fn backpatchArrayReduction(mut path: Arc<Absyn::Path>, mut iterType: Absyn::Redu
     Ok(outValue)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inDims: Arc<metamodelica::List<i32>>, mut makeSequence: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>) -> Result<Arc<Values::Value>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>;
 

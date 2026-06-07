@@ -410,8 +410,8 @@ pub mod EntryTree {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Mutable::Mutable<Entry>>> {
         let mut value: Option<Mutable::Mutable<Entry>> = None;
         let mut k: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -432,8 +432,8 @@ pub mod EntryTree {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -739,8 +739,8 @@ pub mod EntryTree {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
         key = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -1225,8 +1225,8 @@ pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
     Ok(value)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<EntryTree::Tree>>> {
     let mut value: Option<Arc<EntryTree::Tree>> = None;
     let mut k: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -1247,8 +1247,8 @@ pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<EntryTree:
     Ok(value)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
     let mut key: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -1554,8 +1554,8 @@ pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
     let mut key: Key = Arc::new(Absyn::ComponentRef::ALLWILD);
     key = (::match_deref::match_deref! { match &(tree.clone()) {

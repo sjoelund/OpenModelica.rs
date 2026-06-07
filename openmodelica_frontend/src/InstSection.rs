@@ -1380,8 +1380,6 @@ pub fn instEqEquation(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
     Ok(outDae)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inType3: Arc<DAE::Type>, mut inConst: DAE::Const, mut source: Arc<DAE::ElementSource>, mut inInitial4: SCode::Initial) -> Result<DAE::DAElist> {
     let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     outDae = 'mc: {
@@ -1593,8 +1591,8 @@ fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inT
     Ok(outDae)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn instEqEquation2List(mut inExps1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inExps2: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTypes3: Arc<metamodelica::List<Arc<DAE::Type>>>, mut r#const: DAE::Const, mut source: Arc<DAE::ElementSource>, mut initial_: SCode::Initial, mut acc: Arc<metamodelica::List<DAE::DAElist>>) -> Result<DAE::DAElist> {
     let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     outDae = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone(), inTypes3.clone())) {
@@ -2392,8 +2390,6 @@ fn makeAssignment(mut inLhs: Arc<DAE::Exp>, mut inLhsProps: DAE::Properties, mut
     Ok(outStatement)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn containsWhenStatements(mut statementList: Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> {
     let mut hasWhenStatements: bool = false;
     hasWhenStatements = 'mc: {
@@ -3452,8 +3448,8 @@ fn generateExpandableDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Grap
     Ok(outDAE)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn daeDeclareList(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClassEnv: FCore::Graph, mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut state: ClassInf::State, mut ty: Arc<DAE::Type>, mut attrs: SCode::Attributes, mut vis: SCode::Visibility, mut io: Absyn::InnerOuter, mut source: Arc<DAE::ElementSource>, mut acc: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut outDAE: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     outDAE = (::match_deref::match_deref! { match &(crefs.clone()) {
@@ -3472,8 +3468,8 @@ fn daeDeclareList(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut 
     Ok(outDAE)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut virtualExpandableCref: Arc<DAE::ComponentRef>, mut virtualExpandableAttr: Arc<DAE::Attributes>, mut virtualExpandableTy: Arc<DAE::Type>, mut virtualExpandableBinding: Arc<DAE::Binding>, mut virtualExpandableCnstForRange: Option<DAE::Const>, mut virtualExpandableEnv: FCore::Graph) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     outEnv = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), virtualExpandableCref.clone(), virtualExpandableAttr.clone(), virtualExpandableTy.clone(), virtualExpandableBinding.clone(), virtualExpandableCnstForRange.clone(), virtualExpandableEnv.clone())) {
@@ -5164,8 +5160,6 @@ fn crefInfoListCrefsEqual(mut inFoundCref: Arc<DAE::ComponentRef>, mut inCrefInf
     outBoolean
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn collectParallelVariables(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inStatments: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
     let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
     outCrefInfos = 'mc: {
@@ -5241,8 +5235,6 @@ fn collectParallelVariables(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::Co
     Ok(outCrefInfos)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn collectParallelVariablesinExps(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
     let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
     outCrefInfos = 'mc: {
@@ -5385,8 +5377,6 @@ fn collectParallelVariablesinExps(mut inCrefInfos: Arc<metamodelica::List<(Arc<D
     Ok(outCrefInfos)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn collectParallelVariablesInSubscriptList(mut inCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>> {
     let mut outCrefInfos: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>> = metamodelica::nil();
     outCrefInfos = 'mc: {

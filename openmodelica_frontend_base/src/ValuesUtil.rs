@@ -1052,8 +1052,6 @@ pub fn valueBool(mut inValue: Arc<Values::Value>) -> Result<bool> {
     Ok(outBool)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn valueReals(mut inValue: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<metamodelica::Real>>> {
     let mut outReal: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     outReal = 'mc: {
@@ -1870,8 +1868,8 @@ pub fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Valu
     Ok(outValue)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValue: Arc<Values::Value>, mut lastValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outValue = (::match_deref::match_deref! { match &((inLst.clone(), inValue.clone(), lastValue.clone())) {

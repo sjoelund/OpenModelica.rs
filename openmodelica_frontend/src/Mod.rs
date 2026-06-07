@@ -847,8 +847,6 @@ fn elabUntypedSubmod(mut inSubMod: Arc<SCode::SubMod>) -> Result<Arc<metamodelic
 }
 
 // - Lookup
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn lookupModificationP(mut inMod: Arc<DAE::Mod>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = 'mc: {
@@ -972,8 +970,6 @@ fn mergeModifiers(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut inSMo
     Ok(outMod)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn mergeSubMods(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut f: SCode::Final, mut e: SCode::Each, mut inSMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = 'mc: {
@@ -2408,8 +2404,6 @@ pub fn getUnelabedSubMod(mut inMod: Arc<SCode::Mod>, mut inIdent: ArcStr) -> Res
     Ok(outSubMod)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getUnelabedSubMod2(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inIdent: ArcStr) -> Result<Arc<SCode::Mod>> {
     let mut outMod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     outMod = 'mc: {
@@ -2580,8 +2574,8 @@ fn removeRedecl(mut isubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>) -> Arc<met
     osubs
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removeModList(mut inMod: Arc<DAE::Mod>, mut remStrings: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     let mut s: ArcStr = arcstr::literal!("");

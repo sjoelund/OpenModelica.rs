@@ -251,8 +251,8 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut component: Arc<N
     Ok(component)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut component: Arc<NFComponent>) -> Result<Arc<Type::NFType>> {
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = (::match_deref::match_deref! { match &(component.clone()) {

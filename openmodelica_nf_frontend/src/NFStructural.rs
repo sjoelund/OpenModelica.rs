@@ -99,26 +99,26 @@ pub fn isBindingNotFixed(mut binding: Arc<Binding::NFBinding>, mut requireFinal:
 }
 
 pub fn isComponentBindingNotFixed(mut component: Arc<Component::NFComponent>, mut node: Arc<InstNode::InstNode>, mut requireFinal: bool, mut maxDepth: i32, mut isRecord: bool) -> Result<bool> {
-    let mut isNotFixed: bool = false;
-    let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    binding = Component::getBinding(component.clone());
-    if Binding::isUnbound(binding.clone()) {
-        if isRecord.clone() || InstNode::isRecord(node.clone()) {
-            isNotFixed = false;
-        } else {
-            parent = InstNode::parent(node.clone());
-            if InstNode::isComponent(parent.clone())? && InstNode::isRecord(parent.clone()) {
-                isNotFixed = isComponentBindingNotFixed(InstNode::component(parent.clone())?, parent.clone(), requireFinal.clone(), maxDepth.clone(), true)?;
+    '__tco: loop {
+        let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
+        let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        binding = Component::getBinding(component.clone());
+        if Binding::isUnbound(binding.clone()) {
+            if isRecord.clone() || InstNode::isRecord(node.clone()) {
+                return Ok(false)
             } else {
-                binding = Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone());
-                isNotFixed = isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?;
+                parent = InstNode::parent(node.clone());
+                if InstNode::isComponent(parent.clone())? && InstNode::isRecord(parent.clone()) {
+                    { (component, node, requireFinal, maxDepth, isRecord) = (InstNode::component(parent.clone())?, parent.clone(), requireFinal.clone(), maxDepth.clone(), true); continue '__tco; }
+                } else {
+                    binding = Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone());
+                    return Ok(isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?)
+                }
             }
+        } else {
+            return Ok(isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?)
         }
-    } else {
-        isNotFixed = isBindingNotFixed(binding.clone(), requireFinal.clone(), maxDepth.clone())?;
     }
-    Ok(isNotFixed)
 }
 
 pub fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut requireFinal: bool, mut maxDepth: i32) -> Result<bool> {

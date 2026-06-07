@@ -437,17 +437,17 @@ pub fn isDiscontinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>,
 }
 
 pub fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
-    let mut b: bool = false;
-    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = (match getParent(var_ptr.clone()) {
+    '__tco: loop {
+        let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+        match getParent(var_ptr.clone()) {
         Some(mut parent) => {
-            isContinuousRecordAware(parent.clone(), staticAsContinuous.clone())?
+            { (var_ptr, staticAsContinuous) = (parent.clone(), staticAsContinuous.clone()); continue '__tco; }
         },
         _ => {
-            isContinuous(var_ptr.clone(), staticAsContinuous.clone())?
+            return Ok(isContinuous(var_ptr.clone(), staticAsContinuous.clone())?)
         },
-    });
-    Ok(b)
+    }
+    }
 }
 
 pub fn isDiscreteState(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {

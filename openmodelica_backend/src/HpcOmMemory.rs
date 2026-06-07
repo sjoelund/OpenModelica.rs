@@ -1645,8 +1645,6 @@ fn appendNodeVarsToCacheMap0(mut iWrittenCLs: Arc<metamodelica::List<i32>>, mut 
     Ok(oRemove)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32)> {
     let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil(), metamodelica::nil(), 0);
     let mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
@@ -3340,8 +3338,8 @@ fn getDimElemCount(mut iNumArrayElems: Arc<metamodelica::List<ArcStr>>, mut iDim
     Ok(oNumArrayElems)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getCrefDims(mut iCref: Arc<DAE::ComponentRef>) -> i32 {
     let mut oDims: i32 = 0;
     let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3406,8 +3404,6 @@ fn createArrayIndexCref(mut iIdx: i32, mut iDimElemCount: Arc<metamodelica::List
     Ok(oCref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn createArrayIndexCref_impl(mut iIdx: i32, mut iDimElemCount: Arc<metamodelica::List<i32>>, mut iRefCurrentDim: (Arc<DAE::ComponentRef>, i32)) -> Result<(Arc<DAE::ComponentRef>, i32)> {
     let mut oRefCurrentDim: (Arc<DAE::ComponentRef>, i32) = (Arc::new(DAE::ComponentRef::WILD), 0);
     let mut ident: ArcStr = arcstr::literal!("");

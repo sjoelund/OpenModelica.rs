@@ -625,8 +625,8 @@ fn unassignTVars(mut v: i32, mut inAss: metamodelica::Array<i32>) -> Result<meta
     Ok(outAss)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut visited: metamodelica::Array<i32>, mut iMark: i32) -> Result<i32> {
     let mut oMark: i32 = 0;
     oMark = (::match_deref::match_deref! { match &(iComps.clone()) {
@@ -749,18 +749,19 @@ fn tVarsofResidualEqns(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodel
     Ok((oMark, oAcc))
 }
 
-#[tailcall::tailcall]
 fn getTVarResiduals(mut index: i32, mut v1: metamodelica::Array<i32>, mut eqnLocalGlobal: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
-    match index.clone() {
+    '__tco: loop {
+        match index.clone() {
         0 => {
-            iAcc.clone()
+            return iAcc.clone()
         },
         _ => {
             let mut e: i32 = 0;
             e = ({let __elt = v1.borrow()[(index.clone()-1) as usize].clone(); __elt});
             e = ({let __elt = eqnLocalGlobal.borrow()[(e.clone()-1) as usize].clone(); __elt});
-            tailcall::call!{ getTVarResiduals(index.clone() - 1, v1.clone(), eqnLocalGlobal.clone(), metamodelica::cons(e.clone(), iAcc.clone())) }
+            { (index, v1, eqnLocalGlobal, iAcc) = (index.clone() - 1, v1.clone(), eqnLocalGlobal.clone(), metamodelica::cons(e.clone(), iAcc.clone())); continue '__tco; }
         },
+    }
     }
 }
 
@@ -1190,8 +1191,8 @@ fn hasnonlinearVars(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::
     hasnonlinear
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasnonlinearVars1(mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> bool {
     let mut hasnonlinear: bool = false;
     hasnonlinear = (::match_deref::match_deref! { match &(row.clone()) {
@@ -1281,8 +1282,8 @@ fn isEntrySolvable(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::L
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn tearingBFS2(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut clst: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inNextQueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
     let mut outNextQueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     outNextQueue = (::match_deref::match_deref! { match &((rows.clone(), clst.clone())) {

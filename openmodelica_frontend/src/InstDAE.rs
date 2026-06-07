@@ -164,8 +164,6 @@ fn showDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClass
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inConnectorType: Arc<DAE::ConnectorType>, mut inVarKind: DAE::VarKind, mut inVarDirection: DAE::VarDirection, mut inParallelism: DAE::VarParallelism, mut protection: DAE::VarVisibility, mut inExpExpOption: Option<Arc<DAE::Exp>>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut inStartValue: Option<Arc<DAE::Exp>>, mut inAttr: Option<Arc<DAE::VariableAttributes>>, mut inComment: Option<Arc<SCode::Comment>>, mut io: Absyn::InnerOuter, mut source: Arc<DAE::ElementSource>, mut declareComplexVars: bool) -> Result<DAE::DAElist> {
     let mut outDAe: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     outDAe = 'mc: {

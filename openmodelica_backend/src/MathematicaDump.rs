@@ -171,8 +171,6 @@ pub fn printExpMmaStr(mut e: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut
     Ok(s)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn printExp2MmaStr(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Variables) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {

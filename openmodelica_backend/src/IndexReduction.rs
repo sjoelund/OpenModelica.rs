@@ -2310,10 +2310,10 @@ fn partitionSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut
 }
 
 fn partitionSystem1(mut index: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarkarr: metamodelica::Array<i32>, mut collmarkarr: metamodelica::Array<i32>, mut iNSystems: i32) -> Result<i32> {
-    let mut oNSystems: i32 = 0;
-    oNSystems = (match index.clone() {
+    '__tco: loop {
+        match index.clone() {
         0 => {
-            iNSystems.clone() - 1
+            return Ok(iNSystems.clone() - 1)
         },
         _ if (!(intGt(({let __elt = rowmarkarr.borrow()[(index.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2321,17 +2321,17 @@ fn partitionSystem1(mut index: i32, mut m: metamodelica::Array<Arc<metamodelica:
             metamodelica::arrayUpdate(rowmarkarr.clone(), index.clone(), iNSystems.clone())?;
             rows = List::select(({let __elt = m.borrow()[(index.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             nsystems = partitionSystemstraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone())?;
-            partitionSystem1(index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), nsystems.clone())?
+            { (index, m, mT, rowmarkarr, collmarkarr, iNSystems) = (index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), nsystems.clone()); continue '__tco; }
         },
         _ => {
-            partitionSystem1(index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone())?
+            { (index, m, mT, rowmarkarr, collmarkarr, iNSystems) = (index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone()); continue '__tco; }
         },
-    });
-    Ok(oNSystems)
+    }
+    }
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn partitionSystemstraverseRows(mut iRows: Arc<metamodelica::List<i32>>, mut iQueue: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarkarr: metamodelica::Array<i32>, mut collmarkarr: metamodelica::Array<i32>, mut iNSystems: i32) -> Result<i32> {
     let mut oNSystems: i32 = 0;
     oNSystems = (::match_deref::match_deref! { match &((iRows.clone(), iQueue.clone())) {
@@ -2361,20 +2361,20 @@ fn partitionSystemstraverseRows(mut iRows: Arc<metamodelica::List<i32>>, mut iQu
 }
 
 fn partitionSystemSplitt(mut index: i32, mut rowmarkarr: metamodelica::Array<i32>, mut systsarr: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut osystsarr: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    osystsarr = (match index.clone() {
+    '__tco: loop {
+        match index.clone() {
         0 => {
-            systsarr.clone()
+            return Ok(systsarr.clone())
         },
         _ => {
             let mut i: i32 = 0;
             let mut arr: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             i = ({let __elt = rowmarkarr.borrow()[(index.clone()-1) as usize].clone(); __elt});
             arr = Array::consToElement(i.clone(), index.clone(), systsarr.clone())?;
-            partitionSystemSplitt(index.clone() - 1, rowmarkarr.clone(), arr.clone())?
+            { (index, rowmarkarr, systsarr) = (index.clone() - 1, rowmarkarr.clone(), arr.clone()); continue '__tco; }
         },
-    });
-    Ok(osystsarr)
+    }
+    }
 }
 
 fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inVarSize: i32, mut inEqnsSize: i32, mut iVars: BackendDAE::Variables, mut iEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inMT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inMapIncRowEqn: metamodelica::Array<i32>, mut vec1: metamodelica::Array<i32>, mut vec2: metamodelica::Array<i32>, mut level: i32, mut iShared: Arc<BackendDAE::Shared>, mut iStateSets: StateSets) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, StateSets)> {
@@ -2552,8 +2552,8 @@ fn getEqnsforDynamicStateSelection(mut U: Arc<metamodelica::List<i32>>, mut neqn
     Ok(eqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforDynamicStateSelection1(mut U: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubset: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outSubset: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outSubset = (::match_deref::match_deref! { match &(U.clone()) {
@@ -3827,8 +3827,8 @@ fn getSetVars(mut index: i32, mut setsize: i32, mut nCandidates: i32, mut nCEqns
     Ok((crstates, crset, oSetVars, ocrA, oAVars, realtp, ocrJ, oJVars))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn setSetAStart(mut iVars: Arc<metamodelica::List<BackendDAE::Var>>, mut n: i32, mut r: i32, mut nCandidates: i32, mut iAcc: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut oAcc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     oAcc = (::match_deref::match_deref! { match &(iVars.clone()) {
@@ -3916,8 +3916,8 @@ fn traverseFindStateOrder(mut inEq: Arc<BackendDAE::Equation>, mut inVars: Backe
     Ok((outEq, outVars))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addStateOrderFinder(mut iVlst: Arc<metamodelica::List<BackendDAE::Var>>, mut iDerVlst: Arc<metamodelica::List<BackendDAE::Var>>, mut inVars: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut oVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     oVars = (::match_deref::match_deref! { match &((iVlst.clone(), iDerVlst.clone())) {

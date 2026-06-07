@@ -6432,8 +6432,6 @@ fn getListFirstShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>
     Ok((outValue, restValues))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getListNthShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut errorMessage: ArcStr, mut currentElement: i32, mut nthElement: i32) -> Result<Arc<Values::Value>> {
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     outValue = 'mc: {
@@ -8325,8 +8323,6 @@ fn getAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::Lis
     Ok(outList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outList = 'mc: {
@@ -8406,8 +8402,6 @@ fn getInitialAlgorithms(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodeli
     Ok(outList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getInitialAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outList = 'mc: {
@@ -8487,8 +8481,6 @@ fn getAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -8528,8 +8520,6 @@ fn getAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica:
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getAlgorithmItemsCountInAlgorithmItems(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -8584,8 +8574,6 @@ fn getNthAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Re
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -8629,8 +8617,6 @@ fn getNthAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Li
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthAlgorithmItemInAlgorithms(mut inAbsynAlgorithmItemLst: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -8691,8 +8677,6 @@ fn getInitialAlgorithmItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> 
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getInitialAlgorithmItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -8750,8 +8734,6 @@ fn getNthInitialAlgorithmItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthInitialAlgorithmItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -8816,8 +8798,6 @@ fn getEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List
     Ok(outList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outList = 'mc: {
@@ -8897,8 +8877,6 @@ fn getInitialEquations(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodelic
     Ok(outList)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getInitialEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outList = 'mc: {
@@ -8978,8 +8956,6 @@ fn getEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -9019,8 +8995,6 @@ fn getEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getEquationItemsCountInEquationItems(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -9076,8 +9050,6 @@ fn getNthEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32) -> Res
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -9121,8 +9093,6 @@ fn getNthEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Lis
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthEquationItemInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -9185,8 +9155,6 @@ fn getInitialEquationItemsCount(mut inClass: Arc<Absyn::Class>) -> Result<i32> {
     Ok(outInteger)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getInitialEquationItemsCountInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<i32> {
     let mut outInteger: i32 = 0;
     outInteger = 'mc: {
@@ -9243,8 +9211,6 @@ fn getNthInitialEquationItem(mut inClass: Arc<Absyn::Class>, mut inInteger: i32)
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getNthInitialEquationItemInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ('mc: {
@@ -9382,8 +9348,6 @@ fn unparseNthImport(mut inImport: Absyn::Import) -> Result<Arc<metamodelica::Lis
     Ok(outValue)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn unparseGroupImport(mut inAbsynGroupImportLst: Arc<metamodelica::List<Absyn::GroupImport>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outList = 'mc: {
@@ -9486,8 +9450,6 @@ fn hasStopTime2(mut arg: Arc<Absyn::ElementArg>) -> bool {
     b
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn searchClassNames(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inSearchText: ArcStr, mut inFindInText: bool, mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut outVals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     outVals = 'mc: {
@@ -9925,8 +9887,6 @@ fn getTransitionsInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamodel
     Ok(outTransitions)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getTransitionsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     outTransitions = 'mc: {
@@ -9966,8 +9926,8 @@ fn getTransitionsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Ar
     Ok(outTransitions)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getTransitionsInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     outTransitions = (::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inTransitions.clone())) {
@@ -10041,8 +10001,6 @@ fn getInitialStatesInClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<metamod
     Ok(outInitialStates)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getInitialStatesInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     outInitialStates = 'mc: {
@@ -10082,8 +10040,8 @@ fn getInitialStatesInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<
     Ok(outInitialStates)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getInitialStatesInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     outInitialStates = (::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inInitialStates.clone())) {

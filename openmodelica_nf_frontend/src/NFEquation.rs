@@ -190,8 +190,8 @@ pub mod Branch {
         Ok(branch)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isEmpty(mut branch: Arc<Branch>) -> Result<bool> {
         let mut empty: bool = false;
         empty = (::match_deref::match_deref! { match &(branch.clone()) {

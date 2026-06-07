@@ -1109,8 +1109,8 @@ pub fn simplifyBinarySub(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
     Ok(outExp)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn simplifyBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut switched: bool) -> Arc<Expression::NFExpression> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     outExp = (::match_deref::match_deref! { match &(exp1.clone()) {

@@ -519,8 +519,8 @@ fn addDirectedNumEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, ArcStr,
     Ok(outTpl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut vars: BackendDAE::Variables, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut iGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
     let mut oGraph: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     oGraph = (::match_deref::match_deref! { match &((iComps.clone(), iGraph.clone())) {
@@ -547,8 +547,8 @@ fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCompon
     Ok(oGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut id: i32, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iGraph: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
     let mut oGraph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     oGraph = (::match_deref::match_deref! { match &(iComps.clone()) {

@@ -846,8 +846,6 @@ fn getThreadFinishTimesMin(mut iThreadIdx: i32, mut iThreadFinishTimes: metamode
     Ok(minThreadTime_Idx)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getTaskWithHighestFinishTime(mut iTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, mut iCurrentTask: Option<Arc<HpcOmSimCode::Task>>) -> Result<Arc<HpcOmSimCode::Task>> {
     let mut oTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut head: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
@@ -1101,8 +1099,6 @@ fn getMaxCommCostsByTaskList1(mut iTask: (Arc<HpcOmSimCode::Task>, i32), mut iPa
     Ok(oCommCost)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getMaxCommCostsByTaskList2(mut iCommCosts: Arc<metamodelica::List<HpcOmTaskGraph::Communication>>, mut iIdx: i32) -> Result<HpcOmTaskGraph::Communication> {
     let mut oComm: HpcOmTaskGraph::Communication = <HpcOmTaskGraph::Communication as ::std::default::Default>::default();
     let mut childIdxHead: i32 = 0;
@@ -1411,8 +1407,6 @@ fn convertScheduleStrucToInfo1(mut iTask: Arc<HpcOmSimCode::Task>, mut iSchedule
     Ok(oScheduleInfo)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut sectionsNumber: i32, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
     let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     oScheduleInfo = 'mc: {
@@ -1459,8 +1453,8 @@ fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimC
     Ok(oScheduleInfo)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut sectionsNumber: i32, mut sectionIdx: i32, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
     let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     oScheduleInfo = (::match_deref::match_deref! { match &(tasks.clone()) {
@@ -1592,8 +1586,6 @@ fn BLS_generateSchedule(mut level: Arc<metamodelica::List<Arc<metamodelica::List
     Ok(taskLstOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut levelAssIn: metamodelica::Array<i32>, mut critPathNodes: Arc<metamodelica::List<i32>>, mut levelIdx: i32, mut targetCosts: metamodelica::Real, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut unassNodesIn: Arc<metamodelica::List<i32>>, mut sectionsIn: Arc<metamodelica::List<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>>>> {
     let mut sectionsOut: Arc<metamodelica::List<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>>> = metamodelica::nil();
     sectionsOut = 'mc: {
@@ -1697,8 +1689,8 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
     Ok(sectionsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn BLS_mergeDependentLevelTask(mut nodesIn: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sectionsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut sectionsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     sectionsOut = (::match_deref::match_deref! { match &(nodesIn.clone()) {
@@ -1723,8 +1715,6 @@ fn BLS_mergeDependentLevelTask(mut nodesIn: Arc<metamodelica::List<i32>>, mut iG
     Ok(sectionsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn BLS_getDependentGroups(mut nodes: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut referenceNodesIn: Arc<metamodelica::List<i32>>, mut dependentsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut dependentsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     dependentsOut = 'mc: {
@@ -2113,8 +2103,6 @@ fn flattenAdviceListElem(mut iAdviceElem: i32, mut iCounterArray: metamodelica::
     Ok(oCounterArray)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn arrayToTupleListZeroRemoved(mut iArray: metamodelica::Array<i32>, mut iCurrentIdx: i32, mut iTupleList: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
     let mut oTupleList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut tmpTupleList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -2170,8 +2158,6 @@ fn intTpl22Gt(mut iTpl1: (i32, i32), mut iTpl2: (i32, i32)) -> bool {
     oRes
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getBestFittingThread(mut iAdviceList: Arc<metamodelica::List<i32>>, mut iLevelExecCosts: metamodelica::Real, mut iThreadReadyList: metamodelica::Array<metamodelica::Real>) -> Result<i32> {
     let mut oThreadIdx: i32 = 0;
     let mut averageThreadTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -2782,8 +2768,6 @@ pub fn createExtSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::L
     Ok(oSchedule)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iThreadAssignments: metamodelica::Array<i32>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iLockWithPredecessorHandler: Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>;
 
@@ -4413,8 +4397,6 @@ fn TDS_InitialCluster(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List
     Ok(clustersOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn TDS_InitialCluster1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut lastArrayIn: metamodelica::Array<metamodelica::Real>, mut lactArrayIn: metamodelica::Array<metamodelica::Real>, mut fpredArrayIn: metamodelica::Array<i32>, mut rootNodes: Arc<metamodelica::List<i32>>, mut taskAssIn: metamodelica::Array<i32>, mut currThread: i32, mut queue: Arc<metamodelica::List<i32>>, mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut clustersOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     clustersOut = 'mc: {
@@ -6137,15 +6119,15 @@ fn computeTimeFinished1(mut threadTasksIn: metamodelica::Array<Arc<metamodelica:
 }
 
 fn getNextThreadIdx(mut threadId: i32, mut closedThreads: Arc<metamodelica::List<i32>>, mut numThreads: i32) -> Result<i32> {
-    let mut nextThreadOut: i32 = 0;
-    let mut isLastThread: bool = false;
-    let mut isClosed: bool = false;
-    let mut nextThread: i32 = 0;
-    isLastThread = intEq(threadId.clone(), numThreads.clone());
-    nextThread = if (isLastThread.clone()) {1} else {threadId.clone() + 1};
-    isClosed = List::isMemberOnTrue(nextThread.clone(), closedThreads.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-    nextThreadOut = if (isClosed.clone()) {getNextThreadIdx(nextThread.clone(), closedThreads.clone(), numThreads.clone())?} else {nextThread.clone()};
-    Ok(nextThreadOut)
+    '__tco: loop {
+        let mut isLastThread: bool = false;
+        let mut isClosed: bool = false;
+        let mut nextThread: i32 = 0;
+        isLastThread = intEq(threadId.clone(), numThreads.clone());
+        nextThread = if (isLastThread.clone()) {1} else {threadId.clone() + 1};
+        isClosed = List::isMemberOnTrue(nextThread.clone(), closedThreads.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+        if (isClosed.clone()) {{ (threadId, closedThreads, numThreads) = (nextThread.clone(), closedThreads.clone(), numThreads.clone()); continue '__tco; }} else {return Ok(nextThread.clone())}
+    }
 }
 
 fn updateFinishingTime(mut taskIn: Arc<HpcOmSimCode::Task>, mut taskIdxIn: i32, mut threadIdxIn: i32, mut threadTasksIn: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut checkedTasksIn: metamodelica::Array<Arc<HpcOmSimCode::Task>>, mut taskGraphTIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>, i32)> {

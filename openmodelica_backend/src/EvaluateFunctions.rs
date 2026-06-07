@@ -1922,8 +1922,6 @@ fn stmtCanBeRemoved(mut stmtIn: Arc<DAE::Statement>, mut repl: BackendVarTransfo
     Ok(tplOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn traverseStmtsAndUpdate<Type_a: Clone + 'static>(mut stmtsIn: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Type_a) -> Result<(Arc<DAE::Statement>, bool)> + 'static>, mut argIn: Type_a, mut stmtsFold: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     pub type FuncType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Type_a) -> Result<(Arc<DAE::Statement>, bool)> + 'static>;
 
@@ -1997,8 +1995,6 @@ fn makeIdentCref(mut inExp: Arc<DAE::Exp>, mut inCrefs: Arc<metamodelica::List<A
     Ok((outExp, outCrefs))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeIdentCref2(mut crefIn: Arc<DAE::ComponentRef>, mut changeTheseCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<DAE::ComponentRef>> {
     let mut crefOut: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     crefOut = 'mc: {
@@ -2077,8 +2073,8 @@ fn statementRHSIsNotConst(mut stmt: Arc<DAE::Statement>) -> Result<bool> {
     Ok(notConst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn generateConstEqs(mut lhsLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhsLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut eqsIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut eqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     eqsOut = (::match_deref::match_deref! { match &((lhsLst.clone(), rhsLst.clone())) {
@@ -2750,8 +2746,8 @@ fn replaceExps(mut replIn: BackendVarTransform::VariableReplacements, mut expsIn
     Ok(expsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getStatementLHS(mut stmt: Arc<DAE::Statement>, mut expsIn: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     lhs = (::match_deref::match_deref! { match &(stmt.clone()) {
@@ -2930,8 +2926,8 @@ fn getStatementsOutputs(mut statements: Arc<metamodelica::List<Arc<DAE::Statemen
     Ok(outputs)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getDAEelseStatemntLsts(mut elseIn: Arc<DAE::Else>, mut stmtLstsIn: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>> {
     let mut stmtLstsOut: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>> = metamodelica::nil();
     stmtLstsOut = (::match_deref::match_deref! { match &(elseIn.clone()) {
@@ -3186,8 +3182,8 @@ fn getScalarsForComplexVar(mut inElem: Arc<DAE::Element>) -> Result<Arc<metamode
     Ok(crefsOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn expandDimension(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut subsIn: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>> {
     let mut subsOut: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>> = metamodelica::nil();
     subsOut = ({
@@ -3554,8 +3550,6 @@ fn collectReplacements(mut stmtsIn: Arc<metamodelica::List<Arc<DAE::Statement>>>
     Ok(replOut)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn collectReplacements1(mut stmtsIn: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut replIn: BackendVarTransform::VariableReplacements) -> Result<BackendVarTransform::VariableReplacements> {
     let mut replOut: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     replOut = 'mc: {

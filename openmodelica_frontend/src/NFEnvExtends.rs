@@ -289,8 +289,8 @@ fn qualifyExtends2(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: E
     Ok(outExtends)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray, mut inIsFirst: bool, mut inFullPath: Arc<Absyn::Path>, mut inInfo: SourceInfo, mut inErrorPath: Option<Arc<Absyn::Path>>) -> Result<Arc<Absyn::Path>> {
     let mut outBaseClass: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outBaseClass = (::match_deref::match_deref! { match &((inBaseClass.clone(), inErrorPath.clone())) {

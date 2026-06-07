@@ -324,8 +324,8 @@ pub fn makeSimpleAssignment(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut sourc
     Ok(outStmt)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut lhsProps: Arc<metamodelica::List<DAE::Properties>>, mut rhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhsProps: Arc<metamodelica::List<DAE::Properties>>, mut attributes: Arc<DAE::Attributes>, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut assignments: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     assignments = (::match_deref::match_deref! { match &((lhsExps.clone(), lhsProps.clone(), rhsExps.clone(), rhsProps.clone())) {
@@ -488,8 +488,6 @@ fn getPropExpType(mut p: DAE::Properties) -> Result<Arc<DAE::Type>> {
     Ok(t)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn makeIf(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inTrueBranch: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inElseIfBranches: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties, Arc<metamodelica::List<Arc<DAE::Statement>>>)>>, mut inElseBranch: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
     let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     outStatements = 'mc: {
@@ -619,8 +617,6 @@ pub fn optimizeElseIf(mut cond: Arc<DAE::Exp>, mut stmts: Arc<metamodelica::List
     oelse
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeElse(mut inTuple: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties, Arc<metamodelica::List<Arc<DAE::Statement>>>)>>, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inSource: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Else>> {
     let mut outElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
     outElse = 'mc: {

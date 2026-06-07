@@ -526,8 +526,8 @@ pub fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
     Ok((exp, subMap))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isFlatCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> bool {
     let mut flat: bool = false;
     flat = (::match_deref::match_deref! { match &(cref.clone()) {

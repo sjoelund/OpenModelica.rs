@@ -699,8 +699,8 @@ fn avlTreeReplace2(mut inAvlTree: AvlTree, mut inKeyComp: i32, mut inKey: AvlKey
     Ok(outAvlTree)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlTree>>>>, mut acc: Arc<metamodelica::List<FCore::VAvlTreeValue>>) -> Result<Arc<metamodelica::List<FCore::VAvlTreeValue>>> {
     let mut res: Arc<metamodelica::List<FCore::VAvlTreeValue>> = metamodelica::nil();
     res = (::match_deref::match_deref! { match &(tree.clone()) {

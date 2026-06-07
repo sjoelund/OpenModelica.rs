@@ -376,8 +376,8 @@ fn traverserExpreplaceFinalParameter(mut inExp: Arc<DAE::Exp>, mut tpl: (Backend
     Ok((outExp, outTpl))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn replaceEquationsAddNew(mut inEqnIndxes: Arc<metamodelica::List<i32>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     outEqSystem = (::match_deref::match_deref! { match &((inEqnIndxes.clone(), inEqns.clone(), inEqSystem.clone())) {
@@ -642,8 +642,6 @@ fn prepairOrphansOrder1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1: metamo
     Ok(ofoundFlow)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn prepairOrphansOrder2(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut imark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut orphans: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut omark: i32 = 0;
     omark = 'mc: {
@@ -797,8 +795,6 @@ fn generateResidualClique(mut r: i32, mut m: metamodelica::Array<Arc<metamodelic
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getOrphansOrderEdvanced(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mc: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mct: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut orphans: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut omark: i32 = 0;
     omark = 'mc: {
@@ -835,8 +831,8 @@ fn getOrphansOrderEdvanced(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1
     Ok(omark)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasOrphanAdvanced(mut rows: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAcc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     oAcc = (::match_deref::match_deref! { match &((rows.clone(), iAcc.clone())) {
@@ -943,8 +939,6 @@ fn getOrphansOrderEdvanced1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1: me
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getConstraintesOrphansOrderEdvanced(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mc: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mct: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut orphans: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut omark: i32 = 0;
     omark = 'mc: {
@@ -1058,8 +1052,6 @@ fn getConstraintesOrphansOrderEdvanced1(mut eqns: Arc<metamodelica::List<i32>>, 
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn mergeOrphanParents(mut links: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAcc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     oAcc = 'mc: {
@@ -1099,8 +1091,6 @@ fn mergeOrphanParents(mut links: Arc<metamodelica::List<i32>>, mut m: metamodeli
     Ok(oAcc)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getLinkPosition(mut orphans: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut ochilds: Arc<metamodelica::List<i32>> = metamodelica::nil();
     ochilds = 'mc: {
@@ -1138,8 +1128,6 @@ fn getLinkPosition(mut orphans: Arc<metamodelica::List<i32>>, mut m: metamodelic
     Ok(ochilds)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getLinkPosition1(mut orphans: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut preorphan: i32, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut childs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     childs = 'mc: {
@@ -1344,8 +1332,6 @@ fn reduceOrphancMatrix1(mut comps: Arc<metamodelica::List<i32>>, mut comps1: Arc
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn hasResidualOrphan1(mut eqns: Arc<metamodelica::List<i32>>, mut ass: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqnsarr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<i32> {
     let mut Orphan: i32 = 0;
     Orphan = 'mc: {
@@ -1376,8 +1362,6 @@ fn hasResidualOrphan1(mut eqns: Arc<metamodelica::List<i32>>, mut ass: metamodel
     Ok(Orphan)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn hasResidualOrphan(mut eqns: Arc<metamodelica::List<i32>>, mut ass: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<i32> {
     let mut Orphan: i32 = 0;
     Orphan = 'mc: {
@@ -1453,8 +1437,6 @@ fn makeGausEliminationRow(mut lst: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>
     Ok((outExp, outExp1))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeGausElimination(mut row: i32, mut size: i32, mut matrix: metamodelica::Array<Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>>, mut vars: metamodelica::Array<Arc<DAE::Exp>>, mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut oAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     oAcc = 'mc: {
@@ -1656,8 +1638,8 @@ fn mulRow(mut inTpl: (i32, Arc<DAE::Exp>), mut e1: Arc<DAE::Exp>) -> Result<(i32
     Ok(outTpl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeFromCol(mut i: i32, mut inTpl: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>, mut inAcc: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>) -> Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>> {
     let mut outAcc: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>> = metamodelica::nil();
     outAcc = (::match_deref::match_deref! { match &(inTpl.clone()) {
@@ -1829,8 +1811,8 @@ fn gaussElimination(mut col: i32, mut size: i32, mut matrix: metamodelica::Array
     Ok((outVars, outEqns))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn diagonalEntry(mut col: i32, mut row: Arc<metamodelica::List<(i32, Arc<DAE::Exp>)>>) -> Result<Option<Arc<DAE::Exp>>> {
     let mut oe: Option<Arc<DAE::Exp>> = None;
     oe = (::match_deref::match_deref! { match &(row.clone()) {
@@ -2160,8 +2142,6 @@ fn sortVarsforOrder(mut inEqn: Arc<BackendDAE::Equation>, mut inVarLst: Arc<meta
     Ok(outVarLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn sortVarsforOrder1(mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut index: i32, mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut vindxs: Arc<metamodelica::List<i32>>, mut vararray: metamodelica::Array<Option<BackendDAE::Var>>, mut vars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut outVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     outVarLst = 'mc: {
@@ -2208,8 +2188,6 @@ fn sortVarsforOrder1(mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
     Ok(outVarLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn sortVarsforOrder2(mut index: i32, mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut vararray: metamodelica::Array<Option<BackendDAE::Var>>, mut iAcc: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut outVarLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     outVarLst = 'mc: {
@@ -2250,8 +2228,6 @@ fn sortVarsforOrder2(mut index: i32, mut inVarLst: Arc<metamodelica::List<Backen
     Ok(outVarLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getOrphansPairs(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>) -> Result<i32> {
     let mut omark: i32 = 0;
     omark = 'mc: {
@@ -2352,8 +2328,6 @@ fn getOrphansPairs1(mut rows: Arc<metamodelica::List<i32>>, mut ass1: metamodeli
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getOrphansPairsConstraints(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<i32> {
     let mut omark: i32 = 0;
     omark = 'mc: {
@@ -2465,8 +2439,6 @@ fn getOrphansPairsConstraints1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1:
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getIndexesForEqnsAdvanced(mut orphans: Arc<metamodelica::List<i32>>, mut index: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut imark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut orowmarks: metamodelica::Array<i32>, mut ocolummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut vec1: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut vec2: metamodelica::Array<i32>, mut queuemark: metamodelica::Array<bool>, mut vars: BackendDAE::Variables, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut shared: Arc<BackendDAE::Shared>, mut size: i32) -> Result<i32> {
     let mut outMark: i32 = 0;
     outMark = 'mc: {
@@ -2546,8 +2518,8 @@ fn getIndexesForEqnsAdvanced(mut orphans: Arc<metamodelica::List<i32>>, mut inde
     Ok(outMark)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getBorderElements(mut elements: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut arr: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAcc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     oAcc = (::match_deref::match_deref! { match &(elements.clone()) {
@@ -2630,8 +2602,8 @@ fn setIndexQueue(mut col: i32, mut tpl: (metamodelica::Array<Arc<metamodelica::L
     Ok(otpl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getIndexQueque(mut colums: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut vec2: metamodelica::Array<i32>, mut queuemark: metamodelica::Array<bool>, mut nextqueue: Arc<metamodelica::List<i32>>, mut iqueue: Arc<metamodelica::List<i32>>, mut iqueue1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut oqueue: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     oqueue = (::match_deref::match_deref! { match &((colums.clone(), nextqueue.clone())) {
@@ -2725,8 +2697,6 @@ fn doMark(mut index: i32, mut arr: metamodelica::Array<i32>, mut mark: i32) -> R
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getIndexSubGraph(mut rows: Arc<metamodelica::List<i32>>, mut vorphan: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut rowmarks: metamodelica::Array<i32>, mut colummarks: metamodelica::Array<i32>, mut orowmarks: metamodelica::Array<i32>, mut ocolummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ifound: bool) -> Result<bool> {
     let mut found: bool = false;
     found = 'mc: {
@@ -2861,8 +2831,6 @@ fn markIndexdColums(mut i: i32, mut size: i32, mut mark: i32, mut colummarks: me
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getOrphans(mut indx: i32, mut size: i32, mut ass: metamodelica::Array<i32>, mut inOrphans: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outOrphans: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outOrphans = 'mc: {
@@ -2901,8 +2869,8 @@ fn expHasCref(mut inExp: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>) -> Resul
     Ok(isthere)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCrefandParentsToSet(mut inCref: Arc<DAE::ComponentRef>, mut ihs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut oprecr: Option<Arc<DAE::ComponentRef>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
     let mut ohs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     ohs = (::match_deref::match_deref! { match &((inCref.clone(), oprecr.clone())) {

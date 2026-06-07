@@ -611,8 +611,8 @@ fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>)
     Ok(r#str)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
@@ -644,8 +644,8 @@ fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
     outString
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inInteger: i32) -> i32 {
     let mut outInteger: i32 = 0;
     outInteger = (::match_deref::match_deref! { match &(inValueLst.clone()) {

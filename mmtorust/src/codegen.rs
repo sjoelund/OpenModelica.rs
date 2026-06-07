@@ -491,35 +491,51 @@ struct GenCtx {
     /// Absent entries default to `Owned` for top-level function vars whose
     /// Arc-ness is read from `fn_env_vars` instead.
     variant_shapes: HashMap<String, VarShape>,
-    /// `true` while emitting the body of a function that has been
-    /// `#[tailcall::tailcall]`-annotated. The macro forbids both `?` and
-    /// `bail!`/`return Err(...)` anywhere in the body — even in non-tail
-    /// positions like preamble matches — because it transforms the whole
-    /// body into a `Thunk<'_, _>`-returning state machine. We use this
-    /// flag in [`emit_match`] (and similar) to rewrite the non-exhaustive
-    /// match fallback from `bail!("match: no arm matched")` to
-    /// `unreachable!("…")`, whose `!` type unifies with whatever the
-    /// macro expects. This trades a clean `Err` for a panic on a truly
-    /// non-exhaustive runtime case — acceptable because the analysis
-    /// pass in [`plan_tail_call_lowering`] only fires for functions that
-    /// the codegen has already verified to be `?`-free.
+    /// `true` while emitting the body of a function whose self-recursion has
+    /// been lowered into a manual `'__tco: loop { … }` (see
+    /// [`plan_tail_call_lowering`] / [`emit_function`]). Every tail-position
+    /// leaf in such a body *diverges*: a tail self-call becomes
+    /// `{ <params> = <args>; continue '__tco }`, and any other leaf becomes
+    /// `return <Ok?>(value)`. Because the leaves diverge, a non-exhaustive
+    /// match in tail position needs a *diverging* fallback as well — we use
+    /// this flag in [`emit_match`] to emit `return Err(…)` / `unreachable!(…)`
+    /// instead of a value-typed `bail!`/`Err(…)` arm that would not unify with
+    /// the `!`-typed sibling arms.
+    ///
+    /// This loop lowering also keeps the legacy `.as_ref()` scrutinee path
+    /// active (it disables `match_deref!{…}` the same way the old
+    /// `#[tailcall]` macro required), so list/Arc scrutinees still decode.
     in_tail_lowered_fn: bool,
     /// Active tail-call lowering context, set by `emit_tail_value_exp` while
-    /// emitting the tail expression of a function selected for `#[tailcall]`.
+    /// emitting the tail expression of a loop-lowered function.
     ///
     /// `(self_name, fallible)`:
     ///   * `self_name` — the bare name of the recursive function. Used by
     ///     `emit_match` to detect self-call results in case position so they
-    ///     can be emitted bare (no `?`/no `Ok(...)` wrap), and by `emit_exp`'s
-    ///     `Call` arm to suppress `?` on the self-call itself.
-    ///   * `fallible` — when `true`, non-self tail-position leaves in match
-    ///     arms must be wrapped in `Ok(...)` so every arm yields
-    ///     `Result<T>` and the match's value can flow out as the function's
-    ///     return.
+    ///     can be lowered to the `continue '__tco` reassignment, and by
+    ///     `emit_exp`'s `Call` arm to do the same for the self-call itself.
+    ///   * `fallible` — when `true`, non-self tail-position leaves are wrapped
+    ///     in `return Ok(…)`; otherwise `return …`.
     ///
-    /// `None` outside the tail-expression of a tail-call-lowered function;
-    /// the field is restored on exit (see `emit_tail_value_exp`).
+    /// `None` outside the tail-expression of a loop-lowered function; the
+    /// field is restored on exit (see `emit_tail_value_exp`).
     tail_lowering: Option<(String, bool)>,
+    /// Input-parameter names of the loop-lowered function currently being
+    /// emitted, in declaration order. A tail self-call reassigns these (via a
+    /// destructuring assignment) before `continue '__tco`. Empty outside a
+    /// loop-lowered body. See [`emit_function`] and the `Call` arm of
+    /// [`emit_exp`].
+    tail_loop_params: Vec<String>,
+    /// Bare name of the loop-lowered function currently being emitted, used by
+    /// the `Call` arm of [`emit_exp`] to confirm a flagged call really is the
+    /// self-call before turning it into a `continue '__tco`. Empty otherwise.
+    tail_self_short: String,
+    /// One-shot signal set by `emit_tail_value_exp` immediately around the
+    /// `emit_exp` of a tail-position self-call. The `Call` arm of `emit_exp`
+    /// captures-and-clears it at entry so it scopes to exactly the outermost
+    /// call (not to fallible argument sub-calls), then emits the
+    /// param-reassignment + `continue '__tco` form instead of an ordinary call.
+    emit_tail_self_call: bool,
     /// Extra match-arm guard expressions accumulated while emitting a
     /// pattern. Some patterns (currently only `TypedPat::Lit(Lit::Real)`)
     /// cannot be expressed directly as Rust patterns: f64 literal patterns
@@ -631,6 +647,9 @@ impl GenCtx {
             hoisted_nested_fns: HashMap::new(),
             in_tail_lowered_fn: false,
             tail_lowering: None,
+            tail_loop_params: Vec::new(),
+            tail_self_short: String::new(),
+            emit_tail_self_call: false,
             pat_extra_guards: Vec::new(),
             pat_bind_rename: HashMap::new(),
             pat_lit_counter: 0,
@@ -3700,9 +3719,10 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
 
 // ── Tail-call analysis ──────────────────────────────────────────────────────
 //
-// We detect single-output, infallible functions whose body either is, or can
-// be rewritten into, a single tail expression that contains at least one
-// self-call in tail position.  The classes of body we recognise are:
+// We detect single-output functions whose body either is, or can be rewritten
+// into, a single tail expression that contains at least one self-call in tail
+// position, and lower them into a manual `'__tco: loop { … }` (see
+// `emit_function`). The classes of body we recognise are:
 //
 //   (A) `<preamble>; outVar := <tail-expr>;`
 //       — the canonical "match in tail position" shape, e.g. `BaseAvlTree.get`.
@@ -3721,21 +3741,24 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
 //       that assigns to the variable yielded by the `then`).  This is the
 //       `BaseAvlTree.listKeys` / `listValues` shape.
 //
-// "Tail position" inside an expression descends through arms of `if`/`match`
-// and the algorithm-side last-assign of `match` cases.
+// "Tail position" inside an expression descends through arms of `if` and
+// *plain* `match` (NOT `matchcontinue`/`try`/`failure`, which catch failure
+// and so are not transparent — see `exp_has_tail_self_call`) and the
+// algorithm-side last-assign of `match` cases.
 //
-// When a function matches one of these shapes *and* is infallible (the
-// `#[tailcall]` crate forbids `?` in the body), we drop the `let mut outVar;
-// … outVar = e; outVar` framing and emit the body as a single trailing
-// expression — recursively pushing branch-final assignments down into
-// `if`/`else` arms so the self-call ends up syntactically last.  We then
-// annotate the function with `#[tailcall::tailcall]`.
+// When a function matches one of these shapes we drop its `let mut outVar`
+// declaration and emit the body inside `'__tco: loop { … }`: each tail
+// self-call reassigns the (mutable) input parameters and `continue '__tco`s;
+// every other tail leaf `return`s its value (wrapped in `Ok(...)` when the
+// function is fallible). Because the loop body diverges on every path it never
+// falls through. Unlike the earlier `#[tailcall]`-crate scheme this places no
+// "`?`-free body" restriction on the candidate, so fallible / `matchcontinue`-
+// using recursions are eligible.
 //
-// Multi-mutual recursion (SCCs of size 2–3) is *not* implemented — see the
-// open TODO. The current MetaModelica source rarely needs it (every
-// important case in `BaseAvlTree`/`List` is a single self-recursive
-// function), so we leave it as a documented follow-up rather than introduce
-// a trampoline scheme on speculation.
+// Multi-output functions and multi-mutual recursion (SCCs of size 2–3) are
+// *not* yet lowered — see the open TODOs. The current MetaModelica source
+// rarely needs mutual recursion (every important case in `BaseAvlTree`/`List`
+// is a single self-recursive function).
 
 /// Return true if any tail position of `exp` is a call to `self_short_name`.
 ///
@@ -3764,18 +3787,24 @@ fn exp_has_tail_self_call(exp: &TypedExp, self_short_name: &str) -> bool {
                 || elseif.iter().any(|(_, e)| exp_has_tail_self_call(e, self_short_name))
                 || exp_has_tail_self_call(else_, self_short_name)
         }
-        TypedExp::Match { cases, .. } => {
+        // Only a *plain* `match` keeps its case bodies in genuine tail
+        // position: a failed arm fails the whole match (the failure
+        // propagates, it is not caught), so a self-call in a case body is a
+        // true tail call. A `matchcontinue` arm, by contrast, is wrapped in a
+        // failure-catching backtrack — turning a self-call there into a
+        // `continue '__tco` would lose the pending alternative arms (and a
+        // deep recursion's failure would re-enter from arm 0 of the *current*
+        // frame instead of unwinding). So matchcontinue self-calls are NOT
+        // tail calls; the `_` arm below treats that match as an opaque leaf.
+        TypedExp::Match { kind: MatchKind::Match, cases, .. } => {
             cases.iter().any(|case| {
                 // A case's tail position is its `result` expression, *unless* the
                 // case has algorithm-side statements ending in an assignment to
                 // a local that's then yielded — in that case the `then` expr
-                // here is just the local. We could descend into the
-                // algorithm-side via `stmts_have_tail_self_call`, but for now
-                // we only inspect the `result` expression because that's the
-                // shape the current TypedCase representation exposes uniformly.
-                // Cases that use algorithm-side recursion (the
-                // `BaseAvlTree.listKeys` pattern with `algorithm lst := f(...); then lst;`)
-                // are not yet detected — see the TODO above.
+                // here is just the local. Cases that use algorithm-side
+                // recursion (the `BaseAvlTree.listKeys` pattern with
+                // `algorithm lst := f(...); then lst;`) are handled by
+                // `case_tail_has_self_call`.
                 case_tail_has_self_call(case, self_short_name)
             })
         }
@@ -3849,16 +3878,17 @@ fn stmts_lowerable_as_tail_expr(stmts: &[typedexp::TypedStmt], out_name: &str) -
     }
 }
 
-/// A plan describing how to lower a function body as a tail-position
-/// expression rather than as `let mut out; … out = e; out`.
+/// A plan describing how to lower a function body into a `'__tco: loop { … }`
+/// rather than as `let mut out; … out = e; out`.
 struct TailCallPlan {
-    /// Name of the single output variable whose declaration we suppress and
-    /// whose final assignment(s) become the function's tail expression.
+    /// Name of the single output variable whose `let mut` declaration we
+    /// suppress and whose final assignment(s) become the loop's diverging tail
+    /// (`return`/`continue`).
     suppressed_out: String,
-    /// `true` when the enclosing function returns `Result<T>` — tail-position
-    /// leaves that are not self-calls need an `Ok(...)` wrap to match the
-    /// function's return type; the self-call itself already returns
-    /// `Result<T>` and is emitted bare (no `?`, no wrap).
+    /// `true` when the enclosing function returns `Result<T>` — a non-self
+    /// tail leaf is then emitted as `return Ok(value)` (vs `return value`).
+    /// The self-call leaf reassigns the loop parameters and `continue`s
+    /// regardless.
     fallible: bool,
 }
 
@@ -4672,30 +4702,24 @@ fn plan_tail_call_lowering<'a>(
     // (no `#[tailcall]` optimisation for accumulator-threading folds).
     if stmts_read_name(typed_stmts, out_name) { return None; }
 
-    // We deliberately do *not* pre-check the body for `?`-emitting calls
-    // here. The earlier `body_emits_extra_question_mark` analysis was too
-    // conservative: it treated every call whose callee wasn't a
-    // known-infallible user function as a `?`-emitter, even though many
-    // builtins (`valueEq` → `==`, `referenceEq` as a binary operator,
-    // `intMod`, etc.) lower without going through `ctx.q(...)` and never
-    // emit `?` at all. That over-approximation was throwing away the
-    // bulk of OMC's `List`/`Avl*` tail-recursive functions. We now rely on
-    // a *dry-run emission* in `emit_function` to make the final
-    // accept/reject decision against the actual emitted text — the only
-    // ground truth for what `?` characters the macro will see.
+    // The output's `let mut <out>` is suppressed, so any *write* to it outside
+    // the consumed tail position(s) would reference an undeclared place
+    // (E0425). A preamble (non-last) statement, or a non-tail branch of the
+    // trailing `if`, that assigns `out` therefore disqualifies the lowering.
+    if preamble_writes_out(typed_stmts, out_name) { return None; }
+
+    // The loop lowering imposes no "`?`-free body" restriction (the whole
+    // point of replacing the `#[tailcall]` macro): fallible recursions are
+    // eligible. We do *not* pre-check for `?`-emitting calls.
     //
-    // A non-exhaustive match outside tail position would be lowered to
-    // `unreachable!()` because the macro forbids `bail!`/`?`/`return Err(_)`
-    // and the surrounding `T`-typed local can't accept an `Err(...)` value.
-    // That replaces MM's "fail()-on-miss" semantics with a Rust panic — a
-    // new failure mode the codebase otherwise avoids. Refuse here so the
-    // generated code remains panic-free.
-    //
-    // The same restriction applies to a tail-position match in an
-    // *infallible* tail-lowered function: there's no `Result<T>` slot for
-    // an `Err(...)` value, so the fallback would again have to panic.
-    // Fallible tail-position matches are fine — their fallback is a
-    // plain `Err(anyhow::anyhow!(...))` value.
+    // A non-exhaustive match outside tail position would be lowered (inside a
+    // loop-lowered body, where `match_deref!` is disabled and `active_tail` is
+    // None) to `unreachable!()` — replacing MM's "fail()-on-miss" with a Rust
+    // panic. The same applies to a non-exhaustive *tail*-position match in an
+    // *infallible* loop-lowered function (no `Result<T>` slot for an `Err`).
+    // Refuse those so the generated code keeps MM's failure semantics. A
+    // non-exhaustive tail-position match in a *fallible* function is fine — its
+    // fallback `return Err(...)` is the natural lowering of fail()-on-miss.
     if body_has_nonexhaustive_nontail_match(typed_stmts, out_name, fn_short_name, is_fallible_fn, top_level) {
         return None;
     }
@@ -4703,18 +4727,37 @@ fn plan_tail_call_lowering<'a>(
     Some(TailCallPlan { suppressed_out: out_name.clone(), fallible: is_fallible_fn })
 }
 
-/// Emit `stmts` as a function body whose value is the value the source
-/// would have assigned to `out_name`. The last statement of `stmts` (and,
-/// recursively, the last statement of each `If` branch) is consumed and
-/// rewritten into expression form. Preceding statements emit normally via
-/// [`emit_stmts`].
+/// True if `out_name` is assigned by a statement the loop lowering does *not*
+/// consume as a tail expression — i.e. any preamble (non-last) statement, or a
+/// non-last statement inside a branch of the trailing `if`. The loop lowering
+/// suppresses `out_name`'s declaration, so such a write would not compile.
 ///
-/// `fallible` controls how tail-position leaves are wrapped:
-///   * a self-call leaf is emitted bare — its `Result<T>` is the function's
-///     return type, so no `?` and no `Ok(...)` is needed.
-///   * any *other* tail leaf in a fallible function is wrapped in `Ok(...)`
-///     so the surrounding `Result<T>` slot is satisfied.
-///   * in an infallible function, both leaf kinds emit verbatim.
+/// This mirrors the tail structure that [`emit_stmts_as_tail`] consumes (the
+/// final `out := <tail>` assign, recursively through trailing `if` branches).
+/// Writes buried inside a tail-position `match` arm's non-terminal statements
+/// are not caught here; those are rare and surface loudly as a build error.
+fn preamble_writes_out(stmts: &[typedexp::TypedStmt], out_name: &str) -> bool {
+    let Some((last, head)) = stmts.split_last() else { return false; };
+    let mut assigned: HashSet<String> = HashSet::new();
+    stmts_assigned_var_names(head, &mut assigned);
+    if assigned.contains(out_name) { return true; }
+    if let typedexp::TypedStmt::If { then_, elseif, else_, .. } = last {
+        return preamble_writes_out(then_, out_name)
+            || elseif.iter().any(|(_, b)| preamble_writes_out(b, out_name))
+            || preamble_writes_out(else_, out_name);
+    }
+    false
+}
+
+/// Emit `stmts` as the iteration body of a `'__tco: loop`. The last statement
+/// of `stmts` (and, recursively, the last statement of each `If` branch) is
+/// consumed and rewritten into a *diverging* tail expression via
+/// [`emit_tail_value_exp`] (self-call → reassign params + `continue '__tco`;
+/// other leaf → `return …`). Preceding statements emit normally via
+/// [`emit_stmts`]. The caller wraps the result in `'__tco: loop { … }`.
+///
+/// `fallible` is threaded to [`emit_tail_value_exp`] so a non-self leaf is
+/// emitted as `return Ok(value)` (fallible) or `return value` (infallible).
 ///
 /// Precondition: `stmts_lowerable_as_tail_expr(stmts, out_name)` is true.
 /// Violating it falls into the wildcard arm which emits a `todo!()` so the
@@ -4777,13 +4820,19 @@ fn emit_stmts_as_tail<'a>(
     }
 }
 
-/// Emit a tail-position expression for the lowering: the self-call is
-/// emitted bare (its `Result<T>` is the function's return value, no `?`
-/// needed), tail-position `if`-expressions are recursed into, `match`
-/// expressions are emitted via [`emit_match`] with `ctx.tail_lowering` set
-/// so each case's result is itself emitted in tail context, and everything
-/// else is emitted via the normal [`emit_exp`] and wrapped in `Ok(...)` if
-/// the enclosing function is fallible.
+/// Emit a tail-position expression for the loop lowering. Every leaf this
+/// produces *diverges* (its Rust type is `!`), so the whole expression can be
+/// the trailing expression of the function's `'__tco: loop { … }` body without
+/// the loop falling through:
+///   * a tail self-call becomes `{ <params> = <args>; continue '__tco }` (see
+///     the `emit_tail_self_call` handshake with the `Call` arm of `emit_exp`);
+///   * a `match` (plain `match` only — `tail_lowering` was set by detection to
+///     fire only there) is emitted via [`emit_match`] with `ctx.tail_lowering`
+///     set so each case result recurses through this function; its arms are
+///     therefore all `!`-typed and the match itself is `!`;
+///   * an `if` recurses into both branches the same way;
+///   * any other leaf (including a tail-position `matchcontinue`, which is an
+///     opaque value, never a tail call) becomes `return <Ok?>(value)`.
 fn emit_tail_value_exp<'a>(
     exp: &TypedExp,
     self_name: &str,
@@ -4793,24 +4842,18 @@ fn emit_tail_value_exp<'a>(
 ) -> String {
     match exp {
         TypedExp::Call { func, .. } if func == self_name => {
-            // Emit the call via the normal path so import/arg formatting is
-            // shared, then strip the trailing `?` (only present when the
-            // enclosing function is fallible). We *can't* use
-            // `QMode::Bare` for the call because that would also propagate
-            // into the argument sub-expressions, suppressing `?` on
-            // non-tail sub-calls — which would be incorrect.
-            //
-            // The `tailcall` v2 API requires the recursive call to be
-            // wrapped in `tailcall::call!{ … }` so the macro's body
-            // rewrite knows to thread this call through the trampoline.
-            // An *unwrapped* recursive call would still compile (and the
-            // function would still be correct) but the macro would not
-            // turn it into a loop, defeating the point of the
-            // annotation.
+            // Reassign the loop parameters from this call's arguments and
+            // `continue '__tco`. The `Call` arm of `emit_exp` owns the actual
+            // rewrite (it has the positionally-resolved argument strings and
+            // applies the same default/named-arg handling as a real call); we
+            // just flag the one call it should treat as the self-call. Clear
+            // `tail_lowering` so any *nested* self-call inside an argument
+            // (not a tail call) goes through the ordinary `?` path.
             ctx.with_tail_lowering(None, |ctx| {
+                ctx.emit_tail_self_call = true;
                 let s = emit_exp(exp, /*is_const=*/false, ctx, top_level);
-                let bare = s.strip_suffix('?').map(str::to_owned).unwrap_or(s);
-                format!("tailcall::call!{{ {bare} }}")
+                ctx.emit_tail_self_call = false;
+                s
             })
         }
         TypedExp::If { cond, then_, elseif, else_, .. } => {
@@ -4828,22 +4871,22 @@ fn emit_tail_value_exp<'a>(
             let e = emit_tail_value_exp(else_, self_name, fallible, ctx, top_level);
             format!("if ({c}) {{{t}}}{ei} else {{{e}}}")
         }
-        TypedExp::Match { .. } => {
+        TypedExp::Match { kind: MatchKind::Match, .. } => {
             // Signal `emit_match` to lower each case's result (or
-            // algorithm-side terminal assign) in tail context. The
-            // surrounding match expression's value flows out as the
-            // function's return — *no* outer `Ok(...)` wrap, because each
-            // case is already responsible for producing `Result<T>` (when
-            // fallible) or `T` (infallible).
+            // algorithm-side terminal assign) in tail context. Every arm then
+            // diverges (self-call → `continue`, leaf → `return`), so the match
+            // itself is `!` and needs no `return`/`Ok(...)` wrap here.
             ctx.with_tail_lowering(Some((self_name.to_owned(), fallible)), |ctx| {
                 emit_exp(exp, /*is_const=*/false, ctx, top_level)
             })
         }
         _ => {
-            // Non-control-flow leaf. The body's `?`-freedom has already
-            // been verified, so `emit_exp` won't emit `?` here.
+            // Opaque leaf — including a `matchcontinue` in tail position, whose
+            // value we simply return (it can never contain a tail self-call,
+            // per the genuine-tail-position restriction in detection). Clear
+            // `tail_lowering` so the inner emission is an ordinary value.
             let s = ctx.with_tail_lowering(None, |ctx| emit_exp(exp, /*is_const=*/false, ctx, top_level));
-            if fallible { format!("Ok({s})") } else { s }
+            if fallible { format!("return Ok({s})") } else { format!("return {s}") }
         }
     }
 }
@@ -5948,79 +5991,32 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         format!("<{}>", bounded.join(", "))
     };
 
-    // Plan tail-call lowering before emitting the body so we can (a) annotate
-    // the function with `#[tailcall::tailcall]`, (b) suppress the `let mut
-    // <out>;` declaration that would otherwise turn the recursive call into a
-    // non-tail expression on the RHS of an assignment, and (c) splice the
-    // assignment's RHS in as the function's trailing expression.
-    //
-    // The `tailcall` crate rewrites *syntactic* tail-position self-calls into
-    // a loop. Our generated bodies normally end with `outVar := …; outVar`,
-    // which is not a syntactic tail call; the lowering below converts the
-    // common `outVar := <expr>;` shape into the equivalent expression form.
+    // Plan tail-call lowering before emitting the body. A qualifying function
+    // (single output, all recursive calls in genuine tail position) is lowered
+    // into a manual `'__tco: loop { … }`: the `let mut <out>;` declaration is
+    // suppressed, each tail self-call reassigns the (mutable) input parameters
+    // and `continue '__tco`s, and every other tail leaf `return`s. Unlike the
+    // old `#[tailcall]` macro this places no "`?`-free body" restriction on the
+    // candidate, so fallible recursions are eligible.
     let mut tail_plan = plan_tail_call_lowering(&typed_stmts, &outputs, name, is_fallible_fn, ctx, top_level);
 
-    // `#[tailcall::tailcall]` and `::match_deref::match_deref!{…}` are mutually
-    // exclusive. The tailcall macro rewrites tail-position self-calls into a
-    // trampoline by walking the body's syntax — but match_deref hides match
-    // arms behind a `Deref @ <pat>` rewrite the tailcall macro doesn't see,
-    // so any `tailcall::call!{…}` inside such an arm becomes invisible to the
-    // rewriter and the function fails to typecheck (raw `T` returned where
-    // `Thunk<T>` is expected). When the body contains any match that *needs*
-    // match_deref (Arc-crossing scrutinee, string-literal patterns, …), drop
-    // the tail-call plan and emit a marker comment so the loss of TCO is
-    // visible in the generated source.
+    // The manual loop reuses the legacy `.as_ref()` scrutinee path — it leaves
+    // `match_deref!{…}` disabled via `in_tail_lowered_fn`. That path cannot
+    // decode every scrutinee `match_deref!` (built on nightly-`deref_patterns`)
+    // can: notably string-literal patterns and tuple-of-Arc destructuring. When
+    // the body needs one of those, keep the function un-lowered so the ordinary
+    // emission can use `match_deref!`. The TCO is lost but correctness holds.
     let body_needs_match_deref = stmts_need_match_deref(&typed_stmts, ctx, top_level);
-    let tailcall_disabled_for_match_deref = tail_plan.is_some() && body_needs_match_deref;
-    if tailcall_disabled_for_match_deref {
+    let tco_disabled_for_match_deref = tail_plan.is_some() && body_needs_match_deref;
+    if tco_disabled_for_match_deref {
         tail_plan = None;
+        writeln!(out, "{indent}// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{{…}}`").unwrap();
+        writeln!(out, "{indent}// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.").unwrap();
     }
 
-    // Dry-run the tail-lowered body emission so we can validate it against
-    // the macro's "no `?` anywhere" constraint *after* all the per-builtin
-    // and per-arg emission decisions have been made — which is the only
-    // ground truth. The structural analysis in `body_emits_extra_question_mark`
-    // is necessarily approximate: it treats every fallible-call site as if
-    // it would emit `?`, but several builtins (e.g. `valueEq`, `referenceEq`
-    // when used as a binary operator, simple arithmetic) lower without
-    // going through `ctx.q(...)` and therefore do not actually produce a
-    // `?` even in a fallible enclosing function. Without the dry-run we
-    // would refuse the lowering for every recursive function whose body
-    // contains such a call — `List::isEqual`, `List::merge`, and most of
-    // the tree-walking infallible-after-lowering family.
-    //
-    // The dry-run is done with cloned `env` / `fresh` so it cannot
-    // influence the upcoming real emission. `ctx.qmode` / `tail_lowering`
-    // are save/restored by the helpers themselves; `ctx.implicit_modules`
-    // accumulates monotonically (any imports the dry-run discovers are
-    // also needed by the real emission, whether tail-lowered or not), so
-    // letting it grow is correct.
-    let mut tail_lowered_body: Option<String> = None;
-    if let Some(plan) = &tail_plan {
-        let mut scratch = String::new();
-        let mut scratch_env = env.clone();
-        let mut scratch_fresh: u32 = 0;
-        let saved_in_tc_dry = std::mem::replace(&mut ctx.in_tail_lowered_fn, true);
-        emit_stmts_as_tail(&mut scratch, &typed_stmts, &plan.suppressed_out, name, plan.fallible, &format!("{indent}    "), ctx, &mut scratch_env, top_level, &mut scratch_fresh);
-        ctx.in_tail_lowered_fn = saved_in_tc_dry;
-        if scratch.contains('?') {
-            // `?` survived the lowering — the macro would reject the body.
-            // Drop the plan; the regular non-lowered emission runs below.
-            tail_plan = None;
-        } else {
-            tail_lowered_body = Some(scratch);
-        }
-    }
-
-    if tail_plan.is_some() {
-        writeln!(out, "{indent}#[tailcall::tailcall]").unwrap();
-    } else if tailcall_disabled_for_match_deref {
-        writeln!(out, "{indent}// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{{…}}` match,").unwrap();
-        writeln!(out, "{indent}// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.").unwrap();
-    }
-    // Set the ambient "we're inside a tail-lowered body" flag so that
-    // helpers called during body emission (notably [`emit_match`]) can
-    // adjust their output — see the field's doc comment.
+    // Set the ambient "we're inside a loop-lowered body" flag so that helpers
+    // called during body emission (notably [`emit_match`]) can adjust their
+    // output — see the field's doc comment.
     let saved_in_tc = std::mem::replace(&mut ctx.in_tail_lowered_fn, tail_plan.is_some());
 
     writeln!(out, "{indent}{pub_kw}fn {ename}{type_params}({params}) -> {sig_ret} {{").unwrap();
@@ -6158,6 +6154,22 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         ctx.fn_outputs_no_default = saved_fn_outputs_no_default;
         ctx.uninit_arrays = saved_uninit_arrays;
     }
+
+    // Open the tail-call loop *before* the output/protected-local declarations
+    // so they are re-initialised on every iteration — matching the fresh-locals
+    // semantics each recursive call would have had. The `use` statements and
+    // nested-`fn` items emitted above stay outside the loop (they are items /
+    // imports, evaluated once). When loop-lowered, the declarations and body
+    // are indented one extra level; `orig_body_indent` is kept for closing the
+    // loop and the function brace.
+    let loop_lowered = tail_plan.is_some();
+    let orig_body_indent = body_indent.clone();
+    if loop_lowered {
+        writeln!(out, "{orig_body_indent}'__tco: loop {{").unwrap();
+        ctx.tail_loop_params = fn_inputs_eff.iter().map(|inp| inp.name.clone()).collect();
+        ctx.tail_self_short = name.to_owned();
+    }
+    let body_indent = if loop_lowered { format!("{orig_body_indent}    ") } else { orig_body_indent.clone() };
 
     for (n, t, modif, is_const_local) in outputs.iter().chain(protected.iter()) {
         // The output `n` is consumed by the tail-call lowering: its declaration
@@ -6324,22 +6336,29 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
             restore_imports(ctx, &saved_imports);
             return;
         }
-        _ => {
-            // When the tail-call lowering survived the dry-run, splice the
-            // pre-emitted body text straight in. We never re-run
-            // `emit_stmts_as_tail` here because that would do all the
-            // per-builtin work twice — wasteful, and a non-monotonic ctx
-            // change in the recursive emitter could differ between runs.
-            if let Some(body_str) = tail_lowered_body.take() {
-                out.push_str(&body_str);
-                writeln!(out, "{indent}}}").unwrap();
-                writeln!(out).unwrap();
-                ctx.current_fn_fallible = saved_fn_fallible;
-                ctx.current_fn_qname = saved_fn_qname;
-                ctx.in_tail_lowered_fn = saved_in_tc;
-                restore_imports(ctx, &saved_imports);
-                return;
+        _ if loop_lowered => {
+            // Emit the body as the loop's iteration: the preamble runs, then
+            // the single tail statement becomes a diverging tail expression
+            // (self-call → reassign + `continue '__tco`; other leaf → `return`).
+            // The loop therefore never falls through, so no trailing
+            // expression / `Ok(...)` wrap is needed after it.
+            let plan = tail_plan.as_ref().unwrap();
+            emit_stmts_as_tail(out, &typed_stmts, &plan.suppressed_out, name, plan.fallible, &body_indent, ctx, &mut env, top_level, &mut fresh);
+            writeln!(out, "{orig_body_indent}}}").unwrap(); // close '__tco loop
+            writeln!(out, "{indent}}}").unwrap();           // close fn
+            writeln!(out).unwrap();
+            if !hoist_buffer.is_empty() {
+                out.push_str(&hoist_buffer);
             }
+            ctx.current_fn_fallible = saved_fn_fallible;
+            ctx.current_fn_qname = saved_fn_qname;
+            ctx.in_tail_lowered_fn = saved_in_tc;
+            ctx.tail_loop_params.clear();
+            ctx.tail_self_short.clear();
+            restore_imports(ctx, &saved_imports);
+            return;
+        }
+        _ => {
             emit_stmts(out, &body_indent, &typed_stmts, FailureMode::Function, ctx, &mut env, top_level, &mut fresh);
         }
     };
@@ -7617,6 +7636,13 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
 
         // TODO: Comprehensions
         TypedExp::Call { func, args, named_args, sig_ty, .. } => {
+            // Loop-TCO self-call: capture-and-clear the one-shot flag at arm
+            // entry so it scopes to exactly *this* (outermost) call and not to
+            // any fallible argument sub-call emitted while resolving `parts`
+            // below. The actual `<params> = <args>; continue '__tco` rewrite
+            // happens once `parts` is known (see `emit_tail_self_call` use).
+            let is_tail_self_call = std::mem::take(&mut ctx.emit_tail_self_call)
+                && func == &ctx.tail_self_short;
             let num_named = named_args.len();
             if named_args.is_empty()
                 && let Ok(res) = emit_builtin_call(func, args, is_const, ctx, top_level) {
@@ -7961,6 +7987,32 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 (parts, None)
             }
             });
+
+            // Loop-TCO self-call: instead of `Module::f(args)`, reassign the
+            // loop parameters and jump to the top of `'__tco`. A destructuring
+            // assignment evaluates the whole right-hand side (reading the old
+            // parameter values) before writing any place, so arguments that
+            // reference the current parameters are handled correctly. Any `?`
+            // inside an argument propagates normally — that is precisely what
+            // the loop lowering buys over the old `#[tailcall]` macro. We guard
+            // on `parts.len() == params.len()`; a mismatch (which the detection
+            // pass should never allow for a self-call) falls through to an
+            // ordinary call so it surfaces as a recursion rather than wrong code.
+            if is_tail_self_call && ctx.tail_loop_params.len() == parts.len() {
+                let params = &ctx.tail_loop_params;
+                let assign = match params.len() {
+                    0 => String::new(),
+                    1 => format!("{} = {}; ", escape_ident(&params[0]), parts[0]),
+                    _ => {
+                        let lhs = params.iter()
+                            .map(|p| escape_ident(p).to_string())
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        format!("({lhs}) = ({}); ", parts.join(", "))
+                    }
+                };
+                return format!("{{ {assign}continue '__tco; }}");
+            }
 
             let mut is_ctor = is_constructor(&func_str, ctx, top_level) || is_constructor(func, ctx, top_level);
             if is_ctor {
@@ -12708,19 +12760,12 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
     // form. `match_uses_match_deref` covers every case the old `input_is_arc`
     // check covered (recursive Arc<Enum>) plus tuples-containing-Arc and
     // string-literal patterns, so this is a strict broadening.
-    // `#[tailcall::tailcall]` is an outer attribute proc-macro that rewrites
-    // the function so each `tailcall::call!{…}` site becomes a `Thunk`
-    // constructor and the *outer* trailing expression must itself produce a
-    // `Thunk`. Wrapping the match in `match_deref!{ match … }` hides the arms
-    // from tailcall's rewriter — the arms keep returning raw `T` values
-    // (e.g. `iacc.clone().reverse()`), and Rust then complains they aren't
-    // `Thunk<…>`. Until match_deref grows tailcall integration we cannot use
-    // it inside tail-call lowered bodies, so fall back to the legacy
-    // `.as_ref()` approach there. This means tail-call functions whose
-    // scrutinees were previously decoded via the nightly `deref_patterns`
-    // feature (tuple-of-Arc, ArcStr literal patterns, …) will not compile on
-    // stable — those are pre-existing limitations of the lowering, not
-    // regressions of this change, and will be addressed by a separate pass.
+    // Loop-lowered tail-call bodies (`in_tail_lowered_fn`) deliberately keep
+    // `match_deref!` off and use the legacy `.as_ref()` path instead. That
+    // path is what `plan_tail_call_lowering` validated the candidate against
+    // (it rejects bodies that genuinely *need* `match_deref!`, e.g.
+    // string-literal or tuple-of-Arc patterns), so list/Arc scrutinees still
+    // decode while the bare tail-call structure stays visible.
     // `match_deref!{ match X { … } }` is a true `match` expression, not the
     // `let pat = … else { bail }` cascade `MatchKind::MatchContinue` lowers
     // to — so the macro form is unavailable for matchcontinue and the
@@ -12734,9 +12779,9 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
     // own match ergonomics on `&T` then makes the bindings by-reference,
     // which matches the implicit_ref regime in
     // `emit_pat_with_implicit_bind`. We extend this to `Ty::List`
-    // (`Arc<metamodelica::List<T>>`) so tail-call lowered bodies — where
-    // `match_deref!` is unavailable because it hides arms from `tailcall`'s
-    // rewrite pass — can still destructure list-typed scrutinees.
+    // (`Arc<metamodelica::List<T>>`) so loop-lowered tail-call bodies — where
+    // `match_deref!` is intentionally kept off (see above) — can still
+    // destructure list-typed scrutinees.
     let input_is_arc_recursive = is_arc_wrapped(&input_ty, ctx)
         || matches!(input_ty, Ty::List(_));
     // Special case: `#[tailcall::tailcall]` body with a tuple scrutinee whose
@@ -13343,27 +13388,23 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 ctx.match_refbound = saved_match_refbound;
                 arm_str
             }).collect();
-            // Inside a `#[tailcall::tailcall]` body the macro rewrites the
-            // function so that early returns (`return`, `?`, `bail!`)
-            // don't typecheck — every arm has to yield a value, not jump
-            // out. The fallback for a non-exhaustive match is therefore
-            // emitted differently inside such a function:
+            // Inside a loop-lowered body (`in_tail_lowered_fn`) the match
+            // fallback depends on whether this is the tail-position match:
             //
-            //   * In the *tail-position* match of a fallible function the
-            //     arms each yield `Result<T>` (either a bare self-call or
-            //     an `Ok(...)`-wrapped non-self leaf). The fallback is an
-            //     `Err(...)` *value* of the same type — error
-            //     propagation still happens because the match expression
-            //     is the function's trailing return.
+            //   * In the *tail-position* match of a fallible function every
+            //     arm diverges (a self-call `continue '__tco`, or a non-self
+            //     leaf `return Ok(...)`). The fallback must diverge too, so it
+            //     is `return Err(...)` — MM's fail()-on-miss surfaced as a
+            //     `Result` the caller's `?` propagates.
             //
-            //   * In a *non-tail* match — bound to a `T`-typed local in
-            //     the preamble, for example — the arms yield `T`, so the
-            //     fallback must too. `unreachable!()` produces `!` which
-            //     unifies with any expected type and panics if reached.
-            //     `body_emits_extra_question_mark` only allows us to
-            //     lower a function when every reachable path's value is
-            //     known, so a runtime miss here is a real bug, not a
-            //     soft error worth `bail!`-recovering from.
+            //   * In a *non-tail* match — bound to a `T`-typed local in the
+            //     preamble, for example — the arms yield `T`, so the fallback
+            //     must too. `unreachable!()` produces `!` which unifies with
+            //     any expected type and panics if reached.
+            //     `plan_tail_call_lowering` only lowers a function when no such
+            //     non-exhaustive non-tail match can fail at runtime (see
+            //     `body_has_nonexhaustive_nontail_match`), so a miss here is a
+            //     real codegen bug, not a soft error worth recovering from.
             // `match_deref!{ … }` disables Rust's exhaustiveness check for any
             // arm whose pattern contains a `Deref @ …`. Per the crate's own
             // README: "all arms with Deref @ are ignored when compiler
@@ -13378,8 +13419,12 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
             let fallback = if exhaustive && !force_fallback {
                 String::new()
             } else if ctx.in_tail_lowered_fn {
+                // In a loop-lowered tail-position match every sibling arm
+                // diverges (`continue`/`return`), so the fallback must diverge
+                // too: a value-typed `Err(…)` would not unify with the
+                // `!`-typed arms (and the `loop` body must stay `()`/`!`).
                 if active_tail.is_some() && ctx.current_fn_fallible {
-                    ",\n        _ => Err(anyhow::anyhow!(\"match: no arm matched\"))".to_owned()
+                    ",\n        _ => return Err(anyhow::anyhow!(\"match: no arm matched\"))".to_owned()
                 } else {
                     ",\n        _ => unreachable!(\"tail-call lowered match: no arm matched\")".to_owned()
                 }
@@ -13398,15 +13443,12 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // but not provably so over a tuple/guarded pattern).
                 ",\n        _ => panic!(\"match: no arm matched\")".to_owned()
             };
-            // When the match is itself the tail expression of a
-            // `#[tailcall::tailcall]` body, drop the outer parentheses.
-            // The macro's tail-position detector matches on the literal
-            // shape of the function's trailing expression and does *not*
-            // peek through grouping parens — emitting `(match …)` would
-            // make every `tailcall::call!{…}` inside an arm fail with
-            // "tailcall::call! must be used in tail position". In any
-            // non-tail context the parens are needed for precedence
-            // (the match expression is often the operand of a wider
+            // When the match is the tail expression of a loop-lowered body
+            // (`active_tail` set) it stands as a statement / loop-body tail —
+            // every arm diverges, so the whole match is `!`. Drop the outer
+            // parentheses there (they are pointless and keep the emitted shape
+            // clean). In any non-tail context the parens are needed for
+            // precedence (the match is often the operand of a wider
             // expression, e.g. `(match …).clone()`).
             // When `use_match_deref` is set, wrap the assembled match in the
             // `::match_deref::match_deref!{ … }` proc-macro. The macro rewrites

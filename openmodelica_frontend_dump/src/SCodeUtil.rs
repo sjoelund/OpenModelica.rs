@@ -122,8 +122,6 @@ pub fn getElementNamed(mut inIdent: ArcStr, mut inClass: Arc<SCode::Element>) ->
     Ok(outElement)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getElementNamedFromElts(mut inIdent: ArcStr, mut inElementLst: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = 'mc: {
@@ -1148,8 +1146,6 @@ fn subModsEqual(mut inSubModLst1: Arc<metamodelica::List<Arc<SCode::SubMod>>>, m
     Ok(equal)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn subscriptsEqual(mut inSs1: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inSs2: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<bool> {
     let mut equal: bool = false;
     equal = 'mc: {
@@ -3306,8 +3302,8 @@ pub fn isElementEncapsulated(mut inElement: Arc<SCode::Element>) -> bool {
     outIsEncapsulated
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getElementsFromElement(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inElement: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outProgram = (::match_deref::match_deref! { match &(inElement.clone()) {
@@ -3329,8 +3325,8 @@ pub fn getElementsFromElement(mut inProgram: Arc<metamodelica::List<Arc<SCode::E
     Ok(outProgram)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getElementWithId(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inId: ArcStr) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &((inProgram.clone(), inId.clone())) {
@@ -3351,8 +3347,8 @@ fn getElementWithId(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>,
     Ok(outElement)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getElementWithPath(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &(inPath.clone()) {
@@ -4370,8 +4366,8 @@ pub fn isExternalObject(mut els: Arc<metamodelica::List<Arc<SCode::Element>>>) -
     res
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExtendsOfExternalObject(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(inEls.clone()) {
@@ -4389,8 +4385,8 @@ fn hasExtendsOfExternalObject(mut inEls: Arc<metamodelica::List<Arc<SCode::Eleme
     res
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(inEls.clone()) {
@@ -4408,8 +4404,8 @@ fn hasExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Elem
     res
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExternalObjectConstructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(inEls.clone()) {
@@ -4547,8 +4543,8 @@ pub fn getConstrainingMod(mut element: Arc<SCode::Element>) -> Arc<SCode::Mod> {
     r#mod
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEmptyClassDef(mut cdef: Arc<SCode::ClassDef>) -> bool {
     let mut isEmpty: bool = false;
     isEmpty = (::match_deref::match_deref! { match &(cdef.clone()) {
@@ -5109,8 +5105,8 @@ pub fn mergeSCodeMods(mut inModOuter: Arc<SCode::Mod>, mut inModInner: Arc<SCode
     Ok(outMod)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasNamedExternalCall(mut name: ArcStr, mut def: Arc<SCode::ClassDef>) -> bool {
     let mut hasCall: bool = false;
     hasCall = (::match_deref::match_deref! { match &(def.clone()) {
@@ -5128,8 +5124,8 @@ pub fn hasNamedExternalCall(mut name: ArcStr, mut def: Arc<SCode::ClassDef>) -> 
     hasCall
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn classDefHasSections(mut cdef: Arc<SCode::ClassDef>, mut checkExternal: bool) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(cdef.clone()) {

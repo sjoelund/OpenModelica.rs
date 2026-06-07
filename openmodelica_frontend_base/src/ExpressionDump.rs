@@ -404,8 +404,6 @@ pub fn printCrefsFromExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
     Ok(s)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut stringDelimiter: ArcStr, mut opcreffunc: Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>, mut opcallfunc: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, Option<(Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>, Type_a)>) -> Result<ArcStr> + 'static>>) -> Result<ArcStr> {
     pub type printComponentRefStrFunc<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<ArcStr> + 'static>;
 
@@ -2081,8 +2079,6 @@ fn printExpIfDiff(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<ArcStr
     Ok(s)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn printArraySizes(mut inLst: Arc<metamodelica::List<Option<i32>>>) -> Result<ArcStr> {
     let mut out: ArcStr = arcstr::literal!("");
     out = ('mc: {

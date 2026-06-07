@@ -750,16 +750,16 @@ fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer
     }
 
     fn checkDiscreteRecord(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut discrete_records: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut is_parent: bool) -> Result<bool> {
-        let mut b: bool = false;
-        b = (match BVariable::getParent(var.clone()) {
+        '__tco: loop {
+            match BVariable::getParent(var.clone()) {
         Some(mut parent) => {
-            checkDiscreteRecord(parent.clone(), discrete_records.clone(), true)?
+            { (var, discrete_records, is_parent) = (parent.clone(), discrete_records.clone(), true); continue '__tco; }
         },
         _ => {
-            is_parent.clone() && UnorderedSet::contains(BVariable::getVarName(var.clone()), discrete_records.clone())?
+            return Ok(is_parent.clone() && UnorderedSet::contains(BVariable::getVarName(var.clone()), discrete_records.clone())?)
         },
-    });
-        Ok(b)
+    }
+        }
     }
 
     let mut cont_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();

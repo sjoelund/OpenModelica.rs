@@ -866,8 +866,8 @@ fn markIndex(mut inIndex: i32, mut inArray: metamodelica::Array<i32>) -> metamod
     outArray
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn selectSecondaryParameters(mut inOrdering: Arc<metamodelica::List<i32>>, mut inParameters: BackendDAE::Variables, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inSecondaryParams: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     let mut outSecondaryParams: metamodelica::Array<i32> = Default::default();
     outSecondaryParams = (::match_deref::match_deref! { match &(inOrdering.clone()) {
@@ -1646,8 +1646,8 @@ fn consistencyCheck(mut inRedundantEqns: Arc<metamodelica::List<i32>>, mut inEqn
     Ok((outConsistentEquations, outInconsistentEquations, outUncheckedEquations))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isVarExplicitSolvable(mut inElem: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut inVarID: i32) -> bool {
     let mut outSolvable: bool = false;
     outSolvable = (::match_deref::match_deref! { match &(inElem.clone()) {
@@ -1737,8 +1737,6 @@ fn compsMarker(mut inUnassignedEqn: i32, mut inVecVarToEq: metamodelica::Array<i
     Ok(outMarkedEqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn compsMarker2(mut inVarList: Arc<metamodelica::List<i32>>, mut inVecVarToEq: metamodelica::Array<i32>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inFlatComps: Arc<metamodelica::List<i32>>, mut inMarkedEqns: Arc<metamodelica::List<i32>>, mut inLoopListComps: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outMarkedEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outMarkedEqns = 'mc: {
@@ -1804,8 +1802,6 @@ fn downCompsMarker(mut unassignedEqns: Arc<metamodelica::List<i32>>, mut vecVarT
     Ok(inMarkedEqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn setupVarReplacements(mut inMarkedEqns: Arc<metamodelica::List<i32>>, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inVars: BackendDAE::Variables, mut inVecEqToVar: metamodelica::Array<i32>, mut inRepls: BackendVarTransform::VariableReplacements, mut inMapIncRowEqn: metamodelica::Array<i32>, mut inME: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut inShared: Arc<BackendDAE::Shared>) -> Result<BackendVarTransform::VariableReplacements> {
     let mut outRepls: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     outRepls = 'mc: {

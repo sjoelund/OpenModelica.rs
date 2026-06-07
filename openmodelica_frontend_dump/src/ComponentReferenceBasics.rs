@@ -135,8 +135,8 @@ pub fn crefFirstCref(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Compon
     Ok(outCr)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
     let mut outIdent: ArcStr = arcstr::literal!("");
     outIdent = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
@@ -153,8 +153,8 @@ pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcSt
     Ok(outIdent)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
     let mut outComponentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
@@ -661,8 +661,6 @@ fn crefLexicalCompareSubsAtEnd2(mut inSubs1: Arc<metamodelica::List<i32>>, mut i
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn crefContainedIn(mut containerCref: Arc<DAE::ComponentRef>, mut containedCref: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = 'mc: {
@@ -904,8 +902,8 @@ pub fn crefEqualWithoutSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::C
     res
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut icr2: Arc<DAE::ComponentRef>) -> bool {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((refEq.clone(), icr1.clone(), icr2.clone())) {

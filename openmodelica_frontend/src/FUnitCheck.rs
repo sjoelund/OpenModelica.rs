@@ -2106,8 +2106,8 @@ fn convertUnitString2unit(mut var: Arc<DAE::Element>, mut inTpl: ((metamodelica:
     Ok(outTpl)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn parseVarList(mut invarlist: Arc<metamodelica::List<Arc<DAE::Var>>>) -> ArcStr {
     let mut outstring: ArcStr = arcstr::literal!("");
     outstring = ((::match_deref::match_deref! { match &(invarlist.clone()) {

@@ -659,8 +659,6 @@ pub fn getAttributeByNameAndTarget(mut iAttributeName: ArcStr, mut iAttributeTar
     Ok(oAttribute)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>, mut iAttributeName: ArcStr, mut iAttributeTarget: AttributeTarget) -> Result<Option<(Attribute, i32)>> {
     let mut oAttribute: Option<(Attribute, i32)> = None;
     let mut rest: Arc<metamodelica::List<Attribute>> = metamodelica::nil();

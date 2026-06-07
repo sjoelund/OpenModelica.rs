@@ -1079,8 +1079,8 @@ pub fn getLoopResiduals(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamode
     Ok(residuals)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
     let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     vars = (::match_deref::match_deref! { match &(comp.clone()) {
@@ -1115,8 +1115,8 @@ pub fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica
     Ok(vars)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     var_cref = (::match_deref::match_deref! { match &(comp.clone()) {
@@ -1133,8 +1133,8 @@ pub fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::
     Ok(var_cref)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
     let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     eqns = (::match_deref::match_deref! { match &(comp.clone()) {
@@ -1162,8 +1162,8 @@ pub fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica
     Ok(eqns)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status> {
     let mut status: Solve::Status = Solve::Status::UNPROCESSED;
     status = (::match_deref::match_deref! { match &(comp.clone()) {
@@ -1184,8 +1184,8 @@ pub fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status>
     Ok(status)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDiscrete(mut comp: Arc<NBStrongComponent>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(comp.clone()) {

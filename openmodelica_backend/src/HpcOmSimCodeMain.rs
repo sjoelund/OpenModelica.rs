@@ -431,8 +431,8 @@ fn applyGRSForScheduler(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Li
     Ok((oTaskGraph, oTaskGraphT, oTaskGraphMeta))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>, mut iLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut oContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut rest: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -466,8 +466,6 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
     Ok(oContractedLevelfixTasks)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn applyGRSForLevelFixSchedulerLevel(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>, mut iCriticalSize: i32, mut iSortedLevelTasks: metamodelica::Array<i32>, mut iCurrentSmallTask: i32, mut iCurrentBigTask: (i32, Arc<metamodelica::List<i32>>, metamodelica::Real), mut iContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut oContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut tmpContractedTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();

@@ -158,8 +158,6 @@ pub fn getExtendsElementspecInClass(mut inClass: Arc<Absyn::Class>) -> Result<Ar
     Ok(outAbsynElementSpecLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getExtendsElementspecInClassparts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>> {
     let mut outAbsynElementSpecLst: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> = metamodelica::nil();
     outAbsynElementSpecLst = 'mc: {
@@ -215,8 +213,6 @@ fn getExtendsElementspecInClassparts(mut inAbsynClassPartLst: Arc<metamodelica::
     Ok(outAbsynElementSpecLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getExtendsElementspecInElementitems(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementSpec>>>> {
     let mut outAbsynElementSpecLst: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> = metamodelica::nil();
     outAbsynElementSpecLst = 'mc: {
@@ -916,8 +912,8 @@ pub fn unparseMods(mut r#mod: Arc<Absyn::Modification>) -> Result<ArcStr> {
     Ok(s)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Modification>> {
     let mut outModification: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
     outModification = (::match_deref::match_deref! { match &((inAbsynElementArgLst.clone(), inPath.clone())) {
@@ -1050,8 +1046,6 @@ pub fn getExtendsModifierNames(mut classPath: Arc<Absyn::Path>, mut extendsPath:
     Ok(result)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getModificationNames(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut includeRedeclares: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outStringLst = 'mc: {
@@ -2461,8 +2455,8 @@ pub fn replaceEquationList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<A
     Ok(outAbsynClassPartLst)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEquationList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::EquationItem>>>> {
     let mut outAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
     outAbsynEquationItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
@@ -3111,8 +3105,6 @@ fn getClassnamesInClassListNoPartial(mut inPath: Arc<Absyn::Path>, mut inProgram
     Ok(outString)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getClassnamesInPartsNoPartial(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     outStringLst = 'mc: {

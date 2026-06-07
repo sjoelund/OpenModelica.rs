@@ -90,8 +90,6 @@ pub fn uncertaintyType() -> Arc<DAE::Type> { __uncertaintyType_TLS.with(|__t| __
 thread_local! { static __distributionType_TLS: Arc<DAE::Type> = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Distribution")).clone() }) }, varLst: list![Arc::new(DAE::Var { name: (literal!("name")).clone(), attributes: Arc::new(DAE::Attributes { connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::PARAM, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: DAE::T_STRING_DEFAULT().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("params")).clone(), attributes: Arc::new(DAE::Attributes { connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::PARAM, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: DAE::T_ARRAY_REAL_NODIM().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(DAE::Var { name: (literal!("paramNames")).clone(), attributes: Arc::new(DAE::Attributes { connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR(), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::PARAM, direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: DAE::T_ARRAY_STRING_NODIM().clone(), binding: openmodelica_frontend_types::DAE::Binding::interned_UNBOUND(), bind_from_outside: false, constOfForIteratorRange: None })], equalityConstraint: None, usedExternally: false }); }
 pub fn distributionType() -> Arc<DAE::Type> { __distributionType_TLS.with(|__t| __t.clone()) }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
     outExpExpOption = 'mc: {
@@ -173,8 +171,6 @@ fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Ar
     Ok(outExpExpOption)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inString: ArcStr, mut useConstValue: bool) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
     outExpExpOption = (::match_deref::match_deref! { match &((inMod.clone(), inType.clone(), inIntegerLst.clone(), inString.clone())) {
@@ -232,8 +228,6 @@ pub fn instStartBindingExp(mut inMod: Arc<DAE::Mod>, mut inExpectedType: Arc<DAE
     Ok(outStartValue)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn instStartOrigin(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inString: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outExpExpOption: Option<Arc<DAE::Exp>> = None;
     outExpExpOption = 'mc: {

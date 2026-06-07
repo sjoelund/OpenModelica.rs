@@ -83,8 +83,6 @@ pub fn collectForLoops(mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut
     Ok((varsOut, eqsOut))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn unexpandArrayVariables(mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut foldIn: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
     let mut foldOut: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     foldOut = 'mc: {
@@ -222,8 +220,6 @@ fn buildAccumExpInEquations1(mut termIn: Arc<DAE::Exp>, mut minmaxTermsIn: Arc<m
     minmaxTermsOut
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn buildAccumExpInEquations2(mut minmaxTerm: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, i32)>>, mut foldIn: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut foldOut: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let sumReductionInfo: Arc<DAE::ReductionInfo> = Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("sum")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: DAE::T_REAL_DEFAULT().clone(), defaultValue: Some(Arc::new(Values::Value::REAL { real: metamodelica::OrderedFloat(0.0_f64) })), foldName: (literal!("$sumFold")).clone(), resultName: (literal!("$sumRes")).clone(), foldExp: Some(Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$sumFold")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }), operator: DAE::Operator::ADD { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("$sumRes")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }) })) });
@@ -452,8 +448,6 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
     Ok(res)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     let mut outEqual: bool = false;
     if referenceEq(&*(inExp1.clone()),&*(inExp2.clone())) {
@@ -878,8 +872,6 @@ fn expEqualNoCrefSubsListList(mut inExpl1: Arc<metamodelica::List<Arc<metamodeli
     Ok(outEqual)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn buildBackendDAEForEquations(mut classEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut foldIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut foldOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     foldOut = 'mc: {

@@ -1650,8 +1650,8 @@ pub mod Equation {
         Ok(r#str)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getAttributes(mut eq: Arc<Equation>) -> Arc<EquationAttributes::EquationAttributes> {
         let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
         attr = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -1767,8 +1767,8 @@ pub mod Equation {
         Ok(eq)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getSource(mut eq: Arc<Equation>) -> Arc<DAE::ElementSource> {
         let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
         source = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -1985,8 +1985,8 @@ pub mod Equation {
         Ok(cref)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getLHS(mut eq: Arc<Equation>) -> Result<Option<Arc<Expression::NFExpression>>> {
         let mut lhs: Option<Arc<Expression::NFExpression>> = None;
         let mut success: bool = false;
@@ -2016,8 +2016,8 @@ pub mod Equation {
         Ok(lhs)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getRHS(mut eq: Arc<Equation>) -> Result<Option<Arc<Expression::NFExpression>>> {
         let mut rhs: Option<Arc<Expression::NFExpression>> = None;
         rhs = (::match_deref::match_deref! { match &(eq.clone()) {

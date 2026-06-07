@@ -1657,8 +1657,6 @@ fn lookupVarNoErrorMessage(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outEnv, id))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::ComponentRef>> {
     let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     outCref = 'mc: {

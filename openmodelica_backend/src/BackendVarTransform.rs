@@ -186,8 +186,8 @@ pub fn removeReplacements(mut iRepl: VariableReplacements, mut inSrcs: Arc<metam
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addReplacements(mut iRepl: VariableReplacements, mut inSrcs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inDsts: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<VariableReplacements> {
     let mut outRepl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
     outRepl = (::match_deref::match_deref! { match &((inSrcs.clone(), inDsts.clone())) {
@@ -390,8 +390,6 @@ fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
     Ok((outRepl, outSrc, outDst))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut repl: VariableReplacements, mut singleRepl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inSet: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<VariableReplacements> {
     let mut outRepl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
     outRepl = 'mc: {
@@ -458,8 +456,6 @@ fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
     Ok((outRepl, outSrc, outDst))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addExtendReplacement(mut extendrepl: CrefSet, mut cr: Arc<DAE::ComponentRef>, mut preCr: Option<Arc<DAE::ComponentRef>>) -> Result<CrefSet> {
     let mut outExtendrepl: CrefSet = <Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> as ::std::default::Default>::default();
     outExtendrepl = 'mc: {
@@ -1861,8 +1857,6 @@ fn replaceEquation(mut inBackendDAEEquation: Arc<BackendDAE::Equation>, mut inVa
     Ok((outBackendDAEEquationLst, replacementPerformed))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn optimizeIfEquation(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut elseenqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut conditions1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut source: Arc<DAE::ElementSource>, mut inEqAttr: BackendDAE::EquationAttributes, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     outEqns = 'mc: {

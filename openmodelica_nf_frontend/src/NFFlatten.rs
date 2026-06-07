@@ -461,8 +461,8 @@ pub mod FunctionTreeImpl {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Result<Option<Arc<Function::Function>>> {
         let mut value: Option<Arc<Function::Function>> = None;
         let mut k: Key = Arc::new(<Path as ::std::default::Default>::default());
@@ -483,8 +483,8 @@ pub mod FunctionTreeImpl {
         Ok(value)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = Arc::new(<Path as ::std::default::Default>::default());
@@ -790,8 +790,8 @@ pub mod FunctionTreeImpl {
         Ok(res)
     }
 
-    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
         let mut key: Key = Arc::new(<Path as ::std::default::Default>::default());
         key = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -1288,8 +1288,8 @@ fn deleteComponent(mut node: Arc<InstNode::InstNode>, mut prefix: Arc<Prefix::Pr
     Ok(())
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getComponentType(mut ty: Arc<Type::NFType>, mut settings: FlattenSettings) -> ComponentType {
     let mut compTy: ComponentType = ComponentType::NORMAL;
     compTy = (::match_deref::match_deref! { match &(ty.clone()) {

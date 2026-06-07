@@ -173,10 +173,10 @@ fn traverseAdjacencyMatrixList<T: Clone + 'static>(mut inLst: Arc<metamodelica::
 }
 
 pub fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut size: i32, mut index: i32, mut skip: metamodelica::Array<i32>, mut rowskip: metamodelica::Array<i32>, mut mnew: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outMNew: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    outMNew = (match m.clone() {
+    '__tco: loop {
+        match m.clone() {
         _ if (intGt(index.clone(), size.clone())) => {
-            mnew.clone()
+            return Ok(mnew.clone())
         },
         _ if (intGt(({let __elt = skip.borrow()[(index.clone()-1) as usize].clone(); __elt}), 0)) => {
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -190,14 +190,14 @@ pub fn getOtherEqSysAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica:
         __acc.reverse()
     });
             metamodelica::arrayUpdate(mnew.clone(), index.clone(), row.clone())?;
-            getOtherEqSysAdjacencyMatrix(m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone())?
+            { (m, size, index, skip, rowskip, mnew) = (m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone()); continue '__tco; }
         },
         _ => {
             metamodelica::arrayUpdate(mnew.clone(), index.clone(), metamodelica::nil())?;
-            getOtherEqSysAdjacencyMatrix(m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone())?
+            { (m, size, index, skip, rowskip, mnew) = (m.clone(), size.clone(), index.clone() + 1, skip.clone(), rowskip.clone(), mnew.clone()); continue '__tco; }
         },
-    });
-    Ok(outMNew)
+    }
+    }
 }
 
 fn isAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {

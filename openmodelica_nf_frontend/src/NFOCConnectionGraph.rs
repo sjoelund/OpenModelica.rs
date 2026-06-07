@@ -648,8 +648,8 @@ fn isOverconstrainedCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<
     Ok(b)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getOverconstrainedCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut c: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -895,8 +895,6 @@ fn ord(mut inEl1: PotentialRoot, mut inEl2: PotentialRoot) -> Result<bool> {
     Ok(outBoolean)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: PotentialRoots, mut roots: DefiniteRoots, mut firstRoot: Arc<ComponentRef::NFComponentRef>) -> Result<DefiniteRoots> {
     let mut outRoots: DefiniteRoots = metamodelica::nil();
     outRoots = 'mc: {
@@ -1033,8 +1031,6 @@ fn printTupleStr(mut inTpl: (ArcStr, ArcStr)) -> ArcStr {
     out
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn makeTuple(mut inLstLst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<(ArcStr, ArcStr)>>> {
     let mut outLst: Arc<metamodelica::List<(ArcStr, ArcStr)>> = metamodelica::nil();
     outLst = 'mc: {

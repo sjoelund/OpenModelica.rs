@@ -51,8 +51,6 @@ use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::MMath;
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist: UnitAbsyn::InstStore) -> Result<UnitAbsyn::InstStore> {
     let mut outSt: UnitAbsyn::InstStore = UnitAbsyn::InstStore::NOSTORE;
     outSt = 'mc: {
@@ -390,8 +388,6 @@ fn unify(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit, mut st:
     Ok((outresult, outSt))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn isSpecUnitEq(mut insu1: UnitAbsyn::SpecUnit, mut insu2: UnitAbsyn::SpecUnit) -> Result<bool> {
     let mut res: bool = false;
     res = 'mc: {
@@ -851,8 +847,6 @@ pub fn powUnitVec(mut inunitvec: Arc<metamodelica::List<MMath::Rational>>, mut e
     Ok(outunitvec)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn negParamList(mut ine: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>, mut ac: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
     let mut oute: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
     oute = 'mc: {
@@ -938,8 +932,6 @@ pub fn normalizeOnUnit(mut u: UnitAbsyn::Unit, mut st: UnitAbsyn::Store) -> Resu
     Ok((unit, outSt))
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn normalizeParamsExponents(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>) -> Result<Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>>> {
     let mut outparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
     outparams = 'mc: {

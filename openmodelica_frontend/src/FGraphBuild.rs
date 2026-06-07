@@ -270,8 +270,8 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: F
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inSubMod.clone(), inGraph.clone())) {
@@ -497,8 +497,8 @@ pub fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodelica::Li
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inStartWith.clone(), inArrayDims.clone(), inGraph.clone())) {
@@ -610,8 +610,8 @@ pub fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut inPare
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inCrefs.clone(), inGraph.clone())) {
@@ -789,8 +789,8 @@ pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode:
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inExps.clone(), inGraph.clone())) {
@@ -995,8 +995,8 @@ pub fn addIterators(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterat
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inIterators.clone(), inGraph.clone())) {
@@ -1036,8 +1036,8 @@ pub fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut 
     Ok(outGraph)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
+// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (::match_deref::match_deref! { match &((inElements.clone(), inGraph.clone())) {
