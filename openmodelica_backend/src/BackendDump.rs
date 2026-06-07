@@ -1237,12 +1237,6 @@ pub fn dumpLoops(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDA
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut isyst: i32 = 1;
     let mut firstComp: bool = true;
-    let _ = (::match_deref::match_deref! { match &(outDAE.shared.clone()) {
-        Deref @ BackendDAE::Shared { backendDAEType: BackendDAE::BackendDAEType::SIMULATION { .. }, .. } => metamodelica::print((literal!("SIMULATION\n")).clone()),
-        Deref @ BackendDAE::Shared { backendDAEType: BackendDAE::BackendDAEType::INITIALSYSTEM { .. }, .. } => metamodelica::print((literal!("INITIALSYSTEM\n")).clone()),
-        _ => metamodelica::print((literal!("UNKNOWN\n")).clone()),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
     for mut syst in &*inDAE.eqs.clone() {
         let mut syst = syst.clone();
         firstComp = true;
