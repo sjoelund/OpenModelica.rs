@@ -175,11 +175,10 @@ pub const ldflags_runtime_fmu_static: &'static str = if cfg!(windows) {
 };
 
 /// Libraries linked into generated simulation code when --parmodauto
-/// (ParModelica auto) is enabled. `@PARMODELICAAUTO_LDFLAGS@` is empty on a
-/// default Unix configure (the ParModelica auto runtime is not built); the
-/// OMDev Windows file hardcodes the pair below.
-pub const parModelicaAutoLibs: &'static str =
-    if cfg!(windows) { " -lParModelicaAuto -ltbb " } else { "" };
+/// (ParModelica auto) is enabled. Mirrors `Util/Autoconf.mo`, which hardcodes
+/// the pair below: the ParModelica auto runtime (`libParModelicaAuto`) ships
+/// with the OpenModelica build on every supported platform.
+pub const parModelicaAutoLibs: &'static str = " -lParModelicaAuto -ltbb ";
 
 pub const corbaLibs: &'static str = "";
 
