@@ -625,6 +625,18 @@ struct ComponentClause {
     components: Arc<List<Arc<ComponentItem>>>,
 }
 
+/// End column for a span, replicating an ANTLR3 line-1 quirk. `PARSER_INFO`
+/// computes the start column as `charPosition + (line==1 ? 2 : 1)` but the end
+/// column always as `LT(1)->charPosition + 1`. ANTLR3 reports `charPosition` on
+/// line 1 as one less than the true 0-based offset (the `+2` start case
+/// compensates), so an end position falling on line 1 comes out one column
+/// lower than the true 1-based column the lexer here reports. Mirror that so
+/// SOURCEINFO for single-line input (e.g. `loadString("model M …")`,
+/// `getClassInformation`) matches the reference omc.
+fn end_col_for_line(line: u32, col: u32) -> i32 {
+    if line == 1 { col as i32 - 1 } else { col as i32 }
+}
+
 /// Build a `SourceInfo` from the rule's first token to the *start* of
 /// `lt1`, the first token that is **not** part of the construct.
 ///
@@ -642,7 +654,7 @@ fn source_info(tok1: &Token, lt1: &Token) -> SourceInfo {
         lineNumberStart: tok1.line as i32,
         columnNumberStart: tok1.col as i32,
         lineNumberEnd: lt1.line as i32,
-        columnNumberEnd: lt1.col as i32,
+        columnNumberEnd: end_col_for_line(lt1.line, lt1.col),
         lastModification: metamodelica::Real::from(CURRENT_TIMESTAMP.with(|f| f.get())),
     }
 }
@@ -674,7 +686,7 @@ fn parser_info_from(first: &Token, start: &TokenInput, input: &TokenInput) -> So
         lineNumberStart: first.line as i32,
         columnNumberStart: first.col as i32,
         lineNumberEnd: end_line as i32,
-        columnNumberEnd: end_col as i32,
+        columnNumberEnd: end_col_for_line(end_line, end_col),
         lastModification: metamodelica::Real::from(CURRENT_TIMESTAMP.with(|f| f.get())),
     }
 }
