@@ -499,9 +499,8 @@ impl<'s> Lexer<'s> {
                 }
                 Some('/') => match self.peek2() {
                     Some('/') => {
-                        // Line comment: record up to (but not including) the
-                        // terminating newline. The position recorded is the
-                        // position of the leading `/`.
+                        // Line comment. The position recorded is the position
+                        // of the leading `/`.
                         let start_line = self.line;
                         let start_col = self.col;
                         let start_pos = self.pos;
@@ -509,7 +508,20 @@ impl<'s> Lexer<'s> {
                             self.advance();
                         }
                         if self.record_comments {
-                            let text: arcstr::ArcStr = self.src[start_pos..self.pos].into();
+                            // ANTLR3's `LINE_COMMENT` rule is
+                            // `'//' (~('\r'|'\n')*) (NL|EOF)`, so the token text
+                            // includes the terminating newline. The Absyn dump
+                            // (e.g. `ELEMENTARGCOMMENT`/`EXPRESSIONCOMMENT`)
+                            // writes that text verbatim and relies on the
+                            // trailing `\n` to put the following element on its
+                            // own line — without it a `// foo` comment would
+                            // swallow the next token. Include the `\n` (the
+                            // loop has already absorbed any preceding `\r`).
+                            let text_end = match self.peek() {
+                                Some('\n') => self.pos + 1,
+                                _ => self.pos, // terminated by EOF
+                            };
+                            let text: arcstr::ArcStr = self.src[start_pos..text_end].into();
                             // For a single-line comment, end col is one before
                             // current col (current col is on the newline / EOF).
                             self.comments.push(CommentToken {
@@ -1197,7 +1209,9 @@ mod tests {
         ]);
         assert_eq!(comments.len(), 2);
         assert_eq!(comments[0].kind, CommentKind::Line);
-        assert_eq!(&*comments[0].text, "// hi");
+        // The line comment's text includes its terminating newline, matching
+        // ANTLR3's `LINE_COMMENT : '//' (~('\r'|'\n')*) (NL|EOF)`.
+        assert_eq!(&*comments[0].text, "// hi\n");
         assert_eq!((comments[0].line, comments[0].col), (1, 3));
         assert_eq!(comments[1].kind, CommentKind::Block);
         assert_eq!(&*comments[1].text, "/* block\ncomment */");

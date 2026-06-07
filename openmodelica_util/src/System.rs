@@ -353,19 +353,40 @@ pub fn strtokIncludingDelimiters(string: ArcStr, token: ArcStr) -> Arc<List<ArcS
 }
 
 pub fn splitOnNewline(r#str: ArcStr, includeDelimiter: bool) -> Result<Arc<List<ArcStr>>> {
-    // Split on '\n'; if `includeDelimiter` is true, re-attach the newline
-    // to each preceding line (mirrors the C version used by error reporting).
+    // Split on '\n' and '\r\n', mirroring `System_splitOnNewline` in
+    // `runtime/System_omc.c`. When `includeDelimiter` is true the newline
+    // delimiters are emitted as their OWN tokens, not re-attached to the
+    // preceding line:
+    //     splitOnNewline("a\nb\r\nc")        = {a, b, c}
+    //     splitOnNewline("a\nb\r\nc", true)  = {a, \n, b, \r\n, c}
+    // Empty segments (e.g. between consecutive newlines) are dropped. Tpl's
+    // `writeChars` relies on the delimiter being a standalone "\n"/"\r\n"
+    // token so it can call `newLine` — which re-applies the active block
+    // indent — instead of printing a bare '\n' inside a string token (which
+    // would leave the next line un-indented).
+    let s = r#str.as_str();
+    let bytes = s.as_bytes();
     let mut out: Vec<ArcStr> = Vec::new();
-    for line in r#str.split_inclusive('\n') {
-        if includeDelimiter {
-            out.push(ArcStr::from(line));
+    let mut start = 0usize;
+    let mut i = 0usize;
+    while i < bytes.len() {
+        let is_crlf = bytes[i] == b'\r' && i + 1 < bytes.len() && bytes[i + 1] == b'\n';
+        if bytes[i] == b'\n' || is_crlf {
+            if i > start {
+                out.push(ArcStr::from(&s[start..i]));
+            }
+            let dl = if is_crlf { 2 } else { 1 };
+            if includeDelimiter {
+                out.push(ArcStr::from(&s[i..i + dl]));
+            }
+            i += dl;
+            start = i;
         } else {
-            // Strip the trailing '\n' (and any '\r' before it) so the
-            // caller can re-join with their own delimiter.
-            let trimmed = line.strip_suffix('\n').unwrap_or(line);
-            let trimmed = trimmed.strip_suffix('\r').unwrap_or(trimmed);
-            out.push(ArcStr::from(trimmed));
+            i += 1;
         }
+    }
+    if i > start {
+        out.push(ArcStr::from(&s[start..i]));
     }
     Ok(list_from_vec(out))
 }

@@ -276,6 +276,13 @@ fn parse_expression_enabled() -> bool {
     INTERACTIVE_PARSE.with(|f| f.get())
 }
 
+/// True while parsing an interactive `.mos` statement stream (vs. a stored
+/// definition). Interactive statements discard expression comments instead of
+/// wrapping them in `Absyn.EXPRESSIONCOMMENT`; see [`expression`].
+fn is_interactive_parse() -> bool {
+    INTERACTIVE_PARSE.with(|f| f.get())
+}
+
 // ---------------------------------------------------------------------------
 // Error type
 // ---------------------------------------------------------------------------
@@ -1686,12 +1693,44 @@ fn class_modification_impl(input: &mut TokenInput, can_have_break: bool) -> Moda
 }
 
 fn argument_list(input: &mut TokenInput, can_have_break: bool) -> ModalResult<Arc<List<Arc<ElementArg>>>> {
-    let mut res = List::new(Arc::new(argument_or_break(input, can_have_break)?));
+    // Mirror the ANTLR3 `argument_list` rule's comment handling: a line/block
+    // comment that precedes an argument is preserved as an
+    // `Absyn.ELEMENTARGCOMMENT` spliced into the list right before that
+    // argument, and any comments trailing the last argument (before the
+    // closing `)`) are appended. This is what lets `list`/save round-trip
+    // class-modification comments such as the `// comment` before `Placement`
+    // in an annotation (openmodelica/interactive-API/CopyClass6). Without it
+    // the leading comment leaks forward and is swallowed by the next inner
+    // expression's `EXPRESSIONCOMMENT`.
+    let cursor = save_comment_cursor();
+    let mut out: Vec<Arc<ElementArg>> = Vec::new();
+
+    let push_comments_before = |out: &mut Vec<Arc<ElementArg>>, input: &TokenInput| {
+        let (line, col) = next_pos(input);
+        for txt in take_comments_before(line, col) {
+            out.push(Arc::new(ElementArg::ELEMENTARGCOMMENT { comment: txt }));
+        }
+    };
+
+    push_comments_before(&mut out, input);
+    match argument_or_break(input, can_have_break) {
+        Ok(a) => out.push(Arc::new(a)),
+        // No (further) argument: an empty `()` reaches here via `opt`. Restore
+        // the comment cursor so the drained comments are reclaimed by the
+        // surrounding checkpoint rather than lost on backtrack.
+        Err(e) => { restore_comment_cursor(cursor); return Err(e); }
+    }
     loop {
         if opt(t(TK::Comma)).parse_next(input)?.is_none() { break; }
-        res = cons(Arc::new(argument_or_break(input, can_have_break)?), res);
+        push_comments_before(&mut out, input);
+        out.push(Arc::new(argument_or_break(input, can_have_break)?));
     }
-    Ok(res.reverse())
+    // Comments between the last argument and the closing `)`.
+    push_comments_before(&mut out, input);
+
+    let mut res: Arc<List<Arc<ElementArg>>> = Arc::new(List::Nil);
+    for e in out.into_iter().rev() { res = cons(e, res); }
+    Ok(res)
 }
 
 fn argument_or_break(input: &mut TokenInput, can_have_break: bool) -> ModalResult<ElementArg> {
@@ -3047,8 +3086,10 @@ fn expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
     let input_save  = *input;
 
     // Comments immediately before the next token (the expression's first
-    // token) become `commentsBefore`. We must drain — not peek — because a
-    // nested `expression` call would otherwise re-claim the same comments.
+    // token) become `commentsBefore`. We must drain — not peek — because the
+    // global comment cursor has to advance past them so they are not
+    // re-claimed at a later checkpoint, mirroring the ANTLR `expression` rule
+    // advancing `omc_first_comment` in its `@init`/trailing actions.
     let (line, col) = next_pos(input);
     let before = take_comments_before(line, col);
 
@@ -3061,7 +3102,15 @@ fn expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
             let (line, col) = next_pos(input);
             let after = take_comments_before(line, col);
 
-            if before.is_empty() && after.is_empty() {
+            // Wrap in `Absyn.EXPRESSIONCOMMENT` only for stored definitions
+            // (`loadFile`/`loadString`, where `list`/save round-trips must
+            // preserve source comments). Interactive `.mos` statements drop the
+            // drained comments: the reference omc echoes `getVersion()`, not
+            // `// comment getVersion()`, under `-d=showStatement`. The ANTLR3
+            // grammar achieves this via `omc_first_comment` already pointing
+            // past the leading comment when an interactive statement's
+            // expression runs; we model it directly with the interactive flag.
+            if is_interactive_parse() || (before.is_empty() && after.is_empty()) {
                 Ok(exp)
             } else {
                 let mut b: Arc<List<ArcStr>> = Arc::new(List::Nil);
@@ -4094,9 +4143,11 @@ end A;\n\
 
     #[test]
     fn expression_comment_wraps_inner_expression() {
-        // A `/* … */` comment placed immediately before/after an expression
-        // should round-trip as an `EXPRESSIONCOMMENT` wrapper, mirroring the
-        // ANTLR3 non-bootstrap behaviour at `grammars/Modelica.g:1554`.
+        // In a stored definition (`interactive == false`), a comment placed
+        // immediately before/after an expression round-trips as an
+        // `EXPRESSIONCOMMENT` wrapper, mirroring the ANTLR3 `expression` rule at
+        // `grammars/Modelica.g:1554`. The reference omc preserves such comments
+        // when a class is re-dumped via `list`.
         let code = "\
 package P\n\
 algorithm\n\
@@ -4126,6 +4177,24 @@ end P;\n\
             }
         }
         assert!(saw_wrapper, "expected an EXPRESSIONCOMMENT wrapper around the RHS");
+    }
+
+    #[test]
+    fn interactive_expression_comment_is_dropped() {
+        // An interactive `.mos` statement does NOT wrap its expression in
+        // `EXPRESSIONCOMMENT`: the reference omc echoes `f()`, not
+        // `// c f()`, under `-d=showStatement`. The leading comment is drained
+        // and discarded.
+        let stmts = parse_statements(
+            "// a comment\nf();", "t.mos", "t.mos", Grammar::MetaModelica, false, 0.0,
+        ).expect("parse");
+        let items: Vec<_> = (&*stmts.interactiveStmtLst).into_iter().collect();
+        assert_eq!(items.len(), 1, "expected one statement");
+        let crate::GlobalScript::Statement::IEXP { exp, .. } = &*items[0] else {
+            panic!("expected IEXP, got {:?}", items[0]);
+        };
+        assert!(!matches!(&**exp, Exp::EXPRESSIONCOMMENT { .. }),
+                "interactive expression must not be wrapped in EXPRESSIONCOMMENT, got {exp:?}");
     }
 
     #[test]
