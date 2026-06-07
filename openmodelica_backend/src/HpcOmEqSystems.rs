@@ -1251,7 +1251,7 @@ fn getResidualExpressions1(mut i: i32, mut resExpsIn: Arc<metamodelica::List<Arc
     let mut h_iArr: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = Default::default();
     h_iArrOut = 'mc: {
         let __mc_input = h_iArrIn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut h_i: Arc<metamodelica::List<Arc<DAE::Exp>>> = h_i.clone();
             let mut h_iArr: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = h_iArr.clone();
@@ -1259,8 +1259,8 @@ fn getResidualExpressions1(mut i: i32, mut resExpsIn: Arc<metamodelica::List<Arc
             repl = metamodelica::arrayGet(replArr.clone(), i.clone() + 1)?;
             (h_i, _) = BackendVarTransform::replaceExpList1(resExpsIn.clone(), repl.clone(), None)?;
             h_iArr = metamodelica::arrayUpdate(h_iArrIn.clone(), i.clone() + 1, h_i.clone())?;
-            Ok(h_iArr.clone())
-        })() { break 'mc __v; }
+            Ok((h_iArr.clone(), h_i.clone(), h_iArr.clone(), repl.clone()))
+        })() { h_i = __wb0; h_iArr = __wb1; repl = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             metamodelica::print((literal!("getResidualExpressions failed \n")).clone());

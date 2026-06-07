@@ -70,7 +70,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = 'mc: {
         let __mc_input = (inClass.clone(), inProgram.clone(), classPath.clone());
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (outClass @ Deref @ Absyn::Class { name: n, body: d, .. }, p, Deref @ Absyn::Path::IDENT { name: Deref @ "" }) => {
                     let mut resultClassDef: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
@@ -81,11 +81,11 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
                     resultClassDef = refactorGraphAnnInClassDef(d.clone(), p.clone(), cPath.clone(), env.clone())?;
                     assign_field!(outClass.body = resultClassDef.clone());
-                    Ok((outClass.clone(), outClass.clone()))
+                    Ok(outClass.clone())
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outClass = __wb0; break 'mc __v; }
+        })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (outClass @ Deref @ Absyn::Class { name: n, body: d, .. }, p, cPath) => {

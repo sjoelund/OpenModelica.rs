@@ -5307,7 +5307,7 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
     let mut args: Arg;
     (cdef, opt_pa, args) = 'mc: {
         let __mc_input = (cdef.clone(), path.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, Some(pa)) => {
                     let mut pa = (*pa).clone();
@@ -5318,12 +5318,12 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     pa = joinPaths(pa.clone(), Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() }))?;
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), Some(pa.clone()), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::PARTS; classParts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), opt_pa.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cdef = __wb0; opt_pa = __wb1; parts = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, None) => {
                     let mut args: Arg;
@@ -5332,12 +5332,12 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), Some(Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() })), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::PARTS; classParts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), opt_pa.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cdef = __wb0; opt_pa = __wb1; parts = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, opt_pa) => {
                     let mut opt_pa = (*opt_pa).clone();
@@ -5346,12 +5346,12 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), opt_pa.clone(), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::PARTS; classParts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cdef = __wb0; parts = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, Some(pa)) => {
                     let mut pa = (*pa).clone();
@@ -5362,12 +5362,12 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     pa = joinPaths(pa.clone(), Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() }))?;
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), Some(pa.clone()), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), opt_pa.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cdef = __wb0; opt_pa = __wb1; parts = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, None) => {
                     let mut args: Arg;
@@ -5376,12 +5376,12 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), Some(Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() })), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), opt_pa.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cdef = __wb0; opt_pa = __wb1; parts = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, opt_pa) => {
                     let mut opt_pa = (*opt_pa).clone();
@@ -5390,11 +5390,11 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), opt_pa.clone(), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
-                    Ok((cdef.clone(), opt_pa.clone(), args.clone()))
+                    Ok(((cdef.clone(), opt_pa.clone(), args.clone()), cdef.clone(), parts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { cdef = __wb0; parts = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

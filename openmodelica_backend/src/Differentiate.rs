@@ -2546,7 +2546,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e @ Deref @ DAE::Exp::CALL { path, expLst: expl, attr: Deref @ DAE::CallAttributes { tuple_: b, builtin: false, isImpure, ty, tailCall: tc, .. } } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2635,11 +2635,11 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                         metamodelica::print((literal!("### differentiated result CALL :\n")).clone());
                         metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
-                    Ok((exp.clone(), functions.clone()))
+                    Ok(((exp.clone(), functions.clone()), inInputData.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { inInputData = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3327,7 +3327,7 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
         (i, dc) = tpl.clone();
         let () = 'mc: {
         let __mc_input = dc.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::derivativeCond::ZERO_DERIVATIVE { .. } => {
                     let mut e: Arc<DAE::Exp> = e.clone();
@@ -3335,12 +3335,12 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
                     e = (expl.clone()).get(i.clone())?;
                     (e, functionTree) = differentiateExp(e.clone(), diffwrtCref.clone(), inputData.clone(), diffType.clone(), functionTree.clone(), defaultMaxIter.clone())?;
                     let true = (Expression::isZero(e.clone())?) else { bail!("pattern mismatch") };
-                    Ok(())
+                    Ok(((), e.clone(), functionTree.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { e = __wb0; functionTree = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::derivativeCond::NO_DERIVATIVE { binding: Deref @ DAE::Exp::CALL { path: p1, .. } } => {
                     let mut p2: Arc<Absyn::Path> = p2.clone();
@@ -3350,11 +3350,11 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
                     } };
                     p2 = __pa0.clone();
                     let true = (AbsynUtil::pathEqual(p1.clone(), p2.clone())) else { bail!("pattern mismatch") };
-                    Ok(())
+                    Ok(((), p2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { p2 = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::derivativeCond::NO_DERIVATIVE { binding: Deref @ DAE::Exp::ICONST { .. } } => {

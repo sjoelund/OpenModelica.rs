@@ -449,7 +449,7 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
             if evaluate.clone() {
                 let () = 'mc: {
         let __mc_input = r#mod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::MOD { binding: Some(aexp), .. } => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
@@ -458,11 +458,11 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
                     (exp, _, _, _) = Typing::typeExp(exp.clone(), NFInstContext::ANNOTATION.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone(), false)?;
                     exp = Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?;
                     assign_variant_field!(r#mod => SCode::Mod::MOD; binding = Some(Expression::toAbsyn(exp.clone())?));
-                    Ok(())
+                    Ok(((), exp.clone(), r#mod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { exp = __wb0; r#mod = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

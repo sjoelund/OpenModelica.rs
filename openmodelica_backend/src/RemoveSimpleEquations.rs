@@ -3324,7 +3324,7 @@ fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, 
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (outExp, outReplaced) = 'mc: {
         let __mc_input = exp.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
                     if !((!(UnorderedSet::contains(cr.clone(), replacedCrefs.clone())?))) { bail!("guard") }
@@ -3336,11 +3336,11 @@ fn replaceCrefWithBindExp_traverser(mut exp: Arc<DAE::Exp>, mut replaced: bool, 
                     e = __pa0.clone();
                     UnorderedSet::add(cr.clone(), replacedCrefs.clone())?;
                     (e, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replacedCrefs.clone(); move |__pe_a0, __pe_a1| replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
-                    Ok((e.clone(), true))
+                    Ok(((e.clone(), true), e.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { e = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CREF { .. } => {
@@ -5011,7 +5011,7 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
     let mut value: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outHTCrToExp = 'mc: {
         let __mc_input = ();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
             let mut value: Arc<DAE::Exp> = value.clone();
@@ -5022,8 +5022,8 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
             value = __pa0.clone();
             outHTCrToExp = BaseHashTable::add((cr.clone(), value.clone()), inHTCrToExp.clone())?;
             outHTCrToExp = solveAllCrefs(cr.clone(), value.clone(), outHTCrToExp.clone(), inHTCrToCrEqLst.clone())?;
-            Ok(outHTCrToExp.clone())
-        })() { break 'mc __v; }
+            Ok((outHTCrToExp.clone(), value.clone()))
+        })() { value = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             metamodelica::print((literal!("\n++++++++++ Error in RemoveSimpleEquations.addToCrToExp ++++++++++\n")).clone());

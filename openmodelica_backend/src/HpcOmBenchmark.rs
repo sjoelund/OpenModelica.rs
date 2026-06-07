@@ -77,7 +77,7 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
     let mut tmpCalcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
     calcTimes = 'mc: {
         let __mc_input = iFileNamePrefix.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut fullFileName: ArcStr = fullFileName.clone();
             let mut tmpCalcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpCalcTimes.clone();
@@ -88,9 +88,9 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
             } };
             metamodelica::print((literal!("Using json-file\n")).clone());
             tmpCalcTimes = readCalcTimesFromJson((fullFileName.clone()).clone())?;
-            Ok(tmpCalcTimes.clone())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok((tmpCalcTimes.clone(), fullFileName.clone(), tmpCalcTimes.clone()))
+        })() { fullFileName = __wb0; tmpCalcTimes = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut fullFileName: ArcStr = fullFileName.clone();
             let mut tmpCalcTimes: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpCalcTimes.clone();
@@ -100,8 +100,8 @@ pub fn readCalcTimesFromFile(mut iFileNamePrefix: ArcStr) -> Result<Arc<metamode
                 _ => bail!("pattern mismatch"),
             } };
             tmpCalcTimes = readCalcTimesFromXml((fullFileName.clone()).clone())?;
-            Ok(tmpCalcTimes.clone())
-        })() { break 'mc __v; }
+            Ok((tmpCalcTimes.clone(), fullFileName.clone(), tmpCalcTimes.clone()))
+        })() { fullFileName = __wb0; tmpCalcTimes = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             metamodelica::print((literal!("readCalcTimesFromFile: No valid profiling-file found.\n")).clone());
@@ -139,7 +139,7 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
     oTuples = 'mc: {
         let __mc_input = iList.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: numOfCalcs, tail: Deref @ metamodelica::List::Cons { head: calcTimeSum, tail: Deref @ metamodelica::List::Cons { head: eqIdx, tail: rest } } } => {
                     let mut intEqIdx: i32 = intEqIdx.clone();
@@ -148,11 +148,11 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
                     intNumOfCalcs = ((numOfCalcs.clone()).0.floor() as i32);
                     intEqIdx = ((eqIdx.clone()).0.floor() as i32);
                     tmpTuples = expandCalcTimes(rest.clone(), metamodelica::cons((intEqIdx.clone(), intNumOfCalcs.clone(), calcTimeSum.clone()), iTuples.clone()))?;
-                    Ok(tmpTuples.clone())
+                    Ok((tmpTuples.clone(), intEqIdx.clone(), intNumOfCalcs.clone(), tmpTuples.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { intEqIdx = __wb0; intNumOfCalcs = __wb1; tmpTuples = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {

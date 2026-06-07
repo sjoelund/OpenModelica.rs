@@ -1127,7 +1127,7 @@ fn fixClassdef(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
     let mut tree: Arc<AvlSetString::Tree> = inTree.clone();
     outCd = 'mc: {
         let __mc_input = (inEnv.clone(), inCd.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::ClassDef::PARTS { elementLst: elts, normalEquationLst: ne, initialEquationLst: ie, normalAlgorithmLst: na, initialAlgorithmLst: ia, constraintLst: nc, clsattrs: clats, externalDecl: ed }) => {
                     let mut elts_1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1144,11 +1144,11 @@ fn fixClassdef(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
                     na_1 = fixList(cache.clone(), env.clone(), na.clone(), tree.clone(), (std::sync::Arc::new(fixAlgorithm) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<SCode::AlgorithmSection>, Arc<AvlSetString::Tree>) -> Result<Arc<SCode::AlgorithmSection>> + 'static>))?;
                     ia_1 = fixList(cache.clone(), env.clone(), ia.clone(), tree.clone(), (std::sync::Arc::new(fixAlgorithm) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<SCode::AlgorithmSection>, Arc<AvlSetString::Tree>) -> Result<Arc<SCode::AlgorithmSection>> + 'static>))?;
                     nc_1 = fixList(cache.clone(), env.clone(), nc.clone(), tree.clone(), (std::sync::Arc::new(fixConstraint) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, SCode::ConstraintSection, Arc<AvlSetString::Tree>) -> Result<SCode::ConstraintSection> + 'static>))?;
-                    Ok(if (metamodelica::ReferenceEq::reference_eq(&*(elts.clone()), &*(elts_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ne.clone()), &*(ne_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ie.clone()), &*(ie_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(na.clone()), &*(na_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ia.clone()), &*(ia_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(nc.clone()), &*(nc_1.clone()))) {inCd.clone()} else {Arc::new(SCode::ClassDef::PARTS { elementLst: elts_1.clone(), normalEquationLst: ne_1.clone(), initialEquationLst: ie_1.clone(), normalAlgorithmLst: na_1.clone(), initialAlgorithmLst: ia_1.clone(), constraintLst: nc_1.clone(), clsattrs: clats.clone(), externalDecl: ed.clone() })})
+                    Ok((if (metamodelica::ReferenceEq::reference_eq(&*(elts.clone()), &*(elts_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ne.clone()), &*(ne_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ie.clone()), &*(ie_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(na.clone()), &*(na_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(ia.clone()), &*(ia_1.clone())) && metamodelica::ReferenceEq::reference_eq(&*(nc.clone()), &*(nc_1.clone()))) {inCd.clone()} else {Arc::new(SCode::ClassDef::PARTS { elementLst: elts_1.clone(), normalEquationLst: ne_1.clone(), initialEquationLst: ie_1.clone(), normalAlgorithmLst: na_1.clone(), initialAlgorithmLst: ia_1.clone(), constraintLst: nc_1.clone(), clsattrs: clats.clone(), externalDecl: ed.clone() })}, tree.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tree = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::ClassDef::CLASS_EXTENDS { modifications: r#mod, composition: cd @ Deref @ SCode::ClassDef::PARTS { elementLst: elts, normalEquationLst: ne, initialEquationLst: ie, normalAlgorithmLst: na, initialAlgorithmLst: ia, constraintLst: nc, clsattrs: clats, externalDecl: ed } }) => {

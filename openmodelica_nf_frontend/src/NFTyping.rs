@@ -391,7 +391,7 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
     cache = InstNode::getFuncCache(constructor.clone())?;
     recordTy = 'mc: {
         let __mc_input = cache.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ CachedData::FUNCTION { .. } => {
                     let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = fields.clone();
@@ -399,11 +399,11 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
                     let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = indexMap.clone();
                     r#fn = List::find(var_field!((*cache).funcs, CachedData::CachedData::FUNCTION).clone(), (std::sync::Arc::new(fnptr!(Function::isDefaultRecordConstructor, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<bool> + 'static>))?;
                     (fields, indexMap) = Record::collectRecordFields(r#fn.node.clone())?;
-                    Ok(Arc::new(ComplexType::NFComplexType::RECORD { constructor: constructor.clone(), fields: fields.clone(), indexMap: indexMap.clone() }))
+                    Ok((Arc::new(ComplexType::NFComplexType::RECORD { constructor: constructor.clone(), fields: fields.clone(), indexMap: indexMap.clone() }), fields.clone(), r#fn.clone(), indexMap.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { fields = __wb0; r#fn = __wb1; indexMap = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

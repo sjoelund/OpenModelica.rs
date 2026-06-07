@@ -480,7 +480,7 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
     (cache, cond_exp, cond_prop) = elabExpInExpression(inCache.clone(), inEnv.clone(), cond_e.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = ();
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut false_exp: Arc<DAE::Exp> = false_exp.clone();
             let mut false_prop: DAE::Properties = false_prop.clone();
@@ -494,9 +494,9 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
             (outCache, false_exp, false_prop) = elabExpInExpression(outCache.clone(), inEnv.clone(), false_e.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
             (outCache, outExp, outProperties) = makeIfExp(outCache.clone(), inEnv.clone(), cond_exp.clone(), cond_prop.clone(), true_exp.clone(), true_prop.clone(), false_exp.clone(), false_prop.clone(), inImplicit.clone(), inPrefix.clone(), inInfo.clone())?;
             ErrorExt::delCheckpoint((literal!("Static.elabExp:IFEXP")).clone());
-            Ok(((outCache.clone(), outExp.clone(), outProperties.clone()), outCache.clone(), outExp.clone(), outProperties.clone()))
-        })() { outCache = __wb0; outExp = __wb1; outProperties = __wb2; break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+            Ok(((outCache.clone(), outExp.clone(), outProperties.clone()), false_exp.clone(), false_prop.clone(), outCache.clone(), outExp.clone(), outProperties.clone(), true_exp.clone(), true_prop.clone()))
+        })() { false_exp = __wb0; false_prop = __wb1; outCache = __wb2; outExp = __wb3; outProperties = __wb4; true_exp = __wb5; true_prop = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut b: bool = b.clone();
             let mut outCache: FCore::Cache = outCache.clone();
@@ -513,8 +513,8 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
             (outCache, outExp, outProperties) = elabExpInExpression(outCache.clone(), inEnv.clone(), if (b.clone()) {true_e.clone()} else {false_e.clone()}, inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
             ErrorExt::delCheckpoint((literal!("Static.elabExp:IFEXP:HACK")).clone());
             ErrorExt::rollBack((literal!("Static.elabExp:IFEXP")).clone());
-            Ok(((outCache.clone(), outExp.clone(), outProperties.clone()), outCache.clone(), outExp.clone(), outProperties.clone()))
-        })() { outCache = __wb0; outExp = __wb1; outProperties = __wb2; break 'mc __v; }
+            Ok(((outCache.clone(), outExp.clone(), outProperties.clone()), b.clone(), outCache.clone(), outExp.clone(), outProperties.clone()))
+        })() { b = __wb0; outCache = __wb1; outExp = __wb2; outProperties = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             ErrorExt::rollBack((literal!("Static.elabExp:IFEXP:HACK")).clone());
@@ -814,7 +814,7 @@ fn elabExp_Array(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::ARRAY { arrayExp: es } => {
                     let mut arr_ty: Arc<DAE::Type> = arr_ty.clone();
@@ -836,11 +836,11 @@ fn elabExp_Array(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
                     exp = Arc::new(DAE::Exp::ARRAY { ty: Types::simplifyType(arr_ty.clone())?, scalar: !(Types::isArray(ty.clone())), array: expl.clone() });
                     InstMeta::checkArrayType(ty.clone())?;
                     exp = elabMatrixToMatrixExp(exp.clone())?;
-                    Ok(((exp.clone(), DAE::Properties::PROP { type_: arr_ty.clone(), constFlag: c.clone() }), outCache.clone()))
+                    Ok(((exp.clone(), DAE::Properties::PROP { type_: arr_ty.clone(), constFlag: c.clone() }), arr_ty.clone(), c.clone(), exp.clone(), expl.clone(), outCache.clone(), props.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; break 'mc __v; }
+        })() { arr_ty = __wb0; c = __wb1; exp = __wb2; expl = __wb3; outCache = __wb4; props = __wb5; ty = __wb6; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::ARRAY { arrayExp: es } => {
@@ -7790,7 +7790,7 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_METARECORD { path: fq_path, .. } => {
                     let mut field_names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -7861,11 +7861,11 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     } else {
                         prop = getProperties(ty.clone(), ty_const.clone())?;
                     }
-                    Ok(((outCache.clone(), Some((Arc::new(DAE::Exp::METARECORDCALL { path: fq_path.clone(), args: args.clone(), fieldNames: field_names.clone(), index: var_field!((*inType).index, DAE::Type::T_METARECORD).clone(), typeVars: var_field!((*inType).typeVars, DAE::Type::T_METARECORD).clone() }), prop.clone()))), outCache.clone()))
+                    Ok(((outCache.clone(), Some((Arc::new(DAE::Exp::METARECORDCALL { path: fq_path.clone(), args: args.clone(), fieldNames: field_names.clone(), index: var_field!((*inType).index, DAE::Type::T_METARECORD).clone(), typeVars: var_field!((*inType).typeVars, DAE::Type::T_METARECORD).clone() }), prop.clone()))), outCache.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; break 'mc __v; }
+        })() { outCache = __wb0; ty = __wb1; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Type::T_METARECORD { path: fq_path, .. } => {
@@ -9465,7 +9465,7 @@ fn fillGraphicsDefaultSlots(mut inCache: FCore::Cache, mut inSlots: Arc<metamode
         if !(filled.clone()) {
             slot = 'mc: {
         let __mc_input = slot.clone();
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Slot { defaultArg: defarg @ Deref @ DAE::FuncArg { .. }, .. } => {
                     let mut c: DAE::Const = c.clone();
@@ -9494,11 +9494,11 @@ fn fillGraphicsDefaultSlots(mut inCache: FCore::Cache, mut inSlots: Arc<metamode
                     outConsts = metamodelica::cons(c.clone(), outConsts.clone());
                     slot.slotFilled = true;
                     slot.arg = Some(exp.clone());
-                    Ok((slot.clone(), outCache.clone(), outConsts.clone(), outPolymorphicBindings.clone()))
+                    Ok((slot.clone(), c.clone(), e.clone(), exp.clone(), outCache.clone(), outConsts.clone(), outPolymorphicBindings.clone(), slot.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; outConsts = __wb1; outPolymorphicBindings = __wb2; break 'mc __v; }
+        })() { c = __wb0; e = __wb1; exp = __wb2; outCache = __wb3; outConsts = __wb4; outPolymorphicBindings = __wb5; slot = __wb6; ty = __wb7; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

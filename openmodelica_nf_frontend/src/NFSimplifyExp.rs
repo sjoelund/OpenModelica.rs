@@ -646,7 +646,7 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
     });
     outExp = 'mc: {
         let __mc_input = iters.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
@@ -677,23 +677,23 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
                     } else {
                         bail!("fail");
                     }
-                    Ok((outExp.clone(), outExp.clone()))
+                    Ok((outExp.clone(), dim.clone(), dim_size.clone(), exp.clone(), expanded.clone(), outExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outExp = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { dim = __wb0; dim_size = __wb1; exp = __wb2; expanded = __wb3; outExp = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut ty: Arc<Type::NFType> = ty.clone();
                     exp = simplify(exp.clone(), false)?;
                     ty = Type::simplify(ty.clone())?;
-                    Ok(Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: var.clone(), purity: pur.clone(), exp: exp.clone(), iters: iters.clone() }) }))
+                    Ok((Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: var.clone(), purity: pur.clone(), exp: exp.clone(), iters: iters.clone() }) }), exp.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { exp = __wb0; ty = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(outExp)
@@ -778,7 +778,7 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut call: Arc<Call::NFCall> = call.clone();
@@ -786,11 +786,11 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
                         exp = simplify(var_field!((*call).exp, Call::NFCall::TYPED_REDUCTION).clone(), false)?,
                         iters = iters.clone()
                     );
-                    Ok(Arc::new(Expression::NFExpression::CALL { call: call.clone() }))
+                    Ok((Arc::new(Expression::NFExpression::CALL { call: call.clone() }), call.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { call = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }
         },

@@ -1196,7 +1196,7 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
     let mut timeBackend: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     (outLibs, outFileDir) = 'mc: {
         let __mc_input = inEnv.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             let mut graph = __mc_input.clone() else { bail!("nomatch") };
             let mut file_dir: ArcStr = arcstr::literal!("");
             let mut description: ArcStr = arcstr::literal!("");
@@ -1242,8 +1242,8 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
             (libs, file_dir, timeSimCode, timeTemplates) = generateModelCodeDAE(dlow.clone(), initDAE.clone(), initDAE_lambda0_option.clone(), removedInitialEquationLst.clone(), SymbolTable::getAbsyn(), className.clone(), (inFileNamePrefix.clone()).clone(), inSimSettingsOpt.clone(), args.clone())?;
             timeSimCode = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
             timeTemplates = System::realtimeTock(ClockIndexes::RT_CLOCK_TEMPLATES.clone())?;
-            Ok(((libs.clone(), file_dir.clone()), cache.clone()))
-        })() { cache = __wb0; break 'mc __v; }
+            Ok(((libs.clone(), file_dir.clone()), cache.clone(), generateFunctions.clone(), timeBackend.clone(), timeSimCode.clone(), timeTemplates.clone()))
+        })() { cache = __wb0; generateFunctions = __wb1; timeBackend = __wb2; timeSimCode = __wb3; timeTemplates = __wb4; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut resstr: ArcStr = arcstr::literal!("");

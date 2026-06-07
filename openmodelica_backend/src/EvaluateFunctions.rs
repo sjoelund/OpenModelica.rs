@@ -830,7 +830,7 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
     let true = (recursionLimit.clone() > 0) else { bail!("pattern mismatch") };
     (rhsExpOut, lhsExpOut, addedEquations, funcsOut, eqIdxOut, changed, callSignLstOut) = 'mc: {
         let __mc_input = (rhsExpIn.clone(), callSignLstIn.clone());
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9, __wb10, __wb11, __wb12, __wb13, __wb14, __wb15, __wb16, __wb17, __wb18, __wb19, __wb20, __wb21, __wb22, __wb23, __wb24, __wb25, __wb26, __wb27, __wb28, __wb29, __wb30, __wb31, __wb32, __wb33, __wb34, __wb35, __wb36, __wb37, __wb38, __wb39, __wb40, __wb41, __wb42, __wb43, __wb44, __wb45, __wb46, __wb47, __wb48, __wb49, __wb50, __wb51)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path, expLst: expsIn, attr: attr1 }, callSignLst) => {
                     let mut path = (*path).clone();
@@ -1020,12 +1020,12 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
                             BackendDump::dumpEquationList(constEqs.clone(), (literal!("including the additional equations:\n")).clone())?;
                         }
                     }
-                    Ok(((exp.clone(), outputExp.clone(), constEqs.clone(), funcs.clone(), idx.clone(), changed.clone(), callSignLst.clone()), changed.clone()))
+                    Ok(((exp.clone(), outputExp.clone(), constEqs.clone(), funcs.clone(), idx.clone(), changed.clone(), callSignLst.clone()), abort.clone(), algs.clone(), allInputCrefs.clone(), allInputExps.clone(), allInputs.clone(), allOutputCrefs.clone(), allOutputs.clone(), attr2.clone(), changed.clone(), constComplexCrefs.clone(), constComplexExps.clone(), constCrefs.clone(), constEqs.clone(), constExps.clone(), constInputCrefs.clone(), constInputExps.clone(), constScalarCrefs.clone(), constScalarCrefsLhs.clone(), constScalarExps.clone(), continueEval.clone(), elements.clone(), exp.clone(), exps.clone(), func.clone(), funcIsConst.clone(), funcIsPartConst.clone(), funcs.clone(), hasAssert.clone(), hasReinit.clone(), hasReturn.clone(), hasTerminate.clone(), idx.clone(), isConstRec.clone(), isNDimArray.clone(), isUnknownType.clone(), lhsExps.clone(), newOutputVars.clone(), outputCrefs.clone(), outputExp.clone(), outputVarNames.clone(), outputVarTypes.clone(), protectVars.clone(), repl.clone(), scalarExp.clone(), scalarInputs.clone(), scalarOutputs.clone(), signature.clone(), singleOutputType.clone(), updatedVarOutputs.clone(), varComplexCrefs.clone(), varScalarCrefs.clone(), varScalarCrefsInFunc.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { changed = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { abort = __wb0; algs = __wb1; allInputCrefs = __wb2; allInputExps = __wb3; allInputs = __wb4; allOutputCrefs = __wb5; allOutputs = __wb6; attr2 = __wb7; changed = __wb8; constComplexCrefs = __wb9; constComplexExps = __wb10; constCrefs = __wb11; constEqs = __wb12; constExps = __wb13; constInputCrefs = __wb14; constInputExps = __wb15; constScalarCrefs = __wb16; constScalarCrefsLhs = __wb17; constScalarExps = __wb18; continueEval = __wb19; elements = __wb20; exp = __wb21; exps = __wb22; func = __wb23; funcIsConst = __wb24; funcIsPartConst = __wb25; funcs = __wb26; hasAssert = __wb27; hasReinit = __wb28; hasReturn = __wb29; hasTerminate = __wb30; idx = __wb31; isConstRec = __wb32; isNDimArray = __wb33; isUnknownType = __wb34; lhsExps = __wb35; newOutputVars = __wb36; outputCrefs = __wb37; outputExp = __wb38; outputVarNames = __wb39; outputVarTypes = __wb40; protectVars = __wb41; repl = __wb42; scalarExp = __wb43; scalarInputs = __wb44; scalarOutputs = __wb45; signature = __wb46; singleOutputType = __wb47; updatedVarOutputs = __wb48; varComplexCrefs = __wb49; varScalarCrefs = __wb50; varScalarCrefsInFunc = __wb51; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ASUB { exp: Deref @ DAE::Exp::CALL { path, expLst: exps, attr: attr1 }, sub }, callSignLst) => {
                     let mut changed: bool = changed.clone();
@@ -1046,12 +1046,12 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
                         exp = rhsExpIn.clone();
                         changed = false;
                     }
-                    Ok(((exp.clone(), lhsExpIn.clone(), metamodelica::nil(), funcsIn.clone(), eqIdx.clone(), changed.clone(), callSignLst.clone()), changed.clone()))
+                    Ok(((exp.clone(), lhsExpIn.clone(), metamodelica::nil(), funcsIn.clone(), eqIdx.clone(), changed.clone(), callSignLst.clone()), changed.clone(), continueEval.clone(), exp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { changed = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { changed = __wb0; continueEval = __wb1; exp = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut callSignLst: Arc<metamodelica::List<CallSignature>> = callSignLst.clone();
@@ -1064,11 +1064,11 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
                             callSignLst = metamodelica::cons(signature.clone(), callSignLst.clone());
                         }
                     }
-                    Ok((rhsExpIn.clone(), lhsExpIn.clone(), metamodelica::nil(), funcsIn.clone(), eqIdx.clone(), false, callSignLst.clone()))
+                    Ok(((rhsExpIn.clone(), lhsExpIn.clone(), metamodelica::nil(), funcsIn.clone(), eqIdx.clone(), false, callSignLst.clone()), callSignLst.clone(), signature.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { callSignLst = __wb0; signature = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok((rhsExpOut, lhsExpOut, addedEquations, funcsOut, eqIdxOut, changed, callSignLstOut))
@@ -1377,7 +1377,7 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
     let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     (varOutputs, outputExpOut, varScalarCrefsInFunc) = 'mc: {
         let __mc_input = (constComplexCrefs.clone(), varComplexCrefs.clone(), constScalarCrefs.clone(), varScalarCrefs.clone(), lhsExpIn.clone());
-        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
                     let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
@@ -1399,11 +1399,11 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                     funcOutputs = List::map2(outputCrefs.clone(), (std::sync::Arc::new(generateOutputElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> + 'static>), allOutputs.clone(), lhsExpIn.clone())?;
                     funcProts = List::map2(protCrefs.clone(), (std::sync::Arc::new(generateProtectedElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> + 'static>), allOutputs.clone(), lhsExpIn.clone())?;
                     varOutputs = listAppend(funcOutputs.clone(), funcProts.clone());
-                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), varOutputs.clone(), varScalarCrefsInFunc.clone()))
+                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), allOutputCrefs.clone(), funcOutputs.clone(), funcProts.clone(), outputCrefs.clone(), outputExp.clone(), pos.clone(), protCrefs.clone(), varOutputs.clone(), varScalarCrefsInFunc.clone(), varScalarExps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { varOutputs = __wb0; varScalarCrefsInFunc = __wb1; break 'mc __v; }
+        })() { allOutputCrefs = __wb0; funcOutputs = __wb1; funcProts = __wb2; outputCrefs = __wb3; outputExp = __wb4; pos = __wb5; protCrefs = __wb6; varOutputs = __wb7; varScalarCrefsInFunc = __wb8; varScalarExps = __wb9; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, Deref @ DAE::Exp::LBINARY { .. }) => {
@@ -1412,7 +1412,7 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9, __wb10)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
                     let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
@@ -1444,12 +1444,12 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                     varScalarExps = List::map1(pos.clone(), (std::sync::Arc::new(List::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), expLst.clone())?;
                     varScalarExps = List::map(varScalarExps.clone(), (std::sync::Arc::new(scalarRecExpForOneDimRec) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     outputExp = if (List::hasOneElement(varScalarExps.clone())) {listHead(varScalarExps.clone())?} else {Arc::new(DAE::Exp::TUPLE { PR: varScalarExps.clone() })};
-                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), varOutputs.clone(), varScalarCrefsInFunc.clone()))
+                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), allOutputCrefs.clone(), allOutputCrefs2.clone(), funcOutputs.clone(), funcProts.clone(), outputCrefs.clone(), outputExp.clone(), pos.clone(), protCrefs.clone(), varOutputs.clone(), varScalarCrefsInFunc.clone(), varScalarExps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { varOutputs = __wb0; varScalarCrefsInFunc = __wb1; break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
+        })() { allOutputCrefs = __wb0; allOutputCrefs2 = __wb1; funcOutputs = __wb2; funcProts = __wb3; outputCrefs = __wb4; outputExp = __wb5; pos = __wb6; protCrefs = __wb7; varOutputs = __wb8; varScalarCrefsInFunc = __wb9; varScalarExps = __wb10; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
                     let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
@@ -1473,12 +1473,12 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                     funcOutputs = List::map2(outputCrefs.clone(), (std::sync::Arc::new(generateOutputElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> + 'static>), allOutputs.clone(), lhsExpIn.clone())?;
                     funcProts = List::map2(protCrefs.clone(), (std::sync::Arc::new(generateProtectedElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> + 'static>), allOutputs.clone(), lhsExpIn.clone())?;
                     varOutputs = listAppend(funcOutputs.clone(), funcProts.clone());
-                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), varOutputs.clone(), varScalarCrefsInFunc.clone()))
+                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefsInFunc.clone()), allOutputCrefs.clone(), funcOutputs.clone(), funcProts.clone(), outputCrefs.clone(), outputExp.clone(), pos.clone(), protCrefs.clone(), varOutputs.clone(), varScalarCrefsInFunc.clone(), varScalarExps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { varOutputs = __wb0; varScalarCrefsInFunc = __wb1; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { allOutputCrefs = __wb0; funcOutputs = __wb1; funcProts = __wb2; outputCrefs = __wb3; outputExp = __wb4; pos = __wb5; protCrefs = __wb6; varOutputs = __wb7; varScalarCrefsInFunc = __wb8; varScalarExps = __wb9; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, Deref @ metamodelica::List::Nil, _) => {
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
@@ -1490,12 +1490,12 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                     outputCrefs = List::map1(outputCrefs.clone(), (std::sync::Arc::new(ComponentReference::joinCrefsR) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), lhsCref.clone())?;
                     expLst = List::map(outputCrefs.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     outputExp = Arc::new(DAE::Exp::TUPLE { PR: expLst.clone() });
-                    Ok((metamodelica::nil(), outputExp.clone(), metamodelica::nil()))
+                    Ok(((metamodelica::nil(), outputExp.clone(), metamodelica::nil()), expLst.clone(), lhsCref.clone(), outputCrefs.clone(), outputExp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { expLst = __wb0; lhsCref = __wb1; outputCrefs = __wb2; outputExp = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _) => {
                     let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
@@ -1519,11 +1519,11 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
                     varScalarCrefs1 = List::map1(varScalarCrefs1.clone(), (std::sync::Arc::new(ComponentReference::joinCrefsR) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), lhsCref.clone())?;
                     varScalarExps = List::map(varScalarCrefs1.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     outputExp = if (List::hasOneElement(varScalarExps.clone())) {listHead(varScalarExps.clone())?} else {Arc::new(DAE::Exp::TUPLE { PR: varScalarExps.clone() })};
-                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefs.clone()), varOutputs.clone()))
+                    Ok(((varOutputs.clone(), outputExp.clone(), varScalarCrefs.clone()), allOutputCrefs.clone(), funcOutputs.clone(), funcProts.clone(), funcSOutputs.clone(), funcSProts.clone(), lhsCref.clone(), outputExp.clone(), varOutputs.clone(), varScalarCrefs1.clone(), varScalarExps.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { varOutputs = __wb0; break 'mc __v; }
+        })() { allOutputCrefs = __wb0; funcOutputs = __wb1; funcProts = __wb2; funcSOutputs = __wb3; funcSProts = __wb4; lhsCref = __wb5; outputExp = __wb6; varOutputs = __wb7; varScalarCrefs1 = __wb8; varScalarExps = __wb9; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

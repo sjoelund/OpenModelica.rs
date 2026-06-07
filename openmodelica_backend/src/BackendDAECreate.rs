@@ -3144,7 +3144,7 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
                         let mut stmt = stmt.clone();
                         let () = 'mc: {
         let __mc_input = stmt.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
                     let BackendDAE::WhenOperator::ASSIGN { left: ref eleft2, .. } = __mc_input.clone() else { bail!("nomatch") };
                     let mut added: bool = added.clone();
                     let mut res: Arc<BackendDAE::Equation>;
@@ -3155,14 +3155,14 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
                     res = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEqRes.clone(), source: source.clone(), attr: attr.clone() });
                     result = metamodelica::cons(res.clone(), result.clone());
                     added = true;
-                    Ok(())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+                    Ok(((), added.clone(), result.clone()))
+        })() { added = __wb0; result = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
                     let _ = __mc_input.clone() else { bail!("nomatch") };
                     let mut elseEqnsRest: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = elseEqnsRest.clone();
                     elseEqnsRest = metamodelica::cons(eqn.clone(), elseEqnsRest.clone());
-                    Ok(())
-        })() { break 'mc __v; }
+                    Ok(((), elseEqnsRest.clone()))
+        })() { elseEqnsRest = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
                     }
@@ -3173,7 +3173,7 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
                         let mut stmt = stmt.clone();
                         let () = 'mc: {
         let __mc_input = stmt.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
                     let BackendDAE::WhenOperator::REINIT { stateVar: ref crleft2, .. } = __mc_input.clone() else { bail!("nomatch") };
                     let mut added: bool = added.clone();
                     let mut res: Arc<BackendDAE::Equation>;
@@ -3184,14 +3184,14 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
                     res = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEqRes.clone(), source: source.clone(), attr: attr.clone() });
                     result = metamodelica::cons(res.clone(), result.clone());
                     added = true;
-                    Ok(())
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+                    Ok(((), added.clone(), result.clone()))
+        })() { added = __wb0; result = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
                     let _ = __mc_input.clone() else { bail!("nomatch") };
                     let mut elseEqnsRest: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = elseEqnsRest.clone();
                     elseEqnsRest = metamodelica::cons(eqn.clone(), elseEqnsRest.clone());
-                    Ok(())
-        })() { break 'mc __v; }
+                    Ok(((), elseEqnsRest.clone()))
+        })() { elseEqnsRest = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
                     }

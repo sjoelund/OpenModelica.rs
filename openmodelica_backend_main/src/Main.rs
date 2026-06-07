@@ -409,7 +409,7 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
     }
     let () = 'mc: {
         let __mc_input = inStringLst.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 libs => {
                     let mut cls: ArcStr = cls.clone();
@@ -443,12 +443,12 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                     runSilent = Config::silent()?;
                     CevalScriptBackend::translateModel(FCore::emptyCache(), FGraph::empty(), cname.clone(), (fileNamePrefix.clone()).clone(), runBackend.clone(), runSilent.clone(), None)?;
                     showErrors((Print::getErrorString()?).clone(), (ErrorExt::printMessagesStr(false)).clone());
-                    Ok(())
+                    Ok(((), cls.clone(), cname.clone(), fileNamePrefix.clone(), runBackend.clone(), runSilent.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cls = __wb0; cname = __wb1; fileNamePrefix = __wb2; runBackend = __wb3; runSilent = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: f, tail: libs } => {
                     let mut stmts: GlobalScript::Statements = stmts.clone();
@@ -460,11 +460,11 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                     stmts = Parser::parseexp((f.clone()).clone())?;
                     showErrors((Print::getErrorString()?).clone(), (ErrorExt::printMessagesStr(false)).clone());
                     Interactive::evaluateToStdOut(stmts.clone(), true)?;
-                    Ok(())
+                    Ok(((), stmts.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { stmts = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: f, tail: Deref @ metamodelica::List::Nil } => {

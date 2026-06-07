@@ -610,17 +610,17 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     binding = 'mc: {
         let __mc_input = component.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = makeRecordFieldBindingFromParent(cref.clone(), target.clone())?;
-                    Ok(if (Expression::isEmpty(exp.clone())) {Binding::EMPTY_BINDING().clone()} else {Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() })})
+                    Ok((if (Expression::isEmpty(exp.clone())) {Binding::EMPTY_BINDING().clone()} else {Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() })}, exp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { exp = __wb0; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Component::COMPONENT { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. }, .. } => {
                     let mut binding: Arc<Binding::NFBinding> = binding.clone();
@@ -630,12 +630,12 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
                     if !(ComponentRef::hasSubscripts(cref.clone())?) {
                         InstNode::updateComponent(Component::setBinding(binding.clone(), component.clone())?, node.clone())?;
                     }
-                    Ok((binding.clone(), binding.clone()))
+                    Ok((binding.clone(), binding.clone(), exp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { binding = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { binding = __wb0; exp = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Component::COMPONENT { ty: Deref @ Type::ARRAY { elementType: ty @ Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. }, .. }, .. } => {
                     let mut binding: Arc<Binding::NFBinding> = binding.clone();
@@ -645,11 +645,11 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
                     if !(ComponentRef::hasSubscripts(cref.clone())?) {
                         InstNode::updateComponent(Component::setBinding(binding.clone(), component.clone())?, node.clone())?;
                     }
-                    Ok((binding.clone(), binding.clone()))
+                    Ok((binding.clone(), binding.clone(), exp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { binding = __wb0; break 'mc __v; }
+        })() { binding = __wb0; exp = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

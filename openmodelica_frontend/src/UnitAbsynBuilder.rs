@@ -79,15 +79,15 @@ pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut d
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(())
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let DAE::DAElist { elementLst: ref elts } = __mc_input.clone() else { bail!("nomatch") };
             let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
             paths = List::unionList(List::map(elts.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::getClassList, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>))?)?;
             du = List::unionList(List::map1(paths.clone(), (std::sync::Arc::new(retrieveUnitsFromEnv) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, (FCore::Cache, FCore::Graph)) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), (cache.clone(), env.clone()))?)?;
             registerUnitWeightDefineunits(du.clone())?;
-            Ok(())
-        })() { break 'mc __v; }
+            Ok(((), du.clone(), paths.clone()))
+        })() { du = __wb0; paths = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(())

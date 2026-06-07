@@ -1217,7 +1217,7 @@ fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Result<Option<Arc
     let mut opath: Option<Arc<Absyn::Path>> = None;
     outAbsynPathOption = 'mc: {
         let __mc_input = inScope.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r#ref, tail: rest } => {
                     if !((!(FNode::isRefTop(r#ref.clone())?))) { bail!("guard") }
@@ -1242,11 +1242,11 @@ fn getGraphPathNoImplicitScope_dispatch(mut inScope: Scope) -> Result<Option<Arc
                             opath = Some(Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }));
                         }
                     }
-                    Ok(opath.clone())
+                    Ok((opath.clone(), opath.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { opath = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

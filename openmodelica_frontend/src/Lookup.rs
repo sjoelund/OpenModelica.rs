@@ -2483,7 +2483,7 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
             data = __pa2.clone();
             (outCache, outFuncTypes) = 'mc: {
         let __mc_input = data.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut ty: Arc<DAE::Type> = ty.clone();
@@ -2499,11 +2499,11 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
         },
         _ => bail!("match: no arm matched"),
     } });
-                    Ok((inCache.clone(), list![ty.clone()]))
+                    Ok(((inCache.clone(), list![ty.clone()]), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ty = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Data::CO { e: _, .. } => {
@@ -2513,17 +2513,17 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Data::CL { e: cl @ Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_RECORD { isOperator: _ }, .. }, .. } => {
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut ty: Arc<DAE::Type> = ty.clone();
                     (cache, _, ty) = buildRecordType(inCache.clone(), inEnv.clone(), cl.clone())?;
-                    Ok((cache.clone(), list![ty.clone()]))
+                    Ok(((cache.clone(), list![ty.clone()]), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ty = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Data::CL { e: cl, .. } => {
@@ -2538,7 +2538,7 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 FCore::Data::CL { e: cl, .. } => {
                     if !((SCodeUtil::classIsExternalObject(cl.clone()))) { bail!("guard") }
@@ -2547,11 +2547,11 @@ fn lookupFunctionsInFrame(mut inCache: FCore::Cache, mut inClasses: Arc<FCore::R
                     let mut ty: Arc<DAE::Type> = ty.clone();
                     (cache, env, _, _, _, _, _, _, _, _) = Inst::instClass(inCache.clone(), inEnv.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), openmodelica_frontend_types::DAE::Mod::interned_NOMOD(), openmodelica_frontend_types::DAE::Prefix::NOPRE, cl.clone(), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::TOP_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone())?;
                     (cache, ty, _) = lookupTypeInEnv(cache.clone(), env.clone(), (inFuncName.clone()).clone())?;
-                    Ok((cache.clone(), list![ty.clone()]))
+                    Ok(((cache.clone(), list![ty.clone()]), ty.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { ty = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
         }

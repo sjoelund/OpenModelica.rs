@@ -169,7 +169,7 @@ pub fn checkBackendDAEWithErrorMsg(mut inBackendDAE: Arc<BackendDAE::BackendDAE>
     }
     let () = 'mc: {
         let __mc_input = inBackendDAE.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs, .. }, tail: Deref @ metamodelica::List::Nil }, shared: Deref @ BackendDAE::Shared { .. } } => {
                     let mut nVars: i32 = 0;
@@ -185,11 +185,11 @@ pub fn checkBackendDAEWithErrorMsg(mut inBackendDAE: Arc<BackendDAE::BackendDAE>
                     }
                     (expCrefs, wrongEqns) = checkBackendDAE(inBackendDAE.clone())?;
                     printcheckBackendDAEWithErrorMsg(expCrefs.clone(), wrongEqns.clone())?;
-                    Ok(())
+                    Ok(((), expCrefs.clone(), wrongEqns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { expCrefs = __wb0; wrongEqns = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4838,7 +4838,7 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                 _ => bail!("nomatch"),
             }}
         })() { extraArg = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FOR { type_: tp, iter: id1, range: e, statementLst: stmts, .. } => {
                     let mut stmts = (*stmts).clone();
@@ -4848,12 +4848,12 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                     cr = ComponentReferenceBasics::makeCrefIdent((id1.clone()).clone(), tp.clone(), metamodelica::nil());
                     (stmts, _) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(Expression::replaceCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>))> + 'static>), (cr.clone(), e.clone())))?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
-                    Ok((extraArg.clone(), extraArg.clone()))
+                    Ok((extraArg.clone(), cr.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { extraArg = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { cr = __wb0; extraArg = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_PARFOR { type_: tp, iter: id1, range: e, statementLst: stmts, .. } => {
                     let mut stmts = (*stmts).clone();
@@ -4863,11 +4863,11 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                     cr = ComponentReferenceBasics::makeCrefIdent((id1.clone()).clone(), tp.clone(), metamodelica::nil());
                     (stmts, _) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(Expression::replaceCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>))> + 'static>), (cr.clone(), e.clone())))?;
                     extraArg = traverseStmts(stmts.clone(), func.clone(), extraArg.clone())?;
-                    Ok((extraArg.clone(), extraArg.clone()))
+                    Ok((extraArg.clone(), cr.clone(), extraArg.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { extraArg = __wb0; break 'mc __v; }
+        })() { cr = __wb0; extraArg = __wb1; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHILE { exp: e, statementLst: stmts, .. } => {
@@ -4972,18 +4972,18 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut r#str: ArcStr = r#str.clone();
                     r#str = (DAEDump::ppStatementStr(stmt.clone())?).clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackenddAEUtil.traverseStmts not implemented correctly: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();
                     Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
-                    Ok(bail!("fail"))
+                    Ok((bail!("fail"), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     }
@@ -5039,7 +5039,7 @@ pub fn getAdjacencyMatrixEnhancedScalar(mut syst: Arc<BackendDAE::EqSystem>, mut
     let mut varsSolvedInWhenEqnsTupleList: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     (outAdjacencyMatrix, outAdjacencyMatrixT, outMapEqnIncRow, outMapIncRowEqn) = 'mc: {
         let __mc_input = (syst.clone(), shared.clone());
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqns, .. }, Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
                     let mut arr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
@@ -5055,11 +5055,11 @@ pub fn getAdjacencyMatrixEnhancedScalar(mut syst: Arc<BackendDAE::EqSystem>, mut
                     arrT = arrayCreate(numberofVars.clone(), metamodelica::nil());
                     rowmark = arrayCreate(numberofVars.clone(), 0);
                     (arr, arrT, mapEqnIncRow, mapIncRowEqn, varsSolvedInWhenEqnsTupleList) = adjacencyMatrixDispatchEnhancedScalar(vars.clone(), eqns.clone(), arrT.clone(), numberOfEqs.clone(), rowmark.clone(), globalKnownVars.clone(), trytosolve.clone(), shared.clone())?;
-                    Ok((arr.clone(), arrT.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
+                    Ok(((arr.clone(), arrT.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()), varsSolvedInWhenEqnsTupleList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { varsSolvedInWhenEqnsTupleList = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -7767,13 +7767,13 @@ fn makeZeroReplacement(mut inVar: BackendDAE::Var, mut inRepl: BackendVarTransfo
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     (var, repl) = 'mc: {
         let __mc_input = (inVar.clone(), inRepl.clone());
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok(__v) = (|| -> Result<_> {
             let (mut var, mut repl) = __mc_input.clone() else { bail!("nomatch") };
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr = BackendVariable::varCref(var.clone())?;
             repl = BackendVarTransform::addReplacement(repl.clone(), cr.clone(), Expression::makeConstZero(ComponentReference::crefLastType(cr.clone())?), None)?;
-            Ok(((var.clone(), repl.clone()), repl.clone()))
-        })() { repl = __wb0; break 'mc __v; }
+            Ok((var.clone(), repl.clone()))
+        })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok((inVar.clone(), inRepl.clone()))

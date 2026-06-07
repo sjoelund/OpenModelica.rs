@@ -1373,7 +1373,7 @@ fn indexEqmod(mut inBinding: Option<DAE::EqMod>, mut inIndices: Arc<metamodelica
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::EqMod::TYPED { modifierAsExp: exp, modifierAsValue: oval, properties: DAE::Properties::PROP { type_: ty, constFlag: c }, modifierAsAbsynExp: aexp, info } => {
                     let mut exp = (*exp).clone();
@@ -1384,7 +1384,7 @@ fn indexEqmod(mut inBinding: Option<DAE::EqMod>, mut inIndices: Arc<metamodelica
                         let mut i = i.clone();
                         if !(Types::isArray(ty.clone())) {
                             Error::addSourceMessage(Error::MODIFIER_NON_ARRAY_TYPE_WARNING.clone(), list![(ExpressionBasics::printExpStr(exp.clone())?).clone()], inInfo.clone())?;
-                            return Ok(outBinding.clone());
+                            return Ok((outBinding.clone(), val.clone()));
                         }
                         ty = Types::unliftArray(ty.clone())?;
                         (exp, _) = ExpressionSimplify::simplify1(Expression::makeASUB(exp.clone(), list![i.clone()])?)?;
@@ -1401,11 +1401,11 @@ fn indexEqmod(mut inBinding: Option<DAE::EqMod>, mut inIndices: Arc<metamodelica
                         }
                         oval = Some(val.clone());
                     }
-                    Ok(Some(DAE::EqMod::TYPED { modifierAsExp: exp.clone(), modifierAsValue: oval.clone(), properties: DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() }, modifierAsAbsynExp: aexp.clone(), info: info.clone() }))
+                    Ok((Some(DAE::EqMod::TYPED { modifierAsExp: exp.clone(), modifierAsValue: oval.clone(), properties: DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() }, modifierAsAbsynExp: aexp.clone(), info: info.clone() }), val.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { val = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -2804,7 +2804,7 @@ pub fn getClassModifier(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<A
     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = 'mc: {
         let __mc_input = inName.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r#mod: Arc<DAE::Mod> = r#mod.clone();
             let mut n: FCore::Node = n.clone();
@@ -2816,8 +2816,8 @@ pub fn getClassModifier(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<A
             } else {
                 r#mod = openmodelica_frontend_types::DAE::Mod::interned_NOMOD();
             }
-            Ok(r#mod.clone())
-        })() { break 'mc __v; }
+            Ok((r#mod.clone(), r#mod.clone(), n.clone()))
+        })() { r#mod = __wb0; n = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(openmodelica_frontend_types::DAE::Mod::interned_NOMOD())

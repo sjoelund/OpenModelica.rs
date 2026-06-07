@@ -197,14 +197,14 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
             let mut result: Option<Arc<DAE::Exp>> = None;
             result = 'mc: {
         let __mc_input = ();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut mod2: Arc<DAE::Mod> = mod2.clone();
             let mut result: Option<Arc<DAE::Exp>>;
             mod2 = Mod::lookupIdxModification(r#mod.clone(), Arc::new(DAE::Exp::ICONST { integer: index.clone() }))?;
             result = instBinding2(mod2.clone(), etype.clone(), res.clone(), (bind_name.clone()).clone(), useConstValue.clone())?;
-            Ok(result.clone())
-        })() { break 'mc __v; }
+            Ok((result.clone(), mod2.clone()))
+        })() { mod2 = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(None)

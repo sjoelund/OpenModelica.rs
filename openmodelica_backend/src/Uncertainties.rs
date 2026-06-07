@@ -2173,7 +2173,7 @@ fn reduceVariables(mut m: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List
     let mut newM: ExtAdjacencyMatrix = metamodelica::nil();
     mOut = 'mc: {
         let __mc_input = knowns.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut neq: i32 = neq.clone();
@@ -2183,12 +2183,12 @@ fn reduceVariables(mut m: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List
                     variables = getVariables(m.clone());
                     nvar = (variables.clone().len() as i32);
                     let true = (neq.clone() >= nvar.clone()) else { bail!("pattern mismatch") };
-                    Ok(m.clone())
+                    Ok((m.clone(), neq.clone(), nvar.clone(), variables.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { neq = __wb0; nvar = __wb1; variables = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut candidates: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = candidates.clone();
@@ -2206,11 +2206,11 @@ fn reduceVariables(mut m: ExtAdjacencyMatrix, mut knowns: Arc<metamodelica::List
                     reducedVars = findReductionCantidates(variables.clone(), occurrences.clone(), metamodelica::nil())?;
                     candidates = pickReductionCandidates(reducedVars.clone())?;
                     newM = reduceVariablesInMatrix(m.clone(), candidates.clone(), nvar.clone() - neq.clone())?;
-                    Ok(newM.clone())
+                    Ok((newM.clone(), candidates.clone(), neq.clone(), newM.clone(), nvar.clone(), occurrences.clone(), reducedVars.clone(), variables.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { candidates = __wb0; neq = __wb1; newM = __wb2; nvar = __wb3; occurrences = __wb4; reducedVars = __wb5; variables = __wb6; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(mOut)

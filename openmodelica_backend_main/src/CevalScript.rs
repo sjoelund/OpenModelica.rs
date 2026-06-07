@@ -1613,7 +1613,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                         let mut elt = elt.clone();
                         let () = 'mc: {
         let __mc_input = elt.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. } => {
                             let mut outCache: FCore::Cache = outCache.clone();
@@ -1623,11 +1623,11 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                             if isSimpleAPIFunction(ty.clone())? {
                                         tys = metamodelica::cons(ty.clone(), tys.clone());
                             }
-                            Ok(((), outCache.clone()))
+                            Ok(((), outCache.clone(), tys.clone()))
                         }
                         _ => bail!("nomatch"),
                     }}
-        })() { outCache = __wb0; break 'mc __v; }
+        })() { outCache = __wb0; tys = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         _ => {
@@ -2622,7 +2622,7 @@ fn generateFunctions2(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: A
             } };
             Ok((cache.clone(), env.clone()))
         })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok(__v) = (|| -> Result<_> {
             let (mut cache, mut env, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut dependencies: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2668,8 +2668,8 @@ fn generateFunctions2(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: A
             r#str = (Tpl::tplString((std::sync::Arc::new(Unparsing::programExternalHeaderFromTypes) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> + 'static>), metarecords.clone())?).clone();
             System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_records.c")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#include <meta/meta_modelica.h>\n")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?;
             cache = if (cleanCache.clone()) {icache.clone()} else {cache.clone()};
-            Ok(((cache.clone(), env.clone()), cache.clone()))
-        })() { cache = __wb0; break 'mc __v; }
+            Ok((cache.clone(), env.clone()))
+        })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Error::addSourceMessage(Error::SEPARATE_COMPILATION_PACKAGE_FAILED.clone(), list![(name.clone()).clone()], info.clone())?;
@@ -3773,18 +3773,18 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Ar
     let dumpOpt: SCodeDump::SCodeDumpOptions = SCodeDump::SCodeDumpOptions { stripAlgorithmSections: true, stripProtectedImports: false, stripProtectedClasses: true, stripProtectedComponents: true, stripMetaRecords: true, stripGraphicalAnnotations: true, stripStringComments: true, stripExternalDecl: true, stripOutputBindings: true };
     r#str = ('mc: {
         let __mc_input = args.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut p: Absyn::Program = p.clone();
                     p = SymbolTable::getAbsyn();
                     let true = (Interactive::astContainsEncryptedClass(p.clone())?) else { bail!("pattern mismatch") };
                     Error::addMessage(Error::ACCESS_ENCRYPTED_PROTECTED_CONTENTS.clone(), metamodelica::nil())?;
-                    Ok(literal!(""))
+                    Ok((literal!(""), p.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { p = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: Deref @ Absyn::Path::IDENT { name: Deref @ "AllLoadedClasses" } } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: false }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: false }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { name: path, .. }, tail: Deref @ metamodelica::List::Nil } } } } => {
@@ -3800,7 +3800,7 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Ar
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: interface_only }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: short_only }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { name: path, .. }, tail: Deref @ metamodelica::List::Nil } } } } => {
                     let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
@@ -3815,18 +3815,18 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Ar
                     absynClass = if (short_only.clone()) {AbsynUtil::getShortClass(absynClass.clone())?} else {absynClass.clone()};
                     p = Absyn::Program { classes: list![absynClass.clone()], within_: openmodelica_ast::Absyn::Within::TOP };
                     cl = FBuiltin::getElementWithPathCheckBuiltin(scodeP.clone(), className.clone())?;
-                    Ok((::match_deref::match_deref! { match &(AbsynUtil::pathLastIdent(path.clone())?) {
+                    Ok(((::match_deref::match_deref! { match &(AbsynUtil::pathLastIdent(path.clone())?) {
         Deref @ "Absyn" => Dump::unparseStr(p.clone(), false, Dump::defaultDumpOptions.clone())?,
         Deref @ "SCode" => SCodeDump::unparseElementStr(cl.clone(), SCodeDump::defaultOptions.clone())?,
         Deref @ "MetaModelicaInterface" => SCodeDump::unparseElementStr(cl.clone(), dumpOpt.clone())?,
         Deref @ "Internal" => System::anyStringCode(p.clone()),
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } }))
+    } }), absynClass.clone(), cl.clone(), p.clone(), scodeP.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { absynClass = __wb0; cl = __wb1; p = __wb2; scodeP = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -3852,7 +3852,7 @@ fn listFile(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc
     let mut restriction: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
     r#str = ('mc: {
         let __mc_input = args.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: nested }, tail: Deref @ metamodelica::List::Nil } } => {
                     let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
@@ -3884,11 +3884,11 @@ fn listFile(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc
                         Error::addMessage(Error::ACCESS_ENCRYPTED_PROTECTED_CONTENTS.clone(), metamodelica::nil())?;
                         r#str = (literal!("")).clone();
                     }
-                    Ok(r#str.clone())
+                    Ok((r#str.clone(), absynClass.clone(), access.clone(), path.clone(), restriction.clone(), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { absynClass = __wb0; access = __wb1; path = __wb2; restriction = __wb3; r#str = __wb4; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4111,7 +4111,7 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
     let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     res = 'mc: {
         let __mc_input = args.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: Deref @ metamodelica::List::Nil } } => {
                     let mut cl: Arc<SCode::Element> = cl.clone();
@@ -4126,12 +4126,12 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
                     cl = List::getMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))?;
                     (outCache, _) = generateFunctions(cache.clone(), env.clone(), p.clone(), sp.clone(), list![cl.clone()], b.clone())?;
                     { let __v = None; openmodelica_util::Globals::instOnlyForcedFunctions.with(|__root| *__root.borrow_mut() = __v) };
-                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), outCache.clone()))
+                    Ok((Arc::new(Values::Value::BOOL { boolean: true }), cl.clone(), name.clone(), outCache.clone(), p.clone(), sp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { cl = __wb0; name = __wb1; outCache = __wb2; p = __wb3; sp = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: _ }, tail: Deref @ metamodelica::List::Nil } } => {
                     let mut name: ArcStr = name.clone();
@@ -4140,11 +4140,11 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
                     name = (getTypeNameIdent(v.clone())?).clone();
                     let false = (List::isMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Error::addMessage(Error::LOOKUP_ERROR.clone(), list![(name.clone()).clone(), (literal!("<TOP>")).clone()])?;
-                    Ok(bail!("fail"))
+                    Ok((bail!("fail"), name.clone(), sp.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { name = __wb0; sp = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

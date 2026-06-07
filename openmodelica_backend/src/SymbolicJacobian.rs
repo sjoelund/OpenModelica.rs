@@ -529,7 +529,7 @@ fn inputDerivativesUsedWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inShared: 
     let mut hasFailed: bool = false;
     (osyst, outChanged) = 'mc: {
         let __mc_input = isyst.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::EqSystem { orderedEqs, .. } => {
                     let mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -543,11 +543,11 @@ fn inputDerivativesUsedWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inShared: 
                     s = stringDelimitList(List::map(explst.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
                     Error::addMessage(Error::DERIVATIVE_INPUT.clone(), list![(s.clone()).clone()])?;
                     hasFailed = true;
-                    Ok((BackendDAEUtil::setEqSystEqs(isyst.clone(), orderedEqs.clone()), true))
+                    Ok(((BackendDAEUtil::setEqSystEqs(isyst.clone(), orderedEqs.clone()), true), hasFailed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { hasFailed = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -817,7 +817,7 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
     let mut range: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let () = 'mc: {
         let __mc_input = permutation.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut b_entry: metamodelica::Real = b_entry.clone();
             let mut entry: metamodelica::Real = entry.clone();
@@ -857,8 +857,8 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
                 }
             }
             gauss(A.clone(), b.clone(), indxIn.clone() + 1, n.clone(), range.clone(), permutation.clone())?;
-            Ok(())
-        })() { break 'mc __v; }
+            Ok(((), b_entry.clone(), entry.clone(), first.clone(), pivot.clone(), pivotIdx.clone(), pos.clone(), range.clone()))
+        })() { b_entry = __wb0; entry = __wb1; first = __wb2; pivot = __wb3; pivotIdx = __wb4; pos = __wb5; range = __wb6; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Ok(())

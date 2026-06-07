@@ -194,7 +194,7 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
         for mut r#fn in (inElementList.clone()).into_iter().cloned() {
             let __x = 'mc: {
         let __mc_input = r#fn.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: fn_def @ DAE::FunctionDefinition::FUNCTION_DEF { .. }, tail: fn_defs }, .. } => {
                     let mut fn_def = (*fn_def).clone();
@@ -213,12 +213,12 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
                     if let DAE::Function::FUNCTION { functions, .. } = &mut r#fn {
                         *functions = __owned_variant_functions_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than DAE::Function::FUNCTION"); }
-                    Ok(r#fn.clone())
+                    Ok((r#fn.clone(), body.clone(), r#fn.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { body = __wb0; r#fn = __wb1; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: fn_def @ DAE::FunctionDefinition::FUNCTION_EXT { .. }, tail: fn_defs }, .. } => {
                     let mut fn_def = (*fn_def).clone();
@@ -237,11 +237,11 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
                     if let DAE::Function::FUNCTION { functions, .. } = &mut r#fn {
                         *functions = __owned_variant_functions_0;
                     } else { panic!("owned-variant field-assign: value held a different variant than DAE::Function::FUNCTION"); }
-                    Ok(r#fn.clone())
+                    Ok((r#fn.clone(), body.clone(), r#fn.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { body = __wb0; r#fn = __wb1; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -13468,28 +13468,42 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 // arms. Override any inherited QMode::TryBlock for the arm's
                 // guard, body and result emission; restore afterwards.
                 let saved_qmode_mc_arm = std::mem::replace(&mut ctx.qmode, QMode::Function);
-                // Function outputs this arm assigns as a *side effect* (rather
-                // than producing through the `then` result). Each arm is an IIFE
-                // closure whose shadow logic rebinds every assigned outer
-                // variable to an arm-local (`let mut x = x.clone();`); those
-                // shadows never escape the closure. Thread the assigned outputs
-                // out through the closure's return value —
-                // `Ok((then_result, out1, out2, …))` — and write them back to
-                // the outer formals at the break site. Without this,
-                // side-effecting functions like `BackendDAECreate.lowerVar`
-                // (`() := matchcontinue …`, mutating only its `outVars` /
-                // `outGlobalKnownVars` formals) return their inputs unchanged.
+                // Function-scope variables (outputs *and* `protected` locals)
+                // this arm assigns as a *side effect* (rather than producing
+                // through the `then` result). Each arm is an IIFE closure whose
+                // shadow logic (below) rebinds every assigned outer variable to
+                // an arm-local (`let mut x = x.clone();`); those shadows never
+                // escape the closure. Thread the assigned variables out through
+                // the closure's return value — `Ok((then_result, x1, x2, …))` —
+                // and write them back to the outer bindings at the break site.
+                // Without this, side-effecting functions like
+                // `BackendDAECreate.lowerVar` (`() := matchcontinue …`, mutating
+                // its `outVars` formal) return their inputs unchanged, and an arm
+                // that mutates a protected local read *after* the matchcontinue
+                // (e.g. `NFVariable.propagateAnnotation`, whose HideResult arm
+                // sets `mod.binding := …` on the protected `mod` it later dumps)
+                // loses that write.
                 //
-                // Restrict to function outputs that are known-initialised here,
-                // so both the shadow `= x.clone()` read and the unchanged-arm
-                // `x.clone()` return read valid memory. Computed per-arm — each
-                // arm is its own closure, so tuple shapes need not agree across
-                // arms — and sorted for stable output.
+                // The set must coincide with the shadow set built below: any
+                // assigned name that is a function-scope binding and is *not*
+                // arm-local (pattern binding or case-local — those stay inside
+                // the arm). Restrict to known-initialised bindings so both the
+                // shadow `= x.clone()` read and the unchanged-arm `x.clone()`
+                // return read valid memory, and skip reference-bound scrutinees
+                // (writing an owned value back would not type-check). Computed
+                // per-arm — each arm is its own closure, so tuple shapes need
+                // not agree across arms — and sorted for stable output.
                 let arm_writeback: Vec<String> = {
                     let mut assigned: HashSet<String> = HashSet::new();
                     stmts_assigned_var_names(&case.stmts, &mut assigned);
+                    let mut arm_local: HashSet<String> = HashSet::new();
+                    for (n, _) in typedexp::pat_bindings(&case.pattern) { arm_local.insert(n); }
+                    for (n, _, _, _) in &case.locals { arm_local.insert(n.clone()); }
                     let mut v: Vec<String> = assigned.into_iter()
-                        .filter(|n| ctx.fn_outputs.contains(n) && ctx.fn_initialized_vars.contains(n))
+                        .filter(|n| !arm_local.contains(n)
+                            && ctx.fn_env_vars.contains_key(n)
+                            && ctx.fn_initialized_vars.contains(n)
+                            && !ctx.match_refbound.contains(n))
                         .collect();
                     v.sort();
                     v

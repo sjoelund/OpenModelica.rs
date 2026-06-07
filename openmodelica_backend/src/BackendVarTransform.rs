@@ -2142,7 +2142,7 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
         let mut stmt = stmt.clone();
         (outStatementLst, replacementPerformed) = 'mc: {
         let __mc_input = stmt.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN { type_, exp1: e1, exp: e2, source } => {
                     let mut source = (*source).clone();
@@ -2160,12 +2160,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     (e1_2, e2_2) = moveNegateRhs(e1_2.clone(), e2_2.clone());
                     source = ElementSource::addSymbolicTransformationSubstitution(b1.clone(), source.clone(), e1.clone(), e1_2.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e2.clone(), e2_2.clone())?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: type_.clone(), exp1: e1_2.clone(), exp: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: type_.clone(), exp1: e1_2.clone(), exp: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), e2_1.clone(), e2_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; e2_1 = __wb4; e2_2 = __wb5; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { type_, expExpLst, exp: e2, source } => {
                     let mut source = (*source).clone();
@@ -2180,12 +2180,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e2.clone(), e2_1.clone())?;
                     (e2_2, b1) = ExpressionSimplify::simplify(e2_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e2_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e2_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: type_.clone(), expExpLst: expExpLst_1.clone(), exp: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_TUPLE_ASSIGN { type_: type_.clone(), expExpLst: expExpLst_1.clone(), exp: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e2_1.clone(), e2_2.clone(), expExpLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e2_1 = __wb2; e2_2 = __wb3; expExpLst_1 = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSIGN_ARR { type_, lhs: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, exp: e2, source } => {
                     let mut source = (*source).clone();
@@ -2206,12 +2206,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     e1_1 = __pa0.clone();
                     e2_2 = __pa1.clone();
                     source = __pa2.clone();
-                    Ok((validLhsArrayAssignSTMT(cr.clone(), e1_1.clone(), e2_2.clone(), type_.clone(), source.clone(), outStatementLst.clone())?, true))
+                    Ok(((validLhsArrayAssignSTMT(cr.clone(), e1_1.clone(), e2_2.clone(), type_.clone(), source.clone(), outStatementLst.clone())?, true), b1.clone(), b2.clone(), e1_1.clone(), e2_1.clone(), e2_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e2_1 = __wb3; e2_2 = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_IF { exp: e1, statementLst, else_, source } => {
                     let mut source = (*source).clone();
@@ -2221,12 +2221,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     (e1_1, b1) = replaceExp(e1.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone())?;
                     (e1_2, _) = ExpressionSimplify::condsimplify(b1.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b1.clone(), source.clone(), e1.clone(), e1_2.clone())?;
-                    Ok(replaceSTMT_IF(e1_2.clone(), statementLst.clone(), else_.clone(), source.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), outStatementLst.clone(), replacementPerformed.clone() || b1.clone())?)
+                    Ok((replaceSTMT_IF(e1_2.clone(), statementLst.clone(), else_.clone(), source.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), outStatementLst.clone(), replacementPerformed.clone() || b1.clone())?, b1.clone(), e1_1.clone(), e1_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; e1_1 = __wb1; e1_2 = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FOR { type_, iterIsArray, iter: ident, range: e1, statementLst, source } => {
                     let mut source = (*source).clone();
@@ -2244,12 +2244,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     (e1_2, b1) = ExpressionSimplify::condsimplify(b2.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
                     repl = removeIterationVar(repl.clone(), (ident.clone()).clone())?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: e1_2.clone(), statementLst: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: e1_2.clone(), statementLst: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), repl.clone(), statementLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; repl = __wb4; statementLst_1 = __wb5; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_PARFOR { type_, iterIsArray, iter: ident, range: e1, statementLst, loopPrlVars, source } => {
                     let mut source = (*source).clone();
@@ -2264,12 +2264,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::condsimplify(b2.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_PARFOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: e1_2.clone(), statementLst: statementLst_1.clone(), loopPrlVars: loopPrlVars.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_PARFOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: e1_2.clone(), statementLst: statementLst_1.clone(), loopPrlVars: loopPrlVars.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), statementLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; statementLst_1 = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHILE { exp: e1, statementLst, source } => {
                     let mut source = (*source).clone();
@@ -2284,12 +2284,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::condsimplify(b2.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e1_2.clone(), statementLst: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e1_2.clone(), statementLst: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), statementLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; statementLst_1 = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { exp: e1, conditions, initialCall, statementLst, elseWhen: None, source } => {
                     let mut source = (*source).clone();
@@ -2304,12 +2304,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::condsimplify(b2.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e1_2.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: statementLst_1.clone(), elseWhen: None, source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e1_2.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: statementLst_1.clone(), elseWhen: None, source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), statementLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; statementLst_1 = __wb4; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_WHEN { exp: e1, conditions, initialCall, statementLst, elseWhen: Some(statement), source } => {
                     let mut source = (*source).clone();
@@ -2332,12 +2332,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b3.clone(), source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::condsimplify(b3.clone(), e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e1_2.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: statementLst_1.clone(), elseWhen: Some(statement_1.clone()), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e1_2.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: statementLst_1.clone(), elseWhen: Some(statement_1.clone()), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), b3.clone(), e1_1.clone(), e1_2.clone(), statementLst_1.clone(), statement_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; b3 = __wb2; e1_1 = __wb3; e1_2 = __wb4; statementLst_1 = __wb5; statement_1 = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_ASSERT { cond: e1, msg: e2, level: e3, source } => {
                     let mut source = (*source).clone();
@@ -2360,12 +2360,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(b1.clone(), source.clone(), e1.clone(), e1_2.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e2.clone(), e2_2.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b3.clone(), source.clone(), e3.clone(), e3_2.clone())?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e1_2.clone(), msg: e2_2.clone(), level: e3_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSERT { cond: e1_2.clone(), msg: e2_2.clone(), level: e3_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), b3.clone(), e1_1.clone(), e1_2.clone(), e2_1.clone(), e2_2.clone(), e3_1.clone(), e3_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; b3 = __wb2; e1_1 = __wb3; e1_2 = __wb4; e2_1 = __wb5; e2_2 = __wb6; e3_1 = __wb7; e3_2 = __wb8; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_TERMINATE { msg: e1, source } => {
                     let mut source = (*source).clone();
@@ -2380,12 +2380,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(true, source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::simplify(e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_TERMINATE { msg: e1_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_TERMINATE { msg: e1_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), e1_1.clone(), e1_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; e1_1 = __wb1; e1_2 = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_REINIT { var: e1, value: e2, source } => {
                     let mut source = (*source).clone();
@@ -2402,12 +2402,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     (e2_2, _) = ExpressionSimplify::condsimplify(b2.clone(), e2_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b1.clone(), source.clone(), e1.clone(), e1_2.clone())?;
                     source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), e2.clone(), e2_2.clone())?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_REINIT { var: e1_2.clone(), value: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_REINIT { var: e1_2.clone(), value: e2_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), b2.clone(), e1_1.clone(), e1_2.clone(), e2_1.clone(), e2_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; b2 = __wb1; e1_1 = __wb2; e1_2 = __wb3; e2_1 = __wb4; e2_2 = __wb5; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_NORETCALL { exp: e1, source } => {
                     let mut source = (*source).clone();
@@ -2422,12 +2422,12 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                     source = ElementSource::addSymbolicTransformationSubstitution(true, source.clone(), e1.clone(), e1_1.clone())?;
                     (e1_2, b1) = ExpressionSimplify::simplify(e1_1.clone())?;
                     source = ElementSource::addSymbolicTransformationSimplify(b1.clone(), source.clone(), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_1.clone() }), Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e1_2.clone() }))?;
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_NORETCALL { exp: e1_2.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_NORETCALL { exp: e1_2.clone(), source: source.clone() }), outStatementLst.clone()), true), b1.clone(), e1_1.clone(), e1_2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { b1 = __wb0; e1_1 = __wb1; e1_2 = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FAILURE { body: statementLst, source } => {
                     let mut statementLst_1: Arc<metamodelica::List<Arc<DAE::Statement>>> = statementLst_1.clone();
@@ -2436,11 +2436,11 @@ pub fn replaceStatementLst(mut inStatementLst: Arc<metamodelica::List<Arc<DAE::S
                         _ => bail!("pattern mismatch"),
                     } };
                     statementLst_1 = __pa0.clone();
-                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_FAILURE { body: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true))
+                    Ok(((metamodelica::cons(Arc::new(DAE::Statement::STMT_FAILURE { body: statementLst_1.clone(), source: source.clone() }), outStatementLst.clone()), true), statementLst_1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { statementLst_1 = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

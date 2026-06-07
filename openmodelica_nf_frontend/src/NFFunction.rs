@@ -2383,7 +2383,7 @@ pub mod Function {
             let SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok(DAE::FunctionAttributes { inline: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, generateEvents: false, purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_KERNEL_FUNCTION })
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut inline_ty: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
             let mut generateEvents: bool = false;
@@ -2396,8 +2396,8 @@ pub mod Function {
             if SCodeUtil::hasNamedExternalCall((literal!("ModelicaError")).clone(), SCodeUtil::getClassDef(def.clone())?) {
                 purity = DAE::Purity::PURE.clone();
             }
-            Ok(DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL })
-        })() { break 'mc __v; }
+            Ok((DAE::FunctionAttributes { inline: inline_ty.clone(), generateEvents: generateEvents.clone(), purity: purity.clone(), isFunctionPointer: is_partial.clone(), isBuiltin: getBuiltinPtr(cmt.clone())?, functionParallelism: openmodelica_frontend_types::DAE::FunctionParallelism::FP_NON_PARALLEL }, purity.clone()))
+        })() { purity = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
         Ok(attr)

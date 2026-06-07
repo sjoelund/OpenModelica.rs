@@ -290,16 +290,16 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
             { let __v = metamodelica::nil(); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(bail!("fail"))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = assocLst.clone();
             let mut p: Absyn::Program = p.clone();
             let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
             (p, sp) = Util::assoc(Util::makeTuple(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::isSet(Flags::SCODE_INST.clone())?), assocLst.clone())?;
-            Ok((p.clone(), sp.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((p.clone(), sp.clone()), assocLst.clone(), p.clone(), sp.clone()))
+        })() { assocLst = __wb0; p = __wb1; sp = __wb2; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = assocLst.clone();
             let mut p: Absyn::Program = p.clone();
@@ -339,9 +339,9 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons(((Flags::METAMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::METAMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
-            Ok((p.clone(), sp.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((p.clone(), sp.clone()), assocLst.clone(), p.clone(), pCF.clone(), pMM.clone(), pNF.clone(), sp.clone(), spCF.clone(), spNF.clone()))
+        })() { assocLst = __wb0; p = __wb1; pCF = __wb2; pMM = __wb3; pNF = __wb4; sp = __wb5; spCF = __wb6; spNF = __wb7; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = assocLst.clone();
             let mut p: Absyn::Program = p.clone();
@@ -379,9 +379,9 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons(((Flags::PARMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::PARMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
-            Ok((p.clone(), sp.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((p.clone(), sp.clone()), assocLst.clone(), p.clone(), pCF.clone(), pMM.clone(), pNF.clone(), sp.clone(), spCF.clone(), spNF.clone()))
+        })() { assocLst = __wb0; p = __wb1; pCF = __wb2; pMM = __wb3; pNF = __wb4; sp = __wb5; spCF = __wb6; spNF = __wb7; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = assocLst.clone();
             let mut p: Absyn::Program = p.clone();
@@ -414,9 +414,9 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons(((Flags::MODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::MODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
-            Ok((p.clone(), sp.clone()))
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+            Ok(((p.clone(), sp.clone()), assocLst.clone(), p.clone(), pCF.clone(), pNF.clone(), sp.clone(), spCF.clone(), spNF.clone()))
+        })() { assocLst = __wb0; p = __wb1; pCF = __wb2; pNF = __wb3; sp = __wb4; spCF = __wb5; spNF = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<((i32, bool), (Absyn::Program, Arc<metamodelica::List<Arc<SCode::Element>>>))>> = assocLst.clone();
             let mut p: Absyn::Program = p.clone();
@@ -454,8 +454,8 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
             { let __v = metamodelica::cons(((Flags::PDEMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::PDEMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
-            Ok((p.clone(), sp.clone()))
-        })() { break 'mc __v; }
+            Ok(((p.clone(), sp.clone()), assocLst.clone(), p.clone(), pCF.clone(), pMM.clone(), pNF.clone(), sp.clone(), spCF.clone(), spNF.clone()))
+        })() { assocLst = __wb0; p = __wb1; pCF = __wb2; pMM = __wb3; pNF = __wb4; sp = __wb5; spCF = __wb6; spNF = __wb7; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             Error::addInternalError((literal!("FBuiltin.getInitialFunctions failed.")).clone(), metamodelica::sourceInfo!("FFrontEnd/FBuiltin.mo"))?;

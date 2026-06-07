@@ -428,7 +428,7 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
     let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
     (cache, outEnv, outIH, outStore, outDae, outSets, outType, outState, optDerAttr, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone(), inImplicit.clone(), inCallingScope.clone(), inGraph.clone());
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, store, _, _, Deref @ SCode::Element::CLASS { name: n, partialPrefix: SCode::Partial::PARTIAL { .. }, restriction: r, info, .. }, _, _, _, _) => {
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -449,12 +449,12 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                         Error::addSourceMessage(Error::INST_PARTIAL_CLASS_CHECK_MODEL_WARNING.clone(), list![(n.clone()).clone()], info.clone())?;
                     }
                     (cache, env, ih, store, dae, csets, ty, ci_state_1, oDA, graph) = instClass(inCache.clone(), inEnv.clone(), inIH.clone(), store.clone(), inMod.clone(), inPrefix.clone(), c.clone(), inInstDims.clone(), inImplicit.clone(), inCallingScope.clone(), inGraph.clone(), inSets.clone())?;
-                    Ok(((cache.clone(), env.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ty.clone(), ci_state_1.clone(), oDA.clone(), graph.clone()), cache.clone()))
+                    Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ty.clone(), ci_state_1.clone(), oDA.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { cache = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, r#mod, pre, c @ Deref @ SCode::Element::CLASS { name: n, encapsulatedPrefix: encflag, restriction: r, partialPrefix, info, .. }, inst_dims, r#impl, callscope, graph) => {
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -508,11 +508,11 @@ pub fn instClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     ty = markDerivedRecordOutsideBindings(ty.clone(), c.clone())?;
                     ty = markTypesVarsOutsideBindings(ty.clone(), r#mod.clone())?;
                     ty = InstUtil::fixInstClassType(ty.clone(), isPartialFn.clone())?;
-                    Ok(((cache.clone(), env_3.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ty.clone(), ci_state_1.clone(), oDA.clone(), graph.clone()), cache.clone()))
+                    Ok((cache.clone(), env_3.clone(), ih.clone(), store.clone(), dae.clone(), csets.clone(), ty.clone(), ci_state_1.clone(), oDA.clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { cache = __wb0; break 'mc __v; }
+        })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, _, _, _, _, Deref @ SCode::Element::CLASS { name: n, partialPrefix: SCode::Partial::PARTIAL { .. }, info, .. }, _, false, _, _) => {
@@ -3547,7 +3547,7 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
     redecl_name = (SCodeUtil::elementName(redecl_el.clone())?).clone();
     (outElement, outMod) = 'mc: {
         let __mc_input = (redecl_el.clone(), inElement.clone());
-        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::COMPONENT { .. }, Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: repl, .. }, .. }) => {
                     let mut cc_comps: Arc<metamodelica::List<Arc<SCode::Element>>> = cc_comps.clone();
@@ -3587,11 +3587,11 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
     } });
                     (outCache, outElement) = propagateRedeclCompAttr(outCache.clone(), outEnv.clone(), inElement.clone(), redecl_el.clone())?;
                     outElement = SCodeUtil::setComponentMod(outElement.clone(), r#mod.clone())?;
-                    Ok(((outElement.clone(), m.clone()), outCache.clone(), outElement.clone(), outEnv.clone(), outIH.clone()))
+                    Ok(((outElement.clone(), m.clone()), cc_comps.clone(), crefs.clone(), m.clone(), r#mod.clone(), old_m.clone(), outCache.clone(), outElement.clone(), outEnv.clone(), outIH.clone(), redecl_mod.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; outElement = __wb1; outEnv = __wb2; outIH = __wb3; break 'mc __v; }
+        })() { cc_comps = __wb0; crefs = __wb1; m = __wb2; r#mod = __wb3; old_m = __wb4; outCache = __wb5; outElement = __wb6; outEnv = __wb7; outIH = __wb8; redecl_mod = __wb9; break 'mc __v; }
         if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { .. }, Deref @ SCode::Element::CLASS { .. }) => {
@@ -3605,7 +3605,7 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
                 _ => bail!("nomatch"),
             }}
         })() { outCache = __wb0; outEnv = __wb1; outIH = __wb2; break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { .. }, Deref @ SCode::Element::COMPONENT { .. }) => {
                     let mut name: ArcStr = name.clone();
@@ -3615,12 +3615,12 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
                     name = (AbsynUtil::typeSpecPathString(var_field!((*inElement).typeSpec, SCode::Element::COMPONENT).clone())?).clone();
                     let true = (redecl_name.clone() == name.clone()) else { bail!("pattern mismatch") };
                     (outCache, outEnv, outIH) = updateComponentsInEnv(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inMod.clone(), list![Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: metamodelica::nil() })], inState.clone(), inImpl.clone());
-                    Ok(((inElement.clone(), redecl_mod.clone()), outCache.clone(), outEnv.clone(), outIH.clone()))
+                    Ok(((inElement.clone(), redecl_mod.clone()), name.clone(), outCache.clone(), outEnv.clone(), outIH.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; outEnv = __wb1; outIH = __wb2; break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+        })() { name = __wb0; outCache = __wb1; outEnv = __wb2; outIH = __wb3; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { .. }, Deref @ SCode::Element::COMPONENT { .. }) => {
                     let mut name: ArcStr = name.clone();
@@ -3630,11 +3630,11 @@ pub fn redeclareType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
                     name = (AbsynUtil::pathFirstIdent(AbsynUtil::typeSpecPath(var_field!((*inElement).typeSpec, SCode::Element::COMPONENT).clone())?)?).clone();
                     let true = (redecl_name.clone() == name.clone()) else { bail!("pattern mismatch") };
                     (outCache, outEnv, outIH) = updateComponentsInEnv(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inMod.clone(), list![Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: metamodelica::nil() })], inState.clone(), inImpl.clone());
-                    Ok(((inElement.clone(), redecl_mod.clone()), outCache.clone(), outEnv.clone(), outIH.clone()))
+                    Ok(((inElement.clone(), redecl_mod.clone()), name.clone(), outCache.clone(), outEnv.clone(), outIH.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { outCache = __wb0; outEnv = __wb1; outIH = __wb2; break 'mc __v; }
+        })() { name = __wb0; outCache = __wb1; outEnv = __wb2; outIH = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

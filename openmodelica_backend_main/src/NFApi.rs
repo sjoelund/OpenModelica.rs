@@ -185,7 +185,7 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         e = AbsynUtil::createChoiceArray(e.clone())?;
         r#str = ('mc: {
         let __mc_input = e.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: eqmod @ Deref @ Absyn::EqMod::EQMOD { exp: absynExp, .. } }), info, .. } => {
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
@@ -206,12 +206,12 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                     (exp, ty, var, _) = Typing::typeExp(exp.clone(), ANNOTATION_CONTEXT.clone(), info.clone(), false)?;
                     exp = SimplifyExp::simplify(exp.clone(), false)?;
                     r#str = (Expression::toString(exp.clone())?).clone();
-                    Ok(stringAppendList(list![(annName.clone()).clone(), (literal!("=")).clone(), (r#str.clone()).clone()]))
+                    Ok((stringAppendList(list![(annName.clone()).clone(), (literal!("=")).clone(), (r#str.clone()).clone()]), exp.clone(), inst_cls.clone(), name.clone(), program.clone(), r#str.clone(), top.clone(), ty.clone(), var.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { exp = __wb0; inst_cls = __wb1; name = __wb2; program = __wb3; r#str = __wb4; top = __wb5; ty = __wb6; var = __wb7; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8, __wb9, __wb10, __wb11, __wb12, __wb13, __wb14, __wb15)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: Some(Deref @ Absyn::Modification { elementArgLst: r#mod, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), info, .. } => {
                     let mut absynExp: Arc<Absyn::Exp> = absynExp.clone();
@@ -272,12 +272,12 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                         }.is_err() {
                         }
                     }
-                    Ok(if (addAnnotationName.clone()) {stringAppendList(list![(annName.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()])} else {r#str.clone()})
+                    Ok((if (addAnnotationName.clone()) {stringAppendList(list![(annName.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()])} else {r#str.clone()}, absynExp.clone(), anncls.clone(), dae.clone(), exp.clone(), graphics_mod.clone(), inst_anncls.clone(), inst_cls.clone(), name.clone(), program.clone(), save.clone(), smod.clone(), r#str.clone(), stripped_mod.clone(), top.clone(), ty.clone(), var.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { absynExp = __wb0; anncls = __wb1; dae = __wb2; exp = __wb3; graphics_mod = __wb4; inst_anncls = __wb5; inst_cls = __wb6; name = __wb7; program = __wb8; save = __wb9; smod = __wb10; r#str = __wb11; stripped_mod = __wb12; top = __wb13; ty = __wb14; var = __wb15; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, modification: None, info, .. } => {
                     let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
@@ -295,22 +295,22 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
                     Inst::updateImplicitVariability(inst_anncls.clone(), Flags::isSet(Flags::EVAL_PARAM.clone())?, ANNOTATION_CONTEXT.clone())?;
                     dae = frontEndBack(inst_anncls.clone(), (annName.clone()).clone(), false)?;
                     r#str = (DAEUtil::getVariableBindingsStr(DAEUtil::daeElements(dae.clone())?)?).clone();
-                    Ok(if (addAnnotationName.clone()) {stringAppendList(list![(annName.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()])} else {r#str.clone()})
+                    Ok((if (addAnnotationName.clone()) {stringAppendList(list![(annName.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()])} else {r#str.clone()}, anncls.clone(), dae.clone(), inst_anncls.clone(), inst_cls.clone(), program.clone(), r#str.clone(), top.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        })() { anncls = __wb0; dae = __wb1; inst_anncls = __wb2; inst_cls = __wb3; program = __wb4; r#str = __wb5; top = __wb6; break 'mc __v; }
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: annName }, info, .. } => {
                     let mut r#str: ArcStr = r#str.clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("error evaluating: annotation(")); __mm_s.push_str(&*Dump::unparseElementArgStr(e.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     r#str = (Util::escapeQuotes((r#str.clone()).clone())?).clone();
-                    Ok(stringAppendList(list![(annName.clone()).clone(), (literal!("(\"")).clone(), (r#str.clone()).clone(), (literal!("\")")).clone()]))
+                    Ok((stringAppendList(list![(annName.clone()).clone(), (literal!("(\"")).clone(), (r#str.clone()).clone(), (literal!("\")")).clone()]), r#str.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { r#str = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
         stringLst = metamodelica::cons((r#str.clone()).clone(), stringLst.clone());
@@ -360,16 +360,16 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
         let mut i = i.clone();
         elArgs = 'mc: {
         let __mc_input = i.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: items, .. }, constrainClass: cc, .. } => {
                     let mut el: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>>> = el.clone();
                     el = AbsynUtil::getAnnotationsFromItems(items.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone()));
-                    Ok(listAppend(el.clone(), elArgs.clone()))
+                    Ok((listAppend(el.clone(), elArgs.clone()), el.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { el = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => {
@@ -378,7 +378,7 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { comment: cmt, .. }, .. }, .. }, constrainClass: cc, .. } => {
                     let mut anns: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = anns.clone();
@@ -390,11 +390,11 @@ fn evaluateAnnotations_dispatch(mut absynProgram: Absyn::Program, mut classPath:
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    Ok(metamodelica::cons(listAppend(anns.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone())), elArgs.clone()))
+                    Ok((metamodelica::cons(listAppend(anns.clone(), AbsynUtil::getAnnotationsFromConstraintClass(cc.clone())), elArgs.clone()), anns.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { anns = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { .. }, .. } => {
@@ -2059,7 +2059,7 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
     let mut cls: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let () = 'mc: {
         let __mc_input = element.clone();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { .. } => {
                     let mut cls: Arc<InstNode::InstNode> = cls.clone();
@@ -2070,11 +2070,11 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
                     context = InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone());
                     (cls, _) = Lookup::lookupName(path.clone(), scope.clone(), context.clone(), false)?;
                     json = JSON::addPair((literal!("$type")).clone(), dumpJSONNodePath(cls.clone(), false)?, json.clone())?;
-                    Ok(((), json.clone()))
+                    Ok(((), cls.clone(), context.clone(), json.clone(), path.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { json = __wb0; break 'mc __v; }
+        })() { cls = __wb0; context = __wb1; json = __wb2; path = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

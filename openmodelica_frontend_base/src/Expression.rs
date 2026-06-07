@@ -11567,17 +11567,17 @@ pub fn dimensionsList(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) 
     let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outValues = 'mc: {
         let __mc_input = inDims.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut dims: Arc<metamodelica::List<i32>> = dims.clone();
                     let true = (List::all(inDims.clone(), (std::sync::Arc::new(checkDimensionSizes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     dims = List::map(inDims.clone(), (std::sync::Arc::new(dimensionSizeAll) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>))?;
-                    Ok(dims.clone())
+                    Ok((dims.clone(), dims.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { dims = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -11614,17 +11614,17 @@ pub fn expDimensionsList(mut inDims: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> 
     let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outValues = 'mc: {
         let __mc_input = inDims.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut dims: Arc<metamodelica::List<i32>> = dims.clone();
                     let true = (List::all(inDims.clone(), (std::sync::Arc::new(fnptr!(checkExpDimensionSizes, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     dims = List::map(inDims.clone(), (std::sync::Arc::new(expInt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?;
-                    Ok(dims.clone())
+                    Ok((dims.clone(), dims.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { dims = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -11646,7 +11646,7 @@ pub fn isCrefListWithEqualIdents(mut iExpressions: Arc<metamodelica::List<Arc<DA
     let mut headCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     oCrefWithEqualIdents = 'mc: {
         let __mc_input = iExpressions.clone();
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head, tail: _ } => {
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = crefs.clone();
@@ -11656,11 +11656,11 @@ pub fn isCrefListWithEqualIdents(mut iExpressions: Arc<metamodelica::List<Arc<DA
                     crefs = List::map(iExpressions.clone(), (std::sync::Arc::new(expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
                     headCref = expCref(head.clone())?;
                     tmpCrefWithEqualIdents = List::all(crefs.clone(), (std::sync::Arc::new({ let __pe_b1 = headCref.clone(); move |__pe_a0| ComponentReferenceBasics::crefEqualWithoutLastSubs(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-                    Ok(tmpCrefWithEqualIdents.clone())
+                    Ok((tmpCrefWithEqualIdents.clone(), crefs.clone(), headCref.clone(), tmpCrefWithEqualIdents.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { crefs = __wb0; headCref = __wb1; tmpCrefWithEqualIdents = __wb2; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {

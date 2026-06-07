@@ -679,16 +679,16 @@ fn getAttributeByNameAndTargetTail(mut iList: Arc<metamodelica::List<Attribute>>
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut tmpAttribute: Option<(Attribute, i32)> = tmpAttribute.clone();
                     tmpAttribute = getAttributeByNameAndTargetTail(rest.clone(), (iAttributeName.clone()).clone(), iAttributeTarget.clone())?;
-                    Ok(tmpAttribute.clone())
+                    Ok((tmpAttribute.clone(), tmpAttribute.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { break 'mc __v; }
+        })() { tmpAttribute = __wb0; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {

@@ -5526,7 +5526,7 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
     }
     (cache, env, dae) = 'mc: {
         let __mc_input = (graph_inst.clone(), nf_inst.clone());
-        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6)) = (|| -> Result<_> {
             let (false, true) = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut dae: DAE::DAElist = dae.clone();
@@ -5540,8 +5540,8 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             cache = FCore::emptyCache();
             FCore::setCachedFunctionTree(cache.clone(), funcs.clone());
             env = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
-            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone(), flatString.clone()))
-        })() { cache = __wb0; dae = __wb1; env = __wb2; flatString = __wb3; break 'mc __v; }
+            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone(), flatString.clone(), flat_model.clone(), funcs.clone(), nf_funcs.clone()))
+        })() { cache = __wb0; dae = __wb1; env = __wb2; flatString = __wb3; flat_model = __wb4; funcs = __wb5; nf_funcs = __wb6; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let (true, false) = __mc_input.clone() else { bail!("nomatch") };
             let mut dae: DAE::DAElist = dae.clone();
@@ -5549,7 +5549,7 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             dae = FInst::instPath(className.clone(), SymbolTable::getSCode()?)?;
             Ok(((cache.clone(), env.clone(), dae.clone()), dae.clone()))
         })() { dae = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0, __wb1, __wb2)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             let (false, false) = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut dae: DAE::DAElist = dae.clone();
@@ -5560,8 +5560,8 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             (cache, env, _, dae) = Inst::instantiateClass(cache.clone(), InnerOuter::emptyInstHierarchy().clone(), scodeP.clone(), className.clone(), true, relaxedFrontEnd.clone(), true)?;
             dae = DAEUtil::mergeAlgorithmSections(dae.clone())?;
             DAEUtil::getFunctionList(FCore::getFunctionTree(cache.clone()), true)?;
-            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone()))
-        })() { cache = __wb0; dae = __wb1; env = __wb2; break 'mc __v; }
+            Ok(((cache.clone(), env.clone(), dae.clone()), cache.clone(), dae.clone(), env.clone(), scodeP.clone()))
+        })() { cache = __wb0; dae = __wb1; env = __wb2; scodeP = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _) = __mc_input.clone() else { bail!("nomatch") };
             if !((Error::getNumErrorMessages() == numError.clone())) { bail!("guard") }
@@ -8235,7 +8235,7 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                 _ => bail!("nomatch"),
             }}
         })() { break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3, __wb4, __wb5, __wb6, __wb7, __wb8)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
                     let mut c: Arc<Absyn::Class> = c.clone();
@@ -8279,12 +8279,12 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#")); __mm_s.push_str(&*if (f.clone()) {literal!("[-]")} else {literal!("[+]")}); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*if (reportTimes.clone()) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*realString(elapsedTime.clone())); __mm_s.push_str(&*literal!(", ")); ArcStr::from(__mm_s) }} else {literal!("")}); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     metamodelica::print((literal!("-------------------------------------------------------------------------\n")).clone());
                     failed = checkAll(inCache.clone(), inEnv.clone(), rest.clone(), inMsg.clone(), reportTimes.clone(), failed.clone())?;
-                    Ok(((), failed.clone()))
+                    Ok(((), c.clone(), elapsedTime.clone(), f.clone(), failed.clone(), s.clone(), smsg.clone(), r#str.clone(), t1.clone(), t2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { failed = __wb0; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        })() { c = __wb0; elapsedTime = __wb1; f = __wb2; failed = __wb3; s = __wb4; smsg = __wb5; r#str = __wb6; t1 = __wb7; t2 = __wb8; break 'mc __v; }
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
                     let mut c: Arc<Absyn::Class> = c.clone();
@@ -8292,11 +8292,11 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
                     c = ProgramUtil::getPathedClassInProgram(className.clone(), p.clone(), false, false)?;
                     metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Checking skipped: ")); __mm_s.push_str(&*Dump::unparseClassAttributesStr(c.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
                     failed = checkAll(inCache.clone(), inEnv.clone(), rest.clone(), inMsg.clone(), reportTimes.clone(), failed.clone())?;
-                    Ok(((), failed.clone()))
+                    Ok(((), c.clone(), failed.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { failed = __wb0; break 'mc __v; }
+        })() { c = __wb0; failed = __wb1; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
     Ok(failed)
@@ -10514,7 +10514,7 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
     }
     r#str = ('mc: {
         let __mc_input = ();
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1, __wb2, __wb3)) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut cache: FCore::Cache = cache.clone();
             let mut flags: Flags::Flag = flags.clone();
@@ -10547,23 +10547,23 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
                     return Err(__try0_err);
                 }
             }
-            Ok((r#str.clone(), cache.clone()))
-        })() { cache = __wb0; break 'mc __v; }
+            Ok((r#str.clone(), cache.clone(), flags.clone(), odae.clone(), r#str.clone()))
+        })() { cache = __wb0; flags = __wb1; odae = __wb2; r#str = __wb3; break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let false = (Interactive::existClass(path.clone(), SymbolTable::getAbsyn())) else { bail!("pattern mismatch") };
             Error::addMessage(Error::LOOKUP_ERROR.clone(), list![(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone(), (literal!("<TOP>")).clone()])?;
             Ok(literal!(""))
         })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
+        if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r#str: ArcStr = r#str.clone();
             if Error::getNumMessages() == 0 {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Instantiation of ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" failed with no error message")); ArcStr::from(__mm_s) }).clone();
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone(), (literal!("<TOP>")).clone()])?;
             }
-            Ok(literal!(""))
-        })() { break 'mc __v; }
+            Ok((literal!(""), r#str.clone()))
+        })() { r#str = __wb0; break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }).clone();
     result = Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() });

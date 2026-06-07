@@ -915,16 +915,16 @@ fn traverseExpVisitorWrapper(mut inExp: Arc<DAE::Exp>, mut inRepl: BackendVarTra
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
     (exp, repl) = 'mc: {
         let __mc_input = (inExp.clone(), inRepl.clone());
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (exp @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, repl) => {
                     let mut exp = (*exp).clone();
                     (exp, _) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), None)?;
-                    Ok(((exp.clone(), repl.clone()), exp.clone()))
+                    Ok((exp.clone(), repl.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { exp = __wb0; break 'mc __v; }
+        })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
@@ -4515,7 +4515,7 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                 _ => bail!("nomatch"),
             }}
         })() { exp = __wb0; vars = __wb1; break 'mc __v; }
-        if let Ok((__v, __wb0)) = (|| -> Result<_> {
+        if let Ok((__v, __wb0, __wb1)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -4530,11 +4530,11 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                         failed = true;
                         bail!("fail");
                     }
-                    Ok(((e1.clone(), vars.clone()), vars.clone()))
+                    Ok(((e1.clone(), vars.clone()), failed.clone(), vars.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
-        })() { vars = __wb0; break 'mc __v; }
+        })() { failed = __wb0; vars = __wb1; break 'mc __v; }
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 e1 @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
