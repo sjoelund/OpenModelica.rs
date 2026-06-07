@@ -1,542 +1,419 @@
-// Auto-generated from MetaModelica source
-/*
- * This file is part of OpenModelica.
- *
- * Copyright (c) 1998-2026, Open Source Modelica Consortium (OSMC),
- * c/o Linköpings universitet, Department of Computer and Information Science,
- * SE-58183 Linköping, Sweden.
- *
- * All rights reserved.
- *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF AGPL VERSION 3 LICENSE OR
- * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.8.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GNU AGPL
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
- *
- * The OpenModelica software and the OSMC (Open Source Modelica Consortium)
- * Public License (OSMC-PL) are obtained from OSMC, either from the above
- * address, from the URLs:
- * http://www.openmodelica.org or
- * https://github.com/OpenModelica/ or
- * http://www.ida.liu.se/projects/OpenModelica,
- * and in the OpenModelica distribution.
- *
- * GNU AGPL version 3 is obtained from:
- * https://www.gnu.org/licenses/licenses.html#GPL
- *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
- * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.
- *
- * See the full OSMC Public License conditions for more details.
- *
- */
-#![allow(warnings)]
-#![allow(unreachable_patterns, unreachable_code, non_camel_case_types, non_snake_case, dead_code, unused_imports, unused_variables, non_upper_case_globals, unused_mut)]
+// Manually written file.
+//
+// Rust counterpart of `OMCompiler/Compiler/runtime/OMSimulator_omc.c` for the
+// `external "C"` bodies of `OMCompiler/Compiler/Util/OMSimulatorExt.mo`
+// (`statusToString` is plain MetaModelica and is hand-ported at the bottom).
+//
+// The C runtime does not link OMSimulator; it `dlopen`s `libOMSimulator` from
+// the installation on the first `loadOMSimulator()` call and resolves each
+// `oms_*` entry point from it. We mirror that:
+//
+//   * `loadOMSimulator` opens
+//     `<install>/lib/<triple>/omc/libOMSimulator<dllExt>` (on Windows the C
+//     code loads `<install>/bin/libOMSimulator<dllExt>` instead) with
+//     `RTLD_LAZY` and keeps the handle in a process-global slot.
+//   * Every wrapper resolves its symbol from that handle and forwards the
+//     call. Calling any wrapper before `loadOMSimulator()` — or with a
+//     library that lacks the symbol — prints the same
+//     `could not locate the function <name>` message as the C wrapper and
+//     exits with status 0, because scripts compare that output verbatim.
+//   * `unloadOMSimulator` closes the handle. (The C code `dlclose`s but
+//     keeps the stale handle and function pointers around, so a second
+//     load/call sequence after unload is undefined behavior there. We clear
+//     the slot instead so load→unload→load works; for the load-once usage in
+//     all scripts the behavior is identical.)
+//
+// Symbols are resolved per call (`dlsym` on the held handle) instead of all
+// at once like the C `resolveFunctionNames()`. Observable behavior is the
+// same — the C code also only notices a missing symbol when the wrapper is
+// called — and these calls are never on a hot path (each one drives a whole
+// model-composition/simulation step inside OMSimulator).
+//
+// Thread-safety: the handle lives behind a `Mutex`; the function pointer is
+// resolved under the lock and the foreign call is made after dropping it.
+// Concurrent calls into OMSimulator itself are no more synchronized than in
+// the C omc (OMSimulator has its own global model state).
 
-use std::sync::Arc;
-use anyhow::{Result, bail};
-use loop_unwrap::unwrap_break_err;
-use metamodelica::*; // Built-in types and functions
-use const_str;
-use arcstr::{ArcStr, literal, format};
+#![allow(non_snake_case)]
 
-pub fn statusToString(mut status: i32) -> ArcStr {
-    let mut outstring: ArcStr = arcstr::literal!("");
-    if status.clone() == 0 {
-        outstring = (literal!("ok")).clone();
-    } else if status.clone() == 1 {
-        outstring = (literal!("warning")).clone();
-    } else if status.clone() == 2 {
-        outstring = (literal!("discard")).clone();
-    } else if status.clone() == 3 {
-        outstring = (literal!("error")).clone();
-    } else if status.clone() == 4 {
-        outstring = (literal!("fatal")).clone();
-    } else if status.clone() == 5 {
-        outstring = (literal!("pending")).clone();
-    } else {
-        outstring = (literal!("unknown_status")).clone();
+use std::ffi::{CStr, CString};
+use std::sync::Mutex;
+
+use arcstr::ArcStr;
+use libc::{c_char, c_double, c_int, c_void};
+
+use crate::Autoconf;
+use crate::Settings;
+
+/// `dlopen` handle of `libOMSimulator` (cast to `usize` so the slot is
+/// `Send`); `None` until `loadOMSimulator()` succeeds.
+static OMSIMULATOR_DLL: Mutex<Option<usize>> = Mutex::new(None);
+
+/// Mirrors the C wrappers' behavior for a NULL function pointer: print the
+/// message (compared verbatim by scripts) and exit with status 0.
+fn missing_function(name: &str) -> ! {
+    println!("could not locate the function {name}");
+    std::process::exit(0);
+}
+
+/// Resolve `name` in the loaded `libOMSimulator`, or print-and-exit exactly
+/// like the C wrapper does when its function pointer is NULL (either because
+/// `loadOMSimulator()` was never called or the symbol is absent).
+fn resolve(name: &str) -> usize {
+    let dll = OMSIMULATOR_DLL.lock().unwrap();
+    let Some(handle) = *dll else { missing_function(name) };
+    let c_name = CString::new(name).expect("oms symbol names contain no NUL");
+    let addr = unsafe { libc::dlsym(handle as *mut c_void, c_name.as_ptr()) };
+    if addr.is_null() {
+        missing_function(name);
     }
-    outstring
+    addr as usize
+}
+
+/// MetaModelica `String` → C string. MM strings are NUL-terminated in the C
+/// runtime, so an embedded NUL truncates the value there; mirror that here.
+fn c_string(s: &ArcStr) -> CString {
+    match CString::new(s.as_bytes()) {
+        Ok(c) => c,
+        Err(e) => {
+            let pos = e.nul_position();
+            CString::new(&s.as_bytes()[..pos]).expect("truncated at first NUL")
+        }
+    }
+}
+
+/// Copy a C string returned through an OMSimulator out-parameter. The C glue
+/// (`mmc_mk_scon`) would dereference NULL; we map NULL (out-parameter left
+/// untouched on error) to `""` instead of crashing.
+fn from_c_str(p: *const c_char) -> ArcStr {
+    if p.is_null() {
+        return arcstr::literal!("");
+    }
+    ArcStr::from(unsafe { CStr::from_ptr(p) }.to_string_lossy().as_ref())
+}
+
+/// Resolve `$name` and cast it to the given C function-pointer type.
+macro_rules! oms_sym {
+    ($name:expr => $fty:ty) => {{
+        let addr = resolve($name);
+        // SAFETY: the symbol comes from libOMSimulator whose C API declares
+        // exactly this signature (see the typedefs in OMSimulator_omc.c).
+        unsafe { std::mem::transmute::<usize, $fty>(addr) }
+    }};
 }
 
 pub fn loadOMSimulator() -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_loadDLL"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 66, lineNumberEnd: 64, columnNumberEnd: 80, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 64, columnNumberStart: 58, lineNumberEnd: 64, columnNumberEnd: 80, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+    let mut dll = OMSIMULATOR_DLL.lock().unwrap();
+    if dll.is_none() {
+        // The C code asprintf's with a NULL path if the installation
+        // directory cannot be determined; that lookup practically never
+        // fails (it falls back to the executable's prefix). Use "" so the
+        // failure mode is the load-error message below, not a crash.
+        let path = Settings::getInstallationDirectoryPath().unwrap_or_else(|_| arcstr::literal!(""));
+        // Same layout split as the C code: Windows installs the DLL next to
+        // the executables under bin/, unix under lib/<triple>/omc/.
+        let full_file_name = if cfg!(windows) {
+            format!("{path}/bin/libOMSimulator{}", Autoconf::dllExt)
+        } else {
+            format!("{path}/lib/{}/omc/libOMSimulator{}", Autoconf::triple, Autoconf::dllExt)
+        };
+        let c_path = c_string(&ArcStr::from(full_file_name.as_str()));
+        let handle = unsafe { libc::dlopen(c_path.as_ptr(), libc::RTLD_LAZY) };
+        if handle.is_null() {
+            // Message and exit status mirror OMSimulator_loadDLL.
+            println!("Could not load the dynamic library {full_file_name} Exiting the program");
+            std::process::exit(0);
+        }
+        *dll = Some(handle as usize);
+    }
+    0
 }
 
 pub fn unloadOMSimulator() -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_unloadDLL"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 69, columnNumberStart: 68, lineNumberEnd: 69, columnNumberEnd: 82, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 69, columnNumberStart: 60, lineNumberEnd: 69, columnNumberEnd: 82, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+    let mut dll = OMSIMULATOR_DLL.lock().unwrap();
+    match dll.take() {
+        Some(handle) => {
+            unsafe { libc::dlclose(handle as *mut c_void) };
+            0
+        }
+        None => {
+            // Message and exit status mirror OMSimulator_unloadDLL.
+            println!("OMSimulator instance is not found, Please load the OMSimulator instance using loadOMSimulator()");
+            std::process::exit(0);
+        }
+    }
 }
 
 pub fn oms_getVersion() -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getVersion"), lang: Some("C"), output_: Some(CREF_IDENT { name: "outString", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 74, columnNumberStart: 76, lineNumberEnd: 74, columnNumberEnd: 90, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 74, columnNumberStart: 68, lineNumberEnd: 74, columnNumberEnd: 90, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    outString
+    let f = oms_sym!("oms_getVersion" => unsafe extern "C" fn() -> *const c_char);
+    from_c_str(unsafe { f() })
 }
 
-pub fn oms_addBus(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 80, columnNumberStart: 73, lineNumberEnd: 80, columnNumberEnd: 87, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 80, columnNumberStart: 65, lineNumberEnd: 80, columnNumberEnd: 87, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+/// MetaModelica parameter type → the Rust parameter type of the wrapper.
+macro_rules! mm_ty {
+    (String) => { ArcStr };
+    (Integer) => { i32 };
+    (Real) => { metamodelica::Real };
+    (Boolean) => { bool };
 }
 
-pub fn oms_addConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addConnection"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefB", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 87, columnNumberStart: 87, lineNumberEnd: 87, columnNumberEnd: 101, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 87, columnNumberStart: 79, lineNumberEnd: 87, columnNumberEnd: 101, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+/// MetaModelica parameter type → the C ABI type it is passed as.
+macro_rules! oms_c_ty {
+    (String) => { *const c_char };
+    (Integer) => { c_int };
+    (Real) => { c_double };
+    (Boolean) => { bool }; // Rust bool is ABI-compatible with C _Bool
 }
 
-pub fn oms_addConnector(mut cref: ArcStr, mut causality: i32, mut type_: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addConnector"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "causality", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "type_", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 95, columnNumberStart: 95, lineNumberEnd: 95, columnNumberEnd: 109, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 95, columnNumberStart: 87, lineNumberEnd: 95, columnNumberEnd: 109, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+/// Per-argument conversion before the call: `String` needs a CString
+/// temporary, `Real` unwraps `OrderedFloat` to the raw f64.
+macro_rules! oms_c_prep {
+    (String, $v:ident) => { let $v = c_string(&$v); };
+    (Real, $v:ident) => { let $v: c_double = $v.into_inner(); };
+    ($t:ident, $v:ident) => {};
 }
 
-pub fn oms_addConnectorToBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addConnectorToBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "busCref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "connectorCref", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 102, columnNumberStart: 101, lineNumberEnd: 102, columnNumberEnd: 115, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 102, columnNumberStart: 93, lineNumberEnd: 102, columnNumberEnd: 115, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+/// Per-argument expression passed to the C call.
+macro_rules! oms_c_pass {
+    (String, $v:ident) => { $v.as_ptr() };
+    ($t:ident, $v:ident) => { $v };
 }
 
-pub fn oms_addConnectorToTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr, mut type_: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addConnectorToTLMBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "busCref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "connectorCref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "type_", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 110, columnNumberStart: 110, lineNumberEnd: 110, columnNumberEnd: 124, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 110, columnNumberStart: 102, lineNumberEnd: 110, columnNumberEnd: 124, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+/// Define wrappers of the dominant shape: all-input arguments, `int` status
+/// result. The Rust function name equals the symbol name in libOMSimulator.
+macro_rules! oms_status_fns {
+    ($($fname:ident ( $($arg:ident : $mmty:ident),* );)*) => { $(
+        pub fn $fname($($arg: mm_ty!($mmty)),*) -> i32 {
+            $(oms_c_prep!($mmty, $arg);)*
+            let f = oms_sym!(stringify!($fname) => unsafe extern "C" fn($(oms_c_ty!($mmty)),*) -> c_int);
+            unsafe { f($(oms_c_pass!($mmty, $arg)),*) }
+        }
+    )* }
 }
 
-pub fn oms_addDynamicValueIndicator(mut signal: ArcStr, mut lower: ArcStr, mut upper: ArcStr, mut stepSize: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addDynamicValueIndicator"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "signal", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "lower", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "upper", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stepSize", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 119, columnNumberStart: 114, lineNumberEnd: 119, columnNumberEnd: 128, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 119, columnNumberStart: 106, lineNumberEnd: 119, columnNumberEnd: 128, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+oms_status_fns! {
+    oms_addBus(cref: String);
+    oms_addConnection(crefA: String, crefB: String);
+    oms_addConnector(cref: String, causality: Integer, type_: Integer);
+    oms_addConnectorToBus(busCref: String, connectorCref: String);
+    oms_addConnectorToTLMBus(busCref: String, connectorCref: String, type_: String);
+    oms_addDynamicValueIndicator(signal: String, lower: String, upper: String, stepSize: Real);
+    oms_addEventIndicator(signal: String);
+    oms_addExternalModel(cref: String, path: String, startscript: String);
+    oms_addSignalsToResults(cref: String, regex: String);
+    oms_addStaticValueIndicator(signal: String, lower: Real, upper: Real, stepSize: Real);
+    oms_addSubModel(cref: String, fmuPath: String);
+    oms_addSystem(cref: String, type_: Integer);
+    oms_addTimeIndicator(signal: String);
+    oms_addTLMBus(cref: String, domain: Integer, dimensions: Integer, interpolation: Integer);
+    oms_addTLMConnection(crefA: String, crefB: String, delay: Real, alpha: Real, linearimpedance: Real, angularimpedance: Real);
+    oms_compareSimulationResults(filenameA: String, filenameB: String, var: String, relTol: Real, absTol: Real);
+    oms_copySystem(source: String, target: String);
+    oms_delete(cref: String);
+    oms_deleteConnection(crefA: String, crefB: String);
+    oms_deleteConnectorFromBus(busCref: String, connectorCref: String);
+    oms_deleteConnectorFromTLMBus(busCref: String, connectorCref: String);
+    oms_export(cref: String, filename: String);
+    oms_exportDependencyGraphs(cref: String, initialization: String, event: String, simulation: String);
+    oms_faultInjection(signal: String, faultType: Integer, faultValue: Real);
+    oms_importSnapshot(cref: String, snapshot: String);
+    oms_initialize(cref: String);
+    oms_instantiate(cref: String);
+    oms_newModel(cref: String);
+    oms_removeSignalsFromResults(cref: String, regex: String);
+    oms_rename(cref: String, newCref: String);
+    oms_reset(cref: String);
+    oms_RunFile(filename: String);
+    oms_setBoolean(cref: String, value: Boolean);
+    oms_setCommandLineOption(cmd: String);
+    oms_setFixedStepSize(cref: String, stepSize: Real);
+    oms_setInteger(cref: String, value: Integer);
+    oms_setLogFile(filename: String);
+    oms_setLoggingInterval(cref: String, loggingInterval: Real);
+    oms_setLoggingLevel(logLevel: Integer);
+    oms_setReal(cref: String, value: Real);
+    oms_setRealInputDerivative(cref: String, value: Real);
+    oms_setResultFile(cref: String, filename: String, bufferSize: Integer);
+    oms_setSignalFilter(cref: String, regex: String);
+    oms_setSolver(cref: String, solver: Integer);
+    oms_setStartTime(cref: String, startTime: Real);
+    oms_setStopTime(cref: String, stopTime: Real);
+    oms_setTempDirectory(newTempDir: String);
+    oms_setTLMPositionAndOrientation(cref: String, x1: Real, x2: Real, x3: Real, A11: Real, A12: Real, A13: Real, A21: Real, A22: Real, A23: Real, A31: Real, A32: Real, A33: Real);
+    oms_setTLMSocketData(cref: String, address: String, managerPort: Integer, monitorPort: Integer);
+    oms_setTolerance(cref: String, absoluteTolerance: Real, relativeTolerance: Real);
+    oms_setVariableStepSize(cref: String, initialStepSize: Real, minimumStepSize: Real, maximumStepSize: Real);
+    oms_setWorkingDirectory(newWorkingDir: String);
+    oms_simulate(cref: String);
+    oms_stepUntil(cref: String, stopTime: Real);
+    oms_terminate(cref: String);
 }
 
-pub fn oms_addEventIndicator(mut signal: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addEventIndicator"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "signal", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 125, columnNumberStart: 86, lineNumberEnd: 125, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 125, columnNumberStart: 78, lineNumberEnd: 125, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+// ── getters with out-parameters ─────────────────────────────────────────────
+// Out-parameters are pre-initialized to "no value" defaults (0 / 0.0 / false /
+// NULL→"") because OMSimulator only writes them on success; the C glue would
+// read an uninitialized stack slot in that case.
+
+pub fn oms_exportSnapshot(cref: ArcStr) -> (ArcStr, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_exportSnapshot" => unsafe extern "C" fn(*const c_char, *mut *const c_char) -> c_int);
+    let mut contents: *const c_char = std::ptr::null();
+    let status = unsafe { f(cref.as_ptr(), &mut contents) };
+    (from_c_str(contents), status)
 }
 
-pub fn oms_addExternalModel(mut cref: ArcStr, mut path: ArcStr, mut startscript: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addExternalModel"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "path", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "startscript", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 133, columnNumberStart: 100, lineNumberEnd: 133, columnNumberEnd: 114, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 133, columnNumberStart: 92, lineNumberEnd: 133, columnNumberEnd: 114, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addSignalsToResults(mut cref: ArcStr, mut regex: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addSignalsToResults"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "regex", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 140, columnNumberStart: 92, lineNumberEnd: 140, columnNumberEnd: 106, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 140, columnNumberStart: 84, lineNumberEnd: 140, columnNumberEnd: 106, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addStaticValueIndicator(mut signal: ArcStr, mut lower: metamodelica::Real, mut upper: metamodelica::Real, mut stepSize: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addStaticValueIndicator"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "signal", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "lower", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "upper", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stepSize", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 149, columnNumberStart: 113, lineNumberEnd: 149, columnNumberEnd: 127, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 149, columnNumberStart: 105, lineNumberEnd: 149, columnNumberEnd: 127, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addSubModel(mut cref: ArcStr, mut fmuPath: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addSubModel"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "fmuPath", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 156, columnNumberStart: 86, lineNumberEnd: 156, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 156, columnNumberStart: 78, lineNumberEnd: 156, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addSystem(mut cref: ArcStr, mut type_: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addSystem"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "type_", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 163, columnNumberStart: 82, lineNumberEnd: 163, columnNumberEnd: 96, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 163, columnNumberStart: 74, lineNumberEnd: 163, columnNumberEnd: 96, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addTimeIndicator(mut signal: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addTimeIndicator"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "signal", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 169, columnNumberStart: 85, lineNumberEnd: 169, columnNumberEnd: 99, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 169, columnNumberStart: 77, lineNumberEnd: 169, columnNumberEnd: 99, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addTLMBus(mut cref: ArcStr, mut domain: i32, mut dimensions: i32, mut interpolation: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addTLMBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "domain", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "dimensions", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "interpolation", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 178, columnNumberStart: 108, lineNumberEnd: 178, columnNumberEnd: 122, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 178, columnNumberStart: 100, lineNumberEnd: 178, columnNumberEnd: 122, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_addTLMConnection(mut crefA: ArcStr, mut crefB: ArcStr, mut delay: metamodelica::Real, mut alpha: metamodelica::Real, mut linearimpedance: metamodelica::Real, mut angularimpedance: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_addTLMConnection"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "delay", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "alpha", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "linearimpedance", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "angularimpedance", subscripts: Nil } }, tail: Nil } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 189, columnNumberStart: 135, lineNumberEnd: 189, columnNumberEnd: 149, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 189, columnNumberStart: 127, lineNumberEnd: 189, columnNumberEnd: 149, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_compareSimulationResults(mut filenameA: ArcStr, mut filenameB: ArcStr, mut var: ArcStr, mut relTol: metamodelica::Real, mut absTol: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_compareSimulationResults"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "filenameA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "filenameB", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "var", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "relTol", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "absTol", subscripts: Nil } }, tail: Nil } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 199, columnNumberStart: 124, lineNumberEnd: 199, columnNumberEnd: 138, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 199, columnNumberStart: 116, lineNumberEnd: 199, columnNumberEnd: 138, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_copySystem(mut source: ArcStr, mut target: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_copySystem"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "source", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "target", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 206, columnNumberStart: 86, lineNumberEnd: 206, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 206, columnNumberStart: 78, lineNumberEnd: 206, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_delete(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_delete"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 212, columnNumberStart: 73, lineNumberEnd: 212, columnNumberEnd: 87, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 212, columnNumberStart: 65, lineNumberEnd: 212, columnNumberEnd: 87, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_deleteConnection(mut crefA: ArcStr, mut crefB: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_deleteConnection"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefA", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "crefB", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 219, columnNumberStart: 90, lineNumberEnd: 219, columnNumberEnd: 104, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 219, columnNumberStart: 82, lineNumberEnd: 219, columnNumberEnd: 104, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_deleteConnectorFromBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_deleteConnectorFromBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "busCref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "connectorCref", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 226, columnNumberStart: 106, lineNumberEnd: 226, columnNumberEnd: 120, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 226, columnNumberStart: 98, lineNumberEnd: 226, columnNumberEnd: 120, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_deleteConnectorFromTLMBus(mut busCref: ArcStr, mut connectorCref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_deleteConnectorFromTLMBus"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "busCref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "connectorCref", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 233, columnNumberStart: 109, lineNumberEnd: 233, columnNumberEnd: 123, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 233, columnNumberStart: 101, lineNumberEnd: 233, columnNumberEnd: 123, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_export(mut cref: ArcStr, mut filename: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_export"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 240, columnNumberStart: 82, lineNumberEnd: 240, columnNumberEnd: 96, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 240, columnNumberStart: 74, lineNumberEnd: 240, columnNumberEnd: 96, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_exportDependencyGraphs(mut cref: ArcStr, mut initialization: ArcStr, mut event: ArcStr, mut simulation: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_exportDependencyGraphs"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "initialization", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "event", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "simulation", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 249, columnNumberStart: 121, lineNumberEnd: 249, columnNumberEnd: 135, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 249, columnNumberStart: 113, lineNumberEnd: 249, columnNumberEnd: 135, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_exportSnapshot(mut cref: ArcStr) -> (ArcStr, i32) {
-    let mut contents: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_exportSnapshot"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "contents", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 256, columnNumberStart: 90, lineNumberEnd: 256, columnNumberEnd: 104, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 256, columnNumberStart: 82, lineNumberEnd: 256, columnNumberEnd: 104, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (contents, status)
-}
-
-pub fn oms_extractFMIKind(mut filename: ArcStr) -> (i32, i32) {
-    let mut kind: i32 = 0;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_extractFMIKind"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "kind", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 263, columnNumberStart: 90, lineNumberEnd: 263, columnNumberEnd: 104, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 263, columnNumberStart: 82, lineNumberEnd: 263, columnNumberEnd: 104, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+pub fn oms_extractFMIKind(filename: ArcStr) -> (i32, i32) {
+    let filename = c_string(&filename);
+    let f = oms_sym!("oms_extractFMIKind" => unsafe extern "C" fn(*const c_char, *mut c_int) -> c_int);
+    let mut kind: c_int = 0;
+    let status = unsafe { f(filename.as_ptr(), &mut kind) };
     (kind, status)
 }
 
-pub fn oms_getBoolean(mut cref: ArcStr) -> (bool, i32) {
-    let mut value: bool = false;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getBoolean"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 270, columnNumberStart: 83, lineNumberEnd: 270, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 270, columnNumberStart: 75, lineNumberEnd: 270, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+pub fn oms_getBoolean(cref: ArcStr) -> (bool, i32) {
+    let cref = c_string(&cref);
+    // `bool*` out-parameter: read back through u8 so an uninitialized or
+    // non-0/1 byte from the C side cannot create an invalid Rust `bool`.
+    let f = oms_sym!("oms_getBoolean" => unsafe extern "C" fn(*const c_char, *mut u8) -> c_int);
+    let mut value: u8 = 0;
+    let status = unsafe { f(cref.as_ptr(), &mut value) };
+    (value != 0, status)
+}
+
+pub fn oms_getFixedStepSize(cref: ArcStr) -> (metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getFixedStepSize" => unsafe extern "C" fn(*const c_char, *mut c_double) -> c_int);
+    let mut step_size: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut step_size) };
+    (metamodelica::Real::from(step_size), status)
+}
+
+pub fn oms_getInteger(cref: ArcStr) -> (i32, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getInteger" => unsafe extern "C" fn(*const c_char, *mut c_int) -> c_int);
+    let mut value: c_int = 0;
+    let status = unsafe { f(cref.as_ptr(), &mut value) };
     (value, status)
 }
 
-pub fn oms_getFixedStepSize(mut cref: ArcStr) -> (metamodelica::Real, i32) {
-    let mut stepSize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getFixedStepSize"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stepSize", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 277, columnNumberStart: 92, lineNumberEnd: 277, columnNumberEnd: 106, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 277, columnNumberStart: 84, lineNumberEnd: 277, columnNumberEnd: 106, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (stepSize, status)
+pub fn oms_getModelState(cref: ArcStr) -> (i32, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getModelState" => unsafe extern "C" fn(*const c_char, *mut c_int) -> c_int);
+    let mut model_state: c_int = 0;
+    let status = unsafe { f(cref.as_ptr(), &mut model_state) };
+    (model_state, status)
 }
 
-pub fn oms_getInteger(mut cref: ArcStr) -> (i32, i32) {
-    let mut value: i32 = 0;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getInteger"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 284, columnNumberStart: 83, lineNumberEnd: 284, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 284, columnNumberStart: 75, lineNumberEnd: 284, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (value, status)
+pub fn oms_getReal(cref: ArcStr) -> (metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getReal" => unsafe extern "C" fn(*const c_char, *mut c_double) -> c_int);
+    let mut value: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut value) };
+    (metamodelica::Real::from(value), status)
 }
 
-pub fn oms_getModelState(mut cref: ArcStr) -> (i32, i32) {
-    let mut modelState: i32 = 0;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getModelState"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "modelState", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 291, columnNumberStart: 91, lineNumberEnd: 291, columnNumberEnd: 105, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 291, columnNumberStart: 83, lineNumberEnd: 291, columnNumberEnd: 105, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (modelState, status)
-}
-
-pub fn oms_getReal(mut cref: ArcStr) -> (metamodelica::Real, i32) {
-    let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getReal"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 298, columnNumberStart: 80, lineNumberEnd: 298, columnNumberEnd: 94, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 298, columnNumberStart: 72, lineNumberEnd: 298, columnNumberEnd: 94, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (value, status)
-}
-
-pub fn oms_getSolver(mut cref: ArcStr) -> (i32, i32) {
-    let mut solver: i32 = 0;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getSolver"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "solver", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 305, columnNumberStart: 83, lineNumberEnd: 305, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 305, columnNumberStart: 75, lineNumberEnd: 305, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+pub fn oms_getSolver(cref: ArcStr) -> (i32, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getSolver" => unsafe extern "C" fn(*const c_char, *mut c_int) -> c_int);
+    let mut solver: c_int = 0;
+    let status = unsafe { f(cref.as_ptr(), &mut solver) };
     (solver, status)
 }
 
-pub fn oms_getStartTime(mut cref: ArcStr) -> (metamodelica::Real, i32) {
-    let mut startTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getStartTime"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "startTime", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 312, columnNumberStart: 89, lineNumberEnd: 312, columnNumberEnd: 103, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 312, columnNumberStart: 81, lineNumberEnd: 312, columnNumberEnd: 103, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (startTime, status)
+pub fn oms_getStartTime(cref: ArcStr) -> (metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getStartTime" => unsafe extern "C" fn(*const c_char, *mut c_double) -> c_int);
+    let mut start_time: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut start_time) };
+    (metamodelica::Real::from(start_time), status)
 }
 
-pub fn oms_getStopTime(mut cref: ArcStr) -> (metamodelica::Real, i32) {
-    let mut stopTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getStopTime"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stopTime", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 319, columnNumberStart: 87, lineNumberEnd: 319, columnNumberEnd: 101, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 319, columnNumberStart: 79, lineNumberEnd: 319, columnNumberEnd: 101, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (stopTime, status)
+pub fn oms_getStopTime(cref: ArcStr) -> (metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getStopTime" => unsafe extern "C" fn(*const c_char, *mut c_double) -> c_int);
+    let mut stop_time: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut stop_time) };
+    (metamodelica::Real::from(stop_time), status)
 }
 
-pub fn oms_getSubModelPath(mut cref: ArcStr) -> (ArcStr, i32) {
-    let mut path: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getSubModelPath"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "path", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 326, columnNumberStart: 87, lineNumberEnd: 326, columnNumberEnd: 101, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 326, columnNumberStart: 79, lineNumberEnd: 326, columnNumberEnd: 101, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (path, status)
+pub fn oms_getSubModelPath(cref: ArcStr) -> (ArcStr, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getSubModelPath" => unsafe extern "C" fn(*const c_char, *mut *const c_char) -> c_int);
+    let mut path: *const c_char = std::ptr::null();
+    let status = unsafe { f(cref.as_ptr(), &mut path) };
+    (from_c_str(path), status)
 }
 
-pub fn oms_getSystemType(mut cref: ArcStr) -> (i32, i32) {
-    let mut type_: i32 = 0;
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getSystemType"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "type_", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 333, columnNumberStart: 86, lineNumberEnd: 333, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 333, columnNumberStart: 78, lineNumberEnd: 333, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+pub fn oms_getSystemType(cref: ArcStr) -> (i32, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getSystemType" => unsafe extern "C" fn(*const c_char, *mut c_int) -> c_int);
+    let mut type_: c_int = 0;
+    let status = unsafe { f(cref.as_ptr(), &mut type_) };
     (type_, status)
 }
 
-pub fn oms_getTolerance(mut cref: ArcStr) -> (metamodelica::Real, metamodelica::Real, i32) {
-    let mut absoluteTolerance: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut relativeTolerance: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getTolerance"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "absoluteTolerance", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "relativeTolerance", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 341, columnNumberStart: 115, lineNumberEnd: 341, columnNumberEnd: 129, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 341, columnNumberStart: 107, lineNumberEnd: 341, columnNumberEnd: 129, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (absoluteTolerance, relativeTolerance, status)
+pub fn oms_getTolerance(cref: ArcStr) -> (metamodelica::Real, metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getTolerance" => unsafe extern "C" fn(*const c_char, *mut c_double, *mut c_double) -> c_int);
+    let mut absolute_tolerance: c_double = 0.0;
+    let mut relative_tolerance: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut absolute_tolerance, &mut relative_tolerance) };
+    (metamodelica::Real::from(absolute_tolerance), metamodelica::Real::from(relative_tolerance), status)
 }
 
-pub fn oms_getVariableStepSize(mut cref: ArcStr) -> (metamodelica::Real, metamodelica::Real, metamodelica::Real, i32) {
-    let mut initialStepSize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut minimumStepSize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut maximumStepSize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_getVariableStepSize"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "initialStepSize", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "minimumStepSize", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "maximumStepSize", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 350, columnNumberStart: 134, lineNumberEnd: 350, columnNumberEnd: 148, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 350, columnNumberStart: 126, lineNumberEnd: 350, columnNumberEnd: 148, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (initialStepSize, minimumStepSize, maximumStepSize, status)
+pub fn oms_getVariableStepSize(cref: ArcStr) -> (metamodelica::Real, metamodelica::Real, metamodelica::Real, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_getVariableStepSize" => unsafe extern "C" fn(*const c_char, *mut c_double, *mut c_double, *mut c_double) -> c_int);
+    let mut initial_step_size: c_double = 0.0;
+    let mut minimum_step_size: c_double = 0.0;
+    let mut maximum_step_size: c_double = 0.0;
+    let status = unsafe { f(cref.as_ptr(), &mut initial_step_size, &mut minimum_step_size, &mut maximum_step_size) };
+    (metamodelica::Real::from(initial_step_size), metamodelica::Real::from(minimum_step_size), metamodelica::Real::from(maximum_step_size), status)
 }
 
-pub fn oms_faultInjection(mut signal: ArcStr, mut faultType: i32, mut faultValue: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_faultInjection"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "signal", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "faultType", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "faultValue", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 358, columnNumberStart: 104, lineNumberEnd: 358, columnNumberEnd: 118, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 358, columnNumberStart: 96, lineNumberEnd: 358, columnNumberEnd: 118, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+pub fn oms_importFile(filename: ArcStr) -> (ArcStr, i32) {
+    let filename = c_string(&filename);
+    let f = oms_sym!("oms_importFile" => unsafe extern "C" fn(*const c_char, *mut *const c_char) -> c_int);
+    let mut cref: *const c_char = std::ptr::null();
+    let status = unsafe { f(filename.as_ptr(), &mut cref) };
+    (from_c_str(cref), status)
 }
 
-pub fn oms_importFile(mut filename: ArcStr) -> (ArcStr, i32) {
-    let mut cref: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_importFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 365, columnNumberStart: 86, lineNumberEnd: 365, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 365, columnNumberStart: 78, lineNumberEnd: 365, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (cref, status)
+pub fn oms_list(cref: ArcStr) -> (ArcStr, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_list" => unsafe extern "C" fn(*const c_char, *mut *const c_char) -> c_int);
+    let mut contents: *const c_char = std::ptr::null();
+    let status = unsafe { f(cref.as_ptr(), &mut contents) };
+    (from_c_str(contents), status)
 }
 
-pub fn oms_importSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_importSnapshot"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "snapshot", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 372, columnNumberStart: 90, lineNumberEnd: 372, columnNumberEnd: 104, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 372, columnNumberStart: 82, lineNumberEnd: 372, columnNumberEnd: 104, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+pub fn oms_listUnconnectedConnectors(cref: ArcStr) -> (ArcStr, i32) {
+    let cref = c_string(&cref);
+    let f = oms_sym!("oms_listUnconnectedConnectors" => unsafe extern "C" fn(*const c_char, *mut *const c_char) -> c_int);
+    let mut contents: *const c_char = std::ptr::null();
+    let status = unsafe { f(cref.as_ptr(), &mut contents) };
+    (from_c_str(contents), status)
 }
 
-pub fn oms_initialize(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_initialize"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 378, columnNumberStart: 77, lineNumberEnd: 378, columnNumberEnd: 91, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 378, columnNumberStart: 69, lineNumberEnd: 378, columnNumberEnd: 91, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
+pub fn oms_loadSnapshot(cref: ArcStr, snapshot: ArcStr) -> (ArcStr, i32) {
+    let cref = c_string(&cref);
+    let snapshot = c_string(&snapshot);
+    let f = oms_sym!("oms_loadSnapshot" => unsafe extern "C" fn(*const c_char, *const c_char, *mut *const c_char) -> c_int);
+    let mut new_cref: *const c_char = std::ptr::null();
+    let status = unsafe { f(cref.as_ptr(), snapshot.as_ptr(), &mut new_cref) };
+    (from_c_str(new_cref), status)
 }
 
-pub fn oms_instantiate(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_instantiate"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 384, columnNumberStart: 78, lineNumberEnd: 384, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 384, columnNumberStart: 70, lineNumberEnd: 384, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
+// ── plain MetaModelica function from OMSimulatorExt.mo ──────────────────────
 
-pub fn oms_list(mut cref: ArcStr) -> (ArcStr, i32) {
-    let mut contents: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_list"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "contents", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 391, columnNumberStart: 80, lineNumberEnd: 391, columnNumberEnd: 94, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 391, columnNumberStart: 72, lineNumberEnd: 391, columnNumberEnd: 94, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (contents, status)
+pub fn statusToString(status: i32) -> ArcStr {
+    match status {
+        0 => arcstr::literal!("ok"),
+        1 => arcstr::literal!("warning"),
+        2 => arcstr::literal!("discard"),
+        3 => arcstr::literal!("error"),
+        4 => arcstr::literal!("fatal"),
+        5 => arcstr::literal!("pending"),
+        _ => arcstr::literal!("unknown_status"),
+    }
 }
-
-pub fn oms_listUnconnectedConnectors(mut cref: ArcStr) -> (ArcStr, i32) {
-    let mut contents: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_listUnconnectedConnectors"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "contents", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 398, columnNumberStart: 101, lineNumberEnd: 398, columnNumberEnd: 115, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 398, columnNumberStart: 93, lineNumberEnd: 398, columnNumberEnd: 115, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (contents, status)
-}
-
-pub fn oms_loadSnapshot(mut cref: ArcStr, mut snapshot: ArcStr) -> (ArcStr, i32) {
-    let mut newCref: ArcStr = arcstr::literal!("");
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_loadSnapshot"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "snapshot", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "newCref", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 406, columnNumberStart: 96, lineNumberEnd: 406, columnNumberEnd: 110, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 406, columnNumberStart: 88, lineNumberEnd: 406, columnNumberEnd: 110, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    (newCref, status)
-}
-
-pub fn oms_newModel(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_newModel"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 412, columnNumberStart: 75, lineNumberEnd: 412, columnNumberEnd: 89, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 412, columnNumberStart: 67, lineNumberEnd: 412, columnNumberEnd: 89, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_removeSignalsFromResults(mut cref: ArcStr, mut regex: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_removeSignalsFromResults"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "regex", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 419, columnNumberStart: 97, lineNumberEnd: 419, columnNumberEnd: 111, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 419, columnNumberStart: 89, lineNumberEnd: 419, columnNumberEnd: 111, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_rename(mut cref: ArcStr, mut newCref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_rename"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "newCref", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 426, columnNumberStart: 81, lineNumberEnd: 426, columnNumberEnd: 95, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 426, columnNumberStart: 73, lineNumberEnd: 426, columnNumberEnd: 95, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_reset(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_reset"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 432, columnNumberStart: 72, lineNumberEnd: 432, columnNumberEnd: 86, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 432, columnNumberStart: 64, lineNumberEnd: 432, columnNumberEnd: 86, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_RunFile(mut filename: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_RunFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 438, columnNumberStart: 78, lineNumberEnd: 438, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 438, columnNumberStart: 70, lineNumberEnd: 438, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setBoolean(mut cref: ArcStr, mut value: bool) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setBoolean"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 445, columnNumberStart: 83, lineNumberEnd: 445, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 445, columnNumberStart: 75, lineNumberEnd: 445, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setCommandLineOption(mut cmd: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setCommandLineOption"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cmd", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 451, columnNumberStart: 86, lineNumberEnd: 451, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 451, columnNumberStart: 78, lineNumberEnd: 451, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setFixedStepSize(mut cref: ArcStr, mut stepSize: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setFixedStepSize"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stepSize", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 458, columnNumberStart: 92, lineNumberEnd: 458, columnNumberEnd: 106, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 458, columnNumberStart: 84, lineNumberEnd: 458, columnNumberEnd: 106, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setInteger(mut cref: ArcStr, mut value: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setInteger"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 465, columnNumberStart: 83, lineNumberEnd: 465, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 465, columnNumberStart: 75, lineNumberEnd: 465, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setLogFile(mut filename: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setLogFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 471, columnNumberStart: 81, lineNumberEnd: 471, columnNumberEnd: 95, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 471, columnNumberStart: 73, lineNumberEnd: 471, columnNumberEnd: 95, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setLoggingInterval(mut cref: ArcStr, mut loggingInterval: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setLoggingInterval"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "loggingInterval", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 478, columnNumberStart: 101, lineNumberEnd: 478, columnNumberEnd: 115, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 478, columnNumberStart: 93, lineNumberEnd: 478, columnNumberEnd: 115, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setLoggingLevel(mut logLevel: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setLoggingLevel"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "logLevel", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 484, columnNumberStart: 86, lineNumberEnd: 484, columnNumberEnd: 100, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 484, columnNumberStart: 78, lineNumberEnd: 484, columnNumberEnd: 100, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setReal(mut cref: ArcStr, mut value: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setReal"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 491, columnNumberStart: 80, lineNumberEnd: 491, columnNumberEnd: 94, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 491, columnNumberStart: 72, lineNumberEnd: 491, columnNumberEnd: 94, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setRealInputDerivative(mut cref: ArcStr, mut value: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setRealInputDerivative"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "value", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 498, columnNumberStart: 95, lineNumberEnd: 498, columnNumberEnd: 109, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 498, columnNumberStart: 87, lineNumberEnd: 498, columnNumberEnd: 109, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setResultFile(mut cref: ArcStr, mut filename: ArcStr, mut bufferSize: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setResultFile"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "filename", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "bufferSize", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 506, columnNumberStart: 100, lineNumberEnd: 506, columnNumberEnd: 114, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 506, columnNumberStart: 92, lineNumberEnd: 506, columnNumberEnd: 114, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setSignalFilter(mut cref: ArcStr, mut regex: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setSignalFilter"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "regex", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 513, columnNumberStart: 88, lineNumberEnd: 513, columnNumberEnd: 102, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 513, columnNumberStart: 80, lineNumberEnd: 513, columnNumberEnd: 102, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setSolver(mut cref: ArcStr, mut solver: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setSolver"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "solver", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 520, columnNumberStart: 83, lineNumberEnd: 520, columnNumberEnd: 97, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 520, columnNumberStart: 75, lineNumberEnd: 520, columnNumberEnd: 97, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setStartTime(mut cref: ArcStr, mut startTime: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setStartTime"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "startTime", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 527, columnNumberStart: 89, lineNumberEnd: 527, columnNumberEnd: 103, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 527, columnNumberStart: 81, lineNumberEnd: 527, columnNumberEnd: 103, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setStopTime(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setStopTime"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stopTime", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 534, columnNumberStart: 87, lineNumberEnd: 534, columnNumberEnd: 101, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 534, columnNumberStart: 79, lineNumberEnd: 534, columnNumberEnd: 101, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setTempDirectory(mut newTempDir: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setTempDirectory"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "newTempDir", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 540, columnNumberStart: 89, lineNumberEnd: 540, columnNumberEnd: 103, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 540, columnNumberStart: 81, lineNumberEnd: 540, columnNumberEnd: 103, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setTLMPositionAndOrientation(mut cref: ArcStr, mut x1: metamodelica::Real, mut x2: metamodelica::Real, mut x3: metamodelica::Real, mut A11: metamodelica::Real, mut A12: metamodelica::Real, mut A13: metamodelica::Real, mut A21: metamodelica::Real, mut A22: metamodelica::Real, mut A23: metamodelica::Real, mut A31: metamodelica::Real, mut A32: metamodelica::Real, mut A33: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setTLMPositionAndOrientation"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "x1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "x2", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "x3", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A11", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A12", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A13", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A21", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A22", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A23", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A31", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A32", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "A33", subscripts: Nil } }, tail: Nil } } } } } } } } } } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 558, columnNumberStart: 140, lineNumberEnd: 558, columnNumberEnd: 154, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 558, columnNumberStart: 132, lineNumberEnd: 558, columnNumberEnd: 154, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setTLMSocketData(mut cref: ArcStr, mut address: ArcStr, mut managerPort: i32, mut monitorPort: i32) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setTLMSocketData"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "address", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "managerPort", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "monitorPort", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 567, columnNumberStart: 115, lineNumberEnd: 567, columnNumberEnd: 129, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 567, columnNumberStart: 107, lineNumberEnd: 567, columnNumberEnd: 129, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setTolerance(mut cref: ArcStr, mut absoluteTolerance: metamodelica::Real, mut relativeTolerance: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setTolerance"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "absoluteTolerance", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "relativeTolerance", subscripts: Nil } }, tail: Nil } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 575, columnNumberStart: 115, lineNumberEnd: 575, columnNumberEnd: 129, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 575, columnNumberStart: 107, lineNumberEnd: 575, columnNumberEnd: 129, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setVariableStepSize(mut cref: ArcStr, mut initialStepSize: metamodelica::Real, mut minimumStepSize: metamodelica::Real, mut maximumStepSize: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setVariableStepSize"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "initialStepSize", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "minimumStepSize", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "maximumStepSize", subscripts: Nil } }, tail: Nil } } } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 584, columnNumberStart: 134, lineNumberEnd: 584, columnNumberEnd: 148, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 584, columnNumberStart: 126, lineNumberEnd: 584, columnNumberEnd: 148, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_setWorkingDirectory(mut newWorkingDir: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_setWorkingDirectory"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "newWorkingDir", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 590, columnNumberStart: 95, lineNumberEnd: 590, columnNumberEnd: 109, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 590, columnNumberStart: 87, lineNumberEnd: 590, columnNumberEnd: 109, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_simulate(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_simulate"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 596, columnNumberStart: 75, lineNumberEnd: 596, columnNumberEnd: 89, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 596, columnNumberStart: 67, lineNumberEnd: 596, columnNumberEnd: 89, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_stepUntil(mut cref: ArcStr, mut stopTime: metamodelica::Real) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_stepUntil"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "stopTime", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 603, columnNumberStart: 85, lineNumberEnd: 603, columnNumberEnd: 99, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 603, columnNumberStart: 77, lineNumberEnd: 603, columnNumberEnd: 99, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-
-pub fn oms_terminate(mut cref: ArcStr) -> i32 {
-    let mut status: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("OMSimulator_oms_terminate"), lang: Some("C"), output_: Some(CREF_IDENT { name: "status", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "cref", subscripts: Nil } }, tail: Nil }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "omcruntime" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 609, columnNumberStart: 76, lineNumberEnd: 609, columnNumberEnd: 90, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/OMSimulatorExt.mo", isReadOnly: false, lineNumberStart: 609, columnNumberStart: 68, lineNumberEnd: 609, columnNumberEnd: 90, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
-    status
-}
-

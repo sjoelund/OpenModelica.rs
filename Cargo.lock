@@ -1083,6 +1083,7 @@ dependencies = [
  "metamodelica",
  "openmodelica_util_datatypes_basic",
  "roxmltree",
+ "zip",
 ]
 
 [[package]]

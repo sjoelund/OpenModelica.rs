@@ -78,6 +78,15 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // hand-written (using the `zip` crate) in
     // `openmodelica_script_util/src/Unzip.rs`.
     "Unzip",
+    // All bodies but `statusToString` are `external "C"` wrappers over
+    // `runtime/OMSimulator_omc.c`, which `dlopen`s libOMSimulator and
+    // forwards each `oms_*` call. Hand-written (libc dlopen/dlsym) in
+    // `openmodelica_util/src/OMSimulatorExt.rs`.
+    "OMSimulatorExt",
+    // Two `external "C"` wrappers over `runtime/FMIImpl.c` (FMU import via
+    // fmilib: unzip + modelDescription.xml → FMI.* records). Hand-written
+    // (zip + roxmltree, no fmilib) in `openmodelica_util/src/FMIExt.rs`.
+    "FMIExt",
     // All bodies are `external "C"` into `runtime/IOStreamExt_omc.cpp`
     // (mostly NYI there too); hand-written in
     // `openmodelica_util/src/IOStreamExt.rs`.

@@ -13,5 +13,8 @@ openmodelica_util_datatypes_basic.workspace=true
 arcstr.workspace=true
 match_deref.workspace=true
 libc.workspace=true
-# GraphML reader in the hand-written TaskGraphResults.rs.
+# GraphML reader in the hand-written TaskGraphResults.rs; also the
+# modelDescription.xml parser in the hand-written FMIExt.rs.
 roxmltree.workspace=true
+# FMU extraction in the hand-written FMIExt.rs.
+zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
