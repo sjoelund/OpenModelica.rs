@@ -11,7 +11,6 @@ openmodelica_susan.workspace = true
 openmodelica_util.workspace = true
 anyhow.workspace = true
 const-str.workspace=true
-tailcall.workspace=true
 arcstr.workspace=true
 loop_unwrap.workspace=true
 match_deref.workspace=true

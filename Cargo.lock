@@ -399,7 +399,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_util",
  "rayon",
- "tailcall",
  "winnow",
 ]
 
@@ -416,7 +415,6 @@ dependencies = [
  "openmodelica_ast",
  "openmodelica_frontend_dump",
  "openmodelica_util",
- "tailcall",
 ]
 
 [[package]]
@@ -449,7 +447,6 @@ dependencies = [
  "openmodelica_util_datatypes_basic",
  "roxmltree",
  "serde_json",
- "tailcall",
 ]
 
 [[package]]
@@ -489,7 +486,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -508,7 +504,6 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -523,7 +518,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -548,7 +542,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -575,7 +568,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -600,7 +592,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -627,7 +618,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -654,7 +644,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -684,7 +673,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -711,7 +699,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -741,7 +728,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -766,7 +752,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -792,7 +777,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -818,7 +802,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -842,7 +825,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -859,7 +841,6 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_susan",
  "openmodelica_util",
- "tailcall",
 ]
 
 [[package]]
@@ -882,7 +863,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -903,7 +883,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -921,7 +900,6 @@ dependencies = [
  "openmodelica_susan",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -938,7 +916,6 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -953,7 +930,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -980,7 +956,6 @@ dependencies = [
  "openmodelica_simcode_util",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -1018,7 +993,6 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -1037,7 +1011,6 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
  "zip",
 ]
 
@@ -1058,7 +1031,6 @@ dependencies = [
  "openmodelica_frontend_types",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -1081,7 +1053,6 @@ dependencies = [
  "openmodelica_simcode_types",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -1096,7 +1067,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
- "tailcall",
 ]
 
 [[package]]
@@ -1113,7 +1083,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_util_datatypes_basic",
  "roxmltree",
- "tailcall",
 ]
 
 [[package]]
@@ -1126,7 +1095,6 @@ dependencies = [
  "loop_unwrap",
  "match_deref",
  "metamodelica",
- "tailcall",
 ]
 
 [[package]]
@@ -1308,26 +1276,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "tailcall"
-version = "2.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6be08989072ee5adeece48612b4f43ecf8ffce901dee274c33f7310c89f18de"
-dependencies = [
- "tailcall-impl",
-]
-
-[[package]]
-name = "tailcall-impl"
-version = "2.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44f72925e9aaaefcfbef1cf809d408e8a80bdb644ebe9fff0b94714d1d2d8e4d"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
 ]
 
 [[package]]

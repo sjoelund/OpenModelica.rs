@@ -11,5 +11,4 @@ const-str.workspace=true
 arcstr.workspace=true
 anyhow.workspace=true
 loop_unwrap.workspace=true
-tailcall.workspace=true
 match_deref.workspace=true
