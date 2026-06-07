@@ -2303,23 +2303,21 @@ pub fn evalCodeTypeName(mut val: Arc<Values::Value>, mut env: FCore::Graph) -> R
     Ok(res)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getVariableNames(mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut acc: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
-    let mut ovars: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-    ovars = (::match_deref::match_deref! { match &(vars.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(vars.clone()) {
         Deref @ metamodelica::List::Nil => {
-            acc.clone().reverse()
+            return Ok(acc.clone().reverse())
         },
         Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { varIdent: Deref @ "$echo", .. }, tail: vs } => {
-            getVariableNames(vs.clone(), acc.clone())?
+            { (vars, acc) = (vs.clone(), acc.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { varIdent: p, .. }, tail: vs } => {
-            getVariableNames(vs.clone(), metamodelica::cons(Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_VARIABLENAME { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (p.clone()).clone(), subscripts: metamodelica::nil() }) }) }), acc.clone()))?
+            { (vars, acc) = (vs.clone(), metamodelica::cons(Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_VARIABLENAME { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (p.clone()).clone(), subscripts: metamodelica::nil() }) }) }), acc.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(ovars)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getPackageVersion(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Result<ArcStr> {
@@ -2558,24 +2556,22 @@ fn matchQualifiedCalls(mut inExp: Arc<DAE::Exp>, mut inAcc: Arc<metamodelica::Li
     (outExp, outAcc)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn instantiateDaeFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut ipaths: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<FCore::Cache> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    outCache = (::match_deref::match_deref! { match &((icache.clone(), ienv.clone(), ipaths.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((icache.clone(), ienv.clone(), ipaths.clone())) {
         (cache, _, Deref @ metamodelica::List::Nil) => {
-            cache.clone()
+            return Ok(cache.clone())
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: path, tail: paths }) => {
             let mut cache = (*cache).clone();
             let (__pa0, Util::SUCCESS { .. }) = (Static::instantiateDaeFunctionForceInst(cache.clone(), env.clone(), path.clone(), false, None, true)?) else { bail!("pattern mismatch") };
             cache = __pa0.clone();
             cache = instantiateDaeFunctions(cache.clone(), env.clone(), paths.clone())?;
-            cache.clone()
+            return Ok(cache.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outCache)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn generateFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: Absyn::Program, mut fullScodeProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut isp: Arc<metamodelica::List<Arc<SCode::Element>>>, mut cleanCache: bool) -> Result<(FCore::Cache, FCore::Graph)> {
@@ -3098,19 +3094,17 @@ fn isSimpleAPIFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isSimpleAPIFunctionArg(mut ty: Arc<DAE::Type>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_INTEGER { .. } => true,
-        Deref @ DAE::Type::T_REAL { .. } => true,
-        Deref @ DAE::Type::T_BOOL { .. } => true,
-        Deref @ DAE::Type::T_STRING { .. } => true,
-        Deref @ DAE::Type::T_NORETCALL { .. } => true,
-        Deref @ DAE::Type::T_ARRAY { .. } => isSimpleAPIFunctionArg(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone()),
-        Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } } => true,
-        Deref @ DAE::Type::T_TUPLE { .. } => ({
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ DAE::Type::T_INTEGER { .. } => return true,
+        Deref @ DAE::Type::T_REAL { .. } => return true,
+        Deref @ DAE::Type::T_BOOL { .. } => return true,
+        Deref @ DAE::Type::T_STRING { .. } => return true,
+        Deref @ DAE::Type::T_NORETCALL { .. } => return true,
+        Deref @ DAE::Type::T_ARRAY { .. } => { ty = var_field!((*ty).ty, DAE::Type::T_ARRAY).clone(); continue '__tco; },
+        Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } } => return true,
+        Deref @ DAE::Type::T_TUPLE { .. } => return ({
         let mut __acc: Option<bool> = None;
         for mut t in (var_field!((*ty).types, DAE::Type::T_TUPLE).clone()).into_iter().cloned() {
             let __x = isSimpleAPIFunctionArg(t.clone());
@@ -3118,10 +3112,10 @@ fn isSimpleAPIFunctionArg(mut ty: Arc<DAE::Type>) -> bool {
         }
         __acc.unwrap_or(true)
     }),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn verifyInterfaceType(mut elt: Arc<SCode::Element>, mut expected: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
@@ -3641,55 +3635,51 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeThreadDataRecord(mut inRecs: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>, mut inAcc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> {
-    let mut outRecs: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
-    outRecs = (::match_deref::match_deref! { match &(inRecs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRecs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAcc.clone().reverse()
+            return inAcc.clone().reverse()
         },
         Deref @ metamodelica::List::Cons { head: SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: Deref @ "OpenModelica_threadData_ThreadData", .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
             acc = removeThreadDataRecord(rest.clone(), inAcc.clone());
-            acc.clone()
+            return acc.clone()
         },
         Deref @ metamodelica::List::Cons { head: SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "OpenModelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "threadData", path: Deref @ Absyn::Path::IDENT { name: Deref @ "ThreadData" } } }, .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
             acc = removeThreadDataRecord(rest.clone(), inAcc.clone());
-            acc.clone()
+            return acc.clone()
         },
         Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
             acc = removeThreadDataRecord(rest.clone(), metamodelica::cons(r.clone(), inAcc.clone()));
-            acc.clone()
+            return acc.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outRecs
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeThreadDataFunction(mut inFuncs: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut inAcc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>) -> Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> {
-    let mut outFuncs: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
-    outFuncs = (::match_deref::match_deref! { match &(inFuncs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inFuncs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAcc.clone().reverse()
+            return inAcc.clone().reverse()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { name: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "OpenModelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "threadData", path: Deref @ Absyn::Path::IDENT { name: Deref @ "ThreadData" } } } }, .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
             acc = removeThreadDataFunction(rest.clone(), inAcc.clone());
-            acc.clone()
+            return acc.clone()
         },
         Deref @ metamodelica::List::Cons { head: f, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
             acc = removeThreadDataFunction(rest.clone(), metamodelica::cons(f.clone(), inAcc.clone()));
-            acc.clone()
+            return acc.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outFuncs
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn unZipEncryptedPackageAndCheckFile(mut inWorkdir: ArcStr, mut filename: ArcStr, mut skipUnzip: bool) -> Result<(bool, ArcStr)> {

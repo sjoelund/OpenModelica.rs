@@ -227,17 +227,15 @@ pub fn initExpandedClass(mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
     Ok(cls)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getSections(mut cls: Arc<NFClass>) -> Result<Arc<Sections::NFSections>> {
-    let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
-    sections = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).sections, NFClass::INSTANCED_CLASS).clone(),
-        Deref @ TYPED_DERIVED { .. } => getSections(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => crate::NFSections::interned_EMPTY(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(sections)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ INSTANCED_CLASS { .. } => return Ok(var_field!((*cls).sections, NFClass::INSTANCED_CLASS).clone()),
+        Deref @ TYPED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; },
+        _ => return Ok(crate::NFSections::interned_EMPTY()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setSections(mut sections: Arc<Sections::NFSections>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
@@ -332,37 +330,33 @@ pub fn isOnlyBuiltin(mut cls: Arc<NFClass>) -> bool {
     builtin
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBuiltin(mut cls: Arc<NFClass>) -> Result<bool> {
-    let mut isBuiltin: bool = false;
-    isBuiltin = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_BUILTIN { .. } => true,
-        Deref @ INSTANCED_BUILTIN { .. } => true,
-        Deref @ EXPANDED_DERIVED { .. } => self::isBuiltin(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
-        Deref @ TYPED_DERIVED { .. } => self::isBuiltin(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isBuiltin)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ PARTIAL_BUILTIN { .. } => return Ok(true),
+        Deref @ INSTANCED_BUILTIN { .. } => return Ok(true),
+        Deref @ EXPANDED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?; continue '__tco; },
+        Deref @ TYPED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn classTree(mut cls: Arc<NFClass>) -> Result<Arc<ClassTree::ClassTree>> {
-    let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
-    tree = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone(),
-        Deref @ PARTIAL_BUILTIN { .. } => var_field!((*cls).elements, NFClass::PARTIAL_BUILTIN).clone(),
-        Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).elements, NFClass::EXPANDED_CLASS).clone(),
-        Deref @ EXPANDED_DERIVED { .. } => classTree(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
-        Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone(),
-        Deref @ INSTANCED_BUILTIN { .. } => var_field!((*cls).elements, NFClass::INSTANCED_BUILTIN).clone(),
-        Deref @ TYPED_DERIVED { .. } => classTree(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => crate::NFClassTree::ClassTree::interned_EMPTY_TREE(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(tree)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ PARTIAL_CLASS { .. } => return Ok(var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone()),
+        Deref @ PARTIAL_BUILTIN { .. } => return Ok(var_field!((*cls).elements, NFClass::PARTIAL_BUILTIN).clone()),
+        Deref @ EXPANDED_CLASS { .. } => return Ok(var_field!((*cls).elements, NFClass::EXPANDED_CLASS).clone()),
+        Deref @ EXPANDED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?; continue '__tco; },
+        Deref @ INSTANCED_CLASS { .. } => return Ok(var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone()),
+        Deref @ INSTANCED_BUILTIN { .. } => return Ok(var_field!((*cls).elements, NFClass::INSTANCED_BUILTIN).clone()),
+        Deref @ TYPED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; },
+        _ => return Ok(crate::NFClassTree::ClassTree::interned_EMPTY_TREE()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
@@ -590,20 +584,18 @@ pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Mo
     attributes
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Type::NFType>> {
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    ty = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_BUILTIN { .. } => var_field!((*cls).ty, NFClass::PARTIAL_BUILTIN).clone(),
-        Deref @ EXPANDED_DERIVED { .. } => getType(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?, var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?,
-        Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone(),
-        Deref @ INSTANCED_BUILTIN { .. } => var_field!((*cls).ty, NFClass::INSTANCED_BUILTIN).clone(),
-        Deref @ TYPED_DERIVED { .. } => var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone(),
-        _ => crate::NFType::interned_UNKNOWN(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(ty)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ PARTIAL_BUILTIN { .. } => return Ok(var_field!((*cls).ty, NFClass::PARTIAL_BUILTIN).clone()),
+        Deref @ EXPANDED_DERIVED { .. } => { (cls, clsNode) = (InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?, var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone()); continue '__tco; },
+        Deref @ INSTANCED_CLASS { .. } => return Ok(var_field!((*cls).ty, NFClass::INSTANCED_CLASS).clone()),
+        Deref @ INSTANCED_BUILTIN { .. } => return Ok(var_field!((*cls).ty, NFClass::INSTANCED_BUILTIN).clone()),
+        Deref @ TYPED_DERIVED { .. } => return Ok(var_field!((*cls).ty, NFClass::TYPED_DERIVED).clone()),
+        _ => return Ok(crate::NFType::interned_UNKNOWN()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setType(mut ty: Arc<Type::NFType>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {
@@ -703,41 +695,37 @@ pub fn isFunction(mut cls: Arc<NFClass>) -> bool {
     isFunction
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEnumeration(mut cls: Arc<NFClass>) -> Result<bool> {
-    let mut isEnum: bool = false;
-    isEnum = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_BUILTIN { ty: Deref @ Type::ENUMERATION { .. }, .. } => true,
-        Deref @ INSTANCED_BUILTIN { ty: Deref @ Type::ENUMERATION { .. }, .. } => true,
-        Deref @ EXPANDED_DERIVED { .. } => isEnumeration(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?,
-        Deref @ TYPED_DERIVED { .. } => isEnumeration(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isEnum)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ PARTIAL_BUILTIN { ty: Deref @ Type::ENUMERATION { .. }, .. } => return Ok(true),
+        Deref @ INSTANCED_BUILTIN { ty: Deref @ Type::ENUMERATION { .. }, .. } => return Ok(true),
+        Deref @ EXPANDED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?; continue '__tco; },
+        Deref @ TYPED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isExternalFunction(mut cls: Arc<NFClass>) -> Result<bool> {
-    let mut isExtFunc: bool = false;
-    isExtFunc = (::match_deref::match_deref! { match &(cls.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ EXPANDED_DERIVED { .. } => {
-            isExternalFunction(InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?)?
+            { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?; continue '__tco; }
         },
         Deref @ INSTANCED_CLASS { sections: Deref @ Sections::EXTERNAL { language: lang, .. }, .. } => {
-            lang.clone() != literal!("builtin")
+            return Ok(lang.clone() != literal!("builtin"))
         },
         Deref @ TYPED_DERIVED { .. } => {
-            isExternalFunction(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?
+            { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; }
         },
         _ => {
-            false
+            return Ok(false)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isExtFunc)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
@@ -758,21 +746,19 @@ pub fn isOverdetermined(mut cls: Arc<NFClass>) -> bool {
     isOverdetermined
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPrefixes(mut cls: Arc<NFClass>) -> Result<Arc<Prefixes::Prefixes>> {
-    let mut prefs: Arc<Prefixes::Prefixes> = Arc::new(<Prefixes::Prefixes as ::std::default::Default>::default());
-    prefs = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ PARTIAL_CLASS { .. } => var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone(),
-        Deref @ PARTIAL_BUILTIN { .. } => var_field!((*cls).prefixes, NFClass::PARTIAL_BUILTIN).clone(),
-        Deref @ EXPANDED_CLASS { .. } => var_field!((*cls).prefixes, NFClass::EXPANDED_CLASS).clone(),
-        Deref @ EXPANDED_DERIVED { .. } => var_field!((*cls).prefixes, NFClass::EXPANDED_DERIVED).clone(),
-        Deref @ INSTANCED_CLASS { .. } => var_field!((*cls).prefixes, NFClass::INSTANCED_CLASS).clone(),
-        Deref @ TYPED_DERIVED { .. } => getPrefixes(InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?)?,
-        _ => DEFAULT_PREFIXES.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(prefs)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ PARTIAL_CLASS { .. } => return Ok(var_field!((*cls).prefixes, NFClass::PARTIAL_CLASS).clone()),
+        Deref @ PARTIAL_BUILTIN { .. } => return Ok(var_field!((*cls).prefixes, NFClass::PARTIAL_BUILTIN).clone()),
+        Deref @ EXPANDED_CLASS { .. } => return Ok(var_field!((*cls).prefixes, NFClass::EXPANDED_CLASS).clone()),
+        Deref @ EXPANDED_DERIVED { .. } => return Ok(var_field!((*cls).prefixes, NFClass::EXPANDED_DERIVED).clone()),
+        Deref @ INSTANCED_CLASS { .. } => return Ok(var_field!((*cls).prefixes, NFClass::INSTANCED_CLASS).clone()),
+        Deref @ TYPED_DERIVED { .. } => { cls = InstNode::getClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?; continue '__tco; },
+        _ => return Ok(DEFAULT_PREFIXES.clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFClass>) -> Result<Arc<NFClass>> {

@@ -1868,35 +1868,33 @@ pub fn reverseMatrix(mut inValue: Arc<Values::Value>) -> Result<Arc<Values::Valu
     Ok(outValue)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inValue: Arc<Values::Value>, mut lastValue: Arc<Values::Value>) -> Result<Arc<Values::Value>> {
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    outValue = (::match_deref::match_deref! { match &((inLst.clone(), inValue.clone(), lastValue.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inLst.clone(), inValue.clone(), lastValue.clone())) {
         (Deref @ metamodelica::List::Nil, _, preRes) => {
-            preRes.clone()
+            return Ok(preRes.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: n }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(n.clone())?;
             res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { index: n, .. }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(n.clone())?;
             res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(if (b.clone()) {2} else {1})?;
             res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outValue)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn valueInteger(mut inValue: Arc<Values::Value>) -> Result<i32> {

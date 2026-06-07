@@ -9926,28 +9926,26 @@ fn getTransitionsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Ar
     Ok(outTransitions)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getTransitionsInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outTransitions: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    outTransitions = (::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inTransitions.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inTransitions.clone())) {
         (Deref @ metamodelica::List::Cons { head: eqItem @ Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: eq @ Deref @ Absyn::Equation::EQ_NORETCALL { functionName: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "transition", .. }, .. }, .. }, tail: xs }, transitions) => {
             let mut transition: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut transitions = (*transitions).clone();
             transition = getTransitionInEquation(eq.clone())?;
             transition = List::insert(transition.clone(), (transition.clone().len() as i32) + 1, (getAnnotationInEquation(eqItem.clone())?).clone())?;
             transitions = listAppend(list![transition.clone()], transitions.clone());
-            getTransitionsInEquations(xs.clone(), transitions.clone())?
+            { (inAbsynEquationItemLst, inTransitions) = (xs.clone(), transitions.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: xs }, _) => {
-            getTransitionsInEquations(xs.clone(), inTransitions.clone())?
+            { (inAbsynEquationItemLst, inTransitions) = (xs.clone(), inTransitions.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            inTransitions.clone()
+            return Ok(inTransitions.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outTransitions)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getTransitionInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -10040,28 +10038,26 @@ fn getInitialStatesInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<
     Ok(outInitialStates)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getInitialStatesInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
-    let mut outInitialStates: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-    outInitialStates = (::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inInitialStates.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inAbsynEquationItemLst.clone(), inInitialStates.clone())) {
         (Deref @ metamodelica::List::Cons { head: eqItem @ Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: eq @ Deref @ Absyn::Equation::EQ_NORETCALL { functionName: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "initialState", .. }, .. }, .. }, tail: xs }, initialStates) => {
             let mut initialState: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut initialStates = (*initialStates).clone();
             initialState = getInitialStateInEquation(eq.clone())?;
             initialState = List::insert(initialState.clone(), (initialState.clone().len() as i32) + 1, (getAnnotationInEquation(eqItem.clone())?).clone())?;
             initialStates = listAppend(list![initialState.clone()], initialStates.clone());
-            getInitialStatesInEquations(xs.clone(), initialStates.clone())?
+            { (inAbsynEquationItemLst, inInitialStates) = (xs.clone(), initialStates.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: xs }, _) => {
-            getInitialStatesInEquations(xs.clone(), inInitialStates.clone())?
+            { (inAbsynEquationItemLst, inInitialStates) = (xs.clone(), inInitialStates.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            inInitialStates.clone()
+            return Ok(inInitialStates.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outInitialStates)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getInitialStateInEquation(mut inEquation: Arc<Absyn::Equation>) -> Result<Arc<metamodelica::List<ArcStr>>> {

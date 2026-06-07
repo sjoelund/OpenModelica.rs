@@ -93,21 +93,19 @@ pub fn discreteType(mut inType: Arc<DAE::Type>) -> Result<()> {
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDiscreteType(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsDiscrete: bool = false;
-    outIsDiscrete = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_INTEGER { .. } => true,
-        Deref @ DAE::Type::T_STRING { .. } => true,
-        Deref @ DAE::Type::T_BOOL { .. } => true,
-        Deref @ DAE::Type::T_CLOCK { .. } => true,
-        Deref @ DAE::Type::T_ENUMERATION { .. } => true,
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => isDiscreteType(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsDiscrete
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_INTEGER { .. } => return true,
+        Deref @ DAE::Type::T_STRING { .. } => return true,
+        Deref @ DAE::Type::T_BOOL { .. } => return true,
+        Deref @ DAE::Type::T_CLOCK { .. } => return true,
+        Deref @ DAE::Type::T_ENUMERATION { .. } => return true,
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { inType = var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn propsAnd(mut inProps: Arc<metamodelica::List<DAE::Properties>>) -> Result<DAE::Properties> {
@@ -301,88 +299,82 @@ pub fn simpleType(mut inType: Arc<DAE::Type>) -> Result<()> {
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isSimpleType(mut inType: Arc<DAE::Type>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_INTEGER { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_STRING { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_BOOL { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_CLOCK { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_ENUMERATION { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-            isSimpleType(t.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: t, .. } => {
-            isSimpleType(t.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isSimpleNumericType(mut inType: Arc<DAE::Type>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_INTEGER { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-            isSimpleNumericType(t.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: t, .. } => {
-            isSimpleNumericType(t.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNumericType(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outBool: bool = false;
-    outBool = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty, .. } => {
-            isNumericType(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isNumericType(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, .. } => {
-            isNumericType(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            isSimpleNumericType(inType.clone())
+            return isSimpleNumericType(inType.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outBool
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isConnector(mut inType: Arc<DAE::Type>) -> bool {
@@ -417,26 +409,24 @@ pub fn isComplexExpandableConnector(mut inType: Arc<DAE::Type>) -> bool {
     outResult
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isComplexType(mut ity: Arc<DAE::Type>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(ity.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ity.clone()) {
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isComplexType(ty.clone())
+            { ity = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, .. } => {
-            isComplexType(ty.clone())
+            { ity = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_COMPLEX { varLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. } => {
-            true
+            return true
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isExternalObject(mut tp: Arc<DAE::Type>) -> bool {
@@ -640,23 +630,21 @@ pub fn isReal(mut tp: Arc<DAE::Type>) -> bool {
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarReal(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsScalarReal: bool = false;
-    outIsScalarReal = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isScalarReal(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsScalarReal
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isRealOrSubTypeReal(mut inType: Arc<DAE::Type>) -> Result<bool> {
@@ -764,23 +752,21 @@ pub fn isClock(mut tp: Arc<DAE::Type>) -> bool {
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarClock(mut inType: Arc<DAE::Type>) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_CLOCK { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isScalarClock(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isInteger(mut tp: Arc<DAE::Type>) -> bool {
@@ -789,23 +775,21 @@ pub fn isInteger(mut tp: Arc<DAE::Type>) -> bool {
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarInteger(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsScalarInteger: bool = false;
-    outIsScalarInteger = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isScalarInteger(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsScalarInteger
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isBoolean(mut tp: Arc<DAE::Type>) -> bool {
@@ -814,23 +798,21 @@ pub fn isBoolean(mut tp: Arc<DAE::Type>) -> bool {
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarBoolean(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsScalarBoolean: bool = false;
-    outIsScalarBoolean = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_BOOL { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isScalarBoolean(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsScalarBoolean
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn integerOrReal(mut inType: Arc<DAE::Type>) -> Result<()> {
@@ -901,18 +883,16 @@ pub fn isNonscalarArray(mut inType: Arc<DAE::Type>, mut inDims: Arc<metamodelica
     Ok(outBoolean)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isArray(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsArray: bool = false;
-    outIsArray = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_ARRAY { .. } => true,
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => isArray(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
-        Deref @ DAE::Type::T_FUNCTION { .. } => isArray(var_field!((*inType).funcResultType, DAE::Type::T_FUNCTION).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsArray
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_ARRAY { .. } => return true,
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { inType = var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; },
+        Deref @ DAE::Type::T_FUNCTION { .. } => { inType = var_field!((*inType).funcResultType, DAE::Type::T_FUNCTION).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isEmptyArray(mut inType: Arc<DAE::Type>) -> bool {
@@ -1110,31 +1090,29 @@ pub fn getDimensionSizes(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica:
     Ok(outIntegerLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getDimensionProduct(mut inType: Arc<DAE::Type>) -> Result<i32> {
-    let mut sz: i32 = 0;
-    sz = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { dims, ty: tp } => {
-            ({
+            return Ok(({
         let mut __acc: i32 = 1;
         for mut d in (dims.clone()).into_iter().cloned() {
             let __x = Expression::dimensionSize(d.clone())?;
             __acc *= __x;
         }
         __acc
-    }) * getDimensionProduct(tp.clone())?
+    }) * getDimensionProduct(tp.clone())?)
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: tp, .. } => {
-            getDimensionProduct(tp.clone())?
+            { inType = tp.clone(); continue '__tco; }
         },
         _ => {
             let false = (arrayType(inType.clone())) else { bail!("pattern mismatch") };
-            1
+            return Ok(1)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(sz)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getDimensionNth(mut inType: Arc<DAE::Type>, mut inDim: i32) -> Result<Arc<DAE::Dimension>> {
@@ -1496,16 +1474,14 @@ pub fn extendsBasicType(mut inType: Arc<DAE::Type>) -> bool {
     outBoolean
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn derivedBasicType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    outType = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => derivedBasicType(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
-        _ => inType.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outType
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { inType = var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; },
+        _ => return inType.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn arrayType(mut inType: Arc<DAE::Type>) -> bool {
@@ -2453,23 +2429,21 @@ pub fn liftArrayRight(mut inType: Arc<DAE::Type>, mut inIntegerOption: Arc<DAE::
     Ok(outType)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn unliftArray(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    outType = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty, .. } => {
-            ty.clone()
+            return Ok(ty.clone())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            unliftArray(ty.clone())?
+            { inType = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, .. } => {
-            unliftArray(ty.clone())?
+            { inType = ty.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outType)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn unliftArrayOrList(mut inType: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, Arc<DAE::Dimension>)> {
@@ -2499,18 +2473,16 @@ pub fn unliftArrayOrList(mut inType: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, 
     Ok((outType, dim))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayElementType(mut inType: Arc<DAE::Type>) -> Arc<DAE::Type> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    outType = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_ARRAY { .. } => arrayElementType(var_field!((*inType).ty, DAE::Type::T_ARRAY).clone()),
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => if (TypesDump::getDimensions(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()).is_empty()) {inType.clone()} else {arrayElementType(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone())},
-        Deref @ DAE::Type::T_FUNCTION { .. } => arrayElementType(var_field!((*inType).funcResultType, DAE::Type::T_FUNCTION).clone()),
-        _ => inType.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outType
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_ARRAY { .. } => { inType = var_field!((*inType).ty, DAE::Type::T_ARRAY).clone(); continue '__tco; },
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => if (TypesDump::getDimensions(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()).is_empty()) {return inType.clone()} else {{ inType = var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; }},
+        Deref @ DAE::Type::T_FUNCTION { .. } => { inType = var_field!((*inType).funcResultType, DAE::Type::T_FUNCTION).clone(); continue '__tco; },
+        _ => return inType.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn setArrayElementType(mut inType: Arc<DAE::Type>, mut inBaseType: Arc<DAE::Type>) -> Arc<DAE::Type> {
@@ -2612,16 +2584,14 @@ fn makeElementReturnTypeSingle(mut inElement: Arc<DAE::Element>) -> Result<Arc<D
     Ok(outType)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getNthEnumLiteral(mut ty: Arc<DAE::Type>, mut n: i32) -> Result<Arc<DAE::Exp>> {
-    let mut literalExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    literalExp = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_ENUMERATION { .. } => Arc::new(DAE::Exp::ENUM_LITERAL { name: AbsynUtil::joinPaths(var_field!((*ty).path, DAE::Type::T_ENUMERATION).clone(), Arc::new(Absyn::Path::IDENT { name: ((var_field!((*ty).names, DAE::Type::T_ENUMERATION).clone()).get(n.clone())?).clone() }))?, index: n.clone() }),
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => getNthEnumLiteral(var_field!((*ty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), n.clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(literalExp)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ DAE::Type::T_ENUMERATION { .. } => return Ok(Arc::new(DAE::Exp::ENUM_LITERAL { name: AbsynUtil::joinPaths(var_field!((*ty).path, DAE::Type::T_ENUMERATION).clone(), Arc::new(Absyn::Path::IDENT { name: ((var_field!((*ty).names, DAE::Type::T_ENUMERATION).clone()).get(n.clone())?).clone() }))?, index: n.clone() })),
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { (ty, n) = (var_field!((*ty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), n.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn makeEnumerationType(mut inPath: Arc<Absyn::Path>, mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
@@ -5705,48 +5675,46 @@ pub fn boxIfUnboxedType(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
     Ok(outType)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn unboxedType(mut ity: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
-    let mut out: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    out = (::match_deref::match_deref! { match &(ity.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ity.clone()) {
         Deref @ DAE::Type::T_METABOXED { .. } => {
-            unboxedType(var_field!((*ity).ty, DAE::Type::T_METABOXED).clone())?
+            { ity = var_field!((*ity).ty, DAE::Type::T_METABOXED).clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_METAOPTION { .. } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METAOPTION).clone())?;
             ty = boxIfUnboxedType(ty.clone())?;
-            Arc::new(DAE::Type::T_METAOPTION { ty: ty.clone() })
+            return Ok(Arc::new(DAE::Type::T_METAOPTION { ty: ty.clone() }))
         },
         Deref @ DAE::Type::T_METALIST { .. } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METALIST).clone())?;
             ty = boxIfUnboxedType(ty.clone())?;
-            Arc::new(DAE::Type::T_METALIST { ty: ty.clone() })
+            return Ok(Arc::new(DAE::Type::T_METALIST { ty: ty.clone() }))
         },
         Deref @ DAE::Type::T_METATUPLE { .. } => {
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             tys = List::mapMap(var_field!((*ity).types, DAE::Type::T_METATUPLE).clone(), (std::sync::Arc::new(unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>), (std::sync::Arc::new(boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
-            Arc::new(DAE::Type::T_METATUPLE { types: tys.clone() })
+            return Ok(Arc::new(DAE::Type::T_METATUPLE { types: tys.clone() }))
         },
         Deref @ DAE::Type::T_METAARRAY { .. } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
             ty = unboxedType(var_field!((*ity).ty, DAE::Type::T_METAARRAY).clone())?;
             ty = boxIfUnboxedType(ty.clone())?;
-            Arc::new(DAE::Type::T_METAARRAY { ty: ty.clone() })
+            return Ok(Arc::new(DAE::Type::T_METAARRAY { ty: ty.clone() }))
         },
         t @ Deref @ DAE::Type::T_ARRAY { .. } => {
             let mut t = (*t).clone();
             assign_variant_field!(t => DAE::Type::T_ARRAY; ty = unboxedType(var_field!((*t).ty, DAE::Type::T_ARRAY).clone())?);
-            t.clone()
+            return Ok(t.clone())
         },
         _ => {
-            ity.clone()
+            return Ok(ity.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn listMatchSuperType(mut ielist: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut typeList: Arc<metamodelica::List<Arc<DAE::Type>>>, mut printFailtrace: bool) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<DAE::Type>)> {
@@ -6625,28 +6593,26 @@ pub fn resTypeToListTypes(mut inType: Arc<DAE::Type>) -> Arc<metamodelica::List<
     outType
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRealOrIntegerDimensions(mut inType: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::Dimension>>>> {
-    let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-    outDims = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_REAL { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ DAE::Type::T_INTEGER { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            getRealOrIntegerDimensions(ty.clone())?
+            { inType = ty.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: d @ Deref @ DAE::Dimension::DIM_INTEGER { integer: _ }, tail: Deref @ metamodelica::List::Nil }, ty } => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             dims = getRealOrIntegerDimensions(ty.clone())?;
-            metamodelica::cons(d.clone(), dims.clone())
+            return Ok(metamodelica::cons(d.clone(), dims.clone()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outDims)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isPolymorphic(mut ty: Arc<DAE::Type>) -> bool {
@@ -7370,23 +7336,21 @@ fn subtypePolymorphic(mut actual: Arc<DAE::Type>, mut expected: Arc<DAE::Type>, 
     Ok(bindings)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn subtypePolymorphicList(mut actual: Arc<metamodelica::List<Arc<DAE::Type>>>, mut expected: Arc<metamodelica::List<Arc<DAE::Type>>>, mut envPath: Option<Arc<Absyn::Path>>, mut ibindings: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>) -> Result<Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>> {
-    let mut outBindings: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>> = metamodelica::nil();
-    outBindings = (::match_deref::match_deref! { match &((actual.clone(), expected.clone(), ibindings.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((actual.clone(), expected.clone(), ibindings.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, bindings) => {
-            bindings.clone()
+            return Ok(bindings.clone())
         },
         (Deref @ metamodelica::List::Cons { head: ty1, tail: tList1 }, Deref @ metamodelica::List::Cons { head: ty2, tail: tList2 }, bindings) => {
             let mut bindings = (*bindings).clone();
             bindings = subtypePolymorphic(ty1.clone(), ty2.clone(), envPath.clone(), bindings.clone())?;
             bindings = subtypePolymorphicList(tList1.clone(), tList2.clone(), envPath.clone(), bindings.clone())?;
-            bindings.clone()
+            return Ok(bindings.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outBindings)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn boxVarLst(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
@@ -7761,23 +7725,21 @@ pub fn makeRegularTupleFromMetaTupleOnTrue(mut b: bool, mut ty: Arc<DAE::Type>) 
     Ok(out)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn allTuple(mut itys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(itys.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(itys.clone()) {
         Deref @ metamodelica::List::Nil => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_TUPLE { .. }, tail: tys } => {
-            allTuple(tys.clone())
+            { itys = tys.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn unboxedFunctionType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
@@ -8115,23 +8077,21 @@ pub fn varKindToConst(mut varKind: DAE::VarKind) -> Result<DAE::Const> {
     Ok(r#const)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isValidFunctionVarType(mut inType: Arc<DAE::Type>) -> bool {
-    let mut outIsValid: bool = false;
-    outIsValid = (::match_deref::match_deref! { match &(inType.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_COMPLEX { complexClassType: state, .. } => {
-            isValidFunctionVarState(state.clone())
+            return isValidFunctionVarState(state.clone())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
-            isValidFunctionVarType(ty.clone())
+            { inType = ty.clone(); continue '__tco; }
         },
         _ => {
-            true
+            return true
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsValid
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn isValidFunctionVarState(mut inState: ClassInf::State) -> bool {
@@ -9162,46 +9122,40 @@ pub fn arrayHasUnknownDims(mut inType: Arc<DAE::Type>) -> Result<bool> {
     Ok(outUnknownDims)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn metaArrayElementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    outType = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_METAARRAY { .. } => var_field!((*inType).ty, DAE::Type::T_METAARRAY).clone(),
-        Deref @ DAE::Type::T_METATYPE { .. } => metaArrayElementType(var_field!((*inType).ty, DAE::Type::T_METATYPE).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outType)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_METAARRAY { .. } => return Ok(var_field!((*inType).ty, DAE::Type::T_METAARRAY).clone()),
+        Deref @ DAE::Type::T_METATYPE { .. } => { inType = var_field!((*inType).ty, DAE::Type::T_METATYPE).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isMetaArray(mut inType: Arc<DAE::Type>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_METAARRAY { .. } => true,
-        Deref @ DAE::Type::T_METATYPE { .. } => isMetaArray(var_field!((*inType).ty, DAE::Type::T_METATYPE).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_METAARRAY { .. } => return true,
+        Deref @ DAE::Type::T_METATYPE { .. } => { inType = var_field!((*inType).ty, DAE::Type::T_METATYPE).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getAttributes(mut inType: Arc<DAE::Type>) -> Arc<metamodelica::List<Arc<DAE::Var>>> {
-    let mut outAttributes: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-    outAttributes = (::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_REAL { .. } => var_field!((*inType).varLst, DAE::Type::T_REAL).clone(),
-        Deref @ DAE::Type::T_INTEGER { .. } => var_field!((*inType).varLst, DAE::Type::T_INTEGER).clone(),
-        Deref @ DAE::Type::T_STRING { .. } => var_field!((*inType).varLst, DAE::Type::T_STRING).clone(),
-        Deref @ DAE::Type::T_BOOL { .. } => var_field!((*inType).varLst, DAE::Type::T_BOOL).clone(),
-        Deref @ DAE::Type::T_ENUMERATION { .. } => var_field!((*inType).attributeLst, DAE::Type::T_ENUMERATION).clone(),
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => getAttributes(var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
-        _ => metamodelica::nil(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outAttributes
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inType.clone()) {
+        Deref @ DAE::Type::T_REAL { .. } => return var_field!((*inType).varLst, DAE::Type::T_REAL).clone(),
+        Deref @ DAE::Type::T_INTEGER { .. } => return var_field!((*inType).varLst, DAE::Type::T_INTEGER).clone(),
+        Deref @ DAE::Type::T_STRING { .. } => return var_field!((*inType).varLst, DAE::Type::T_STRING).clone(),
+        Deref @ DAE::Type::T_BOOL { .. } => return var_field!((*inType).varLst, DAE::Type::T_BOOL).clone(),
+        Deref @ DAE::Type::T_ENUMERATION { .. } => return var_field!((*inType).attributeLst, DAE::Type::T_ENUMERATION).clone(),
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { inType = var_field!((*inType).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; },
+        _ => return metamodelica::nil(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn lookupAttributeValue(mut inAttributes: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inName: ArcStr) -> Result<Option<Arc<Values::Value>>> {
@@ -9318,17 +9272,15 @@ pub fn isExpandableConnector(mut ty: Arc<DAE::Type>) -> bool {
     isExpandable
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getBasicType(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    outType = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_ARRAY { .. } => getBasicType(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone()),
-        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => getBasicType(var_field!((*ty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone()),
-        _ => ty.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outType
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ DAE::Type::T_ARRAY { .. } => { ty = var_field!((*ty).ty, DAE::Type::T_ARRAY).clone(); continue '__tco; },
+        Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => { ty = var_field!((*ty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(); continue '__tco; },
+        _ => return ty.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn resultExps(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {

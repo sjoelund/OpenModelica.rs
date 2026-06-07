@@ -2639,45 +2639,43 @@ fn aliasEquation2(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut inTpls: Ar
     Ok(outTpls)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn aliasRecord(mut cr: Arc<DAE::ComponentRef>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTpls: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>> {
-    let mut outTpls: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>> = metamodelica::nil();
-    outTpls = (::match_deref::match_deref! { match &((varLst.clone(), explst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((varLst.clone(), explst.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inTpls.clone()
+            return Ok(inTpls.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: ident, ty, .. }, tail: vlst }, Deref @ metamodelica::List::Cons { head: e2 @ Deref @ DAE::Exp::CREF { componentRef: cr2, .. }, tail: elst }) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (ident.clone()).clone(), metamodelica::nil(), ty.clone())?;
             e1 = Arc::new(DAE::Exp::CREF { componentRef: cr1.clone(), ty: ty.clone() });
-            aliasRecord(cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), false), inTpls.clone()))?
+            { (cr, varLst, explst, inTpls) = (cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), false), inTpls.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: ident, ty, .. }, tail: vlst }, Deref @ metamodelica::List::Cons { head: e2 @ Deref @ DAE::Exp::UNARY { operator: op @ DAE::Operator::UMINUS { ty: _ }, exp: Deref @ DAE::Exp::CREF { componentRef: cr2, .. } }, tail: elst }) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (ident.clone()).clone(), metamodelica::nil(), ty.clone())?;
             e1 = Arc::new(DAE::Exp::UNARY { operator: op.clone(), exp: Arc::new(DAE::Exp::CREF { componentRef: cr1.clone(), ty: ty.clone() }) });
-            aliasRecord(cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone()))?
+            { (cr, varLst, explst, inTpls) = (cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: ident, ty, .. }, tail: vlst }, Deref @ metamodelica::List::Cons { head: e2 @ Deref @ DAE::Exp::UNARY { operator: op @ DAE::Operator::UMINUS_ARR { ty: _ }, exp: Deref @ DAE::Exp::CREF { componentRef: cr2, .. } }, tail: elst }) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (ident.clone()).clone(), metamodelica::nil(), ty.clone())?;
             e1 = Arc::new(DAE::Exp::UNARY { operator: op.clone(), exp: Arc::new(DAE::Exp::CREF { componentRef: cr1.clone(), ty: ty.clone() }) });
-            aliasRecord(cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone()))?
+            { (cr, varLst, explst, inTpls) = (cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name: ident, ty, .. }, tail: vlst }, Deref @ metamodelica::List::Cons { head: e2 @ Deref @ DAE::Exp::LUNARY { operator: op @ DAE::Operator::NOT { ty: _ }, exp: Deref @ DAE::Exp::CREF { componentRef: cr2, .. } }, tail: elst }) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             cr1 = ComponentReference::crefPrependIdent(cr.clone(), (ident.clone()).clone(), metamodelica::nil(), ty.clone())?;
             e1 = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: Arc::new(DAE::Exp::CREF { componentRef: cr1.clone(), ty: ty.clone() }) });
-            aliasRecord(cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone()))?
+            { (cr, varLst, explst, inTpls) = (cr.clone(), vlst.clone(), elst.clone(), metamodelica::cons((cr1.clone(), cr2.clone(), e1.clone(), e2.clone(), true), inTpls.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outTpls)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn aliasExpression(mut exp: Arc<DAE::Exp>, mut inTpls: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>) -> Result<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, Arc<DAE::Exp>, Arc<DAE::Exp>, bool)>>> {
@@ -3085,38 +3083,36 @@ fn markDifferentiated2(mut attr: BackendDAE::EquationAttributes) -> BackendDAE::
     attr
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDifferentiated(mut inEqn: Arc<BackendDAE::Equation>) -> Result<bool> {
-    let mut diffed: bool = false;
-    diffed = (::match_deref::match_deref! { match &(inEqn.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqn.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::ARRAY_EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::SOLVED_EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::ALGORITHM { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { attr: BackendDAE::EquationAttributes { differentiated: b, .. }, .. } => {
-            b.clone()
+            return Ok(b.clone())
         },
         Deref @ BackendDAE::Equation::IF_EQUATION { eqnsfalse: Deref @ metamodelica::List::Cons { head: eqn, tail: _ }, .. } => {
-            isDifferentiated(eqn.clone())?
+            { inEqn = eqn.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(diffed)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn replaceDerOpInEquationList(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
@@ -3204,26 +3200,24 @@ pub fn scalarComplexEquations(mut inEquation: Arc<BackendDAE::Equation>, mut fun
     Ok(outEquations)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn allAlgorithmsLst(mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(eqn_lst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eqn_lst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { .. }, tail: Deref @ metamodelica::List::Nil } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { .. }, tail: rest } => {
-            allAlgorithmsLst(rest.clone())
+            { eqn_lst = rest.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn createResidualExp(mut eqn: Arc<BackendDAE::Equation>) -> Result<Arc<DAE::Exp>> {

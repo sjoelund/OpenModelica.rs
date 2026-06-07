@@ -352,17 +352,15 @@ fn applyReplacementsDim(mut map: ArgumentMap, mut dim: Arc<Dimension::NFDimensio
     Ok(dim)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: ArgumentMap, mut mutableParams: bool) -> Result<Arc<Expression::NFExpression>> {
-    let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut cls_node: Arc<InstNode::InstNode> = InstNode::classScope(recordNode.clone());
-    let mut cls: Arc<Class::NFClass> = InstNode::getClass(cls_node.clone())?;
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
-    let mut bindings: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut local_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
-    result = (::match_deref::match_deref! { match &(cls.clone()) {
+    '__tco: loop {
+        let mut cls_node: Arc<InstNode::InstNode> = InstNode::classScope(recordNode.clone());
+        let mut cls: Arc<Class::NFClass> = InstNode::getClass(cls_node.clone())?;
+        let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
+        let mut bindings: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        let mut local_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
+        ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: __esc_comps, .. }, .. } => {
             comps = (*__esc_comps).clone();
             bindings = metamodelica::nil();
@@ -377,12 +375,12 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
             }
             UnorderedMap::apply(local_map.clone(), (std::sync::Arc::new({ let __pe_b1 = local_map.clone(); move |__pe_a0| applyBindingReplacement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             bindings = UnorderedMap::valueList(local_map.clone());
-            Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false)?, var_field!((*cls).ty, Class::NFClass::INSTANCED_CLASS).clone(), bindings.clone())
+            return Ok(Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false)?, var_field!((*cls).ty, Class::NFClass::INSTANCED_CLASS).clone(), bindings.clone()))
         },
-        Deref @ Class::TYPED_DERIVED { .. } => buildRecordBinding(var_field!((*cls).baseClass, Class::NFClass::TYPED_DERIVED).clone(), map.clone(), mutableParams.clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(result)
+        Deref @ Class::TYPED_DERIVED { .. } => { (recordNode, map, mutableParams) = (var_field!((*cls).baseClass, Class::NFClass::TYPED_DERIVED).clone(), map.clone(), mutableParams.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn applyBindingReplacement(mut exp: Arc<Expression::NFExpression>, mut map: ArgumentMap) -> Result<Arc<Expression::NFExpression>> {

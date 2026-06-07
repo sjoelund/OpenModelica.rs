@@ -203,23 +203,21 @@ fn collect(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel:
     Ok((flatModel, conns))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isConnection(mut eq: Arc<Equation::NFEquation>) -> bool {
-    let mut isConn: bool = false;
-    isConn = (::match_deref::match_deref! { match &(eq.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::CONNECT { .. } => {
-            true
+            return true
         },
         Deref @ Equation::FOR { body: Deref @ metamodelica::List::Cons { head: e, tail: _ }, .. } => {
-            isConnection(e.clone())
+            { eq = e.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isConn
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn createGraph(mut variables: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut graph: SBGraph, mut vCount: Arc<Vector::Vector<i32>>, mut eCount: Arc<Vector::Vector<i32>>, mut nmvTable: NameVertexTable) -> Result<()> {

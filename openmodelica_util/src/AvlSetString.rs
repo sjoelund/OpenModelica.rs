@@ -177,8 +177,6 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
     outBalance
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
     let mut key: Key = arcstr::literal!("");
@@ -479,16 +477,14 @@ pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc
     Ok(res)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
-    let mut key: Key = arcstr::literal!("");
-    key = ((::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => var_field!((*tree).key, Tree::NODE).clone(),
-        Deref @ Tree::NODE { .. } => smallestKey(var_field!((*tree).right, Tree::NODE).clone())?,
-        Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(key)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(tree.clone()) {
+        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
+        Deref @ Tree::NODE { .. } => { tree = var_field!((*tree).right, Tree::NODE).clone(); continue '__tco; },
+        Deref @ Tree::LEAF { .. } => return Ok(var_field!((*tree).key, Tree::LEAF).clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 

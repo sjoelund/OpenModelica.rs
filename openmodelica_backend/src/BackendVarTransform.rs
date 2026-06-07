@@ -186,22 +186,20 @@ pub fn removeReplacements(mut iRepl: VariableReplacements, mut inSrcs: Arc<metam
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addReplacements(mut iRepl: VariableReplacements, mut inSrcs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inDsts: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<VariableReplacements> {
-    let mut outRepl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
-    outRepl = (::match_deref::match_deref! { match &((inSrcs.clone(), inDsts.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inSrcs.clone(), inDsts.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            iRepl.clone()
+            return Ok(iRepl.clone())
         },
         (Deref @ metamodelica::List::Cons { head: cr, tail: crlst }, Deref @ metamodelica::List::Cons { head: exp, tail: explst }) => {
             let mut repl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
             repl = addReplacement(iRepl.clone(), cr.clone(), exp.clone(), inFuncTypeExpExpToBooleanOption.clone())?;
-            addReplacements(repl.clone(), crlst.clone(), explst.clone(), inFuncTypeExpExpToBooleanOption.clone())?
+            { (iRepl, inSrcs, inDsts, inFuncTypeExpExpToBooleanOption) = (repl.clone(), crlst.clone(), explst.clone(), inFuncTypeExpExpToBooleanOption.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outRepl)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::ComponentRef>, mut inDst: Arc<DAE::Exp>, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<VariableReplacements> {

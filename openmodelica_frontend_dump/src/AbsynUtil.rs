@@ -863,34 +863,30 @@ pub fn crefExp(mut cr: Arc<Absyn::ComponentRef>) -> Arc<Absyn::Exp> {
     exp
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathEqual(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
-    let mut equal: bool = false;
-    equal = (::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
-        (Deref @ Absyn::Path::FULLYQUALIFIED { .. }, _) => pathEqual(var_field!((*path1).path, Absyn::Path::FULLYQUALIFIED).clone(), path2.clone()),
-        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => pathEqual(path1.clone(), var_field!((*path2).path, Absyn::Path::FULLYQUALIFIED).clone()),
-        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::IDENT { .. }) => stringEq((var_field!((*path1).name, Absyn::Path::IDENT).clone()).clone(), (var_field!((*path2).name, Absyn::Path::IDENT).clone()).clone()),
-        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) => stringEq((var_field!((*path1).name, Absyn::Path::QUALIFIED).clone()).clone(), (var_field!((*path2).name, Absyn::Path::QUALIFIED).clone()).clone()) && pathEqual(var_field!((*path1).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path2).path, Absyn::Path::QUALIFIED).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    equal
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
+        (Deref @ Absyn::Path::FULLYQUALIFIED { .. }, _) => { (path1, path2) = (var_field!((*path1).path, Absyn::Path::FULLYQUALIFIED).clone(), path2.clone()); continue '__tco; },
+        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => { (path1, path2) = (path1.clone(), var_field!((*path2).path, Absyn::Path::FULLYQUALIFIED).clone()); continue '__tco; },
+        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::IDENT { .. }) => return stringEq((var_field!((*path1).name, Absyn::Path::IDENT).clone()).clone(), (var_field!((*path2).name, Absyn::Path::IDENT).clone()).clone()),
+        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) => return stringEq((var_field!((*path1).name, Absyn::Path::QUALIFIED).clone()).clone(), (var_field!((*path2).name, Absyn::Path::QUALIFIED).clone()).clone()) && pathEqual(var_field!((*path1).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path2).path, Absyn::Path::QUALIFIED).clone()),
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathEqualCaseInsensitive(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>) -> bool {
-    let mut equal: bool = false;
-    equal = (::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
-        (Deref @ Absyn::Path::FULLYQUALIFIED { .. }, _) => pathEqualCaseInsensitive(var_field!((*path1).path, Absyn::Path::FULLYQUALIFIED).clone(), path2.clone()),
-        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => pathEqualCaseInsensitive(path1.clone(), var_field!((*path2).path, Absyn::Path::FULLYQUALIFIED).clone()),
-        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::IDENT { .. }) => stringEq((System::tolower((var_field!((*path1).name, Absyn::Path::IDENT).clone()).clone())).clone(), (System::tolower((var_field!((*path2).name, Absyn::Path::IDENT).clone()).clone())).clone()),
-        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) => stringEq((System::tolower((var_field!((*path1).name, Absyn::Path::QUALIFIED).clone()).clone())).clone(), (System::tolower((var_field!((*path2).name, Absyn::Path::QUALIFIED).clone()).clone())).clone()) && pathEqualCaseInsensitive(var_field!((*path1).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path2).path, Absyn::Path::QUALIFIED).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    equal
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((path1.clone(), path2.clone())) {
+        (Deref @ Absyn::Path::FULLYQUALIFIED { .. }, _) => { (path1, path2) = (var_field!((*path1).path, Absyn::Path::FULLYQUALIFIED).clone(), path2.clone()); continue '__tco; },
+        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => { (path1, path2) = (path1.clone(), var_field!((*path2).path, Absyn::Path::FULLYQUALIFIED).clone()); continue '__tco; },
+        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::IDENT { .. }) => return stringEq((System::tolower((var_field!((*path1).name, Absyn::Path::IDENT).clone()).clone())).clone(), (System::tolower((var_field!((*path2).name, Absyn::Path::IDENT).clone()).clone())).clone()),
+        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) => return stringEq((System::tolower((var_field!((*path1).name, Absyn::Path::QUALIFIED).clone()).clone())).clone(), (System::tolower((var_field!((*path2).name, Absyn::Path::QUALIFIED).clone()).clone())).clone()) && pathEqualCaseInsensitive(var_field!((*path1).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path2).path, Absyn::Path::QUALIFIED).clone()),
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn typeSpecEqual(mut a: Arc<Absyn::TypeSpec>, mut b: Arc<Absyn::TypeSpec>) -> Result<bool> {
@@ -1178,17 +1174,15 @@ pub fn stringListPathReversed(mut inStrings: Arc<metamodelica::List<ArcStr>>) ->
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathLastIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::QUALIFIED { .. } => pathLastIdent(var_field!((*path).path, Absyn::Path::QUALIFIED).clone())?,
-        Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone(),
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathLastIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(outIdent)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::QUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::QUALIFIED).clone(); continue '__tco; },
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(var_field!((*path).name, Absyn::Path::IDENT).clone()),
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn pathSetLastIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Result<Arc<Absyn::Path>> {
@@ -1213,17 +1207,15 @@ pub fn pathLast(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     Ok(path)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathFirstIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathFirstIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        Deref @ Absyn::Path::QUALIFIED { .. } => var_field!((*path).name, Absyn::Path::QUALIFIED).clone(),
-        Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(outIdent)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(); continue '__tco; },
+        Deref @ Absyn::Path::QUALIFIED { .. } => return Ok(var_field!((*path).name, Absyn::Path::QUALIFIED).clone()),
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(var_field!((*path).name, Absyn::Path::IDENT).clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Result<Arc<Absyn::Path>> {
@@ -1237,36 +1229,32 @@ pub fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Resul
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathFirstPath(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => path.clone(),
-        Deref @ Absyn::Path::QUALIFIED { .. } => Arc::new(Absyn::Path::IDENT { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone() }),
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathFirstPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outPath)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(path.clone()),
+        Deref @ Absyn::Path::QUALIFIED { .. } => return Ok(Arc::new(Absyn::Path::IDENT { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone() })),
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathSecondIdent(mut inPath: Arc<Absyn::Path>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::QUALIFIED { name: n, .. }, .. } => {
-            n.clone()
+            return Ok(n.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: n }, .. } => {
-            n.clone()
+            return Ok(n.clone())
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
-            pathSecondIdent(p.clone())?
+            { inPath = p.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outIdent)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn pathNthIdent(mut path: Arc<Absyn::Path>, mut n: i32) -> Result<ArcStr> {
@@ -1332,17 +1320,15 @@ pub fn pathStripSamePrefix(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPrefix(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut prefix: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    prefix = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathPrefix(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { .. }, .. } => Arc::new(Absyn::Path::IDENT { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone() }),
-        Deref @ Absyn::Path::QUALIFIED { .. } => Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), path: pathPrefix(var_field!((*path).path, Absyn::Path::QUALIFIED).clone())? }),
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(prefix)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(); continue '__tco; },
+        Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { .. }, .. } => return Ok(Arc::new(Absyn::Path::IDENT { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone() })),
+        Deref @ Absyn::Path::QUALIFIED { .. } => return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), path: pathPrefix(var_field!((*path).path, Absyn::Path::QUALIFIED).clone())? })),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn prefixPath(mut prefix: ArcStr, mut path: Arc<Absyn::Path>) -> Arc<Absyn::Path> {
@@ -1426,17 +1412,15 @@ pub fn pathToStringList(mut path: Arc<Absyn::Path>) -> Result<Arc<metamodelica::
     Ok(outPaths)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathToStringListReverse(mut path: Arc<Absyn::Path>, mut acc: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    outPaths = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => metamodelica::cons((var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), acc.clone()),
-        Deref @ Absyn::Path::QUALIFIED { .. } => pathToStringListReverse(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), metamodelica::cons((var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), acc.clone()))?,
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathToStringListReverse(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), acc.clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outPaths)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(metamodelica::cons((var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), acc.clone())),
+        Deref @ Absyn::Path::QUALIFIED { .. } => { (path, acc) = (var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), metamodelica::cons((var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), acc.clone())); continue '__tco; },
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { (path, acc) = (var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), acc.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addSubscriptsLast(mut icr: Arc<Absyn::ComponentRef>, mut i: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
@@ -1496,67 +1480,61 @@ pub fn crefReplaceFirstIdent(mut icref: Arc<Absyn::ComponentRef>, mut replPath: 
     Ok(outCref)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPrefixOf(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> bool {
-    let mut isPrefix: bool = false;
-    isPrefix = (::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: p }, p2) => {
-            pathPrefixOf(p.clone(), p2.clone())
+            { (prefixPath, path) = (p.clone(), p2.clone()); continue '__tco; }
         },
         (p, Deref @ Absyn::Path::FULLYQUALIFIED { path: p2 }) => {
-            pathPrefixOf(p.clone(), p2.clone())
+            { (prefixPath, path) = (p.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ Absyn::Path::IDENT { name: id }, Deref @ Absyn::Path::IDENT { name: id2 }) => {
-            stringEq((id.clone()).clone(), (id2.clone()).clone())
+            return stringEq((id.clone()).clone(), (id2.clone()).clone())
         },
         (Deref @ Absyn::Path::IDENT { name: id }, Deref @ Absyn::Path::QUALIFIED { name: id2, .. }) => {
-            stringEq((id.clone()).clone(), (id2.clone()).clone())
+            return stringEq((id.clone()).clone(), (id2.clone()).clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id, path: p }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: p2 }) => {
-            stringEq((id.clone()).clone(), (id2.clone()).clone()) && pathPrefixOf(p.clone(), p2.clone())
+            return stringEq((id.clone()).clone(), (id2.clone()).clone()) && pathPrefixOf(p.clone(), p2.clone())
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isPrefix
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removePrefix(mut prefix_path: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut newPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    newPath = (::match_deref::match_deref! { match &((prefix_path.clone(), path.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((prefix_path.clone(), path.clone())) {
         (p, Deref @ Absyn::Path::FULLYQUALIFIED { path: p2 }) => {
-            removePrefix(p.clone(), p2.clone())?
+            { (prefix_path, path) = (p.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id1, path: p }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: p2 }) => {
             let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
-            removePrefix(p.clone(), p2.clone())?
+            { (prefix_path, path) = (p.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ Absyn::Path::IDENT { name: id1 }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: p2 }) => {
             let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
-            p2.clone()
+            return Ok(p2.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(newPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removePrefixOpt(mut prefixPath: Arc<Absyn::Path>, mut path: Arc<Absyn::Path>) -> Option<Arc<Absyn::Path>> {
-    let mut outPath: Option<Arc<Absyn::Path>> = None;
-    outPath = (::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
-        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => removePrefixOpt(prefixPath.clone(), var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone()),
-        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) if (var_field!((*prefixPath).name, Absyn::Path::QUALIFIED).clone() == var_field!((*path).name, Absyn::Path::QUALIFIED).clone()) => removePrefixOpt(var_field!((*prefixPath).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path).path, Absyn::Path::QUALIFIED).clone()),
-        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) if (var_field!((*prefixPath).name, Absyn::Path::IDENT).clone() == var_field!((*path).name, Absyn::Path::QUALIFIED).clone()) => Some(var_field!((*path).path, Absyn::Path::QUALIFIED).clone()),
-        _ => None,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outPath
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((prefixPath.clone(), path.clone())) {
+        (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => { (prefixPath, path) = (prefixPath.clone(), var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone()); continue '__tco; },
+        (Deref @ Absyn::Path::QUALIFIED { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) if (var_field!((*prefixPath).name, Absyn::Path::QUALIFIED).clone() == var_field!((*path).name, Absyn::Path::QUALIFIED).clone()) => { (prefixPath, path) = (var_field!((*prefixPath).path, Absyn::Path::QUALIFIED).clone(), var_field!((*path).path, Absyn::Path::QUALIFIED).clone()); continue '__tco; },
+        (Deref @ Absyn::Path::IDENT { .. }, Deref @ Absyn::Path::QUALIFIED { .. }) if (var_field!((*prefixPath).name, Absyn::Path::IDENT).clone() == var_field!((*path).name, Absyn::Path::QUALIFIED).clone()) => return Some(var_field!((*path).path, Absyn::Path::QUALIFIED).clone()),
+        _ => return None,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn removePartialPrefix(mut inPrefix: Arc<Absyn::Path>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
@@ -1620,38 +1598,36 @@ pub fn getCrefsFromSubs(mut isubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>
     Ok(crefs)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
-    let mut outComponentRefLst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-    outComponentRefLst = (::match_deref::match_deref! { match &(inExp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::INTEGER { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::REAL { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::STRING { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::BOOL { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::ALLWILD { .. } } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::WILD { .. } } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::CREF { componentRef: cr } if (!(includeSubs.clone())) => {
-            list![cr.clone()]
+            return Ok(list![cr.clone()])
         },
         Deref @ Absyn::Exp::CREF { componentRef: cr } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             subs = getSubsFromCref(cr.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l1 = getCrefsFromSubs(subs.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            metamodelica::cons(cr.clone(), l1.clone())
+            return Ok(metamodelica::cons(cr.clone(), l1.clone()))
         },
         Deref @ Absyn::Exp::BINARY { exp1: e1, exp2: e2, .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1660,12 +1636,12 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::UNARY { exp: e1, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::LBINARY { exp1: e1, exp2: e2, .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1674,12 +1650,12 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::LUNARY { exp: e1, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::RELATION { exp1: e1, exp2: e2, .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1688,34 +1664,34 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::IFEXP { ifExp: e1, trueBranch: e2, elseBranch: e3, .. } => {
-            List::flatten(list![getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e3.clone(), includeSubs.clone(), includeFunctions.clone())?])?
+            return Ok(List::flatten(list![getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e3.clone(), includeSubs.clone(), includeFunctions.clone())?])?)
         },
         Deref @ Absyn::Exp::CALL { function_: cr, functionArgs: farg, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromFarg(farg.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = if (includeFunctions.clone()) {metamodelica::cons(cr.clone(), res.clone())} else {res.clone()};
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr, functionArgs: farg } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromFarg(farg.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = if (includeFunctions.clone()) {metamodelica::cons(cr.clone(), res.clone())} else {res.clone()};
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::ARRAY { arrayExp: expl } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut lstres1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             lstres1 = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
             res = List::flatten(lstres1.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::MATRIX { matrix: expll } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = List::flatten(List::flatten(List::map2List(expll.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?)?)?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::RANGE { start: e1, step: Some(e3), stop: e2 } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1726,7 +1702,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l2 = listAppend(l1.clone(), l2.clone());
             l1 = getCrefFromExp(e3.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::RANGE { start: e1, step: None, stop: e2 } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1735,23 +1711,23 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::END { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::TUPLE { expressions: expl } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut crefll: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             crefll = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
             res = List::flatten(crefll.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::CODE { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ Absyn::Exp::AS { exp: e1, .. } => {
-            getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?
+            { (inExp, includeSubs, includeFunctions) = (e1.clone(), includeSubs.clone(), includeFunctions.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::CONS { head: e1, rest: e2 } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1760,23 +1736,23 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             res = listAppend(l1.clone(), l2.clone());
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::LIST { exps: expl } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut crefll: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             crefll = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
             res = List::flatten(crefll.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ Absyn::Exp::MATCHEXP { .. } => {
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
         Deref @ Absyn::Exp::DOT { .. } => {
-            getCrefFromExp(var_field!((*inExp).exp, Absyn::Exp::DOT).clone(), includeSubs.clone(), includeFunctions.clone())?
+            { (inExp, includeSubs, includeFunctions) = (var_field!((*inExp).exp, Absyn::Exp::DOT).clone(), includeSubs.clone(), includeFunctions.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. } => {
-            getCrefFromExp(var_field!((*inExp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), includeSubs.clone(), includeFunctions.clone())?
+            { (inExp, includeSubs, includeFunctions) = (var_field!((*inExp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), includeSubs.clone(), includeFunctions.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::SUBSCRIPTED_EXP { .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1786,18 +1762,18 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
                 l2 = getCrefsFromSubs(var_field!((*inExp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(), includeSubs.clone(), includeFunctions.clone())?;
                 l1 = listAppend(l2.clone(), l1.clone());
             }
-            l1.clone()
+            return Ok(l1.clone())
         },
         Deref @ Absyn::Exp::BREAK { .. } => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("AbsynUtil.getCrefFromExp")); __mm_s.push_str(&*literal!(" failed ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/AbsynUtil.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outComponentRefLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getCrefFromFarg(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
@@ -1884,28 +1860,26 @@ fn getCrefFromNarg(mut inNamedArg: Arc<Absyn::NamedArg>, mut includeSubs: bool, 
     Ok(outComponentRefLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn joinPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &((inPath1.clone(), inPath2.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPath1.clone(), inPath2.clone())) {
         (Deref @ Absyn::Path::IDENT { name: r#str }, p2) => {
-            Arc::new(Absyn::Path::QUALIFIED { name: (r#str.clone()).clone(), path: p2.clone() })
+            return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (r#str.clone()).clone(), path: p2.clone() }))
         },
         (Deref @ Absyn::Path::QUALIFIED { name: r#str, path: p }, p2) => {
             let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             p_1 = joinPaths(p.clone(), p2.clone())?;
-            Arc::new(Absyn::Path::QUALIFIED { name: (r#str.clone()).clone(), path: p_1.clone() })
+            return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (r#str.clone()).clone(), path: p_1.clone() }))
         },
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: p }, p2) => {
-            joinPaths(p.clone(), p2.clone())?
+            { (inPath1, inPath2) = (p.clone(), p2.clone()); continue '__tco; }
         },
         (p, Deref @ Absyn::Path::FULLYQUALIFIED { path: p2 }) => {
-            joinPaths(p.clone(), p2.clone())?
+            { (inPath1, inPath2) = (p.clone(), p2.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn joinPathsOpt(mut inPath1: Option<Arc<Absyn::Path>>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
@@ -2109,30 +2083,26 @@ pub fn pathToCrefWithSubs(mut inPath: Arc<Absyn::Path>, mut inSubs: Arc<metamode
     Ok(outComponentRef)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefLastIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefLastIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outIdent)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstIdentNoSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, .. } => var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, .. } => var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone(),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefFirstIdentNoSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outIdent)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefIsIdent(mut inComponentRef: Arc<Absyn::ComponentRef>) -> bool {
@@ -2156,30 +2126,26 @@ pub fn crefIsQual(mut inComponentRef: Arc<Absyn::ComponentRef>) -> bool {
     outIsQual
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
-    let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefFirstSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(subscripts)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => return Ok(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone()),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
-    let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefLastSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefLastSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(subscripts)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefSetFirstSubs(mut cref: Arc<Absyn::ComponentRef>, mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<Absyn::ComponentRef>> {
@@ -2222,20 +2188,18 @@ pub fn crefSetLastSubs(mut cref: Arc<Absyn::ComponentRef>, mut inSubscripts: Arc
     Ok(cref)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefHasSubscripts(mut cref: Arc<Absyn::ComponentRef>) -> bool {
-    let mut hasSubscripts: bool = false;
-    hasSubscripts = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => !(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone().is_empty()),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, .. } => crefHasSubscripts(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone()),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefHasSubscripts(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()),
-        Deref @ Absyn::ComponentRef::WILD { .. } => false,
-        Deref @ Absyn::ComponentRef::ALLWILD { .. } => false,
-        _ => true,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    hasSubscripts
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return !(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone().is_empty()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::WILD { .. } => return false,
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => return false,
+        _ => return true,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn getSubsFromCref(mut cr: Arc<Absyn::ComponentRef>, mut includeSubs: bool, mut includeFunctions: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
@@ -2293,30 +2257,26 @@ fn stripCommentExpressionsHelper(mut exp: Arc<Absyn::Exp>, mut onlyComments: boo
     (exp, onlyComments)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefGetLastIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut ident: ArcStr = arcstr::literal!("");
-    ident = ((::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefGetLastIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefGetLastIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(ident)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefGetLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
-    let mut subscripts: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    subscripts = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefGetLastSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefGetLastSubs(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(subscripts)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefStripLastSubs(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
@@ -2367,17 +2327,15 @@ pub fn joinCrefs(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut inComponentR
     Ok(outComponentRef)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstIdent(mut inCref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(inCref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => var_field!((*inCref).name, Absyn::ComponentRef::CREF_IDENT).clone(),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => var_field!((*inCref).name, Absyn::ComponentRef::CREF_QUAL).clone(),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefFirstIdent(var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outIdent)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(var_field!((*inCref).name, Absyn::ComponentRef::CREF_IDENT).clone()),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => return Ok(var_field!((*inCref).name, Absyn::ComponentRef::CREF_QUAL).clone()),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { inCref = var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefSetFirstIdent(mut cref: Arc<Absyn::ComponentRef>, mut ident: ArcStr) -> Arc<Absyn::ComponentRef> {
@@ -2401,45 +2359,39 @@ pub fn crefSetFirstIdent(mut cref: Arc<Absyn::ComponentRef>, mut ident: ArcStr) 
     cref
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefSecondIdent(mut cref: Arc<Absyn::ComponentRef>) -> Result<ArcStr> {
-    let mut ident: ArcStr = arcstr::literal!("");
-    ident = ((::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefFirstIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefSecondIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(ident)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => return Ok(crefFirstIdent(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { cref = var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefFirstCref(mut inCref: Arc<Absyn::ComponentRef>) -> Arc<Absyn::ComponentRef> {
-    let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    outCref = (::match_deref::match_deref! { match &(inCref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (var_field!((*inCref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), subscripts: var_field!((*inCref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone() }),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefFirstCref(var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()),
-        _ => inCref.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outCref
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => return Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (var_field!((*inCref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), subscripts: var_field!((*inCref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone() }),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { inCref = var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        _ => return inCref.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStripFirst(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> {
-    let mut outComponentRef: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            cr.clone()
+            return Ok(cr.clone())
         },
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: cr } => {
-            crefStripFirst(cr.clone())?
+            { inComponentRef = cr.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outComponentRef)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefIsFullyQualified(mut inCref: Arc<Absyn::ComponentRef>) -> bool {
@@ -2553,18 +2505,16 @@ pub fn setClassBody(mut inClass: Arc<Absyn::Class>, mut inBody: Arc<Absyn::Class
     Ok(outClass)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefEqual(mut cref1: Arc<Absyn::ComponentRef>, mut cref2: Arc<Absyn::ComponentRef>) -> Result<bool> {
-    let mut equal: bool = false;
-    equal = (::match_deref::match_deref! { match &((cref1.clone(), cref2.clone())) {
-        (Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { .. }) => stringEq((var_field!((*cref1).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cref2).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone()) && subscriptsEqual(var_field!((*cref1).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), var_field!((*cref2).subscripts, Absyn::ComponentRef::CREF_IDENT).clone())?,
-        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ Absyn::ComponentRef::CREF_QUAL { .. }) => stringEq((var_field!((*cref1).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cref2).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone()) && subscriptsEqual(var_field!((*cref1).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cref2).subscripts, Absyn::ComponentRef::CREF_QUAL).clone())? && crefEqual(var_field!((*cref1).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cref2).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?,
-        (Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }, Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }) => crefEqual(var_field!((*cref1).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), var_field!((*cref2).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(equal)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((cref1.clone(), cref2.clone())) {
+        (Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { .. }) => return Ok(stringEq((var_field!((*cref1).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cref2).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone()) && subscriptsEqual(var_field!((*cref1).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), var_field!((*cref2).subscripts, Absyn::ComponentRef::CREF_IDENT).clone())?),
+        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ Absyn::ComponentRef::CREF_QUAL { .. }) => return Ok(stringEq((var_field!((*cref1).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cref2).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone()) && subscriptsEqual(var_field!((*cref1).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cref2).subscripts, Absyn::ComponentRef::CREF_QUAL).clone())? && crefEqual(var_field!((*cref1).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cref2).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?),
+        (Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }, Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }) => { (cref1, cref2) = (var_field!((*cref1).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), var_field!((*cref2).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefFirstEqual(mut iCr1: Arc<Absyn::ComponentRef>, mut iCr2: Arc<Absyn::ComponentRef>) -> Result<bool> {
@@ -2596,18 +2546,16 @@ pub fn subscriptsEqual(mut inSubList1: Arc<metamodelica::List<Arc<Absyn::Subscri
     Ok(outIsEqual)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefEqualNoSubs(mut cr1: Arc<Absyn::ComponentRef>, mut cr2: Arc<Absyn::ComponentRef>) -> bool {
-    let mut equal: bool = false;
-    equal = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
-        (Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { .. }) => stringEq((var_field!((*cr1).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone()),
-        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ Absyn::ComponentRef::CREF_QUAL { .. }) => stringEq((var_field!((*cr1).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone()) && crefEqualNoSubs(var_field!((*cr1).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).componentRef, Absyn::ComponentRef::CREF_QUAL).clone()),
-        (Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }, Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }) => crefEqualNoSubs(var_field!((*cr1).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), var_field!((*cr2).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    equal
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
+        (Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { .. }) => return stringEq((var_field!((*cr1).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), (var_field!((*cr2).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone()),
+        (Deref @ Absyn::ComponentRef::CREF_QUAL { .. }, Deref @ Absyn::ComponentRef::CREF_QUAL { .. }) => return stringEq((var_field!((*cr1).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((*cr2).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone()) && crefEqualNoSubs(var_field!((*cr1).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), var_field!((*cr2).componentRef, Absyn::ComponentRef::CREF_QUAL).clone()),
+        (Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }, Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. }) => { (cr1, cr2) = (var_field!((*cr1).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), var_field!((*cr2).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn crefCompare(mut cr1: Arc<Absyn::ComponentRef>, mut cr2: Arc<Absyn::ComponentRef>) -> Result<i32> {
@@ -4677,17 +4625,15 @@ pub fn makeIntegerSubscript(mut n: i32) -> Arc<Absyn::Subscript> {
     sub
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefExplode(mut inCref: Arc<Absyn::ComponentRef>, mut inAccum: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>) -> Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> {
-    let mut outCrefParts: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-    outCrefParts = (::match_deref::match_deref! { match &(inCref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => crefExplode(var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), metamodelica::cons(crefFirstCref(inCref.clone()), inAccum.clone())),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefExplode(var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), inAccum.clone()),
-        _ => metamodelica::cons(inCref.clone(), inAccum.clone()).reverse(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outCrefParts
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => { (inCref, inAccum) = (var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone(), metamodelica::cons(crefFirstCref(inCref.clone()), inAccum.clone())); continue '__tco; },
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { (inCref, inAccum) = (var_field!((*inCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), inAccum.clone()); continue '__tco; },
+        _ => return metamodelica::cons(inCref.clone(), inAccum.clone()).reverse(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn traverseExpShallow<ArgT: Clone + 'static>(mut inExp: Arc<Absyn::Exp>, mut inArg: ArgT, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<Absyn::Exp>> {
@@ -5051,17 +4997,15 @@ pub fn isInvariantExpNoTraverse(mut e: Arc<Absyn::Exp>, mut b: bool) -> (Arc<Abs
     (e, b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathPartCount(mut path: Arc<Absyn::Path>, mut partsAccum: i32) -> Result<i32> {
-    let mut parts: i32 = 0;
-    parts = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => partsAccum.clone() + 1,
-        Deref @ Absyn::Path::QUALIFIED { .. } => pathPartCount(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), partsAccum.clone() + 1)?,
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathPartCount(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), partsAccum.clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(parts)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(partsAccum.clone() + 1),
+        Deref @ Absyn::Path::QUALIFIED { .. } => { (path, partsAccum) = (var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), partsAccum.clone() + 1); continue '__tco; },
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { (path, partsAccum) = (var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), partsAccum.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getAnnotationsFromConstraintClass(mut inCC: Option<Arc<Absyn::ConstrainClass>>) -> Arc<metamodelica::List<Arc<Absyn::ElementArg>>> {
@@ -5800,17 +5744,15 @@ pub fn pathReplaceFirst(mut path: Arc<Absyn::Path>, mut prefix: Arc<Absyn::Path>
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathContains(mut path: Arc<Absyn::Path>, mut name: ArcStr) -> Result<bool> {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone() == name.clone(),
-        Deref @ Absyn::Path::QUALIFIED { .. } => var_field!((*path).name, Absyn::Path::QUALIFIED).clone() == name.clone() || pathContains(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), (name.clone()).clone())?,
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathContains(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), (name.clone()).clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(res)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::IDENT { .. } => return Ok(var_field!((*path).name, Absyn::Path::IDENT).clone() == name.clone()),
+        Deref @ Absyn::Path::QUALIFIED { .. } => return Ok(var_field!((*path).name, Absyn::Path::QUALIFIED).clone() == name.clone() || pathContains(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), (name.clone()).clone())?),
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => { (path, name) = (var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), (name.clone()).clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getClassAnnotation(mut cls: Arc<Absyn::Class>) -> Result<Option<Arc<Absyn::Annotation>>> {

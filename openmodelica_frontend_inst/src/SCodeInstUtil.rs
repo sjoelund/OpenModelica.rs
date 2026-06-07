@@ -133,39 +133,37 @@ pub fn addRedeclareAsElementsToExtends(mut inElements: Arc<metamodelica::List<Ar
     Ok(outExtendsElements)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeElementsIntoSubMods(mut inFinal: SCode::Final, mut inEach: SCode::Each, mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
-    let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
-    outSubMods = (::match_deref::match_deref! { match &((inFinal.clone(), inEach.clone(), inElements.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inFinal.clone(), inEach.clone(), inElements.clone())) {
         (_, _, Deref @ metamodelica::List::Nil) => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. }, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring class-extends redeclare-as-element: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
-            newSubMods.clone()
+            return Ok(newSubMods.clone())
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::COMPONENT { name: n, .. }, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
-            metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone())
+            return Ok(metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone()))
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el @ Deref @ SCode::Element::CLASS { name: n, .. }, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
-            metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone())
+            return Ok(metamodelica::cons(Arc::new(SCode::SubMod { ident: (n.clone()).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: f.clone(), eachPrefix: e.clone(), element: el.clone() }) }), newSubMods.clone()))
         },
         (f, e, Deref @ metamodelica::List::Cons { head: el, tail: rest }) => {
             let mut newSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- AbsynToSCode.makeElementsIntoSubMods ignoring redeclare-as-element redeclaration: ")); __mm_s.push_str(&*SCodeDump::unparseElementStr(el.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             newSubMods = makeElementsIntoSubMods(f.clone(), e.clone(), rest.clone())?;
-            newSubMods.clone()
+            return Ok(newSubMods.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outSubMods)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn removeReferenceInBinding(mut inBinding: Option<Arc<Absyn::Exp>>, mut inCref: Arc<Absyn::ComponentRef>) -> Result<Option<Arc<Absyn::Exp>>> {

@@ -931,18 +931,16 @@ pub fn merge<NodeType: Clone + 'static>(mut graph1: Arc<metamodelica::List<(Node
     Ok(graph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn merge2<NodeType: Clone + 'static>(mut inGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut eqFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>, mut inAcc: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>) -> Result<Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
-    let mut graph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>> = metamodelica::nil();
-    graph = (::match_deref::match_deref! { match &(inGraph.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inGraph.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAcc.clone().reverse()
+            return Ok(inAcc.clone().reverse())
         },
         Deref @ metamodelica::List::Cons { head: node, tail: Deref @ metamodelica::List::Nil } => {
-            metamodelica::cons(node.clone(), inAcc.clone()).reverse()
+            return Ok(metamodelica::cons(node.clone(), inAcc.clone()).reverse())
         },
         Deref @ metamodelica::List::Cons { head: (n1, e1), tail: Deref @ metamodelica::List::Cons { head: (n2, e2), tail: rest } } => {
             let mut node: (NodeType, Arc<metamodelica::List<NodeType>>);
@@ -950,11 +948,11 @@ fn merge2<NodeType: Clone + 'static>(mut inGraph: Arc<metamodelica::List<(NodeTy
             let mut rest = (*rest).clone();
             b = eqFunc(n1.clone(), n2.clone())?;
             (node, rest) = merge3(b.clone(), n1.clone(), e1.clone(), n2.clone(), e2.clone(), rest.clone(), eqFunc.clone())?;
-            merge2(rest.clone(), eqFunc.clone(), metamodelica::cons(node.clone(), inAcc.clone()))?
+            { (inGraph, eqFunc, inAcc) = (rest.clone(), eqFunc.clone(), metamodelica::cons(node.clone(), inAcc.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(graph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn merge3<NodeType: Clone + 'static>(mut b: bool, mut n1: NodeType, mut e1: Arc<metamodelica::List<NodeType>>, mut n2: NodeType, mut e2: Arc<metamodelica::List<NodeType>>, mut rest: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut eqFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<((NodeType, Arc<metamodelica::List<NodeType>>), Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>)> {

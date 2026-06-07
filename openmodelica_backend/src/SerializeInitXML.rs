@@ -513,28 +513,26 @@ fn xsdateTime(mut file: File::File, mut dt: Util::DateTime) -> () {
     ()
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn expString(mut exp: Arc<Exp>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Exp::ICONST { .. } => intString(var_field!((*exp).integer, Exp::ICONST).clone()),
-        Deref @ Exp::RCONST { .. } => realString(var_field!((*exp).real, Exp::RCONST).clone()),
-        Deref @ Exp::SCONST { .. } => Util::escapeModelicaStringToXmlString((var_field!((*exp).string, Exp::SCONST).clone()).clone())?,
-        Deref @ Exp::BCONST { .. } => boolString(var_field!((*exp).bool, Exp::BCONST).clone()),
-        Deref @ Exp::ENUM_LITERAL { .. } => intString(var_field!((*exp).index, Exp::ENUM_LITERAL).clone()),
-        Deref @ Exp::ARRAY { .. } if (Expression::isSimpleLiteralValue(exp.clone(), true)?) => stringDelimitList(({
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ Exp::ICONST { .. } => return Ok(intString(var_field!((*exp).integer, Exp::ICONST).clone())),
+        Deref @ Exp::RCONST { .. } => return Ok(realString(var_field!((*exp).real, Exp::RCONST).clone())),
+        Deref @ Exp::SCONST { .. } => return Ok(Util::escapeModelicaStringToXmlString((var_field!((*exp).string, Exp::SCONST).clone()).clone())?),
+        Deref @ Exp::BCONST { .. } => return Ok(boolString(var_field!((*exp).bool, Exp::BCONST).clone())),
+        Deref @ Exp::ENUM_LITERAL { .. } => return Ok(intString(var_field!((*exp).index, Exp::ENUM_LITERAL).clone())),
+        Deref @ Exp::ARRAY { .. } if (Expression::isSimpleLiteralValue(exp.clone(), true)?) => return Ok(stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (var_field!((*exp).array, Exp::ARRAY).clone()).into_iter().cloned() {
             let __x = expString(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (literal!(" ")).clone()),
-        Deref @ Exp::REDUCTION { .. } => expString(var_field!((*exp).expr, Exp::REDUCTION).clone())?,
-        _ => bail!("fail"),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(r#str)
+    }), (literal!(" ")).clone())),
+        Deref @ Exp::REDUCTION { .. } => { exp = var_field!((*exp).expr, Exp::REDUCTION).clone(); continue '__tco; },
+        _ => return Ok(bail!("fail")),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 

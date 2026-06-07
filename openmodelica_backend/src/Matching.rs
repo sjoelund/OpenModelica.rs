@@ -736,16 +736,14 @@ fn BFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
     Ok((outAss1, outAss2, osyst, oshared, outArg))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn BFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut parentcolum: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextQueue: Arc<metamodelica::List<i32>>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outVisitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outVisitedColums = (::match_deref::match_deref! { match &((queue.clone(), nextQueue.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((queue.clone(), nextQueue.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inVisitedColums.clone()
+            return Ok(inVisitedColums.clone())
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            BFSBphase(nextQueue.clone(), rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), inVisitedColums.clone())?
+            { (queue, rowmark, i, nv, ne, m, mT, rowmarks, parentcolum, ass1, ass2, nextQueue, inVisitedColums) = (nextQueue.clone(), rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), inVisitedColums.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: c, tail: rest }, _) => {
             let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -753,15 +751,15 @@ fn BFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i
             let mut b: bool = false;
             rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (queue1, b) = BFSBtraverseRows(rows.clone(), nextQueue.clone(), rowmark.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone())?;
-            BFSBphase1(b.clone(), rest.clone(), rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), queue1.clone(), metamodelica::cons(c.clone(), inVisitedColums.clone()))?
+            return Ok(BFSBphase1(b.clone(), rest.clone(), rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), queue1.clone(), metamodelica::cons(c.clone(), inVisitedColums.clone()))?)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function BFSBphase failed in equation ")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outVisitedColums)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn BFSBphase1(mut inPathFound: bool, mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut parentcolum: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextQueue: Arc<metamodelica::List<i32>>, mut inVisitedColums: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
@@ -2325,27 +2323,25 @@ fn HKgetUnmatched(mut U: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::A
     Ok(outUnmatched)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn HKBFS(mut colums: Arc<metamodelica::List<i32>>, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut i: i32, mut level: metamodelica::Array<i32>, mut lowestL: Option<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inRows: Arc<metamodelica::List<(i32, i32)>>) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
-    let mut outRows: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
-    outRows = (::match_deref::match_deref! { match &(colums.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(colums.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inRows.clone()
+            return Ok(inRows.clone())
         },
         Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
             let mut rows: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
             let mut ll: Option<i32> = None;
             (rows, ll) = HKBFSBphase(list![c.clone()], i.clone(), 0, lowestL.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows.clone(), metamodelica::nil())?;
-            HKBFS(rest.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), i.clone(), level.clone(), ll.clone(), ass1.clone(), ass2.clone(), rows.clone())?
+            { (colums, nv, ne, m, mT, rowmarks, i, level, lowestL, ass1, ass2, inRows) = (rest.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), i.clone(), level.clone(), ll.clone(), ass1.clone(), ass2.clone(), rows.clone()); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKBFS failed in phase ")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRows)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn HKBFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut l: i32, mut lowestL: Option<i32>, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inRows: Arc<metamodelica::List<(i32, i32)>>, mut queue1: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<(i32, i32)>>, Option<i32>)> {
@@ -2486,28 +2482,26 @@ fn HKBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<meta
     Ok((outEqnqueue, outRows, unmarowFound))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn HKDFS(mut unmatchedRows: Arc<metamodelica::List<(i32, i32)>>, mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut collummarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inUnmatchedRows: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outUnmatchedRows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outUnmatchedRows = (::match_deref::match_deref! { match &(unmatchedRows.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(unmatchedRows.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inUnmatchedRows.clone()
+            return Ok(inUnmatchedRows.clone())
         },
         Deref @ metamodelica::List::Cons { head: (r, l), tail: rest } => {
             let mut ur: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
             b = HKDFSphase(list![r.clone()], i.clone(), r.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), false)?;
             ur = List::consOnTrue(!(b.clone()), r.clone(), inUnmatchedRows.clone());
-            HKDFS(rest.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), ur.clone())?
+            { (unmatchedRows, i, nv, ne, m, mT, collummarks, level, ass1, ass2, inUnmatchedRows) = (rest.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), ur.clone()); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("function HKDFS failed in phase ")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outUnmatchedRows)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn HKDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32, mut l: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut collummarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inMatched: bool) -> Result<bool> {
@@ -3159,20 +3153,18 @@ fn ABMPphase2(mut U: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32, mut n
     Ok(unMatched)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn ABMPBFSphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32, mut lim: i32, mut lim1: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextqueue: Arc<metamodelica::List<i32>>, mut unMatched: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outunMatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outunMatched = (::match_deref::match_deref! { match &((queue.clone(), nextqueue.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((queue.clone(), nextqueue.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            unMatched.clone()
+            return Ok(unMatched.clone())
         },
         (Deref @ metamodelica::List::Nil, _) => {
             let mut l: i32 = 0;
             let mut b: bool = false;
             l = L.clone() + 2;
             b = intGt(l.clone(), lim.clone()) || intGt(50 * l.clone(), lim1.clone());
-            ABMPBFSphase1(b.clone(), nextqueue.clone(), i.clone(), l.clone(), lim.clone(), lim1.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), unMatched.clone())?
+            return Ok(ABMPBFSphase1(b.clone(), nextqueue.clone(), i.clone(), l.clone(), lim.clone(), lim1.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), unMatched.clone())?)
         },
         (Deref @ metamodelica::List::Cons { head: c, tail: rest }, _) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -3180,15 +3172,15 @@ fn ABMPBFSphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32,
             let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
             rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (queue1, unmatched) = ABMPBFStraverseRows(rows.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), nextqueue.clone(), unMatched.clone())?;
-            ABMPBFSphase(rest.clone(), i.clone(), L.clone(), lim.clone(), lim1.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue1.clone(), unmatched.clone())?
+            { (queue, i, L, lim, lim1, nv, ne, m, mT, rowmarks, level, ass1, ass2, nextqueue, unMatched) = (rest.clone(), i.clone(), L.clone(), lim.clone(), lim1.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue1.clone(), unmatched.clone()); continue '__tco; }
         },
         _ => {
             Error::addInternalError((literal!("function ABMPBFSphase failed")).clone(), metamodelica::sourceInfo!("BackEnd/Matching.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outunMatched)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn ABMPBFSphase1(mut inStop: bool, mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32, mut lim: i32, mut lim1: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowmarks: metamodelica::Array<i32>, mut level: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut nextqueue: Arc<metamodelica::List<i32>>, mut unMatched: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
@@ -5536,24 +5528,22 @@ pub fn getEqnsforIndexReduction(mut U: Arc<metamodelica::List<i32>>, mut neqns: 
     Ok(eqns)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeEmptySubsets(mut index: i32, mut length: i32, mut subsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> {
-    let mut oAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    oAcc = (::match_deref::match_deref! { match &(iAcc.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(iAcc.clone()) {
         _ if (intLe(index.clone(), length.clone())) => {
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             eqns = ({let __elt = subsets.borrow()[(index.clone()-1) as usize].clone(); __elt});
             acc = appendNonEmpty(eqns.clone(), iAcc.clone());
-            removeEmptySubsets(index.clone() + 1, length.clone(), subsets.clone(), acc.clone())
+            { (index, length, subsets, iAcc) = (index.clone() + 1, length.clone(), subsets.clone(), acc.clone()); continue '__tco; }
         },
         _ => {
-            iAcc.clone()
+            return iAcc.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    oAcc
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn appendNonEmpty(mut eqns: Arc<metamodelica::List<i32>>, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> {
@@ -5566,13 +5556,11 @@ fn appendNonEmpty(mut eqns: Arc<metamodelica::List<i32>>, mut iAcc: Arc<metamode
     oAcc
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    outSubsets = (::match_deref::match_deref! { match &(U.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(U.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inSubsets.clone()
+            return Ok(inSubsets.clone())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: rest } if (!(intGt(({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5582,49 +5570,45 @@ fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamod
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone())?;
             eqns = getEqnsforIndexReductionphase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?;
             Array::appendToElement(mark.clone(), eqns.clone(), inSubsets.clone())?;
-            getEqnsforIndexReduction1(rest.clone(), m.clone(), mT.clone(), mark.clone() + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone())?
+            { (U, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets) = (rest.clone(), m.clone(), mT.clone(), mark.clone() + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            getEqnsforIndexReduction1(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone())?
+            { (U, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets) = (rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outSubsets)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReductionphase(mut elst: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inEqns: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outEqns = (::match_deref::match_deref! { match &(elst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(elst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inEqns.clone()
+            return Ok(inEqns.clone())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             rows = List::select(({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             eqns = getEqnsforIndexReductiontraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns.clone())?;
-            getEqnsforIndexReductionphase(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?
+            { (elst, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone()); continue '__tco; }
         },
         _ => {
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEqns)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut nextColums: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mark: i32, mut colummarks: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inEqns: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outEqns = (::match_deref::match_deref! { match &((rows.clone(), nextColums.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((rows.clone(), nextColums.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inEqns.clone()
+            return Ok(inEqns.clone())
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            getEqnsforIndexReductionphase(nextColums.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns.clone())?
+            return Ok(getEqnsforIndexReductionphase(nextColums.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns.clone())?)
         },
         (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _) => {
             let mut queue: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5649,11 +5633,11 @@ fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, 
                 nextqueue = nextColums.clone();
                 queue = inEqns.clone();
             }
-            getEqnsforIndexReductiontraverseRows(rest.clone(), nextqueue.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), queue.clone())?
+            { (rows, nextColums, m, mT, mark, colummarks, ass1, ass2, mapEqnIncRow, mapIncRowEqn, inSubsets, inEqns) = (rest.clone(), nextqueue.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), queue.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outEqns)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn mergeSubsets(mut mark: i32, mut markColum: i32, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut colummarks: metamodelica::Array<i32>) -> Result<()> {

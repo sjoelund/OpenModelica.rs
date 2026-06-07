@@ -2604,16 +2604,14 @@ pub fn checkConnector(mut connExp: Arc<Expression::NFExpression>, mut info: Sour
     Ok(deleted)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn checkConnectorForm(mut cref: Arc<ComponentRef::NFComponentRef>, mut isConnector: bool) -> Result<bool> {
-    let mut valid: bool = false;
-    valid = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, .. } => if (isConnector.clone()) {checkConnectorForm(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), InstNode::isConnector(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone())?)?} else {false},
-        _ => true,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(valid)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, .. } => if (isConnector.clone()) {{ (cref, isConnector) = (var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), InstNode::isConnector(var_field!((*cref).node, ComponentRef::NFComponentRef::CREF).clone())?); continue '__tco; }} else {return Ok(false)},
+        _ => return Ok(true),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn checkLhsInWhen(mut exp: Arc<Expression::NFExpression>) -> bool {

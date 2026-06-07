@@ -576,30 +576,26 @@ pub mod EnvTree {
         Ok(value)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<Item>> {
-        let mut value: Option<Arc<Item>> = None;
-        let mut k: Key = arcstr::literal!("");
-        k = ((::match_deref::match_deref! { match &(tree.clone()) {
+        '__tco: loop {
+            let mut k: Key = arcstr::literal!("");
+            k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => key.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
     } })).clone();
-        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
-        (0, Deref @ Tree::LEAF { .. }) => Some(var_field!((*tree).value, Tree::LEAF).clone()),
-        (0, Deref @ Tree::NODE { .. }) => Some(var_field!((*tree).value, Tree::NODE).clone()),
-        (1, Deref @ Tree::NODE { .. }) => getOpt(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()),
-        ((-1), Deref @ Tree::NODE { .. }) => getOpt(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()),
-        _ => None,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        value
+            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+        (0, Deref @ Tree::LEAF { .. }) => return Some(var_field!((*tree).value, Tree::LEAF).clone()),
+        (0, Deref @ Tree::NODE { .. }) => return Some(var_field!((*tree).value, Tree::NODE).clone()),
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        _ => return None,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -905,17 +901,15 @@ pub mod EnvTree {
         Ok(res)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
-        let mut key: Key = arcstr::literal!("");
-        key = ((::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => var_field!((*tree).key, Tree::NODE).clone(),
-        Deref @ Tree::NODE { .. } => smallestKey(var_field!((*tree).right, Tree::NODE).clone())?,
-        Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-        Ok(key)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(tree.clone()) {
+        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
+        Deref @ Tree::NODE { .. } => { tree = var_field!((*tree).right, Tree::NODE).clone(); continue '__tco; },
+        Deref @ Tree::LEAF { .. } => return Ok(var_field!((*tree).key, Tree::LEAF).clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<Item>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<Item>)>> {
@@ -1003,27 +997,25 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
     Ok(outEnv)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn enterScopePath(mut inEnv: Env, mut inPath: Arc<Absyn::Path>) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    outEnv = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { name, path } => {
             let mut env: Env = metamodelica::nil();
             env = enterScope(inEnv.clone(), (name.clone()).clone())?;
-            enterScopePath(env.clone(), path.clone())?
+            { (inEnv, inPath) = (env.clone(), path.clone()); continue '__tco; }
         },
         Deref @ Absyn::Path::IDENT { name } => {
-            enterScope(inEnv.clone(), (name.clone()).clone())?
+            return Ok(enterScope(inEnv.clone(), (name.clone()).clone())?)
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path } => {
             let mut env: Env = metamodelica::nil();
             env = getEnvTopScope(inEnv.clone())?;
-            enterScopePath(env.clone(), path.clone())?
+            { (inEnv, inPath) = (env.clone(), path.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEnv)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn enterFrame(mut inFrame: Arc<Frame>, mut inEnv: Env) -> Env {
@@ -1322,29 +1314,27 @@ pub fn setImportsInItemHidden(mut inItem: Arc<Item>, mut inHidden: bool) -> Resu
     Ok(outItem)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isItemUsed(mut inItem: Arc<Item>) -> bool {
-    let mut isUsed: bool = false;
-    isUsed = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { env: Deref @ metamodelica::List::Cons { head: Deref @ Frame { isUsed: Some(is_used), .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            Mutable::access(is_used.clone())
+            return Mutable::access(is_used.clone())
         },
         Deref @ Item::VAR { isUsed: Some(is_used), .. } => {
-            Mutable::access(is_used.clone())
+            return Mutable::access(is_used.clone())
         },
         Deref @ Item::ALIAS { .. } => {
-            true
+            return true
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            isItemUsed(item.clone())
+            { inItem = item.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isUsed
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn linkItemUsage(mut inSrcItem: Arc<Item>, mut inDestItem: Arc<Item>) -> Arc<Item> {
@@ -1369,61 +1359,55 @@ pub fn linkItemUsage(mut inSrcItem: Arc<Item>, mut inDestItem: Arc<Item>) -> Arc
     outDestItem
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClassItem(mut inItem: Arc<Item>) -> bool {
-    let mut outIsClass: bool = false;
-    outIsClass = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { .. } => {
-            true
+            return true
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            isClassItem(item.clone())
+            { inItem = item.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsClass
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isVarItem(mut inItem: Arc<Item>) -> bool {
-    let mut outIsVar: bool = false;
-    outIsVar = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::VAR { .. } => {
-            true
+            return true
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            isVarItem(item.clone())
+            { inItem = item.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsVar
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClassExtendsItem(mut inItem: Arc<Item>) -> bool {
-    let mut outIsClassExtends: bool = false;
-    outIsClassExtends = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { classType: ClassType::CLASS_EXTENDS { .. }, .. } => {
-            true
+            return true
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            isClassExtendsItem(item.clone())
+            { inItem = item.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsClassExtends
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn extendEnvWithClassDef(mut inClassDefElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<Env> {
@@ -1781,22 +1765,20 @@ fn compareQualifiedImportNames(mut inImport1: Import, mut inImport2: Import) -> 
     outEqual
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn extendEnvWithEnumLiterals(mut inEnum: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut inEnumPath: Arc<Absyn::Path>, mut inNextValue: i32, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    outEnv = (::match_deref::match_deref! { match &(inEnum.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEnum.clone()) {
         Deref @ metamodelica::List::Cons { head: lit, tail: rest_lits } => {
             let mut env: Env = metamodelica::nil();
             env = extendEnvWithEnum(lit.clone(), inEnumPath.clone(), inNextValue.clone(), inEnv.clone(), inInfo.clone())?;
-            extendEnvWithEnumLiterals(rest_lits.clone(), inEnumPath.clone(), inNextValue.clone() + 1, env.clone(), inInfo.clone())?
+            { (inEnum, inEnumPath, inNextValue, inEnv, inInfo) = (rest_lits.clone(), inEnumPath.clone(), inNextValue.clone() + 1, env.clone(), inInfo.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            inEnv.clone()
+            return Ok(inEnv.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEnv)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn extendEnvWithEnum(mut inEnum: Arc<SCode::Enum>, mut inEnumPath: Arc<Absyn::Path>, mut inValue: i32, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Env> {
@@ -1898,45 +1880,41 @@ pub fn getEnvName(mut inEnv: Env) -> Result<ArcStr> {
     Ok(outString)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &(inEnv.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEnv.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { frameType: FrameType::IMPLICIT_SCOPE { .. }, .. }, tail: rest } => {
-            getEnvPath(rest.clone())?
+            { inEnv = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: Deref @ metamodelica::List::Nil } => {
-            Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
+            return Ok(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: Deref @ metamodelica::List::Nil } } => {
-            Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
+            return Ok(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: rest } => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = getEnvPath(rest.clone())?;
             path = AbsynUtil::joinPaths(path.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?;
-            path.clone()
+            return Ok(path.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getScopeName(mut inEnv: Env) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    outString = ((::match_deref::match_deref! { match &(inEnv.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEnv.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: _ } => {
-            name.clone()
+            return Ok(name.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            getScopeName(rest.clone())?
+            { inEnv = rest.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outString)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn envPrefixOf(mut inPrefixEnv: Env, mut inEnv: Env) -> Result<bool> {
@@ -1993,25 +1971,23 @@ pub fn envScopeNames(mut inEnv: Env) -> Result<Arc<metamodelica::List<ArcStr>>> 
     Ok(outNames)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn envScopeNames2(mut inEnv: Env, mut inAccumNames: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    outNames = (::match_deref::match_deref! { match &(inEnv.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEnv.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: rest_env } => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             names = envScopeNames2(rest_env.clone(), metamodelica::cons((name.clone()).clone(), inAccumNames.clone()))?;
-            names.clone()
+            return Ok(names.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest_env } => {
-            envScopeNames2(rest_env.clone(), inAccumNames.clone())?
+            { (inEnv, inAccumNames) = (rest_env.clone(), inAccumNames.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            inAccumNames.clone()
+            return Ok(inAccumNames.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outNames)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn envEqualPrefix(mut inEnv1: Env, mut inEnv2: Env) -> Result<Env> {
@@ -2056,26 +2032,24 @@ pub fn envEqualPrefix2(mut inEnv1: Env, mut inEnv2: Env, mut inAccumEnv: Env) ->
     Ok(outPrefix)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemInfo(mut inItem: Arc<Item>) -> Result<SourceInfo> {
-    let mut outInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    outInfo = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, .. }, .. } => {
-            info.clone()
+            return Ok(info.clone())
         },
         Deref @ Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, .. }, .. } => {
-            info.clone()
+            return Ok(info.clone())
         },
         Deref @ Item::ALIAS { info, .. } => {
-            info.clone()
+            return Ok(info.clone())
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            getItemInfo(item.clone())?
+            { inItem = item.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outInfo)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
@@ -2139,42 +2113,38 @@ pub fn itemStr(mut inItem: Arc<Item>) -> Result<ArcStr> {
     Ok(outName)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemName(mut inItem: Arc<Item>) -> Result<ArcStr> {
-    let mut outName: ArcStr = arcstr::literal!("");
-    outName = ((::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::VAR { var: Deref @ SCode::Element::COMPONENT { name, .. }, .. } => {
-            name.clone()
+            return Ok(name.clone())
         },
         Deref @ Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, .. }, .. } => {
-            name.clone()
+            return Ok(name.clone())
         },
         Deref @ Item::ALIAS { name, .. } => {
-            name.clone()
+            return Ok(name.clone())
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            getItemName(item.clone())?
+            { inItem = item.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outName)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemEnv(mut inItem: Arc<Item>) -> Result<Env> {
-    let mut outEnv: Env = metamodelica::nil();
-    outEnv = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { env, .. } => {
-            env.clone()
+            return Ok(env.clone())
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            getItemEnv(item.clone())?
+            { inItem = item.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outEnv)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getItemEnvNoFail(mut inItem: Arc<Item>) -> Result<Env> {
@@ -2216,39 +2186,35 @@ pub fn getItemEnvNoFail(mut inItem: Arc<Item>) -> Result<Env> {
     Ok(outEnv)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn setItemEnv(mut inItem: Arc<Item>, mut inNewEnv: Env) -> Result<Arc<Item>> {
-    let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
-    outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { cls, env: _, classType: ct } => {
-            Arc::new(Item::CLASS { cls: cls.clone(), env: inNewEnv.clone(), classType: ct.clone() })
+            return Ok(Arc::new(Item::CLASS { cls: cls.clone(), env: inNewEnv.clone(), classType: ct.clone() }))
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            setItemEnv(item.clone(), inNewEnv.clone())?
+            { (inItem, inNewEnv) = (item.clone(), inNewEnv.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outItem)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mergeItemEnv(mut inItem: Arc<Item>, mut inEnv: Env) -> Env {
-    let mut outEnv: Env = metamodelica::nil();
-    outEnv = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { env: Deref @ metamodelica::List::Cons { head: cls_env, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            enterFrame(cls_env.clone(), inEnv.clone())
+            return enterFrame(cls_env.clone(), inEnv.clone())
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            mergeItemEnv(item.clone(), inEnv.clone())
+            { (inItem, inEnv) = (item.clone(), inEnv.clone()); continue '__tco; }
         },
         _ => {
-            inEnv.clone()
+            return inEnv.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outEnv
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn unmergeItemEnv(mut inItem: Arc<Item>, mut inEnv: Env) -> Env {
@@ -2265,23 +2231,21 @@ pub fn unmergeItemEnv(mut inItem: Arc<Item>, mut inEnv: Env) -> Env {
     outEnv
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getItemPrefixes(mut inItem: Arc<Item>) -> Result<Arc<SCode::Prefixes>> {
-    let mut outPrefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-    outPrefixes = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { cls: Deref @ SCode::Element::CLASS { prefixes: pf, .. }, .. } => {
-            pf.clone()
+            return Ok(pf.clone())
         },
         Deref @ Item::VAR { var: Deref @ SCode::Element::COMPONENT { prefixes: pf, .. }, .. } => {
-            pf.clone()
+            return Ok(pf.clone())
         },
         Deref @ Item::REDECLARED_ITEM { item, .. } => {
-            getItemPrefixes(item.clone())?
+            { inItem = item.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPrefixes)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn resolveRedeclaredItem(mut inItem: Arc<Item>, mut inEnv: Env) -> (Arc<Item>, Env, Arc<metamodelica::List<(Arc<Item>, Arc<metamodelica::List<Arc<Frame>>>)>>) {
@@ -2491,26 +2455,24 @@ pub fn prefixIdentWithEnv(mut inIdent: ArcStr, mut inEnv: Env) -> Result<Arc<Abs
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRedeclarationElement(mut inRedeclare: Arc<Redeclaration>) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    outElement = (::match_deref::match_deref! { match &(inRedeclare.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRedeclare.clone()) {
         Deref @ Redeclaration::RAW_MODIFIER { modifier: e } => {
-            e.clone()
+            return Ok(e.clone())
         },
         Deref @ Redeclaration::PROCESSED_MODIFIER { modifier: Deref @ Item::CLASS { cls: e, .. } } => {
-            e.clone()
+            return Ok(e.clone())
         },
         Deref @ Redeclaration::PROCESSED_MODIFIER { modifier: Deref @ Item::VAR { var: e, .. } } => {
-            e.clone()
+            return Ok(e.clone())
         },
         Deref @ Redeclaration::PROCESSED_MODIFIER { modifier: Deref @ Item::REDECLARED_ITEM { item, .. } } => {
-            getRedeclarationElement(Arc::new(Redeclaration::PROCESSED_MODIFIER { modifier: item.clone() }))?
+            { inRedeclare = Arc::new(Redeclaration::PROCESSED_MODIFIER { modifier: item.clone() }); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outElement)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getRedeclarationNameInfo(mut inRedeclare: Arc<Redeclaration>) -> Result<(ArcStr, SourceInfo)> {

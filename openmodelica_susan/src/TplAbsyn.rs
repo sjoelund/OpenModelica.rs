@@ -716,27 +716,25 @@ pub fn importDeclarations(mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Res
     Ok(outMMDecls)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn transformTemplateDefs(mut inTemplateDefsRest: Arc<metamodelica::List<(ArcStr, TemplateDef)>>, mut inTplPackage: TemplPackage, mut inAccMMDecls: Arc<metamodelica::List<MMDeclaration>>) -> Result<Arc<metamodelica::List<MMDeclaration>>> {
-    let mut outMMDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
-    outMMDecls = (::match_deref::match_deref! { match &((inTemplateDefsRest.clone(), inTplPackage.clone(), inAccMMDecls.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTemplateDefsRest.clone(), inTplPackage.clone(), inAccMMDecls.clone())) {
         (Deref @ metamodelica::List::Nil, _, accMMDecls) => {
-            accMMDecls.clone()
+            return Ok(accMMDecls.clone())
         },
         (Deref @ metamodelica::List::Cons { head: (tplname, TemplateDef::STR_TOKEN_DEF { value: stvalue }), tail: restTDefs }, tplPackage, accMMDecls) => {
             let mut mmDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
             let mut tplname = (*tplname).clone();
             tplname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*tplname.clone()); ArcStr::from(__mm_s) }).clone();
             mmDecls = transformTemplateDefs(restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_STR_TOKEN_DECL { isPublic: true, name: (tplname.clone()).clone(), value: stvalue.clone() }, accMMDecls.clone()))?;
-            mmDecls.clone()
+            return Ok(mmDecls.clone())
         },
         (Deref @ metamodelica::List::Cons { head: (tplname, TemplateDef::LITERAL_DEF { value: svalue, litType }), tail: restTDefs }, tplPackage, accMMDecls) => {
             let mut mmDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
             let mut tplname = (*tplname).clone();
             tplname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*tplname.clone()); ArcStr::from(__mm_s) }).clone();
             mmDecls = transformTemplateDefs(restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_LITERAL_DECL { isPublic: true, name: (tplname.clone()).clone(), value: (svalue.clone()).clone(), litType: litType.clone() }, accMMDecls.clone()))?;
-            mmDecls.clone()
+            return Ok(mmDecls.clone())
         },
         (Deref @ metamodelica::List::Cons { head: (tplname, TemplateDef::TEMPLATE_DEF { args: targs, exp: texp, .. }), tail: restTDefs }, tplPackage, accMMDecls) => {
             let mut encArgs: TypedIdents = metamodelica::nil();
@@ -754,11 +752,11 @@ pub fn transformTemplateDefs(mut inTemplateDefsRest: Arc<metamodelica::List<(Arc
             stmts = addOutPrefixes(stmts.clone(), oargs.clone(), metamodelica::nil())?;
             (stmts, locals, accMMDecls) = inlineLastFunIfSingleCall(iargs.clone(), oargs.clone(), stmts.clone(), locals.clone(), accMMDecls.clone())?;
             mmFun = MMDeclaration::MM_FUN { isPublic: true, name: (tplname.clone()).clone(), inArgs: iargs.clone(), outArgs: oargs.clone(), locals: locals.clone(), statements: stmts.clone(), genInfoOpt: crate::TplAbsyn::GenInfo::GI_TEMPL_FUN };
-            transformTemplateDefs(restTDefs.clone(), tplPackage.clone(), metamodelica::cons(mmFun.clone(), accMMDecls.clone()))?
+            { (inTemplateDefsRest, inTplPackage, inAccMMDecls) = (restTDefs.clone(), tplPackage.clone(), metamodelica::cons(mmFun.clone(), accMMDecls.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outMMDecls)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn inlineLastFunIfSingleCall(mut inInArgs: TypedIdents, mut inOutArgs: TypedIdents, mut inStmts: Arc<metamodelica::List<Arc<MMExp>>>, mut inLocals: TypedIdents, mut inAccMMDecls: Arc<metamodelica::List<MMDeclaration>>) -> Result<(Arc<metamodelica::List<Arc<MMExp>>>, TypedIdents, Arc<metamodelica::List<MMDeclaration>>)> {
@@ -6065,22 +6063,20 @@ fn typesEqualConcrete(mut inTypeA: Arc<TypeSignature>, mut inTypeB: Arc<TypeSign
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn typesEqualList(mut inTypeAList: Arc<metamodelica::List<Arc<TypeSignature>>>, mut inTypeBList: Arc<metamodelica::List<Arc<TypeSignature>>>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut inSetTypeVars: TypedIdents, mut inASTDefs: Arc<metamodelica::List<ASTDef>>) -> Result<TypedIdents> {
-    let mut outSetTypeVars: TypedIdents = metamodelica::nil();
-    outSetTypeVars = (::match_deref::match_deref! { match &((inTypeAList.clone(), inTypeBList.clone(), inTypeVars.clone(), inSetTypeVars.clone(), inASTDefs.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTypeAList.clone(), inTypeBList.clone(), inTypeVars.clone(), inSetTypeVars.clone(), inASTDefs.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, setTyVars, _) => {
-            setTyVars.clone()
+            return Ok(setTyVars.clone())
         },
         (Deref @ metamodelica::List::Cons { head: ota, tail: otaLst }, Deref @ metamodelica::List::Cons { head: otb, tail: otbLst }, tyVars, setTyVars, astDefs) => {
             let mut setTyVars = (*setTyVars).clone();
             setTyVars = typesEqual(ota.clone(), otb.clone(), tyVars.clone(), setTyVars.clone(), astDefs.clone())?;
-            typesEqualList(otaLst.clone(), otbLst.clone(), tyVars.clone(), setTyVars.clone(), astDefs.clone())?
+            { (inTypeAList, inTypeBList, inTypeVars, inSetTypeVars, inASTDefs) = (otaLst.clone(), otbLst.clone(), tyVars.clone(), setTyVars.clone(), astDefs.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outSetTypeVars)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn specializeType(mut inType: Arc<TypeSignature>, mut inTypeVars: Arc<metamodelica::List<ArcStr>>, mut inSetTypeVars: TypedIdents) -> Result<Arc<TypeSignature>> {
@@ -6934,23 +6930,21 @@ pub fn canBeEscapedUnquoted(mut inStringList: Arc<metamodelica::List<ArcStr>>) -
     Ok(outCanBeUnquoted)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn canBeEscapedUnquotedChars(mut inChars: Arc<metamodelica::List<ArcStr>>) -> bool {
-    let mut outCanBeUnquoted: bool = false;
-    outCanBeUnquoted = (::match_deref::match_deref! { match &(inChars.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inChars.clone()) {
         Deref @ metamodelica::List::Nil => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: c, tail: chars } if (c.clone() == literal!("'") || c.clone() == literal!("\"") || c.clone() == literal!("?") || c.clone() == literal!("\\") || c.clone() == literal!("\n") || c.clone() == literal!("\t") || c.clone() == literal!(" ")) => {
-            canBeEscapedUnquotedChars(chars.clone())
+            { inChars = chars.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outCanBeUnquoted
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn canBeOnOneLine(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> bool {

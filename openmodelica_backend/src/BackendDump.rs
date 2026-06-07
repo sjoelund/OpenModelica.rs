@@ -2326,13 +2326,11 @@ pub fn dumpEqnsStr(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)
     Ok(r#str)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn dumpEqnsStr2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inInteger: i32, mut inAcc: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    strs = (::match_deref::match_deref! { match &((inEquationLst.clone(), inInteger.clone(), inAcc.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inEquationLst.clone(), inInteger.clone(), inAcc.clone())) {
         (Deref @ metamodelica::List::Nil, _, acc) => {
-            acc.clone().reverse()
+            return Ok(acc.clone().reverse())
         },
         (Deref @ metamodelica::List::Cons { head: eqn, tail: eqns }, index, acc) => {
             let mut es: ArcStr = arcstr::literal!("");
@@ -2345,29 +2343,27 @@ fn dumpEqnsStr2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equati
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*is.clone()); __mm_s.push_str(&*literal!(" : ")); __mm_s.push_str(&*es.clone()); ArcStr::from(__mm_s) }).clone();
             index_1 = index.clone() + 1;
             acc = metamodelica::cons((r#str.clone()).clone(), acc.clone());
-            dumpEqnsStr2(eqns.clone(), index_1.clone(), acc.clone())?
+            { (inEquationLst, inInteger, inAcc) = (eqns.clone(), index_1.clone(), acc.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(strs)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut eqnstrue: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut eqnsfalse: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iString: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    outString = ((::match_deref::match_deref! { match &((conditions.clone(), eqnstrue.clone(), eqnsfalse.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((conditions.clone(), eqnstrue.clone(), eqnsfalse.clone())) {
         (Deref @ metamodelica::List::Nil, _, Deref @ metamodelica::List::Nil) => {
             let mut s: ArcStr = arcstr::literal!("");
             s = stringAppendList(list![(iString.clone()).clone(), (literal!("\nend if")).clone()]);
-            s.clone()
+            return Ok(s.clone())
         },
         (Deref @ metamodelica::List::Nil, _, _) => {
             let mut seqns: ArcStr = arcstr::literal!("");
             let mut s: ArcStr = arcstr::literal!("");
             seqns = stringDelimitList(List::map(eqnsfalse.clone(), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n  ")).clone());
             s = stringAppendList(list![(iString.clone()).clone(), (literal!("\nelse\n  ")).clone(), (seqns.clone()).clone(), (literal!("\nend if")).clone()]);
-            s.clone()
+            return Ok(s.clone())
         },
         (Deref @ metamodelica::List::Cons { head: e, tail: elst }, Deref @ metamodelica::List::Cons { head: eqns, tail: eqnslst }, _) => {
             let mut seqns: ArcStr = arcstr::literal!("");
@@ -2376,11 +2372,11 @@ pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
             se = (ExpressionBasics::printExpStr(e.clone())?).clone();
             seqns = stringDelimitList(List::map(eqns.clone(), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n  ")).clone());
             s = stringAppendList(list![(iString.clone()).clone(), (literal!("\nelseif ")).clone(), (se.clone()).clone(), (literal!(" then\n  ")).clone(), (seqns.clone()).clone()]);
-            ifequationString(elst.clone(), eqnslst.clone(), eqnsfalse.clone(), (s.clone()).clone())?
+            { (conditions, eqnstrue, eqnsfalse, iString) = (elst.clone(), eqnslst.clone(), eqnsfalse.clone(), (s.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outString)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn varString(mut inVar: BackendDAE::Var) -> Result<ArcStr> {

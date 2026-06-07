@@ -900,28 +900,26 @@ fn compareCrefStreamSet(mut cref: Arc<ComponentRef::NFComponentRef>, mut element
     Ok(matches)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn associatedFlowCref(mut streamCref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-    let mut flowCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut rest_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut flow_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(streamCref.clone()) {
-        Deref @ ComponentRef::CREF { ty: __pa0, restCref: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
-        _ => bail!("pattern mismatch"),
-    } };
-    ty = __pa0.clone();
-    rest_cr = __pa1.clone();
-    flowCref = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
+    '__tco: loop {
+        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut rest_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        let mut flow_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(streamCref.clone()) {
+            Deref @ ComponentRef::CREF { ty: __pa0, restCref: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            _ => bail!("pattern mismatch"),
+        } };
+        ty = __pa0.clone();
+        rest_cr = __pa1.clone();
+        ::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
         Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::CONNECTOR { flows: Deref @ metamodelica::List::Cons { head: __esc_flow_node, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
             flow_node = (*__esc_flow_node).clone();
-            ComponentRef::prefixCref(flow_node.clone(), InstNode::getType(flow_node.clone())?, metamodelica::nil(), streamCref.clone())
+            return Ok(ComponentRef::prefixCref(flow_node.clone(), InstNode::getType(flow_node.clone())?, metamodelica::nil(), streamCref.clone()))
         },
-        _ => associatedFlowCref(rest_cr.clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(flowCref)
+        _ => { streamCref = rest_cr.clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lookupVarAttr(mut varName: Arc<ComponentRef::NFComponentRef>, mut attrName: ArcStr, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<Option<Arc<Expression::NFExpression>>> {

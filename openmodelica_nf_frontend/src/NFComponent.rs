@@ -251,20 +251,18 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut component: Arc<N
     Ok(component)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut component: Arc<NFComponent>) -> Result<Arc<Type::NFType>> {
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    ty = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { ty: Deref @ Type::UNTYPED { .. }, .. } => InstNode::getType(var_field!((*component).classInst, NFComponent::COMPONENT).clone())?,
-        Deref @ COMPONENT { .. } => var_field!((*component).ty, NFComponent::COMPONENT).clone(),
-        Deref @ ITERATOR { .. } => var_field!((*component).ty, NFComponent::ITERATOR).clone(),
-        Deref @ TYPE_ATTRIBUTE { .. } => var_field!((*component).ty, NFComponent::TYPE_ATTRIBUTE).clone(),
-        Deref @ INVALID_COMPONENT { .. } => getType(var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone())?,
-        _ => crate::NFType::interned_UNKNOWN(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(ty)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(component.clone()) {
+        Deref @ COMPONENT { ty: Deref @ Type::UNTYPED { .. }, .. } => return Ok(InstNode::getType(var_field!((*component).classInst, NFComponent::COMPONENT).clone())?),
+        Deref @ COMPONENT { .. } => return Ok(var_field!((*component).ty, NFComponent::COMPONENT).clone()),
+        Deref @ ITERATOR { .. } => return Ok(var_field!((*component).ty, NFComponent::ITERATOR).clone()),
+        Deref @ TYPE_ATTRIBUTE { .. } => return Ok(var_field!((*component).ty, NFComponent::TYPE_ATTRIBUTE).clone()),
+        Deref @ INVALID_COMPONENT { .. } => { component = var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone(); continue '__tco; },
+        _ => return Ok(crate::NFType::interned_UNKNOWN()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setType(mut ty: Arc<Type::NFType>, mut component: Arc<NFComponent>) -> Result<Arc<NFComponent>> {

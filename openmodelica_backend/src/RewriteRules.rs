@@ -1262,46 +1262,42 @@ pub fn getAllRules() -> Result<Rules> {
     Ok(outRules)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRulesFrontEnd(mut inRules: Rules) -> Rules {
-    let mut outRules: Rules = metamodelica::nil();
-    outRules = (::match_deref::match_deref! { match &(inRules.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRules.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: r @ Rule::FRONTEND_RULE { .. }, tail: rest } => {
             let mut lst: Rules = metamodelica::nil();
             lst = getRulesFrontEnd(rest.clone());
-            metamodelica::cons(r.clone(), lst.clone())
+            return metamodelica::cons(r.clone(), lst.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            getRulesFrontEnd(rest.clone())
+            { inRules = rest.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outRules
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getRulesBackEnd(mut inRules: Rules) -> Rules {
-    let mut outRules: Rules = metamodelica::nil();
-    outRules = (::match_deref::match_deref! { match &(inRules.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRules.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: r @ Rule::BACKEND_RULE { .. }, tail: rest } => {
             let mut lst: Rules = metamodelica::nil();
             lst = getRulesBackEnd(rest.clone());
-            metamodelica::cons(r.clone(), lst.clone())
+            return metamodelica::cons(r.clone(), lst.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            getRulesBackEnd(rest.clone())
+            { inRules = rest.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outRules
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn stmtsToRules(mut inStmts: Arc<metamodelica::List<GlobalScript::Statement>>, mut inAcc: Rules) -> Result<Rules> {

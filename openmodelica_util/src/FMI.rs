@@ -347,25 +347,23 @@ pub fn isFMICSType(mut inFMIType: ArcStr) -> bool {
     success
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEnumerationTypeFromTypes(mut inTypeDefinitionsList: Arc<metamodelica::List<TypeDefinitions>>, mut inBaseType: ArcStr) -> Result<ArcStr> {
-    let mut outEnumerationType: ArcStr = arcstr::literal!("");
-    outEnumerationType = ((::match_deref::match_deref! { match &((inTypeDefinitionsList.clone(), inBaseType.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTypeDefinitionsList.clone(), inBaseType.clone())) {
         (Deref @ metamodelica::List::Cons { head: TypeDefinitions { name: name_, .. }, tail: _ }, baseType) if (stringEqual((name_.clone()).clone(), (baseType.clone()).clone())) => {
-            name_.clone()
+            return Ok(name_.clone())
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: xs }, baseType) => {
             let mut name_: ArcStr = arcstr::literal!("");
             name_ = (getEnumerationTypeFromTypes(xs.clone(), (baseType.clone()).clone())?).clone();
-            name_.clone()
+            return Ok(name_.clone())
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            literal!("")
+            return Ok(literal!(""))
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outEnumerationType)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn filterModelVariables(mut inModelVariables: Arc<metamodelica::List<ModelVariables>>, mut tipe: ArcStr, mut variableCausality: ArcStr) -> Result<Arc<metamodelica::List<ModelVariables>>> {

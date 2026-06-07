@@ -89,62 +89,58 @@ pub fn getGeneralTarget(mut in_txt: Tpl::Text, mut in_a_str: ArcStr) -> Result<T
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn underscorePath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { name: i_name, path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = replaceDotAndUnderscore(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = underscorePath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name_1 }) => {
             let mut txt = (*txt).clone();
             txt = replaceDotAndUnderscore(txt.clone(), (i_name_1.clone()).clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = underscorePath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, subscriptLst: i_subscriptLst, .. }) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
             txt = subscriptsStr(txt.clone(), i_subscriptLst.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("der(")).clone() }))?;
             txt = crefStr(txt.clone(), i_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("previous(")).clone() }))?;
             txt = crefStr(txt.clone(), i_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
@@ -154,42 +150,40 @@ pub fn crefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Re
             txt = subscriptsStr(txt.clone(), i_subscriptLst.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("._")).clone() }))?;
             txt = crefStr(txt.clone(), i_componentRef.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStrNoUnderscore(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = subscriptsStr(txt.clone(), i_subscriptLst.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("der(")).clone() }))?;
             txt = crefStrNoUnderscore(txt.clone(), i_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("previous(")).clone() }))?;
             txt = crefStrNoUnderscore(txt.clone(), i_componentRef.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
@@ -197,16 +191,16 @@ pub fn crefStrNoUnderscore(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Componen
             txt = subscriptsStr(txt.clone(), i_subscriptLst.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
             txt = crefStrNoUnderscore(txt.clone(), i_componentRef.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_49(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
@@ -245,28 +239,26 @@ pub fn subscriptsStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelic
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStrMatlabSafe(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: i_ident, subscriptLst: i_subscriptLst, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = subscriptsStrMatlabSafe(txt.clone(), i_subscriptLst.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$DER", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("der_")).clone() }))?;
             txt = crefStrMatlabSafe(txt.clone(), i_componentRef.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$CLKPRE", componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("pre_")).clone() }))?;
             txt = crefStrMatlabSafe(txt.clone(), i_componentRef.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
@@ -274,16 +266,16 @@ pub fn crefStrMatlabSafe(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentR
             txt = subscriptsStrMatlabSafe(txt.clone(), i_subscriptLst.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt = crefStrMatlabSafe(txt.clone(), i_componentRef.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_52(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
@@ -867,34 +859,32 @@ pub fn getAliasVar(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVa
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dotPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { name: i_name, path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
             txt = dotPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name_1 }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name_1.clone()).clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = dotPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn error(mut txt: Tpl::Text, mut a_srcInfo: SourceInfo, mut a_errMessage: ArcStr) -> Result<Tpl::Text> {

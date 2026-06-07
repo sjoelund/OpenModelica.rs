@@ -913,23 +913,21 @@ pub fn pathStripGraphScopePrefix(mut inPath: Arc<Absyn::Path>, mut inEnv: Graph,
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn pathStripGraphScopePrefix2(mut inPath: Arc<Absyn::Path>, mut inEnvPath: Arc<Absyn::Path>, mut stripPartial: bool) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &((inPath.clone(), inEnvPath.clone(), stripPartial.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPath.clone(), inEnvPath.clone(), stripPartial.clone())) {
         (Deref @ Absyn::Path::QUALIFIED { name: id1, path }, Deref @ Absyn::Path::QUALIFIED { name: id2, path: env_path }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
-            pathStripGraphScopePrefix2(path.clone(), env_path.clone(), stripPartial.clone())?
+            { (inPath, inEnvPath, stripPartial) = (path.clone(), env_path.clone(), stripPartial.clone()); continue '__tco; }
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id1, path }, Deref @ Absyn::Path::IDENT { name: id2 }, _) if (stringEqual((id1.clone()).clone(), (id2.clone()).clone())) => {
-            path.clone()
+            return Ok(path.clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id1, .. }, env_path, true) if (!(stringEqual((id1.clone()).clone(), (AbsynUtil::pathFirstIdent(env_path.clone())?).clone()))) => {
-            inPath.clone()
+            return Ok(inPath.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn mkComponentNode(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inVarEl: Arc<SCode::Element>, mut inMod: Arc<DAE::Mod>, mut instStatus: Status, mut inCompGraph: Graph) -> Result<Graph> {
@@ -1592,23 +1590,21 @@ pub fn graphPrefixOf(mut inPrefixEnv: Graph, mut inEnv: Graph) -> Result<bool> {
     Ok(outIsPrefix)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn graphPrefixOf2(mut inPrefixEnv: Scope, mut inEnv: Scope) -> Result<bool> {
-    let mut outIsPrefix: bool = false;
-    outIsPrefix = (::match_deref::match_deref! { match &((inPrefixEnv.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPrefixEnv.clone(), inEnv.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (Deref @ metamodelica::List::Cons { head: r1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: r2, tail: rest2 }) if (stringEq((FNode::refName(r1.clone())?).clone(), (FNode::refName(r2.clone())?).clone())) => {
-            graphPrefixOf2(rest1.clone(), rest2.clone())?
+            { (inPrefixEnv, inEnv) = (rest1.clone(), rest2.clone()); continue '__tco; }
         },
         _ => {
-            false
+            return Ok(false)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outIsPrefix)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn setStatus(mut inEnv: Graph, mut inName: Name, mut inStatus: FCore::Data) -> Result<Graph> {

@@ -779,23 +779,21 @@ pub fn make3Tuple<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>
     outTuple
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>, mut inAccum: i32) -> Result<i32> {
-    let mut outResult: i32 = 0;
-    outResult = (::match_deref::match_deref! { match &(inList.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inList.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAccum.clone()
+            return Ok(inAccum.clone())
         },
         Deref @ metamodelica::List::Cons { head: Some(i), tail: rest } => {
-            mulListIntegerOpt(rest.clone(), i.clone() * inAccum.clone())?
+            { (inList, inAccum) = (rest.clone(), i.clone() * inAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: None, tail: rest } => {
-            mulListIntegerOpt(rest.clone(), inAccum.clone())?
+            { (inList, inAccum) = (rest.clone(), inAccum.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outResult)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 /// A single boolean value that can be updated (a destructive operation). NOTE: Use Mutable<Boolean> instead. This implementation is kept since Susan cannot use that type.

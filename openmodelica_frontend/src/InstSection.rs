@@ -1591,22 +1591,20 @@ fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inT
     Ok(outDae)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn instEqEquation2List(mut inExps1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inExps2: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTypes3: Arc<metamodelica::List<Arc<DAE::Type>>>, mut r#const: DAE::Const, mut source: Arc<DAE::ElementSource>, mut initial_: SCode::Initial, mut acc: Arc<metamodelica::List<DAE::DAElist>>) -> Result<DAE::DAElist> {
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    outDae = (::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone(), inTypes3.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inExps1.clone(), inExps2.clone(), inTypes3.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            DAEUtil::joinDaeLst(acc.clone().reverse())?
+            return Ok(DAEUtil::joinDaeLst(acc.clone().reverse())?)
         },
         (Deref @ metamodelica::List::Cons { head: exp1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: exp2, tail: rest2 }, Deref @ metamodelica::List::Cons { head: ty, tail: rest3 }) => {
             let mut res: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             res = instEqEquation2(exp1.clone(), exp2.clone(), ty.clone(), r#const.clone(), source.clone(), initial_.clone())?;
-            instEqEquation2List(rest1.clone(), rest2.clone(), rest3.clone(), r#const.clone(), source.clone(), initial_.clone(), metamodelica::cons(res.clone(), acc.clone()))?
+            { (inExps1, inExps2, inTypes3, r#const, source, initial_, acc) = (rest1.clone(), rest2.clone(), rest3.clone(), r#const.clone(), source.clone(), initial_.clone(), metamodelica::cons(res.clone(), acc.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outDae)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn makeDaeEquation(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inSource: Arc<DAE::ElementSource>, mut inInitial3: SCode::Initial) -> Result<DAE::DAElist> {
@@ -3448,31 +3446,27 @@ fn generateExpandableDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Grap
     Ok(outDAE)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn daeDeclareList(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClassEnv: FCore::Graph, mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut state: ClassInf::State, mut ty: Arc<DAE::Type>, mut attrs: SCode::Attributes, mut vis: SCode::Visibility, mut io: Absyn::InnerOuter, mut source: Arc<DAE::ElementSource>, mut acc: DAE::DAElist) -> Result<DAE::DAElist> {
-    let mut outDAE: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    outDAE = (::match_deref::match_deref! { match &(crefs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(crefs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            acc.clone()
+            return Ok(acc.clone())
         },
         Deref @ metamodelica::List::Cons { head: cref, tail: lst } => {
             let mut daeExpandable: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             daeExpandable = InstDAE::daeDeclare(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), cref.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), None, metamodelica::nil(), None, None, Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((literal!("virtual variable in expandable connector")).clone()) })), io.clone(), openmodelica_frontend_types::SCode::Final::NOT_FINAL, source.clone(), true)?;
             daeExpandable = DAEUtil::joinDaes(daeExpandable.clone(), acc.clone())?;
             daeExpandable = daeDeclareList(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), lst.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), io.clone(), source.clone(), daeExpandable.clone())?;
-            daeExpandable.clone()
+            return Ok(daeExpandable.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outDAE)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut virtualExpandableCref: Arc<DAE::ComponentRef>, mut virtualExpandableAttr: Arc<DAE::Attributes>, mut virtualExpandableTy: Arc<DAE::Type>, mut virtualExpandableBinding: Arc<DAE::Binding>, mut virtualExpandableCnstForRange: Option<DAE::Const>, mut virtualExpandableEnv: FCore::Graph) -> Result<FCore::Graph> {
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    outEnv = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), virtualExpandableCref.clone(), virtualExpandableAttr.clone(), virtualExpandableTy.clone(), virtualExpandableBinding.clone(), virtualExpandableCnstForRange.clone(), virtualExpandableEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), virtualExpandableCref.clone(), virtualExpandableAttr.clone(), virtualExpandableTy.clone(), virtualExpandableBinding.clone(), virtualExpandableCnstForRange.clone(), virtualExpandableEnv.clone())) {
         (_, topEnv, Deref @ DAE::ComponentRef::CREF_IDENT { ident: currentName, .. }, veAttr, veTy, veBinding, veCnstForRange, veEnv) => {
             let mut updatedEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut realEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -3480,7 +3474,7 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             (realEnv, forLoopScope) = FGraph::splitGraphScope(topEnv.clone())?;
             updatedEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
             updatedEnv = FGraph::pushScope(updatedEnv.clone(), forLoopScope.clone())?;
-            updatedEnv.clone()
+            return Ok(updatedEnv.clone())
         },
         (cache, topEnv, veCref @ Deref @ DAE::ComponentRef::CREF_QUAL { .. }, veAttr, veTy, veBinding, veCnstForRange, veEnv) => {
             let mut qualCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3501,11 +3495,11 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             currentEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
             currentEnv = FGraph::pushScope(currentEnv.clone(), forLoopScope.clone())?;
             updatedEnv = updateEnvComponentsOnQualPath(cache.clone(), topEnv.clone(), qualCref.clone(), currentAttr.clone(), currentTy.clone(), currentBinding.clone(), currentCnstForRange.clone(), currentEnv.clone())?;
-            updatedEnv.clone()
+            return Ok(updatedEnv.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outEnv)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn connectExpandableVariables(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inSets: DAE::Connect::Sets, mut inPrefix: DAE::Prefix, mut inComponentRefLeft: Arc<Absyn::ComponentRef>, mut inComponentRefRight: Arc<Absyn::ComponentRef>, mut inVariablesUnion: Arc<metamodelica::List<ArcStr>>, mut inImpl: bool, mut inGraph: ConnectionGraph::ConnectionGraph, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Connect::Sets, DAE::DAElist, ConnectionGraph::ConnectionGraph)> {

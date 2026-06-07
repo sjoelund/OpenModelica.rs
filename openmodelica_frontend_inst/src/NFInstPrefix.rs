@@ -148,40 +148,36 @@ pub fn firstName(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &(inPrefix.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
-            inCref.clone()
+            return Ok(inCref.clone())
         },
         Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() });
-            prefixCref(cref.clone(), rest_prefix.clone())?
+            { (inCref, inPrefix) = (cref.clone(), rest_prefix.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
-            inPath.clone()
+            return Ok(inPath.clone())
         },
         Deref @ Prefix::PREFIX { name, restPrefix: rest_prefix, .. } => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = Arc::new(Absyn::Path::QUALIFIED { name: (name.clone()).clone(), path: inPath.clone() });
-            prefixPath(path.clone(), rest_prefix.clone())?
+            { (inPath, inPrefix) = (path.clone(), rest_prefix.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn prefixStr(mut inString: ArcStr, mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
@@ -239,23 +235,21 @@ pub fn fromPath(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Prefix>> {
     Ok(outPrefix)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn fromPath2(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
-    outPrefix = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { name, path } => {
-            fromPath2(path.clone(), Arc::new(Prefix::PREFIX { name: (name.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() }))?
+            { (inPath, inPrefix) = (path.clone(), Arc::new(Prefix::PREFIX { name: (name.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() })); continue '__tco; }
         },
         Deref @ Absyn::Path::IDENT { name } => {
-            Arc::new(Prefix::PREFIX { name: (name.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() })
+            return Ok(Arc::new(Prefix::PREFIX { name: (name.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() }))
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path } => {
-            fromPath2(path.clone(), inPrefix.clone())?
+            { (inPath, inPrefix) = (path.clone(), inPrefix.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outPrefix)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn fromStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<Prefix> {
@@ -264,20 +258,18 @@ pub fn fromStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<Pre
     outPrefix
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn fromStringList2(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut inPrefix: Arc<Prefix>) -> Arc<Prefix> {
-    let mut outPrefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
-    outPrefix = (::match_deref::match_deref! { match &(inStrings.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStrings.clone()) {
         Deref @ metamodelica::List::Cons { head: r#str, tail: strl } => {
-            fromStringList2(strl.clone(), Arc::new(Prefix::PREFIX { name: (r#str.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() }))
+            { (inStrings, inPrefix) = (strl.clone(), Arc::new(Prefix::PREFIX { name: (r#str.clone()).clone(), dims: metamodelica::nil(), restPrefix: inPrefix.clone() })); continue '__tco; }
         },
         _ => {
-            inPrefix.clone()
+            return inPrefix.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outPrefix
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn toStr(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
@@ -320,23 +312,21 @@ pub fn toStrWithEmpty(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
     Ok(outStr)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isPackagePrefix(mut inPrefix: Arc<Prefix>) -> bool {
-    let mut outIsPackagePrefix: bool = false;
-    outIsPackagePrefix = (::match_deref::match_deref! { match &(inPrefix.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { restPrefix: prefix, .. } => {
-            isPackagePrefix(prefix.clone())
+            { inPrefix = prefix.clone(); continue '__tco; }
         },
         Deref @ Prefix::EMPTY_PREFIX { classPath: None } => {
-            true
+            return true
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsPackagePrefix
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn toPackagePrefix(mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {

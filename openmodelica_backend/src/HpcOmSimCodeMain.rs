@@ -372,10 +372,8 @@ pub fn applyGRS(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>
 }
 
 fn applyGRS1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>, mut again: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta)> {
-    let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut oTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut oTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
-    (oTaskGraph, oTaskGraphT, oTaskGraphMeta) = (match again.clone() {
+    '__tco: loop {
+        match again.clone() {
         true => {
             let mut changed: bool = false;
             let mut changed2: bool = false;
@@ -386,13 +384,13 @@ fn applyGRS1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
             (tmpTaskGraph, tmpTaskGraphT, tmpTaskGraphMeta, tmpContractedTasks, changed) = HpcOmTaskGraph::mergeSimpleNodes(iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone(), iContractedTasks.clone())?;
             (tmpTaskGraph, tmpTaskGraphT, tmpTaskGraphMeta, tmpContractedTasks, changed2) = HpcOmTaskGraph::mergeParentNodes(tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta.clone(), tmpContractedTasks.clone())?;
             changed = changed.clone() || changed2.clone();
-            applyGRS1(tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta.clone(), tmpContractedTasks.clone(), changed.clone())?
+            { (iTaskGraph, iTaskGraphT, iTaskGraphMeta, iContractedTasks, again) = (tmpTaskGraph.clone(), tmpTaskGraphT.clone(), tmpTaskGraphMeta.clone(), tmpContractedTasks.clone(), changed.clone()); continue '__tco; }
         },
         _ => {
-            (iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone())
+            return Ok((iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone()))
         },
-    });
-    Ok((oTaskGraph, oTaskGraphT, oTaskGraphMeta))
+    }
+    }
 }
 
 fn applyGRSForScheduler(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta)> {
@@ -431,19 +429,17 @@ fn applyGRSForScheduler(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Li
     Ok((oTaskGraph, oTaskGraphT, oTaskGraphMeta))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>, mut iLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
-    let mut oContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut rest: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut head: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut sortedHead: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut sortedHeadArray: metamodelica::Array<i32> = Default::default();
-    let mut tmpContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
-    let mut bigTaskExecTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    oContractedLevelfixTasks = (::match_deref::match_deref! { match &((iTaskGraphMeta.clone(), iLevelNodes.clone())) {
+    '__tco: loop {
+        let mut rest: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+        let mut head: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut sortedHead: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut sortedHeadArray: metamodelica::Array<i32> = Default::default();
+        let mut tmpContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+        let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+        let mut bigTaskExecTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+        let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+        ::match_deref::match_deref! { match &((iTaskGraphMeta.clone(), iLevelNodes.clone())) {
         (HpcOmTaskGraph::TaskGraphMeta { exeCosts: __esc_exeCosts, inComps: __esc_inComps, .. }, Deref @ metamodelica::List::Cons { head: __esc_head, tail: __esc_rest }) => {
             exeCosts = (*__esc_exeCosts).clone();
             inComps = (*__esc_inComps).clone();
@@ -458,12 +454,12 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
             }
             tmpContractedLevelfixTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), 500, sortedHeadArray.clone(), 1, (metamodelica::arrayLength(sortedHeadArray.clone()), metamodelica::nil(), bigTaskExecTime.clone()), iContractedLevelfixTasks.clone())?;
             tmpContractedLevelfixTasks = applyGRSForLevelFixScheduler(iTaskGraphMeta.clone(), iContractedTasks.clone(), rest.clone(), tmpContractedLevelfixTasks.clone())?;
-            tmpContractedLevelfixTasks.clone()
+            return Ok(tmpContractedLevelfixTasks.clone())
         },
-        _ => iContractedLevelfixTasks.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oContractedLevelfixTasks)
+        _ => return Ok(iContractedLevelfixTasks.clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn applyGRSForLevelFixSchedulerLevel(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>, mut iCriticalSize: i32, mut iSortedLevelTasks: metamodelica::Array<i32>, mut iCurrentSmallTask: i32, mut iCurrentBigTask: (i32, Arc<metamodelica::List<i32>>, metamodelica::Real), mut iContractedLevelfixTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
@@ -573,11 +569,10 @@ fn GRS_newGraph(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
 }
 
 fn GRS_newGraph2(mut origNodes: Arc<metamodelica::List<i32>>, mut removedNodes: Arc<metamodelica::List<i32>>, mut contrTasks: metamodelica::Array<i32>, mut origGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut origInComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut newGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut newInComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut newNode: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut graphOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut inCompsOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    (graphOut, inCompsOut) = (::match_deref::match_deref! { match &(origNodes.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(origNodes.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (newGraph.clone(), newInComps.clone())
+            return Ok((newGraph.clone(), newInComps.clone()))
         },
         Deref @ metamodelica::List::Cons { head: node, tail: rest } => {
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -588,11 +583,11 @@ fn GRS_newGraph2(mut origNodes: Arc<metamodelica::List<i32>>, mut removedNodes: 
             comps = metamodelica::arrayGet(origInComps.clone(), node.clone())?;
             metamodelica::arrayUpdate(newGraph.clone(), newNode.clone(), row.clone())?;
             metamodelica::arrayUpdate(newInComps.clone(), newNode.clone(), comps.clone())?;
-            GRS_newGraph2(rest.clone(), removedNodes.clone(), contrTasks.clone(), origGraph.clone(), origInComps.clone(), newGraph.clone(), newInComps.clone(), newNode.clone() + 1)?
+            { (origNodes, removedNodes, contrTasks, origGraph, origInComps, newGraph, newInComps, newNode) = (rest.clone(), removedNodes.clone(), contrTasks.clone(), origGraph.clone(), origInComps.clone(), newGraph.clone(), newInComps.clone(), newNode.clone() + 1); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((graphOut, inCompsOut))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn createSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iFilenamePrefix: ArcStr, mut iNumProc: i32, mut iNumProcToUse: i32, mut iSimCode: SimCode::SimCode, mut iScheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iSystemName: ArcStr, mut iSchedulerName: ArcStr) -> Result<(Arc<HpcOmSimCode::Schedule>, SimCode::SimCode, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {

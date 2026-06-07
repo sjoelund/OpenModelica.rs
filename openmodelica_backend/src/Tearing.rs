@@ -625,13 +625,11 @@ fn unassignTVars(mut v: i32, mut inAss: metamodelica::Array<i32>) -> Result<meta
     Ok(outAss)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut visited: metamodelica::Array<i32>, mut iMark: i32) -> Result<i32> {
-    let mut oMark: i32 = 0;
-    oMark = (::match_deref::match_deref! { match &(iComps.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(iComps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iMark.clone()
+            return Ok(iMark.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: c, tail: Deref @ metamodelica::List::Nil }, tail: comps } => {
             let mut v: i32 = 0;
@@ -641,7 +639,7 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
             vars = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             tvars = tVarsofEqn(vars.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark.clone(), metamodelica::nil())?;
             metamodelica::arrayUpdate(mT.clone(), v.clone(), tvars.clone())?;
-            getDependenciesOfVars(comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1)?
+            { (iComps, ass1, ass2, m, mT, visited, iMark) = (comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: comp, tail: comps } => {
             let mut tvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -649,11 +647,11 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
             vars = List::map1r(comp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone())?;
             tvars = tVarsofEqns(comp.clone(), m.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark.clone())?;
             List::fold1r(vars.clone(), Arc::new(arrayUpdate.clone()), tvars.clone(), mT.clone())?;
-            getDependenciesOfVars(comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1)?
+            { (iComps, ass1, ass2, m, mT, visited, iMark) = (comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oMark)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn tVarsofEqns(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut visited: metamodelica::Array<i32>, mut iMark: i32) -> Result<Arc<metamodelica::List<i32>>> {
@@ -1191,23 +1189,21 @@ fn hasnonlinearVars(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::
     hasnonlinear
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasnonlinearVars1(mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> bool {
-    let mut hasnonlinear: bool = false;
-    hasnonlinear = (::match_deref::match_deref! { match &(row.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(row.clone()) {
         Deref @ metamodelica::List::Nil => {
-            false
+            return false
         },
         Deref @ metamodelica::List::Cons { head: (_, BackendDAE::Solvability::SOLVABILITY_NONLINEAR { .. }, _), tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            hasnonlinearVars1(rest.clone())
+            { row = rest.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    hasnonlinear
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn tearingBFS1(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut size: i32, mut c: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inNextQueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
@@ -1282,13 +1278,11 @@ fn isEntrySolvable(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::L
     Ok(b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn tearingBFS2(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut clst: Arc<metamodelica::List<i32>>, mut mt: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut inNextQueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
-    let mut outNextQueue: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
-    outNextQueue = (::match_deref::match_deref! { match &((rows.clone(), clst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((rows.clone(), clst.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
-            inNextQueue.clone()
+            return Ok(inNextQueue.clone())
         },
         (Deref @ metamodelica::List::Cons { head: (r, _, _), tail: rest }, Deref @ metamodelica::List::Cons { head: c, tail: ilst }) => {
             let mut vareqns: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
@@ -1304,11 +1298,11 @@ fn tearingBFS2(mut rows: Arc<metamodelica::List<(i32, BackendDAE::Solvability, A
             }
             vareqns = List::removeOnTrue(ass2.clone(), (std::sync::Arc::new(fnptr!(isAssignedSaveEnhanced, metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>))) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, (i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)) -> Result<bool> + 'static>), ({let __elt = mt.borrow()[(r.clone()-1) as usize].clone(); __elt}))?;
             newqueue = listAppend(inNextQueue.clone(), vareqns.clone());
-            tearingBFS2(rest.clone(), ilst.clone(), mt.clone(), ass1.clone(), ass2.clone(), newqueue.clone())?
+            { (rows, clst, mt, ass1, ass2, inNextQueue) = (rest.clone(), ilst.clone(), mt.clone(), ass1.clone(), ass2.clone(), newqueue.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outNextQueue)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn omcTearing3(mut unassigned: Arc<metamodelica::List<i32>>, mut unsolvables: Arc<metamodelica::List<i32>>, mut tSel_always: Arc<metamodelica::List<i32>>, mut tSel_prefer: Arc<metamodelica::List<i32>>, mut tSel_avoid: Arc<metamodelica::List<i32>>, mut tSel_never: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut size: i32, mut vars: BackendDAE::Variables, mut ishared: Arc<BackendDAE::Shared>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut columark: metamodelica::Array<i32>, mut mark: i32, mut inTVars: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, i32)> {

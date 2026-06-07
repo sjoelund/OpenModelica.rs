@@ -1286,47 +1286,45 @@ pub mod SimVars {
         Ok(part_vars)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getStrongComponentVars(mut comp: Arc<StrongComponent::NBStrongComponent>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {
-        let mut part_vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        part_vars = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ StrongComponent::SINGLE_COMPONENT { .. } => getVars(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), simcode_map.clone())?,
-        Deref @ StrongComponent::MULTI_COMPONENT { .. } => List::flatten(({
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ StrongComponent::SINGLE_COMPONENT { .. } => return Ok(getVars(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), simcode_map.clone())?),
+        Deref @ StrongComponent::MULTI_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut v in (var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone()).into_iter().cloned() {
             let __x = getVars(Slice::getT(v.clone()), simcode_map.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?,
-        Deref @ StrongComponent::SLICED_COMPONENT { .. } => getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), simcode_map.clone())?,
-        Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), simcode_map.clone())?,
-        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?, simcode_map.clone())?,
-        Deref @ StrongComponent::ENTWINED_COMPONENT { .. } => List::flatten(({
+    }))?),
+        Deref @ StrongComponent::SLICED_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), simcode_map.clone())?),
+        Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => return Ok(getVars(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), simcode_map.clone())?),
+        Deref @ StrongComponent::GENERIC_COMPONENT { .. } => return Ok(getVars(BVariable::getVarPointer(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::GENERIC_COMPONENT).clone(), metamodelica::sourceInfo!("NSimCode/NSimVar.mo"))?, simcode_map.clone())?),
+        Deref @ StrongComponent::ENTWINED_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut c in (var_field!((*comp).entwined_slices, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone()).into_iter().cloned() {
             let __x = getStrongComponentVars(c.clone(), simcode_map.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?,
-        Deref @ StrongComponent::ALGEBRAIC_LOOP { .. } => List::flatten(({
+    }))?),
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimVar::SimVar>>>>> = metamodelica::nil();
         for mut v in (var_field!((*comp).strict, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).iteration_vars.clone()).into_iter().cloned() {
             let __x = getVars(Slice::getT(v.clone()), simcode_map.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?,
-        Deref @ StrongComponent::ALIAS { .. } => getStrongComponentVars(var_field!((*comp).original, StrongComponent::NBStrongComponent::ALIAS).clone(), simcode_map.clone())?,
+    }))?),
+        Deref @ StrongComponent::ALIAS { .. } => { (comp, simcode_map) = (var_field!((*comp).original, StrongComponent::NBStrongComponent::ALIAS).clone(), simcode_map.clone()); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVars.getStrongComponentVars")); __mm_s.push_str(&*literal!(" failed with unknown reason for\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(part_vars)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     fn getVars(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<Arc<metamodelica::List<Arc<SimVar::SimVar>>>> {

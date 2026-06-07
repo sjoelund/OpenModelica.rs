@@ -184,19 +184,17 @@ pub fn isNull(mut obj: Arc<JSON>) -> bool {
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addElement(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {
-    let mut outObj: Arc<JSON> = Arc::new(JSON::FALSE);
-    outObj = (::match_deref::match_deref! { match &(obj.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(obj.clone()) {
         Deref @ ARRAY { .. } => {
             Vector::push(var_field!((*obj).values, JSON::ARRAY).clone(), value.clone());
-            obj.clone()
+            return Ok(obj.clone())
         },
-        Deref @ NULL { .. } => addElement(value.clone(), emptyArray(0))?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outObj)
+        Deref @ NULL { .. } => { (value, obj) = (value.clone(), emptyArray(0)); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addElementNotNull(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {
@@ -205,20 +203,18 @@ pub fn addElementNotNull(mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc
     Ok(outObj)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addPair(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {
-    let mut outObj: Arc<JSON> = Arc::new(JSON::FALSE);
-    outObj = (::match_deref::match_deref! { match &(obj.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(obj.clone()) {
         Deref @ OBJECT { .. } => {
             UnorderedMap::add((key.clone()).clone(), value.clone(), var_field!((*obj).values, JSON::OBJECT).clone())?;
-            obj.clone()
+            return Ok(obj.clone())
         },
-        Deref @ LIST_OBJECT { .. } => Arc::new(JSON::LIST_OBJECT { values: metamodelica::cons((key.clone(), value.clone()), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) }),
-        Deref @ NULL { .. } => addPair((key.clone()).clone(), value.clone(), emptyListObject())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outObj)
+        Deref @ LIST_OBJECT { .. } => return Ok(Arc::new(JSON::LIST_OBJECT { values: metamodelica::cons((key.clone(), value.clone()), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) })),
+        Deref @ NULL { .. } => { (key, value, obj) = ((key.clone()).clone(), value.clone(), emptyListObject()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addPairNotNull(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Result<Arc<JSON>> {

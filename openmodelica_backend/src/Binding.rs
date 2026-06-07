@@ -203,42 +203,38 @@ pub fn updatePackage(mut in_class: Arc<Absyn::Class>, mut ag_elems: Arc<metamode
     Ok(out_class)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn populateModel(mut element_defs: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>, mut autoVal: i32, mut elements_in: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut elements_out: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    elements_out = (::match_deref::match_deref! { match &(element_defs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(element_defs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            elements_in.clone()
+            return Ok(elements_in.clone())
         },
         Deref @ metamodelica::List::Cons { head: (Deref @ SCode::Element::CLASS { name: cname, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: _, classDef: _, cmt: _, info: _ }, p_path), tail: rest } => {
             let mut el: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
             let mut nName: ArcStr = arcstr::literal!("");
             nName = (if (p_path.clone() == literal!("")) {cname.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*p_path.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*cname.clone()); ArcStr::from(__mm_s) }}).clone();
             el = Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { flowPrefix: false, streamPrefix: false, parallelism: openmodelica_ast::Absyn::Parallelism::NON_PARALLEL, variability: openmodelica_ast::Absyn::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD, arrayDim: metamodelica::nil() }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: AbsynUtil::stringPath((nName.clone()).clone())?, arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_agen_")); __mm_s.push_str(&*cname.clone()); __mm_s.push_str(&*intString(autoVal.clone())); ArcStr::from(__mm_s) }).clone(), arrayDim: metamodelica::nil(), modification: None }, condition: None, comment: None })] }), info: Absyn::dummyInfo.clone(), constrainClass: None });
-            populateModel(rest.clone(), autoVal.clone() + 1, metamodelica::cons(Arc::new(Absyn::ElementItem::ELEMENTITEM { element: el.clone() }), elements_in.clone()))?
+            { (element_defs, autoVal, elements_in) = (rest.clone(), autoVal.clone() + 1, metamodelica::cons(Arc::new(Absyn::ElementItem::ELEMENTITEM { element: el.clone() }), elements_in.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(elements_out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getAllElementsOfType(mut element_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeName: Ident, mut pathInProg: ArcStr, mut elements_in: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>> {
-    let mut elements_out: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> = metamodelica::nil();
-    elements_out = (::match_deref::match_deref! { match &(element_defs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(element_defs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            elements_in.clone()
+            return Ok(elements_in.clone())
         },
         Deref @ metamodelica::List::Cons { head: el, tail: rest } => {
             let mut m: Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>> = metamodelica::nil();
             m = listAppend(getAllElementsOfType2(el.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone())?, elements_in.clone());
-            getAllElementsOfType(rest.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone(), m.clone())?
+            { (element_defs, typeName, pathInProg, elements_in) = (rest.clone(), (typeName.clone()).clone(), (pathInProg.clone()).clone(), m.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(elements_out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut pathInProg: ArcStr) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, ArcStr)>>> {
@@ -339,22 +335,20 @@ fn isOfType(mut elems: Arc<metamodelica::List<Arc<SCode::Element>>>, mut typeNam
     Ok(result)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn inferBindingClientList(mut client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program) -> Result<Arc<Absyn::Class>> {
-    let mut out_vmodel: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    out_vmodel = (::match_deref::match_deref! { match &(client_list.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(client_list.clone()) {
         Deref @ metamodelica::List::Nil => {
-            vmodel.clone()
+            return Ok(vmodel.clone())
         },
         Deref @ metamodelica::List::Cons { head: ce, tail: rest } => {
             let mut upd_vmodel: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
             upd_vmodel = inferBindingClient(ce.clone(), vmodel.clone(), env.clone())?;
-            inferBindingClientList(rest.clone(), upd_vmodel.clone(), env.clone())?
+            { (client_list, vmodel, env) = (rest.clone(), upd_vmodel.clone(), env.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_vmodel)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn inferBindingClient(mut client_e: Arc<Client_e>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program) -> Result<Arc<Absyn::Class>> {
@@ -395,20 +389,18 @@ fn inferBindingClient(mut client_e: Arc<Client_e>, mut vmodel: Arc<Absyn::Class>
     Ok(out_vmodel)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toExpList(mut e_list: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut in_es: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Arc<metamodelica::List<Arc<Absyn::Exp>>> {
-    let mut out_es: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-    out_es = (::match_deref::match_deref! { match &(e_list.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(e_list.clone()) {
         Deref @ metamodelica::List::Nil => {
-            in_es.clone()
+            return in_es.clone()
         },
         Deref @ metamodelica::List::Cons { head: (exp, _), tail: rest } => {
-            toExpList(rest.clone(), metamodelica::cons(exp.clone(), in_es.clone()))
+            { (e_list, in_es) = (rest.clone(), metamodelica::cons(exp.clone(), in_es.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    out_es
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn updateClass(mut in_class: Arc<Absyn::Class>, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut defs: Absyn::Program, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut path: ArcStr) -> Result<Arc<Absyn::Class>> {
@@ -821,13 +813,11 @@ fn parseAggregator(mut in_eq: Arc<Absyn::Exp>, mut fargs: Arc<Absyn::FunctionArg
     out_eq
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel: Arc<Absyn::Class>, mut env: Absyn::Program, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
-    let mut out_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
-    out_es = (::match_deref::match_deref! { match &(providers.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(providers.clone()) {
         Deref @ metamodelica::List::Nil => {
-            in_es.clone()
+            return Ok(in_es.clone())
         },
         Deref @ metamodelica::List::Cons { head: Provider { modelID: className, component: _, template }, tail: rest } => {
             let mut comps: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>> = metamodelica::nil();
@@ -844,11 +834,11 @@ pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel
             exp = __pa0.clone();
             exps = applyTemplate(exp.clone(), comps.clone(), metamodelica::nil())?;
             new_es = listAppend(exps.clone(), in_es.clone());
-            getProviders(rest.clone(), vmodel.clone(), env.clone(), new_es.clone())?
+            { (providers, vmodel, env, in_es) = (rest.clone(), vmodel.clone(), env.clone(), new_es.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out_es)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn applyTemplate(mut exp: Arc<Absyn::Exp>, mut comps: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArcStr)>>, mut in_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>> {
@@ -1129,20 +1119,18 @@ fn buildInstList2(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut pre
     Ok(client_list)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isAlreadyInList(mut ts: Arc<Absyn::TypeSpec>, mut predecessors: Arc<metamodelica::List<Arc<Client_e>>>) -> Result<bool> {
-    let mut val: bool = false;
-    val = (::match_deref::match_deref! { match &(predecessors.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(predecessors.clone()) {
         Deref @ metamodelica::List::Nil => {
-            false
+            return Ok(false)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Client_e::CLIENT_E { components: _, typeSpec: _, rootType: ots, def: _, instance: _, predecessors: _, mediator: _ }, tail: rest } => {
-            if (AbsynUtil::typeSpecEqual(ts.clone(), ots.clone())?) {true} else {isAlreadyInList(ts.clone(), rest.clone())?}
+            if (AbsynUtil::typeSpecEqual(ts.clone(), ots.clone())?) {return Ok(true)} else {{ (ts, predecessors) = (ts.clone(), rest.clone()); continue '__tco; }}
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(val)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut in_client_list: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
@@ -1337,22 +1325,20 @@ fn isClientInMediator(mut ci_name: ArcStr, mut clients: Arc<metamodelica::List<C
     Ok((isClient, iname))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getMediatorDefsElements(mut mediator_defs: Arc<metamodelica::List<Arc<SCode::Element>>>, mut mediators_in: Arc<metamodelica::List<Mediator>>) -> Result<Arc<metamodelica::List<Mediator>>> {
-    let mut mediators_out: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
-    mediators_out = (::match_deref::match_deref! { match &(mediator_defs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(mediator_defs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            mediators_in.clone()
+            return Ok(mediators_in.clone())
         },
         Deref @ metamodelica::List::Cons { head: el, tail: rest } => {
             let mut m: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
             m = listAppend(getMediatorDefsElement(el.clone())?, mediators_in.clone());
-            getMediatorDefsElements(rest.clone(), m.clone())?
+            { (mediator_defs, mediators_in) = (rest.clone(), m.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(mediators_out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Mediator>>> {
@@ -1434,33 +1420,29 @@ fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelic
     Ok(mediator)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getPreferredList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Preferred>>) -> Result<Arc<metamodelica::List<Preferred>>> {
-    let mut n_val: Arc<metamodelica::List<Preferred>> = metamodelica::nil();
-    n_val = (::match_deref::match_deref! { match &(e.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ metamodelica::List::Nil => {
-            val.clone()
+            return Ok(val.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CALL { function_: _, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames }, .. }, tail: rest } => {
             let mut clientInstancePath: ArcStr = arcstr::literal!("");
             let mut providerInstancePath: ArcStr = arcstr::literal!("");
             clientInstancePath = (getArg(argNames.clone(), (literal!("clientInstancePath")).clone())?).clone();
             providerInstancePath = (getArg(argNames.clone(), (literal!("providerInstancePath")).clone())?).clone();
-            getPreferredList(rest.clone(), metamodelica::cons(Preferred { clientInstancePath: (clientInstancePath.clone()).clone(), providerInstancePath: (providerInstancePath.clone()).clone() }, val.clone()))?
+            { (e, val) = (rest.clone(), metamodelica::cons(Preferred { clientInstancePath: (clientInstancePath.clone()).clone(), providerInstancePath: (providerInstancePath.clone()).clone() }, val.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(n_val)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getClientList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Client>>) -> Result<Arc<metamodelica::List<Client>>> {
-    let mut n_val: Arc<metamodelica::List<Client>> = metamodelica::nil();
-    n_val = (::match_deref::match_deref! { match &(e.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ metamodelica::List::Nil => {
-            val.clone()
+            return Ok(val.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CALL { function_: _, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames }, .. }, tail: rest } => {
             let mut className: ArcStr = arcstr::literal!("");
@@ -1477,20 +1459,18 @@ fn getClientList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<m
             } else {
                 isMandatory = false;
             }
-            getClientList(rest.clone(), metamodelica::cons(Client { modelID: (className.clone()).clone(), component: (instance.clone()).clone(), template: (template.clone()).clone(), isMandatory: isMandatory.clone() }, val.clone()))?
+            { (e, val) = (rest.clone(), metamodelica::cons(Client { modelID: (className.clone()).clone(), component: (instance.clone()).clone(), template: (template.clone()).clone(), isMandatory: isMandatory.clone() }, val.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(n_val)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc<metamodelica::List<Provider>>) -> Result<Arc<metamodelica::List<Provider>>> {
-    let mut n_val: Arc<metamodelica::List<Provider>> = metamodelica::nil();
-    n_val = (::match_deref::match_deref! { match &(e.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(e.clone()) {
         Deref @ metamodelica::List::Nil => {
-            val.clone()
+            return Ok(val.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CALL { function_: _, functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames }, .. }, tail: rest } => {
             let mut className: ArcStr = arcstr::literal!("");
@@ -1499,11 +1479,11 @@ fn getProviderList(mut e: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut val: Arc
             className = (getArg(argNames.clone(), (literal!("modelID")).clone())?).clone();
             instance = (getArg(argNames.clone(), (literal!("component")).clone())?).clone();
             providerTemplate = (getArg(argNames.clone(), (literal!("template")).clone())?).clone();
-            getProviderList(rest.clone(), metamodelica::cons(Provider { modelID: (className.clone()).clone(), component: (instance.clone()).clone(), template: (providerTemplate.clone()).clone() }, val.clone()))?
+            { (e, val) = (rest.clone(), metamodelica::cons(Provider { modelID: (className.clone()).clone(), component: (instance.clone()).clone(), template: (providerTemplate.clone()).clone() }, val.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(n_val)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getArg(mut argNames: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut name: ArcStr) -> Result<ArcStr> {

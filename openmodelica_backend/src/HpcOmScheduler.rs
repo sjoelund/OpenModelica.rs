@@ -1453,13 +1453,11 @@ fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimC
     Ok(oScheduleInfo)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut sectionsNumber: i32, mut sectionIdx: i32, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
-    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
-    oScheduleInfo = (::match_deref::match_deref! { match &(tasks.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(tasks.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iScheduleInfo.clone()
+            return Ok(iScheduleInfo.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc, threadIdx: threadIdxOpt, .. }, tail: rest } => {
             let mut numNodes: i32 = 0;
@@ -1469,11 +1467,11 @@ fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmS
             threadIdx = Util::getOptionOrDefault(threadIdxOpt.clone(), -1);
             tuplLst = List::threadMap1(List::fill(threadIdx.clone(), numNodes.clone()), List::fill(-1, numNodes.clone()), std::sync::Arc::new(fnptr!(Util::make3Tuple, _, _, _)), metamodelica::OrderedFloat(0.0_f64))?;
             List::threadMap1_0(nodeIdc.clone(), tuplLst.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), iScheduleInfo.clone())?;
-            convertScheduleStrucToInfoLevel1(rest.clone(), sectionsNumber.clone(), sectionIdx.clone() + 1, iScheduleInfo.clone())?
+            { (tasks, sectionsNumber, sectionIdx, iScheduleInfo) = (rest.clone(), sectionsNumber.clone(), sectionIdx.clone() + 1, iScheduleInfo.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oScheduleInfo)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 //-----------------
@@ -1689,13 +1687,11 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
     Ok(sectionsOut)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn BLS_mergeDependentLevelTask(mut nodesIn: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sectionsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
-    let mut sectionsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    sectionsOut = (::match_deref::match_deref! { match &(nodesIn.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(nodesIn.clone()) {
         Deref @ metamodelica::List::Nil => {
-            sectionsIn.clone().reverse()
+            return Ok(sectionsIn.clone().reverse())
         },
         Deref @ metamodelica::List::Cons { head: node, tail: rest } => {
             let mut dependentNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1708,11 +1704,11 @@ fn BLS_mergeDependentLevelTask(mut nodesIn: Arc<metamodelica::List<i32>>, mut iG
             (_, rest, _) = List::intersection1OnTrue(rest.clone(), dependentNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             section = section.clone().reverse();
             sections = BLS_mergeDependentLevelTask(rest.clone(), iGraph.clone(), iGraphT.clone(), metamodelica::cons(section.clone(), sectionsIn.clone()))?;
-            sections.clone()
+            return Ok(sections.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(sectionsOut)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn BLS_getDependentGroups(mut nodes: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut referenceNodesIn: Arc<metamodelica::List<i32>>, mut dependentsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {

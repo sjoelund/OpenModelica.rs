@@ -3338,30 +3338,28 @@ fn getDimElemCount(mut iNumArrayElems: Arc<metamodelica::List<ArcStr>>, mut iDim
     Ok(oNumArrayElems)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getCrefDims(mut iCref: Arc<DAE::ComponentRef>) -> i32 {
-    let mut oDims: i32 = 0;
-    let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-    let mut tmpDims: i32 = 0;
-    oDims = (::match_deref::match_deref! { match &(iCref.clone()) {
+    '__tco: loop {
+        let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+        let mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
+        let mut tmpDims: i32 = 0;
+        ::match_deref::match_deref! { match &(iCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: __esc_componentRef, .. } => {
             componentRef = (*__esc_componentRef).clone();
-            getCrefDims(componentRef.clone())
+            { iCref = componentRef.clone(); continue '__tco; }
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: __esc_subscriptLst, .. } => {
             subscriptLst = (*__esc_subscriptLst).clone();
             tmpDims = (subscriptLst.clone().len() as i32);
-            tmpDims.clone()
+            return tmpDims.clone()
         },
         _ => {
             metamodelica::print((literal!("HpcOmMemory.getCrefDims failed!\n")).clone());
-            0
+            return 0
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    oDims
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn expandCref1(mut iCref: Arc<DAE::ComponentRef>, mut iElems: i32, mut iDimElemCount: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {

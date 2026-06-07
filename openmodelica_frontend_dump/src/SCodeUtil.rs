@@ -3302,63 +3302,57 @@ pub fn isElementEncapsulated(mut inElement: Arc<SCode::Element>) -> bool {
     outIsEncapsulated
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getElementsFromElement(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inElement: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    outProgram = (::match_deref::match_deref! { match &(inElement.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, .. } => {
-            els.clone()
+            return Ok(els.clone())
         },
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, .. }, .. } => {
-            els.clone()
+            return Ok(els.clone())
         },
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: p, .. }, .. }, .. } => {
             let mut els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             e = getElementWithPath(inProgram.clone(), p.clone())?;
             els = getElementsFromElement(inProgram.clone(), e.clone())?;
-            els.clone()
+            return Ok(els.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outProgram)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getElementWithId(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inId: ArcStr) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    outElement = (::match_deref::match_deref! { match &((inProgram.clone(), inId.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inProgram.clone(), inId.clone())) {
         (Deref @ metamodelica::List::Cons { head: e @ Deref @ SCode::Element::CLASS { name: n, .. }, tail: _ }, i) if (stringEq((n.clone()).clone(), (i.clone()).clone())) => {
-            e.clone()
+            return Ok(e.clone())
         },
         (Deref @ metamodelica::List::Cons { head: e @ Deref @ SCode::Element::COMPONENT { name: n, .. }, tail: _ }, i) if (stringEq((n.clone()).clone(), (i.clone()).clone())) => {
-            e.clone()
+            return Ok(e.clone())
         },
         (Deref @ metamodelica::List::Cons { head: e @ Deref @ SCode::Element::EXTENDS { baseClassPath: p, .. }, tail: _ }, i) if (stringEq((AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone(), (i.clone()).clone())) => {
-            e.clone()
+            return Ok(e.clone())
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, i) => {
-            getElementWithId(rest.clone(), (i.clone()).clone())?
+            { (inProgram, inId) = (rest.clone(), (i.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outElement)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getElementWithPath(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    outElement = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
-            getElementWithPath(inProgram.clone(), p.clone())?
+            { (inProgram, inPath) = (inProgram.clone(), p.clone()); continue '__tco; }
         },
         Deref @ Absyn::Path::IDENT { name: i } => {
             let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             e = getElementWithId(inProgram.clone(), (i.clone()).clone())?;
-            e.clone()
+            return Ok(e.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { name: i, path: p } => {
             let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -3366,11 +3360,11 @@ pub fn getElementWithPath(mut inProgram: Arc<metamodelica::List<Arc<SCode::Eleme
             e = getElementWithId(inProgram.clone(), (i.clone()).clone())?;
             sp = getElementsFromElement(inProgram.clone(), e.clone())?;
             e = getElementWithPath(sp.clone(), p.clone())?;
-            e.clone()
+            return Ok(e.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outElement)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getElementName(mut e: Arc<SCode::Element>) -> Result<ArcStr> {
@@ -4366,61 +4360,55 @@ pub fn isExternalObject(mut els: Arc<metamodelica::List<Arc<SCode::Element>>>) -
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExtendsOfExternalObject(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(inEls.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEls.clone()) {
         Deref @ metamodelica::List::Nil => {
-            false
+            return false
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: path, .. }, tail: _ } if (AbsynUtil::pathEqual(path.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("ExternalObject")).clone() }))) => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: els } => {
-            hasExtendsOfExternalObject(els.clone())
+            { inEls = els.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(inEls.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEls.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { name: Deref @ "destructor", .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: els } => {
-            hasExternalObjectDestructor(els.clone())
+            { inEls = els.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasExternalObjectConstructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(inEls.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEls.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { name: Deref @ "constructor", .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: els } => {
-            hasExternalObjectConstructor(els.clone())
+            { inEls = els.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn getExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<SCode::Element>> {
@@ -4543,18 +4531,16 @@ pub fn getConstrainingMod(mut element: Arc<SCode::Element>) -> Arc<SCode::Mod> {
     r#mod
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEmptyClassDef(mut cdef: Arc<SCode::ClassDef>) -> bool {
-    let mut isEmpty: bool = false;
-    isEmpty = (::match_deref::match_deref! { match &(cdef.clone()) {
-        Deref @ SCode::ClassDef::PARTS { .. } => var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && isNone(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone()),
-        Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => isEmptyClassDef(var_field!((*cdef).composition, SCode::ClassDef::CLASS_EXTENDS).clone()),
-        Deref @ SCode::ClassDef::ENUMERATION { .. } => var_field!((*cdef).enumLst, SCode::ClassDef::ENUMERATION).clone().is_empty(),
-        _ => true,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isEmpty
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cdef.clone()) {
+        Deref @ SCode::ClassDef::PARTS { .. } => return var_field!((*cdef).elementLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && isNone(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone()),
+        Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => { cdef = var_field!((*cdef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(); continue '__tco; },
+        Deref @ SCode::ClassDef::ENUMERATION { .. } => return var_field!((*cdef).enumLst, SCode::ClassDef::ENUMERATION).clone().is_empty(),
+        _ => return true,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn stripCommentsFromProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut stripAnnotations: bool, mut stripComments: bool) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
@@ -5105,36 +5091,32 @@ pub fn mergeSCodeMods(mut inModOuter: Arc<SCode::Mod>, mut inModInner: Arc<SCode
     Ok(outMod)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasNamedExternalCall(mut name: ArcStr, mut def: Arc<SCode::ClassDef>) -> bool {
-    let mut hasCall: bool = false;
-    hasCall = (::match_deref::match_deref! { match &(def.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(def.clone()) {
         Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { funcName: Some(fn_name), .. }), .. } => {
-            fn_name.clone() == name.clone()
+            return fn_name.clone() == name.clone()
         },
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => {
-            hasNamedExternalCall((name.clone()).clone(), var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone())
+            { (name, def) = ((name.clone()).clone(), var_field!((*def).composition, SCode::ClassDef::CLASS_EXTENDS).clone()); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    hasCall
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn classDefHasSections(mut cdef: Arc<SCode::ClassDef>, mut checkExternal: bool) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &(cdef.clone()) {
-        Deref @ SCode::ClassDef::PARTS { .. } => !(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && if (checkExternal.clone()) {isNone(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone())} else {true}),
-        Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => classDefHasSections(var_field!((*cdef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), checkExternal.clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cdef.clone()) {
+        Deref @ SCode::ClassDef::PARTS { .. } => return !(var_field!((*cdef).normalEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialEquationLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).normalAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && var_field!((*cdef).initialAlgorithmLst, SCode::ClassDef::PARTS).clone().is_empty() && if (checkExternal.clone()) {isNone(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone())} else {true}),
+        Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => { (cdef, checkExternal) = (var_field!((*cdef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), checkExternal.clone()); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn mapElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {

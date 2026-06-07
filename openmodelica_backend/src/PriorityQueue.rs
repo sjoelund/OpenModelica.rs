@@ -175,23 +175,21 @@ pub fn elements(mut ts: T) -> Result<Arc<metamodelica::List<(i32, Arc<metamodeli
     Ok(elts)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn elements2(mut its: T, mut acc: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>) -> Result<Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>>> {
-    let mut elts: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)>> = metamodelica::nil();
-    elts = (::match_deref::match_deref! { match &(its.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(its.clone()) {
         Deref @ metamodelica::List::Nil => {
-            acc.clone().reverse()
+            return Ok(acc.clone().reverse())
         },
         ts => {
             let mut elt: Element = (0, metamodelica::nil());
             let mut ts = (*ts).clone();
             (ts, elt) = deleteAndReturnMin(ts.clone())?;
-            elements2(ts.clone(), metamodelica::cons(elt.clone(), acc.clone()))?
+            { (its, acc) = (ts.clone(), metamodelica::cons(elt.clone(), acc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(elts)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 /* TODO: Hide from user when we remove RML... */
@@ -256,20 +254,18 @@ fn link(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> Result<Arc<Tree>> {
     Ok(t)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn ins(mut t: Arc<Tree>, mut its: T) -> Result<T> {
-    let mut ots: T = metamodelica::nil();
-    ots = (::match_deref::match_deref! { match &((t.clone(), its.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((t.clone(), its.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            list![t.clone()]
+            return Ok(list![t.clone()])
         },
         (t1, Deref @ metamodelica::List::Cons { head: t2, tail: ts }) => {
-            if (rank(t1.clone())? < rank(t2.clone())?) {metamodelica::cons(t1.clone(), metamodelica::cons(t2.clone(), ts.clone()))} else {ins(link(t1.clone(), t2.clone())?, ts.clone())?}
+            if (rank(t1.clone())? < rank(t2.clone())?) {return Ok(metamodelica::cons(t1.clone(), metamodelica::cons(t2.clone(), ts.clone())))} else {{ (t, its) = (link(t1.clone(), t2.clone())?, ts.clone()); continue '__tco; }}
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(ots)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getMin(mut ts: T) -> Result<(Arc<Tree>, T)> {

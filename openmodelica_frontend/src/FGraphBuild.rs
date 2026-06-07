@@ -270,23 +270,21 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: F
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: FCore::ModScope, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inSubMod.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inSubMod.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: id, r#mod: m }, tail: rest }, g) => {
             let mut g = (*g).clone();
             g = mkModNode((id.clone()).clone(), m.clone(), inModScope.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkSubMods(rest.clone(), inModScope.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn mkBindingNode(mut inBinding: Option<Arc<Absyn::Exp>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -497,13 +495,11 @@ pub fn mkDimsNode(mut inName: Name, mut inArrayDims: Option<Arc<metamodelica::Li
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inStartWith.clone(), inArrayDims.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inStartWith.clone(), inArrayDims.clone(), inGraph.clone())) {
         (_, Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: rest }, g) => {
             let mut name: Name = arcstr::literal!("");
@@ -511,7 +507,7 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
             name = (intString(i.clone())).clone();
             g = mkExpressionNode((name.clone()).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
         (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e }, tail: rest }, g) => {
             let mut name: Name = arcstr::literal!("");
@@ -519,11 +515,11 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
             name = (intString(i.clone())).clone();
             g = mkExpressionNode((name.clone()).clone(), e.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -610,23 +606,21 @@ pub fn mkExpressionNode(mut inName: Name, mut inExp: Arc<Absyn::Exp>, mut inPare
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inCrefs.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCrefs.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: cr, tail: rest }, g) => {
             let mut g = (*g).clone();
             g = mkCrefNode(cr.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkCrefsNodes(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn mkCrefNode(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -789,13 +783,11 @@ pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode:
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inExps.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inExps.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: e, tail: rest }, g) => {
             let mut crefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -803,11 +795,11 @@ pub fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut
             crefs = AbsynUtil::getCrefFromExp(e.clone(), true, true)?;
             g = mkCrefsNodes(crefs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = mkCrefsFromExps(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn analyseExp(mut inExp: Arc<Absyn::Exp>, mut inRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -995,13 +987,11 @@ pub fn addIterators(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterat
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inIterators.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inIterators.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: i @ Deref @ Absyn::ForIterator { name, .. }, tail: rest }, g) => {
             let mut n: Node = <FCore::Node as ::std::default::Default>::default();
@@ -1011,11 +1001,11 @@ pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::Fo
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             g = addIterators_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
@@ -1036,13 +1026,11 @@ pub fn addMatchScope(mut inMatchExp: Arc<Absyn::Exp>, mut inParentRef: Ref, mut 
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inElements.clone(), inGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inElements.clone(), inGraph.clone())) {
         (Deref @ metamodelica::List::Nil, g) => {
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element }, tail: rest }, g) => {
             let mut el: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -1050,16 +1038,16 @@ pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::El
             el = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
             g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = addMatchScope_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, g) => {
             let mut g = (*g).clone();
             g = addMatchScope_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g.clone()
+            return Ok(g.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn mkRefNode(mut inName: Name, mut inTargetScope: Scope, mut inParentRef: Ref, mut inGraph: Graph) -> Result<Graph> {

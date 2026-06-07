@@ -26584,32 +26584,30 @@ pub fn variableType(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lastIdentOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, .. }) => {
             let mut txt = (*txt).clone();
             txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn identOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Path>) -> Result<Tpl::Text> {
@@ -26709,16 +26707,14 @@ fn lm_1025(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Re
     Ok(txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn boostextentDims(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_StatArrayDims: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_StatArrayDims.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_StatArrayDims.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, ident: i_ident, .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_NO_SUBS")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_dims, .. }, a_StatArrayDims) => {
             let mut ret_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -26731,21 +26727,21 @@ pub fn boostextentDims(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef
             txt = lm_1025(txt.clone(), ret_1.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_c, .. }, a_StatArrayDims) => {
             let mut txt = (*txt).clone();
             txt = boostextentDims(txt.clone(), i_c.clone(), a_StatArrayDims.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_1027(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
@@ -26763,17 +26759,15 @@ fn lm_1027(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Re
     Ok(txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayextentDims(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_array: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_array.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_array.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, ident: i_ident, .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_NO_SUBS")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/*hier1*/")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_dims, .. }, a_array) => {
             let mut ret_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -26784,21 +26778,21 @@ pub fn arrayextentDims(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_1027(txt.clone(), ret_1.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_c, .. }, a_array) => {
             let mut txt = (*txt).clone();
             txt = arrayextentDims(txt.clone(), i_c.clone(), a_array.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_1029(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
@@ -26816,17 +26810,15 @@ fn lm_1029(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<ArcStr>>) -> Re
     Ok(txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayNumElements(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_array: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_array.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_array.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Nil, ident: i_ident, .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_ident.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_NO_SUBS")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/*hier1*/")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: i_dims, .. }, a_array) => {
             let mut ret_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -26837,21 +26829,21 @@ pub fn arrayNumElements(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_1029(txt.clone(), ret_1.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_c, .. }, a_array) => {
             let mut txt = (*txt).clone();
             txt = arrayNumElements(txt.clone(), i_c.clone(), a_array.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_1031(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<metamodelica::List<SimCodeVar::SimVar>>>>, mut a_useFlatArrayNotation: bool, mut a_stateDerVectorName: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_additionalConstVarFunctionCalls: Tpl::Text, mut a_className: Tpl::Text, mut a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
@@ -27327,34 +27319,32 @@ pub fn initVal(mut in_txt: Tpl::Text, mut in_a_initialValue: Arc<DAE::Exp>) -> R
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dotPath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { name: i_name, path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".")).clone() }))?;
             txt = dotPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name_1 }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name_1.clone()).clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = dotPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lm_1052(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
@@ -27619,53 +27609,51 @@ fn lm_1064(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<SimCode::Si
     Ok(txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn numResidues2(mut in_txt: Tpl::Text, mut in_a_eqn: Arc<SimCode::SimEqSystem>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqn.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_eqn.clone())) {
         (txt, Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index: _, .. }) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("1")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { index: _, .. }) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_ALGORITHM { index: _, .. }) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { vars: i_ls_vars, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_1063(txt.clone(), i_ls_vars.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { eqs: i_nls_eqs, .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             txt = lm_1064(txt.clone(), i_nls_eqs.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_MIXED { cont: i_cont, .. }) => {
             let mut txt = (*txt).clone();
             txt = numResidues2(txt.clone(), i_cont.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SimCode::SimEqSystem::SES_WHEN { index: _, .. }) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn numStatevars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
@@ -29656,47 +29644,45 @@ pub fn initValst(mut txt: Tpl::Text, mut a_varDecls: Tpl::Text, mut a_type: Tpl:
     Ok((out_txt, out_a_varDecls, out_a_type, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn startValue(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0.0")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("false")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"empty\"")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::Type::T_ENUMERATION { index: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0")).clone() }))?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_elty, .. }) => {
             let mut txt = (*txt).clone();
             txt = startValue(txt.clone(), i_elty.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fun_1149(mut in_txt: Tpl::Text, mut in_a_vi_numZeroCrossings: i32) -> Result<Tpl::Text> {

@@ -866,13 +866,11 @@ fn markIndex(mut inIndex: i32, mut inArray: metamodelica::Array<i32>) -> metamod
     outArray
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn selectSecondaryParameters(mut inOrdering: Arc<metamodelica::List<i32>>, mut inParameters: BackendDAE::Variables, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inSecondaryParams: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut outSecondaryParams: metamodelica::Array<i32> = Default::default();
-    outSecondaryParams = (::match_deref::match_deref! { match &(inOrdering.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inOrdering.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inSecondaryParams.clone()
+            return Ok(inSecondaryParams.clone())
         },
         Deref @ metamodelica::List::Cons { head: i, tail: rest } => {
             let mut secondaryParams: metamodelica::Array<i32> = Default::default();
@@ -880,11 +878,11 @@ fn selectSecondaryParameters(mut inOrdering: Arc<metamodelica::List<i32>>, mut i
             param = BackendVariable::getVarAt(inParameters.clone(), i.clone())?;
             secondaryParams = if (if (BackendVariable::isVarAlg(param.clone())) {false} else {!(BackendVariable::varFixed(param.clone()))} || 1 == ({let __elt = inSecondaryParams.borrow()[(i.clone()-1) as usize].clone(); __elt})) {List::fold(({let __elt = inM.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(markIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), inSecondaryParams.clone())?} else {inSecondaryParams.clone()};
             secondaryParams = selectSecondaryParameters(rest.clone(), inParameters.clone(), inM.clone(), secondaryParams.clone())?;
-            secondaryParams.clone()
+            return Ok(secondaryParams.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outSecondaryParams)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn flattenParamComp(mut paramIndices: Arc<metamodelica::List<i32>>, mut inAllParameters: BackendDAE::Variables) -> Result<i32> {
@@ -1646,28 +1644,26 @@ fn consistencyCheck(mut inRedundantEqns: Arc<metamodelica::List<i32>>, mut inEqn
     Ok((outConsistentEquations, outInconsistentEquations, outUncheckedEquations))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isVarExplicitSolvable(mut inElem: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut inVarID: i32) -> bool {
-    let mut outSolvable: bool = false;
-    outSolvable = (::match_deref::match_deref! { match &(inElem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inElem.clone()) {
         Deref @ metamodelica::List::Nil => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: (id, BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE { .. }, _), tail: _ } if (intEq(id.clone(), inVarID.clone())) => {
-            false
+            return false
         },
         Deref @ metamodelica::List::Cons { head: (id, BackendDAE::Solvability::SOLVABILITY_NONLINEAR { .. }, _), tail: _ } if (intEq(id.clone(), inVarID.clone())) => {
-            false
+            return false
         },
         Deref @ metamodelica::List::Cons { head: (_, _, _), tail: elem } => {
             let mut b: bool = false;
             b = isVarExplicitSolvable(elem.clone(), inVarID.clone());
-            b.clone()
+            return b.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outSolvable
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn splitStrongComponents(mut inComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {

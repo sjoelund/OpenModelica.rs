@@ -229,17 +229,15 @@ pub fn expandCref3(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<S
     Ok(arrayExp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut comb: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut accum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut restSubs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut crefType: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
-    let mut arrayExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
-    let mut arr_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut slice: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut rest: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-    let mut i: i32 = 0;
-    arrayExp = (::match_deref::match_deref! { match &(subs.clone()) {
-        Deref @ metamodelica::List::Nil => expandCref3(restSubs.clone(), cref.clone(), crefType.clone(), metamodelica::cons(comb.clone().reverse(), accum.clone()))?,
+    '__tco: loop {
+        let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+        let mut arr_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut slice: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+        let mut rest: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
+        let mut i: i32 = 0;
+        ::match_deref::match_deref! { match &(subs.clone()) {
+        Deref @ metamodelica::List::Nil => return Ok(expandCref3(restSubs.clone(), cref.clone(), crefType.clone(), metamodelica::cons(comb.clone().reverse(), accum.clone()))?),
         Deref @ metamodelica::List::Cons { head: Deref @ Subscript::EXPANDED_SLICE { indices: __esc_slice }, tail: __esc_rest } => {
             slice = (*__esc_slice).clone();
             rest = (*__esc_rest).clone();
@@ -251,12 +249,12 @@ pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>
                 i = i.clone() + 1;
             }
             arr_ty = Type::liftArrayLeft(Expression::typeOf(metamodelica::arrayGet(expl.clone(), 1)?), Dimension::fromExpArray(expl.clone()));
-            Expression::makeArray(arr_ty.clone(), expl.clone(), false)
+            return Ok(Expression::makeArray(arr_ty.clone(), expl.clone(), false))
         },
-        _ => expandCref4(listRest(subs.clone())?, metamodelica::cons(listHead(subs.clone())?, comb.clone()), accum.clone(), restSubs.clone(), cref.clone(), crefType.clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(arrayExp)
+        _ => { (subs, comb, accum, restSubs, cref, crefType) = (listRest(subs.clone())?, metamodelica::cons(listHead(subs.clone())?, comb.clone()), accum.clone(), restSubs.clone(), cref.clone(), crefType.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn expandTypename(mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {

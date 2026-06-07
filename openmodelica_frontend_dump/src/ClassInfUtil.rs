@@ -681,67 +681,65 @@ pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut
     Ok(outState)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodelica::List<ClassInf::State>>) -> Result<bool> {
-    let mut outBoolean: bool = false;
-    outBoolean = (::match_deref::match_deref! { match &((inState.clone(), inStateLst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inState.clone(), inStateLst.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            false
+            return Ok(false)
         },
         (ClassInf::State::UNKNOWN { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::UNKNOWN { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::MODEL { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::MODEL { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::RECORD { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::RECORD { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::BLOCK { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::BLOCK { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::CONNECTOR { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::CONNECTOR { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::PACKAGE { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::PACKAGE { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::FUNCTION { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::FUNCTION { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::ENUMERATION { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::ENUMERATION { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_INTEGER { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_INTEGER { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_REAL { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_REAL { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_STRING { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_STRING { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_BOOL { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_BOOL { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_CLOCK { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_CLOCK { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (ClassInf::State::TYPE_ENUM { .. }, Deref @ metamodelica::List::Cons { head: ClassInf::State::TYPE_ENUM { .. }, tail: _ }) => {
-            true
+            return Ok(true)
         },
         (_, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
             let mut res: bool = false;
             res = matchingState(inState.clone(), rest.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outBoolean)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isFunction(mut inState: ClassInf::State) -> bool {

@@ -1555,17 +1555,15 @@ pub fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: 
     Ok(outCref)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isSeedCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
-        Deref @ DAE::ComponentRef::CREF_IDENT { .. } => StringUtil::startsWith((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (literal!("Seed")).clone()),
-        Deref @ DAE::ComponentRef::CREF_QUAL { .. } => isSeedCref(var_field!((*cr).componentRef, DAE::ComponentRef::CREF_QUAL).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cr.clone()) {
+        Deref @ DAE::ComponentRef::CREF_IDENT { .. } => return StringUtil::startsWith((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), (literal!("Seed")).clone()),
+        Deref @ DAE::ComponentRef::CREF_QUAL { .. } => { cr = var_field!((*cr).componentRef, DAE::ComponentRef::CREF_QUAL).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn differentiateCalls(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>)> {
@@ -2926,13 +2924,11 @@ fn createPartialSum(mut inArgsLst: Arc<metamodelica::List<Arc<metamodelica::List
     Ok(outExp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn prepareArgumentsExplArray(mut inWorkLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inArgs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCurrentArg: i32, mut inAccum: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>> {
-    let mut outExpLstLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-    outExpLstLst = (::match_deref::match_deref! { match &(inWorkLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inWorkLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAccum.clone().reverse()
+            return Ok(inAccum.clone().reverse())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
             let mut args: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2943,11 +2939,11 @@ fn prepareArgumentsExplArray(mut inWorkLst: Arc<metamodelica::List<Arc<DAE::Exp>
             dims = Expression::arrayDimension(tp.clone());
             (eone, _) = Expression::makeOneExpression(dims.clone())?;
             args = List::set(inArgs.clone(), inCurrentArg.clone(), eone.clone())?;
-            prepareArgumentsExplArray(rest.clone(), inArgs.clone(), inCurrentArg.clone() + 1, metamodelica::cons(args.clone(), inAccum.clone()))?
+            { (inWorkLst, inArgs, inCurrentArg, inAccum) = (rest.clone(), inArgs.clone(), inCurrentArg.clone() + 1, metamodelica::cons(args.clone(), inAccum.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outExpLstLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn differentiatePartialFunction(mut inFunction: DAE::Function, mut inDiffwrtCref: Arc<DAE::ComponentRef>, mut inInputData: BackendDAE::DifferentiateInputData, mut inDiffType: BackendDAE::DifferentiationType, mut inFunctionTree: Arc<AvlTreePathFunction::Tree>, mut maxIter: i32) -> Result<(DAE::Function, Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<bool>>)> {

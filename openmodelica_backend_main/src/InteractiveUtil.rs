@@ -912,30 +912,28 @@ pub fn unparseMods(mut r#mod: Arc<Absyn::Modification>) -> Result<ArcStr> {
     Ok(s)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Modification>> {
-    let mut outModification: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-    outModification = (::match_deref::match_deref! { match &((inAbsynElementArgLst.clone(), inPath.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inAbsynElementArgLst.clone(), inPath.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: p1, modification: Some(r#mod), .. }, tail: _ }, p2) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
-            r#mod.clone()
+            return Ok(r#mod.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: name1 }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { name: name2, path: p2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut res: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
             res = getModificationValues(args.clone(), p2.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         (Deref @ metamodelica::List::Cons { head: elArg @ Deref @ Absyn::ElementArg::REDECLARATION { elementSpec: elSpec, .. }, tail: _ }, p1) if (AbsynUtil::pathFirstIdent(p1.clone())? == AbsynUtil::elementSpecName(elSpec.clone())?) => {
-            Arc::new(Absyn::Modification { elementArgLst: list![elArg.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() })
+            return Ok(Arc::new(Absyn::Modification { elementArgLst: list![elArg.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
             let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
             r#mod = getModificationValues(rest.clone(), inPath.clone())?;
-            r#mod.clone()
+            return Ok(r#mod.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outModification)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getElementModifierNames(mut path: Arc<Absyn::Path>, mut inElementName: ArcStr, mut inProgram3: Absyn::Program) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -2455,25 +2453,23 @@ pub fn replaceEquationList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<A
     Ok(outAbsynClassPartLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEquationList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::EquationItem>>>> {
-    let mut outAbsynEquationItemLst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-    outAbsynEquationItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::EQUATIONS { contents: lst }, tail: _ } => {
-            lst.clone()
+            return Ok(lst.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             ys = getEquationList(xs.clone())?;
-            ys.clone()
+            return Ok(ys.clone())
         },
         _ => {
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outAbsynEquationItemLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn annotationListToAbsyn(mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<Arc<Absyn::Annotation>> {

@@ -1109,19 +1109,17 @@ pub fn simplifyBinarySub(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Op
     Ok(outExp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn simplifyBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>, mut switched: bool) -> Arc<Expression::NFExpression> {
-    let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    outExp = (::match_deref::match_deref! { match &(exp1.clone()) {
-        Deref @ Expression::INTEGER { value: 0 } => exp1.clone(),
-        Deref @ Expression::REAL { value: __rlit_0 } if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => exp1.clone(),
-        Deref @ Expression::INTEGER { value: 1 } => exp2.clone(),
-        Deref @ Expression::REAL { value: __rlit_1 } if __rlit_1.eq(&metamodelica::OrderedFloat((1.0) as f64)) => exp2.clone(),
-        _ => if (switched.clone()) {Arc::new(Expression::NFExpression::BINARY { exp1: exp2.clone(), operator: op.clone(), exp2: exp1.clone() })} else {simplifyBinaryMul(exp2.clone(), op.clone(), exp1.clone(), true)},
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outExp
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp1.clone()) {
+        Deref @ Expression::INTEGER { value: 0 } => return exp1.clone(),
+        Deref @ Expression::REAL { value: __rlit_0 } if __rlit_0.eq(&metamodelica::OrderedFloat((0.0) as f64)) => return exp1.clone(),
+        Deref @ Expression::INTEGER { value: 1 } => return exp2.clone(),
+        Deref @ Expression::REAL { value: __rlit_1 } if __rlit_1.eq(&metamodelica::OrderedFloat((1.0) as f64)) => return exp2.clone(),
+        _ => if (switched.clone()) {return Arc::new(Expression::NFExpression::BINARY { exp1: exp2.clone(), operator: op.clone(), exp2: exp1.clone() })} else {{ (exp1, op, exp2, switched) = (exp2.clone(), op.clone(), exp1.clone(), true); continue '__tco; }},
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn simplifyBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>, mut exp2: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {

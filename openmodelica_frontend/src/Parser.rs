@@ -327,46 +327,42 @@ fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     Ok(license)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> ArcStr {
-    let mut libraryKey: ArcStr = arcstr::literal!("");
-    libraryKey = ((::match_deref::match_deref! { match &(eltArgs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            literal!("")
+            return literal!("")
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "libraryKey" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), .. }, tail: _ } => {
-            s.clone()
+            return s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (getLicenseAnnotationLibraryKey(xs.clone())).clone();
-            s.clone()
+            return s.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    libraryKey
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> ArcStr {
-    let mut licenseFile: ArcStr = arcstr::literal!("");
-    licenseFile = ((::match_deref::match_deref! { match &(eltArgs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            literal!("")
+            return literal!("")
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "licenseFile" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::STRING { value: s }, .. }, .. }), .. }, tail: _ } => {
-            s.clone()
+            return s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (getLicenseAnnotationLicenseFile(xs.clone())).clone();
-            s.clone()
+            return s.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    licenseFile
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn getFeaturesAnnotation(mut className: Arc<Absyn::Class>) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -388,27 +384,25 @@ fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     Ok(features)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    features = (::match_deref::match_deref! { match &(eltArgs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), .. }, tail: _ } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             featuresList = List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?;
-            featuresList.clone()
+            return Ok(featuresList.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             featuresList = getFeaturesAnnotationList2(xs.clone())?;
-            featuresList.clone()
+            return Ok(featuresList.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(features)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn expToString(mut inExp: Arc<Absyn::Exp>) -> ArcStr {

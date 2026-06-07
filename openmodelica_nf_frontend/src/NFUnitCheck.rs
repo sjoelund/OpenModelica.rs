@@ -1325,26 +1325,24 @@ fn convertUnitStringToUnit(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<U
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getUnitStringFromExp(mut unitExp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
-    let mut unitString: ArcStr = arcstr::literal!("");
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    unitString = ((::match_deref::match_deref! { match &(unitExp.clone()) {
-        Deref @ Expression::STRING { .. } => var_field!((*unitExp).value, Expression::NFExpression::STRING).clone(),
-        Deref @ Expression::ARRAY { literal: true, .. } if (Expression::isLiteral(unitExp.clone())? && !(Type::isEmptyArray(Expression::typeOf(unitExp.clone()))?)) => getUnitStringFromExp(Expression::arrayFirstScalar(unitExp.clone())?)?,
+    '__tco: loop {
+        let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        ::match_deref::match_deref! { match &(unitExp.clone()) {
+        Deref @ Expression::STRING { .. } => return Ok(var_field!((*unitExp).value, Expression::NFExpression::STRING).clone()),
+        Deref @ Expression::ARRAY { literal: true, .. } if (Expression::isLiteral(unitExp.clone())? && !(Type::isEmptyArray(Expression::typeOf(unitExp.clone()))?)) => { unitExp = Expression::arrayFirstScalar(unitExp.clone())?; continue '__tco; },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: __esc_exp, tail: _ }, .. } } if (Call::isNamed(var_field!((*unitExp).call, Expression::NFExpression::CALL).clone(), (literal!("fill")).clone())?) => {
             exp = (*__esc_exp).clone();
-            getUnitStringFromExp(exp.clone())?
+            { unitExp = exp.clone(); continue '__tco; }
         },
         _ if (!(Expression::isLiteral(unitExp.clone())?)) => {
             exp = Ceval::tryEvalExp(unitExp.clone(), Ceval::noTarget().clone());
-            if (Expression::isLiteral(exp.clone())?) {getUnitStringFromExp(exp.clone())?} else {literal!("")}
+            if (Expression::isLiteral(exp.clone())?) {{ unitExp = exp.clone(); continue '__tco; }} else {return Ok(literal!(""))}
         },
-        _ => literal!(""),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(unitString)
+        _ => return Ok(literal!("")),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn parse(mut unitString: ArcStr, mut cref: Arc<ComponentRef::NFComponentRef>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut info: SourceInfo) -> Result<Unit::Unit> {

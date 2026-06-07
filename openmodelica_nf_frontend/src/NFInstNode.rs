@@ -412,17 +412,15 @@ pub mod InstNode {
         node
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isClass(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isClass: bool = false;
-        isClass = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => true,
-        Deref @ INNER_OUTER_NODE { .. } => self::isClass(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isClass)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(true),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn isBaseClass(mut node: Arc<InstNode>) -> bool {
@@ -435,27 +433,25 @@ pub mod InstNode {
         isBaseClass
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isUserdefinedClass(mut node: Arc<InstNode>) -> bool {
-        let mut isUserdefined: bool = false;
-        let mut ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
-        isUserdefined = (::match_deref::match_deref! { match &(node.clone()) {
+        '__tco: loop {
+            let mut ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
+            ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: __esc_ty, .. } => {
             ty = (*__esc_ty).clone();
-            (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => true,
-        Deref @ InstNodeType::BASE_CLASS { .. } => true,
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => true,
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => isUserdefinedClass(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ InstNodeType::NORMAL_CLASS => return true,
+        Deref @ InstNodeType::BASE_CLASS { .. } => return true,
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => return true,
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => { node = var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
         },
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        isUserdefined
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn isDerivedClass(mut node: Arc<InstNode>) -> bool {
@@ -508,17 +504,15 @@ pub mod InstNode {
         Ok(isFunc)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isComponent(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isComponent: bool = false;
-        isComponent = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => true,
-        Deref @ INNER_OUTER_NODE { .. } => self::isComponent(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isComponent)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ COMPONENT_NODE { .. } => return Ok(true),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn isRef(mut node: Arc<InstNode>) -> bool {
@@ -596,52 +590,46 @@ pub mod InstNode {
         Ok(b)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isOperator(mut node: Arc<InstNode>) -> bool {
-        let mut op: bool = false;
-        op = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => SCodeUtil::isOperator(var_field!((*node).definition, InstNode::CLASS_NODE).clone()),
-        Deref @ INNER_OUTER_NODE { .. } => isOperator(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        op
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return SCodeUtil::isOperator(var_field!((*node).definition, InstNode::CLASS_NODE).clone()),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn name(mut node: Arc<InstNode>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
-        name = ((::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => var_field!((*node).name, InstNode::CLASS_NODE).clone(),
-        Deref @ COMPONENT_NODE { .. } => var_field!((*node).name, InstNode::COMPONENT_NODE).clone(),
-        Deref @ INNER_OUTER_NODE { .. } => self::name(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        Deref @ VAR_NODE { .. } => var_field!((*node).name, InstNode::VAR_NODE).clone(),
-        Deref @ REF_NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$REF[")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!((*node).index, InstNode::REF_NODE).clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) },
-        Deref @ NAME_NODE { .. } => var_field!((*node).name, InstNode::NAME_NODE).clone(),
-        Deref @ IMPLICIT_SCOPE { .. } => literal!("$IMPLICIT"),
-        Deref @ ITERATOR_NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$ITERATOR(")); __mm_s.push_str(&*Expression::toString(var_field!((*node).exp, InstNode::ITERATOR_NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
-        Deref @ EMPTY_NODE { .. } => literal!("$EMPTY"),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-        Ok(name)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(var_field!((*node).name, InstNode::CLASS_NODE).clone()),
+        Deref @ COMPONENT_NODE { .. } => return Ok(var_field!((*node).name, InstNode::COMPONENT_NODE).clone()),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        Deref @ VAR_NODE { .. } => return Ok(var_field!((*node).name, InstNode::VAR_NODE).clone()),
+        Deref @ REF_NODE { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$REF[")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!((*node).index, InstNode::REF_NODE).clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }),
+        Deref @ NAME_NODE { .. } => return Ok(var_field!((*node).name, InstNode::NAME_NODE).clone()),
+        Deref @ IMPLICIT_SCOPE { .. } => return Ok(literal!("$IMPLICIT")),
+        Deref @ ITERATOR_NODE { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$ITERATOR(")); __mm_s.push_str(&*Expression::toString(var_field!((*node).exp, InstNode::ITERATOR_NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }),
+        Deref @ EMPTY_NODE { .. } => return Ok(literal!("$EMPTY")),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isNamed(mut node: Arc<InstNode>, mut name: ArcStr) -> bool {
-        let mut res: bool = false;
-        res = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => var_field!((*node).name, InstNode::CLASS_NODE).clone() == name.clone(),
-        Deref @ COMPONENT_NODE { .. } => var_field!((*node).name, InstNode::COMPONENT_NODE).clone() == name.clone(),
-        Deref @ INNER_OUTER_NODE { .. } => isNamed(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(), (name.clone()).clone()),
-        Deref @ VAR_NODE { .. } => var_field!((*node).name, InstNode::VAR_NODE).clone() == name.clone(),
-        Deref @ NAME_NODE { .. } => var_field!((*node).name, InstNode::NAME_NODE).clone() == name.clone(),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        res
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return var_field!((*node).name, InstNode::CLASS_NODE).clone() == name.clone(),
+        Deref @ COMPONENT_NODE { .. } => return var_field!((*node).name, InstNode::COMPONENT_NODE).clone() == name.clone(),
+        Deref @ INNER_OUTER_NODE { .. } => { (node, name) = (var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(), (name.clone()).clone()); continue '__tco; },
+        Deref @ VAR_NODE { .. } => return var_field!((*node).name, InstNode::VAR_NODE).clone() == name.clone(),
+        Deref @ NAME_NODE { .. } => return var_field!((*node).name, InstNode::NAME_NODE).clone() == name.clone(),
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn className(mut node: Arc<InstNode>) -> Result<ArcStr> {
@@ -659,22 +647,20 @@ pub mod InstNode {
         Ok(outName)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn typeName(mut node: Arc<InstNode>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
-        name = ((::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => literal!("class"),
-        Deref @ COMPONENT_NODE { .. } => literal!("component"),
-        Deref @ INNER_OUTER_NODE { .. } => typeName(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        Deref @ REF_NODE { .. } => literal!("ref node"),
-        Deref @ NAME_NODE { .. } => literal!("name node"),
-        Deref @ IMPLICIT_SCOPE { .. } => literal!("implicit scope"),
-        Deref @ EMPTY_NODE { .. } => literal!("empty node"),
-        Deref @ VAR_NODE { .. } => literal!("var node"),
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-        Ok(name)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(literal!("class")),
+        Deref @ COMPONENT_NODE { .. } => return Ok(literal!("component")),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        Deref @ REF_NODE { .. } => return Ok(literal!("ref node")),
+        Deref @ NAME_NODE { .. } => return Ok(literal!("name node")),
+        Deref @ IMPLICIT_SCOPE { .. } => return Ok(literal!("implicit scope")),
+        Deref @ EMPTY_NODE { .. } => return Ok(literal!("empty node")),
+        Deref @ VAR_NODE { .. } => return Ok(literal!("var node")),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn rename(mut name: ArcStr, mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -754,17 +740,15 @@ pub mod InstNode {
         Ok(parent)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn rootTypeParent(mut nodeType: Arc<InstNodeType>, mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        parent = (::match_deref::match_deref! { match &(nodeType.clone()) {
-        Deref @ InstNodeType::ROOT_CLASS { .. } if (!(isEmpty(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()))) => var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone(),
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => rootTypeParent(var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node.clone())?,
-        _ => self::parent(node.clone()),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(parent)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(nodeType.clone()) {
+        Deref @ InstNodeType::ROOT_CLASS { .. } if (!(isEmpty(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()))) => return Ok(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (nodeType, node) = (var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node.clone()); continue '__tco; },
+        _ => return Ok(self::parent(node.clone())),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn parentScope(mut node: Arc<InstNode>, mut ignoreRedeclare: bool) -> Result<Arc<InstNode>> {
@@ -848,28 +832,24 @@ pub mod InstNode {
         scope
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn libraryScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut lib: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        lib = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { parentScope: Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. }, .. } => node.clone(),
-        _ => libraryScope(parentScope(node.clone(), false)?)?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(lib)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { parentScope: Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. }, .. } => return Ok(node.clone()),
+        _ => { node = parentScope(node.clone(), false)?; continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn topScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut topScope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        topScope = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => node.clone(),
-        _ => self::topScope(parent(node.clone()))?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(topScope)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => return Ok(node.clone()),
+        _ => { node = parent(node.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn annotationScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -895,16 +875,14 @@ pub mod InstNode {
         res
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn topComponent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
-        let mut topComponent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        topComponent = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => node.clone(),
-        Deref @ COMPONENT_NODE { .. } => self::topComponent(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-        Ok(topComponent)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => return Ok(node.clone()),
+        Deref @ COMPONENT_NODE { .. } => { node = var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn setParent(mut parent: Arc<InstNode>, mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -944,16 +922,14 @@ pub mod InstNode {
         node
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getClass(mut node: Arc<InstNode>) -> Result<Arc<Class::NFClass>> {
-        let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-        cls = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()),
-        Deref @ COMPONENT_NODE { .. } => getClass(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())))?,
-        _ => bail!("match: no arm matched"),
-    } });
-        Ok(cls)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
+        Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn getDerivedClass(mut node: Arc<InstNode>) -> Result<Arc<Class::NFClass>> {
@@ -976,17 +952,15 @@ pub mod InstNode {
         derived
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getDerivedNode2(mut node: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut recursive: bool) -> Arc<InstNode> {
-        let mut derived: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        derived = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::BASE_CLASS { .. } => if (recursive.clone()) {getDerivedNode(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), true)} else {var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone()},
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => getDerivedNode2(node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), recursive.clone()),
-        _ => node.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        derived
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ InstNodeType::BASE_CLASS { .. } => if (recursive.clone()) {return getDerivedNode(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), true)} else {return var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone()},
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, recursive) = (node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), recursive.clone()); continue '__tco; },
+        _ => return node.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn updateClass(mut cls: Arc<Class::NFClass>, mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -1105,20 +1079,18 @@ pub mod InstNode {
         Ok(definition)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn classDefinition(mut node: Arc<InstNode>) -> Result<Arc<SCode::Element>> {
-        let mut definition: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-        definition = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => var_field!((*node).definition, InstNode::CLASS_NODE).clone(),
-        Deref @ COMPONENT_NODE { .. } => classDefinition(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())))?,
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(var_field!((*node).definition, InstNode::CLASS_NODE).clone()),
+        Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.classDefinition")); __mm_s.push_str(&*literal!(" failed for non class/component node: ")); __mm_s.push_str(&*toString(node.clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(definition)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn extendsDefinition(mut node: Arc<InstNode>) -> Result<Option<Arc<SCode::Element>>> {
@@ -1258,54 +1230,50 @@ pub mod InstNode {
         Ok(node)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn scopeList(mut node: Arc<InstNode>, mut includeRoot: bool, mut accumScopes: Arc<metamodelica::List<Arc<InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode>>>> {
-        let mut scopes: Arc<metamodelica::List<Arc<InstNode>>> = metamodelica::nil();
-        scopes = (::match_deref::match_deref! { match &(node.clone()) {
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            scopeListClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), includeRoot.clone(), accumScopes.clone())?
+            return Ok(scopeListClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), includeRoot.clone(), accumScopes.clone())?)
         },
         Deref @ COMPONENT_NODE { parent: Deref @ EMPTY_NODE { .. }, .. } => {
-            accumScopes.clone()
+            return Ok(accumScopes.clone())
         },
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent }, .. } => {
-            scopeList(parent.clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone()))?
+            { (node, includeRoot, accumScopes) = (parent.clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone())); continue '__tco; }
         },
         Deref @ COMPONENT_NODE { .. } => {
-            scopeList(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone()))?
+            { (node, includeRoot, accumScopes) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone())); continue '__tco; }
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
-            scopeList(var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), includeRoot.clone(), accumScopes.clone())?
+            { (node, includeRoot, accumScopes) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), includeRoot.clone(), accumScopes.clone()); continue '__tco; }
         },
         _ => {
-            accumScopes.clone()
+            return Ok(accumScopes.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(scopes)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn scopeListClass(mut clsNode: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut includeRoot: bool, mut accumScopes: Arc<metamodelica::List<Arc<InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode>>>> {
-        let mut scopes: Arc<metamodelica::List<Arc<InstNode>>> = metamodelica::nil();
-        scopes = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?,
-        Deref @ InstNodeType::BASE_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?,
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => scopeListClass(clsNode.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?,
-        Deref @ InstNodeType::BUILTIN_CLASS => metamodelica::cons(clsNode.clone(), accumScopes.clone()),
-        Deref @ InstNodeType::TOP_SCOPE { .. } => accumScopes.clone(),
-        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot.clone()) {scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?} else {accumScopes.clone()},
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), metamodelica::cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?,
-        Deref @ InstNodeType::IMPLICIT_SCOPE => scopeList(parent(clsNode.clone()), includeRoot.clone(), accumScopes.clone())?,
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?),
+        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (clsNode, ty, includeRoot, accumScopes) = (clsNode.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), includeRoot.clone(), accumScopes.clone()); continue '__tco; },
+        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(metamodelica::cons(clsNode.clone(), accumScopes.clone())),
+        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumScopes.clone()),
+        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot.clone()) {return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?)} else {return Ok(accumScopes.clone())},
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), metamodelica::cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?),
+        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopeList(parent(clsNode.clone()), includeRoot.clone(), accumScopes.clone())?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopeListClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(scopes)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn getAnnotation(mut name: ArcStr, mut node: Arc<InstNode>) -> Result<(Arc<SCode::Mod>, Arc<InstNode>)> {
@@ -1354,65 +1322,59 @@ pub mod InstNode {
         Ok(path)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn scopePath(mut node: Arc<InstNode>, mut scopeType: ScopeType, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-        path = (::match_deref::match_deref! { match &(node.clone()) {
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: it, .. } => {
-            (::match_deref::match_deref! { match &(it.clone()) {
-        Deref @ InstNodeType::BASE_CLASS { .. } if (!(ignoreBaseClass.clone())) => scopePath(var_field!((**it).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), false)?,
-        _ => scopePath2(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::CLASS_NODE).clone()).clone() }))?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+            ::match_deref::match_deref! { match &(it.clone()) {
+        Deref @ InstNodeType::BASE_CLASS { .. } if (!(ignoreBaseClass.clone())) => { (node, scopeType, ignoreBaseClass) = (var_field!((**it).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), false); continue '__tco; },
+        _ => return Ok(scopePath2(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::CLASS_NODE).clone()).clone() }))?),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
         },
         Deref @ COMPONENT_NODE { .. } => {
-            scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone() }))?
+            return Ok(scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::IDENT { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone() }))?)
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
-            scopePath(var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), scopeType.clone(), false)?
+            { (node, scopeType, ignoreBaseClass) = (var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), scopeType.clone(), false); continue '__tco; }
         },
         _ => {
-            Arc::new(Absyn::Path::IDENT { name: (name(node.clone())?).clone() })
+            return Ok(Arc::new(Absyn::Path::IDENT { name: (name(node.clone())?).clone() }))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(path)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn scopePath2(mut node: Arc<InstNode>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-        path = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => scopePathClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), scopeType.clone(), accumPath.clone())?,
-        Deref @ COMPONENT_NODE { .. } => scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), path: accumPath.clone() }))?,
-        _ => accumPath.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(path)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(scopePathClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), scopeType.clone(), accumPath.clone())?),
+        Deref @ COMPONENT_NODE { .. } => { (node, scopeType, accumPath) = (var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), path: accumPath.clone() })); continue '__tco; },
+        _ => return Ok(accumPath.clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn scopePathClass(mut node: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-        path = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?,
-        Deref @ InstNodeType::BASE_CLASS { .. } => scopePath2(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), accumPath.clone())?,
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => scopePathClass(node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), scopeType.clone(), accumPath.clone())?,
-        Deref @ InstNodeType::BUILTIN_CLASS => Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }),
-        Deref @ InstNodeType::TOP_SCOPE { .. } => accumPath.clone(),
-        Deref @ InstNodeType::ROOT_CLASS { .. } => if (scopeType.clone() == ScopeType::FULL.clone()) {scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?} else if (scopeType.clone() == ScopeType::INCLUDING_ROOT.clone()) {Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() })} else {accumPath.clone()},
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopePath2(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?,
-        Deref @ InstNodeType::IMPLICIT_SCOPE => scopePath2(classParent(node.clone())?, scopeType.clone(), accumPath.clone())?,
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ InstNodeType::NORMAL_CLASS => return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?),
+        Deref @ InstNodeType::BASE_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), accumPath.clone())?),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => { (node, ty, scopeType, accumPath) = (node.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), scopeType.clone(), accumPath.clone()); continue '__tco; },
+        Deref @ InstNodeType::BUILTIN_CLASS => return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() })),
+        Deref @ InstNodeType::TOP_SCOPE { .. } => return Ok(accumPath.clone()),
+        Deref @ InstNodeType::ROOT_CLASS { .. } => if (scopeType.clone() == ScopeType::FULL.clone()) {return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?)} else if (scopeType.clone() == ScopeType::INCLUDING_ROOT.clone()) {return Ok(Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))} else {return Ok(accumPath.clone())},
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => return Ok(scopePath2(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?),
+        Deref @ InstNodeType::IMPLICIT_SCOPE => return Ok(scopePath2(classParent(node.clone())?, scopeType.clone(), accumPath.clone())?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopePathClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(path)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn isInput(mut node: Arc<InstNode>) -> bool {
@@ -1435,46 +1397,40 @@ pub mod InstNode {
         isOutput
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isInner(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isInner: bool = false;
-        isInner = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isInner(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
-        Deref @ CLASS_NODE { .. } => AbsynUtil::isInner(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
-        Deref @ INNER_OUTER_NODE { .. } => self::isInner(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isInner)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ COMPONENT_NODE { .. } => return Ok(Component::isInner(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?),
+        Deref @ CLASS_NODE { .. } => return Ok(AbsynUtil::isInner(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?)),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isOuter(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isOuter: bool = false;
-        isOuter = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
-        Deref @ CLASS_NODE { .. } => AbsynUtil::isOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
-        Deref @ INNER_OUTER_NODE { .. } => self::isOuter(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isOuter)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ COMPONENT_NODE { .. } => return Ok(Component::isOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?),
+        Deref @ CLASS_NODE { .. } => return Ok(AbsynUtil::isOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?)),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isOnlyOuter(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isOuter: bool = false;
-        isOuter = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isOnlyOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
-        Deref @ CLASS_NODE { .. } => AbsynUtil::isOnlyOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
-        Deref @ INNER_OUTER_NODE { .. } => isOnlyOuter(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isOuter)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ COMPONENT_NODE { .. } => return Ok(Component::isOnlyOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?),
+        Deref @ CLASS_NODE { .. } => return Ok(AbsynUtil::isOnlyOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?)),
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn isInnerOuterNode(mut node: Arc<InstNode>) -> bool {
@@ -1650,16 +1606,14 @@ pub mod InstNode {
         scope
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn explicitScope(mut node: Arc<InstNode>) -> Arc<InstNode> {
-        let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        scope = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ IMPLICIT_SCOPE { .. } => explicitScope(var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone()),
-        _ => node.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        scope
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ IMPLICIT_SCOPE { .. } => { node = var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(); continue '__tco; },
+        _ => return node.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn addIterator(mut iterator: Arc<InstNode>, mut scope: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -2054,17 +2008,15 @@ pub mod InstNode {
         isBuiltin
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isBuiltinNodeType(mut nodeType: Arc<InstNodeType>) -> bool {
-        let mut isBuiltin: bool = false;
-        isBuiltin = (::match_deref::match_deref! { match &(nodeType.clone()) {
-        Deref @ InstNodeType::BUILTIN_CLASS => true,
-        Deref @ InstNodeType::BASE_CLASS { .. } => isBuiltinNodeType(var_field!((*nodeType).ty, InstNodeType::BASE_CLASS).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        isBuiltin
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(nodeType.clone()) {
+        Deref @ InstNodeType::BUILTIN_CLASS => return true,
+        Deref @ InstNodeType::BASE_CLASS { .. } => { nodeType = var_field!((*nodeType).ty, InstNodeType::BASE_CLASS).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn isPartial(mut node: Arc<InstNode>) -> Result<bool> {
@@ -2144,30 +2096,26 @@ pub mod InstNode {
         Ok(dstNode)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isRecord(mut node: Arc<InstNode>) -> bool {
-        let mut isRec: bool = false;
-        isRec = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Restriction::isRecord(Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))),
-        Deref @ COMPONENT_NODE { .. } => isRecord(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        isRec
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Restriction::isRecord(Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))),
+        Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isModel(mut node: Arc<InstNode>) -> Result<bool> {
-        let mut isModel: bool = false;
-        isModel = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Restriction::isModel(Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))),
-        Deref @ COMPONENT_NODE { .. } => self::isModel(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())))?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isModel)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Ok(Restriction::isModel(Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())))),
+        Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn isEnumerationType(mut node: Arc<InstNode>) -> Result<bool> {
@@ -2217,21 +2165,19 @@ pub mod InstNode {
         Ok(binding_exp)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getSections(mut node: Arc<InstNode>) -> Result<Arc<Sections::NFSections>> {
-        let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
-        let mut cls: Arc<Class::NFClass> = getClass(node.clone())?;
-        sections = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ Class::INSTANCED_CLASS { .. } => var_field!((*cls).sections, Class::NFClass::INSTANCED_CLASS).clone(),
-        Deref @ Class::TYPED_DERIVED { .. } => getSections(var_field!((*cls).baseClass, Class::NFClass::TYPED_DERIVED).clone())?,
+        '__tco: loop {
+            let mut cls: Arc<Class::NFClass> = getClass(node.clone())?;
+            ::match_deref::match_deref! { match &(cls.clone()) {
+        Deref @ Class::INSTANCED_CLASS { .. } => return Ok(var_field!((*cls).sections, Class::NFClass::INSTANCED_CLASS).clone()),
+        Deref @ Class::TYPED_DERIVED { .. } => { node = var_field!((*cls).baseClass, Class::NFClass::TYPED_DERIVED).clone(); continue '__tco; },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getSections")); __mm_s.push_str(&*literal!(" did not get an instanced class")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInstNode.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(sections)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn hash(mut node: Arc<InstNode>) -> Result<i32> {
@@ -2266,18 +2212,16 @@ pub mod InstNode {
         clock
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn restriction(mut node: Arc<InstNode>) -> Arc<Restriction::NFRestriction> {
-        let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
-        res = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
-        Deref @ COMPONENT_NODE { .. } => restriction(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))),
-        Deref @ INNER_OUTER_NODE { .. } => restriction(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone()),
-        _ => crate::NFRestriction::interned_UNKNOWN(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        res
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(node.clone()) {
+        Deref @ CLASS_NODE { .. } => return Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
+        Deref @ COMPONENT_NODE { .. } => { node = Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())); continue '__tco; },
+        Deref @ INNER_OUTER_NODE { .. } => { node = var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone(); continue '__tco; },
+        _ => return crate::NFRestriction::interned_UNKNOWN(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn isExtends(mut node: Arc<InstNode>) -> bool {
@@ -2291,24 +2235,22 @@ pub mod InstNode {
         res
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isDiscreteClass(mut clsNode: Arc<InstNode>) -> Result<bool> {
-        let mut isDiscrete: bool = false;
-        let mut base_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-        let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
-        base_node = Class::lastBaseClass(clsNode.clone())?;
-        cls = getClass(base_node.clone())?;
-        isDiscrete = (::match_deref::match_deref! { match &(cls.clone()) {
+        '__tco: loop {
+            let mut base_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
+            let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
+            base_node = Class::lastBaseClass(clsNode.clone())?;
+            cls = getClass(base_node.clone())?;
+            ::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => {
             exts = ClassTree::getExtends(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone());
-            if (metamodelica::arrayLength(exts.clone()) == 1) {isDiscreteClass(({let __elt = exts.borrow()[(1-1) as usize].clone(); __elt}))?} else {false}
+            if (metamodelica::arrayLength(exts.clone()) == 1) {{ clsNode = ({let __elt = exts.borrow()[(1-1) as usize].clone(); __elt}); continue '__tco; }} else {return Ok(false)}
         },
-        _ => Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isDiscrete)
+        _ => return Ok(Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn clearGeneratedInners(mut node: Arc<InstNode>) -> Result<()> {

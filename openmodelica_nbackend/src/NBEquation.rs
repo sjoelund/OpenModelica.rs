@@ -1650,41 +1650,39 @@ pub mod Equation {
         Ok(r#str)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getAttributes(mut eq: Arc<Equation>) -> Arc<EquationAttributes::EquationAttributes> {
-        let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
-        attr = (::match_deref::match_deref! { match &(eq.clone()) {
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::SCALAR_EQUATION).clone()
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::ARRAY_EQUATION).clone()
         },
         Deref @ RECORD_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::RECORD_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::RECORD_EQUATION).clone()
         },
         Deref @ ALGORITHM { .. } => {
-            var_field!((*eq).attr, Equation::ALGORITHM).clone()
+            return var_field!((*eq).attr, Equation::ALGORITHM).clone()
         },
         Deref @ IF_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::IF_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::IF_EQUATION).clone()
         },
         Deref @ FOR_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::FOR_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::FOR_EQUATION).clone()
         },
         Deref @ WHEN_EQUATION { .. } => {
-            var_field!((*eq).attr, Equation::WHEN_EQUATION).clone()
+            return var_field!((*eq).attr, Equation::WHEN_EQUATION).clone()
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
-            getAttributes(body.clone())
+            { eq = body.clone(); continue '__tco; }
         },
         _ => {
-            default(EquationKind::UNKNOWN.clone(), false, None, None)
+            return default(EquationKind::UNKNOWN.clone(), false, None, None)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        attr
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn setAttributes(mut eq: Arc<Equation>, mut attr: Arc<EquationAttributes::EquationAttributes>) -> Result<Arc<Equation>> {
@@ -1767,41 +1765,39 @@ pub mod Equation {
         Ok(eq)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getSource(mut eq: Arc<Equation>) -> Arc<DAE::ElementSource> {
-        let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-        source = (::match_deref::match_deref! { match &(eq.clone()) {
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::SCALAR_EQUATION).clone()
+            return var_field!((*eq).source, Equation::SCALAR_EQUATION).clone()
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::ARRAY_EQUATION).clone()
+            return var_field!((*eq).source, Equation::ARRAY_EQUATION).clone()
         },
         Deref @ RECORD_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::RECORD_EQUATION).clone()
+            return var_field!((*eq).source, Equation::RECORD_EQUATION).clone()
         },
         Deref @ ALGORITHM { .. } => {
-            var_field!((*eq).source, Equation::ALGORITHM).clone()
+            return var_field!((*eq).source, Equation::ALGORITHM).clone()
         },
         Deref @ IF_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::IF_EQUATION).clone()
+            return var_field!((*eq).source, Equation::IF_EQUATION).clone()
         },
         Deref @ FOR_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::FOR_EQUATION).clone()
+            return var_field!((*eq).source, Equation::FOR_EQUATION).clone()
         },
         Deref @ WHEN_EQUATION { .. } => {
-            var_field!((*eq).source, Equation::WHEN_EQUATION).clone()
+            return var_field!((*eq).source, Equation::WHEN_EQUATION).clone()
         },
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
-            getSource(body.clone())
+            { eq = body.clone(); continue '__tco; }
         },
         _ => {
-            DAE::emptyElementSource().clone()
+            return DAE::emptyElementSource().clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        source
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
     pub fn setDerivative(mut eq: Arc<Equation>, mut derivative: Pointer::Pointer<Arc<Equation>>) -> Result<Arc<Equation>> {
@@ -1985,51 +1981,47 @@ pub mod Equation {
         Ok(cref)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getLHS(mut eq: Arc<Equation>) -> Result<Option<Arc<Expression::NFExpression>>> {
-        let mut lhs: Option<Arc<Expression::NFExpression>> = None;
-        let mut success: bool = false;
-        lhs = (::match_deref::match_deref! { match &(eq.clone()) {
+        '__tco: loop {
+            let mut success: bool = false;
+            ::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCALAR_EQUATION { .. } => {
-            Some(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone())
+            return Ok(Some(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone()))
         },
         Deref @ ARRAY_EQUATION { .. } => {
-            Some(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone())
+            return Ok(Some(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone()))
         },
         Deref @ RECORD_EQUATION { .. } => {
-            Some(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone())
+            return Ok(Some(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone()))
         },
         Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            getLHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?)?
+            { eq = listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?; continue '__tco; }
         },
         Deref @ IF_EQUATION { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, success) = IfEquationBody::getLHS(var_field!((*eq).body, Equation::IF_EQUATION).clone(), openmodelica_nf_frontend::NFExpression::interned_END())?;
-            if (success.clone()) {Some(exp.clone())} else {None}
+            if (success.clone()) {return Ok(Some(exp.clone()))} else {return Ok(None)}
         },
         _ => {
-            None
+            return Ok(None)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(lhs)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getRHS(mut eq: Arc<Equation>) -> Result<Option<Arc<Expression::NFExpression>>> {
-        let mut rhs: Option<Arc<Expression::NFExpression>> = None;
-        rhs = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SCALAR_EQUATION { .. } => Some(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone()),
-        Deref @ ARRAY_EQUATION { .. } => Some(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone()),
-        Deref @ RECORD_EQUATION { .. } => Some(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone()),
-        Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => getRHS(listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?)?,
-        Deref @ IF_EQUATION { .. } => Some(IfEquationBody::getRHS(var_field!((*eq).body, Equation::IF_EQUATION).clone())?),
-        _ => None,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(rhs)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(eq.clone()) {
+        Deref @ SCALAR_EQUATION { .. } => return Ok(Some(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone())),
+        Deref @ ARRAY_EQUATION { .. } => return Ok(Some(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone())),
+        Deref @ RECORD_EQUATION { .. } => return Ok(Some(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone())),
+        Deref @ FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => { eq = listHead(var_field!((*eq).body, Equation::FOR_EQUATION).clone())?; continue '__tco; },
+        Deref @ IF_EQUATION { .. } => return Ok(Some(IfEquationBody::getRHS(var_field!((*eq).body, Equation::IF_EQUATION).clone())?)),
+        _ => return Ok(None),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn setLHS(mut eq: Arc<Equation>, mut lhs: Arc<Expression::NFExpression>) -> Result<Arc<Equation>> {

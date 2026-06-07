@@ -483,13 +483,11 @@ fn translateEnumlist(mut inAbsynEnumLiteralLst: Arc<metamodelica::List<Arc<Absyn
     Ok(outEnumLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut outElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    outElementLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: es }, tail: rest } => {
             let mut els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -497,7 +495,7 @@ pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List
             es_1 = translateEitemlist(es.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?;
             els = translateClassdefElements(rest.clone())?;
             els = listAppend(es_1.clone(), els.clone());
-            els.clone()
+            return Ok(els.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: es }, tail: rest } => {
             let mut els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
@@ -505,23 +503,21 @@ pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List
             es_1 = translateEitemlist(es.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
             els = translateClassdefElements(rest.clone())?;
             els = listAppend(es_1.clone(), els.clone());
-            els.clone()
+            return Ok(els.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            translateClassdefElements(rest.clone())?
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outElementLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefEquations(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
-    let mut outEquationLst: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-    outEquationLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::EQUATIONS { contents: eql }, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -530,25 +526,23 @@ fn translateClassdefEquations(mut inAbsynClassPartLst: Arc<metamodelica::List<Ar
             eql_1 = translateEquations(eql.clone(), false)?;
             eqs = translateClassdefEquations(rest.clone())?;
             eqs_1 = listAppend(eqs.clone(), eql_1.clone());
-            eqs_1.clone()
+            return Ok(eqs_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
             eqs = translateClassdefEquations(rest.clone())?;
-            eqs.clone()
+            return Ok(eqs.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEquationLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefInitialequations(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
-    let mut outEquationLst: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-    outEquationLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::INITIALEQUATIONS { contents: eql }, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -557,25 +551,23 @@ fn translateClassdefInitialequations(mut inAbsynClassPartLst: Arc<metamodelica::
             eql_1 = translateEquations(eql.clone(), true)?;
             eqs = translateClassdefInitialequations(rest.clone())?;
             eqs_1 = listAppend(eqs.clone(), eql_1.clone());
-            eqs_1.clone()
+            return Ok(eqs_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
             eqs = translateClassdefInitialequations(rest.clone())?;
-            eqs.clone()
+            return Ok(eqs.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEquationLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>> {
-    let mut outAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-    outAlgorithmLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::ALGORITHMS { contents: al }, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
@@ -584,60 +576,56 @@ fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<A
             al_1 = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefAlgorithms(rest.clone())?;
             als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: al_1.clone() }), als.clone());
-            als_1.clone()
+            return Ok(als_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
             als = translateClassdefAlgorithms(rest.clone())?;
-            als.clone()
+            return Ok(als.clone())
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("- AbsynToSCode.translateClassdefAlgorithms failed\n")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outAlgorithmLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefConstraints(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<SCode::ConstraintSection>>> {
-    let mut outConstraintLst: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
-    outConstraintLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::CONSTRAINTS { contents: consts }, tail: rest } => {
             let mut cos: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             let mut cos_1: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             cos = translateClassdefConstraints(rest.clone())?;
             cos_1 = metamodelica::cons(SCode::ConstraintSection { constraints: consts.clone() }, cos.clone());
-            cos_1.clone()
+            return Ok(cos_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut cos: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             cos = translateClassdefConstraints(rest.clone())?;
-            cos.clone()
+            return Ok(cos.clone())
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("- AbsynToSCode.translateClassdefConstraints failed\n")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outConstraintLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefInitialalgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>>> {
-    let mut outAlgorithmLst: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-    outAlgorithmLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::INITIALALGORITHMS { contents: al }, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
@@ -646,16 +634,16 @@ fn translateClassdefInitialalgorithms(mut inAbsynClassPartLst: Arc<metamodelica:
             stmts = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefInitialalgorithms(rest.clone())?;
             als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: stmts.clone() }), als.clone());
-            als_1.clone()
+            return Ok(als_1.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
             als = translateClassdefInitialalgorithms(rest.clone())?;
-            als.clone()
+            return Ok(als.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outAlgorithmLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn translateClassdefAlgorithmitems(mut inStatements: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Statement>>>> {
@@ -801,27 +789,25 @@ fn translateAlgBranches(mut inBranches: Arc<metamodelica::List<(Arc<Absyn::Exp>,
     Ok(outBranches)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateClassdefExternaldecls(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Option<Arc<SCode::ExternalDecl>>> {
-    let mut outAbsynExternalDeclOption: Option<Arc<SCode::ExternalDecl>> = None;
-    outAbsynExternalDeclOption = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::EXTERNAL { externalDecl: Deref @ Absyn::ExternalDecl { funcName: fn_name, lang, output_, args, annotation_: aann }, .. }, tail: _ } => {
             let mut sann: Option<Arc<SCode::Annotation>> = None;
             sann = translateAnnotationOpt(aann.clone())?;
-            Some(Arc::new(SCode::ExternalDecl { funcName: fn_name.clone(), lang: lang.clone(), output_: output_.clone(), args: args.clone(), annotation_: sann.clone() }))
+            return Ok(Some(Arc::new(SCode::ExternalDecl { funcName: fn_name.clone(), lang: lang.clone(), output_: output_.clone(), args: args.clone(), annotation_: sann.clone() })))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: Option<Arc<SCode::ExternalDecl>> = None;
             res = translateClassdefExternaldecls(rest.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
         Deref @ metamodelica::List::Nil => {
-            None
+            return Ok(None)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outAbsynExternalDeclOption)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn translateEitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inVisibility: SCode::Visibility) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
@@ -901,44 +887,40 @@ pub fn translateElement(mut inElement: Arc<Absyn::Element>, mut inVisibility: SC
     Ok(outElementLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateDefineunitParam(mut inArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inArg: ArcStr) -> Result<Option<ArcStr>> {
-    let mut expOpt: Option<ArcStr> = None;
-    expOpt = (::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: name, argValue: Deref @ Absyn::Exp::STRING { value: r#str } }, tail: _ }, arg) if (name.clone() == arg.clone()) => {
-            Some((r#str.clone()).clone())
+            return Ok(Some((r#str.clone()).clone()))
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            None
+            return Ok(None)
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: args }, arg) => {
-            translateDefineunitParam(args.clone(), (arg.clone()).clone())?
+            { (inArgs, inArg) = (args.clone(), (arg.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(expOpt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateDefineunitParam2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inArg: ArcStr) -> Result<Option<metamodelica::Real>> {
-    let mut weightOpt: Option<metamodelica::Real> = None;
-    weightOpt = (::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inArgs.clone(), inArg.clone())) {
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: name, argValue: Deref @ Absyn::Exp::REAL { value: s } }, tail: _ }, arg) if (name.clone() == arg.clone()) => {
             let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             r = stringReal((s.clone()).clone())?;
-            Some(r.clone())
+            return Ok(Some(r.clone()))
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            None
+            return Ok(None)
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: args }, arg) => {
-            translateDefineunitParam2(args.clone(), (arg.clone()).clone())?
+            { (inArgs, inArg) = (args.clone(), (arg.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(weightOpt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPrefix: bool, mut io: Absyn::InnerOuter, mut inRedeclareKeywords: Option<Absyn::RedeclareKeywords>, mut inVisibility: SCode::Visibility, mut inElementSpec4: Arc<Absyn::ElementSpec>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
@@ -1087,29 +1069,27 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
     Ok(outElementLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn translateImports(mut imp: Absyn::Import, mut visibility: SCode::Visibility, mut info: SourceInfo) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
-    let mut elts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    elts = (::match_deref::match_deref! { match &(imp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(imp.clone()) {
         Absyn::Import::NAMED_IMPORT { name, path: Deref @ Absyn::Path::FULLYQUALIFIED { path: p } } => {
-            translateImports(Absyn::Import::NAMED_IMPORT { name: (name.clone()).clone(), path: p.clone() }, visibility.clone(), info.clone())?
+            { (imp, visibility, info) = (Absyn::Import::NAMED_IMPORT { name: (name.clone()).clone(), path: p.clone() }, visibility.clone(), info.clone()); continue '__tco; }
         },
         Absyn::Import::QUAL_IMPORT { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: p } } => {
-            translateImports(Absyn::Import::QUAL_IMPORT { path: p.clone() }, visibility.clone(), info.clone())?
+            { (imp, visibility, info) = (Absyn::Import::QUAL_IMPORT { path: p.clone() }, visibility.clone(), info.clone()); continue '__tco; }
         },
         Absyn::Import::UNQUAL_IMPORT { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: p } } => {
-            translateImports(Absyn::Import::UNQUAL_IMPORT { path: p.clone() }, visibility.clone(), info.clone())?
+            { (imp, visibility, info) = (Absyn::Import::UNQUAL_IMPORT { path: p.clone() }, visibility.clone(), info.clone()); continue '__tco; }
         },
         Absyn::Import::GROUP_IMPORT { prefix: p, groups } => {
-            List::map3(groups.clone(), (std::sync::Arc::new(translateGroupImport) as std::sync::Arc<dyn ::std::ops::Fn(Absyn::GroupImport, Arc<Absyn::Path>, SCode::Visibility, SourceInfo) -> Result<Arc<SCode::Element>> + 'static>), p.clone(), visibility.clone(), info.clone())?
+            return Ok(List::map3(groups.clone(), (std::sync::Arc::new(translateGroupImport) as std::sync::Arc<dyn ::std::ops::Fn(Absyn::GroupImport, Arc<Absyn::Path>, SCode::Visibility, SourceInfo) -> Result<Arc<SCode::Element>> + 'static>), p.clone(), visibility.clone(), info.clone())?)
         },
         _ => {
-            list![Arc::new(SCode::Element::IMPORT { imp: imp.clone(), visibility: visibility.clone(), info: info.clone() })]
+            return Ok(list![Arc::new(SCode::Element::IMPORT { imp: imp.clone(), visibility: visibility.clone(), info: info.clone() })])
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(elts)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn translateGroupImport(mut gimp: Absyn::GroupImport, mut prefix: Arc<Absyn::Path>, mut visibility: SCode::Visibility, mut info: SourceInfo) -> Result<Arc<SCode::Element>> {
@@ -1253,23 +1233,21 @@ fn getInfoAnnotationOrDefault(mut comment: Arc<SCode::Comment>, mut default: Sou
     info
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getInfoAnnotationOrDefault2(mut lst: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut default: SourceInfo) -> SourceInfo {
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    info = (::match_deref::match_deref! { match &(lst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(lst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            default.clone()
+            return default.clone()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "__OpenModelica_FileInfo", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::TUPLE { expressions: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::STRING { value: fileName }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::INTEGER { value: line }, tail: Deref @ metamodelica::List::Nil } } }), .. } }, tail: _ } => {
-            SourceInfo { fileName: (fileName.clone()).clone(), isReadOnly: false, lineNumberStart: line.clone(), columnNumberStart: 0, lineNumberEnd: line.clone(), columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) }
+            return SourceInfo { fileName: (fileName.clone()).clone(), isReadOnly: false, lineNumberStart: line.clone(), columnNumberStart: 0, lineNumberEnd: line.clone(), columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            getInfoAnnotationOrDefault2(rest.clone(), default.clone())
+            { (lst, default) = (rest.clone(), default.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    info
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn translateComment(mut inComment: Option<Arc<Absyn::Comment>>) -> Result<Arc<SCode::Comment>> {

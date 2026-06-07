@@ -2200,30 +2200,28 @@ pub fn instExpOpt(mut absynExp: Option<Arc<Absyn::Exp>>, mut scope: Arc<InstNode
     Ok(exp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
-    let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    exp = (::match_deref::match_deref! { match &(absynExp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(absynExp.clone()) {
         Deref @ Absyn::Exp::INTEGER { .. } => {
-            Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*absynExp).value, Absyn::Exp::INTEGER).clone() })
+            return Ok(Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*absynExp).value, Absyn::Exp::INTEGER).clone() }))
         },
         Deref @ Absyn::Exp::REAL { .. } => {
-            Arc::new(Expression::NFExpression::REAL { value: stringReal((var_field!((*absynExp).value, Absyn::Exp::REAL).clone()).clone())? })
+            return Ok(Arc::new(Expression::NFExpression::REAL { value: stringReal((var_field!((*absynExp).value, Absyn::Exp::REAL).clone()).clone())? }))
         },
         Deref @ Absyn::Exp::STRING { .. } => {
-            Arc::new(Expression::NFExpression::STRING { value: (System::unescapedString((var_field!((*absynExp).value, Absyn::Exp::STRING).clone()).clone())).clone() })
+            return Ok(Arc::new(Expression::NFExpression::STRING { value: (System::unescapedString((var_field!((*absynExp).value, Absyn::Exp::STRING).clone()).clone())).clone() }))
         },
         Deref @ Absyn::Exp::BOOL { .. } => {
-            Arc::new(Expression::NFExpression::BOOLEAN { value: var_field!((*absynExp).value, Absyn::Exp::BOOL).clone() })
+            return Ok(Arc::new(Expression::NFExpression::BOOLEAN { value: var_field!((*absynExp).value, Absyn::Exp::BOOL).clone() }))
         },
         Deref @ Absyn::Exp::CREF { .. } => {
-            instCref(var_field!((*absynExp).componentRef, Absyn::Exp::CREF).clone(), scope.clone(), context.clone(), info.clone())?
+            return Ok(instCref(var_field!((*absynExp).componentRef, Absyn::Exp::CREF).clone(), scope.clone(), context.clone(), info.clone())?)
         },
         Deref @ Absyn::Exp::ARRAY { .. } => {
             let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
             arr = Array::mapList(var_field!((*absynExp).arrayExp, Absyn::Exp::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = scope.clone(); let __pe_b2 = context.clone(); let __pe_b3 = info.clone(); move |__pe_a0| instExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            Expression::makeArrayCheckLiteral(crate::NFType::interned_UNKNOWN(), arr.clone())?
+            return Ok(Expression::makeArrayCheckLiteral(crate::NFType::interned_UNKNOWN(), arr.clone())?)
         },
         Deref @ Absyn::Exp::MATRIX { .. } => {
             let mut expll: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Expression::NFExpression>>>>> = metamodelica::nil();
@@ -2242,7 +2240,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
         }
         __acc.reverse()
     });
-            Arc::new(Expression::NFExpression::MATRIX { elements: expll.clone() })
+            return Ok(Arc::new(Expression::NFExpression::MATRIX { elements: expll.clone() }))
         },
         Deref @ Absyn::Exp::RANGE { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2251,10 +2249,10 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).start, Absyn::Exp::RANGE).clone(), scope.clone(), context.clone(), info.clone())?;
             oe = instExpOpt(var_field!((*absynExp).step, Absyn::Exp::RANGE).clone(), scope.clone(), context.clone(), info.clone())?;
             e3 = instExp(var_field!((*absynExp).stop, Absyn::Exp::RANGE).clone(), scope.clone(), context.clone(), info.clone())?;
-            Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_UNKNOWN(), start: e1.clone(), step: oe.clone(), stop: e3.clone() })
+            return Ok(Arc::new(Expression::NFExpression::RANGE { ty: crate::NFType::interned_UNKNOWN(), start: e1.clone(), step: oe.clone(), stop: e3.clone() }))
         },
         Deref @ Absyn::Exp::TUPLE { expressions: Deref @ metamodelica::List::Cons { head: absynExp1, tail: Deref @ metamodelica::List::Nil } } => {
-            instExp(absynExp1.clone(), scope.clone(), context.clone(), info.clone())?
+            { (absynExp, scope, context, info) = (absynExp1.clone(), scope.clone(), context.clone(), info.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::TUPLE { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -2266,7 +2264,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
         }
         __acc.reverse()
     });
-            Arc::new(Expression::NFExpression::TUPLE { ty: crate::NFType::interned_UNKNOWN(), elements: expl.clone() })
+            return Ok(Arc::new(Expression::NFExpression::TUPLE { ty: crate::NFType::interned_UNKNOWN(), elements: expl.clone() }))
         },
         Deref @ Absyn::Exp::BINARY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2275,14 +2273,14 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::BINARY).clone(), scope.clone(), context.clone(), info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::BINARY).clone(), scope.clone(), context.clone(), info.clone())?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::BINARY).clone())?;
-            Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() })
+            return Ok(Arc::new(Expression::NFExpression::BINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() }))
         },
         Deref @ Absyn::Exp::UNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
             e1 = instExp(var_field!((*absynExp).exp, Absyn::Exp::UNARY).clone(), scope.clone(), context.clone(), info.clone())?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::UNARY).clone())?;
-            Expression::makeUnary(op.clone(), e1.clone())
+            return Ok(Expression::makeUnary(op.clone(), e1.clone()))
         },
         Deref @ Absyn::Exp::LBINARY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2291,14 +2289,14 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::LBINARY).clone(), scope.clone(), context.clone(), info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::LBINARY).clone(), scope.clone(), context.clone(), info.clone())?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::LBINARY).clone())?;
-            Arc::new(Expression::NFExpression::LBINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() })
+            return Ok(Arc::new(Expression::NFExpression::LBINARY { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone() }))
         },
         Deref @ Absyn::Exp::LUNARY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut op: Arc<Operator::NFOperator> = Arc::new(<Operator::NFOperator as ::std::default::Default>::default());
             e1 = instExp(var_field!((*absynExp).exp, Absyn::Exp::LUNARY).clone(), scope.clone(), context.clone(), info.clone())?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::LUNARY).clone())?;
-            Arc::new(Expression::NFExpression::LUNARY { operator: op.clone(), exp: e1.clone() })
+            return Ok(Arc::new(Expression::NFExpression::LUNARY { operator: op.clone(), exp: e1.clone() }))
         },
         Deref @ Absyn::Exp::RELATION { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2307,7 +2305,7 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             e1 = instExp(var_field!((*absynExp).exp1, Absyn::Exp::RELATION).clone(), scope.clone(), context.clone(), info.clone())?;
             e2 = instExp(var_field!((*absynExp).exp2, Absyn::Exp::RELATION).clone(), scope.clone(), context.clone(), info.clone())?;
             op = Operator::fromAbsyn(var_field!((*absynExp).op, Absyn::Exp::RELATION).clone())?;
-            Arc::new(Expression::NFExpression::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: -1 })
+            return Ok(Arc::new(Expression::NFExpression::RELATION { exp1: e1.clone(), operator: op.clone(), exp2: e2.clone(), index: -1 }))
         },
         Deref @ Absyn::Exp::IFEXP { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2322,37 +2320,37 @@ pub fn instExp(mut absynExp: Arc<Absyn::Exp>, mut scope: Arc<InstNode::InstNode>
             }
             e1 = instExp(var_field!((*absynExp).ifExp, Absyn::Exp::IFEXP).clone(), scope.clone(), context.clone(), info.clone())?;
             e2 = instExp(var_field!((*absynExp).trueBranch, Absyn::Exp::IFEXP).clone(), scope.clone(), context.clone(), info.clone())?;
-            Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_UNKNOWN(), condition: e1.clone(), trueBranch: e2.clone(), falseBranch: e3.clone() })
+            return Ok(Arc::new(Expression::NFExpression::IF { ty: crate::NFType::interned_UNKNOWN(), condition: e1.clone(), trueBranch: e2.clone(), falseBranch: e3.clone() }))
         },
         Deref @ Absyn::Exp::CALL { .. } => {
-            Call::instantiate(var_field!((*absynExp).function_, Absyn::Exp::CALL).clone(), var_field!((*absynExp).functionArgs, Absyn::Exp::CALL).clone(), scope.clone(), context.clone(), info.clone())?
+            return Ok(Call::instantiate(var_field!((*absynExp).function_, Absyn::Exp::CALL).clone(), var_field!((*absynExp).functionArgs, Absyn::Exp::CALL).clone(), scope.clone(), context.clone(), info.clone())?)
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { .. } => {
-            instPartEvalFunction(var_field!((*absynExp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), var_field!((*absynExp).functionArgs, Absyn::Exp::PARTEVALFUNCTION).clone(), scope.clone(), context.clone(), info.clone())?
+            return Ok(instPartEvalFunction(var_field!((*absynExp).function_, Absyn::Exp::PARTEVALFUNCTION).clone(), var_field!((*absynExp).functionArgs, Absyn::Exp::PARTEVALFUNCTION).clone(), scope.clone(), context.clone(), info.clone())?)
         },
         Deref @ Absyn::Exp::END { .. } => {
-            crate::NFExpression::interned_END()
+            return Ok(crate::NFExpression::interned_END())
         },
         Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. } => {
-            instExp(var_field!((*absynExp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), scope.clone(), context.clone(), info.clone())?
+            { (absynExp, scope, context, info) = (var_field!((*absynExp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone(), scope.clone(), context.clone(), info.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::SUBSCRIPTED_EXP { .. } => {
-            Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: instExp(var_field!((*absynExp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(), scope.clone(), context.clone(), info.clone())?, subscripts: ({
+            return Ok(Arc::new(Expression::NFExpression::SUBSCRIPTED_EXP { exp: instExp(var_field!((*absynExp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(), scope.clone(), context.clone(), info.clone())?, subscripts: ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut s in (var_field!((*absynExp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone()).into_iter().cloned() {
             let __x = instSubscript(Arc::new(Subscript::NFSubscript::RAW_SUBSCRIPT { subscript: s.clone() }), scope.clone(), context.clone(), info.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), ty: crate::NFType::interned_UNKNOWN(), split: false })
+    }), ty: crate::NFType::interned_UNKNOWN(), split: false }))
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.instExp")); __mm_s.push_str(&*literal!(" got unknown expression: ")); __mm_s.push_str(&*Dump::printExpStr(absynExp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFInst.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(exp)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn instCref(mut absynCref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {

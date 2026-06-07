@@ -1021,23 +1021,21 @@ pub fn isIn(mut inNode: Node, mut inFunctionRefIs: Arc<dyn ::std::ops::Fn(metamo
     Ok(b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nonImplicitRefFromScope(mut inScope: Scope) -> Result<Ref> {
-    let mut outRef: Ref = Default::default();
-    outRef = (::match_deref::match_deref! { match &(inScope.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inScope.clone()) {
         Deref @ metamodelica::List::Nil => {
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
         Deref @ metamodelica::List::Cons { head: r, tail: _ } if (!(isRefImplicitScope(r.clone())?)) => {
-            r.clone()
+            return Ok(r.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            nonImplicitRefFromScope(rest.clone())?
+            { inScope = rest.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRef)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn namesUpToParentName(mut inRef: Ref, mut inName: Name) -> Result<Names> {
@@ -1097,22 +1095,20 @@ pub fn originalScope(mut inRef: Ref) -> Result<Scope> {
     Ok(outScope)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn originalScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
-    let mut outScope: Scope = metamodelica::nil();
-    outScope = (::match_deref::match_deref! { match &(inAcc.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAcc.clone()) {
         acc if (isTop(fromRef(inRef.clone())?)) => {
-            metamodelica::cons(inRef.clone(), acc.clone()).reverse()
+            return Ok(metamodelica::cons(inRef.clone(), acc.clone()).reverse())
         },
         acc => {
             let mut r: Ref = Default::default();
             r = original(parents(fromRef(inRef.clone())?)?)?;
-            originalScope_dispatch(r.clone(), metamodelica::cons(inRef.clone(), acc.clone()))?
+            { (inRef, inAcc) = (r.clone(), metamodelica::cons(inRef.clone(), acc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outScope)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn original(mut inParents: Parents) -> Result<Ref> {
@@ -1127,22 +1123,20 @@ pub fn contextualScope(mut inRef: Ref) -> Result<Scope> {
     Ok(outScope)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn contextualScope_dispatch(mut inRef: Ref, mut inAcc: Scope) -> Result<Scope> {
-    let mut outScope: Scope = metamodelica::nil();
-    outScope = (::match_deref::match_deref! { match &(inAcc.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAcc.clone()) {
         acc if (isTop(fromRef(inRef.clone())?)) => {
-            metamodelica::cons(inRef.clone(), acc.clone()).reverse()
+            return Ok(metamodelica::cons(inRef.clone(), acc.clone()).reverse())
         },
         acc => {
             let mut r: Ref = Default::default();
             r = contextual(parents(fromRef(inRef.clone())?)?)?;
-            contextualScope_dispatch(r.clone(), metamodelica::cons(inRef.clone(), acc.clone()))?
+            { (inRef, inAcc) = (r.clone(), metamodelica::cons(inRef.clone(), acc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outScope)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn contextual(mut inParents: Parents) -> Result<Ref> {
@@ -1184,13 +1178,11 @@ pub fn lookupRef(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
     Ok(outRef)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
-    let mut outRef: Ref = Default::default();
-    outRef = (::match_deref::match_deref! { match &(inScope.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inScope.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inRef.clone()
+            return Ok(inRef.clone())
         },
         Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
             let mut n: Name = arcstr::literal!("");
@@ -1198,11 +1190,11 @@ pub fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
             n = (name(fromRef(r.clone())?)?).clone();
             r = child(inRef.clone(), (n.clone()).clone())?;
             r = lookupRef_dispatch(r.clone(), rest.clone())?;
-            r.clone()
+            return Ok(r.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRef)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn filter(mut inRef: Ref, mut inFilter: Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>) -> Result<Refs> {

@@ -1620,27 +1620,25 @@ pub mod VariableAttributes {
         Ok(stateSelect)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
-        let mut name: ArcStr = arcstr::literal!("");
-        let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
-        let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        name = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
+        '__tco: loop {
+            let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+            let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+            let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
+            let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
+            ::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ Expression::ENUM_LITERAL { .. } => return Ok(var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone()),
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { node: __esc_node, .. }, .. } => {
             node = (*__esc_node).clone();
-            InstNode::name(node.clone())?
+            return Ok(InstNode::name(node.clone())?)
         },
         Deref @ Expression::CALL { call: __esc_call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
             call = (*__esc_call).clone();
-            getStateSelectName(var_field!((*call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone())?
+            { exp = var_field!((*call).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(); continue '__tco; }
         },
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: __esc_arg, tail: _ }, .. } } if (AbsynUtil::pathString(Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)? == literal!("fill")) => {
             arg = (*__esc_arg).clone();
-            getStateSelectName(arg.clone())?
+            { exp = arg.clone(); continue '__tco; }
         },
         Deref @ Expression::ARRAY { .. } => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Arc::new(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())) {
@@ -1653,15 +1651,15 @@ pub mod VariableAttributes {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
                 bail!("fail");
             }
-            getStateSelectName(arg.clone())?
+            { exp = arg.clone(); continue '__tco; }
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFBackendExtension.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-        Ok(name)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     fn lookupStateSelectMember(mut name: ArcStr) -> Result<StateSelect> {

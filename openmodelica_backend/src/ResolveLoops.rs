@@ -604,23 +604,21 @@ fn removeNode(mut node: i32, mut inPaths: Arc<metamodelica::List<Arc<metamodelic
     accPaths
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn pathContainsNode(mut node: i32, mut inPath: Arc<metamodelica::List<i32>>) -> bool {
-    let mut c: bool = false;
-    c = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ metamodelica::List::Cons { head: n, tail: _ } if (intEq(n.clone(), node.clone())) => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            pathContainsNode(node.clone(), rest.clone())
+            { (node, inPath) = (node.clone(), rest.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    c
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn listContains(mut lst: Arc<metamodelica::List<i32>>, mut int: i32) -> bool {
@@ -702,13 +700,11 @@ fn hasSameIntSortedExcept(mut inList1: Arc<metamodelica::List<i32>>, mut inList2
     Ok(rv)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getShortPathsBetweenEqCrossNodes(mut eqCrossLstIn: Arc<metamodelica::List<i32>>, mut eqCrossSet: Arc<AvlSetInt::Tree>, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mTIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut pathsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut findExactlyOneLoop: bool) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
-    let mut pathsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    pathsOut = ({
+    '__tco: loop {
+        ({
         let mut paths: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-        (::match_deref::match_deref! { match &(eqCrossLstIn.clone()) {
+        ::match_deref::match_deref! { match &(eqCrossLstIn.clone()) {
         Deref @ metamodelica::List::Cons { head: crossEq, tail: rest } => {
             let mut adjVar: i32 = 0;
             let mut adjEq: i32 = 0;
@@ -732,15 +728,15 @@ fn getShortPathsBetweenEqCrossNodes(mut eqCrossLstIn: Arc<metamodelica::List<i32
                 }
             }
             paths = getShortPathsBetweenEqCrossNodes(rest.clone(), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), listAppend(paths.clone(), pathsIn.clone()), findExactlyOneLoop.clone())?;
-            paths.clone()
+            return Ok(paths.clone())
         },
         Deref @ metamodelica::List::Nil => {
-            pathsIn.clone()
+            return Ok(pathsIn.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
-    });
-    Ok(pathsOut)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    })
+    }
 }
 
 fn connectsLoops(mut path: Arc<metamodelica::List<i32>>, mut allLoops: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<bool> {
@@ -1273,32 +1269,30 @@ fn crefHasUnitCoeff(mut cref: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Eq
     Ok(isUnit)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn crefUnitCoeffInExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
-    let mut isUnit: bool = false;
-    isUnit = (::match_deref::match_deref! { match &(exp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD { .. }, exp2: e2 } => {
-            crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
+            return Ok(crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?)
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB { .. }, exp2: e2 } => {
-            crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
+            return Ok(crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?)
         },
         Deref @ DAE::Exp::UNARY { exp: e1, .. } => {
-            crefUnitCoeffInExp(e1.clone(), cref.clone())?
+            { (exp, cref) = (e1.clone(), cref.clone()); continue '__tco; }
         },
         Deref @ DAE::Exp::BINARY { exp1: Deref @ DAE::Exp::CREF { componentRef: c, .. }, operator: DAE::Operator::MUL { .. }, exp2: e2 } => {
-            !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e2.clone()) || Expression::isConstMinusOne(e2.clone())
+            return Ok(!(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e2.clone()) || Expression::isConstMinusOne(e2.clone()))
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::MUL { .. }, exp2: Deref @ DAE::Exp::CREF { componentRef: c, .. } } => {
-            !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e1.clone()) || Expression::isConstMinusOne(e1.clone())
+            return Ok(!(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e1.clone()) || Expression::isConstMinusOne(e1.clone()))
         },
         _ => {
-            true
+            return Ok(true)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isUnit)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn sortLoop(mut loopIn: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sortLoopIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
@@ -1885,18 +1879,17 @@ pub fn partitionBipartiteGraph(mut m: metamodelica::Array<Arc<metamodelica::List
 }
 
 fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut checkNextIn: Arc<metamodelica::List<i32>>, mut markEqs: metamodelica::Array<i32>, mut markVars: metamodelica::Array<i32>, mut currNumberIn: i32, mut partitionsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut nextIndex: i32) -> Result<(i32, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
-    let mut currNumberOut: i32 = 0;
-    let mut partitionsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut eq: i32 = 0;
-    let mut next_index: i32 = 0;
-    let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut eqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut part: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut restPart: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut partitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    (currNumberOut, partitionsOut) = (::match_deref::match_deref! { match &(checkNextIn.clone()) {
-        Deref @ metamodelica::List::Cons { head: 0, tail: Deref @ metamodelica::List::Nil } => (currNumberIn.clone() - 1, partitionsIn.clone()),
+    '__tco: loop {
+        let mut eq: i32 = 0;
+        let mut next_index: i32 = 0;
+        let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut eqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut part: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut restPart: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+        let mut partitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+        ::match_deref::match_deref! { match &(checkNextIn.clone()) {
+        Deref @ metamodelica::List::Cons { head: 0, tail: Deref @ metamodelica::List::Nil } => return Ok((currNumberIn.clone() - 1, partitionsIn.clone())),
         Deref @ metamodelica::List::Cons { head: __esc_eq, tail: __esc_rest } => {
             eq = (*__esc_eq).clone();
             rest = (*__esc_rest).clone();
@@ -1925,7 +1918,7 @@ fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
             } else {
                 partitions = partitionsIn.clone();
             }
-            colorNodePartitions(m.clone(), mT.clone(), rest.clone(), markEqs.clone(), markVars.clone(), currNumberIn.clone(), partitions.clone(), nextIndex.clone())?
+            { (m, mT, checkNextIn, markEqs, markVars, currNumberIn, partitionsIn, nextIndex) = (m.clone(), mT.clone(), rest.clone(), markEqs.clone(), markVars.clone(), currNumberIn.clone(), partitions.clone(), nextIndex.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             eq = 0;
@@ -1937,11 +1930,11 @@ fn colorNodePartitions(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
                     break;
                 }
             }
-            colorNodePartitions(m.clone(), mT.clone(), list![eq.clone()], markEqs.clone(), markVars.clone(), currNumberIn.clone() + 1, metamodelica::cons(metamodelica::nil(), partitionsIn.clone()), next_index.clone())?
+            { (m, mT, checkNextIn, markEqs, markVars, currNumberIn, partitionsIn, nextIndex) = (m.clone(), mT.clone(), list![eq.clone()], markEqs.clone(), markVars.clone(), currNumberIn.clone() + 1, metamodelica::cons(metamodelica::nil(), partitionsIn.clone()), next_index.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((currNumberOut, partitionsOut))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn arrayGetIsNotPositive(mut idx: i32, mut arrayIn: metamodelica::Array<i32>) -> Result<bool> {

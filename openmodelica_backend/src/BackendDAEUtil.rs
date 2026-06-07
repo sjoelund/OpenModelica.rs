@@ -3132,26 +3132,24 @@ fn adjacencyRowAlgorithm(mut exp: Arc<DAE::Exp>, mut row: Arc<AvlSetInt::Tree>, 
     Ok(row)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn adjacencyRow1<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static>(mut inList: Arc<metamodelica::List<Type_a>>, mut inFunc: Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>, mut inArg: Type_b, mut inArg1: Type_c, mut inArg2: Type_d, mut inArg3: Type_e, mut inArg4: Type_f) -> Result<Type_c> {
     pub type FuncType<Type_a: Clone + 'static, Type_b: Clone + 'static, Type_c: Clone + 'static, Type_d: Clone + 'static, Type_e: Clone + 'static, Type_f: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a, Type_b, Type_c, Type_d, Type_e, Type_f) -> Result<Type_c> + 'static>;
 
-    let mut outArg1: Type_c;
-    outArg1 = (::match_deref::match_deref! { match &(inList.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inList.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inArg1.clone()
+            return Ok(inArg1.clone())
         },
         Deref @ metamodelica::List::Cons { head: e1, tail: rest_e1 } => {
             let mut res: Type_c;
             let mut res1: Type_c;
             res = inFunc(e1.clone(), inArg.clone(), inArg1.clone(), inArg2.clone(), inArg3.clone(), inArg4.clone())?;
             res1 = adjacencyRow1(rest_e1.clone(), inFunc.clone(), inArg.clone(), res.clone(), inArg2.clone(), inArg3.clone(), inArg4.clone())?;
-            res1.clone()
+            return Ok(res1.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outArg1)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut inIntegerLst: Arc<AvlSetInt::Tree>, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut inIndexType: BackendDAE::IndexType, mut isInitial: bool) -> Result<Arc<AvlSetInt::Tree>> {
@@ -4040,57 +4038,53 @@ pub fn traversingadjacencyRowExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Bac
     Ok((outExp, cont, outTpl))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowExp1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inVarIndxLst: Arc<AvlSetInt::Tree>, mut diffindex: i32) -> Result<Arc<AvlSetInt::Tree>> {
-    let mut outVarIndxLst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-    outVarIndxLst = (::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inVarIndxLst.clone()
+            return Ok(inVarIndxLst.clone())
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { derName: Some(_), .. }, .. }, tail: rest }, Deref @ metamodelica::List::Cons { head: i, tail: irest }) => {
             let mut vars: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             let mut i1: i32 = 0;
             i1 = if (intGe(diffindex.clone(), 1)) {i.clone()} else {-(i.clone())};
             vars = AvlSetInt::add(inVarIndxLst.clone(), i1.clone())?;
-            adjacencyRowExp1(rest.clone(), irest.clone(), vars.clone(), diffindex.clone())?
+            { (inVarLst, inIntegerLst, inVarIndxLst, diffindex) = (rest.clone(), irest.clone(), vars.clone(), diffindex.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { index: diffidx, .. }, .. }, tail: rest }, Deref @ metamodelica::List::Cons { head: i, tail: irest }) => {
             let mut vars: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             let mut i1: i32 = 0;
             i1 = if (intGe(diffindex.clone(), diffidx.clone())) {i.clone()} else {-(i.clone())};
             vars = AvlSetInt::add(inVarIndxLst.clone(), i1.clone())?;
-            adjacencyRowExp1(rest.clone(), irest.clone(), vars.clone(), diffindex.clone())?
+            { (inVarLst, inIntegerLst, inVarIndxLst, diffindex) = (rest.clone(), irest.clone(), vars.clone(), diffindex.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, Deref @ metamodelica::List::Cons { head: i, tail: irest }) => {
             let mut vars: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             vars = AvlSetInt::add(inVarIndxLst.clone(), i.clone())?;
-            adjacencyRowExp1(rest.clone(), irest.clone(), vars.clone(), diffindex.clone())?
+            { (inVarLst, inIntegerLst, inVarIndxLst, diffindex) = (rest.clone(), irest.clone(), vars.clone(), diffindex.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outVarIndxLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowExp1DiscreteOrArray(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inVarIndxLst: Arc<AvlSetInt::Tree>) -> Result<Arc<AvlSetInt::Tree>> {
-    let mut outVarIndxLst: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-    outVarIndxLst = (::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inVarLst.clone(), inIntegerLst.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            inVarIndxLst.clone()
+            return Ok(inVarIndxLst.clone())
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. }, tail: rest }, Deref @ metamodelica::List::Cons { head: i, tail: irest }) => {
             let mut vars: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             vars = AvlSetInt::add(inVarIndxLst.clone(), i.clone())?;
-            adjacencyRowExp1DiscreteOrArray(rest.clone(), irest.clone(), vars.clone())?
+            { (inVarLst, inIntegerLst, inVarIndxLst) = (rest.clone(), irest.clone(), vars.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, Deref @ metamodelica::List::Cons { head: _, tail: irest }) => {
-            adjacencyRowExp1DiscreteOrArray(rest.clone(), irest.clone(), inVarIndxLst.clone())?
+            { (inVarLst, inIntegerLst, inVarIndxLst) = (rest.clone(), irest.clone(), inVarIndxLst.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outVarIndxLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn traversingadjacencyRowExpFinderwithInput(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> {
@@ -5520,41 +5514,37 @@ fn adjacencyRowEnhancedEqnLst(mut iEqns: Arc<metamodelica::List<Arc<BackendDAE::
     Ok((outRow, oSize))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmOutputs(mut algOutputs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inVariables: BackendDAE::Variables, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
-    let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
-    outRow = (::match_deref::match_deref! { match &(algOutputs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(algOutputs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iRow.clone()
+            return Ok(iRow.clone())
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: rest } => {
             let mut vindx: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
             (_, vindx) = BackendVariable::getVar(cr.clone(), inVariables.clone())?;
             row = adjacencyRowAlgorithmOutputs1(vindx.clone(), mark.clone(), rowmark.clone(), iRow.clone())?;
-            adjacencyRowAlgorithmOutputs(rest.clone(), inVariables.clone(), mark.clone(), rowmark.clone(), row.clone())?
+            { (algOutputs, inVariables, mark, rowmark, iRow) = (rest.clone(), inVariables.clone(), mark.clone(), rowmark.clone(), row.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRow)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmOutputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
-    let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
-    outRow = (::match_deref::match_deref! { match &(vindx.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(vindx.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iRow.clone()
+            return Ok(iRow.clone())
         },
         Deref @ metamodelica::List::Cons { head: i, tail: rest } => {
             metamodelica::arrayUpdate(rowmark.clone(), i.clone(), mark.clone())?;
-            adjacencyRowAlgorithmOutputs1(rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), openmodelica_backend_types::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), iRow.clone()))?
+            { (vindx, mark, rowmark, iRow) = (rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), openmodelica_backend_types::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), iRow.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRow)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn adjacencyRowAlgorithmInputs(mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>))> {
@@ -5587,24 +5577,22 @@ fn adjacencyRowAlgorithmInputs(mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendDAE::
     Ok((outExp, oTpl))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn adjacencyRowAlgorithmInputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> {
-    let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
-    outRow = (::match_deref::match_deref! { match &(vindx.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(vindx.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iRow.clone()
+            return Ok(iRow.clone())
         },
         Deref @ metamodelica::List::Cons { head: i, tail: rest } if (!(intEq(intAbs(({let __elt = rowmark.borrow()[(i.clone()-1) as usize].clone(); __elt})), mark.clone()))) => {
             metamodelica::arrayUpdate(rowmark.clone(), i.clone(), -(mark.clone()))?;
-            adjacencyRowAlgorithmInputs1(rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), openmodelica_backend_types::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), iRow.clone()))?
+            { (vindx, mark, rowmark, iRow) = (rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), openmodelica_backend_types::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), iRow.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-            adjacencyRowAlgorithmInputs1(rest.clone(), mark.clone(), rowmark.clone(), iRow.clone())?
+            { (vindx, mark, rowmark, iRow) = (rest.clone(), mark.clone(), rowmark.clone(), iRow.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRow)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn adjacencyRowWhenEnhanced(mut inEquation: Arc<BackendDAE::WhenEquation>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables, mut iLst: Arc<metamodelica::List<i32>>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut shared: Arc<BackendDAE::Shared>) -> Result<(Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, Arc<metamodelica::List<i32>>)> {
@@ -7908,24 +7896,22 @@ fn traverseBackendDAEExpsJacobianEqn<Type_a: Clone + 'static>(mut inJacEntry: Ar
     Ok(outTypeA)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn traverseStateSetsJacobiansExp<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inStateSets: Arc<metamodelica::List<BackendDAE::StateSet>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
-    let mut outTypeA: Type_a;
-    outTypeA = (::match_deref::match_deref! { match &(inStateSets.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStateSets.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inTypeA.clone()
+            return Ok(inTypeA.clone())
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::StateSet { jacobian: Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some((bdae, _, _, _, _, _)), .. }, .. }, tail: rest } => {
             let mut arg: Type_a;
             arg = traverseBackendDAEExps(bdae.clone(), inFunc.clone(), inTypeA.clone())?;
-            traverseStateSetsJacobiansExp(rest.clone(), inFunc.clone(), arg.clone())?
+            { (inStateSets, inFunc, inTypeA) = (rest.clone(), inFunc.clone(), arg.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outTypeA)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static + metamodelica::ReferenceEq>(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inTypeA: A) -> Result<A> {
@@ -9347,24 +9333,22 @@ fn getModuleIndexes(mut inModuleName: ArcStr, mut inModuleList: Arc<metamodelica
     Ok(outIndexes)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn selectOptModules1(mut strOptModule: ArcStr, mut inOptModules: Arc<metamodelica::List<(Arc<dyn ::std::ops::Fn(Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> + 'static>, ArcStr)>>) -> Result<(Arc<dyn ::std::ops::Fn(Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> + 'static>, ArcStr)> {
-    let mut outOptModule: (BackendDAEFunc::optimizationModule, ArcStr);
-    outOptModule = (::match_deref::match_deref! { match &(inOptModules.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inOptModules.clone()) {
         Deref @ metamodelica::List::Cons { head: module @ (_, name), tail: _ } if (stringEqual((name.clone()).clone(), (strOptModule.clone()).clone())) => {
-            module.clone()
+            return Ok(module.clone())
         },
         Deref @ metamodelica::List::Cons { head: (_, name), tail: rest } if (!(stringEqual((name.clone()).clone(), (strOptModule.clone()).clone()))) => {
-            selectOptModules1((strOptModule.clone()).clone(), rest.clone())?
+            { (strOptModule, inOptModules) = ((strOptModule.clone()).clone(), rest.clone()); continue '__tco; }
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selection of optimization module ")); __mm_s.push_str(&*strOptModule.clone()); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/BackendDAEUtil.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outOptModule)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isInitOptModuleActivated(mut initOptModule: ArcStr, mut activatedInitOptModules: Arc<metamodelica::List<(Arc<dyn ::std::ops::Fn(Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> + 'static>, ArcStr)>>) -> Result<bool> {

@@ -57,25 +57,23 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::DoubleEnded;
 use openmodelica_util_datatypes_basic::List;
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn buildWithin(mut inPath: Arc<Absyn::Path>) -> Result<Absyn::Within> {
-    let mut outWithin: Absyn::Within = Absyn::Within::TOP;
-    outWithin = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => {
-            openmodelica_ast::Absyn::Within::TOP
+            return Ok(openmodelica_ast::Absyn::Within::TOP)
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path } => {
-            buildWithin(path.clone())?
+            { inPath = path.clone(); continue '__tco; }
         },
         path => {
             let mut w_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             w_path = AbsynUtil::stripLast(path.clone())?;
-            Absyn::Within::WITHIN { path: w_path.clone() }
+            return Ok(Absyn::Within::WITHIN { path: w_path.clone() })
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outWithin)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn updateProgram(mut inNewProgram: Absyn::Program, mut inOldProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
@@ -89,13 +87,11 @@ pub fn updateProgram(mut inNewProgram: Absyn::Program, mut inOldProgram: Absyn::
     Ok(outProgram)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut w: Absyn::Within, mut inOldProgram: Absyn::Program, mut mergeAST: bool) -> Result<Absyn::Program> {
-    let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    outProgram = (::match_deref::match_deref! { match &((inNewClasses.clone(), w.clone(), inOldProgram.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inNewClasses.clone(), w.clone(), inOldProgram.clone())) {
         (Deref @ metamodelica::List::Nil, _, prg) => {
-            prg.clone()
+            return Ok(prg.clone())
         },
         (Deref @ metamodelica::List::Cons { head: c1 @ Deref @ Absyn::Class { name, .. }, tail: c2 }, Absyn::Within::TOP { .. }, p2 @ Absyn::Program { classes: c3, within_: w2 }) => {
             let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -104,18 +100,18 @@ pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>
             } else {
                 newp = Absyn::Program { classes: metamodelica::cons(c1.clone(), c3.clone()), within_: w2.clone() };
             }
-            updateProgram2(c2.clone(), w.clone(), newp.clone(), mergeAST.clone())?
+            { (inNewClasses, w, inOldProgram, mergeAST) = (c2.clone(), w.clone(), newp.clone(), mergeAST.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: c1, tail: c2 }, Absyn::Within::WITHIN { .. }, p2) => {
             let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut newp_1: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             newp = insertClassInProgram(c1.clone(), w.clone(), p2.clone(), mergeAST.clone())?;
             newp_1 = updateProgram2(c2.clone(), w.clone(), newp.clone(), mergeAST.clone())?;
-            newp_1.clone()
+            return Ok(newp_1.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outProgram)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getClassnamesInParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -625,100 +621,92 @@ pub fn replaceProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
     Ok(outAbsynClassPartLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn deletePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
-    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-    outAbsynClassPartLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             res = deletePublicList(xs.clone());
-            res.clone()
+            return res.clone()
         },
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             res = deletePublicList(xs.clone());
-            metamodelica::cons(x.clone(), res.clone())
+            return metamodelica::cons(x.clone(), res.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outAbsynClassPartLst
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn deleteProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ClassPart>>> {
-    let mut outAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-    outAbsynClassPartLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             res = deleteProtectedList(xs.clone());
-            res.clone()
+            return res.clone()
         },
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             res = deleteProtectedList(xs.clone());
-            metamodelica::cons(x.clone(), res.clone())
+            return metamodelica::cons(x.clone(), res.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outAbsynClassPartLst
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
-    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    outAbsynElementItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { contents: res1 }, tail: rest } => {
             let mut res2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             res2 = getPublicList(rest.clone());
             res = listAppend(res1.clone(), res2.clone());
-            res.clone()
+            return res.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             ys = getPublicList(xs.clone());
-            ys.clone()
+            return ys.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outAbsynElementItemLst
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Arc<metamodelica::List<Arc<Absyn::ElementItem>>> {
-    let mut outAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    outAbsynElementItemLst = (::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAbsynClassPartLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: res1 }, tail: rest } => {
             let mut res2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             res2 = getProtectedList(rest.clone());
             res = listAppend(res1.clone(), res2.clone());
-            res.clone()
+            return res.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             ys = getProtectedList(xs.clone());
-            ys.clone()
+            return ys.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outAbsynElementItemLst
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn getClassFromElementitemlist(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inIdent: ArcStr) -> Result<Arc<Absyn::Class>> {
@@ -780,25 +768,23 @@ pub fn getPathedClassInProgram(mut inPath: Arc<Absyn::Path>, mut inProgram: Absy
     Ok(outClass)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getPathedClassInProgramWork(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut enclOnErr: bool) -> Result<Arc<Absyn::Class>> {
-    let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    outClass = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => {
-            getClassInProgram((var_field!((*inPath).name, Absyn::Path::IDENT).clone()).clone(), inProgram.clone())?
+            return Ok(getClassInProgram((var_field!((*inPath).name, Absyn::Path::IDENT).clone()).clone(), inProgram.clone())?)
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
             let mut c: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
             c = getClassInProgram((var_field!((*inPath).name, Absyn::Path::QUALIFIED).clone()).clone(), inProgram.clone())?;
-            getPathedClassInClass(var_field!((*inPath).path, Absyn::Path::QUALIFIED).clone(), c.clone(), enclOnErr.clone())?
+            return Ok(getPathedClassInClass(var_field!((*inPath).path, Absyn::Path::QUALIFIED).clone(), c.clone(), enclOnErr.clone())?)
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
-            getPathedClassInProgramWork(var_field!((*inPath).path, Absyn::Path::FULLYQUALIFIED).clone(), inProgram.clone(), enclOnErr.clone())?
+            { (inPath, inProgram, enclOnErr) = (var_field!((*inPath).path, Absyn::Path::FULLYQUALIFIED).clone(), inProgram.clone(), enclOnErr.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outClass)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getPathedClassInClass(mut inPath: Arc<Absyn::Path>, mut inClass: Arc<Absyn::Class>, mut enclOnError: bool) -> Result<Arc<Absyn::Class>> {
@@ -1074,31 +1060,29 @@ pub fn mergeElements(mut inEls1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>
     Ok(outEls)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn excludeElementsFromFile(mut inFile: ArcStr, mut inEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementItem>>>> {
-    let mut outEls: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    outEls = ({
+    '__tco: loop {
+        ({
         let mut b: bool = false;
-        (::match_deref::match_deref! { match &((inFile.clone(), inEls.clone())) {
+        ::match_deref::match_deref! { match &((inFile.clone(), inEls.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         (file, Deref @ metamodelica::List::Cons { head: e @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { info: SourceInfo { fileName: f, .. }, .. } }, tail: rest }) => {
             let mut filtered: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             b = stringEqual((file.clone()).clone(), (f.clone()).clone());
             filtered = excludeElementsFromFile((file.clone()).clone(), rest.clone())?;
-            if (!(b.clone())) {metamodelica::cons(e.clone(), filtered.clone())} else {filtered.clone()}
+            if (!(b.clone())) {return Ok(metamodelica::cons(e.clone(), filtered.clone()))} else {return Ok(filtered.clone())}
         },
         (file, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::LEXER_COMMENT { comment: _ }, tail: rest }) => {
             let mut filtered: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             filtered = excludeElementsFromFile((file.clone()).clone(), rest.clone())?;
-            filtered.clone()
+            return Ok(filtered.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } })
-    });
-    Ok(outEls)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    })
+    }
 }
 
 pub fn getClassnamesInClass(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut inClass: Arc<Absyn::Class>, mut inShowProtected: bool, mut includeConstants: bool) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {

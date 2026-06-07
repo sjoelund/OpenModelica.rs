@@ -2452,13 +2452,11 @@ fn getCSE3(mut partition: Arc<metamodelica::List<i32>>, mut m: metamodelica::Arr
     Ok(cseOut)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sysIn: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
-    let mut sysOut: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    sysOut = (::match_deref::match_deref! { match &((tplsIn.clone(), sysIn.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((tplsIn.clone(), sysIn.clone())) {
         (Deref @ metamodelica::List::Nil, syst @ Deref @ BackendDAE::EqSystem { .. }) => {
-            BackendDAEUtil::clearEqSyst(syst.clone())?
+            return Ok(BackendDAEUtil::clearEqSyst(syst.clone())?)
         },
         (Deref @ metamodelica::List::Cons { head: CommonSubExp::ASSIGNMENT_CSE { eqIdcs: Deref @ metamodelica::List::Cons { head: eqIdx1, tail: Deref @ metamodelica::List::Cons { head: eqIdx2, tail: Deref @ metamodelica::List::Nil } }, aliasVars: Deref @ metamodelica::List::Cons { head: varIdx1, tail: Deref @ metamodelica::List::Cons { head: varIdx2, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: rest }, syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqs, .. }) => {
             let mut varIdx_remain: i32 = 0;
@@ -2512,7 +2510,7 @@ fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, 
             eqLst = BackendEquation::getList(eqIdcs.clone(), eqs.clone())?;
             eqs = List::threadFold(eqIdcs.clone(), eqLst.clone(), (std::sync::Arc::new(BackendEquation::setAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<BackendDAE::Equation>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>), eqs.clone())?;
             BackendEquation::setAtIndex(eqs.clone(), eqIdxDel.clone(), Arc::new(BackendDAE::Equation::EQUATION { exp: varExp_remain.clone(), scalar: varExp_alias.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() }))?;
-            commonSubExpressionUpdate(rest.clone(), m.clone(), mT.clone(), syst.clone())?
+            { (tplsIn, m, mT, sysIn) = (rest.clone(), m.clone(), mT.clone(), syst.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: CommonSubExp::SHORTCUT_CSE { eqIdcs: Deref @ metamodelica::List::Cons { head: eqIdx1, tail: Deref @ metamodelica::List::Cons { head: eqIdx2, tail: Deref @ metamodelica::List::Nil } }, sharedVar }, tail: rest }, syst @ Deref @ BackendDAE::EqSystem { orderedVars: vars, orderedEqs: eqs, .. }) => {
             let mut n: i32 = 0;
@@ -2557,44 +2555,42 @@ fn commonSubExpressionUpdate(mut tplsIn: Arc<metamodelica::List<CommonSubExp>>, 
                 eqNew = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs1.clone(), scalar: rhs1.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                 BackendEquation::setAtIndex(eqs.clone(), eqIdx1.clone(), eqNew.clone())?;
             }
-            commonSubExpressionUpdate(rest.clone(), m.clone(), mT.clone(), syst.clone())?
+            { (tplsIn, m, mT, sysIn) = (rest.clone(), m.clone(), mT.clone(), syst.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
-            commonSubExpressionUpdate(rest.clone(), m.clone(), mT.clone(), sysIn.clone())?
+            { (tplsIn, m, mT, sysIn) = (rest.clone(), m.clone(), mT.clone(), sysIn.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(sysOut)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasAlgebraicOperationsOnly(mut exp: Arc<DAE::Exp>) -> bool {
-    let mut isAlgOut: bool = false;
-    isAlgOut = (::match_deref::match_deref! { match &(exp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::RCONST { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Exp::CREF { .. } => {
-            true
+            return true
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: _, exp2: e2 } => {
             let mut b: bool = false;
             b = hasAlgebraicOperationsOnly(e1.clone());
             b = b.clone() && hasAlgebraicOperationsOnly(e2.clone());
-            b.clone()
+            return b.clone()
         },
         Deref @ DAE::Exp::UNARY { operator: _, exp: e1 } => {
             let mut b: bool = false;
             b = hasAlgebraicOperationsOnly(e1.clone());
-            b.clone()
+            return b.clone()
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isAlgOut
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn cancelExpressions(mut e1In: Arc<DAE::Exp>, mut e2In: Arc<DAE::Exp>) -> Result<(bool, Arc<DAE::Exp>, Arc<DAE::Exp>)> {

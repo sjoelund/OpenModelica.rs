@@ -648,21 +648,19 @@ fn isOverconstrainedCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<
     Ok(b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getOverconstrainedCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-    let mut c: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut rest: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    c = (::match_deref::match_deref! { match &(cref.clone()) {
+    '__tco: loop {
+        let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
+        let mut rest: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+        ::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { node: __esc_node, origin: ComponentRef::Origin::CREF, restCref: __esc_rest, .. } => {
             node = (*__esc_node).clone();
             rest = (*__esc_rest).clone();
-            if (Class::isOverdetermined(InstNode::getClass(node.clone())?)) {cref.clone()} else {getOverconstrainedCref(rest.clone())?}
+            if (Class::isOverdetermined(InstNode::getClass(node.clone())?)) {return Ok(cref.clone())} else {{ cref = rest.clone(); continue '__tco; }}
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(c)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn handleOverconstrainedConnections_dispatch(mut graph: NFOCConnectionGraph, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, FlatEdges, FlatEdges)> {

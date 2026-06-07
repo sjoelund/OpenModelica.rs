@@ -190,16 +190,14 @@ pub mod Branch {
         Ok(branch)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn isEmpty(mut branch: Arc<Branch>) -> Result<bool> {
-        let mut empty: bool = false;
-        empty = (::match_deref::match_deref! { match &(branch.clone()) {
-        Deref @ BRANCH { .. } => var_field!((*branch).body, Branch::BRANCH).clone().is_empty(),
-        Deref @ INVALID_BRANCH { .. } => isEmpty(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone())?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(empty)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(branch.clone()) {
+        Deref @ BRANCH { .. } => return Ok(var_field!((*branch).body, Branch::BRANCH).clone().is_empty()),
+        Deref @ INVALID_BRANCH { .. } => { branch = var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn sizeOf(mut branch: Arc<Branch>) -> Result<i32> {

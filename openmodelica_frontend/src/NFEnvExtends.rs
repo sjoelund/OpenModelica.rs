@@ -289,20 +289,18 @@ fn qualifyExtends2(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: E
     Ok(outExtends)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray, mut inIsFirst: bool, mut inFullPath: Arc<Absyn::Path>, mut inInfo: SourceInfo, mut inErrorPath: Option<Arc<Absyn::Path>>) -> Result<Arc<Absyn::Path>> {
-    let mut outBaseClass: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outBaseClass = (::match_deref::match_deref! { match &((inBaseClass.clone(), inErrorPath.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inBaseClass.clone(), inErrorPath.clone())) {
         (_, Some(bc)) => {
-            bc.clone()
+            return Ok(bc.clone())
         },
         (Deref @ Absyn::Path::IDENT { name }, _) => {
             let mut env: Env = metamodelica::nil();
             let mut ep: Option<Arc<Absyn::Path>> = None;
             let mut opath: Option<Arc<Absyn::Path>> = None;
             (opath, env, ep) = qualifyExtendsPart((name.clone()).clone(), inEnv.clone(), inExtendsTable.clone(), inIsFirst.clone(), inFullPath.clone(), inInfo.clone())?;
-            makeExtendsPath(opath.clone(), None, env.clone(), ep.clone(), inIsFirst.clone())?
+            return Ok(makeExtendsPath(opath.clone(), None, env.clone(), ep.clone(), inIsFirst.clone())?)
         },
         (Deref @ Absyn::Path::QUALIFIED { name, path: rest_path }, _) => {
             let mut env: Env = metamodelica::nil();
@@ -311,16 +309,16 @@ fn qualifyExtends3(mut inBaseClass: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
             let mut rest_path = (*rest_path).clone();
             (opath, env, ep) = qualifyExtendsPart((name.clone()).clone(), inEnv.clone(), inExtendsTable.clone(), inIsFirst.clone(), inFullPath.clone(), inInfo.clone())?;
             rest_path = qualifyExtends3(rest_path.clone(), env.clone(), inExtendsTable.clone(), false, inFullPath.clone(), inInfo.clone(), ep.clone())?;
-            makeExtendsPath(opath.clone(), Some(rest_path.clone()), env.clone(), ep.clone(), inIsFirst.clone())?
+            return Ok(makeExtendsPath(opath.clone(), Some(rest_path.clone()), env.clone(), ep.clone(), inIsFirst.clone())?)
         },
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path }, _) => {
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
-            qualifyExtends3(rest_path.clone(), env.clone(), inExtendsTable.clone(), inIsFirst.clone(), rest_path.clone(), inInfo.clone(), None)?
+            { (inBaseClass, inEnv, inExtendsTable, inIsFirst, inFullPath, inInfo, inErrorPath) = (rest_path.clone(), env.clone(), inExtendsTable.clone(), inIsFirst.clone(), rest_path.clone(), inInfo.clone(), None); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outBaseClass)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn makeExtendsPath(mut inFirstPath: Option<Arc<Absyn::Path>>, mut inRestPath: Option<Arc<Absyn::Path>>, mut inEnv: Env, mut inErrorPath: Option<Arc<Absyn::Path>>, mut inIsFirst: bool) -> Result<Arc<Absyn::Path>> {

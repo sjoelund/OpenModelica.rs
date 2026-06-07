@@ -135,40 +135,36 @@ pub fn crefFirstCref(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Compon
     Ok(outCr)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcStr> {
-    let mut outIdent: ArcStr = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
-            id.clone()
+            return Ok(id.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             let mut res: ArcStr = arcstr::literal!("");
             res = (crefLastIdent(cr.clone())?).clone();
-            res.clone()
+            return Ok(res.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outIdent)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outComponentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outComponentRef = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            inComponentRef.clone()
+            return Ok(inComponentRef.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             let mut res: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             res = crefLastCref(cr.clone())?;
-            res.clone()
+            return Ok(res.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outComponentRef)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefFirstIdentEqual(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc<DAE::ComponentRef>) -> Result<bool> {
@@ -902,29 +898,27 @@ pub fn crefEqualWithoutSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::C
     res
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut icr2: Arc<DAE::ComponentRef>) -> bool {
-    let mut res: bool = false;
-    res = (::match_deref::match_deref! { match &((refEq.clone(), icr1.clone(), icr2.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((refEq.clone(), icr1.clone(), icr2.clone())) {
         (true, _, _) => {
-            true
+            return true
         },
         (_, Deref @ DAE::ComponentRef::CREF_IDENT { ident: n1, .. }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: n2, .. }) => {
-            stringEq((n1.clone()).clone(), (n2.clone()).clone())
+            return stringEq((n1.clone()).clone(), (n2.clone()).clone())
         },
         (_, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, componentRef: cr1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, componentRef: cr2, .. }) => {
             let mut r: bool = false;
             r = stringEq((n1.clone()).clone(), (n2.clone()).clone());
             r = if (r.clone()) {crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone())} else {false};
-            r.clone()
+            return r.clone()
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    res
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn crefStripLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {

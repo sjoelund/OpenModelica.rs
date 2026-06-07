@@ -227,27 +227,25 @@ pub fn dumpElementSpacing(mut in_txt: Tpl::Text, mut in_a_element: Arc<SCode::El
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::ClassDef>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone())) {
         (txt, Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: i_composition, .. }) => {
             let mut txt = (*txt).clone();
             txt = dumpClassDefSpacing(txt.clone(), i_composition.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fun_25(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, mut in_a_element: Arc<SCode::Element>) -> Result<Tpl::Text> {

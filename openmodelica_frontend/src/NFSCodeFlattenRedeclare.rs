@@ -523,23 +523,21 @@ fn pushRedeclareIntoExtends2(mut inName: ArcStr, mut inRedeclare: Item, mut inBa
     Ok(outExtends)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn pushRedeclareIntoExtends3(mut inRedeclare: Item, mut inName: ArcStr, mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>, mut inOutRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>>> {
-    let mut outRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
-    outRedeclares = (::match_deref::match_deref! { match &(inRedeclares.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRedeclares.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: item }, tail: rest_redecls } if (stringEqual((NFSCodeEnv::getItemName(item.clone())?).clone(), (inName.clone()).clone())) => {
-            List::append_reverse(inOutRedeclares.clone(), metamodelica::cons(Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: inRedeclare.clone() }), rest_redecls.clone()))
+            return Ok(List::append_reverse(inOutRedeclares.clone(), metamodelica::cons(Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: inRedeclare.clone() }), rest_redecls.clone())))
         },
         Deref @ metamodelica::List::Cons { head: redecl, tail: rest_redecls } => {
-            pushRedeclareIntoExtends3(inRedeclare.clone(), (inName.clone()).clone(), rest_redecls.clone(), metamodelica::cons(redecl.clone(), inOutRedeclares.clone()))?
+            { (inRedeclare, inName, inRedeclares, inOutRedeclares) = (inRedeclare.clone(), (inName.clone()).clone(), rest_redecls.clone(), metamodelica::cons(redecl.clone(), inOutRedeclares.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            metamodelica::cons(Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: inRedeclare.clone() }), inOutRedeclares.clone()).reverse()
+            return Ok(metamodelica::cons(Arc::new(NFSCodeEnv::Redeclaration::PROCESSED_MODIFIER { modifier: inRedeclare.clone() }), inOutRedeclares.clone()).reverse())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outRedeclares)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut inEnv: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Replacement>>)> {
@@ -564,42 +562,40 @@ pub fn replaceElementInScope(mut inElementName: ArcStr, mut inElement: Item, mut
     Ok(outEnv)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn propagateItemPrefixes(mut inOriginalItem: Item, mut inNewItem: Item) -> Result<Item> {
-    let mut outNewItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    outNewItem = (::match_deref::match_deref! { match &((inOriginalItem.clone(), inNewItem.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inOriginalItem.clone(), inNewItem.clone())) {
         (Deref @ NFSCodeEnv::Item::VAR { var: el1, .. }, Deref @ NFSCodeEnv::Item::VAR { var: el2, isUsed: iu2 }) => {
             let mut el2 = (*el2).clone();
             el2 = propagateAttributesVar(el1.clone(), el2.clone())?;
-            Arc::new(NFSCodeEnv::Item::VAR { var: el2.clone(), isUsed: iu2.clone() })
+            return Ok(Arc::new(NFSCodeEnv::Item::VAR { var: el2.clone(), isUsed: iu2.clone() }))
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: el1, .. }, Deref @ NFSCodeEnv::Item::CLASS { cls: el2, env: env2, classType: ty2 }) => {
             let mut el2 = (*el2).clone();
             el2 = propagateAttributesClass(el1.clone(), el2.clone())?;
-            Arc::new(NFSCodeEnv::Item::CLASS { cls: el2.clone(), env: env2.clone(), classType: ty2.clone() })
+            return Ok(Arc::new(NFSCodeEnv::Item::CLASS { cls: el2.clone(), env: env2.clone(), classType: ty2.clone() }))
         },
         (Deref @ NFSCodeEnv::Item::ALIAS { .. }, _) => {
-            inNewItem.clone()
+            return Ok(inNewItem.clone())
         },
         (_, Deref @ NFSCodeEnv::Item::ALIAS { .. }) => {
-            inNewItem.clone()
+            return Ok(inNewItem.clone())
         },
         (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, .. }, _) => {
-            propagateItemPrefixes(item.clone(), inNewItem.clone())?
+            { (inOriginalItem, inNewItem) = (item.clone(), inNewItem.clone()); continue '__tco; }
         },
         (_, Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env1 }) => {
             let mut item = (*item).clone();
             item = propagateItemPrefixes(inOriginalItem.clone(), item.clone())?;
-            Arc::new(NFSCodeEnv::Item::REDECLARED_ITEM { item: item.clone(), declaredEnv: env1.clone() })
+            return Ok(Arc::new(NFSCodeEnv::Item::REDECLARED_ITEM { item: item.clone(), declaredEnv: env1.clone() }))
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("NFSCodeFlattenRedeclare.propagateAttributes failed on unknown item.")).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outNewItem)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn propagateAttributesVar(mut inOriginalVar: Arc<SCode::Element>, mut inNewVar: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {

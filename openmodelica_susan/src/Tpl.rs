@@ -257,23 +257,21 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
     Ok(outText)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<Text> {
-    let mut outText: Text = <Text as ::std::default::Default>::default();
-    outText = (::match_deref::match_deref! { match &((inText.clone(), inChars.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inText.clone(), inChars.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: Deref @ "\n", tail: chars }) => {
             let mut txt = (*txt).clone();
             txt = newLine(txt.clone())?;
-            writeChars(txt.clone(), chars.clone())?
+            { (inText, inChars) = (txt.clone(), chars.clone()); continue '__tco; }
         },
         (txt, Deref @ metamodelica::List::Cons { head: Deref @ "\r\n", tail: chars }) => {
             let mut txt = (*txt).clone();
             txt = newLine(txt.clone())?;
-            writeChars(txt.clone(), chars.clone())?
+            { (inText, inChars) = (txt.clone(), chars.clone()); continue '__tco; }
         },
         (txt, Deref @ metamodelica::List::Cons { head: c, tail: chars }) => {
             let mut lschars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -282,16 +280,16 @@ fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) ->
             let mut chars = (*chars).clone();
             (lschars, chars, isline) = takeLineOrString(chars.clone());
             txt = writeLineOrStr(txt.clone(), stringAppendList(metamodelica::cons((c.clone()).clone(), lschars.clone())), isline.clone())?;
-            writeChars(txt.clone(), chars.clone())?
+            { (inText, inChars) = (txt.clone(), chars.clone()); continue '__tco; }
         },
         (_, _) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("-!!!Tpl.writeChars failed.\n")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outText)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn writeLineOrStr(mut inText: Text, mut inStr: ArcStr, mut inIsLine: bool) -> Result<Text> {
@@ -387,29 +385,27 @@ fn isAtStartOfLine(mut text: Text) -> Result<bool> {
     Ok(b)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inTok.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inTok.clone()) {
         Deref @ StringToken::ST_NEW_LINE { .. } => {
-            true
+            return true
         },
         Deref @ StringToken::ST_LINE { .. } => {
-            true
+            return true
         },
         Deref @ StringToken::ST_STRING_LIST { lastHasNewLine: true, .. } => {
-            true
+            return true
         },
         Deref @ StringToken::ST_BLOCK { tokens: Deref @ metamodelica::List::Cons { head: tok, tail: _ }, .. } => {
-            isAtStartOfLineTok(tok.clone())
+            { inTok = tok.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn newLine(mut inText: Text) -> Result<Text> {

@@ -121,25 +121,23 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addNodes(mut gin: (GraphML::GraphInfo, i32), mut inRefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut gout: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
-    gout = (::match_deref::match_deref! { match &((gin.clone(), inRefs.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((gin.clone(), inRefs.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            gin.clone()
+            return Ok(gin.clone())
         },
         (g, Deref @ metamodelica::List::Cons { head: n, tail: rest }) if (!(FNode::isRefTop(n.clone())?) && !(FNode::isRefUserDefined(n.clone())?)) => {
-            addNodes(g.clone(), rest.clone())?
+            { (gin, inRefs) = (g.clone(), rest.clone()); continue '__tco; }
         },
         (g, Deref @ metamodelica::List::Cons { head: n, tail: rest }) => {
             let mut g = (*g).clone();
             g = addNode(g.clone(), FNode::fromRef(n.clone())?)?;
-            addNodes(g.clone(), rest.clone())?
+            { (gin, inRefs) = (g.clone(), rest.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(gout)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphML::GraphInfo, i32)> {

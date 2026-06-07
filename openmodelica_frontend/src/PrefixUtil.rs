@@ -309,27 +309,25 @@ fn compPreStripLast(mut inCompPrefix: Arc<DAE::ComponentPrefix>) -> Result<Arc<D
     Ok(outCompPrefix)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: DAE::Prefix) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &((inPath.clone(), inPrefix.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPath.clone(), inPrefix.clone())) {
         (p, DAE::Prefix::NOPRE { .. }) => {
-            p.clone()
+            return Ok(p.clone())
         },
         (p, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: s, next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, .. }, classPre: _ }) => {
             let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             p_1 = Arc::new(Absyn::Path::QUALIFIED { name: (s.clone()).clone(), path: p.clone() });
-            p_1.clone()
+            return Ok(p_1.clone())
         },
         (p, DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: s, next: ss, .. }, classPre: cp }) => {
             let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             p_1 = prefixPath(Arc::new(Absyn::Path::QUALIFIED { name: (s.clone()).clone(), path: p.clone() }), DAE::Prefix::PREFIX { compPre: ss.clone(), classPre: cp.clone() })?;
-            p_1.clone()
+            return Ok(p_1.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn prefixToPath(mut inPrefix: DAE::Prefix) -> Result<Arc<Absyn::Path>> {
@@ -431,37 +429,35 @@ pub fn prefixToCrefOpt(mut pre: DAE::Prefix) -> Result<Option<Arc<DAE::Component
     Ok(cref_1)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixToCrefOpt2(mut inPrefix: DAE::Prefix, mut inExpComponentRefOption: Option<Arc<DAE::ComponentRef>>) -> Result<Option<Arc<DAE::ComponentRef>>> {
-    let mut outComponentRefOpt: Option<Arc<DAE::ComponentRef>> = None;
-    outComponentRefOpt = (::match_deref::match_deref! { match &((inPrefix.clone(), inExpComponentRefOption.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPrefix.clone(), inExpComponentRefOption.clone())) {
         (DAE::Prefix::NOPRE { .. }, None) => {
-            None
+            return Ok(None)
         },
         (DAE::Prefix::NOPRE { .. }, Some(cref)) => {
-            Some(cref.clone())
+            return Ok(Some(cref.clone()))
         },
         (DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, classPre: _ }, Some(cref)) => {
-            Some(cref.clone())
+            return Ok(Some(cref.clone()))
         },
         (DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, subscripts: s, next: xs, .. }, classPre: cp }, None) => {
             let mut cref_1: Option<Arc<DAE::ComponentRef>> = None;
             let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref_ = ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }), s.clone());
             cref_1 = prefixToCrefOpt2(DAE::Prefix::PREFIX { compPre: xs.clone(), classPre: cp.clone() }, Some(cref_.clone()))?;
-            cref_1.clone()
+            return Ok(cref_1.clone())
         },
         (DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { prefix: i, subscripts: s, next: xs, .. }, classPre: cp }, Some(cref)) => {
             let mut cref_1: Option<Arc<DAE::ComponentRef>> = None;
             let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref_ = ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: false }), s.clone(), cref.clone());
             cref_1 = prefixToCrefOpt2(DAE::Prefix::PREFIX { compPre: xs.clone(), classPre: cp.clone() }, Some(cref_.clone()))?;
-            cref_1.clone()
+            return Ok(cref_1.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outComponentRefOpt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn makeCrefFromPrefixNoFail(mut pre: DAE::Prefix) -> Result<Arc<DAE::ComponentRef>> {
@@ -1314,17 +1310,15 @@ pub fn prefixHashWork(mut inPrefix: Arc<DAE::ComponentPrefix>, mut hash: i32) ->
     hash
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn componentPrefixPathEqual(mut pre1: Arc<DAE::ComponentPrefix>, mut pre2: Arc<DAE::ComponentPrefix>) -> bool {
-    let mut eq: bool = false;
-    eq = (::match_deref::match_deref! { match &((pre1.clone(), pre2.clone())) {
-        (Deref @ DAE::ComponentPrefix::PRE { .. }, Deref @ DAE::ComponentPrefix::PRE { .. }) => if (var_field!((*pre1).prefix, DAE::ComponentPrefix::PRE).clone() == var_field!((*pre2).prefix, DAE::ComponentPrefix::PRE).clone()) {componentPrefixPathEqual(var_field!((*pre1).next, DAE::ComponentPrefix::PRE).clone(), var_field!((*pre2).next, DAE::ComponentPrefix::PRE).clone())} else {false},
-        (Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }) => true,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    eq
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((pre1.clone(), pre2.clone())) {
+        (Deref @ DAE::ComponentPrefix::PRE { .. }, Deref @ DAE::ComponentPrefix::PRE { .. }) => if (var_field!((*pre1).prefix, DAE::ComponentPrefix::PRE).clone() == var_field!((*pre2).prefix, DAE::ComponentPrefix::PRE).clone()) {{ (pre1, pre2) = (var_field!((*pre1).next, DAE::ComponentPrefix::PRE).clone(), var_field!((*pre2).next, DAE::ComponentPrefix::PRE).clone()); continue '__tco; }} else {return false},
+        (Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }) => return true,
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn componentPrefix(mut inPrefix: DAE::Prefix) -> Arc<DAE::ComponentPrefix> {
@@ -1355,17 +1349,15 @@ pub fn writeComponentPrefix(mut file: File::File, mut pre: Arc<DAE::ComponentPre
     Ok(())
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasSubs(mut pre: Arc<DAE::ComponentPrefix>) -> bool {
-    let mut ob: bool = false;
-    ob = (::match_deref::match_deref! { match &(pre.clone()) {
-        Deref @ DAE::ComponentPrefix::PRE { subscripts: Deref @ metamodelica::List::Nil, .. } => hasSubs(var_field!((*pre).next, DAE::ComponentPrefix::PRE).clone()),
-        Deref @ DAE::ComponentPrefix::PRE { .. } => true,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    ob
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(pre.clone()) {
+        Deref @ DAE::ComponentPrefix::PRE { subscripts: Deref @ metamodelica::List::Nil, .. } => { pre = var_field!((*pre).next, DAE::ComponentPrefix::PRE).clone(); continue '__tco; },
+        Deref @ DAE::ComponentPrefix::PRE { .. } => return true,
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn removeCompPrefixFromExps(mut inExp: Arc<DAE::Exp>, mut inCompPref: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::Exp>> {
@@ -1393,21 +1385,19 @@ fn removeCompPrefixFromCrefExp(mut inExp: Arc<DAE::Exp>, mut inB: bool, mut inCo
     Ok((outExp, b))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removePrefixFromCref(mut inCref: Arc<DAE::ComponentRef>, mut inCompPref: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &((inCref.clone(), inCompPref.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCref.clone(), inCompPref.clone())) {
         (_, Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }) => {
-            inCref.clone()
+            return Ok(inCref.clone())
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { .. }, _) => {
-            inCref.clone()
+            return Ok(inCref.clone())
         },
         (cref @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, .. }, pref @ Deref @ DAE::ComponentPrefix::PRE { next: Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }, .. }) => {
             if stringEqual((var_field!((**cref).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), (var_field!((**pref).prefix, DAE::ComponentPrefix::PRE).clone()).clone()) {
             }
-            var_field!((**cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone()
+            return Ok(var_field!((**cref).componentRef, DAE::ComponentRef::CREF_QUAL).clone())
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, .. }, pref @ Deref @ DAE::ComponentPrefix::PRE { next: Deref @ DAE::ComponentPrefix::PRE { prefix: _, .. }, .. }) => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -1415,18 +1405,18 @@ fn removePrefixFromCref(mut inCref: Arc<DAE::ComponentRef>, mut inCompPref: Arc<
             cref = removePrefixFromCref(inCref.clone(), var_field!((*pref).next, DAE::ComponentPrefix::PRE).clone())?;
             assign_variant_field!(pref => DAE::ComponentPrefix::PRE; next = openmodelica_frontend_types::DAE::ComponentPrefix::interned_NOCOMPPRE());
             cref = removePrefixFromCref(cref.clone(), pref.clone())?;
-            cref.clone()
+            return Ok(cref.clone())
         },
         (_, Deref @ DAE::ComponentPrefix::PRE { .. }) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("PrefixUtil.removePrefixFromCref")); __mm_s.push_str(&*literal!(" :Cref is not qualified but we have prefix to remove: ")); __mm_s.push_str(&*ComponentReference::crefStr(inCref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/PrefixUtil.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("PrefixUtil.removePrefixFromCref")); __mm_s.push_str(&*literal!(" :failed on cref: ")); __mm_s.push_str(&*ComponentReference::crefStr(inCref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("FrontEnd/PrefixUtil.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 

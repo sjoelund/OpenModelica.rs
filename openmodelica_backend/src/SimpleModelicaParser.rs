@@ -3231,38 +3231,34 @@ fn removeLastTokenInTrees(mut ts: Arc<metamodelica::List<Arc<ParseTree>>>) -> Re
     Ok(ts)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn firstTokenInTree(mut t: Arc<ParseTree>) -> Result<Token> {
-    let mut token: Token = <Token as ::std::default::Default>::default();
-    token = (::match_deref::match_deref! { match &(t.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(t.clone()) {
         Deref @ ParseTree::EMPTY { .. } => {
             metamodelica::print((literal!("No first token in tree\n")).clone());
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        Deref @ ParseTree::LEAF { .. } => var_field!((*t).token, ParseTree::LEAF).clone(),
-        Deref @ ParseTree::NODE { .. } => firstTokenInTree((var_field!((*t).nodes, ParseTree::NODE).clone()).get(1)?)?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(token)
+        Deref @ ParseTree::LEAF { .. } => return Ok(var_field!((*t).token, ParseTree::LEAF).clone()),
+        Deref @ ParseTree::NODE { .. } => { t = (var_field!((*t).nodes, ParseTree::NODE).clone()).get(1)?; continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn lastToken(mut t: Arc<ParseTree>) -> Result<Token> {
-    let mut token: Token = <Token as ::std::default::Default>::default();
-    token = (::match_deref::match_deref! { match &(t.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(t.clone()) {
         Deref @ ParseTree::EMPTY { .. } => {
             if debug.clone() {
                 metamodelica::print((literal!("lastToken fail\n")).clone());
             }
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        Deref @ ParseTree::LEAF { .. } => var_field!((*t).token, ParseTree::LEAF).clone(),
-        Deref @ ParseTree::NODE { .. } => lastToken(List::last(var_field!((*t).nodes, ParseTree::NODE).clone())?)?,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(token)
+        Deref @ ParseTree::LEAF { .. } => return Ok(var_field!((*t).token, ParseTree::LEAF).clone()),
+        Deref @ ParseTree::NODE { .. } => { t = List::last(var_field!((*t).nodes, ParseTree::NODE).clone())?; continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {

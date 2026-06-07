@@ -2106,27 +2106,25 @@ fn convertUnitString2unit(mut var: Arc<DAE::Element>, mut inTpl: ((metamodelica:
     Ok(outTpl)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn parseVarList(mut invarlist: Arc<metamodelica::List<Arc<DAE::Var>>>) -> ArcStr {
-    let mut outstring: ArcStr = arcstr::literal!("");
-    outstring = ((::match_deref::match_deref! { match &(invarlist.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(invarlist.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name, binding: eqbind, .. }, tail: _ } if (stringEq((name.clone()).clone(), (literal!("unit")).clone())) => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (getStringFromExp(eqbind.clone())).clone();
-            s.clone()
+            return s.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: varlist } => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (parseVarList(varlist.clone())).clone();
-            s.clone()
+            return s.clone()
         },
         Deref @ metamodelica::List::Nil => {
-            literal!("None")
+            return literal!("None")
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    outstring
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn getStringFromExp(mut binding: Arc<DAE::Binding>) -> ArcStr {

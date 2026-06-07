@@ -1094,13 +1094,11 @@ fn makeTransitive1(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRe
     Ok((outRepl, outSrc, outDst))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut repl: VariableReplacements, mut singleRepl: VariableReplacements) -> Result<VariableReplacements> {
-    let mut outRepl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
-    outRepl = (::match_deref::match_deref! { match &((lst.clone(), repl.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((lst.clone(), repl.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
-            repl.clone()
+            return Ok(repl.clone())
         },
         (Deref @ metamodelica::List::Cons { head: cr, tail: crs }, VariableReplacements { hashTable: ht, .. }) => {
             let mut crDst: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1110,11 +1108,11 @@ fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mu
             (crDst, _) = replaceExp(crDst.clone(), singleRepl.clone(), None)?;
             repl1 = addReplacementNoTransitive(repl.clone(), cr.clone(), crDst.clone())?;
             repl2 = makeTransitive12(crs.clone(), repl1.clone(), singleRepl.clone())?;
-            repl2.clone()
+            return Ok(repl2.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outRepl)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn makeTransitive2(mut repl: VariableReplacements, mut src: Arc<DAE::ComponentRef>, mut dst: Arc<DAE::Exp>) -> Result<(VariableReplacements, Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> {

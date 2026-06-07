@@ -2276,28 +2276,26 @@ fn isClockExp(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
     Ok(out)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
-    let mut out: bool = false;
-    out = (::match_deref::match_deref! { match &(inEq.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEq.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { scalar: e, .. } => {
-            isClockExp(e.clone())?
+            return Ok(isClockExp(e.clone())?)
         },
         Deref @ BackendDAE::Equation::ARRAY_EQUATION { right: e, .. } => {
-            isClockExp(e.clone())?
+            return Ok(isClockExp(e.clone())?)
         },
         Deref @ BackendDAE::Equation::FOR_EQUATION { body: eq, .. } => {
-            isClockEquation(eq.clone())?
+            { inEq = eq.clone(); continue '__tco; }
         },
         Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e, .. } => {
-            isClockExp(e.clone())?
+            return Ok(isClockExp(e.clone())?)
         },
         Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e, .. } => {
-            isClockExp(e.clone())?
+            return Ok(isClockExp(e.clone())?)
         },
         Deref @ BackendDAE::Equation::ALGORITHM { .. } => {
-            false
+            return Ok(false)
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: e, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -2310,7 +2308,7 @@ fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
                 Error::addSourceMessageAndFail(Error::INVALID_CLOCK_EQUATION.clone(), metamodelica::nil(), info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
-            false
+            return Ok(false)
         },
         Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { value: e, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -2323,10 +2321,10 @@ fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
                 Error::addSourceMessageAndFail(Error::INVALID_CLOCK_EQUATION.clone(), metamodelica::nil(), info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
-            false
+            return Ok(false)
         },
         Deref @ BackendDAE::Equation::COMPLEX_EQUATION { right: e, .. } => {
-            isClockExp(e.clone())?
+            return Ok(isClockExp(e.clone())?)
         },
         Deref @ BackendDAE::Equation::IF_EQUATION { eqnstrue: trueEqs, eqnsfalse: falseEqs, .. } => {
             let mut listEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2359,15 +2357,15 @@ fn isClockEquation(mut inEq: Arc<BackendDAE::Equation>) -> Result<bool> {
                     unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
                 }
             }
-            false
+            return Ok(false)
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.isClockEquation")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("BackEnd/SynchronousFeatures.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn detectEqPartition(mut inEq: Arc<BackendDAE::Equation>) -> Result<(Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>)> {

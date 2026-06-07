@@ -2268,22 +2268,20 @@ fn reduceVariablesInMatrix(mut m: ExtAdjacencyMatrix, mut candidates: Arc<metamo
     Ok(mOut)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn findReductionCantidates(mut variables: Arc<metamodelica::List<i32>>, mut occurrences: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut acc: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>> {
-    let mut out: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    out = (::match_deref::match_deref! { match &((variables.clone(), occurrences.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((variables.clone(), occurrences.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            acc.clone()
+            return Ok(acc.clone())
         },
         (Deref @ metamodelica::List::Cons { head: var, tail: varTail }, Deref @ metamodelica::List::Cons { head: occurrence, tail: occurrenceTail }) => {
             let mut newAcc: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
             newAcc = findReductionCantidates2(var.clone(), occurrence.clone(), acc.clone())?;
-            findReductionCantidates(varTail.clone(), occurrenceTail.clone(), newAcc.clone())?
+            { (variables, occurrences, acc) = (varTail.clone(), occurrenceTail.clone(), newAcc.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn findReductionCantidates2(mut var: i32, mut occurrence: Arc<metamodelica::List<i32>>, mut acc: Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>> {
@@ -2937,20 +2935,18 @@ fn getExtAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>
     mOut
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getExtAdjacencyMatrix2(mut i: i32, mut m: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut acc: ExtAdjacencyMatrix) -> ExtAdjacencyMatrix {
-    let mut mOut: ExtAdjacencyMatrix = metamodelica::nil();
-    mOut = (::match_deref::match_deref! { match &(m.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(m.clone()) {
         Deref @ metamodelica::List::Nil => {
-            acc.clone().reverse()
+            return acc.clone().reverse()
         },
         Deref @ metamodelica::List::Cons { head: h, tail: t } => {
-            getExtAdjacencyMatrix2(i.clone() + 1, t.clone(), metamodelica::cons((i.clone(), h.clone()), acc.clone()))
+            { (i, m, acc) = (i.clone() + 1, t.clone(), metamodelica::cons((i.clone(), h.clone()), acc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    mOut
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn dumpExtAdjacencyMatrix(mut m: ExtAdjacencyMatrix) -> Result<()> {
@@ -3128,13 +3124,11 @@ fn findArraysPartiallyIndexed1(mut inEqs: Arc<metamodelica::List<Arc<BackendDAE:
     Ok(outHt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn findArraysPartiallyIndexed2(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut indubRef: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
-    let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
-    outHt = (::match_deref::match_deref! { match &((inRef.clone(), indubRef.clone(), inht.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inRef.clone(), indubRef.clone(), inht.clone())) {
         (Deref @ metamodelica::List::Nil, _, ht) => {
-            ht.clone()
+            return Ok(ht.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: c1, ty: _ }, tail: expl1 }, dubRef, ht) => {
             let mut c2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3150,16 +3144,16 @@ fn findArraysPartiallyIndexed2(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>
                 dubRef = BaseHashTable::add((c2.clone(), 1), dubRef.clone())?;
             }
             ht = findArraysPartiallyIndexed2(expl1.clone(), dubRef.clone(), ht.clone())?;
-            ht.clone()
+            return Ok(ht.clone())
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: expl1 }, dubRef, ht) => {
             let mut ht = (*ht).clone();
             ht = findArraysPartiallyIndexed2(expl1.clone(), dubRef.clone(), ht.clone())?;
-            ht.clone()
+            return Ok(ht.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outHt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn findArrayVariables(mut inRef: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
@@ -3714,23 +3708,21 @@ fn removeSimpleEquationsUC(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     Ok(daeOut)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCrefsToHashTable(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut table: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))> {
-    let mut out: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
-    out = (::match_deref::match_deref! { match &(crefs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(crefs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            table.clone()
+            return Ok(table.clone())
         },
         Deref @ metamodelica::List::Cons { head: h, tail: t } => {
             let mut new_table: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (HashTable::FuncHashCref, HashTable::FuncCrefEqual, HashTable::FuncCrefStr, HashTable::FuncExpStr));
             new_table = BaseHashTable::add((h.clone(), 0), table.clone())?;
             new_table = addCrefsToHashTable(t.clone(), new_table.clone())?;
-            new_table.clone()
+            return Ok(new_table.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getAllVariablesForCref(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {

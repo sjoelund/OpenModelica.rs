@@ -1016,32 +1016,30 @@ pub fn subscriptIndexExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE
     Ok(outExp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn subscriptEqual(mut inSubscriptLst1: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscriptLst2: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
-    let mut outBoolean: bool = false;
-    outBoolean = (::match_deref::match_deref! { match &((inSubscriptLst1.clone(), inSubscriptLst2.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inSubscriptLst1.clone(), inSubscriptLst2.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            true
+            return Ok(true)
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: xs2 }) => {
-            subscriptEqual(xs1.clone(), xs2.clone())?
+            { (inSubscriptLst1, inSubscriptLst2) = (xs1.clone(), xs2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e1 }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e2 }, tail: xs2 }) => {
-            if (expEqual(e1.clone(), e2.clone())?) {subscriptEqual(xs1.clone(), xs2.clone())?} else {false}
+            if (expEqual(e1.clone(), e2.clone())?) {{ (inSubscriptLst1, inSubscriptLst2) = (xs1.clone(), xs2.clone()); continue '__tco; }} else {return Ok(false)}
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: e1 }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: e2 }, tail: xs2 }) => {
-            if (expEqual(e1.clone(), e2.clone())?) {subscriptEqual(xs1.clone(), xs2.clone())?} else {false}
+            if (expEqual(e1.clone(), e2.clone())?) {{ (inSubscriptLst1, inSubscriptLst2) = (xs1.clone(), xs2.clone()); continue '__tco; }} else {return Ok(false)}
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLE_NONEXP { exp: e1 }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLE_NONEXP { exp: e2 }, tail: xs2 }) => {
-            if (expEqual(e1.clone(), e2.clone())?) {subscriptEqual(xs1.clone(), xs2.clone())?} else {false}
+            if (expEqual(e1.clone(), e2.clone())?) {{ (inSubscriptLst1, inSubscriptLst2) = (xs1.clone(), xs2.clone()); continue '__tco; }} else {return Ok(false)}
         },
         _ => {
-            false
+            return Ok(false)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outBoolean)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {

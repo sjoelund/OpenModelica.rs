@@ -526,17 +526,15 @@ pub fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
     Ok((exp, subMap))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isFlatCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> bool {
-    let mut flat: bool = false;
-    flat = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::SCOPE, .. } if (Type::isArray(var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone())) => !(var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone().is_empty()),
-        Deref @ ComponentRef::CREF { .. } => isFlatCref(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    flat
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cref.clone()) {
+        Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::SCOPE, .. } if (Type::isArray(var_field!((*cref).ty, ComponentRef::NFComponentRef::CREF).clone())) => return !(var_field!((*cref).subscripts, ComponentRef::NFComponentRef::CREF).clone().is_empty()),
+        Deref @ ComponentRef::CREF { .. } => { cref = var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn subscriptBinding3(mut subscript: Arc<Subscript::NFSubscript>, mut subMap: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>) -> Result<Arc<Subscript::NFSubscript>> {

@@ -611,53 +611,49 @@ fn unparseArrayDescription(mut lst: Arc<metamodelica::List<Arc<Values::Value>>>)
     Ok(r#str)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> ArcStr {
-    let mut outString: ArcStr = arcstr::literal!("");
-    outString = ((::match_deref::match_deref! { match &(inValueLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: elts, .. }, tail: _ } => {
             let mut res: ArcStr = arcstr::literal!("");
             res = (unparsePrimType(elts.clone())).clone();
-            res.clone()
+            return res.clone()
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: _ } => {
-            literal!("i")
+            return literal!("i")
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { .. }, tail: _ } => {
-            literal!("r")
+            return literal!("r")
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { .. }, tail: _ } => {
-            literal!("s")
+            return literal!("s")
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { .. }, tail: _ } => {
-            literal!("b")
+            return literal!("b")
         },
         Deref @ metamodelica::List::Nil => {
-            literal!("{}")
+            return literal!("{}")
         },
         _ => {
-            literal!("error")
+            return literal!("error")
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    outString
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn unparseNumDims(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut inInteger: i32) -> i32 {
-    let mut outInteger: i32 = 0;
-    outInteger = (::match_deref::match_deref! { match &(inValueLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: _ } => {
-            unparseNumDims(vals.clone(), inInteger.clone() + 1)
+            { (inValueLst, inInteger) = (vals.clone(), inInteger.clone() + 1); continue '__tco; }
         },
         _ => {
-            inInteger.clone() + 1
+            return inInteger.clone() + 1
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outInteger
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn unparseDimSizes(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {

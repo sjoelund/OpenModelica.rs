@@ -699,23 +699,21 @@ fn avlTreeReplace2(mut inAvlTree: AvlTree, mut inKeyComp: i32, mut inKey: AvlKey
     Ok(outAvlTree)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlTree>>>>, mut acc: Arc<metamodelica::List<FCore::VAvlTreeValue>>) -> Result<Arc<metamodelica::List<FCore::VAvlTreeValue>>> {
-    let mut res: Arc<metamodelica::List<FCore::VAvlTreeValue>> = metamodelica::nil();
-    res = (::match_deref::match_deref! { match &(tree.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ metamodelica::List::Nil => {
-            acc.clone()
+            return Ok(acc.clone())
         },
         Deref @ metamodelica::List::Cons { head: Some(Deref @ FCore::VAvlTree { value, left, right, .. }), tail: rest } => {
-            getAvlTreeValues(metamodelica::cons(left.clone(), metamodelica::cons(right.clone(), rest.clone())), List::consOption(value.clone(), acc.clone()))?
+            { (tree, acc) = (metamodelica::cons(left.clone(), metamodelica::cons(right.clone(), rest.clone())), List::consOption(value.clone(), acc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: None, tail: rest } => {
-            getAvlTreeValues(rest.clone(), acc.clone())?
+            { (tree, acc) = (rest.clone(), acc.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(res)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getAvlValue(mut inValue: AvlTreeValue) -> Result<AvlValue> {

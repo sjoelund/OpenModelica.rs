@@ -462,25 +462,23 @@ fn convertStateSelectAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<O
     Ok(stateSelect)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getStateSelectName(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {
-    let mut name: ArcStr = arcstr::literal!("");
-    let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    name = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),
-        Deref @ Expression::CREF { .. } => InstNode::name(ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?,
+    '__tco: loop {
+        let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
+        ::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ Expression::ENUM_LITERAL { .. } => return Ok(var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone()),
+        Deref @ Expression::CREF { .. } => return Ok(InstNode::name(ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?),
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: __esc_e, .. } } => {
             e = (*__esc_e).clone();
-            getStateSelectName(e.clone())?
+            { exp = e.clone(); continue '__tco; }
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConvertDAE.getStateSelectName")); __mm_s.push_str(&*literal!(" got invalid StateSelect expression ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFConvertDAE.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(name)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lookupStateSelectMember(mut name: ArcStr) -> Result<DAE::StateSelect> {

@@ -2673,13 +2673,11 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
     Ok((outVariables, outString))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inList: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outList = (::match_deref::match_deref! { match &((expLst.clone(), inList.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((expLst.clone(), inList.clone())) {
         (Deref @ metamodelica::List::Nil, lst) => {
-            lst.clone()
+            return Ok(lst.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::INTEGER { value: v }, tail: expLstRest }, lst) => {
             let mut i: i32 = 0;
@@ -2688,11 +2686,11 @@ fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inLi
             i = v.clone();
             lst2 = listAppend(lst.clone(), list![i.clone()]);
             lst3 = makeReduceList(expLstRest.clone(), lst2.clone())?;
-            lst3.clone()
+            return Ok(lst3.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outList)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn StringDelimit2Int(mut inString: ArcStr, mut inDelim: ArcStr) -> Result<Arc<metamodelica::List<i32>>> {

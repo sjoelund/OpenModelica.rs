@@ -1890,17 +1890,15 @@ pub mod Function {
     }
 
     pub fn isNonDefaultRecordConstructor(mut r#fn: Arc<Function>) -> bool {
-        // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-        // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
         pub fn isNonDefaultRecordConstructorPath(mut path: Arc<Absyn::Path>) -> bool {
-            let mut b: bool = false;
-            b = (::match_deref::match_deref! { match &(path.clone()) {
-        Deref @ Absyn::Path::QUALIFIED { name: Deref @ "'constructor'", .. } => true,
-        Deref @ Absyn::Path::QUALIFIED { .. } => isNonDefaultRecordConstructorPath(var_field!((*path).path, Absyn::Path::QUALIFIED).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-            b
+            '__tco: loop {
+                ::match_deref::match_deref! { match &(path.clone()) {
+        Deref @ Absyn::Path::QUALIFIED { name: Deref @ "'constructor'", .. } => return true,
+        Deref @ Absyn::Path::QUALIFIED { .. } => { path = var_field!((*path).path, Absyn::Path::QUALIFIED).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+            }
         }
 
         let mut b: bool = isNonDefaultRecordConstructorPath(r#fn.path.clone());
@@ -2425,26 +2423,24 @@ pub mod Function {
         Ok(())
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     fn isValidParamType(mut ty: Arc<Type::NFType>) -> Result<bool> {
-        let mut isValid: bool = false;
-        isValid = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::INTEGER => true,
-        Deref @ Type::REAL => true,
-        Deref @ Type::STRING => true,
-        Deref @ Type::BOOLEAN => true,
-        Deref @ Type::CLOCK => true,
-        Deref @ Type::ENUMERATION { .. } => true,
-        Deref @ Type::POLYMORPHIC { .. } => true,
-        Deref @ Type::ARRAY { .. } => isValidParamType(var_field!((*ty).elementType, Type::NFType::ARRAY).clone())?,
-        Deref @ Type::COMPLEX { .. } => isValidParamState(var_field!((*ty).cls, Type::NFType::COMPLEX).clone())?,
-        Deref @ Type::FUNCTION { .. } => true,
-        Deref @ Type::METABOXED { .. } => isValidParamType(var_field!((*ty).ty, Type::NFType::METABOXED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        Ok(isValid)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ Type::INTEGER => return Ok(true),
+        Deref @ Type::REAL => return Ok(true),
+        Deref @ Type::STRING => return Ok(true),
+        Deref @ Type::BOOLEAN => return Ok(true),
+        Deref @ Type::CLOCK => return Ok(true),
+        Deref @ Type::ENUMERATION { .. } => return Ok(true),
+        Deref @ Type::POLYMORPHIC { .. } => return Ok(true),
+        Deref @ Type::ARRAY { .. } => { ty = var_field!((*ty).elementType, Type::NFType::ARRAY).clone(); continue '__tco; },
+        Deref @ Type::COMPLEX { .. } => return Ok(isValidParamState(var_field!((*ty).cls, Type::NFType::COMPLEX).clone())?),
+        Deref @ Type::FUNCTION { .. } => return Ok(true),
+        Deref @ Type::METABOXED { .. } => { ty = var_field!((*ty).ty, Type::NFType::METABOXED).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     fn isValidParamState(mut cls: Arc<InstNode::InstNode>) -> Result<bool> {

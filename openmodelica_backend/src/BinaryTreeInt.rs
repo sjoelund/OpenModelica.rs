@@ -133,47 +133,43 @@ fn treeGet2(mut inBinTree: Arc<BinTree>, mut ikey: Key) -> Result<i32> {
     Ok(compResult)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn treeGet3(mut inBinTree: Arc<BinTree>, mut ikey: Key, mut inCompResult: i32) -> Result<Value> {
-    let mut outValue: Value = 0;
-    outValue = (::match_deref::match_deref! { match &((inBinTree.clone(), inCompResult.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inBinTree.clone(), inCompResult.clone())) {
         (Deref @ BinTree { value: Some(TreeValue { value: rval, .. }), .. }, 0) => {
-            rval.clone()
+            return Ok(rval.clone())
         },
         (Deref @ BinTree { rightSubTree: Some(right), .. }, 1) => {
             let mut compResult: i32 = 0;
             compResult = treeGet2(right.clone(), ikey.clone())?;
-            treeGet3(right.clone(), ikey.clone(), compResult.clone())?
+            { (inBinTree, ikey, inCompResult) = (right.clone(), ikey.clone(), compResult.clone()); continue '__tco; }
         },
         (Deref @ BinTree { leftSubTree: Some(left), .. }, (-1)) => {
             let mut compResult: i32 = 0;
             compResult = treeGet2(left.clone(), ikey.clone())?;
-            treeGet3(left.clone(), ikey.clone(), compResult.clone())?
+            { (inBinTree, ikey, inCompResult) = (left.clone(), ikey.clone(), compResult.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outValue)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::List<i32>>) -> Result<Arc<BinTree>> {
-    let mut outBinTree: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
-    outBinTree = (::match_deref::match_deref! { match &((inBinTree.clone(), inKeyLst.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inBinTree.clone(), inKeyLst.clone())) {
         (bt, Deref @ metamodelica::List::Nil) => {
-            bt.clone()
+            return Ok(bt.clone())
         },
         (bt, Deref @ metamodelica::List::Cons { head: key, tail: res }) => {
             let mut bt_1: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
             let mut bt_2: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
             bt_1 = treeAdd(bt.clone(), key.clone(), 0)?;
             bt_2 = treeAddList(bt_1.clone(), res.clone())?;
-            bt_2.clone()
+            return Ok(bt_2.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outBinTree)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn treeAdd(mut inBinTree: Arc<BinTree>, mut inKey: Key, mut inValue: Value) -> Result<Arc<BinTree>> {

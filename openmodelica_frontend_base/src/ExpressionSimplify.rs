@@ -6936,29 +6936,27 @@ fn simplifyReductionFoldPhase2(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>
     Ok(exp)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn hasZeroLengthIterator(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(inIters.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inIters.clone()) {
         Deref @ metamodelica::List::Nil => {
-            false
+            return false
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { guardExp: Some(Deref @ DAE::Exp::BCONST { bool: false }), .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { exp: Deref @ DAE::Exp::LIST { valList: Deref @ metamodelica::List::Nil }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { exp: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: iters } => {
-            hasZeroLengthIterator(iters.clone())
+            { inIters = iters.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn simplifyList(mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {

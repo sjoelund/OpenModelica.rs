@@ -2266,56 +2266,54 @@ fn sizeOfVariableList(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
     Ok(size)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
-    let mut size: i32 = 0;
-    size = (::match_deref::match_deref! { match &(ty.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
-            1
+            return Ok(1)
         },
         Deref @ DAE::Type::T_REAL { .. } => {
-            1
+            return Ok(1)
         },
         Deref @ DAE::Type::T_STRING { .. } => {
-            1
+            return Ok(1)
         },
         Deref @ DAE::Type::T_BOOL { .. } => {
-            1
+            return Ok(1)
         },
         Deref @ DAE::Type::T_ENUMERATION { .. } => {
-            1
+            return Ok(1)
         },
         Deref @ DAE::Type::T_ARRAY { .. } => {
-            ({
+            return Ok(({
         let mut __acc: i32 = 1;
         for mut dim in (var_field!((*ty).dims, DAE::Type::T_ARRAY).clone()).into_iter().cloned() {
             let __x = Expression::dimensionSize(dim.clone())?;
             __acc *= __x;
         }
         __acc
-    }) * sizeOfType(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone())?
+    }) * sizeOfType(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone())?)
         },
         Deref @ DAE::Type::T_COMPLEX { varLst: v, equalityConstraint: None, .. } => {
-            sizeOfVariableList(v.clone())?
+            return Ok(sizeOfVariableList(v.clone())?)
         },
         Deref @ DAE::Type::T_COMPLEX { equalityConstraint: Some((_, n, _)), .. } => {
-            n.clone()
+            return Ok(n.clone())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { equalityConstraint: Some(_), .. } => {
-            0
+            return Ok(0)
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
-            sizeOfType(t.clone())?
+            { ty = t.clone(); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.sizeOfType failed on ")); __mm_s.push_str(&*TypesDump::printTypeStr(ty.clone())?); ArcStr::from(__mm_s) }).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(size)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes: SCode::Attributes, mut info: SourceInfo) -> Result<bool> {

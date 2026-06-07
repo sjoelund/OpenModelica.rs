@@ -1044,13 +1044,11 @@ fn getOrderedEqsandVars(mut syst: Arc<BackendDAE::EqSystem>, mut inEqnsVars: Arc
     Ok(outEqnsVars)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables, mut inAccum: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>> {
-    let mut outEqnsVarsLst: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-    outEqnsVarsLst = (::match_deref::match_deref! { match &(inComps.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inAccum.clone()
+            return Ok(inAccum.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { eqn: e, var: v }, tail: rest } => {
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -1060,7 +1058,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], list![var.clone()])]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: elst, vars: vlst, .. }, tail: rest } => {
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -1070,7 +1068,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqnlst = BackendEquation::getList(elst.clone(), eqns.clone())?;
             result = listAppend(inAccum.clone(), list![(eqnlst.clone(), varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEARRAY { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1080,7 +1078,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1090,7 +1088,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1100,7 +1098,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1110,7 +1108,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { eqn: e, vars: vlst }, tail: rest } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1120,7 +1118,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: vlst, residualequations: elst, innerEquations, .. }, .. }, tail: rest } => {
             let mut vlst1: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1141,16 +1139,16 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             eqnlst = listAppend(eqnlst1.clone(), eqnlst.clone());
             result = listAppend(inAccum.clone(), list![(eqnlst.clone(), varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
-            result.clone()
+            return Ok(result.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("XMLDump.getOrderedEqs2 failed!")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEqnsVarsLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn dumpDAEVariableAttributes(mut dae_var_attr: Option<Arc<DAE::VariableAttributes>>, mut Content: ArcStr, mut addMathMLCode: bool) -> Result<()> {

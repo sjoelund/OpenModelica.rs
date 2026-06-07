@@ -132,21 +132,19 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
     Ok(newFunction)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lookupId(mut blocks: Arc<metamodelica::List<MidCode::Block>>, mut id: i32) -> Result<MidCode::Block> {
-    let mut block_: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
-    let mut blocks_local: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
-    let mut block_local: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
-    block_ = (::match_deref::match_deref! { match &(blocks.clone()) {
-        Deref @ metamodelica::List::Cons { head: block_local, tail: _ } if (block_local.id.clone() == id.clone()) => block_local.clone(),
+    '__tco: loop {
+        let mut blocks_local: Arc<metamodelica::List<MidCode::Block>> = metamodelica::nil();
+        let mut block_local: MidCode::Block = <MidCode::Block as ::std::default::Default>::default();
+        ::match_deref::match_deref! { match &(blocks.clone()) {
+        Deref @ metamodelica::List::Cons { head: block_local, tail: _ } if (block_local.id.clone() == id.clone()) => return Ok(block_local.clone()),
         Deref @ metamodelica::List::Cons { head: _, tail: __esc_blocks_local } => {
             blocks_local = (*__esc_blocks_local).clone();
-            lookupId(blocks_local.clone(), id.clone())?
+            { (blocks, id) = (blocks_local.clone(), id.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(block_)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i32>>> {

@@ -5670,23 +5670,21 @@ fn filterReductionIterator(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outVals))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn extendFrameForIterators(mut inEnv: FCore::Graph, mut inNames: Arc<metamodelica::List<ArcStr>>, mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inTys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<FCore::Graph> {
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    outEnv = (::match_deref::match_deref! { match &((inEnv.clone(), inNames.clone(), inVals.clone(), inTys.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inEnv.clone(), inNames.clone(), inVals.clone(), inTys.clone())) {
         (env, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            env.clone()
+            return Ok(env.clone())
         },
         (env, Deref @ metamodelica::List::Cons { head: name, tail: names }, Deref @ metamodelica::List::Cons { head: val, tail: vals }, Deref @ metamodelica::List::Cons { head: ty, tail: tys }) => {
             let mut env = (*env).clone();
             env = FGraph::addForIterator(env.clone(), (name.clone()).clone(), ty.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: val.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
             env = extendFrameForIterators(env.clone(), names.clone(), vals.clone(), tys.clone())?;
-            env.clone()
+            return Ok(env.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outEnv)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn backpatchArrayReduction(mut path: Arc<Absyn::Path>, mut iterType: Absyn::ReductionIterType, mut inValue: Arc<Values::Value>, mut dims: Arc<metamodelica::List<i32>>) -> Result<Arc<Values::Value>> {
@@ -5718,17 +5716,15 @@ fn backpatchArrayReduction(mut path: Arc<Absyn::Path>, mut iterType: Absyn::Redu
     Ok(outValue)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut inDims: Arc<metamodelica::List<i32>>, mut makeSequence: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>) -> Result<Arc<Values::Value>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>;
 
-    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-    outValue = (::match_deref::match_deref! { match &((inVals.clone(), inDims.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inVals.clone(), inDims.clone())) {
         (vals, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }) => {
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             value = makeSequence(vals.clone())?;
-            value.clone()
+            return Ok(value.clone())
         },
         (vals, Deref @ metamodelica::List::Cons { head: dim, tail: dims }) => {
             let mut valMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
@@ -5737,11 +5733,11 @@ fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value
             valMatrix = List::partition(vals.clone(), dim.clone())?;
             vals = List::map(valMatrix.clone(), makeSequence.clone())?;
             value = backpatchArrayReduction3(vals.clone(), dims.clone(), makeSequence.clone())?;
-            value.clone()
+            return Ok(value.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outValue)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn cevalSimple(mut exp: Arc<DAE::Exp>) -> Result<Arc<Values::Value>> {

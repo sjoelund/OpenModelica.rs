@@ -209,19 +209,17 @@ pub fn addPotentialRoot(mut inGraph: ConnectionGraph, mut inRoot: Arc<DAE::Compo
     Ok(outGraph)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, mut inMessage: Arc<DAE::Exp>) -> Result<ConnectionGraph> {
-    let mut outGraph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
-    outGraph = (::match_deref::match_deref! { match &((inGraph.clone(), inRoots.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inGraph.clone(), inRoots.clone())) {
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }) => {
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addUniqueRoots(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inMessage.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
-            ConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: metamodelica::cons((root.clone(), inMessage.clone()), uniqueRoots.clone()), branches: branches.clone(), connections: connections.clone() }
+            return Ok(ConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: metamodelica::cons((root.clone(), inMessage.clone()), uniqueRoots.clone()), branches: branches.clone(), connections: connections.clone() })
         },
         (ConnectionGraph { .. }, Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: Deref @ metamodelica::List::Nil }) => {
-            inGraph.clone()
+            return Ok(inGraph.clone())
         },
         (ConnectionGraph { updateGraph, definiteRoots, potentialRoots, uniqueRoots, branches, connections }, Deref @ DAE::Exp::ARRAY { ty, scalar, array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: root, ty: _ }, tail: rest } }) => {
             let mut graph: ConnectionGraph = <ConnectionGraph as ::std::default::Default>::default();
@@ -230,14 +228,14 @@ pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, 
             }
             graph = ConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: metamodelica::cons((root.clone(), inMessage.clone()), uniqueRoots.clone()), branches: branches.clone(), connections: connections.clone() };
             graph = addUniqueRoots(graph.clone(), Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: rest.clone() }), inMessage.clone())?;
-            graph.clone()
+            return Ok(graph.clone())
         },
         (_, _) => {
-            inGraph.clone()
+            return Ok(inGraph.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addBranch(mut inGraph: ConnectionGraph, mut inRef1: Arc<DAE::ComponentRef>, mut inRef2: Arc<DAE::ComponentRef>) -> Result<ConnectionGraph> {
@@ -452,23 +450,21 @@ fn connectCanonicalComponents(mut inPartition: (metamodelica::Array<Arc<metamode
     Ok((outPartition, outReallyConnected))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addRootsToTable(mut inTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut inRoots: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inFirstRoot: Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
-    let mut outTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
-    outTable = (::match_deref::match_deref! { match &((inTable.clone(), inRoots.clone(), inFirstRoot.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTable.clone(), inRoots.clone(), inFirstRoot.clone())) {
         (table, Deref @ metamodelica::List::Cons { head: root, tail: tail }, firstRoot) => {
             let mut table = (*table).clone();
             table = BaseHashTable::add((root.clone(), firstRoot.clone()), table.clone())?;
             table = addRootsToTable(table.clone(), tail.clone(), firstRoot.clone())?;
-            table.clone()
+            return Ok(table.clone())
         },
         (table, Deref @ metamodelica::List::Nil, _) => {
-            table.clone()
+            return Ok(table.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outTable)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn resultGraphWithRoots(mut roots: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
@@ -481,24 +477,22 @@ fn resultGraphWithRoots(mut roots: Arc<metamodelica::List<Arc<DAE::ComponentRef>
     Ok(outTable)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addBranchesToTable(mut inTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut inBranches: Edges) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> {
-    let mut outTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
-    outTable = (::match_deref::match_deref! { match &((inTable.clone(), inBranches.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTable.clone(), inBranches.clone())) {
         (table, Deref @ metamodelica::List::Cons { head: (ref1, ref2), tail: tail }) => {
             let mut table1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
             let mut table2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
             table1 = connectBranchComponents(table.clone(), ref1.clone(), ref2.clone())?;
             table2 = addBranchesToTable(table1.clone(), tail.clone())?;
-            table2.clone()
+            return Ok(table2.clone())
         },
         (table, Deref @ metamodelica::List::Nil) => {
-            table.clone()
+            return Ok(table.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outTable)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn ord(mut inEl1: PotentialRoot, mut inEl2: PotentialRoot) -> Result<bool> {
@@ -1580,13 +1574,11 @@ fn filterFromSet(mut inConnects: Arc<metamodelica::List<DAE::Connect::ConnectorE
     Ok(filteredCrefs)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn removeFromConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::ConnectorElement>>, mut inToRemove: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<DAE::Connect::ConnectorElement>>> {
-    let mut outConnects: Arc<metamodelica::List<DAE::Connect::ConnectorElement>> = metamodelica::nil();
-    outConnects = (::match_deref::match_deref! { match &((inConnects.clone(), inToRemove.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inConnects.clone(), inToRemove.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            inConnects.clone()
+            return Ok(inConnects.clone())
         },
         (cset, Deref @ metamodelica::List::Cons { head: c, tail: rest }) => {
             let mut cset = (*cset).clone();
@@ -1596,11 +1588,11 @@ fn removeFromConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::Conne
             } };
             cset = __pa0.clone();
             cset = removeFromConnects(cset.clone(), rest.clone())?;
-            cset.clone()
+            return Ok(cset.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outConnects)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn addBrokenEqualityConstraintEquations(mut inDAE: DAE::DAElist, mut inBroken: DaeEdges) -> Result<DAE::DAElist> {

@@ -912,59 +912,57 @@ pub fn hasDiscreteVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE:
     outBoolean
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasContinuousVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> bool {
-    let mut outBoolean: bool = false;
-    outBoolean = (::match_deref::match_deref! { match &(inBackendDAEVarLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inBackendDAEVarLst.clone()) {
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, varType: Deref @ DAE::Type::T_REAL { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, varType: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_REAL { .. }, .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_WITH_DER { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_LOOP_INPUT { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE { .. }, .. }, tail: _ } => {
-            true
+            return true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: vs } => {
-            hasContinuousVar(vs.clone())
+            { inBackendDAEVarLst = vs.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outBoolean
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isVarNonDiscreteAlg(mut var: BackendDAE::Var) -> bool {

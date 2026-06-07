@@ -1193,18 +1193,16 @@ fn getUnsolvedVarsBySCC1(mut iVarIdx: (i32, i32), mut orderedVars: BackendDAE::V
     Ok(oUnsolvedVars)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), mut iUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
-    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
-    let mut intVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut boolVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut stringVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut realVarIdc: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
-    let mut varIdx: i32 = 0;
-    let mut derived: i32 = 0;
-    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    oUnsolvedVars = (::match_deref::match_deref! { match &((iVarType.clone(), iVarIdx.clone(), iUnsolvedVars.clone())) {
+    '__tco: loop {
+        let mut intVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut boolVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut stringVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut realVarIdc: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
+        let mut varIdx: i32 = 0;
+        let mut derived: i32 = 0;
+        let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+        ::match_deref::match_deref! { match &((iVarType.clone(), iVarIdx.clone(), iUnsolvedVars.clone())) {
         (Deref @ DAE::Type::T_INTEGER { .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
             derived = (*__esc_derived).clone();
@@ -1213,7 +1211,7 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
             intVarIdc = metamodelica::cons(varIdx.clone(), intVarIdc.clone());
-            (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
+            return (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_REAL { .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
@@ -1223,7 +1221,7 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
             realVarIdc = metamodelica::cons((varIdx.clone(), derived.clone()), realVarIdc.clone());
-            (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
+            return (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_BOOL { .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
@@ -1233,7 +1231,7 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
             boolVarIdc = metamodelica::cons(varIdx.clone(), boolVarIdc.clone());
-            (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
+            return (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_ARRAY { ty: __esc_ty, .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             ty = (*__esc_ty).clone();
@@ -1243,7 +1241,7 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             realVarIdc = (*__esc_realVarIdc).clone();
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
-            getUnsolvedVarsBySCC2(ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone())
+            { (iVarType, iVarIdx, iUnsolvedVars) = (ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone()); continue '__tco; }
         },
         (Deref @ DAE::Type::T_ENUMERATION { .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
@@ -1253,7 +1251,7 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
             stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
-            (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
+            return (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_STRING { .. }, (__esc_varIdx, __esc_derived), (__esc_intVarIdc, __esc_realVarIdc, __esc_boolVarIdc, __esc_stringVarIdc)) => {
             varIdx = (*__esc_varIdx).clone();
@@ -1263,15 +1261,15 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
             boolVarIdc = (*__esc_boolVarIdc).clone();
             stringVarIdc = (*__esc_stringVarIdc).clone();
             stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
-            (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
+            return (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         _ => {
             metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("getUnsolvedVarsBySCC2: Warning, unknown varType for variable ")); __mm_s.push_str(&*intString(Util::tuple21(iVarIdx.clone()))); __mm_s.push_str(&*literal!(" !\n")); ArcStr::from(__mm_s) }).clone());
-            iUnsolvedVars.clone()
+            return iUnsolvedVars.clone()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    oUnsolvedVars
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn removeEventVars(mut eventVarLst: Arc<metamodelica::List<i32>>, mut varLstIn: Arc<metamodelica::List<(i32, i32)>>, mut varIdx: i32) -> Result<Arc<metamodelica::List<(i32, i32)>>> {
@@ -2066,13 +2064,11 @@ pub fn getAllSuccessors(mut nodes: Arc<metamodelica::List<i32>>, mut graph: Task
     Ok(successors)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getAllSuccessors2(mut nodes: Arc<metamodelica::List<i32>>, mut graph: TaskGraph, mut alreadyVisited: metamodelica::Array<bool>, mut successorsIn: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut successorsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    successorsOut = (::match_deref::match_deref! { match &(nodes.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(nodes.clone()) {
         Deref @ metamodelica::List::Nil => {
-            List::unique(successorsIn.clone())
+            return Ok(List::unique(successorsIn.clone()))
         },
         _ => {
             let mut check: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -2082,11 +2078,11 @@ fn getAllSuccessors2(mut nodes: Arc<metamodelica::List<i32>>, mut graph: TaskGra
             (_, successors1) = List::filterOnTrueSync(check.clone(), (std::sync::Arc::new(fnptr!(boolNot, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<bool> + 'static>), successors1.clone())?;
             successors1 = List::unique(successors1.clone());
             List::map2_0(successors1.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), true, alreadyVisited.clone())?;
-            getAllSuccessors2(successors1.clone(), graph.clone(), alreadyVisited.clone(), listAppend(successors1.clone(), successorsIn.clone()))?
+            { (nodes, graph, alreadyVisited, successorsIn) = (successors1.clone(), graph.clone(), alreadyVisited.clone(), listAppend(successors1.clone(), successorsIn.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(successorsOut)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getChildNodes(mut adjacencyLstIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut parents: Arc<metamodelica::List<i32>>, mut childLstTmp: Arc<metamodelica::List<i32>>, mut Idx: i32) -> Result<Arc<metamodelica::List<i32>>> {
@@ -2244,27 +2240,25 @@ pub fn getLevelNodes(mut iTaskGraph: TaskGraph) -> Result<Arc<metamodelica::List
     Ok(oLevelNodes)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLevelNodes0(mut iTaskGraph: TaskGraph, mut iRefCounter: metamodelica::Array<i32>, mut iNodesWithRefZero: Arc<metamodelica::List<i32>>, mut iLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
-    let mut oLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut tmpLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut zeroRefNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    oLevelNodes = (::match_deref::match_deref! { match &(iNodesWithRefZero.clone()) {
+    '__tco: loop {
+        let mut tmpLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
+        let mut zeroRefNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        ::match_deref::match_deref! { match &(iNodesWithRefZero.clone()) {
         Deref @ metamodelica::List::Nil => {
             tmpLevelNodes = iLevelNodes.clone().reverse();
-            tmpLevelNodes.clone()
+            return Ok(tmpLevelNodes.clone())
         },
         __esc_zeroRefNodes => {
             zeroRefNodes = (*__esc_zeroRefNodes).clone();
             tmpLevelNodes = metamodelica::cons(zeroRefNodes.clone(), iLevelNodes.clone());
             zeroRefNodes = List::fold2(zeroRefNodes.clone(), (std::sync::Arc::new(getLevelNodes1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iTaskGraph.clone(), iRefCounter.clone(), metamodelica::nil())?;
             tmpLevelNodes = getLevelNodes0(iTaskGraph.clone(), iRefCounter.clone(), zeroRefNodes.clone(), tmpLevelNodes.clone())?;
-            tmpLevelNodes.clone()
+            return Ok(tmpLevelNodes.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oLevelNodes)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getLevelNodes1(mut iNodeIdx: i32, mut iTaskGraph: TaskGraph, mut iRefCounter: metamodelica::Array<i32>, mut iNodesWithRefZero: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
@@ -2319,27 +2313,25 @@ fn createRefCounter(mut iTaskGraph: TaskGraph) -> Result<metamodelica::Array<i32
     Ok(oRefCounter)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn createRefCounter0(mut iChildNodes: Arc<metamodelica::List<i32>>, mut iRefCounter: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut oRefCounter: metamodelica::Array<i32> = Default::default();
-    let mut tmpRefCounter: metamodelica::Array<i32> = Default::default();
-    let mut counter: i32 = 0;
-    let mut head: i32 = 0;
-    let mut tail: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    oRefCounter = (::match_deref::match_deref! { match &(iChildNodes.clone()) {
-        Deref @ metamodelica::List::Nil => iRefCounter.clone(),
+    '__tco: loop {
+        let mut tmpRefCounter: metamodelica::Array<i32> = Default::default();
+        let mut counter: i32 = 0;
+        let mut head: i32 = 0;
+        let mut tail: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        ::match_deref::match_deref! { match &(iChildNodes.clone()) {
+        Deref @ metamodelica::List::Nil => return Ok(iRefCounter.clone()),
         Deref @ metamodelica::List::Cons { head: __esc_head, tail: __esc_tail } => {
             head = (*__esc_head).clone();
             tail = (*__esc_tail).clone();
             counter = metamodelica::arrayGet(iRefCounter.clone(), head.clone())? + 1;
             tmpRefCounter = metamodelica::arrayUpdate(iRefCounter.clone(), head.clone(), counter.clone())?;
             tmpRefCounter = createRefCounter0(tail.clone(), tmpRefCounter.clone())?;
-            tmpRefCounter.clone()
+            return Ok(tmpRefCounter.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oRefCounter)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getNodesWithRefCountZero(mut iRefCounter: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<i32>>> {
@@ -4468,29 +4460,27 @@ fn updateInComps2(mut iNodeIdx: i32, mut inCompLstIn: Arc<metamodelica::List<Arc
     Ok(inCompLstOut)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn equalLists(mut inList1: Arc<metamodelica::List<i32>>, mut inList2: Arc<metamodelica::List<i32>>) -> bool {
-    let mut outIsEqual: bool = false;
-    outIsEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            true
+            return true
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            false
+            return false
         },
         (_, Deref @ metamodelica::List::Nil) => {
-            false
+            return false
         },
         (Deref @ metamodelica::List::Cons { head: e1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: e2, tail: rest2 }) if (intEq(e1.clone(), e2.clone())) => {
-            equalLists(rest1.clone(), rest2.clone())
+            { (inList1, inList2) = (rest1.clone(), rest2.clone()); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIsEqual
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: TaskGraph, mut doNotMerge: Arc<metamodelica::List<i32>>, mut lstIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut inPath: i32, mut contrNodes: metamodelica::Array<i32>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
@@ -5281,18 +5271,16 @@ pub fn validateTaskGraphMeta(mut iMeta: TaskGraphMeta, mut iDae: Arc<BackendDAE:
     Ok(valid)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn validateTaskGraphMeta0(mut iEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)> {
-    let mut oCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
-    let mut currentIdx: i32 = 0;
-    let mut eqSysIdx: i32 = 0;
-    let mut rest: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut head: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
-    let mut iCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
-    let mut oCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
-    let mut tmpCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
-    oCompsTpl = (::match_deref::match_deref! { match &(iCompsTpl.clone()) {
+    '__tco: loop {
+        let mut currentIdx: i32 = 0;
+        let mut eqSysIdx: i32 = 0;
+        let mut rest: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
+        let mut head: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
+        let mut iCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
+        let mut oCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
+        let mut tmpCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
+        ::match_deref::match_deref! { match &(iCompsTpl.clone()) {
         (__esc_currentIdx, Deref @ metamodelica::List::Cons { head: __esc_head, tail: __esc_rest }, __esc_iCompEqSysMapping) => {
             currentIdx = (*__esc_currentIdx).clone();
             head = (*__esc_head).clone();
@@ -5301,12 +5289,12 @@ fn validateTaskGraphMeta0(mut iEqSysMapping: metamodelica::Array<(Arc<BackendDAE
             (_, eqSysIdx) = metamodelica::arrayGet(iEqSysMapping.clone(), currentIdx.clone())?;
             oCompEqSysMapping = metamodelica::cons((head.clone(), eqSysIdx.clone()), iCompEqSysMapping.clone());
             tmpCompsTpl = validateTaskGraphMeta0(iEqSysMapping.clone(), (currentIdx.clone() + 1, rest.clone(), oCompEqSysMapping.clone()))?;
-            tmpCompsTpl.clone()
+            return Ok(tmpCompsTpl.clone())
         },
-        _ => iCompsTpl.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oCompsTpl)
+        _ => return Ok(iCompsTpl.clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn validateComponents(mut graphComps: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>, mut systComps: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) -> Result<bool> {
@@ -5749,26 +5737,24 @@ fn getCriticalPath2(mut iCriticalPaths: Arc<metamodelica::List<(metamodelica::Re
     Ok(oLongestPathIndex)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addUpExeCostsForNode(mut iNodeComps: Arc<metamodelica::List<i32>>, mut iExeCosts: metamodelica::Array<(i32, metamodelica::Real)>, mut iExeCost: metamodelica::Real) -> Result<metamodelica::Real> {
-    let mut oExeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut head: i32 = 0;
-    let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut cost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    oExeCost = (::match_deref::match_deref! { match &(iNodeComps.clone()) {
+    '__tco: loop {
+        let mut head: i32 = 0;
+        let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        let mut cost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+        ::match_deref::match_deref! { match &(iNodeComps.clone()) {
         Deref @ metamodelica::List::Cons { head: __esc_head, tail: __esc_rest } => {
             head = (*__esc_head).clone();
             rest = (*__esc_rest).clone();
             (_, cost) = metamodelica::arrayGet(iExeCosts.clone(), head.clone())?;
             cost = (cost.clone()) + (iExeCost.clone());
             cost = addUpExeCostsForNode(rest.clone(), iExeCosts.clone(), cost.clone())?;
-            cost.clone()
+            return Ok(cost.clone())
         },
-        _ => iExeCost.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oExeCost)
+        _ => return Ok(iExeCost.clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn gatherParallelSets(mut nodeInfo: metamodelica::Array<(i32, metamodelica::Real, i32)>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {

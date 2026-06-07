@@ -123,30 +123,28 @@ impl Default for NFDimension {
     fn default() -> Self { Self::BOOLEAN }
 }
 pub use self::NFDimension::{RAW_DIM,UNTYPED,INTEGER,BOOLEAN,ENUM,EXP,RESIZABLE,UNKNOWN};
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> Result<Arc<NFDimension>> {
-    let mut dim: Arc<NFDimension> = Arc::new(NFDimension::BOOLEAN);
-    dim = (::match_deref::match_deref! { match &(exp.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::INTEGER { .. } => {
-            Arc::new(NFDimension::INTEGER { size: var_field!((*exp).value, Expression::NFExpression::INTEGER).clone(), var: var.clone() })
+            return Ok(Arc::new(NFDimension::INTEGER { size: var_field!((*exp).value, Expression::NFExpression::INTEGER).clone(), var: var.clone() }))
         },
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: ty, .. } } => {
-            (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ Type::BOOLEAN => crate::NFDimension::interned_BOOLEAN(),
-        Deref @ Type::ENUMERATION { .. } => Arc::new(NFDimension::ENUM { enumType: ty.clone() }),
+            ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ Type::BOOLEAN => return Ok(crate::NFDimension::interned_BOOLEAN()),
+        Deref @ Type::ENUMERATION { .. } => return Ok(Arc::new(NFDimension::ENUM { enumType: ty.clone() })),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFDimension.fromExp")); __mm_s.push_str(&*literal!(" got invalid typename")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFDimension.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
         },
         Deref @ Expression::ARRAY { .. } if (Expression::arrayAllEqual(exp.clone())?) => {
-            fromExp(Expression::arrayFirstScalar(exp.clone())?, var.clone())?
+            { (exp, var) = (Expression::arrayFirstScalar(exp.clone())?, var.clone()); continue '__tco; }
         },
         Deref @ Expression::SUBSCRIPTED_EXP { split: true, .. } if (Expression::isArray(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone()) && Expression::arrayAllEqual(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?) => {
-            fromExp(Expression::arrayFirstScalar(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?, var.clone())?
+            { (exp, var) = (Expression::arrayFirstScalar(var_field!((*exp).exp, Expression::NFExpression::SUBSCRIPTED_EXP).clone())?, var.clone()); continue '__tco; }
         },
         _ => {
             let mut exp_simple: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -155,35 +153,35 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut var: Variability) -> 
             let mut value: i32 = 0;
             let mut value_original: i32 = 0;
             exp_simple = SimplifyExp::simplify(exp.clone(), false)?;
-            (::match_deref::match_deref! { match &(exp_simple.clone()) {
+            ::match_deref::match_deref! { match &(exp_simple.clone()) {
         Deref @ Expression::INTEGER { value: __esc_value } => {
             value = (*__esc_value).clone();
-            Arc::new(NFDimension::INTEGER { size: value.clone(), var: var.clone() })
+            return Ok(Arc::new(NFDimension::INTEGER { size: value.clone(), var: var.clone() }))
         },
         _ => {
             e1 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e1 = SimplifyExp::simplify(e1.clone(), false)?;
-            (::match_deref::match_deref! { match &(e1.clone()) {
+            ::match_deref::match_deref! { match &(e1.clone()) {
         Deref @ Expression::INTEGER { value: __esc_value } => {
             value = (*__esc_value).clone();
             e2 = Expression::map(exp_simple.clone(), (std::sync::Arc::new(Expression::replaceResizableParameterWithOriginal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = SimplifyExp::simplify(e2.clone(), false)?;
-            (::match_deref::match_deref! { match &(e2.clone()) {
-        Deref @ Expression::INTEGER { value: value_original } if (value.clone() != value_original.clone()) => Arc::new(NFDimension::RESIZABLE { size: value_original.clone(), opt_size: Some(value.clone()), exp: exp.clone(), var: var.clone() }),
-        _ => Arc::new(NFDimension::RESIZABLE { size: value.clone(), opt_size: None, exp: exp.clone(), var: var.clone() }),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+            ::match_deref::match_deref! { match &(e2.clone()) {
+        Deref @ Expression::INTEGER { value: value_original } if (value.clone() != value_original.clone()) => return Ok(Arc::new(NFDimension::RESIZABLE { size: value_original.clone(), opt_size: Some(value.clone()), exp: exp.clone(), var: var.clone() })),
+        _ => return Ok(Arc::new(NFDimension::RESIZABLE { size: value.clone(), opt_size: None, exp: exp.clone(), var: var.clone() })),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
         },
-        _ => Arc::new(NFDimension::EXP { exp: exp.clone(), var: var.clone() }),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+        _ => return Ok(Arc::new(NFDimension::EXP { exp: exp.clone(), var: var.clone() })),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(dim)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn fromRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<NFDimension>> {

@@ -298,69 +298,59 @@ pub fn unliftArrayN(mut N: i32, mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
     Ok(ty)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isInteger(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isInteger: bool = false;
-    isInteger = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ INTEGER { .. } => true,
-        Deref @ METABOXED { .. } => self::isInteger(var_field!((*ty).ty, NFType::METABOXED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isInteger)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ INTEGER { .. } => return Ok(true),
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isReal(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isReal: bool = false;
-    isReal = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ REAL { .. } => true,
-        Deref @ METABOXED { .. } => self::isReal(var_field!((*ty).ty, NFType::METABOXED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isReal)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ REAL { .. } => return Ok(true),
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBoolean(mut ty: Arc<NFType>) -> bool {
-    let mut isBool: bool = false;
-    isBool = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ BOOLEAN { .. } => true,
-        Deref @ METABOXED { .. } => isBoolean(var_field!((*ty).ty, NFType::METABOXED).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isBool
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ BOOLEAN { .. } => return true,
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isString(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isString: bool = false;
-    isString = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ STRING { .. } => true,
-        Deref @ METABOXED { .. } => self::isString(var_field!((*ty).ty, NFType::METABOXED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isString)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ STRING { .. } => return Ok(true),
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isClock(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isClock: bool = false;
-    isClock = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ CLOCK { .. } => true,
-        Deref @ METABOXED { .. } => self::isClock(var_field!((*ty).ty, NFType::METABOXED).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isClock)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ CLOCK { .. } => return Ok(true),
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isContinuous(mut ty: Arc<NFType>) -> Result<bool> {
@@ -502,62 +492,54 @@ pub fn simplifyConditionalArray(mut ty: Arc<NFType>) -> Arc<NFType> {
     outType
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isVector(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isVector: bool = false;
-    isVector = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => true,
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isVector(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isVector)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => return Ok(true),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isMatrix(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isMatrix: bool = false;
-    isMatrix = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. } => true,
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isMatrix(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isMatrix)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. } => return Ok(true),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isSquareMatrix(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isSquareMatrix: bool = false;
-    isSquareMatrix = (::match_deref::match_deref! { match &(ty.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: d1, tail: Deref @ metamodelica::List::Cons { head: d2, tail: Deref @ metamodelica::List::Nil } }, .. } => {
-            Dimension::isEqualKnown(d1.clone(), d2.clone())?
+            return Ok(Dimension::isEqualKnown(d1.clone(), d2.clone())?)
         },
         Deref @ CONDITIONAL_ARRAY { .. } => {
-            self::isSquareMatrix(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?
+            { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; }
         },
         _ => {
-            false
+            return Ok(false)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isSquareMatrix)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isEmptyArray(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isEmpty: bool = false;
-    isEmpty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
-        Deref @ CONDITIONAL_ARRAY { .. } => isEmptyArray(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isEmpty)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return Ok(List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isSingleElementArray(mut ty: Arc<NFType>) -> Result<bool> {
@@ -699,22 +681,20 @@ pub fn isRecord(mut ty: Arc<NFType>) -> bool {
     isRecord
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isBasic(mut ty: Arc<NFType>) -> bool {
-    let mut isNumeric: bool = false;
-    isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ REAL { .. } => true,
-        Deref @ INTEGER { .. } => true,
-        Deref @ BOOLEAN { .. } => true,
-        Deref @ STRING { .. } => true,
-        Deref @ ENUMERATION { .. } => true,
-        Deref @ CLOCK { .. } => true,
-        Deref @ FUNCTION { .. } => isBasic(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isNumeric
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ REAL { .. } => return true,
+        Deref @ INTEGER { .. } => return true,
+        Deref @ BOOLEAN { .. } => return true,
+        Deref @ STRING { .. } => return true,
+        Deref @ ENUMERATION { .. } => return true,
+        Deref @ CLOCK { .. } => return true,
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        _ => return false,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isBasicNumeric(mut ty: Arc<NFType>) -> bool {
@@ -728,35 +708,31 @@ pub fn isBasicNumeric(mut ty: Arc<NFType>) -> bool {
     isNumeric
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isNumeric(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isNumeric: bool = false;
-    isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => isBasicNumeric(var_field!((*ty).elementType, NFType::ARRAY).clone()),
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isNumeric(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
-        _ => isBasicNumeric(ty.clone()),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isNumeric)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return Ok(isBasicNumeric(var_field!((*ty).elementType, NFType::ARRAY).clone())),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        _ => return Ok(isBasicNumeric(ty.clone())),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isScalarBuiltin: bool = false;
-    isScalarBuiltin = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ INTEGER { .. } => true,
-        Deref @ REAL { .. } => true,
-        Deref @ STRING { .. } => true,
-        Deref @ BOOLEAN { .. } => true,
-        Deref @ CLOCK { .. } => true,
-        Deref @ ENUMERATION { .. } => true,
-        Deref @ FUNCTION { .. } => self::isScalarBuiltin(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isScalarBuiltin)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ INTEGER { .. } => return Ok(true),
+        Deref @ REAL { .. } => return Ok(true),
+        Deref @ STRING { .. } => return Ok(true),
+        Deref @ BOOLEAN { .. } => return Ok(true),
+        Deref @ CLOCK { .. } => return Ok(true),
+        Deref @ ENUMERATION { .. } => return Ok(true),
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isTuple(mut ty: Arc<NFType>) -> bool {
@@ -832,18 +808,16 @@ pub fn nthTupleType(mut ty: Arc<NFType>, mut n: i32) -> Result<Arc<NFType>> {
     Ok(outTy)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayElementType(mut ty: Arc<NFType>) -> Arc<NFType> {
-    let mut elementTy: Arc<NFType> = Arc::new(NFType::ANY);
-    elementTy = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => var_field!((*ty).elementType, NFType::ARRAY).clone(),
-        Deref @ CONDITIONAL_ARRAY { .. } => arrayElementType(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
-        Deref @ UNTYPED { .. } if (!(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().is_empty())) => Arc::new(NFType::UNTYPED { typeNode: var_field!((*ty).typeNode, NFType::UNTYPED).clone(), dimensions: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }),
-        _ => ty.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    elementTy
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return var_field!((*ty).elementType, NFType::ARRAY).clone(),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        Deref @ UNTYPED { .. } if (!(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().is_empty())) => return Arc::new(NFType::UNTYPED { typeNode: var_field!((*ty).typeNode, NFType::UNTYPED).clone(), dimensions: metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect()) }),
+        _ => return ty.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn setArrayElementType(mut arrayTy: Arc<NFType>, mut elementTy: Arc<NFType>) -> Arc<NFType> {
@@ -857,18 +831,16 @@ pub fn setArrayElementType(mut arrayTy: Arc<NFType>, mut elementTy: Arc<NFType>)
     ty
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn elementType(mut ty: Arc<NFType>) -> Arc<NFType> {
-    let mut elementTy: Arc<NFType> = Arc::new(NFType::ANY);
-    elementTy = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => var_field!((*ty).elementType, NFType::ARRAY).clone(),
-        Deref @ CONDITIONAL_ARRAY { .. } => elementType(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
-        Deref @ FUNCTION { .. } => elementType(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
-        _ => ty.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    elementTy
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return var_field!((*ty).elementType, NFType::ARRAY).clone(),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        _ => return ty.clone(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn copyElementType(mut dstType: Arc<NFType>, mut srcType: Arc<NFType>) -> Arc<NFType> {
@@ -877,20 +849,18 @@ pub fn copyElementType(mut dstType: Arc<NFType>, mut srcType: Arc<NFType>) -> Ar
     ty
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn arrayDims(mut ty: Arc<NFType>) -> Arc<metamodelica::List<Arc<Dimension::NFDimension>>> {
-    let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    dims = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => var_field!((*ty).dimensions, NFType::ARRAY).clone(),
-        Deref @ FUNCTION { .. } => arrayDims(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
-        Deref @ METABOXED { .. } => arrayDims(var_field!((*ty).ty, NFType::METABOXED).clone()),
-        Deref @ CONDITIONAL_ARRAY { .. } => List::fill(crate::NFDimension::interned_UNKNOWN(), dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())),
-        Deref @ UNTYPED { .. } => Arc::new(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()),
-        _ => metamodelica::nil(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    dims
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return var_field!((*ty).dimensions, NFType::ARRAY).clone(),
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        Deref @ CONDITIONAL_ARRAY { .. } => return List::fill(crate::NFDimension::interned_UNKNOWN(), dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())),
+        Deref @ UNTYPED { .. } => return Arc::new(var_field!((*ty).dimensions, NFType::UNTYPED).clone().borrow().iter().cloned().collect::<metamodelica::List<_>>()),
+        _ => return metamodelica::nil(),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn copyDims(mut srcType: Arc<NFType>, mut dstType: Arc<NFType>) -> Arc<NFType> {
@@ -951,33 +921,29 @@ pub fn applyToDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dim
     Ok(ty)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn nthDimension(mut ty: Arc<NFType>, mut index: i32) -> Result<Arc<Dimension::NFDimension>> {
-    let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
-    dim = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => (var_field!((*ty).dimensions, NFType::ARRAY).clone()).get(index.clone())?,
-        Deref @ FUNCTION { .. } => nthDimension(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), index.clone())?,
-        Deref @ METABOXED { .. } => nthDimension(var_field!((*ty).ty, NFType::METABOXED).clone(), index.clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(dim)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return Ok((var_field!((*ty).dimensions, NFType::ARRAY).clone()).get(index.clone())?),
+        Deref @ FUNCTION { .. } => { (ty, index) = (Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), index.clone()); continue '__tco; },
+        Deref @ METABOXED { .. } => { (ty, index) = (var_field!((*ty).ty, NFType::METABOXED).clone(), index.clone()); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn dimensionCount(mut ty: Arc<NFType>) -> i32 {
-    let mut dimCount: i32 = 0;
-    dimCount = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => (var_field!((*ty).dimensions, NFType::ARRAY).clone().len() as i32),
-        Deref @ CONDITIONAL_ARRAY { .. } => dimensionCount(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
-        Deref @ FUNCTION { .. } => dimensionCount(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
-        Deref @ METABOXED { .. } => dimensionCount(var_field!((*ty).ty, NFType::METABOXED).clone()),
-        Deref @ UNTYPED { .. } => metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()),
-        _ => 0,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    dimCount
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return (var_field!((*ty).dimensions, NFType::ARRAY).clone().len() as i32),
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        Deref @ UNTYPED { .. } => return metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()),
+        _ => return 0,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn dimensionDiff(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> i32 {
@@ -985,18 +951,16 @@ pub fn dimensionDiff(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> i32 {
     diff
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn hasKnownSize(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isKnown: bool = false;
-    isKnown = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
-        Deref @ CONDITIONAL_ARRAY { .. } => false,
-        Deref @ FUNCTION { .. } => hasKnownSize(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
-        _ => true,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isKnown)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => return Ok(List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?),
+        Deref @ CONDITIONAL_ARRAY { .. } => return Ok(false),
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        _ => return Ok(true),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn hasZeroDimension(mut ty: Arc<NFType>) -> Result<bool> {
@@ -1087,66 +1051,62 @@ pub fn nthEnumLiteral(mut ty: Arc<NFType>, mut index: i32) -> Result<ArcStr> {
     Ok(literal)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toString(mut ty: Arc<NFType>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ INTEGER => literal!("Integer"),
-        Deref @ REAL => literal!("Real"),
-        Deref @ STRING => literal!("String"),
-        Deref @ BOOLEAN => literal!("Boolean"),
-        Deref @ CLOCK => literal!("Clock"),
-        Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {literal!("enumeration(:)")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("enumeration ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(var_field!((*ty).literals, NFType::ENUMERATION).clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }},
-        Deref @ ARRAY { .. } => List::toString(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (toString(var_field!((*ty).elementType, NFType::ARRAY).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
-        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
-        Deref @ NORETCALL => literal!("()"),
-        Deref @ UNKNOWN => literal!("unknown()"),
-        Deref @ COMPLEX { .. } => AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?,
-        Deref @ FUNCTION { .. } => Function::typeString(var_field!((*ty).r#fn, NFType::FUNCTION).clone())?,
-        Deref @ METABOXED { .. } => toString(var_field!((*ty).ty, NFType::METABOXED).clone())?,
-        Deref @ POLYMORPHIC { .. } => if (StringUtil::startsWith((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone(), (literal!("__")).clone())) {substring((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone(), 3, ((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone().len() as i32))?} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) }},
-        Deref @ ANY => literal!("$ANY$"),
-        Deref @ CONDITIONAL_ARRAY { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*toString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED { .. } => Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ INTEGER => return Ok(literal!("Integer")),
+        Deref @ REAL => return Ok(literal!("Real")),
+        Deref @ STRING => return Ok(literal!("String")),
+        Deref @ BOOLEAN => return Ok(literal!("Boolean")),
+        Deref @ CLOCK => return Ok(literal!("Clock")),
+        Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {return Ok(literal!("enumeration(:)"))} else {return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("enumeration ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(var_field!((*ty).literals, NFType::ENUMERATION).clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })},
+        Deref @ ARRAY { .. } => return Ok(List::toString(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (toString(var_field!((*ty).elementType, NFType::ARRAY).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?),
+        Deref @ TUPLE { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }),
+        Deref @ NORETCALL => return Ok(literal!("()")),
+        Deref @ UNKNOWN => return Ok(literal!("unknown()")),
+        Deref @ COMPLEX { .. } => return Ok(AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?),
+        Deref @ FUNCTION { .. } => return Ok(Function::typeString(var_field!((*ty).r#fn, NFType::FUNCTION).clone())?),
+        Deref @ METABOXED { .. } => { ty = var_field!((*ty).ty, NFType::METABOXED).clone(); continue '__tco; },
+        Deref @ POLYMORPHIC { .. } => if (StringUtil::startsWith((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone(), (literal!("__")).clone())) {return Ok(substring((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone(), 3, ((var_field!((*ty).name, NFType::POLYMORPHIC).clone()).clone().len() as i32))?)} else {return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) })},
+        Deref @ ANY => return Ok(literal!("$ANY$")),
+        Deref @ CONDITIONAL_ARRAY { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*toString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ UNTYPED { .. } => return Ok(Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.toString")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*anyString(ty.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFType.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(r#str)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ INTEGER => literal!("Integer"),
-        Deref @ REAL => literal!("Real"),
-        Deref @ STRING => literal!("String"),
-        Deref @ BOOLEAN => literal!("Boolean"),
-        Deref @ CLOCK => literal!("Clock"),
-        Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {literal!("enumeration(:)")} else if (isBuiltinEnumeration(ty.clone())) {AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?} else {Util::makeQuotedIdentifier((AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?).clone())?},
-        Deref @ ARRAY { .. } => Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format.clone(), (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format.clone())?).clone())?,
-        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
-        Deref @ NORETCALL => literal!("()"),
-        Deref @ UNKNOWN => literal!("unknown()"),
-        Deref @ COMPLEX { .. } => Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?,
-        Deref @ FUNCTION { .. } => Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).r#fn, NFType::FUNCTION).node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?,
-        Deref @ METABOXED { .. } => toFlatString(var_field!((*ty).ty, NFType::METABOXED).clone(), format.clone())?,
-        Deref @ POLYMORPHIC { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) },
-        Deref @ ANY => literal!("$ANY$"),
-        Deref @ CONDITIONAL_ARRAY { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*toFlatString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toFlatString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED { .. } => Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ INTEGER => return Ok(literal!("Integer")),
+        Deref @ REAL => return Ok(literal!("Real")),
+        Deref @ STRING => return Ok(literal!("String")),
+        Deref @ BOOLEAN => return Ok(literal!("Boolean")),
+        Deref @ CLOCK => return Ok(literal!("Clock")),
+        Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {return Ok(literal!("enumeration(:)"))} else if (isBuiltinEnumeration(ty.clone())) {return Ok(AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?)} else {return Ok(Util::makeQuotedIdentifier((AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?).clone())?)},
+        Deref @ ARRAY { .. } => return Ok(Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format.clone(), (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format.clone())?).clone())?),
+        Deref @ TUPLE { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }),
+        Deref @ NORETCALL => return Ok(literal!("()")),
+        Deref @ UNKNOWN => return Ok(literal!("unknown()")),
+        Deref @ COMPLEX { .. } => return Ok(Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?),
+        Deref @ FUNCTION { .. } => return Ok(Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).r#fn, NFType::FUNCTION).node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?),
+        Deref @ METABOXED { .. } => { (ty, format) = (var_field!((*ty).ty, NFType::METABOXED).clone(), format.clone()); continue '__tco; },
+        Deref @ POLYMORPHIC { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) }),
+        Deref @ ANY => return Ok(literal!("$ANY$")),
+        Deref @ CONDITIONAL_ARRAY { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*toFlatString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toFlatString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); ArcStr::from(__mm_s) }),
+        Deref @ UNTYPED { .. } => return Ok(Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.toFlatString")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*anyString(ty.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!("NFFrontEnd/NFType.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(r#str)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn dimensionsToFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
@@ -1443,22 +1403,20 @@ pub fn hashContinue(mut ty: Arc<NFType>, mut hash: i32) -> Result<i32> {
     Ok(hash)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDiscrete(mut ty: Arc<NFType>) -> Result<bool> {
-    let mut isDiscrete: bool = false;
-    isDiscrete = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ INTEGER { .. } => true,
-        Deref @ STRING { .. } => true,
-        Deref @ BOOLEAN { .. } => true,
-        Deref @ ENUMERATION { .. } => true,
-        Deref @ ARRAY { .. } => self::isDiscrete(var_field!((*ty).elementType, NFType::ARRAY).clone())?,
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isDiscrete(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
-        Deref @ FUNCTION { .. } => self::isDiscrete(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(isDiscrete)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ INTEGER { .. } => return Ok(true),
+        Deref @ STRING { .. } => return Ok(true),
+        Deref @ BOOLEAN { .. } => return Ok(true),
+        Deref @ ENUMERATION { .. } => return Ok(true),
+        Deref @ ARRAY { .. } => { ty = var_field!((*ty).elementType, NFType::ARRAY).clone(); continue '__tco; },
+        Deref @ CONDITIONAL_ARRAY { .. } => { ty = var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(); continue '__tco; },
+        Deref @ FUNCTION { .. } => { ty = Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()); continue '__tco; },
+        _ => return Ok(false),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn lookupRecordFieldType(mut name: ArcStr, mut recordType: Arc<NFType>) -> Result<Arc<NFType>> {
@@ -1664,17 +1622,15 @@ pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
     Ok(sz)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn complexSize(mut ty: Arc<NFType>, mut resize: bool) -> Result<Option<i32>> {
-    let mut sz: Option<i32> = None;
-    sz = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => complexSize(var_field!((*ty).elementType, NFType::ARRAY).clone(), resize.clone())?,
-        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => Some(sizeOf(ty.clone(), resize.clone())?),
-        _ => None,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(sz)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(ty.clone()) {
+        Deref @ ARRAY { .. } => { (ty, resize) = (var_field!((*ty).elementType, NFType::ARRAY).clone(), resize.clone()); continue '__tco; },
+        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => return Ok(Some(sizeOf(ty.clone(), resize.clone())?)),
+        _ => return Ok(None),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 

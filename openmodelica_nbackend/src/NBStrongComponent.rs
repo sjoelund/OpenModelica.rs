@@ -1079,131 +1079,121 @@ pub fn getLoopResiduals(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamode
     Ok(residuals)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getVariables(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
-    let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    vars = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ SINGLE_COMPONENT { .. } => list![var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()],
-        Deref @ MULTI_COMPONENT { .. } => ({
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ SINGLE_COMPONENT { .. } => return Ok(list![var_field!((*comp).var, NBStrongComponent::SINGLE_COMPONENT).clone()]),
+        Deref @ MULTI_COMPONENT { .. } => return Ok(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut v in (var_field!((*comp).vars, NBStrongComponent::MULTI_COMPONENT).clone()).into_iter().cloned() {
             let __x = Slice::getT(v.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
-        Deref @ SLICED_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).var, NBStrongComponent::SLICED_COMPONENT).clone())],
-        Deref @ RESIZABLE_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).var, NBStrongComponent::RESIZABLE_COMPONENT).clone())],
-        Deref @ GENERIC_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).var, NBStrongComponent::GENERIC_COMPONENT).clone())],
-        Deref @ ENTWINED_COMPONENT { .. } => List::flatten(({
+    })),
+        Deref @ SLICED_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).var, NBStrongComponent::SLICED_COMPONENT).clone())]),
+        Deref @ RESIZABLE_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).var, NBStrongComponent::RESIZABLE_COMPONENT).clone())]),
+        Deref @ GENERIC_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).var, NBStrongComponent::GENERIC_COMPONENT).clone())]),
+        Deref @ ENTWINED_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut slice in (var_field!((*comp).entwined_slices, NBStrongComponent::ENTWINED_COMPONENT).clone()).into_iter().cloned() {
             let __x = getVariables(slice.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?,
-        Deref @ ALGEBRAIC_LOOP { .. } => Tearing::getVariables(var_field!((*comp).strict, NBStrongComponent::ALGEBRAIC_LOOP).clone())?,
-        Deref @ ALIAS { .. } => getVariables(var_field!((*comp).original, NBStrongComponent::ALIAS).clone())?,
+    }))?),
+        Deref @ ALGEBRAIC_LOOP { .. } => return Ok(Tearing::getVariables(var_field!((*comp).strict, NBStrongComponent::ALGEBRAIC_LOOP).clone())?),
+        Deref @ ALIAS { .. } => { comp = var_field!((*comp).original, NBStrongComponent::ALIAS).clone(); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.getVariables")); __mm_s.push_str(&*literal!(" failed because of wrong component: ")); __mm_s.push_str(&*toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(vars)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getVarCref(mut comp: Arc<NBStrongComponent>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-    let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    var_cref = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ SLICED_COMPONENT { .. } => var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone(),
-        Deref @ RESIZABLE_COMPONENT { .. } => var_field!((*comp).var_cref, NBStrongComponent::RESIZABLE_COMPONENT).clone(),
-        Deref @ GENERIC_COMPONENT { .. } => var_field!((*comp).var_cref, NBStrongComponent::GENERIC_COMPONENT).clone(),
-        Deref @ ALIAS { .. } => getVarCref(var_field!((*comp).original, NBStrongComponent::ALIAS).clone())?,
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ SLICED_COMPONENT { .. } => return Ok(var_field!((*comp).var_cref, NBStrongComponent::SLICED_COMPONENT).clone()),
+        Deref @ RESIZABLE_COMPONENT { .. } => return Ok(var_field!((*comp).var_cref, NBStrongComponent::RESIZABLE_COMPONENT).clone()),
+        Deref @ GENERIC_COMPONENT { .. } => return Ok(var_field!((*comp).var_cref, NBStrongComponent::GENERIC_COMPONENT).clone()),
+        Deref @ ALIAS { .. } => { comp = var_field!((*comp).original, NBStrongComponent::ALIAS).clone(); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.getVarCref")); __mm_s.push_str(&*literal!(" failed because of wrong component: ")); __mm_s.push_str(&*toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(var_cref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getEquations(mut comp: Arc<NBStrongComponent>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> {
-    let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    eqns = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ SINGLE_COMPONENT { .. } => list![var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()],
-        Deref @ MULTI_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::MULTI_COMPONENT).clone())],
-        Deref @ SLICED_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone())],
-        Deref @ RESIZABLE_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::RESIZABLE_COMPONENT).clone())],
-        Deref @ GENERIC_COMPONENT { .. } => list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::GENERIC_COMPONENT).clone())],
-        Deref @ ENTWINED_COMPONENT { .. } => List::flatten(({
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ SINGLE_COMPONENT { .. } => return Ok(list![var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()]),
+        Deref @ MULTI_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::MULTI_COMPONENT).clone())]),
+        Deref @ SLICED_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone())]),
+        Deref @ RESIZABLE_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::RESIZABLE_COMPONENT).clone())]),
+        Deref @ GENERIC_COMPONENT { .. } => return Ok(list![Slice::getT(var_field!((*comp).eqn, NBStrongComponent::GENERIC_COMPONENT).clone())]),
+        Deref @ ENTWINED_COMPONENT { .. } => return Ok(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
         for mut slice in (var_field!((*comp).entwined_slices, NBStrongComponent::ENTWINED_COMPONENT).clone()).into_iter().cloned() {
             let __x = getEquations(slice.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?,
-        Deref @ ALGEBRAIC_LOOP { .. } => Tearing::getResidualEqns(var_field!((*comp).strict, NBStrongComponent::ALGEBRAIC_LOOP).clone()),
-        Deref @ ALIAS { .. } => getEquations(var_field!((*comp).original, NBStrongComponent::ALIAS).clone())?,
+    }))?),
+        Deref @ ALGEBRAIC_LOOP { .. } => return Ok(Tearing::getResidualEqns(var_field!((*comp).strict, NBStrongComponent::ALGEBRAIC_LOOP).clone())),
+        Deref @ ALIAS { .. } => { comp = var_field!((*comp).original, NBStrongComponent::ALIAS).clone(); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.getEquations")); __mm_s.push_str(&*literal!(" failed because of wrong component: ")); __mm_s.push_str(&*toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(eqns)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getSolveStatus(mut comp: Arc<NBStrongComponent>) -> Result<Solve::Status> {
-    let mut status: Solve::Status = Solve::Status::UNPROCESSED;
-    status = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ SINGLE_COMPONENT { .. } => var_field!((*comp).status, NBStrongComponent::SINGLE_COMPONENT).clone(),
-        Deref @ MULTI_COMPONENT { .. } => var_field!((*comp).status, NBStrongComponent::MULTI_COMPONENT).clone(),
-        Deref @ SLICED_COMPONENT { .. } => var_field!((*comp).status, NBStrongComponent::SLICED_COMPONENT).clone(),
-        Deref @ RESIZABLE_COMPONENT { .. } => var_field!((*comp).status, NBStrongComponent::RESIZABLE_COMPONENT).clone(),
-        Deref @ GENERIC_COMPONENT { .. } => Solve::Status::EXPLICIT.clone(),
-        Deref @ ENTWINED_COMPONENT { .. } => Solve::Status::EXPLICIT.clone(),
-        Deref @ ALGEBRAIC_LOOP { .. } => var_field!((*comp).status, NBStrongComponent::ALGEBRAIC_LOOP).clone(),
-        Deref @ ALIAS { .. } => getSolveStatus(var_field!((*comp).original, NBStrongComponent::ALIAS).clone())?,
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ SINGLE_COMPONENT { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::SINGLE_COMPONENT).clone()),
+        Deref @ MULTI_COMPONENT { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::MULTI_COMPONENT).clone()),
+        Deref @ SLICED_COMPONENT { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::SLICED_COMPONENT).clone()),
+        Deref @ RESIZABLE_COMPONENT { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::RESIZABLE_COMPONENT).clone()),
+        Deref @ GENERIC_COMPONENT { .. } => return Ok(Solve::Status::EXPLICIT.clone()),
+        Deref @ ENTWINED_COMPONENT { .. } => return Ok(Solve::Status::EXPLICIT.clone()),
+        Deref @ ALGEBRAIC_LOOP { .. } => return Ok(var_field!((*comp).status, NBStrongComponent::ALGEBRAIC_LOOP).clone()),
+        Deref @ ALIAS { .. } => { comp = var_field!((*comp).original, NBStrongComponent::ALIAS).clone(); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.getSolveStatus")); __mm_s.push_str(&*literal!(" failed because of wrong component: ")); __mm_s.push_str(&*toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(status)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isDiscrete(mut comp: Arc<NBStrongComponent>) -> Result<bool> {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(comp.clone()) {
-        Deref @ SINGLE_COMPONENT { .. } => Equation::isDiscrete(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone()),
-        Deref @ MULTI_COMPONENT { .. } => Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::MULTI_COMPONENT).clone())),
-        Deref @ SLICED_COMPONENT { .. } => Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone())),
-        Deref @ RESIZABLE_COMPONENT { .. } => Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::RESIZABLE_COMPONENT).clone())),
-        Deref @ ENTWINED_COMPONENT { .. } => List::all(var_field!((*comp).entwined_slices, NBStrongComponent::ENTWINED_COMPONENT).clone(), (std::sync::Arc::new(isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NBStrongComponent>) -> Result<bool> + 'static>))?,
-        Deref @ GENERIC_COMPONENT { .. } => Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::GENERIC_COMPONENT).clone())),
-        Deref @ ALGEBRAIC_LOOP { .. } => var_field!((*comp).mixed, NBStrongComponent::ALGEBRAIC_LOOP).clone(),
-        Deref @ ALIAS { .. } => isDiscrete(var_field!((*comp).original, NBStrongComponent::ALIAS).clone())?,
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ SINGLE_COMPONENT { .. } => return Ok(Equation::isDiscrete(var_field!((*comp).eqn, NBStrongComponent::SINGLE_COMPONENT).clone())),
+        Deref @ MULTI_COMPONENT { .. } => return Ok(Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::MULTI_COMPONENT).clone()))),
+        Deref @ SLICED_COMPONENT { .. } => return Ok(Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::SLICED_COMPONENT).clone()))),
+        Deref @ RESIZABLE_COMPONENT { .. } => return Ok(Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::RESIZABLE_COMPONENT).clone()))),
+        Deref @ ENTWINED_COMPONENT { .. } => return Ok(List::all(var_field!((*comp).entwined_slices, NBStrongComponent::ENTWINED_COMPONENT).clone(), (std::sync::Arc::new(isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NBStrongComponent>) -> Result<bool> + 'static>))?),
+        Deref @ GENERIC_COMPONENT { .. } => return Ok(Equation::isDiscrete(Slice::getT(var_field!((*comp).eqn, NBStrongComponent::GENERIC_COMPONENT).clone()))),
+        Deref @ ALGEBRAIC_LOOP { .. } => return Ok(var_field!((*comp).mixed, NBStrongComponent::ALGEBRAIC_LOOP).clone()),
+        Deref @ ALIAS { .. } => { comp = var_field!((*comp).original, NBStrongComponent::ALIAS).clone(); continue '__tco; },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBStrongComponent.isDiscrete")); __mm_s.push_str(&*literal!(" failed because of wrong component: ")); __mm_s.push_str(&*toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(b)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isDummy(mut comp: Arc<NBStrongComponent>) -> bool {

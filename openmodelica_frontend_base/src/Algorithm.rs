@@ -324,27 +324,25 @@ pub fn makeSimpleAssignment(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut sourc
     Ok(outStmt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut lhsProps: Arc<metamodelica::List<DAE::Properties>>, mut rhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhsProps: Arc<metamodelica::List<DAE::Properties>>, mut attributes: Arc<DAE::Attributes>, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
-    let mut assignments: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    assignments = (::match_deref::match_deref! { match &((lhsExps.clone(), lhsProps.clone(), rhsExps.clone(), rhsProps.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((lhsExps.clone(), lhsProps.clone(), rhsExps.clone(), rhsProps.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, _) => {
-            metamodelica::nil()
+            return Ok(metamodelica::nil())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs_prop }) => {
-            makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?
+            { (lhsExps, lhsProps, rhsExps, rhsProps, attributes, initial_, source) = (rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: lhs_prop, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: rhs, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: rhs_prop, tail: rest_rhs_prop }) => {
             let mut ass: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
             let mut rest_ass: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             ass = makeAssignment(lhs.clone(), lhs_prop.clone(), rhs.clone(), rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
             rest_ass = makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
-            metamodelica::cons(ass.clone(), rest_ass.clone())
+            return Ok(metamodelica::cons(ass.clone(), rest_ass.clone()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(assignments)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut props: Arc<metamodelica::List<DAE::Properties>>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Result<()> {

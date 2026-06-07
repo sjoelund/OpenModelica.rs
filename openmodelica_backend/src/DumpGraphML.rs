@@ -519,13 +519,11 @@ fn addDirectedNumEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, ArcStr,
     Ok(outTpl)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut vars: BackendDAE::Variables, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut iGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut oGraph: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
-    oGraph = (::match_deref::match_deref! { match &((iComps.clone(), iGraph.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((iComps.clone(), iGraph.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
-            iGraph.clone()
+            return Ok(iGraph.clone())
         },
         (Deref @ metamodelica::List::Cons { head: comp, tail: rest }, (graphInfo, graph)) => {
             let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -540,20 +538,18 @@ fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCompon
             text = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(iN.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::mapMap(varlst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
             label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (text.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
             (graphInfo, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("n")); __mm_s.push_str(&*intString(iN.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_GREEN)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![label.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, None, metamodelica::nil(), graph.clone(), graphInfo.clone())?;
-            addCompsGraph(rest.clone(), vars.clone(), varcomp1.clone(), iN.clone() + 1, (graphInfo.clone(), graph.clone()))?
+            { (iComps, vars, varcomp, iN, iGraph) = (rest.clone(), vars.clone(), varcomp1.clone(), iN.clone() + 1, (graphInfo.clone(), graph.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut id: i32, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iGraph: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
-    oGraph = (::match_deref::match_deref! { match &(iComps.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(iComps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iGraph.clone()
+            return Ok(iGraph.clone())
         },
         Deref @ metamodelica::List::Cons { head: comp, tail: rest } => {
             let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -564,11 +560,11 @@ fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongC
             List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), markarray.clone())?;
             vlst = getUsedVarsComp(elst.clone(), m.clone(), markarray.clone(), mark.clone())?;
             (n, graph) = addCompEdgesGraph(vlst.clone(), varcomp.clone(), markarray.clone(), mark.clone() + 1, iN.clone(), id.clone(), iGraph.clone())?;
-            addCompsEdgesGraph(rest.clone(), m.clone(), varcomp.clone(), iN.clone() + 1, n.clone(), markarray.clone(), mark.clone() + 2, graph.clone())?
+            { (iComps, m, varcomp, iN, id, markarray, mark, iGraph) = (rest.clone(), m.clone(), varcomp.clone(), iN.clone() + 1, n.clone(), markarray.clone(), mark.clone() + 2, graph.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oGraph)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getUsedVarsComp(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut markarray: metamodelica::Array<i32>, mut mark: i32) -> Result<Arc<metamodelica::List<i32>>> {

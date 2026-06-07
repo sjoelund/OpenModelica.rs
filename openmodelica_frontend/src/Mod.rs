@@ -2574,20 +2574,18 @@ fn removeRedecl(mut isubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>) -> Arc<met
     osubs
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn removeModList(mut inMod: Arc<DAE::Mod>, mut remStrings: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<DAE::Mod>> {
-    let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-    let mut s: ArcStr = arcstr::literal!("");
-    outMod = (::match_deref::match_deref! { match &(remStrings.clone()) {
-        Deref @ metamodelica::List::Nil => inMod.clone(),
+    '__tco: loop {
+        let mut s: ArcStr = arcstr::literal!("");
+        ::match_deref::match_deref! { match &(remStrings.clone()) {
+        Deref @ metamodelica::List::Nil => return Ok(inMod.clone()),
         Deref @ metamodelica::List::Cons { head: __esc_s, tail: _ } => {
             s = (*__esc_s).clone();
-            removeModList(removeMod(inMod.clone(), (s.clone()).clone())?, remStrings.clone())?
+            { (inMod, remStrings) = (removeMod(inMod.clone(), (s.clone()).clone())?, remStrings.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outMod)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn removeMod(mut inMod: Arc<DAE::Mod>, mut componentModified: ArcStr) -> Result<Arc<DAE::Mod>> {

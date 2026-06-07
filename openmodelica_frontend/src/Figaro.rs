@@ -618,23 +618,21 @@ fn foExp(mut inExp: Arc<Absyn::Exp>) -> Result<ArcStr> {
     Ok(outCode)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getLastIdent(mut inPath: Path) -> Result<Ident> {
-    let mut outIdent: Ident = arcstr::literal!("");
-    outIdent = ((::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { path: p, .. } => {
-            getLastIdent(p.clone())?
+            { inPath = p.clone(); continue '__tco; }
         },
         Deref @ Absyn::Path::IDENT { name: n } => {
-            n.clone()
+            return Ok(n.clone())
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
-            getLastIdent(p.clone())?
+            { inPath = p.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(outIdent)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn figaroObjectListToString(mut inFigaroObjectList: Arc<metamodelica::List<FigaroObject>>) -> Result<ArcStr> {

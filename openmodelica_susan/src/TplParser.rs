@@ -391,30 +391,26 @@ pub mod CacheTree {
         Ok(value)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn getOpt(mut tree: Arc<Tree>, mut key: Key) -> Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> {
-        let mut value: Option<Arc<metamodelica::List<TplAbsyn::ASTDef>>> = None;
-        let mut k: Key = arcstr::literal!("");
-        k = ((::match_deref::match_deref! { match &(tree.clone()) {
+        '__tco: loop {
+            let mut k: Key = arcstr::literal!("");
+            k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
         _ => key.clone(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+        _ => unreachable!("tail-call lowered match: no arm matched"),
     } })).clone();
-        value = (::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
-        (0, Deref @ Tree::LEAF { .. }) => Some(var_field!((*tree).value, Tree::LEAF).clone()),
-        (0, Deref @ Tree::NODE { .. }) => Some(var_field!((*tree).value, Tree::NODE).clone()),
-        (1, Deref @ Tree::NODE { .. }) => getOpt(var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()),
-        ((-1), Deref @ Tree::NODE { .. }) => getOpt(var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()),
-        _ => None,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-        value
+            ::match_deref::match_deref! { match &((keyCompare((key.clone()).clone(), (k.clone()).clone()), tree.clone())) {
+        (0, Deref @ Tree::LEAF { .. }) => return Some(var_field!((*tree).value, Tree::LEAF).clone()),
+        (0, Deref @ Tree::NODE { .. }) => return Some(var_field!((*tree).value, Tree::NODE).clone()),
+        (1, Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).right, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        ((-1), Deref @ Tree::NODE { .. }) => { (tree, key) = (var_field!((*tree).left, Tree::NODE).clone(), (key.clone()).clone()); continue '__tco; },
+        _ => return None,
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+        }
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -720,17 +716,15 @@ pub mod CacheTree {
         Ok(res)
     }
 
-    // NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-    // (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
     pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
-        let mut key: Key = arcstr::literal!("");
-        key = ((::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => var_field!((*tree).key, Tree::NODE).clone(),
-        Deref @ Tree::NODE { .. } => smallestKey(var_field!((*tree).right, Tree::NODE).clone())?,
-        Deref @ Tree::LEAF { .. } => var_field!((*tree).key, Tree::LEAF).clone(),
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-        Ok(key)
+        '__tco: loop {
+            ::match_deref::match_deref! { match &(tree.clone()) {
+        Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),
+        Deref @ Tree::NODE { .. } => { tree = var_field!((*tree).right, Tree::NODE).clone(); continue '__tco; },
+        Deref @ Tree::LEAF { .. } => return Ok(var_field!((*tree).key, Tree::LEAF).clone()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+        }
     }
 
     pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>)>> {
@@ -1115,21 +1109,19 @@ pub fn interleaveExpectChar(mut inChars: Arc<metamodelica::List<ArcStr>>, mut in
     Ok((outChars, outLineInfo))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn takeKeywordChars(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
-    let mut outChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    outChars = (::match_deref::match_deref! { match &((inChars.clone(), inKeywordChars.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inChars.clone(), inKeywordChars.clone())) {
         (Deref @ metamodelica::List::Cons { head: c, tail: chars }, Deref @ metamodelica::List::Cons { head: kwc, tail: kwchars }) => {
             let true = (stringEq((c.clone()).clone(), (kwc.clone()).clone())) else { bail!("pattern mismatch") };
-            takeKeywordChars(chars.clone(), kwchars.clone())?
+            { (inChars, inKeywordChars) = (chars.clone(), kwchars.clone()); continue '__tco; }
         },
         (chars, Deref @ metamodelica::List::Nil) => {
-            chars.clone()
+            return Ok(chars.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outChars)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isKeyword(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inKeywordChars: Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<metamodelica::List<ArcStr>>, bool)> {

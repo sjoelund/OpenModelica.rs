@@ -159,30 +159,28 @@ fn makeLabel(mut sl: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
     Ok(s2)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeLabelReq(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut inString: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    outString = ((::match_deref::match_deref! { match &(inStringLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStringLst.clone()) {
         Deref @ metamodelica::List::Cons { head: s, tail: Deref @ metamodelica::List::Nil } => {
-            stringAppend((inString.clone()).clone(), (s.clone()).clone())
+            return Ok(stringAppend((inString.clone()).clone(), (s.clone()).clone()))
         },
         Deref @ metamodelica::List::Cons { head: s1, tail: Deref @ metamodelica::List::Cons { head: s2, tail: Deref @ metamodelica::List::Nil } } => {
             let mut s: Label = arcstr::literal!("");
             s = (stringAppend((inString.clone()).clone(), (s1.clone()).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (literal!("\\n")).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (s2.clone()).clone())).clone();
-            s.clone()
+            return Ok(s.clone())
         },
         Deref @ metamodelica::List::Cons { head: s1, tail: rest } => {
             let mut s: Label = arcstr::literal!("");
             s = (stringAppend((inString.clone()).clone(), (s1.clone()).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (literal!("\\n")).clone())).clone();
-            makeLabelReq(rest.clone(), (s.clone()).clone())?
+            { (inStringLst, inString) = (rest.clone(), (s.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outString)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn dumpChildren(mut inIdent: Ident, mut inChildren: Children) -> Result<()> {
@@ -248,16 +246,14 @@ fn makeAttr(mut l: Arc<metamodelica::List<Attribute>>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn makeAttrReq(mut inAttributeLst: Arc<metamodelica::List<Attribute>>, mut inString: ArcStr) -> Result<ArcStr> {
-    let mut outString: ArcStr = arcstr::literal!("");
-    outString = ((::match_deref::match_deref! { match &(inAttributeLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inAttributeLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Attribute { name, value: v }, tail: Deref @ metamodelica::List::Nil } => {
             let mut s: Label = arcstr::literal!("");
             s = (stringAppend((inString.clone()).clone(), (name.clone()).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (literal!("=")).clone())).clone();
-            stringAppend((s.clone()).clone(), (v.clone()).clone())
+            return Ok(stringAppend((s.clone()).clone(), (v.clone()).clone()))
         },
         Deref @ metamodelica::List::Cons { head: Attribute { name, value: v }, tail: rest } => {
             let mut s: Label = arcstr::literal!("");
@@ -265,10 +261,10 @@ fn makeAttrReq(mut inAttributeLst: Arc<metamodelica::List<Attribute>>, mut inStr
             s = (stringAppend((s.clone()).clone(), (literal!("=")).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (v.clone()).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (literal!(",")).clone())).clone();
-            makeAttrReq(rest.clone(), (s.clone()).clone())?
+            { (inAttributeLst, inString) = (rest.clone(), (s.clone()).clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } })).clone();
-    Ok(outString)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 

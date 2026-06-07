@@ -181,32 +181,30 @@ pub fn generateOmsiFunctionCode(mut txt: Tpl::Text, mut a_omsiFunction: Arc<SimC
     Ok(out_txt)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn lastIdentOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, .. }) => {
             let mut txt = (*txt).clone();
             txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
             txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            txt.clone()
+            return Ok(txt.clone())
         },
         (txt, _) => {
-            txt.clone()
+            return Ok(txt.clone())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(out_txt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fun_59(mut in_txt: Tpl::Text, mut in_a_eqsystem: Arc<SimCode::SimEqSystem>, mut in_a_fullPathPrefix: Tpl::Text, mut in_a_fileNamePrefix: Tpl::Text, mut in_a_includes: Tpl::Text, mut in_a_residualCall: Tpl::Text, mut in_a_omsiName: ArcStr, mut in_a_funcCallArgName: ArcStr, mut in_a_functionCall: Tpl::Text, mut in_a_functionPrototypes: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_modelFunctionnamePrefixStr: ArcStr, mut in_a_FileNamePrefix: ArcStr, mut in_a_evaluationCode: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {

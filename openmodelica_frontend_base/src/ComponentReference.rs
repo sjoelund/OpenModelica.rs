@@ -128,25 +128,23 @@ pub fn crefToPathIgnoreSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
     Ok(outPath)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn pathToCref(mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outComponentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outComponentRef = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::IDENT { name: i } => {
-            ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil())
+            return Ok(ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
-            pathToCref(p.clone())?
+            { inPath = p.clone(); continue '__tco; }
         },
         Deref @ Absyn::Path::QUALIFIED { name: i, path: p } => {
             let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             c = pathToCref(p.clone())?;
-            ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), c.clone())
+            return Ok(ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), c.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outComponentRef)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn creffromVar(mut inVar: Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> {
@@ -238,19 +236,17 @@ fn unelabSubscripts(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscrip
     Ok(outAbsynSubscriptLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toExpCref(mut absynCref: Arc<Absyn::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut daeCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    daeCref = (::match_deref::match_deref! { match &(absynCref.clone()) {
-        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => ComponentReferenceBasics::makeCrefIdent((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone())?),
-        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => ComponentReferenceBasics::makeCrefQual((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone())?, toExpCref(var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?),
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => toExpCref(var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone())?,
-        Deref @ Absyn::ComponentRef::WILD { .. } => openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(),
-        Deref @ Absyn::ComponentRef::ALLWILD { .. } => openmodelica_frontend_types::DAE::ComponentRef::interned_WILD(),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(daeCref)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(absynCref.clone()) {
+        Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => return Ok(ComponentReferenceBasics::makeCrefIdent((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone())?)),
+        Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => return Ok(ComponentReferenceBasics::makeCrefQual((var_field!((*absynCref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), toExpCrefSubs(var_field!((*absynCref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone())?, toExpCref(var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone())?)),
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => { absynCref = var_field!((*absynCref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(); continue '__tco; },
+        Deref @ Absyn::ComponentRef::WILD { .. } => return Ok(openmodelica_frontend_types::DAE::ComponentRef::interned_WILD()),
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => return Ok(openmodelica_frontend_types::DAE::ComponentRef::interned_WILD()),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn toExpCrefSubs(mut absynSubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
@@ -406,45 +402,41 @@ pub fn isInternalCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
     b
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isRecord(mut cr: Arc<DAE::ComponentRef>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, .. } => {
-            true
+            return true
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: comp, .. } => {
-            isRecord(comp.clone())
+            { cr = comp.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn isArrayElement(mut cr: Arc<DAE::ComponentRef>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(cr.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(cr.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
-            true
+            return true
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { identType: Deref @ DAE::Type::T_ARRAY { .. }, .. } => {
-            true
+            return true
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: comp, .. } => {
-            isArrayElement(comp.clone())
+            { cr = comp.clone(); continue '__tco; }
         },
         _ => {
-            false
+            return false
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn isPreCref(mut cr: Arc<DAE::ComponentRef>) -> bool {
@@ -937,20 +929,18 @@ pub fn crefArrayGetFirstCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resu
     Ok(outComponentRef)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastPath(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    outPath = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: i, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
-            Arc::new(Absyn::Path::IDENT { name: (i.clone()).clone() })
+            return Ok(Arc::new(Absyn::Path::IDENT { name: (i.clone()).clone() }))
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: c, subscriptLst: Deref @ metamodelica::List::Nil, .. } => {
-            crefLastPath(c.clone())?
+            { inComponentRef = c.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outPath)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefRest(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
@@ -1067,20 +1057,18 @@ pub fn crefType(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
     Ok(outType)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastType(mut inRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
-    let mut res: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    res = (::match_deref::match_deref! { match &(inRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: t2, subscriptLst: _ } => {
-            t2.clone()
+            return Ok(t2.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: _, identType: _, subscriptLst: _, componentRef: cr } => {
-            crefLastType(cr.clone())?
+            { inRef = cr.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(res)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefFirstSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<metamodelica::List<Arc<DAE::Subscript>>> {
@@ -1094,20 +1082,18 @@ pub fn crefFirstSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<metamodelica::Li
     outSubscripts
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefLastSubs(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
-    let mut outSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-    outSubscriptLst = (::match_deref::match_deref! { match &(inComponentRef.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. } => {
-            subs.clone()
+            return Ok(subs.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            crefLastSubs(cr.clone())?
+            { inComponentRef = cr.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outSubscriptLst)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefTypeConsiderSubs(mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
@@ -1304,25 +1290,23 @@ pub fn crefPrefixStringList(mut inStrings: Arc<metamodelica::List<ArcStr>>, mut 
     outCref
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn prefixWithPath(mut inCref: Arc<DAE::ComponentRef>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::IDENT { name } => {
-            Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() })
+            return Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() }))
         },
         Deref @ Absyn::Path::QUALIFIED { name, path: rest_path } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = prefixWithPath(inCref.clone(), rest_path.clone())?;
-            Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: cref.clone() })
+            return Ok(Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: cref.clone() }))
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path } => {
-            prefixWithPath(inCref.clone(), rest_path.clone())?
+            { (inCref, inPath) = (inCref.clone(), rest_path.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn prependStringCref(mut inString: ArcStr, mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
@@ -1800,24 +1784,22 @@ pub fn crefStripSubsExceptModelSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<D
     outCref
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn crefStripPrefix(mut cref: Arc<DAE::ComponentRef>, mut prefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &((cref.clone(), prefix.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((cref.clone(), prefix.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id1, identType: _, subscriptLst: subs1, componentRef: cr1 }, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id2, identType: _, subscriptLst: subs2 }) => {
             let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
             let true = (ExpressionBasics::subscriptEqual(subs1.clone(), subs2.clone())?) else { bail!("pattern mismatch") };
-            cr1.clone()
+            return Ok(cr1.clone())
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident: id1, identType: _, subscriptLst: subs1, componentRef: cr1 }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: id2, identType: _, subscriptLst: subs2, componentRef: cr2 }) => {
             let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
             let true = (ExpressionBasics::subscriptEqual(subs1.clone(), subs2.clone())?) else { bail!("pattern mismatch") };
-            crefStripPrefix(cr1.clone(), cr2.clone())?
+            { (cref, prefix) = (cr1.clone(), cr2.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefStripLastIdent(mut inCr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
@@ -2167,23 +2149,21 @@ pub fn toStringList(mut inCref: Arc<DAE::ComponentRef>) -> Arc<metamodelica::Lis
     outStringList
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn toStringList_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumStrings: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
-    let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    outStringList = (::match_deref::match_deref! { match &(inCref.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, componentRef: cref, .. } => {
-            toStringList_tail(cref.clone(), metamodelica::cons((id.clone()).clone(), inAccumStrings.clone()))
+            { (inCref, inAccumStrings) = (cref.clone(), metamodelica::cons((id.clone()).clone(), inAccumStrings.clone())); continue '__tco; }
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, .. } => {
-            metamodelica::cons((id.clone()).clone(), inAccumStrings.clone())
+            return metamodelica::cons((id.clone()).clone(), inAccumStrings.clone())
         },
         _ => {
-            metamodelica::nil()
+            return metamodelica::nil()
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outStringList
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn crefDepth(mut inCref: Arc<DAE::ComponentRef>) -> Result<i32> {
@@ -2203,23 +2183,21 @@ pub fn crefDepth(mut inCref: Arc<DAE::ComponentRef>) -> Result<i32> {
     Ok(depth)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn crefDepth1(mut inCref: Arc<DAE::ComponentRef>, mut iDepth: i32) -> Result<i32> {
-    let mut depth: i32 = 0;
-    depth = (::match_deref::match_deref! { match &(inCref.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::WILD { .. } => {
-            iDepth.clone()
+            return Ok(iDepth.clone())
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
-            1 + iDepth.clone()
+            return Ok(1 + iDepth.clone())
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: n, .. } => {
-            crefDepth1(n.clone(), 1 + iDepth.clone())?
+            { (inCref, iDepth) = (n.clone(), 1 + iDepth.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(depth)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn expandCref(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
@@ -2394,23 +2372,21 @@ pub fn expandCref_impl(mut inCref: Arc<DAE::ComponentRef>, mut expandRecord: boo
     Ok(outCref)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn expandCrefLst(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inCrefsAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    outCref = (::match_deref::match_deref! { match &(inCrefs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCrefs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            List::flatten(inCrefsAcc.clone())?
+            return Ok(List::flatten(inCrefsAcc.clone())?)
         },
         Deref @ metamodelica::List::Cons { head: cr, tail: rest } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             crefs = List::map(varLst.clone(), (std::sync::Arc::new(creffromVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
             crefs = List::map1r(crefs.clone(), (std::sync::Arc::new(joinCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone())?;
-            expandCrefLst(rest.clone(), varLst.clone(), metamodelica::cons(crefs.clone(), inCrefsAcc.clone()))?
+            { (inCrefs, varLst, inCrefsAcc) = (rest.clone(), varLst.clone(), metamodelica::cons(crefs.clone(), inCrefsAcc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn expandCrefQual(mut inHeadCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inRestCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
@@ -2566,28 +2542,26 @@ pub fn expandArrayCref(mut inCr: Arc<DAE::ComponentRef>, mut inDims: Arc<metamod
     Ok(outCrefs)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn expandArrayCref1(mut inCr: Arc<DAE::ComponentRef>, mut inSubscripts: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>, mut inAccumSubs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inAccumCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    outCrefs = (::match_deref::match_deref! { match &(inSubscripts.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inSubscripts.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: sub, tail: subs }, tail: rest_subs } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             crefs = expandArrayCref1(inCr.clone(), metamodelica::cons(subs.clone(), rest_subs.clone()), inAccumSubs.clone(), inAccumCrefs.clone())?;
             crefs = expandArrayCref1(inCr.clone(), rest_subs.clone(), metamodelica::cons(sub.clone(), inAccumSubs.clone()), crefs.clone())?;
-            crefs.clone()
+            return Ok(crefs.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
-            inAccumCrefs.clone()
+            return Ok(inAccumCrefs.clone())
         },
         _ => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = crefSetLastSubs(inCr.clone(), inAccumSubs.clone())?;
-            metamodelica::cons(cref.clone(), inAccumCrefs.clone())
+            return Ok(metamodelica::cons(cref.clone(), inAccumCrefs.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outCrefs)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn explode(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
@@ -2596,22 +2570,20 @@ pub fn explode(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<metamodelica::L
     Ok(outParts)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn explode_tail(mut inCref: Arc<DAE::ComponentRef>, mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
-    let mut outParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    outParts = (::match_deref::match_deref! { match &(inCref.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: rest_cr, .. } => {
             let mut first_cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             first_cr = ComponentReferenceBasics::crefFirstCref(inCref.clone())?;
-            explode_tail(rest_cr.clone(), metamodelica::cons(first_cr.clone(), inParts.clone()))?
+            { (inCref, inParts) = (rest_cr.clone(), metamodelica::cons(first_cr.clone(), inParts.clone())); continue '__tco; }
         },
         _ => {
-            metamodelica::cons(inCref.clone(), inParts.clone())
+            return Ok(metamodelica::cons(inCref.clone(), inParts.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outParts)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn implode(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<DAE::ComponentRef>> {
@@ -2634,22 +2606,20 @@ pub fn implode_reverse(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef
     Ok(outCref)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn implode_tail(mut inParts: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inAccumCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> {
-    let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    outCref = (::match_deref::match_deref! { match &(inParts.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inParts.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: subs }, tail: rest } => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (id.clone()).clone(), identType: ty.clone(), subscriptLst: subs.clone(), componentRef: inAccumCref.clone() });
-            implode_tail(rest.clone(), cr.clone())?
+            { (inParts, inAccumCref) = (rest.clone(), cr.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
-            inAccumCref.clone()
+            return Ok(inAccumCref.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outCref)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn identifierCount(mut inCref: Arc<DAE::ComponentRef>) -> i32 {
@@ -2658,20 +2628,18 @@ pub fn identifierCount(mut inCref: Arc<DAE::ComponentRef>) -> i32 {
     outIdCount
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn identifierCount_tail(mut inCref: Arc<DAE::ComponentRef>, mut inAccumCount: i32) -> i32 {
-    let mut outIdCount: i32 = 0;
-    outIdCount = (::match_deref::match_deref! { match &(inCref.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
-            identifierCount_tail(cr.clone(), inAccumCount.clone() + 1)
+            { (inCref, inAccumCount) = (cr.clone(), inAccumCount.clone() + 1); continue '__tco; }
         },
         _ => {
-            inAccumCount.clone() + 1
+            return inAccumCount.clone() + 1
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    outIdCount
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 pub fn checkCrefSubscriptsBounds(mut inCref: Arc<DAE::ComponentRef>, mut inInfo: SourceInfo) -> Result<()> {

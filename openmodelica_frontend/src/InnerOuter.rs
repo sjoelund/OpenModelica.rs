@@ -887,11 +887,9 @@ pub fn lookupInnerVar(mut inCache: Cache, mut inEnv: FCore::Graph, mut inIH: Ins
     Ok(outInstInner)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, mut inInnerOuter: Absyn::InnerOuter, mut inInstInner: InstInner) -> Result<InstHierarchy> {
-    let mut outIH: InstHierarchy = metamodelica::nil();
-    outIH = (::match_deref::match_deref! { match &((inIH.clone(), inInstInner.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inIH.clone(), inInstInner.clone())) {
         (Deref @ metamodelica::List::Nil, InstInner { .. }) => {
             let mut tih: TopInstance;
             let mut ih: InstHierarchy = metamodelica::nil();
@@ -901,7 +899,7 @@ pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, m
             sm = HashSet::emptyHashSet();
             tih = TopInstance { path: None, ht: ht.clone(), outerPrefixes: emptyOuterPrefixes().clone(), sm: sm.clone() };
             ih = updateInstHierarchy(list![tih.clone()], inPrefix.clone(), inInnerOuter.clone(), inInstInner.clone())?;
-            ih.clone()
+            return Ok(ih.clone())
         },
         (Deref @ metamodelica::List::Cons { head: TopInstance { path: pathOpt, ht, outerPrefixes, sm }, tail: restIH }, InstInner { name, .. }) => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -910,14 +908,14 @@ pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, m
             cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
             (_, cref) = PrefixUtil::prefixCref(FCore::emptyCache(), FGraph::empty(), emptyInstHierarchy().clone(), inPrefix.clone(), cref_.clone())?;
             ht = add((cref.clone(), inInstInner.clone()), ht.clone())?;
-            metamodelica::cons(TopInstance { path: pathOpt.clone(), ht: ht.clone(), outerPrefixes: outerPrefixes.clone(), sm: sm.clone() }, restIH.clone())
+            return Ok(metamodelica::cons(TopInstance { path: pathOpt.clone(), ht: ht.clone(), outerPrefixes: outerPrefixes.clone(), sm: sm.clone() }, restIH.clone()))
         },
         (_, InstInner { .. }) => {
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outIH)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn updateSMHierarchy(mut smState: Arc<DAE::ComponentRef>, mut inIH: InstHierarchy) -> Result<InstHierarchy> {

@@ -1165,24 +1165,22 @@ fn varEqns(mut v: i32, mut pos: i32, mut mT: metamodelica::Array<Arc<metamodelic
     Ok(outVarEqns)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getControlEqns(mut inVarsEqn: Arc<metamodelica::List<i32>>, mut inVarsEqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outEqns = (::match_deref::match_deref! { match &((inVarsEqn.clone(), inVarsEqns.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inVarsEqn.clone(), inVarsEqns.clone())) {
         (a, Deref @ metamodelica::List::Nil) => {
-            a.clone()
+            return Ok(a.clone())
         },
         (a, Deref @ metamodelica::List::Cons { head: b, tail: rest }) => {
             let mut c: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut d: Arc<metamodelica::List<i32>> = metamodelica::nil();
             c = List::intersectionOnTrue(a.clone(), b.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             d = getControlEqns(c.clone(), rest.clone())?;
-            d.clone()
+            return Ok(d.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outEqns)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn removeEqualFunctionCall(mut inEqsLst: Arc<metamodelica::List<i32>>, mut inExp: Arc<DAE::Exp>, mut inECr: Arc<DAE::Exp>, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut ichanged: Arc<metamodelica::List<i32>>) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<i32>>)> {
@@ -3025,49 +3023,43 @@ fn simplifyIfEquation1(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
     Ok(outEqns)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn simplifySolvedIfEqns2(mut crexplst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inEqAttr: BackendDAE::EquationAttributes) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
-    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    outEqns = (::match_deref::match_deref! { match &(crexplst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(crexplst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            inEqns.clone()
+            return Ok(inEqns.clone())
         },
         Deref @ metamodelica::List::Cons { head: (cr, e), tail: rest } => {
             let mut crexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             crexp = Expression::crefExp(cr.clone())?;
-            simplifySolvedIfEqns2(rest.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: crexp.clone(), scalar: e.clone(), source: DAE::emptyElementSource().clone(), attr: inEqAttr.clone() }), inEqns.clone()), inEqAttr.clone())?
+            { (crexplst, inEqns, inEqAttr) = (rest.clone(), metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: crexp.clone(), scalar: e.clone(), source: DAE::emptyElementSource().clone(), attr: inEqAttr.clone() }), inEqns.clone()), inEqAttr.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outEqns)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn simplifySolvedIfEqns(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut iHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
-    let mut oHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
-    oHt = (::match_deref::match_deref! { match &((conditions.clone(), theneqns.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((conditions.clone(), theneqns.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            iHt.clone()
+            return Ok(iHt.clone())
         },
         (Deref @ metamodelica::List::Cons { head: c, tail: explst }, Deref @ metamodelica::List::Cons { head: eqns, tail: rest }) => {
             let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
             ht = simplifySolvedIfEqns1(c.clone(), eqns.clone(), iHt.clone(), HashSet::emptyHashSet())?;
-            simplifySolvedIfEqns(explst.clone(), rest.clone(), ht.clone())?
+            { (conditions, theneqns, iHt) = (explst.clone(), rest.clone(), ht.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oHt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn simplifySolvedIfEqns1(mut condition: Arc<DAE::Exp>, mut brancheqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), mut iHs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
-    let mut oHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
-    oHt = (::match_deref::match_deref! { match &(brancheqns.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(brancheqns.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iHt.clone()
+            return Ok(iHt.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, scalar: e, .. }, tail: rest } => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3078,7 +3070,7 @@ fn simplifySolvedIfEqns1(mut condition: Arc<DAE::Exp>, mut brancheqns: Arc<metam
             exp = BaseHashTable::get(cr.clone(), iHt.clone())?;
             exp = Arc::new(DAE::Exp::IFEXP { expCond: condition.clone(), expThen: e.clone(), expElse: exp.clone() });
             ht = BaseHashTable::add((cr.clone(), exp.clone()), iHt.clone())?;
-            simplifySolvedIfEqns1(condition.clone(), rest.clone(), ht.clone(), hs.clone())?
+            { (condition, brancheqns, iHt, iHs) = (condition.clone(), rest.clone(), ht.clone(), hs.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::CREF { componentRef: cr, .. } }, scalar: e, .. }, tail: rest } => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3091,26 +3083,24 @@ fn simplifySolvedIfEqns1(mut condition: Arc<DAE::Exp>, mut brancheqns: Arc<metam
             e = Expression::negate(e.clone())?;
             exp = Arc::new(DAE::Exp::IFEXP { expCond: condition.clone(), expThen: e.clone(), expElse: exp.clone() });
             ht = BaseHashTable::add((cr.clone(), exp.clone()), iHt.clone())?;
-            simplifySolvedIfEqns1(condition.clone(), rest.clone(), ht.clone(), hs.clone())?
+            { (condition, brancheqns, iHt, iHs) = (condition.clone(), rest.clone(), ht.clone(), hs.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oHt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn simplifySolvedIfEqnsElse(mut elseenqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))> {
-    let mut oHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
-    oHt = (::match_deref::match_deref! { match &(elseenqs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(elseenqs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iHt.clone()
+            return Ok(iHt.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, scalar: e, .. }, tail: rest } if (!(BaseHashTable::hasKey(cr.clone(), iHt.clone())?)) => {
             let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
             let false = (Expression::expHasCref(e.clone(), cr.clone())?) else { bail!("pattern mismatch") };
             ht = BaseHashTable::add((cr.clone(), e.clone()), iHt.clone())?;
-            simplifySolvedIfEqnsElse(rest.clone(), ht.clone())?
+            { (elseenqs, iHt) = (rest.clone(), ht.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: Deref @ DAE::Exp::CREF { componentRef: cr, .. } }, scalar: e, .. }, tail: rest } if (!(BaseHashTable::hasKey(cr.clone(), iHt.clone())?)) => {
             let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTable2::FuncHashCref, HashTable2::FuncCrefEqual, HashTable2::FuncCrefStr, HashTable2::FuncExpStr));
@@ -3118,11 +3108,11 @@ fn simplifySolvedIfEqnsElse(mut elseenqs: Arc<metamodelica::List<Arc<BackendDAE:
             let false = (Expression::expHasCref(e.clone(), cr.clone())?) else { bail!("pattern mismatch") };
             e = Expression::negate(e.clone())?;
             ht = BaseHashTable::add((cr.clone(), e.clone()), iHt.clone())?;
-            simplifySolvedIfEqnsElse(rest.clone(), ht.clone())?
+            { (elseenqs, iHt) = (rest.clone(), ht.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oHt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn simplifyIfEquationAsserts(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut elseenqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut conditions1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut theneqns1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)> {
@@ -3672,25 +3662,23 @@ fn semiLinearOptimize2(mut saLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iH
     Ok(oAcc)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn semiLinearOptimize4(mut explst: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, Arc<DAE::ElementSource>)>>, mut iAcc: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>, mut inEqAttr: BackendDAE::EquationAttributes) -> Result<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> {
-    let mut oAcc: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>> = metamodelica::nil();
-    oAcc = (::match_deref::match_deref! { match &(explst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(explst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iAcc.clone()
+            return Ok(iAcc.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } => {
-            iAcc.clone()
+            return Ok(iAcc.clone())
         },
         Deref @ metamodelica::List::Cons { head: (s2, index, source), tail: rest @ Deref @ metamodelica::List::Cons { head: (s1, _, _), tail: _ } } => {
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: s2.clone(), scalar: s1.clone(), source: source.clone(), attr: inEqAttr.clone() });
-            semiLinearOptimize4(rest.clone(), metamodelica::cons((eqn.clone(), index.clone()), iAcc.clone()), inEqAttr.clone())?
+            { (explst, iAcc, inEqAttr) = (rest.clone(), metamodelica::cons((eqn.clone(), index.clone()), iAcc.clone()), inEqAttr.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(oAcc)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn semiLinearOptimize3(mut exp: Arc<DAE::Exp>, mut isource: Arc<DAE::ElementSource>, mut iIndex: i32, mut iHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut IEqnsarray: metamodelica::Array<(Arc<BackendDAE::Equation>, i32)>, mut iAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, Arc<DAE::ElementSource>)>>) -> Result<(Arc<DAE::Exp>, Arc<DAE::ElementSource>, i32, Arc<metamodelica::List<(Arc<DAE::Exp>, i32, Arc<DAE::ElementSource>)>>)> {
@@ -3805,19 +3793,17 @@ fn semiLinearSort(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>
     Ok(oEqnsarray)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn semiLinearSort1(mut eqnslstlst: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>>>, mut size: i32, mut iEqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>>> {
-    let mut oEqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
-    oEqnsarray = (::match_deref::match_deref! { match &(eqnslstlst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eqnslstlst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            iEqnsarray.clone()
+            return Ok(iEqnsarray.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: tpl, tail: Deref @ metamodelica::List::Nil }, tail: rest } => {
             let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
             eqnsarray = if (intGt(size.clone(), metamodelica::arrayLength(iEqnsarray.clone()))) {Array::expand(5, iEqnsarray.clone(), metamodelica::nil())?} else {iEqnsarray.clone()};
             eqnsarray = metamodelica::arrayUpdate(eqnsarray.clone(), size.clone(), list![tpl.clone()])?;
-            semiLinearSort1(rest.clone(), size.clone() + 1, eqnsarray.clone())?
+            { (eqnslstlst, size, iEqnsarray) = (rest.clone(), size.clone() + 1, eqnsarray.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: eqns, tail: rest } => {
             let mut size1: i32 = 0;
@@ -3825,11 +3811,11 @@ fn semiLinearSort1(mut eqnslstlst: Arc<metamodelica::List<Arc<metamodelica::List
             let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
             ht = HashTableExpToIndex::emptyHashTable();
             (size1, eqnsarray) = semiLinearSort2(eqns.clone(), ht.clone(), size.clone(), iEqnsarray.clone())?;
-            semiLinearSort1(rest.clone(), size1.clone(), eqnsarray.clone())?
+            { (eqnslstlst, size, iEqnsarray) = (rest.clone(), size1.clone(), eqnsarray.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(oEqnsarray)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn semiLinearSort2(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>, mut iHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), mut size: i32, mut iEqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>>) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>>)> {
@@ -4386,13 +4372,11 @@ fn eaddInitialStmtsToAlgorithms1Helper(mut inEq: Arc<BackendDAE::Equation>, mut 
     Ok((outEq, outTpl))
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn expandAlgorithmStmts(mut inAlg: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inOutputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inVars: BackendDAE::Variables, mut isInitialEquation: bool) -> Result<Arc<metamodelica::List<Arc<DAE::Statement>>>> {
-    let mut outAlg: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    outAlg = (::match_deref::match_deref! { match &((inAlg.clone(), inOutputs.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inAlg.clone(), inOutputs.clone())) {
         (statements, Deref @ metamodelica::List::Nil) => {
-            statements.clone()
+            return Ok(statements.clone())
         },
         (statements, Deref @ metamodelica::List::Cons { head: out, tail: rest }) => {
             let mut initExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4414,11 +4398,11 @@ pub fn expandAlgorithmStmts(mut inAlg: Arc<metamodelica::List<Arc<DAE::Statement
                 stmt = Algorithm::makeAssignment(Arc::new(DAE::Exp::CREF { componentRef: v.varName.clone(), ty: type_.clone() }), DAE::Properties::PROP { type_: type_.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, initExp.clone(), DAE::Properties::PROP { type_: type_.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }, DAE::dummyAttrVar().clone(), openmodelica_frontend_types::SCode::Initial::NON_INITIAL, DAE::emptyElementSource().clone())?;
                 statements = metamodelica::cons(stmt.clone(), statements.clone());
             }
-            expandAlgorithmStmts(statements.clone(), rest.clone(), inVars.clone(), isInitialEquation.clone())?
+            { (inAlg, inOutputs, inVars, isInitialEquation) = (statements.clone(), rest.clone(), inVars.clone(), isInitialEquation.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outAlg)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 // =============================================================================

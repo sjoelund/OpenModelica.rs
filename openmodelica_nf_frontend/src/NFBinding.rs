@@ -452,21 +452,19 @@ pub fn getInfo(mut binding: Arc<NFBinding>) -> SourceInfo {
     info
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn getType(mut binding: Arc<NFBinding>) -> Result<Arc<Type::NFType>> {
-    let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    ty = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ UNBOUND { .. } => crate::NFType::interned_UNKNOWN(),
-        Deref @ RAW_BINDING { .. } => crate::NFType::interned_UNKNOWN(),
-        Deref @ UNTYPED_BINDING { .. } => crate::NFType::interned_UNKNOWN(),
-        Deref @ TYPED_BINDING { .. } => var_field!((*binding).bindingType, NFBinding::TYPED_BINDING).clone(),
-        Deref @ FLAT_BINDING { .. } => Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone()),
-        Deref @ CEVAL_BINDING { .. } => Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone()),
-        Deref @ INVALID_BINDING { .. } => getType(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone())?,
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(ty)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(binding.clone()) {
+        Deref @ UNBOUND { .. } => return Ok(crate::NFType::interned_UNKNOWN()),
+        Deref @ RAW_BINDING { .. } => return Ok(crate::NFType::interned_UNKNOWN()),
+        Deref @ UNTYPED_BINDING { .. } => return Ok(crate::NFType::interned_UNKNOWN()),
+        Deref @ TYPED_BINDING { .. } => return Ok(var_field!((*binding).bindingType, NFBinding::TYPED_BINDING).clone()),
+        Deref @ FLAT_BINDING { .. } => return Ok(Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())),
+        Deref @ CEVAL_BINDING { .. } => return Ok(Expression::typeOf(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())),
+        Deref @ INVALID_BINDING { .. } => { binding = var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(); continue '__tco; },
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isEach(mut binding: Arc<NFBinding>) -> bool {
@@ -492,22 +490,20 @@ pub fn isTyped(mut binding: Arc<NFBinding>) -> bool {
     isTyped
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 pub fn toString(mut binding: Arc<NFBinding>, mut prefix: ArcStr) -> Result<ArcStr> {
-    let mut string: ArcStr = arcstr::literal!("");
-    string = ((::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ UNBOUND { .. } => literal!(""),
-        Deref @ RAW_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ TYPED_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ FLAT_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ CEVAL_BINDING { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())?); ArcStr::from(__mm_s) },
-        Deref @ INVALID_BINDING { .. } => toString(var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), (prefix.clone()).clone())?,
-        _ => literal!(""),
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } })).clone();
-    Ok(string)
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(binding.clone()) {
+        Deref @ UNBOUND { .. } => return Ok(literal!("")),
+        Deref @ RAW_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Dump::printExpStr(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ UNTYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ TYPED_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ FLAT_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ CEVAL_BINDING { .. } => return Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*Expression::toString(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())?); ArcStr::from(__mm_s) }),
+        Deref @ INVALID_BINDING { .. } => { (binding, prefix) = (var_field!((*binding).binding, NFBinding::INVALID_BINDING).clone(), (prefix.clone()).clone()); continue '__tco; },
+        _ => return Ok(literal!("")),
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn toFlatString(mut binding: Arc<NFBinding>, mut format: BaseModelica::OutputFormat, mut prefix: ArcStr) -> Result<ArcStr> {

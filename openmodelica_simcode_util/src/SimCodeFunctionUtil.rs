@@ -98,28 +98,26 @@ pub fn crefSubIsScalar(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
     Ok(isScalar)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn subsToScalar(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<bool> {
-    let mut outBoolean: bool = false;
-    outBoolean = (::match_deref::match_deref! { match &(inExpSubscriptLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inExpSubscriptLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            true
+            return Ok(true)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { .. }, tail: _ } => {
-            false
+            return Ok(false)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: _ } => {
-            false
+            return Ok(false)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { .. }, tail: r } => {
             let mut b: bool = false;
             b = subsToScalar(r.clone())?;
-            b.clone()
+            return Ok(b.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outBoolean)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefNoSub(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
@@ -2904,23 +2902,21 @@ pub fn getImplicitRecordConstructors(mut inExpLst: Arc<metamodelica::List<Arc<DA
     Ok(outExpLst)
 }
 
-// NOTE: tail-call loop lowering disabled — the body needs `match_deref!{…}`
-// (string-literal / tuple-of-Arc patterns) which the loop's `.as_ref()` path can't decode.
 fn getCalledFunctionsInFunctions(mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
-    let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
-    outHt = (::match_deref::match_deref! { match &((paths.clone(), inHt.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((paths.clone(), inHt.clone())) {
         (Deref @ metamodelica::List::Nil, ht) => {
-            ht.clone()
+            return Ok(ht.clone())
         },
         (Deref @ metamodelica::List::Cons { head: path, tail: rest }, ht) => {
             let mut ht = (*ht).clone();
             ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?, ht.clone(), funcs.clone())?;
             ht = getCalledFunctionsInFunctions(rest.clone(), ht.clone(), funcs.clone())?;
-            ht.clone()
+            return Ok(ht.clone())
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok(outHt)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: ArcStr, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)), mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
