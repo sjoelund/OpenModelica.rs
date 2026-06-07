@@ -955,7 +955,77 @@ pub fn copyFile(source: ArcStr, destination: ArcStr) -> bool {
 }
 
 pub fn removeDirectory(inString: ArcStr) -> bool {
-    fs::remove_dir_all(inString.as_str()).is_ok()
+    // `SystemImpl__removeDirectory` is more than a recursive delete; the
+    // scripting `remove()` API relies on two quirks:
+    //   * a non-directory path is unlink'ed (scripts call remove() on plain
+    //     files, e.g. recompileFMU.mos removes simpleLoop.fmu), and
+    //   * the path may contain a `*` wildcard inside one component
+    //     ("[base/]pre*post[/sub]"); every matching entry is removed,
+    //     failures of individual matches are ignored, and the result is
+    //     true as long as the wildcard's base directory could be read.
+    remove_directory_wild(inString.as_str())
+}
+
+fn remove_directory_wild(path: &str) -> bool {
+    let Some(star) = path.find('*') else {
+        return remove_directory_item(path);
+    };
+    // Split "[basepath/]pre*post[/sub]" around the component holding the
+    // first `*`. Like the C unix branch, only `/` separates components
+    // (omc-internal paths are forward-slash normalized).
+    let (prefix, sub) = match path[star..].find('/') {
+        Some(i) => (&path[..star + i], Some(&path[star + i + 1..])),
+        None => (path, None),
+    };
+    let (basepath, pattern) = match prefix[..star].rfind('/') {
+        Some(i) => (&prefix[..i], &prefix[i + 1..]),
+        None => (".", prefix),
+    };
+    // Only the first `*` splits the pattern; a second one would be matched
+    // literally in C as well.
+    let (pat_pre, pat_post) = pattern.split_once('*').expect("component contains the `*`");
+    // An empty basepath (wildcard in the first component of an absolute
+    // path) fails read_dir just like C's opendir("").
+    let Ok(entries) = fs::read_dir(basepath) else {
+        return false;
+    };
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else { continue };
+        let matches = name.len() >= pat_pre.len() + pat_post.len()
+            && name.starts_with(pat_pre)
+            && name.ends_with(pat_post);
+        if !matches {
+            continue;
+        }
+        let full = format!("{basepath}/{name}");
+        // stat (following symlinks) like the C code; ignore per-item errors.
+        let Ok(meta) = fs::metadata(&full) else { continue };
+        if meta.is_dir() {
+            match sub {
+                Some(sub) => {
+                    remove_directory_wild(&format!("{full}/{sub}"));
+                }
+                None => {
+                    remove_directory_item(&full);
+                }
+            }
+        } else if sub.is_none() {
+            let _ = fs::remove_file(&full);
+        }
+        // A file with remaining sub-path components is skipped, as in C.
+    }
+    true
+}
+
+/// Wildcard-free delete: directories recursively, anything else (plain
+/// file, dead symlink) via unlink — `SystemImpl__removeDirectoryItem`.
+fn remove_directory_item(path: &str) -> bool {
+    if fs::metadata(path).map(|m| m.is_dir()).unwrap_or(false) {
+        fs::remove_dir_all(path).is_ok()
+    } else {
+        fs::remove_file(path).is_ok()
+    }
 }
 
 // ───────────────────────────────── classnames-for-simulation cache ────────────
