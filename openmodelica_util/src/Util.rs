@@ -1208,7 +1208,7 @@ pub fn absoluteOrRelative(mut inFileName: ArcStr) -> ArcStr {
 }
 
 pub fn hashFileNamePrefix(mut inFileNamePrefix: ArcStr) -> Result<ArcStr> {
-    let mut hashStr: ArcStr = substring((intString(intAbs(stringHashDjb2((inFileNamePrefix.clone()).clone())))).clone(), 1, 3)?;
+    let mut hashStr: ArcStr = substring((intString(stringHashDjb2((inFileNamePrefix.clone()).clone()))).clone(), 1, 3)?;
     Ok(hashStr)
 }
 
@@ -1369,7 +1369,7 @@ pub fn applyTuple31<T1: Clone + 'static + metamodelica::ReferenceEq, T2: Clone +
 
 pub fn referenceCompare<T1: Clone + 'static, T2: Clone + 'static>(mut ref1: T1, mut ref2: T2) -> i32 {
     let mut result: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("referenceCompareExt"), lang: Some("C"), output_: Some(CREF_IDENT { name: "result", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref2", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Include" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "\n  static inline int referenceCompareExt(void *ref1, void *ref2)\n  {\n    return (ref1 < ref2) ? -1 : (ref1 > ref2);\n  }\n" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1652, columnNumberStart: 73, lineNumberEnd: 1657, columnNumberEnd: 2, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1652, columnNumberStart: 66, lineNumberEnd: 1657, columnNumberEnd: 2, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("referenceCompareExt"), lang: Some("C"), output_: Some(CREF_IDENT { name: "result", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref2", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Include" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "\n  static inline int referenceCompareExt(void *ref1, void *ref2)\n  {\n    return (ref1 < ref2) ? -1 : (ref1 > ref2);\n  }\n" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 73, lineNumberEnd: 1655, columnNumberEnd: 2, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 66, lineNumberEnd: 1655, columnNumberEnd: 2, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     result
 }
 
