@@ -157,6 +157,40 @@ thread_local! {
     static SYNTAX_MESSAGES: RefCell<Vec<SyntaxMessage>> = const { RefCell::new(Vec::new()) };
 }
 
+thread_local! {
+    /// Original file bytes when the source was not valid UTF-8 and had to be
+    /// sanitized for the lexer (each invalid byte replaced by `'?'`, preserving
+    /// byte offsets). `None` for valid-UTF-8 or string-literal input. The lexer
+    /// consults this in `lex_string` to reproduce the C `STRING` rule's
+    /// per-literal UTF-8 check (`SystemImpl__iconv__ascii` + warning).
+    static SOURCE_ORIG_BYTES: RefCell<Option<std::sync::Arc<[u8]>>> = const { RefCell::new(None) };
+}
+
+/// Install (or clear) the original bytes of a non-UTF-8 source for the duration
+/// of a parse. `ParserExt` sets this from the raw file bytes before parsing and
+/// clears it afterwards. See [`SOURCE_ORIG_BYTES`].
+pub fn set_non_utf8_source_bytes(bytes: Option<std::sync::Arc<[u8]>>) {
+    SOURCE_ORIG_BYTES.with(|b| *b.borrow_mut() = bytes);
+}
+
+/// If the source was non-UTF-8 and the original bytes of `[start, end)` (a
+/// string literal's content span, in byte offsets that line up with the
+/// sanitized source) are not valid UTF-8, return that span ASCII-fied — every
+/// byte with the high bit set replaced by `'?'`, the rest kept — exactly like
+/// the C `SystemImpl__iconv__ascii`. Returns `None` when the span was valid (so
+/// the lexer keeps the string verbatim and emits no warning).
+fn ascii_fy_string_span_if_invalid(start: usize, end: usize) -> Option<String> {
+    SOURCE_ORIG_BYTES.with(|b| {
+        let b = b.borrow();
+        let bytes = b.as_deref()?;
+        let span = bytes.get(start..end)?;
+        if std::str::from_utf8(span).is_ok() {
+            return None;
+        }
+        Some(span.iter().map(|&c| if c & 0x80 != 0 { '?' } else { c as char }).collect())
+    })
+}
+
 /// Record a non-fatal syntax diagnostic. With `SyntaxSeverity::Error` the
 /// parse continues but `run_entry` fails afterwards, mirroring the C
 /// parser's `ModelicaParser_lexerError = ANTLR3_TRUE` convention; a

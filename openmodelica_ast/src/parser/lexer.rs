@@ -694,6 +694,9 @@ impl<'s> Lexer<'s> {
     /// Lex a string literal; the opening `"` has already been consumed.
     /// The raw content (with escape sequences preserved) is returned.
     fn lex_string(&mut self, start_line: u32, start_col: u32) -> Result<TokenKind, LexError> {
+        // Byte offset of the content right after the opening `"`; lines up with
+        // the original (pre-sanitization) bytes for the per-literal UTF-8 check.
+        let content_start = self.pos;
         let mut raw = String::new();
         loop {
             match self.advance() {
@@ -712,7 +715,50 @@ impl<'s> Lexer<'s> {
                 Some(c) => raw.push(c),
             }
         }
+        // Reproduce the C `STRING` rule (BaseModelica_Lexer.g): if the literal's
+        // original bytes are not valid UTF-8, fall back to 7-bit ASCII (high
+        // bytes → '?') and warn. The closing `"` is one byte, so the content
+        // span ends at `self.pos - 1`.
+        let content_end = self.pos - 1;
+        if let Some(ascii) = super::ascii_fy_string_span_if_invalid(content_start, content_end) {
+            self.warn_non_utf8(&ascii, start_line, start_col);
+            return Ok(TokenKind::Str(ascii.into()));
+        }
         Ok(TokenKind::Str(raw.into()))
+    }
+
+    /// Emit the C `STRING`-rule warning for a string literal that was not valid
+    /// UTF-8. Mirrors the message, truncation (72 chars + "...") and span
+    /// (`[start_col, start_col + len]`) of `BaseModelica_Lexer.g`. `ascii` is
+    /// the already-ASCII-fied content (without the surrounding quotes).
+    fn warn_non_utf8(&self, ascii: &str, start_line: u32, start_col: u32) {
+        // Every byte is ASCII here, so byte length == display column count.
+        let full_len = ascii.len();
+        let (mut display, len) = if full_len > 75 {
+            (ascii[..72].to_owned(), 72usize)
+        } else {
+            (ascii.to_owned(), full_len)
+        };
+        // Keep the printed message on one line (C replaces CR/LF with spaces).
+        display = display.chars().map(|c| if c == '\n' || c == '\r' { ' ' } else { c }).collect();
+        if full_len > 75 {
+            display.push_str("...");
+        }
+        let message = format!(
+            "The file was not encoded in UTF-8:\n  \"{display}\".\n  \
+             Defaulting to 7-bit ASCII with unknown characters replaced by '?'.\n  \
+             To change encoding when loading a file: loadFile(encoding=\"ISO-XXXX-YY\").\n  \
+             To change it in a package: add a file package.encoding at the top-level.\n  \
+             Note: The Modelica Language Specification only allows files encoded in UTF-8."
+        );
+        super::add_syntax_message(
+            super::SyntaxSeverity::Warning,
+            message,
+            start_line,
+            start_col,
+            start_line,
+            start_col + len as u32,
+        );
     }
 
     /// `SESCAPE` (BaseModelica_Lexer.g): a backslash escaping a byte that is not

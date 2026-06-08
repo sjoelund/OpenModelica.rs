@@ -101,6 +101,49 @@ fn run_parse(src: &str, filename: &str, info_filename: &str, grammar: Grammar, r
     result
 }
 
+/// Read a source file as a UTF-8 string for the lexer, mirroring the C lexer's
+/// tolerance of non-UTF-8 input (it lexes raw bytes and only validates inside
+/// the `STRING` rule). When the file is valid UTF-8 this is just the contents
+/// and `None`. When it is not, each byte that is not part of a valid UTF-8
+/// sequence is replaced by `'?'` — one byte each, so byte offsets stay aligned
+/// with the original — and the original bytes are returned so the lexer can
+/// reproduce the per-string-literal warning + ASCII fallback.
+fn read_source_file(filename: &str) -> std::io::Result<(String, Option<Arc<[u8]>>)> {
+    Ok(sanitize_source_bytes(std::fs::read(filename)?))
+}
+
+fn sanitize_source_bytes(bytes: Vec<u8>) -> (String, Option<Arc<[u8]>>) {
+    match std::str::from_utf8(&bytes) {
+        Ok(s) => (s.to_owned(), None),
+        Err(_) => {
+            let mut out = String::with_capacity(bytes.len());
+            let mut i = 0;
+            while i < bytes.len() {
+                match std::str::from_utf8(&bytes[i..]) {
+                    Ok(s) => {
+                        out.push_str(s);
+                        break;
+                    }
+                    Err(e) => {
+                        let valid = e.valid_up_to();
+                        // SAFETY: `bytes[i..i+valid]` is valid UTF-8 per the
+                        // `from_utf8` error contract.
+                        out.push_str(unsafe { std::str::from_utf8_unchecked(&bytes[i..i + valid]) });
+                        // `error_len() == None` ⇒ truncated multibyte sequence
+                        // at EOF; replace the rest. Each invalid byte → one '?'.
+                        let invalid = e.error_len().unwrap_or(bytes.len() - i - valid);
+                        for _ in 0..invalid {
+                            out.push('?');
+                        }
+                        i += valid + invalid;
+                    }
+                }
+            }
+            (out, Some(Arc::from(bytes)))
+        }
+    }
+}
+
 /// The file's mtime in seconds, the way parseFile in Parser/parse.c stores
 /// `st.st_mtime` into every SOURCEINFO's lastModification — except under
 /// OPENMODELICA_BACKEND_STUBS, where it is pinned to 0.0 so bootstrapping
@@ -145,7 +188,7 @@ pub fn parse(
             encoding.as_str()
         ));
     }
-    let src = std::fs::read_to_string(filename.as_str())
+    let (src, orig_bytes) = read_source_file(filename.as_str())
         .with_context(|| format!("ParserExt::parse: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
     parser::set_pure_impure_as_ident(languageStandardInt < 33 && strict);
@@ -153,7 +196,10 @@ pub fn parse(
     // cannot write to are flagged read-only in their SOURCEINFO, so the
     // interactive API refuses to modify them.
     let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
-    run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str()))
+    parser::set_non_utf8_source_bytes(orig_bytes);
+    let result = run_parse(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str()));
+    parser::set_non_utf8_source_bytes(None);
+    result
 }
 
 pub fn parsestring(
@@ -185,12 +231,14 @@ pub fn parseexp(
     languageStandardInt: i32,
     _runningTestsuite: bool,
 ) -> Result<GlobalScript::Statements> {
-    let src = std::fs::read_to_string(filename.as_str())
+    let (src, orig_bytes) = read_source_file(filename.as_str())
         .with_context(|| format!("ParserExt::parseexp: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
     let readonly = !openmodelica_util::System::regularFileWritable(filename.clone());
+    parser::set_non_utf8_source_bytes(orig_bytes);
     let result = parser::parse_statements(&src, filename.as_str(), infoFilename.as_str(), grammar, readonly, file_timestamp(filename.as_str())).map_err(|e| anyhow!(e.to_string()));
     report_syntax_messages(infoFilename.as_str());
+    parser::set_non_utf8_source_bytes(None);
     result
 }
 
