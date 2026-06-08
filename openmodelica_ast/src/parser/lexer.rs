@@ -675,8 +675,13 @@ impl<'s> Lexer<'s> {
             // ---- Modelica 3.x keywords ----
             // (MetaModelica_Lexer.g also declares STREAM.)
             "stream"  if m3 || meta => TokenKind::Stream,
-            "pure"    if m3 => TokenKind::Pure,
-            "impure"  if m3 || meta => TokenKind::Impure,
+            // `pure`/`impure` only became keywords in Modelica 3.3; under
+            // `--std=<3.3 --strict` the Modelica-3 lexer demotes them to
+            // identifiers (Modelica_3_Lexer.g). The MetaModelica grammar always
+            // keeps `impure` a keyword (no such predicate there).
+            "pure"    if m3 => if super::pure_impure_as_ident() { TokenKind::Ident(word.into()) } else { TokenKind::Pure },
+            "impure"  if m3 => if super::pure_impure_as_ident() { TokenKind::Ident(word.into()) } else { TokenKind::Impure },
+            "impure"  if meta => TokenKind::Impure,
 
             // ---- Optimica extensions (always enabled for now) ----
             "optimization" if optimica => TokenKind::Optimization,

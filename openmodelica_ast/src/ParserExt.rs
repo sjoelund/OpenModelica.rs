@@ -131,7 +131,7 @@ pub fn parse(
     acceptedGram: i32,
     encoding: ArcStr,
     languageStandardInt: i32,
-    _strict: bool,
+    strict: bool,
     _runningTestsuite: bool,
     _libraryPath: ArcStr,
     _lveInstance: Option<i32>,
@@ -148,6 +148,7 @@ pub fn parse(
     let src = std::fs::read_to_string(filename.as_str())
         .with_context(|| format!("ParserExt::parse: cannot read {filename}"))?;
     let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::set_pure_impure_as_ident(languageStandardInt < 33 && strict);
     // Like parseFile in Parser/parse.c: classes parsed from a file the user
     // cannot write to are flagged read-only in their SOURCEINFO, so the
     // interactive API refuses to modify them.
@@ -160,10 +161,11 @@ pub fn parsestring(
     infoFilename: ArcStr,
     acceptedGram: i32,
     languageStandardInt: i32,
-    _strict: bool,
+    strict: bool,
     _runningTestsuite: bool,
 ) -> Result<Absyn::Program> {
     let grammar = select_grammar(acceptedGram, languageStandardInt);
+    parser::set_pure_impure_as_ident(languageStandardInt < 33 && strict);
     // String input has no on-disk path; the interactive name serves as both
     // the SOURCEINFO and the error-display name (like the C `parseString`).
     run_parse(r#str.as_str(), infoFilename.as_str(), infoFilename.as_str(), grammar, /*readonly=*/false, now_timestamp())

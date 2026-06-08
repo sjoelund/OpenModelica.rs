@@ -242,6 +242,26 @@ thread_local! {
     /// applies to just that expression — nested expressions fall back to the
     /// default, exactly like the explicit rule arguments in Modelica.g.
     static ALLOW_PART_EVAL_FUNC: std::cell::Cell<Option<bool>> = const { std::cell::Cell::new(None) };
+    /// Whether `pure`/`impure` are lexed as plain identifiers rather than
+    /// keywords. Mirrors the `Modelica_3_Lexer.g` predicate
+    /// `if (ModelicaParser_langStd < 33 && ModelicaParser_strict) $type = IDENT;`
+    /// — i.e. they only became keywords in Modelica 3.3, so a `--std=3.2
+    /// --strict` parse must reject `pure function …`. Defaults to `false`
+    /// (keywords); set per-parse by [`set_pure_impure_as_ident`].
+    static PURE_IMPURE_AS_IDENT: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Set whether `pure`/`impure` should be lexed as identifiers for subsequent
+/// parses on this thread (see [`PURE_IMPURE_AS_IDENT`]). Called from
+/// `ParserExt` with `languageStandardInt < 33 && strict`.
+pub fn set_pure_impure_as_ident(b: bool) {
+    PURE_IMPURE_AS_IDENT.with(|c| c.set(b));
+}
+
+/// Whether the lexer should treat `pure`/`impure` as identifiers. Read by the
+/// Modelica-3 keyword table in [`lexer`].
+pub(crate) fn pure_impure_as_ident() -> bool {
+    PURE_IMPURE_AS_IDENT.with(|c| c.get())
 }
 
 /// Parse a function-call argument expression, permitting a top-level partial
@@ -523,30 +543,38 @@ pub fn parse_statements(
     readonly: bool,
     timestamp: f64,
 ) -> Result<crate::GlobalScript::Statements, Box<dyn std::error::Error>> {
+    // The pure/impure language-version gating is a property of a full-file
+    // parse (set by ParserExt.parse/parsestring); interactive statements and
+    // fragments use the default (keywords), so reset any inherited value.
+    set_pure_impure_as_ident(false);
     run_entry(src, filename, info_filename, grammar, true, readonly, timestamp, interactive_stmt)
 }
 
 /// Parse a dotted name path such as `Modelica.Blocks.Sources` (ANTLR3 rule
 /// `name_path_end`; entry point for `ParserExt.stringPath`).
 pub fn parse_path(src: &str, filename: &str, grammar: Grammar) -> Result<Path, Box<dyn std::error::Error>> {
+    set_pure_impure_as_ident(false);
     run_entry(src, filename, filename, grammar, false, /*readonly=*/false, /*timestamp=*/0.0, name_path)
 }
 
 /// Parse a component reference such as `a.b[1].c` (ANTLR3 rule
 /// `component_reference_end`; entry point for `ParserExt.stringCref`).
 pub fn parse_cref(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ComponentRef, Box<dyn std::error::Error>> {
+    set_pure_impure_as_ident(false);
     run_entry(src, filename, filename, grammar, false, /*readonly=*/false, /*timestamp=*/0.0, component_reference)
 }
 
 /// Parse a single element modification such as `x(start = 1.0)` (ANTLR3 rule
 /// `element_modification_or_replaceable`; entry point for `ParserExt.stringMod`).
 pub fn parse_modification(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::ElementArg, Box<dyn std::error::Error>> {
+    set_pure_impure_as_ident(false);
     run_entry(src, filename, filename, grammar, false, /*readonly=*/false, /*timestamp=*/0.0, element_modification_or_replaceable)
 }
 
 /// Parse a single equation such as `x = y + 1` (ANTLR3 rule `equation`;
 /// entry point for `ParserExt.stringEq`).
 pub fn parse_equation(src: &str, filename: &str, grammar: Grammar) -> Result<Absyn::EquationItem, Box<dyn std::error::Error>> {
+    set_pure_impure_as_ident(false);
     run_entry(src, filename, filename, grammar, false, /*readonly=*/false, /*timestamp=*/0.0, equation_item)
 }
 
@@ -872,7 +900,6 @@ fn stored_definition(input: &mut TokenInput) -> ModalResult<Program> {
     let classes = class_definition_list(input)?;
 
     if !input.is_empty() {
-        eprintln!("stored_definition: remaining tokens: {:?}", &input[..input.len().min(5)]);
         return Err(ErrMode::Backtrack(ContextError::default()));
     }
     Ok(Program { classes: to_rc_list(classes), within_ })
