@@ -425,7 +425,27 @@ pub fn getNumWarningMessages() -> i32 {
 /// on this redirection (it always reads errors back through the queue
 /// directly), so we leave it as a no-op.
 pub fn initAssertionFunctions() {
-    // Intentional no-op — see doc comment.
+    // Mirror `Error_initAssertionFunctions` (`runtime/Error_omc.cpp`): bind the
+    // runtime's `omc_assert` reporter to `omc_assert_compiler`'s behaviour, so
+    // that assertions raised by metamodelica runtime functions (e.g.
+    // `uriToFilename`) append a `RUNTIME`/`Error` message to the buffer before
+    // the assertion fails. The message carries no source position, so it
+    // renders as `Error: <msg>`, exactly like the C compiler.
+    metamodelica::setAssertHook(|msg| {
+        addSourceMessage(
+            0,
+            MessageType::SIMULATION, // C `ErrorType_runtime` → prints as RUNTIME
+            Severity::ERROR,
+            0,
+            0,
+            0,
+            0,
+            false,
+            ArcStr::from(""),
+            ArcStr::from(msg),
+            nil(),
+        );
+    });
 }
 
 pub fn isTopCheckpoint(id: ArcStr) -> bool {

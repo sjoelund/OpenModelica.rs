@@ -229,6 +229,53 @@ pub fn print(s: ArcStr) {
 }
 
 // ============================================================================
+// Runtime assertions (`omc_assert`)
+// ============================================================================
+
+/// Host hook invoked by [`omc_assert!`] before the assertion fails. This is
+/// the analogue of the C runtime's `omc_assert` function pointer
+/// (`SimulationRuntime/c/util/omc_error.c`): the compiler binds it (via
+/// `ErrorExt.initAssertionFunctions`) to `omc_assert_compiler`, which appends a
+/// `RUNTIME`/`Error` message to the error buffer, while the simulation runtime
+/// would bind its own logger. When unbound the message survives only through
+/// the returned error, matching a runtime that never installed a reporter.
+static ASSERT_HOOK: std::sync::OnceLock<fn(&str)> = std::sync::OnceLock::new();
+
+/// Bind the assertion reporter, mirroring the assignment of the `omc_assert`
+/// function pointer in `Error_initAssertionFunctions`. The first binding wins,
+/// matching the single init call performed at startup; later calls are ignored.
+pub fn setAssertHook(hook: fn(&str)) {
+    let _ = ASSERT_HOOK.set(hook);
+}
+
+/// Report an assertion message through the bound hook, if any. Called by the
+/// [`omc_assert!`] macro immediately before it fails the surrounding
+/// computation. Reading the `OnceLock` is lock-free after startup, so this is
+/// safe to reach from any thread and adds no contention on the (cold) assert
+/// path.
+pub fn reportAssert(msg: &str) {
+    if let Some(hook) = ASSERT_HOOK.get() {
+        hook(msg);
+    }
+}
+
+/// Runtime assertion mirroring the C `omc_assert(threadData, info, fmt, ...)`.
+/// It reports the formatted message to the host error subsystem (see
+/// [`setAssertHook`]) and then fails the current computation with that message
+/// — the analogue of `omc_assert`'s `MMC_THROW`, which a surrounding
+/// matchcontinue catches. Use it wherever a ported runtime function would call
+/// `omc_assert`, instead of a bare `bail!`, so the message reaches
+/// `getErrorString`.
+#[macro_export]
+macro_rules! omc_assert {
+    ($($arg:tt)*) => {{
+        let __msg: ::std::string::String = ::std::format!($($arg)*);
+        $crate::reportAssert(&__msg);
+        ::anyhow::bail!(__msg)
+    }};
+}
+
+// ============================================================================
 // Integer arithmetic functions
 // ============================================================================
 
@@ -958,7 +1005,7 @@ fn decode_uri(src: &str) -> String {
 pub fn uriToFilename(uri_om: ArcStr) -> Result<ArcStr> {
     let uri = &*uri_om;
     if uri.is_empty() {
-        bail!("Malformed URI (got an empty string)");
+        omc_assert!("Malformed URI (got an empty string)");
     }
     // Scheme matching is case-insensitive per the C implementation
     // (`strncasecmp`). Only the prefix is lowercased — paths on
@@ -1008,13 +1055,12 @@ pub fn uriToFilename(uri_om: ArcStr) -> Result<ArcStr> {
         let ident_end = rest.find(['.', '/']).unwrap_or(rest.len());
         let class_name = &rest[..ident_end];
         if class_name.is_empty() {
-            bail!("Malformed URI (couldn't get a class name): {uri}");
+            omc_assert!("Malformed URI (couldn't get a class name): {uri}");
         }
-        let mut dir = uri_lookup_directory(class_name)
-            .filter(|d| !d.is_empty())
-            .ok_or_else(|| {
-                anyhow::anyhow!("Failed to lookup URI (is the package loaded?) {uri}")
-            })?;
+        let mut dir = match uri_lookup_directory(class_name).filter(|d| !d.is_empty()) {
+            Some(dir) => dir,
+            None => omc_assert!("Failed to lookup URI (is the package loaded?) {uri}"),
+        };
         let rest = decode_uri(&rest[ident_end..]);
         // Descend into nested class subdirectories: for each `.Ident`,
         // extend the directory while `<dir>/<Ident>` exists on disk. An
@@ -1030,7 +1076,7 @@ pub fn uriToFilename(uri_om: ArcStr) -> Result<ArcStr> {
                 .unwrap_or(rest.len());
             if id_end == pos {
                 if rest[id_end..].starts_with('.') {
-                    bail!("Malformed URI (double dot in class name): {uri}");
+                    omc_assert!("Malformed URI (double dot in class name): {uri}");
                 }
                 break; // '/' or end of string
             }
@@ -1054,7 +1100,7 @@ pub fn uriToFilename(uri_om: ArcStr) -> Result<ArcStr> {
     let path: &str = if scheme_match("file://") {
         &uri[7..]
     } else if uri.contains("://") {
-        bail!("Unknown URI schema: {uri}");
+        omc_assert!("Unknown URI schema: {uri}");
     } else {
         uri
     };
