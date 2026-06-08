@@ -61,6 +61,37 @@ impl Registry {
 
 static REGISTRY: LazyLock<Mutex<Registry>> = LazyLock::new(|| Mutex::new(Registry::new()));
 
+unsafe extern "C" {
+    /// C shim (`src/runtime_error_shim.c`): rebind the runtime's
+    /// `OpenModelica_Modelica{,V}FormatError` function-pointer slots so that a
+    /// `ModelicaError`/`ModelicaFormatError` raised inside an evaluated external
+    /// function is reported to the error buffer before the runtime throws. See
+    /// [`install_modelica_error_interception`].
+    fn omrs_install_modelica_error(err_slot: *mut c_void, verr_slot: *mut c_void);
+}
+
+/// Rebind the loaded runtime's `ModelicaError`/`ModelicaFormatError` hooks, the
+/// analogue of `Error_registerModelicaFormatError` (which the C compiler runs at
+/// startup against its statically-linked runtime). Only takes effect when the
+/// host requested it via `ErrorExt::registerModelicaFormatError`. `dlsym`
+/// resolves the addresses of the runtime's function-pointer variables (through
+/// the function library's `DT_NEEDED` on `libOpenModelicaRuntimeC`); the C shim
+/// saves the originals (for the throw) and repoints them at its reporting shims.
+fn install_modelica_error_interception(lib: usize) {
+    if !crate::ErrorExt::modelicaFormatErrorRegistered() {
+        return;
+    }
+    let err_slot = dlsym_addr(lib, "OpenModelica_ModelicaError");
+    let verr_slot = dlsym_addr(lib, "OpenModelica_ModelicaVFormatError");
+    // Both pointers come from the same runtime translation unit; if either is
+    // missing the runtime predates this hook and there is nothing to rebind.
+    if let (Some(err_slot), Some(verr_slot)) = (err_slot, verr_slot) {
+        unsafe {
+            omrs_install_modelica_error(err_slot as *mut c_void, verr_slot as *mut c_void);
+        }
+    }
+}
+
 fn last_dlerror() -> String {
     let e = unsafe { libc::dlerror() };
     if e.is_null() { "unknown error".to_owned() } else { unsafe { CStr::from_ptr(e) }.to_string_lossy().into_owned() }
@@ -235,6 +266,9 @@ fn ensure_runtime(reg: &mut Registry) -> Result<()> {
         std::ptr::write_bytes(td as *mut u8, 0, THREADDATA_SIZE);
         reg.thread_data = td as usize;
     }
+    // The runtime that owns the `OpenModelica_Modelica*Error` pointers is now
+    // loaded; rebind them if the host asked for error-buffer interception.
+    install_modelica_error_interception(lib);
     reg.inited = true;
     Ok(())
 }

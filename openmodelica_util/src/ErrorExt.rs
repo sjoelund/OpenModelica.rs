@@ -431,21 +431,57 @@ pub fn initAssertionFunctions() {
     // `uriToFilename`) append a `RUNTIME`/`Error` message to the buffer before
     // the assertion fails. The message carries no source position, so it
     // renders as `Error: <msg>`, exactly like the C compiler.
-    metamodelica::setAssertHook(|msg| {
-        addSourceMessage(
-            0,
-            MessageType::SIMULATION, // C `ErrorType_runtime` → prints as RUNTIME
-            Severity::ERROR,
-            0,
-            0,
-            0,
-            0,
-            false,
-            ArcStr::from(""),
-            ArcStr::from(msg),
-            nil(),
-        );
-    });
+    metamodelica::setAssertHook(add_runtime_error_message);
+}
+
+/// Append a positionless `RUNTIME`/`Error` message to the buffer — the analogue
+/// of `c_add_message(NULL, 0, ErrorType_runtime, ErrorLevel_error, str, ...)`.
+/// With no source location it renders as `Error: <msg>`, matching the C
+/// compiler. Shared by the `omc_assert` hook and the external-function
+/// `ModelicaError`/`ModelicaFormatError` interception (see
+/// [`registerModelicaFormatError`]).
+fn add_runtime_error_message(msg: &str) {
+    addSourceMessage(
+        0,
+        MessageType::SIMULATION, // C `ErrorType_runtime` → prints as RUNTIME
+        Severity::ERROR,
+        0,
+        0,
+        0,
+        0,
+        false,
+        ArcStr::from(""),
+        ArcStr::from(msg),
+        nil(),
+    );
+}
+
+/// Whether the host requested `ModelicaError`/`ModelicaFormatError` interception
+/// (i.e. [`registerModelicaFormatError`] ran). The rebinding itself happens in
+/// `dynload::ensure_runtime`, once the C runtime that owns the
+/// `OpenModelica_Modelica*Error` function pointers has been loaded.
+static MODELICA_ERROR_REGISTERED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+/// Whether [`registerModelicaFormatError`] has been called. Read by
+/// `dynload::ensure_runtime` to decide whether to rebind the runtime pointers.
+pub fn modelicaFormatErrorRegistered() -> bool {
+    MODELICA_ERROR_REGISTERED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Exported for the C interception shim (`src/runtime_error_shim.c`): append a
+/// `ModelicaError`/`ModelicaFormatError` message raised inside an evaluated
+/// external function to the error buffer.
+///
+/// # Safety
+/// `msg` must be a valid NUL-terminated C string for the duration of the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn omrs_add_runtime_error(msg: *const std::os::raw::c_char) {
+    if msg.is_null() {
+        return;
+    }
+    let text = unsafe { std::ffi::CStr::from_ptr(msg) }.to_string_lossy();
+    add_runtime_error_message(&text);
 }
 
 pub fn isTopCheckpoint(id: ArcStr) -> bool {
@@ -564,10 +600,18 @@ pub fn pushMessages(handles: Arc<List<i32>>) {
     });
 }
 
-/// Register the runtime's `ModelicaFormatError` hook. Unused by the
-/// bootstrap — see comments at the top of this file.
+/// Mirror `Error_registerModelicaFormatError` (`runtime/Error_omc.cpp`): make
+/// `ModelicaError`/`ModelicaFormatError` raised inside an evaluated external C
+/// function route to the error buffer (as a `RUNTIME`/`Error` message) rather
+/// than only streaming to the simulation log.
+///
+/// The C compiler rebinds the `OpenModelica_Modelica{,V}FormatError` function
+/// pointers here directly, because it links the runtime statically. The Rust
+/// port dlopens the runtime lazily, so the pointers do not exist yet; we only
+/// record the request and let `dynload::ensure_runtime` perform the rebinding
+/// once the runtime is loaded (see [`modelicaFormatErrorRegistered`]).
 pub fn registerModelicaFormatError() {
-    // Intentional no-op — see doc comment.
+    MODELICA_ERROR_REGISTERED.store(true, std::sync::atomic::Ordering::Relaxed);
 }
 
 /// Roll back messages added since the most recent checkpoint and discard

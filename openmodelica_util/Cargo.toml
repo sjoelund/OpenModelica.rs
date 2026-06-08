@@ -18,3 +18,7 @@ libc.workspace=true
 roxmltree.workspace=true
 # FMU extraction in the hand-written FMIExt.rs.
 zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
+
+[build-dependencies]
+# Compiles src/runtime_error_shim.c (va_list error interception shim).
+cc.workspace=true
