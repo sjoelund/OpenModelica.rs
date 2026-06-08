@@ -1733,11 +1733,15 @@ fn component_list(input: &mut TokenInput) -> ModalResult<Arc<List<Arc<ComponentI
 }
 
 fn component_declaration(input: &mut TokenInput) -> ModalResult<ComponentItem> {
-    let name = match next_tok(input)? {
-        TK::Ident(n)  => n,
-        TK::Operator  => literal!("operator"),
+    // Peek before consuming: a non-name token must leave the cursor in place so
+    // the failure (and its `No viable alternative near token: …` diagnostic) is
+    // reported at that token, not at the one after it.
+    let name = match peek_kind(input) {
+        Some(TK::Ident(n)) => n.clone(),
+        Some(TK::Operator) => literal!("operator"),
         _ => return Err(ErrMode::Backtrack(ContextError::default())),
     };
+    next_tok(input)?; // consume the validated name token
     let arrayDim  = opt(array_subscripts).parse_next(input)?.unwrap_or_else(|| Arc::new(List::Nil));
     let m         = opt(modification).parse_next(input)?;
     let condition = if opt(t(TK::If)).parse_next(input)?.is_some() {
@@ -1899,7 +1903,7 @@ fn parse_replaceable_spec(input: &mut TokenInput) -> ModalResult<(ElementSpec, O
         ElementSpec::CLASSDEF { replaceable_: true, class_: Arc::new(cls) }
     } else {
         let typePrefix = type_prefix(input)?;
-        let typeSpec   = cut_err(type_specifier)
+        let typeSpec   = cut_err(type_specifier_no_dims)
             .context(StrContext::Label("type specifier in replaceable"))
             .parse_next(input)?;
         let comp       = cut_err(component_declaration)
@@ -1930,7 +1934,7 @@ fn element_redeclaration(input: &mut TokenInput) -> ModalResult<ElementArg> {
             (RedeclareKeywords::REDECLARE, ElementSpec::CLASSDEF { replaceable_: false, class_: Arc::new(cls) }, None, parser_info(&start, input))
         } else {
             let typePrefix = type_prefix(input)?;
-            let typeSpec   = cut_err(type_specifier)
+            let typeSpec   = cut_err(type_specifier_no_dims)
                 .context(StrContext::Label("type specifier in redeclaration"))
                 .parse_next(input)?;
             let comp       = cut_err(component_declaration)
@@ -4052,6 +4056,17 @@ fn comment(input: &mut TokenInput) -> ModalResult<Option<Comment>> {
 }
 
 fn type_specifier(input: &mut TokenInput) -> ModalResult<TypeSpec> {
+    type_specifier_impl(input, /*allow_dims=*/true)
+}
+
+/// `type_specifier_no_dims` from Modelica.g: the type in a (re)declared
+/// component clause (`component_clause1`) must not carry array dimensions —
+/// `redeclare A[2] x` is a syntax error (dimensions belong on the component).
+fn type_specifier_no_dims(input: &mut TokenInput) -> ModalResult<TypeSpec> {
+    type_specifier_impl(input, /*allow_dims=*/false)
+}
+
+fn type_specifier_impl(input: &mut TokenInput, allow_dims: bool) -> ModalResult<TypeSpec> {
     let path = name_path(input)?;
     let mut ts: Arc<List<Arc<TypeSpec>>> = nil();
     if opt(t(TK::Less)).parse_next(input)?.is_some() {
@@ -4065,7 +4080,7 @@ fn type_specifier(input: &mut TokenInput) -> ModalResult<TypeSpec> {
         ts = ts.reverse();
         t(TK::Greater).parse_next(input)?;
     }
-    let arrayDim = opt(array_subscripts).parse_next(input)?;
+    let arrayDim = if allow_dims { opt(array_subscripts).parse_next(input)? } else { None };
     if ts.is_empty() {
         Ok(TypeSpec::TPATH { path: Arc::new(path), arrayDim })
     } else {
