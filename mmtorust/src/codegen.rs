@@ -15975,6 +15975,51 @@ fn emit_pat_assign<'a>(
                 writeln!(out, "{indent}let {} = {actual_expr};", escape_ident(name)).unwrap();
             }
         }
+        TypedPat::Lit(Lit::Real(v)) => {
+            // Rust forbids `f64` literal patterns, so a failable binding whose
+            // whole LHS is a real literal (`0.0 := realMod(x, 1.0)`) cannot be
+            // expressed as `let 0.0 = … else { fail }`. Lower it to a temp bind
+            // plus an explicit equality guard. Dropping this guard (the previous
+            // behaviour: `let _ /* … */ = … else { fail }`, where `_` is
+            // irrefutable and the `else` is dead) silently turned a refutable
+            // binding into an always-succeeding one — e.g. ExpressionSimplify's
+            // `x / (r*y) = (1/r)*x/y` rule guards on `0.0 := realMod(1e12/r, 1.0)`
+            // to fire only when `1/r` is a clean ≤12-decimal value; without the
+            // guard it fired for every constant denominator and over-folded
+            // `2/π`. Mirrors the match-arm path's `__rlit` mechanism.
+            let n = *fresh; *fresh += 1;
+            let tmp = format!("__rlit{n}");
+            let lit = format!("metamodelica::OrderedFloat(({v}) as f64)");
+            if let FailureMode::IfLetElse(else_code) = &fail_mode {
+                // `scrut_expr` is a raw `Result<Real>` here; unwrap it (running the
+                // else-recovery on `Err`), then run the same recovery on a value
+                // mismatch. Both copies of `else_code` diverge, so only one path
+                // ever executes.
+                writeln!(out, "{indent}let Ok({tmp}) = ({scrut_expr}) else {{").unwrap();
+                out.push_str(else_code.as_str());
+                writeln!(out, "{indent}}};").unwrap();
+                writeln!(out, "{indent}if !({tmp}.eq(&{lit})) {{").unwrap();
+                out.push_str(else_code.as_str());
+                writeln!(out, "{indent}}}").unwrap();
+            } else {
+                let fail_owned;
+                let fail: &str = match &fail_mode {
+                    FailureMode::Failure => "()",
+                    // Function / TryArm: follow qmode like the generic path so a
+                    // mismatch inside a `try` block breaks to the try label
+                    // rather than bailing out of a possibly-infallible function.
+                    _ => match &ctx.qmode {
+                        QMode::TryBlock(label) => {
+                            fail_owned = format!("break {label} Err::<_, _>(anyhow::anyhow!(\"pattern mismatch\"))");
+                            &fail_owned
+                        }
+                        _ => "bail!(\"pattern mismatch\")",
+                    },
+                };
+                writeln!(out, "{indent}let {tmp} = ({scrut_expr});").unwrap();
+                writeln!(out, "{indent}if !({tmp}.eq(&{lit})) {{ {fail} }}").unwrap();
+            }
+        }
         _ => {
             // MetaModelica permits a pattern-let to *reassign* names that are
             // already in scope (e.g. `l :: ll := ll;` where `l` and `ll` were

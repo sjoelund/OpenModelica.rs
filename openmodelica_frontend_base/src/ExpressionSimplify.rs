@@ -1738,7 +1738,8 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::POW { ty: Deref @ DAE::Type::T_REAL { .. } }, exp2: Deref @ DAE::Exp::RCONST { real: r1 } }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let _ /* lit — guard not yet implemented */ = (realMod(r1.clone(), metamodelica::OrderedFloat(2.0_f64))) else { bail!("pattern mismatch") };
+                    let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(2.0_f64)));
+                    if !(__rlit0.eq(&metamodelica::OrderedFloat((1.0) as f64))) { bail!("pattern mismatch") }
                     e3 = Expression::makePureBuiltinCall((literal!("log")).clone(), list![e1.clone()], DAE::T_REAL_DEFAULT().clone());
                     Ok(Expression::expMul(Arc::new(DAE::Exp::RCONST { real: r1.clone() }), e3.clone())?)
                 }
@@ -5455,7 +5456,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
                     r1 = metamodelica::OrderedFloat(1e12_f64) * r.clone();
-                    let _ /* lit — guard not yet implemented */ = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64))) else { bail!("pattern mismatch") };
+                    let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64)));
+                    if !(__rlit0.eq(&metamodelica::OrderedFloat((0.0) as f64))) { bail!("pattern mismatch") }
                     e3 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: r.clone() }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e1.clone() });
                     Ok(e3.clone())
                 }
@@ -5470,7 +5472,8 @@ fn simplifyBinary(mut origExp: Arc<DAE::Exp>, mut inOperator2: Operator, mut lhs
                     let true = (realAbs(r1.clone()) > metamodelica::OrderedFloat(0.0_f64)) else { bail!("pattern mismatch") };
                     r = metamodelica::OrderedFloat(1.0_f64) / r1.clone();
                     r1 = metamodelica::OrderedFloat(1e12_f64) * r.clone();
-                    let _ /* lit — guard not yet implemented */ = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64))) else { bail!("pattern mismatch") };
+                    let __rlit0 = (realMod(r1.clone(), metamodelica::OrderedFloat(1.0_f64)));
+                    if !(__rlit0.eq(&metamodelica::OrderedFloat((0.0) as f64))) { bail!("pattern mismatch") }
                     Ok(Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: r.clone() }), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e1.clone() }), operator: op2.clone(), exp2: e3.clone() }))
                 }
                 _ => bail!("nomatch"),
