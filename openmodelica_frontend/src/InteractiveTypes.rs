@@ -49,7 +49,7 @@ use openmodelica_frontend_types::Values;
 
 /// these are the simulation/buildModel* options
 /// simulation/buildModel* options
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SimulationOptions {
     /// start time, default 0.0
     pub startTime: Arc<DAE::Exp>,
@@ -100,7 +100,7 @@ pub type SIMULATION_OPTIONS = SimulationOptions;
 
 
 /// - InteractiveTypes.Variable
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Variable {
     /// The variable identifier
     pub varIdent: ArcStr,
@@ -125,7 +125,7 @@ pub type IVAR = Variable;
 
 /// - a component in a class
 ///  this is used in extracting all the components in all the classes
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Component {
     COMPONENTITEM {
         /// the class where the component is
@@ -152,7 +152,7 @@ impl Default for Component {
 }
 pub use self::Component::{COMPONENTITEM,EXTENDSITEM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Components {
     pub componentLst: Arc<metamodelica::List<Component>>,
     /// the number of components in list. used to optimize the get_dependency_on_class
@@ -171,7 +171,7 @@ impl Default for Components {
 pub type COMPONENTS = Components;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ComponentReplacement {
     /// which class contain the old cref
     pub which1: Arc<Absyn::Path>,
@@ -194,7 +194,7 @@ impl Default for ComponentReplacement {
 pub type COMPONENTREPLACEMENT = ComponentReplacement;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ComponentReplacementRules {
     pub componentReplacementLst: Arc<metamodelica::List<ComponentReplacement>>,
     /// the number of rules

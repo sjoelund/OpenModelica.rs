@@ -54,7 +54,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::UnorderedSet;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NFAlgorithm {
     pub statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>,
     pub inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>,

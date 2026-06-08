@@ -110,7 +110,7 @@ pub type PotentialRoot = (Arc<ComponentRef::NFComponentRef>, metamodelica::Real)
 pub type PotentialRoots = Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, metamodelica::Real)>>;
 
 /// Input structure for connection breaking algorithm. It is collected during instantiation phase.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NFOCConnectionGraph {
     pub updateGraph: bool,
     /// Roots defined with Connection.root
@@ -198,7 +198,7 @@ pub mod CrefSets {
     ///   corresponds to its rank, while other elements are given positive values that
     ///   corresponds to the index of their parent in the array. The hashtable is used
     ///   to look up the array index of a entry, and is also used to store the entries.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Sets {
         /// An array of nodes
         pub nodes: metamodelica::Array<i32>,

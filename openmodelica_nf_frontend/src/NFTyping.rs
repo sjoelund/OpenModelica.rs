@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 
 pub mod TypingError {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum TypingError {
         NO_ERROR,
         OUT_OF_BOUNDS {

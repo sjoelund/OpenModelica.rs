@@ -1870,6 +1870,13 @@ pub fn referenceEq<A: ?Sized>(a1: &A, a2: &A) -> bool {
 /// `GenCtx::derives_for`).
 pub use metamodelica_derive::ReferenceEq;
 
+/// `#[derive(MetaCmp)]` — emits `PartialEq`/`PartialOrd`/`Ord` with an
+/// `Arc::ptr_eq` fast path on every `Arc<…>` field, the faithful port of the
+/// MMC runtime `valueCompare`'s pointer-identity short-circuit. mmtorust emits
+/// it in place of the builtin `PartialEq`/`PartialOrd`/`Ord` derives (see
+/// `GenCtx::derives_for`) so comparing the cyclic NF graphs terminates.
+pub use metamodelica_derive::MetaCmp;
+
 /// MetaModelica `referenceEq` as a trait, for *generic* contexts where the
 /// operands' representation is opaque to the code generator (a bare type
 /// parameter, or a type containing one). Concrete-typed sites are lowered

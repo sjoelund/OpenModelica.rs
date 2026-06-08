@@ -180,7 +180,7 @@ pub fn stopLibraryVendorExecutable(mut lveInstance: Option<i32>) -> () {
     ()
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ParserResult {
     pub filename: ArcStr,
     pub program: Option<Absyn::Program>,

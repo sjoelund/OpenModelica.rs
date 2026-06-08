@@ -47,7 +47,7 @@ use crate::System;
 use crate::UnorderedSet;
 
 /// Interval type for set based graphs.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SBInterval {
     pub lo: i32,
     pub step: i32,

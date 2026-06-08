@@ -47,7 +47,7 @@ use openmodelica_frontend_types::DAE;
 
 ///
 /// Calling scope is used to determine when unconnected flow variables should be set to zero.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum CallingScope {
     /// this is a top call
     TOP_CALL,
@@ -67,7 +67,7 @@ pub const alwaysUnroll: bool = true;
 
 pub const neverUnroll: bool = false;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SearchStrategy {
     /// this one searches only in the local scope, it won't find *time* variable
     SEARCH_LOCAL_ONLY,
@@ -77,7 +77,7 @@ pub enum SearchStrategy {
 pub use self::SearchStrategy::{SEARCH_LOCAL_ONLY,SEARCH_ALSO_BUILTIN};
 
 /// data for 'spliced expression' (typically a component reference) returned in lookupVar
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SplicedExpData {
     /// the spliced expression
     pub splicedExp: Option<Arc<DAE::Exp>>,

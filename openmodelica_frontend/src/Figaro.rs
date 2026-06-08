@@ -94,7 +94,7 @@ pub fn run(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPa
 }
 
 /// A class that has a corresponding class in Figaro.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FigaroClass {
     pub className: Ident,
     /// Figaro type name
@@ -114,7 +114,7 @@ pub type FIGAROCLASS = FigaroClass;
 
 
 /// A component that will be an object in Figaro.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FigaroObject {
     pub objectName: ArcStr,
     /// Figaro type name
@@ -722,7 +722,7 @@ fn callFigaroProcessor(mut inFigaroProcessorFile: ArcStr, mut inArgumentFile: Ar
 }
 
 /// An XML token.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Token {
     OPENTAG {
         tagName: ArcStr,

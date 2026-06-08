@@ -59,7 +59,7 @@ use openmodelica_util::Flags;
 use openmodelica_util::IOStream;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NFAttributes {
     pub connectorType: i32,
     pub parallelism: Prefixes::Parallelism,

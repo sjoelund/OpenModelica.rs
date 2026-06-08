@@ -50,7 +50,7 @@ use openmodelica_frontend_types::SCode;
 use openmodelica_util::Config;
 use openmodelica_util::System;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct splitElements {
     pub v: Arc<metamodelica::List<Arc<DAE::Element>>>,
     pub ie: Arc<metamodelica::List<Arc<DAE::Element>>>,
@@ -82,7 +82,7 @@ impl Default for splitElements {
 pub type SPLIT_ELEMENTS = splitElements;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct compWithSplitElements {
     pub name: ArcStr,
     pub spltElems: Arc<splitElements>,
@@ -102,7 +102,7 @@ impl Default for compWithSplitElements {
 pub type COMP_WITH_SPLIT = compWithSplitElements;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct functionList {
     pub funcs: Arc<metamodelica::List<DAE::Function>>,
 }

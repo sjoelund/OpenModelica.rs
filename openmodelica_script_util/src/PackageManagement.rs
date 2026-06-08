@@ -88,7 +88,7 @@ pub mod AvailableLibraries {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -787,7 +787,7 @@ pub mod VersionMap {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -2063,7 +2063,7 @@ fn compareUrlBool(mut tpl1: (Arc<metamodelica::List<ArcStr>>, ArcStr), mut tpl2:
     Ok(b)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct PackageInstallInfo {
     pub needsInstall: bool,
     pub pkg: ArcStr,

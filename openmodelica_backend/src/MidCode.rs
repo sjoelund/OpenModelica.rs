@@ -47,7 +47,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_frontend_base::DAEDump;
 use openmodelica_frontend_types::DAE;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Program {
     pub name: ArcStr,
     pub functions: Arc<metamodelica::List<Function>>,
@@ -56,7 +56,7 @@ pub struct Program {
 pub type PROGRAM = Program;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Var {
     pub name: ArcStr,
     pub ty: Arc<DAE::Type>,
@@ -77,7 +77,7 @@ impl Default for Var {
 pub type VAR = Var;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VarBuf {
     pub name: ArcStr,
 }
@@ -93,7 +93,7 @@ impl Default for VarBuf {
 pub type VARBUF = VarBuf;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VarBufPtr {
     pub name: ArcStr,
 }
@@ -109,7 +109,7 @@ impl Default for VarBufPtr {
 pub type VARBUFPTR = VarBufPtr;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum OutVar {
     OUT_VAR {
         var: Var,
@@ -127,7 +127,7 @@ pub fn varString(mut var: Var) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Function {
     pub name: Arc<Absyn::Path>,
     pub locals: Arc<metamodelica::List<Var>>,
@@ -162,7 +162,7 @@ pub type FUNCTION = Function;
 /// Basic block.
 ///  No control flow within block.
 ///  Can branch or jump on exit, called the block's terminator.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Block {
     pub id: i32,
     pub stmts: Arc<metamodelica::List<Stmt>>,
@@ -182,7 +182,7 @@ impl Default for Block {
 pub type BLOCK = Block;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Terminator {
     GOTO {
         next: i32,
@@ -236,7 +236,7 @@ impl Default for Terminator {
 }
 pub use self::Terminator::{GOTO,BRANCH,CALL,RETURN,SWITCH,LONGJMP,PUSHJMP,POPJMP,ASSERT,TERMINATE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Stmt {
     NOP,
     ASSIGN {
@@ -249,7 +249,7 @@ impl Default for Stmt {
 }
 pub use self::Stmt::{NOP,ASSIGN};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum RValue {
     VARIABLE {
         src: Var,
@@ -305,7 +305,7 @@ impl Default for RValue {
 }
 pub use self::RValue::{VARIABLE,UNARYOP,BINARYOP,LITERALINTEGER,LITERALREAL,LITERALBOOLEAN,LITERALSTRING,LITERALMETATYPE,UNIONTYPEVARIANT,ISSOME,ISCONS,METAFIELD};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum UnaryOp {
     MOVE,
     UMINUS,
@@ -315,7 +315,7 @@ pub enum UnaryOp {
 }
 pub use self::UnaryOp::{MOVE,UMINUS,NOT,UNBOX,BOX};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BinaryOp {
     ADD,
     SUB,

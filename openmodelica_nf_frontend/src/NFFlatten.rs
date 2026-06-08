@@ -152,7 +152,7 @@ pub mod FunctionTreeImpl {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -824,7 +824,7 @@ pub mod FunctionTreeImpl {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FlattenSettings {
     pub scalarize: bool,
     pub arrayConnect: bool,
@@ -856,7 +856,7 @@ pub type SETTINGS = FlattenSettings;
 
 pub mod Prefix {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Prefix {
         PREFIX {
             root: Arc<InstNode::InstNode>,

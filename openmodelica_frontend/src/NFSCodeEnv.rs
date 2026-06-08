@@ -68,7 +68,7 @@ pub const tmpTickIndex: i32 = 2;
 
 pub const extendsTickIndex: i32 = 3;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ImportTable {
     /// If true means that the imports are hidden.
     pub hidden: bool,
@@ -94,7 +94,7 @@ pub type IMPORT_TABLE = ImportTable;
 ///  element stored in the SCode representation. These are processed when they are
 ///  used, i.e. when replacements are done, and converted into PROCESSED_MODIFIERs
 ///  which are environment items ready to be replaced in the environment.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Redeclaration {
     RAW_MODIFIER {
         modifier: Arc<SCode::Element>,
@@ -112,7 +112,7 @@ impl Default for Redeclaration {
 }
 pub use self::Redeclaration::{RAW_MODIFIER,PROCESSED_MODIFIER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Extends {
     pub baseClass: Arc<Absyn::Path>,
     pub redeclareModifiers: Arc<metamodelica::List<Arc<Redeclaration>>>,
@@ -134,7 +134,7 @@ impl Default for Extends {
 pub type EXTENDS = Extends;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ExtendsTable {
     pub baseClasses: Arc<metamodelica::List<Arc<Extends>>>,
     pub redeclaredElements: Arc<metamodelica::List<Arc<SCode::Element>>>,
@@ -154,7 +154,7 @@ impl Default for ExtendsTable {
 pub type EXTENDS_TABLE = ExtendsTable;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FrameType {
     NORMAL_SCOPE,
     ENCAPSULATED_SCOPE,
@@ -168,7 +168,7 @@ impl Default for FrameType {
 }
 pub use self::FrameType::{NORMAL_SCOPE,ENCAPSULATED_SCOPE,IMPLICIT_SCOPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Frame {
     pub name: Option<ArcStr>,
     pub frameType: FrameType,
@@ -195,7 +195,7 @@ impl Default for Frame {
 pub type FRAME = Frame;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ClassType {
     USERDEFINED,
     BUILTIN,
@@ -207,7 +207,7 @@ impl Default for ClassType {
 }
 pub use self::ClassType::{USERDEFINED,BUILTIN,CLASS_EXTENDS,BASIC_TYPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Item {
     VAR {
         var: Arc<SCode::Element>,
@@ -269,7 +269,7 @@ pub mod EnvTree {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.

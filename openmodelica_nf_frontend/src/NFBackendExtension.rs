@@ -77,7 +77,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // Util imports
 pub mod BackendInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct BackendInfo {
         /// Structural kind: state, algebraic...
         pub varKind: Arc<VariableKind::VariableKind>,
@@ -241,7 +241,7 @@ pub fn DUMMY_BACKEND_INFO() -> Arc<BackendInfo::BackendInfo> { __DUMMY_BACKEND_I
 
 pub mod VariableKind {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum VariableKind {
         TIME,
         ALGEBRAIC,
@@ -563,7 +563,7 @@ pub mod VariableKind {
 
 pub mod VariableAttributes {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum VariableAttributes {
         VAR_ATTR_REAL {
             /// quantity
@@ -1827,7 +1827,7 @@ impl Ord for Uncertainty {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Distribution {
     pub name: Arc<Expression::NFExpression>,
     pub params: Arc<Expression::NFExpression>,
@@ -1841,7 +1841,7 @@ pub mod Annotations {
     use super::*;
     /// all annotations that are vendor specific
     ///      note: doesn't include __OpenModelica_tearingSelect, this is considered a first class attribute
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Annotations {
         pub hideResult: bool,
         pub resizable: bool,

@@ -101,7 +101,7 @@ impl Default for Kind {
 
 pub mod Association {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Association {
         CONTINUOUS {
             kind: Kind,
@@ -366,7 +366,7 @@ pub mod Association {
 
 pub mod Partition {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Partition {
         /// Partition index
         pub index: i32,

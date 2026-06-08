@@ -74,7 +74,7 @@ pub type Next = i32;
 
 pub static emptyImportTable: std::sync::LazyLock<ImportTable> = std::sync::LazyLock::new(|| { ImportTable { hidden: false, qualifiedImports: metamodelica::nil(), unqualifiedImports: metamodelica::nil() } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ImportTable {
     /// If true means that the imports are hidden.
     pub hidden: bool,
@@ -98,7 +98,7 @@ pub type IMPORT_TABLE = ImportTable;
 /// array of 1
 pub type Ref = metamodelica::Array<Node>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Node {
     /// node name, class/component/extends name, etc. see also *NodeName in above
     pub name: Name,
@@ -128,7 +128,7 @@ pub type N = Node;
 
 
 /// Used to know where a modifier came from, for error reporting.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ModScope {
     MS_COMPONENT {
         name: ArcStr,
@@ -148,7 +148,7 @@ pub enum ModScope {
 }
 pub use self::ModScope::{MS_COMPONENT,MS_EXTENDS,MS_DERIVED,MS_CLASS_EXTENDS,MS_CONSTRAINEDBY};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Data {
     /// top
     TOP,
@@ -327,7 +327,7 @@ pub mod RefTree {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -1001,7 +1001,7 @@ pub mod RefTree {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Kind {
     USERDEFINED,
     BUILTIN,
@@ -1012,7 +1012,7 @@ pub use self::Kind::{USERDEFINED,BUILTIN,BASIC_TYPE};
 /// Used to distinguish between different phases of the instantiation of a component
 /// A component is first added to environment untyped. It can thereafter be instantiated to get its type
 /// and finally instantiated to produce the DAE. These three states are indicated by this datatype.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Status {
     /// Untyped variables, initially added to env
     VAR_UNTYPED,
@@ -1045,7 +1045,7 @@ pub use self::Status::{VAR_UNTYPED,VAR_TYPED,VAR_DAE,VAR_DELETED,CLS_UNTYPED,CLS
 // ************************ FVisit structures ***************************
 /// Visit Node Info
 /// Visit Node Info
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Visit {
     /// which node it is
     pub r#ref: Ref,
@@ -1066,7 +1066,7 @@ pub type VN = Visit;
 
 
 /// Visited structure is an AvlTree Id <-> Visit
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Visited {
     pub tree: Arc<VAvlTree>,
     /// the next visit node id
@@ -1090,7 +1090,7 @@ pub type VAvlKey = i32;
 pub type VAvlValue = Visit;
 
 /// The binary tree data structure for visited
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VAvlTree {
     /// Value
     pub value: Option<VAvlTreeValue>,
@@ -1117,7 +1117,7 @@ pub type VAVLTREENODE = VAvlTree;
 
 
 /// Each node in the binary tree can have a value associated with it.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VAvlTreeValue {
     /// Key
     pub key: VAvlKey,
@@ -1168,7 +1168,7 @@ pub static implicitScopeNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr
 
 /// propagate more info into env if needed
 /// propagate more info into env if needed
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Extra {
     pub topModel: Arc<Absyn::Path>,
 }
@@ -1185,7 +1185,7 @@ pub type EXTRA = Extra;
 
 
 /// graph
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Graph {
     /// graph
     G {
@@ -1208,7 +1208,7 @@ impl Default for Graph {
 }
 pub use self::Graph::{G,EG};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Top {
     pub graph: metamodelica::Array<Graph>,
     /// name of the graph
@@ -1241,7 +1241,7 @@ pub const firstId: i32 = 0;
 // ************************ Cache structures ***************************
 pub type StructuralParameters = (Arc<AvlSetCR::Tree>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>);
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Cache {
     CACHE {
         /// and the initial environment
@@ -1261,7 +1261,7 @@ impl Default for Cache {
 }
 pub use self::Cache::{CACHE,NO_CACHE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ScopeType {
     FUNCTION_SCOPE,
     CLASS_SCOPE,

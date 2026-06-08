@@ -66,7 +66,7 @@ pub type Tokens = Arc<metamodelica::List<Arc<Tpl::StringToken>>>;
 
 pub static dummySourceInfo: SourceInfo = SourceInfo { fileName: literal!("NoFileName.xxx"), isReadOnly: false, lineNumberStart: 0, columnNumberStart: 0, lineNumberEnd: 0, columnNumberEnd: 0, lastModification: metamodelica::OrderedFloat(0.0_f64) };
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum PathIdent {
     IDENT {
         ident: Ident,
@@ -85,7 +85,7 @@ impl Default for PathIdent {
 }
 pub use self::PathIdent::{IDENT,PATH_IDENT};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TypeSignature {
     LIST_TYPE {
         ofType: Arc<TypeSignature>,
@@ -154,7 +154,7 @@ pub use self::TypeSignature::{LIST_TYPE,ARRAY_TYPE,OPTION_TYPE,TUPLE_TYPE,NAMED_
 
 pub type Expression = (Arc<ExpressionBase>, SourceInfo);
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ExpressionBase {
     TEMPLATE {
         items: Arc<metamodelica::List<(Arc<ExpressionBase>, SourceInfo)>>,
@@ -243,7 +243,7 @@ impl Default for ExpressionBase {
 }
 pub use self::ExpressionBase::{TEMPLATE,STR_TOKEN,LITERAL,SOFT_NEW_LINE,BOUND_VALUE,FUN_CALL,CONDITION,MATCH,MAP,MAP_ARG_LIST,ESCAPED,INDENTATION,LET,TEXT_CREATE,TEXT_ADD,NORET_CALL,ERROR_EXP};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MatchingExp {
     BIND_AS_MATCH {
         bindIdent: Ident,
@@ -297,7 +297,7 @@ impl Default for MatchingExp {
 }
 pub use self::MatchingExp::{BIND_AS_MATCH,BIND_MATCH,RECORD_MATCH,SOME_MATCH,NONE_MATCH,TUPLE_MATCH,LIST_MATCH,LIST_CONS_MATCH,STRING_MATCH,LITERAL_MATCH,REST_MATCH};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TypeInfo {
     TI_UNION_TYPE {
         recTags: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>)>>,
@@ -328,7 +328,7 @@ impl Default for TypeInfo {
 }
 pub use self::TypeInfo::{TI_UNION_TYPE,TI_RECORD_TYPE,TI_ALIAS_TYPE,TI_FUN_TYPE,TI_CONST_TYPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ASTDef {
     pub importPackage: Arc<PathIdent>,
     pub isDefault: bool,
@@ -348,7 +348,7 @@ impl Default for ASTDef {
 pub type AST_DEF = ASTDef;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct TemplPackage {
     pub name: Arc<PathIdent>,
     pub astDefs: Arc<metamodelica::List<ASTDef>>,
@@ -370,7 +370,7 @@ impl Default for TemplPackage {
 pub type TEMPL_PACKAGE = TemplPackage;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TemplateDef {
     STR_TOKEN_DEF {
         value: StringToken,
@@ -397,7 +397,7 @@ pub use self::TemplateDef::{STR_TOKEN_DEF,LITERAL_DEF,TEMPLATE_DEF};
 
 /* Output AST */
 //type MMPublic = Boolean;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct MMPackage {
     pub name: Arc<PathIdent>,
     pub mmDeclarations: Arc<metamodelica::List<MMDeclaration>>,
@@ -417,7 +417,7 @@ impl Default for MMPackage {
 pub type MM_PACKAGE = MMPackage;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MMDeclaration {
     MM_IMPORT {
         isPublic: bool,
@@ -455,7 +455,7 @@ impl Default for MMDeclaration {
 }
 pub use self::MMDeclaration::{MM_IMPORT,MM_STR_TOKEN_DECL,MM_LITERAL_DECL,MM_FUN};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MMExp {
     MM_ASSIGN {
         lhsArgs: Arc<metamodelica::List<ArcStr>>,
@@ -597,7 +597,7 @@ pub type MMEscOption = (ArcStr, (Arc<MMExp>, Arc<TypeSignature>));
 
 pub type ScopeEnv = Arc<metamodelica::List<Scope>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Scope {
     FUN_SCOPE {
         args: TypedIdents,
@@ -637,7 +637,7 @@ pub enum Scope {
 }
 pub use self::Scope::{FUN_SCOPE,CASE_SCOPE,LET_SCOPE,RECURSIVE_SCOPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct MapContext {
     pub ofBinding: Arc<MatchingExp>,
     pub mapExp: Expression,
@@ -651,7 +651,7 @@ pub struct MapContext {
 pub type MAP_CONTEXT = MapContext;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum GenInfo {
     GI_TEMPL_FUN,
     GI_MATCH_FUN,

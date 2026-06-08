@@ -124,7 +124,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// package:     NBackendDAE
 /// description: This file contains the main data type for the backend containing
 ///              all data. It further contains the lower and solve main function.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NBackendDAE {
     MAIN {
         /// Partitions for differential-algebraic equations

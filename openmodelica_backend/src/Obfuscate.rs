@@ -79,7 +79,7 @@ impl Default for ElementType {
     fn default() -> Self { Self::TYPE }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Env {
     pub mapping: Mapping,
     pub builtins: Builtins,

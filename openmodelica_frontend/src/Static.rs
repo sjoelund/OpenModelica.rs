@@ -102,7 +102,7 @@ pub const SLOT_EVALUATING: i32 = 1;
 
 pub const SLOT_EVALUATED: i32 = 2;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Slot {
     /// The slots default argument.
     pub defaultArg: Arc<DAE::FuncArg>,
@@ -7909,7 +7909,7 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     Ok((outCache, expProps))
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ForceFunctionInst {
     /// Used when blocking function instantiation to instantiate the function anyway
     FORCE_FUNCTION_INST,

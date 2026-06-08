@@ -115,7 +115,7 @@ pub type SMNODE = SMNode;
 
 
 /// Collecting information about a group of state components forming a flat state machine
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FlatSMGroup {
     pub initState: Arc<DAE::ComponentRef>,
     pub states: metamodelica::Array<Arc<DAE::ComponentRef>>,

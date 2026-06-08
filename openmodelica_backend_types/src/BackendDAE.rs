@@ -65,7 +65,7 @@ pub type Type = Arc<openmodelica_frontend_types::DAE::Type>;
 ///  constants and parameters.
 ///  The equations are also split into two lists, one with simple equations, a=b, a-b=0, etc., that
 ///  are removed from  the set of equations to speed up calculations.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct BackendDAE {
     pub eqs: EqSystems,
     pub shared: Arc<Shared>,
@@ -86,7 +86,7 @@ pub type DAE = BackendDAE;
 pub type EqSystems = Arc<metamodelica::List<Arc<EqSystem>>>;
 
 /// An independent system of equations (and their corresponding variables)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EqSystem {
     /// ordered Variables, only states and alg. vars
     pub orderedVars: Variables,
@@ -124,7 +124,7 @@ impl Default for EqSystem {
 pub type EQSYSTEM = EqSystem;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SubClock {
     SUBCLOCK {
         factor: MMath::Rational,
@@ -140,7 +140,7 @@ pub use self::SubClock::{SUBCLOCK,INFERED_SUBCLOCK};
 
 pub static DEFAULT_SUBCLOCK: std::sync::LazyLock<SubClock> = std::sync::LazyLock::new(|| { SubClock::SUBCLOCK { factor: MMath::RAT1.clone(), shift: MMath::RAT0.clone(), solver: None } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BaseClockPartitionKind {
     UNKNOWN_PARTITION,
     CLOCKED_PARTITION {
@@ -156,7 +156,7 @@ impl Default for BaseClockPartitionKind {
 pub use self::BaseClockPartitionKind::{UNKNOWN_PARTITION,CLOCKED_PARTITION,CONTINUOUS_TIME_PARTITION,UNSPECIFIED_PARTITION};
 
 /// Data shared for all equation-systems
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Shared {
     /// variables only depending on parameters and constants [TODO: move stuff (like inputs) to localKnownVars]
     pub globalKnownVars: Variables,
@@ -231,7 +231,7 @@ impl Default for Shared {
 pub type SHARED = Shared;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct InlineData {
     pub inlineSystems: EqSystems,
     pub knownVariables: Variables,
@@ -249,7 +249,7 @@ impl Default for InlineData {
 pub type INLINE_DATA = InlineData;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct BasePartition {
     pub clock: Arc<openmodelica_frontend_types::DAE::ClockKind>,
     pub nSubClocks: i32,
@@ -267,7 +267,7 @@ impl Default for BasePartition {
 pub type BASE_PARTITION = BasePartition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SubPartition {
     pub clock: SubClock,
     pub holdEvents: bool,
@@ -287,7 +287,7 @@ impl Default for SubPartition {
 pub type SUB_PARTITION = SubPartition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct PartitionsInfo {
     pub basePartitions: metamodelica::Array<BasePartition>,
     pub subPartitions: metamodelica::Array<SubPartition>,
@@ -306,7 +306,7 @@ pub type PARTITIONS_INFO = PartitionsInfo;
 
 
 /// extra information that we should send around with the DAE
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ExtraInfo {
     /// the model description string
     pub description: ArcStr,
@@ -331,7 +331,7 @@ pub type EXTRA_INFO = ExtraInfo;
 
 /// BackendDAEType to indicate different types of BackendDAEs.
 ///  For example for simulation, initialization, Jacobian, algebraic loops etc.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BackendDAEType {
     /// Type for the normal BackendDAE.DAE for simulation
     SIMULATION,
@@ -355,7 +355,7 @@ impl Default for BackendDAEType {
 }
 pub use self::BackendDAEType::{SIMULATION,JACOBIAN,ALGEQSYSTEM,ARRAYSYSTEM,PARAMETERSYSTEM,INITIALSYSTEM,INLINESYSTEM,DAEMODESYSTEM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DataReconciliationData {
     /// jacobians for set-C and set-S
     pub symbolicJacobian: Arc<Jacobian>,
@@ -389,7 +389,7 @@ pub type DATA_RECON = DataReconciliationData;
 //
 //  variables and equations definition
 //
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Variables {
     /// HashTB, cref->indx
     pub crefIndices: metamodelica::Array<Arc<metamodelica::List<CrefIndex>>>,
@@ -416,7 +416,7 @@ pub type VARIABLES = Variables;
 
 
 /// Component Reference Index
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CrefIndex {
     pub cref: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     pub index: i32,
@@ -436,7 +436,7 @@ pub type CREFINDEX = CrefIndex;
 
 /// array of Equations are expandable, to amortize the cost of adding
 ///  equations in a more efficient manner
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VariableArray {
     /// no. elements
     pub numberOfElements: i32,
@@ -458,7 +458,7 @@ pub type VARIABLE_ARRAY = VariableArray;
 pub type EquationArray = Arc<ExpandableArray::ExpandableArray<Arc<Equation>>>;
 
 /// variables
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Var {
     /// variable name
     pub varName: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
@@ -527,7 +527,7 @@ pub type VAR = Var;
 
 
 /// variable kind
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarKind {
     VARIABLE,
     STATE {
@@ -582,7 +582,7 @@ impl Default for VarKind {
 }
 pub use self::VarKind::{VARIABLE,STATE,STATE_DER,DUMMY_DER,DUMMY_STATE,CLOCKED_STATE,DISCRETE,PARAM,CONST,EXTOBJ,JAC_VAR,JAC_TMP_VAR,SEED_VAR,OPT_CONSTR,OPT_FCONSTR,OPT_INPUT_WITH_DER,OPT_INPUT_DER,OPT_TGRID,OPT_LOOP_INPUT,ALG_STATE,ALG_STATE_OLD,DAE_RESIDUAL_VAR,DAE_AUX_VAR,LOOP_ITERATION,LOOP_SOLVED};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TearingSelect {
     NEVER,
     AVOID,
@@ -598,7 +598,7 @@ pub use self::TearingSelect::{NEVER,AVOID,DEFAULT,PREFER,ALWAYS};
 pub const WHENCLK_PRREFIX: &'static str = "$whenclk";
 
 /// equation kind
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum EquationKind {
     BINDING_EQUATION,
     DYNAMIC_EQUATION,
@@ -616,7 +616,7 @@ impl Default for EquationKind {
 pub use self::EquationKind::{BINDING_EQUATION,DYNAMIC_EQUATION,INITIAL_EQUATION,CLOCKED_EQUATION,DISCRETE_EQUATION,AUX_EQUATION,UNKNOWN_EQUATION_KIND};
 
 /// evaluation stages
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EvaluationStages {
     pub dynamicEval: bool,
     pub algebraicEval: bool,
@@ -640,7 +640,7 @@ pub type EVALUATION_STAGES = EvaluationStages;
 
 pub static defaultEvalStages: EvaluationStages = EvaluationStages { dynamicEval: false, algebraicEval: false, zerocrossEval: false, discreteEval: false };
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EquationAttributes {
     /// true if the equation was differentiated, and should not be differentiated again to avoid equal equations
     pub differentiated: bool,
@@ -673,7 +673,7 @@ pub static EQ_ATTR_DEFAULT_AUX: std::sync::LazyLock<EquationAttributes> = std::s
 
 pub static EQ_ATTR_DEFAULT_UNKNOWN: std::sync::LazyLock<EquationAttributes> = std::sync::LazyLock::new(|| { EquationAttributes { differentiated: false, kind: crate::BackendDAE::EquationKind::UNKNOWN_EQUATION_KIND, evalStages: defaultEvalStages.clone() } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Equation {
     EQUATION {
         exp: Arc<openmodelica_frontend_types::DAE::Exp>,
@@ -782,7 +782,7 @@ impl Default for Equation {
 pub use self::Equation::{EQUATION,ARRAY_EQUATION,SOLVED_EQUATION,RESIDUAL_EQUATION,ALGORITHM,WHEN_EQUATION,COMPLEX_EQUATION,IF_EQUATION,FOR_EQUATION,DUMMY_EQUATION};
 
 /// equation when condition then cr = exp, reinit(...), terminate(...) or assert(...)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct WhenEquation {
     /// the when-condition
     pub condition: Arc<openmodelica_frontend_types::DAE::Exp>,
@@ -804,7 +804,7 @@ impl Default for WhenEquation {
 pub type WHEN_STMTS = WhenEquation;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum WhenOperator {
     /// left_cr = right_exp
     ASSIGN {
@@ -860,7 +860,7 @@ pub use self::WhenOperator::{ASSIGN,REINIT,ASSERT,TERMINATE,NORETCALL};
 pub type ExternalObjectClasses = Arc<metamodelica::List<ExternalObjectClass>>;
 
 /// class of external objects
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ExternalObjectClass {
     /// className of external object
     pub path: Arc<Absyn::Path>,
@@ -883,7 +883,7 @@ pub type EXTOBJCLASS = ExternalObjectClass;
 //
 //  Matching, strong components and StateSets
 //
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Matching {
     /// matching has not yet been performed
     NO_MATCHING,
@@ -910,7 +910,7 @@ impl Default for Matching {
 }
 pub use self::Matching::{NO_MATCHING,MATCHING};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IndexReduction {
     /// Use index reduction during matching
     INDEX_REDUCTION,
@@ -919,7 +919,7 @@ pub enum IndexReduction {
 }
 pub use self::IndexReduction::{INDEX_REDUCTION,NO_INDEX_REDUCTION};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum EquationConstraints {
     /// for e.g. initial eqns.
     ///                  where not all variables
@@ -1003,7 +1003,7 @@ pub use self::StateOrder::{STATEORDER,NOSTATEORDER};
 /// Order of the equations the have to be solved
 pub type StrongComponents = Arc<metamodelica::List<Arc<StrongComponent>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum StrongComponent {
     SINGLEEQUATION {
         eqn: i32,
@@ -1061,7 +1061,7 @@ impl Default for StrongComponent {
 }
 pub use self::StrongComponent::{SINGLEEQUATION,EQUATIONSYSTEM,SINGLEARRAY,SINGLEALGORITHM,SINGLECOMPLEXEQUATION,SINGLEWHENEQUATION,SINGLEIFEQUATION,TORNSYSTEM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct TearingSet {
     pub tearingvars: Arc<metamodelica::List<i32>>,
     pub residualequations: Arc<metamodelica::List<i32>>,
@@ -1086,7 +1086,7 @@ pub type TEARINGSET = TearingSet;
 
 pub type InnerEquations = Arc<metamodelica::List<InnerEquation>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum InnerEquation {
     INNEREQUATION {
         eqn: i32,
@@ -1111,7 +1111,7 @@ pub use self::InnerEquation::{INNEREQUATION,INNEREQUATIONCONSTRAINTS};
 /// List of StateSets
 pub type StateSets = Arc<metamodelica::List<StateSet>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct StateSet {
     pub index: i32,
     pub rang: i32,
@@ -1153,7 +1153,7 @@ pub type STATESET = StateSet;
 //
 // event info and stuff
 //
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EventInfo {
     /// stores all information related to time events
     pub timeEvents: Arc<metamodelica::List<TimeEvent>>,
@@ -1182,7 +1182,7 @@ impl Default for EventInfo {
 pub type EVENT_INFO = EventInfo;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ZeroCrossingSet {
     pub zc: DoubleEnded::MutableList<ZeroCrossing>,
     pub tree: metamodelica::Array<Arc<ZeroCrossings::ZeroCrossingTree::Tree>>,
@@ -1200,7 +1200,7 @@ impl Default for ZeroCrossingSet {
 pub type ZERO_CROSSING_SET = ZeroCrossingSet;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ZeroCrossing {
     /// zero crossing index
     pub index: i32,
@@ -1226,7 +1226,7 @@ impl Default for ZeroCrossing {
 pub type ZERO_CROSSING = ZeroCrossing;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SimIterator {
     SIM_ITERATOR_RANGE {
         name: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
@@ -1270,7 +1270,7 @@ pub fn getSimIteratorSize(mut iters: Arc<metamodelica::List<SimIterator>>) -> Re
     Ok(size)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TimeEvent {
     /// e.g. time > 0.5
     SIMPLE_TIME_EVENT,
@@ -1319,7 +1319,7 @@ pub type AdjacencyMatrixEnhanced = metamodelica::Array<Arc<metamodelica::List<(i
 
 pub type AdjacencyMatrixTEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>)>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Solvability {
     /// Equation is already solved for the variable
     SOLVABILITY_SOLVED,
@@ -1357,7 +1357,7 @@ pub use self::Solvability::{SOLVABILITY_SOLVED,SOLVABILITY_CONSTONE,SOLVABILITY_
 /// Constraints on the solvability of the (casual) tearing set; needed for proper Dynamic Tearing
 pub type Constraints = Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IndexType {
     /// adjacency matrix with absolute indexes
     ABSOLUTE,
@@ -1380,7 +1380,7 @@ pub use self::IndexType::{ABSOLUTE,NORMAL,SOLVABLE,BASECLOCK_IDX,SUBCLOCK_IDX,SP
 //
 // Jacobian stuff
 //
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum JacobianType {
     /// If Jacobian has only constant values, for system
     ///               of equations this means that it can be solved statically.
@@ -1428,7 +1428,7 @@ pub const homotopyLambda: &'static str = "__HOM_LAMBDA";
 
 pub type FullJacobian = Option<Arc<metamodelica::List<(i32, i32, Arc<Equation>)>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Jacobian {
     FULL_JACOBIAN {
         jacobian: FullJacobian,
@@ -1491,7 +1491,7 @@ pub fn emptyNonlinearPattern() -> (Arc<metamodelica::List<(Arc<openmodelica_fron
 pub type SparseColoring = Arc<metamodelica::List<Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>>>;
 
 // colouring
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DifferentiateInputData {
     pub independenentVars: Option<Variables>,
     pub dependenentVars: Option<Variables>,
@@ -1527,7 +1527,7 @@ pub fn emptyInputData() -> DifferentiateInputData { __emptyInputData_TLS.with(|_
 pub type DifferentiateInputArguments = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, DifferentiateInputData, DifferentiationType, Arc<AvlTreePathFunction::Tree>);
 
 /// Define the behaviour of differentiation method for (e.g. index reduction, ...)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum DifferentiationType {
     /// Used for index reduction differentiation w.r.t. time (e.g. create dummy derivative variables)
     DIFFERENTIATION_TIME,
@@ -1550,7 +1550,7 @@ impl Default for DifferentiationType {
 pub use self::DifferentiationType::{DIFFERENTIATION_TIME,SIMPLE_DIFFERENTIATION,DIFFERENTIATION_FUNCTION,DIFF_FULL_JACOBIAN,GENERIC_GRADIENT};
 
 /// types to count operations for the components
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum CompInfo {
     COUNTER {
         comp: Arc<StrongComponent>,
@@ -1602,7 +1602,7 @@ impl Default for CompInfo {
 }
 pub use self::CompInfo::{COUNTER,SYSTEM,TORN_ANALYSE,NO_COMP};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct BackendDAEModeData {
     pub stateVars: Arc<metamodelica::List<Var>>,
     pub algStateVars: Arc<metamodelica::List<Var>>,

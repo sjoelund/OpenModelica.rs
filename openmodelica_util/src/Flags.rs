@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::Gettext;
 use crate::Global;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DebugFlag {
     /// Unique index.
     pub index: i32,
@@ -61,7 +61,7 @@ pub struct DebugFlag {
 pub type DEBUG_FLAG = DebugFlag;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ConfigFlag {
     /// Unique index.
     pub index: i32,
@@ -97,7 +97,7 @@ pub type CONFIG_FLAG = ConfigFlag;
 
 
 /// This uniontype is used to store the values of configuration flags.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FlagData {
     /// Only used to initialize the flag array.
     EMPTY_FLAG,
@@ -138,7 +138,7 @@ impl Default for FlagData {
 pub use self::FlagData::{EMPTY_FLAG,BOOL_FLAG,INT_FLAG,INT_LIST_FLAG,REAL_FLAG,STRING_FLAG,STRING_LIST_FLAG,ENUM_FLAG};
 
 /// This uniontype is used to specify the visibility of a configuration flag.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FlagVisibility {
     /// An internal flag that is hidden to the user.
     INTERNAL,
@@ -151,7 +151,7 @@ impl Default for FlagVisibility {
 pub use self::FlagVisibility::{INTERNAL,EXTERNAL};
 
 /// The structure which stores the flags.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Flag {
     FLAGS {
         debugFlags: metamodelica::Array<bool>,
@@ -165,7 +165,7 @@ impl Default for Flag {
 pub use self::Flag::{FLAGS,NO_FLAGS};
 
 /// Specifies valid options for a flag.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ValidOptions {
     STRING_OPTION {
         /// Options for a string flag.

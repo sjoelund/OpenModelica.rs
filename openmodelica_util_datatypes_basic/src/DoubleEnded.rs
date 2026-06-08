@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use crate::GCExt;
 use crate::Mutable;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct MutableList<T: Clone> {
     pub length: Mutable::Mutable<i32>,
     pub front: Mutable::Mutable<Arc<metamodelica::List<T>>>,

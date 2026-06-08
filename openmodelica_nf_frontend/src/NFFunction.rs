@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 pub type NamedArg = (ArcStr, Arc<Expression::NFExpression>);
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct TypedArg {
     pub name: Option<ArcStr>,
     pub value: Arc<Expression::NFExpression>,
@@ -170,7 +170,7 @@ impl Default for SlotEvalStatus {
 
 pub mod Slot {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Slot {
         pub node: Arc<InstNode::InstNode>,
         pub ty: SlotType,
@@ -229,7 +229,7 @@ pub mod Slot {
 
 pub mod FunctionMatchKind {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum FunctionMatchKind {
         /// Exact match.
         EXACT,
@@ -335,7 +335,7 @@ pub fn NO_MATCH() -> Arc<FunctionMatchKind::FunctionMatchKind> { __NO_MATCH_TLS.
 
 pub mod MatchedFunction {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct MatchedFunction {
         pub func: Arc<Function::Function>,
         pub args: Arc<metamodelica::List<Arc<TypedArg>>>,
@@ -413,7 +413,7 @@ impl Default for FunctionStatus {
 
 pub mod Function {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Function {
         pub path: Arc<Absyn::Path>,
         pub node: Arc<InstNode::InstNode>,

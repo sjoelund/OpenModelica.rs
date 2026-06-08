@@ -51,7 +51,7 @@ use crate::System;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SBPWAtomicLinearMap {
     pub dom: Arc<SBAtomicSet::SBAtomicSet>,
     pub lmap: Arc<SBLinearMap::SBLinearMap>,

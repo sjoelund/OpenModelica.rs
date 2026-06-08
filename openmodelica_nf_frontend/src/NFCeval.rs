@@ -87,7 +87,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 
 pub mod EvalTarget {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct EvalTarget {
         pub info: SourceInfo,
         pub context: i32,
@@ -126,7 +126,7 @@ pub mod EvalTarget {
 thread_local! { static __noTarget_TLS: Arc<EvalTarget::EvalTarget> = Arc::new(EvalTarget::EvalTarget { info: Absyn::dummyInfo.clone(), context: InstContext::NO_CONTEXT.clone(), extra: None }); }
 pub fn noTarget() -> Arc<EvalTarget::EvalTarget> { __noTarget_TLS.with(|__t| __t.clone()) }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EvalTargetData {
     pub component: Arc<InstNode::InstNode>,
     pub index: i32,

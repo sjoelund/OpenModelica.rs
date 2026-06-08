@@ -47,7 +47,7 @@ use crate::SimCodeVar;
 
 pub const fn emptyHpcomData() -> HpcOmData { HpcOmData { schedules: None, hpcOmMemory: None } }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct HpcOmData {
     pub schedules: Option<(Arc<Schedule>, Arc<Schedule>, Arc<Schedule>)>,
     pub hpcOmMemory: Option<MemoryMap>,
@@ -65,7 +65,7 @@ impl Default for HpcOmData {
 pub type HPCOMDATA = HpcOmData;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MemoryMap {
     MEMORYMAP_ARRAY {
         floatArraySize: i32,
@@ -80,7 +80,7 @@ impl Default for MemoryMap {
 }
 pub use self::MemoryMap::{MEMORYMAP_ARRAY,MEMORYMAP_UNIFORM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CommunicationInfo {
     pub floatVars: Arc<metamodelica::List<SimCodeVar::SimVar>>,
     pub intVars: Arc<metamodelica::List<SimCodeVar::SimVar>>,
@@ -100,7 +100,7 @@ impl Default for CommunicationInfo {
 pub type COMMUNICATION_INFO = CommunicationInfo;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Task {
     SCHEDULED_TASK {
         compIdx: i32,
@@ -147,7 +147,7 @@ impl Default for Task {
 }
 pub use self::Task::{SCHEDULED_TASK,CALCTASK,CALCTASK_LEVEL,DEPTASK,PREFETCHTASK,TASKEMPTY};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TaskList {
     PARALLELTASKLIST {
         tasks: Arc<metamodelica::List<Arc<Task>>>,
@@ -167,7 +167,7 @@ impl Default for TaskList {
 pub use self::TaskList::{PARALLELTASKLIST,SERIALTASKLIST};
 
 //TODO: Use the TaskList for the other schedulers, too
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Schedule {
     LEVELSCHEDULE {
         tasksOfLevels: Arc<metamodelica::List<TaskList>>,

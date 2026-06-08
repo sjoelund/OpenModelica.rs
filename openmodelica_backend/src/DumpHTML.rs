@@ -55,7 +55,7 @@ use openmodelica_util_datatypes_basic::List;
 // types
 //
 // =============================================================================
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Style {
     pub name: ArcStr,
     pub value: ArcStr,
@@ -64,7 +64,7 @@ pub struct Style {
 pub type STYLE = Style;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Tag {
     HEADING {
         stage: i32,
@@ -108,7 +108,7 @@ impl Default for Tag {
 }
 pub use self::Tag::{HEADING,HYPERLINK,ANKER,LINE,DIVISION,SCRIPT,SCRIPT_BODY,CANVAS};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Document {
     pub docType: ArcStr,
     /// because of performance issues tags in reverse order

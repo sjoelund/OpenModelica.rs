@@ -118,7 +118,7 @@ pub fn convertStatements(mut statements: Arc<metamodelica::List<Arc<Statement::N
     Ok(elements)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VariableConversionSettings {
     pub isFunctionParameter: bool,
     pub addTypeToSource: bool,

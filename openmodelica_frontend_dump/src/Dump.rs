@@ -58,7 +58,7 @@ use openmodelica_util_datatypes_basic::List;
 
 // public imports
 // protected imports
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DumpOptions {
     pub fileName: ArcStr,
 }

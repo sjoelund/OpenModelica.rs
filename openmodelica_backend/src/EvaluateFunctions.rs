@@ -84,7 +84,7 @@ use openmodelica_util_datatypes_basic::List;
 //
 // =============================================================================
 /// store informations when traversing the statements and evaluate the function calls
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FuncInfo {
     pub repl: BackendVarTransform::VariableReplacements,
     pub funcTree: Arc<AvlTreePathFunction::Tree>,
@@ -104,7 +104,7 @@ impl Default for FuncInfo {
 pub type FUNCINFO = FuncInfo;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Variability {
     CONST,
     VARIABLE,
@@ -114,7 +114,7 @@ impl Default for Variability {
 }
 pub use self::Variability::{CONST,VARIABLE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CallSignature {
     pub path: Arc<Absyn::Path>,
     pub inputsVari: Arc<metamodelica::List<Variability>>,

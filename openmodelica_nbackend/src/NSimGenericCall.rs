@@ -67,7 +67,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// file:        NSimGenericCall.mo
 /// package:     NSimGenericCall
 /// description: This file contains the data types and functions for generic for loop calls.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NSimGenericCall {
     SINGLE_GENERIC_CALL {
         index: i32,
@@ -247,7 +247,7 @@ pub fn convert(mut call: Arc<NSimGenericCall>) -> Result<OldSimCode::SimGenericC
 
 pub mod SimIterator {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum SimIterator {
         SIM_ITERATOR_RANGE {
             name: Arc<ComponentRef::NFComponentRef>,
@@ -414,7 +414,7 @@ pub type DependentIterator = (Arc<ComponentRef::NFComponentRef>, metamodelica::A
 
 pub mod SimBranch {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum SimBranch {
         SIM_BRANCH {
             condition: Arc<Expression::NFExpression>,

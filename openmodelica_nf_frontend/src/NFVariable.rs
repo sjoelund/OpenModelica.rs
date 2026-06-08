@@ -80,7 +80,7 @@ use openmodelica_util::StringUtil;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NFVariable {
     pub name: Arc<ComponentRef::NFComponentRef>,
     pub ty: Arc<Type::NFType>,

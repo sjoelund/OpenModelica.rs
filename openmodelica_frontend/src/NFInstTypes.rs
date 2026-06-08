@@ -51,7 +51,7 @@ use openmodelica_frontend_types::SCode;
 //public import NFConnect2;
 pub type Prefix = Arc<NFInstPrefix::Prefix>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Element {
     ELEMENT {
         component: Arc<Component>,
@@ -71,7 +71,7 @@ pub enum Element {
 }
 pub use self::Element::{ELEMENT,CONDITIONAL_ELEMENT,EXTENDED_ELEMENTS};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Class {
     COMPLEX_CLASS {
         name: Arc<Absyn::Path>,
@@ -87,7 +87,7 @@ pub enum Class {
 }
 pub use self::Class::{COMPLEX_CLASS,BASIC_TYPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Function {
     /// A function has inputs, output and locals without binding.
     ///     These are resolved to statements in the algorithm section
@@ -113,7 +113,7 @@ pub enum Function {
 }
 pub use self::Function::{FUNCTION,RECORD_CONSTRUCTOR};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Dimension {
     UNTYPED_DIMENSION {
         dimension: Arc<DAE::Dimension>,
@@ -125,7 +125,7 @@ pub enum Dimension {
 }
 pub use self::Dimension::{UNTYPED_DIMENSION,TYPED_DIMENSION};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Binding {
     UNBOUND,
     RAW_BINDING {
@@ -152,7 +152,7 @@ pub enum Binding {
 }
 pub use self::Binding::{UNBOUND,RAW_BINDING,UNTYPED_BINDING,TYPED_BINDING};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Component {
     UNTYPED_COMPONENT {
         name: Arc<Absyn::Path>,
@@ -194,7 +194,7 @@ pub enum Component {
 }
 pub use self::Component::{UNTYPED_COMPONENT,TYPED_COMPONENT,CONDITIONAL_COMPONENT,DELETED_COMPONENT,OUTER_COMPONENT,COMPONENT_ALIAS};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Condition {
     SINGLE_CONDITION {
         condition: bool,
@@ -205,7 +205,7 @@ pub enum Condition {
 }
 pub use self::Condition::{SINGLE_CONDITION,ARRAY_CONDITION};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ParamType {
     /// Not a parameter.
     NON_PARAM,
@@ -216,7 +216,7 @@ pub enum ParamType {
 }
 pub use self::ParamType::{NON_PARAM,NON_STRUCT_PARAM,STRUCT_PARAM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Modifier {
     MODIFIER {
         name: ArcStr,
@@ -247,7 +247,7 @@ impl Modifier {
 pub fn interned_NOMOD() -> Arc<Modifier> { Modifier::interned_NOMOD() }
 pub use self::Modifier::{MODIFIER,REDECLARE,NOMOD};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ConstrainingClass {
     pub classPath: Arc<Absyn::Path>,
     pub r#mod: Arc<Modifier>,
@@ -256,7 +256,7 @@ pub struct ConstrainingClass {
 pub type CONSTRAINING_CLASS = ConstrainingClass;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Prefixes {
     NO_PREFIXES,
     PREFIXES {
@@ -275,14 +275,14 @@ pub static DEFAULT_PROTECTED_PREFIXES: std::sync::LazyLock<Prefixes> = std::sync
 
 pub static DEFAULT_INPUT_PREFIXES: std::sync::LazyLock<Prefixes> = std::sync::LazyLock::new(|| { Prefixes::PREFIXES { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, variability: openmodelica_frontend_types::SCode::Variability::VAR, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: (openmodelica_ast::Absyn::Direction::INPUT, Absyn::dummyInfo.clone()), connectorType: (openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, Absyn::dummyInfo.clone()), varArgs: crate::NFInstTypes::VarArgs::NO_VARARG } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum VarArgs {
     NO_VARARG,
     IS_VARARG,
 }
 pub use self::VarArgs::{NO_VARARG,IS_VARARG};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum DaePrefixes {
     NO_DAE_PREFIXES,
     DAE_PREFIXES {
@@ -299,7 +299,7 @@ pub use self::DaePrefixes::{NO_DAE_PREFIXES,DAE_PREFIXES};
 thread_local! { static __DEFAULT_CONST_DAE_PREFIXES_TLS: DaePrefixes = DaePrefixes::DAE_PREFIXES { visibility: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, variability: openmodelica_frontend_types::DAE::VarKind::CONST, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, connectorType: openmodelica_frontend_types::DAE::ConnectorType::interned_NON_CONNECTOR() }; }
 pub fn DEFAULT_CONST_DAE_PREFIXES() -> DaePrefixes { __DEFAULT_CONST_DAE_PREFIXES_TLS.with(|__t| __t.clone()) }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Equation {
     EQUALITY_EQUATION {
         /// The left hand side expression.
@@ -371,7 +371,7 @@ pub enum Equation {
 }
 pub use self::Equation::{EQUALITY_EQUATION,CONNECT_EQUATION,FOR_EQUATION,IF_EQUATION,WHEN_EQUATION,ASSERT_EQUATION,TERMINATE_EQUATION,REINIT_EQUATION,NORETCALL_EQUATION};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Statement {
     ASSIGN_STMT {
         /// The asignee
@@ -450,7 +450,7 @@ pub enum Statement {
 }
 pub use self::Statement::{ASSIGN_STMT,FUNCTION_ARRAY_INIT,FOR_STMT,IF_STMT,WHEN_STMT,ASSERT_STMT,TERMINATE_STMT,REINIT_STMT,NORETCALL_STMT,WHILE_STMT,RETURN_STMT,BREAK_STMT,FAILURE_STMT};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FunctionSlot {
     pub name: ArcStr,
     pub arg: Option<Arc<DAE::Exp>>,
@@ -460,7 +460,7 @@ pub struct FunctionSlot {
 pub type SLOT = FunctionSlot;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum EntryOrigin {
     /// An entry declared in the local scope.
     LOCAL_ORIGIN,
@@ -512,7 +512,7 @@ pub fn interned_LOCAL_ORIGIN() -> Arc<EntryOrigin> { EntryOrigin::interned_LOCAL
 pub fn interned_BUILTIN_ORIGIN() -> Arc<EntryOrigin> { EntryOrigin::interned_BUILTIN_ORIGIN() }
 pub use self::EntryOrigin::{LOCAL_ORIGIN,BUILTIN_ORIGIN,INHERITED_ORIGIN,REDECLARED_ORIGIN,IMPORTED_ORIGIN};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Entry {
     pub name: ArcStr,
     pub element: Arc<SCode::Element>,
@@ -523,7 +523,7 @@ pub struct Entry {
 pub type ENTRY = Entry;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ScopeType {
     BUILTIN_SCOPE,
     TOP_SCOPE,
@@ -537,7 +537,7 @@ pub enum ScopeType {
 }
 pub use self::ScopeType::{BUILTIN_SCOPE,TOP_SCOPE,NORMAL_SCOPE,IMPLICIT_SCOPE};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Frame {
     pub name: Option<ArcStr>,
     pub prefix: Option<Arc<NFInstPrefix::Prefix>>,
@@ -555,7 +555,7 @@ pub type AvlKey = ArcStr;
 pub type AvlValue = Arc<Entry>;
 
 /// The binary tree data structure
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct AvlTree {
     /// Value
     pub value: Option<Arc<AvlTreeValue>>,
@@ -571,7 +571,7 @@ pub type AVLTREENODE = AvlTree;
 
 
 /// Each node in the binary tree can have a value associated with it.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct AvlTreeValue {
     /// Key
     pub key: AvlKey,

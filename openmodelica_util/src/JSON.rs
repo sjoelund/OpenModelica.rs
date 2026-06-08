@@ -57,7 +57,7 @@ use crate::UnorderedMap;
 use crate::Util;
 use crate::Vector;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum JSON {
     OBJECT {
         values: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>,

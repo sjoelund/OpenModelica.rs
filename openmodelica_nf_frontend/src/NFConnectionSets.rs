@@ -136,7 +136,7 @@ pub mod ConnectionSets {
     ///   corresponds to its rank, while other elements are given positive values that
     ///   corresponds to the index of their parent in the array. The hashtable is used
     ///   to look up the array index of a entry, and is also used to store the entries.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Sets {
         /// An array of nodes
         pub nodes: metamodelica::Array<i32>,

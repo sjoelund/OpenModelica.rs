@@ -185,7 +185,7 @@ pub type checkEqn = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equat
 
 pub mod Iterator {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Iterator {
         SINGLE {
             /// the name of the iterator
@@ -1222,7 +1222,7 @@ pub mod Iterator {
 
 pub mod Equation {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Equation {
         SCALAR_EQUATION {
             /// equality type
@@ -3308,7 +3308,7 @@ pub mod Equation {
 
 pub mod IfEquationBody {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct IfEquationBody {
         /// the if-condition
         pub condition: Arc<Expression::NFExpression>,
@@ -3731,7 +3731,7 @@ pub mod IfEquationBody {
 pub mod WhenEquationBody {
     use super::*;
     /// equation when condition then cr = exp, reinit(...), terminate(...) or assert(...)
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct WhenEquationBody {
         /// the when-condition
         pub condition: Arc<Expression::NFExpression>,
@@ -4232,7 +4232,7 @@ pub mod WhenEquationBody {
 
 pub mod WhenStatement {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum WhenStatement {
         /// left_cr = right_exp
         ASSIGN {
@@ -4490,7 +4490,7 @@ pub mod WhenStatement {
 
 pub mod EquationAttributes {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct EquationAttributes {
         /// if the equation has been differentiated w.r.t time already
         pub derivative: Option<Pointer::Pointer<Arc<Equation::Equation>>>,
@@ -4667,7 +4667,7 @@ pub fn equationKindString(mut eqKind: EquationKind, mut clock_idx: Option<i32>, 
 
 pub mod EquationPointers {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct EquationPointers {
         /// Map for cref->index
         pub map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>,
@@ -5079,7 +5079,7 @@ pub mod EquationPointers {
 
 pub mod EqData {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum EqData {
         EQ_DATA_SIM {
             /// current index to be used for new identifier

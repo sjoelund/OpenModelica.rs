@@ -73,7 +73,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Pointer;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFComponentRef {
     CREF {
         node: Arc<InstNode::InstNode>,

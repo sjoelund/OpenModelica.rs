@@ -106,7 +106,7 @@ use openmodelica_util_datatypes_basic::List;
 
 //public imports
 // protected imports
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum AnnotationType {
     ICON_ANNOTATION,
     DIAGRAM_ANNOTATION,
@@ -114,7 +114,7 @@ pub enum AnnotationType {
 pub use self::AnnotationType::{ICON_ANNOTATION,DIAGRAM_ANNOTATION};
 
 /// Used by buildEnvForGraphicProgram to avoid excessive work.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum GraphicEnvCache {
     GRAPHIC_ENV_NO_CACHE {
         program: Absyn::Program,
@@ -3092,7 +3092,7 @@ fn getClassEnv_dispatch(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) ->
     Ok((cache, env_2))
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ComponentProperties {
     pub isFinal: bool,
     pub isFlow: bool,

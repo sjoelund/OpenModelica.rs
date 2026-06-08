@@ -82,7 +82,7 @@ use openmodelica_util_datatypes_basic::List;
 /// eqnAttributes(source,EquationAttributes)
 pub type EquationSourceAndAttributes = (Arc<DAE::ElementSource>, BackendDAE::EquationAttributes);
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SimpleContainer {
     ALIAS {
         cr1: Arc<DAE::ComponentRef>,

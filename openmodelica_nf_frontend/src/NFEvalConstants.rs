@@ -73,7 +73,7 @@ use openmodelica_util::ExecStat::execStat;
 use openmodelica_util::Flags;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EvalSettings {
     pub scalarize: bool,
 }

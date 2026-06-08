@@ -45,7 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::System;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TranslatableContent {
     /// Used to mark messages as targets for translation
     gettext {

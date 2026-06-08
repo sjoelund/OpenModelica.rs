@@ -71,14 +71,14 @@ pub type FrameType = NFSCodeEnv::FrameType;
 
 pub type Import = Absyn::Import;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum RedeclareReplaceStrategy {
     INSERT_REDECLARES,
     IGNORE_REDECLARES,
 }
 pub use self::RedeclareReplaceStrategy::{INSERT_REDECLARES,IGNORE_REDECLARES};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum LookupStrategy {
     NO_BUILTIN_TYPES,
     LOOKUP_ANY,

@@ -193,7 +193,7 @@ impl Default for TokenId {
     fn default() -> Self { Self::_NO_TOKEN }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Token {
     pub fileName: ArcStr,
     pub id: TokenId,

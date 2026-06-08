@@ -59,7 +59,7 @@ use openmodelica_util::Error;
 use openmodelica_util::IOStream;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFSections {
     SECTIONS {
         equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>,

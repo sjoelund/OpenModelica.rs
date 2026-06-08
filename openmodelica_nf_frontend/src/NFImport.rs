@@ -54,7 +54,7 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_util::Error;
 use openmodelica_util::ErrorTypes;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFImport {
     UNRESOLVED_IMPORT {
         imp: Absyn::Import,

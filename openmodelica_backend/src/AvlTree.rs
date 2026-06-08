@@ -117,7 +117,7 @@ pub type TREE<Key, Val> = Tree<Key, Val>;
 
 
 /// The binary tree data structure
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Node<Key, Val> {
     NODE {
         /// Val
@@ -135,7 +135,7 @@ pub enum Node<Key, Val> {
 pub use self::Node::{NODE,NO_NODE};
 
 /// Each node in the binary tree can have an item associated with it.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Item<Key, Val> {
     ITEM {
         /// Key

@@ -74,7 +74,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub type Cache = FCore::Cache;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct InstResult {
     pub outCache: Cache,
     pub outEnv: FCore::Graph,
@@ -102,7 +102,7 @@ impl Default for InstResult {
 pub type INST_RESULT = InstResult;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct InstInner {
     /// the prefix of the inner. we need it to prefix the outer variables with it!
     pub innerPrefix: DAE::Prefix,
@@ -140,7 +140,7 @@ impl Default for InstInner {
 pub type INST_INNER = InstInner;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct OuterPrefix {
     /// the prefix of this outer + component name
     pub outerComponentRef: Arc<DAE::ComponentRef>,
@@ -1188,7 +1188,7 @@ fn dumpTuple(mut tpl: (Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> {
 
 /* end of InstHierarchyHashTable instance specific code */
 /* Generic hashtable code below!! */
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct InstHierarchyHashTable {
     /// hashtable to translate Key to array indx
     pub hashTable: metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>,
@@ -1216,7 +1216,7 @@ pub type HASHTABLE = InstHierarchyHashTable;
 
 /// array of values are expandable, to amortize the
 /// cost of adding elements in a more efficient manner
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ValueArray {
     /// number of elements in hashtable
     pub numberOfElements: i32,

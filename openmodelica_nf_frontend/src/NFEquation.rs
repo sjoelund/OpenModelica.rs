@@ -59,7 +59,7 @@ use openmodelica_util::ErrorTypes;
 use openmodelica_util::IOStream;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFEquation {
     EQUALITY {
         /// The left hand side expression.
@@ -137,7 +137,7 @@ impl Default for NFEquation {
 pub use self::NFEquation::{EQUALITY,CONNECT,FOR,IF,WHEN,ASSERT,TERMINATE,REINIT,NORETCALL};
 pub mod Branch {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Branch {
         BRANCH {
             condition: Arc<Expression::NFExpression>,

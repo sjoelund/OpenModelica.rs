@@ -79,7 +79,7 @@ use openmodelica_util_datatypes_basic::List;
 //--------------------------------------------------//
 // matrix type
 //-------------------------------------------------//
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct EqSys {
     pub dim: i32,
     pub matrixA: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>,

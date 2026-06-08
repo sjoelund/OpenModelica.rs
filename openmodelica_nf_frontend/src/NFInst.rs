@@ -124,7 +124,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 pub mod InstSettings {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct InstSettings {
         /// Merge sections from extends clauses if true
         pub mergeExtendsSections: bool,

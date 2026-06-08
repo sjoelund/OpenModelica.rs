@@ -69,7 +69,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub mod FlowAlias {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct FlowAlias {
         pub name: Arc<ComponentRef::NFComponentRef>,
         pub negative: bool,
@@ -630,7 +630,7 @@ pub type IndexTable = Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, 
 ///   corresponds to its rank, while other elements are given positive values that
 ///   corresponds to the index of their parent in the array. The hashtable is used
 ///   to look up the array index of a entry, and is also used to store the entries.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Sets {
     /// An array of nodes
     pub nodes: metamodelica::Array<i32>,

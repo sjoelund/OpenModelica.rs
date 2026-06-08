@@ -86,7 +86,7 @@ pub mod ModTable {
     pub type Key = ArcStr;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -765,7 +765,7 @@ pub mod ModTable {
 pub mod ModifierScope {
     use super::*;
     /// Structure that represents where a modifier comes from.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum ModifierScope {
         COMPONENT {
             name: ArcStr,
@@ -832,7 +832,7 @@ pub mod ModifierScope {
 
 pub mod Modifier {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Modifier {
         MODIFIER {
             name: ArcStr,

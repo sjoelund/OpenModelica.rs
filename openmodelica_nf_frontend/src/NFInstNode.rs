@@ -75,7 +75,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 use openmodelica_util_datatypes_basic::Pointer;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum InstNodeType {
     /// An element with no specific characteristics.
     NORMAL_CLASS,
@@ -186,7 +186,7 @@ impl Ord for PackageCacheState {
 
 pub mod CachedData {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum CachedData {
         NO_CACHE,
         PACKAGE {
@@ -274,7 +274,7 @@ pub mod CachedData {
 
 pub mod InstNode {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum InstNode {
         CLASS_NODE {
             name: ArcStr,

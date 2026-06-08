@@ -52,7 +52,7 @@ use openmodelica_util::JSON;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NFOperator {
     pub ty: Arc<Type::NFType>,
     pub op: Op,

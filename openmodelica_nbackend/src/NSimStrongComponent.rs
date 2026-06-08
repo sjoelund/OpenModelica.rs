@@ -108,7 +108,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub mod Block {
     use super::*;
     /// A single blck from BLT transformation.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Block {
         /// Single residual equation of the form
         ///      0 = exp
@@ -1372,7 +1372,7 @@ pub mod Block {
 
 pub mod LinearSystem {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct LinearSystem {
         pub index: i32,
         pub mixed: bool,
@@ -1421,7 +1421,7 @@ pub mod LinearSystem {
 
 pub mod NonlinearSystem {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct NonlinearSystem {
         pub index: i32,
         /// equations

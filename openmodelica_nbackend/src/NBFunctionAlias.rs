@@ -174,7 +174,7 @@ pub mod Call_Id {
     use super::*;
     /// key for UnorderedMap.
     ///    used to uniquely identify a function call
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Call_Id {
         pub call: Arc<Expression::NFExpression>,
         pub iter: Arc<Iterator::Iterator>,
@@ -217,7 +217,7 @@ pub mod Call_Aux {
     /// value for UnorderedMap.
     ///    represents the auxilliary variable that will be created and has
     ///    the equation kind for auxilliary equation.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct Call_Aux {
         pub replacer: Arc<Expression::NFExpression>,
         pub kind: EquationKind,

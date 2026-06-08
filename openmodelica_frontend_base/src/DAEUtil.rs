@@ -4046,7 +4046,7 @@ fn traverseDAEElement<ArgT: Clone + 'static>(mut element: Arc<DAE::Element>, mut
     Ok((element, arg))
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum TraverseStatementsOptions {
     TRAVERSE_ALL,
     TRAVERSE_RHS_ONLY,

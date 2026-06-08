@@ -68,7 +68,7 @@ use openmodelica_util_datatypes_basic::List;
 ///  package:     SymbolTable
 ///  description: Thread-local, mutable symbol table. Set this at the start
 ///               of any interactive call or in Main.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SymbolTable {
     /// ast ; The ast
     pub ast: Absyn::Program,

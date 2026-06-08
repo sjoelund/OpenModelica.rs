@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 /// represents a rational number, e.g. 6/7
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Rational {
     /// numerator
     pub nom: i32,

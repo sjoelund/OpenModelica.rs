@@ -62,7 +62,7 @@ pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
 }
 
 /// The binary tree data structure.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Tree {
     NODE {
         /// The key of the node.

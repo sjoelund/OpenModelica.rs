@@ -67,7 +67,7 @@ pub type SparsityPattern = Arc<metamodelica::List<(i32, Arc<metamodelica::List<i
 pub type NonlinearPattern = Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>;
 
 // same structure but different name for the sake of maintenance
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct JacobianColumn {
     pub columnEqns: Arc<metamodelica::List<Arc<SimEqSystem>>>,
     pub columnVars: Arc<metamodelica::List<SimCodeVar::SimVar>>,
@@ -378,7 +378,7 @@ impl Default for SimCode {
 pub type SIMCODE = SimCode;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ClockedPartition {
     pub baseClock: Arc<DAE::ClockKind>,
     pub subPartitions: Arc<metamodelica::List<SubPartition>>,
@@ -396,7 +396,7 @@ impl Default for ClockedPartition {
 pub type CLOCKED_PARTITION = ClockedPartition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SubPartition {
     pub vars: Arc<metamodelica::List<(SimCodeVar::SimVar, bool)>>,
     pub equations: Arc<metamodelica::List<Arc<SimEqSystem>>>,
@@ -420,7 +420,7 @@ impl Default for SubPartition {
 pub type SUBPARTITION = SubPartition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BackendMapping {
     BACKENDMAPPING {
         m: metamodelica::Array<Arc<metamodelica::List<i32>>>,
@@ -439,7 +439,7 @@ impl Default for BackendMapping {
 }
 pub use self::BackendMapping::{BACKENDMAPPING,NO_MAPPING};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct PartitionData {
     pub numPartitions: i32,
     pub partitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>,
@@ -462,7 +462,7 @@ pub type PARTITIONDATA = PartitionData;
 
 
 /// Delayed expressions type
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DelayedExpression {
     pub delayedExps: Arc<metamodelica::List<(i32, (Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::Exp>))>>,
     pub maxDelayedIndex: i32,
@@ -480,7 +480,7 @@ impl Default for DelayedExpression {
 pub type DELAYED_EXPRESSIONS = DelayedExpression;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SpatialDistributionInfo {
     pub spatialDistributions: Arc<metamodelica::List<SpatialDistribution>>,
     pub maxIndex: i32,
@@ -498,7 +498,7 @@ impl Default for SpatialDistributionInfo {
 pub type SPATIAL_DISTRIBUTION_INFO = SpatialDistributionInfo;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SpatialDistribution {
     /// uniqueIndex
     pub index: i32,
@@ -537,7 +537,7 @@ pub type SPATIAL_DISTRIBUTION = SpatialDistribution;
 
 
 /// unitDefinitions for fmi modelDescription.xml
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct UnitDefinition {
     pub name: ArcStr,
     pub baseUnit: BaseUnit,
@@ -555,7 +555,7 @@ impl Default for UnitDefinition {
 pub type UNITDEFINITION = UnitDefinition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BaseUnit {
     BASEUNIT {
         /// exponent
@@ -586,7 +586,7 @@ impl Default for BaseUnit {
 pub use self::BaseUnit::{BASEUNIT,NOBASEUNIT};
 
 /// Container for metadata about a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ModelInfo {
     pub name: Arc<Absyn::Path>,
     pub description: ArcStr,
@@ -651,7 +651,7 @@ pub type Files = Arc<metamodelica::List<FileInfo>>;
 ///   it is used to generate the file information in one place and use an index
 ///   whenever we need to refer to one file from a var or function.
 ///   this is done so that we don't repeat long filenames everywhere.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FileInfo {
     /// fileName where the class/component is defined in
     pub fileName: ArcStr,
@@ -672,7 +672,7 @@ pub type FILEINFO = FileInfo;
 
 
 /// Number of variables of various types in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct VarInfo {
     pub numZeroCrossings: i32,
     pub numTimeEvents: i32,
@@ -759,7 +759,7 @@ impl Default for VarInfo {
 pub type VARINFO = VarInfo;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum DaeModeConfig {
     ALL_EQUATIONS,
     DYNAMIC_EQUATIONS,
@@ -770,7 +770,7 @@ impl Default for DaeModeConfig {
 pub use self::DaeModeConfig::{ALL_EQUATIONS,DYNAMIC_EQUATIONS};
 
 /// contains data that belongs to the dae mode
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DaeModeData {
     /// daeModel residuals equations
     pub daeEquations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimEqSystem>>>>>,
@@ -800,7 +800,7 @@ pub type DAEMODEDATA = DaeModeData;
 
 
 /// contains data for code generation for OMSI
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct OMSIData {
     /// contains equations and variables for initialization problem
     pub initialization: Arc<OMSIFunction>,
@@ -821,7 +821,7 @@ pub type OMSI_DATA = OMSIData;
 
 
 /// contains equations and variables for initialization or simulation problem
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct OMSIFunction {
     /// causalized list of single equations and systems of equations
     pub equations: Arc<metamodelica::List<Arc<SimEqSystem>>>,
@@ -860,7 +860,7 @@ thread_local! { static __emptyOMSIFunction_TLS: Arc<OMSIFunction> = Arc::new(OMS
 pub fn emptyOMSIFunction() -> Arc<OMSIFunction> { __emptyOMSIFunction_TLS.with(|__t| __t.clone()) }
 
 /// Represents a single equation or a system of equations that must be solved together.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SimEqSystem {
     SES_RESIDUAL {
         index: i32,
@@ -1034,7 +1034,7 @@ impl Default for SimEqSystem {
 }
 pub use self::SimEqSystem::{SES_RESIDUAL,SES_FOR_RESIDUAL,SES_GENERIC_RESIDUAL,SES_SIMPLE_ASSIGN,SES_SIMPLE_ASSIGN_CONSTRAINTS,SES_ARRAY_CALL_ASSIGN,SES_RESIZABLE_ASSIGN,SES_GENERIC_ASSIGN,SES_ENTWINED_ASSIGN,SES_IFEQUATION,SES_ALGORITHM,SES_INVERSE_ALGORITHM,SES_LINEAR,SES_NONLINEAR,SES_MIXED,SES_WHEN,SES_FOR_LOOP,SES_FOR_EQUATION,SES_ALIAS,SES_ALGEBRAIC_SYSTEM};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SimGenericCall {
     SINGLE_GENERIC_CALL {
         index: i32,
@@ -1068,7 +1068,7 @@ impl Default for SimGenericCall {
 }
 pub use self::SimGenericCall::{SINGLE_GENERIC_CALL,IF_GENERIC_CALL,WHEN_GENERIC_CALL};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum SimBranch {
     SIM_BRANCH {
         condition: Option<Arc<DAE::Exp>>,
@@ -1090,7 +1090,7 @@ impl Default for SimBranch {
 pub use self::SimBranch::{SIM_BRANCH,SIM_BRANCH_STMT};
 
 /// represents directional derivatives with sparsity and coloring
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct DerivativeMatrix {
     pub columns: Arc<metamodelica::List<Arc<OMSIFunction>>>,
     /// unique matrix name
@@ -1104,7 +1104,7 @@ pub struct DerivativeMatrix {
 pub type DERIVATIVE_MATRIX = DerivativeMatrix;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct LinearSystem {
     pub index: i32,
     pub partOfMixed: bool,
@@ -1125,7 +1125,7 @@ pub struct LinearSystem {
 pub type LINEARSYSTEM = LinearSystem;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NonlinearSystem {
     pub index: i32,
     pub eqs: Arc<metamodelica::List<Arc<SimEqSystem>>>,
@@ -1160,7 +1160,7 @@ impl Default for NonlinearSystem {
 pub type NONLINEARSYSTEM = NonlinearSystem;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct StateSet {
     pub index: i32,
     pub nCandidates: i32,
@@ -1188,7 +1188,7 @@ impl Default for StateSet {
 pub type SES_STATESET = StateSet;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ExtObjInfo {
     pub vars: Arc<metamodelica::List<SimCodeVar::SimVar>>,
     pub aliases: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>,
@@ -1207,7 +1207,7 @@ pub type EXTOBJINFO = ExtObjInfo;
 
 
 /// Settings for simulation init file header.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct SimulationSettings {
     pub startTime: metamodelica::Real,
     pub stopTime: metamodelica::Real,
@@ -1251,7 +1251,7 @@ pub type Value = SimCodeVar::SimVar;
 pub type HashTableCrefToSimVar = (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (HashTableCrefSimVar::FuncHashCref, HashTableCrefSimVar::FuncCrefEqual, HashTableCrefSimVar::FuncCrefStr, HashTableCrefSimVar::FuncExpStr));
 
 /* FMI 2.0 Export */
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiUnknown {
     pub index: i32,
     pub dependencies: Arc<metamodelica::List<i32>>,
@@ -1271,7 +1271,7 @@ impl Default for FmiUnknown {
 pub type FMIUNKNOWN = FmiUnknown;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiOutputs {
     pub fmiUnknownsList: Arc<metamodelica::List<FmiUnknown>>,
 }
@@ -1287,7 +1287,7 @@ impl Default for FmiOutputs {
 pub type FMIOUTPUTS = FmiOutputs;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiDerivatives {
     pub fmiUnknownsList: Arc<metamodelica::List<FmiUnknown>>,
 }
@@ -1303,7 +1303,7 @@ impl Default for FmiDerivatives {
 pub type FMIDERIVATIVES = FmiDerivatives;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiDiscreteStates {
     pub fmiUnknownsList: Arc<metamodelica::List<FmiUnknown>>,
 }
@@ -1319,7 +1319,7 @@ impl Default for FmiDiscreteStates {
 pub type FMIDISCRETESTATES = FmiDiscreteStates;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiInitialUnknowns {
     pub fmiUnknownsList: Arc<metamodelica::List<FmiUnknown>>,
     /// use the sorted crefs to get the ValueReference of unknowns
@@ -1341,7 +1341,7 @@ impl Default for FmiInitialUnknowns {
 pub type FMIINITIALUNKNOWNS = FmiInitialUnknowns;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FmiModelStructure {
     pub fmiOutputs: FmiOutputs,
     pub fmiDerivatives: FmiDerivatives,
@@ -1367,7 +1367,7 @@ impl Default for FmiModelStructure {
 pub type FMIMODELSTRUCTURE = FmiModelStructure;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum FmiSimulationFlags {
     FMI_SIMULATION_FLAGS {
         nameValueTuples: Arc<metamodelica::List<(ArcStr, ArcStr)>>,

@@ -73,7 +73,7 @@ pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
 pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
 /// The binary tree data structure.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Tree {
     NODE {
         /// The key of the node.

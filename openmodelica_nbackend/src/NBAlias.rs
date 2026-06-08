@@ -177,7 +177,7 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<E
 pub mod AliasSet {
     use super::*;
     /// gets accumulated to find sets of alias equations and solve them
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct AliasSet {
         /// list of all variables in this set
         pub simple_variables: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>,
@@ -227,7 +227,7 @@ pub fn EMPTY_ALIAS_SET() -> Arc<AliasSet::AliasSet> { __EMPTY_ALIAS_SET_TLS.with
 pub type SetPtr = Pointer::Pointer<Arc<AliasSet::AliasSet>>;
 
 /// used for findCrefs()
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CrefTpl {
     /// false if search already resulted in non simple structure
     pub cont: bool,
@@ -1356,7 +1356,7 @@ fn rateVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut attrcol
 
 pub mod AttributeCollector {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct AttributeCollector {
         /// set containing all minimum values
         pub min_val_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>,

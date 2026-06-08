@@ -61,7 +61,7 @@ use openmodelica_util::Error;
 use openmodelica_util::ErrorTypes;
 use openmodelica_util_datatypes_basic::Mutable;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFBinding {
     UNBOUND,
     RAW_BINDING {

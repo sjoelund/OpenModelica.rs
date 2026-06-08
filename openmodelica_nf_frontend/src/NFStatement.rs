@@ -55,7 +55,7 @@ use openmodelica_util::IOStream;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFStatement {
     ASSIGNMENT {
         /// The asignee
@@ -135,7 +135,7 @@ impl Default for NFStatement {
     }
 }
 pub use self::NFStatement::{ASSIGNMENT,FUNCTION_ARRAY_INIT,FOR,IF,WHEN,ASSERT,TERMINATE,REINIT,NORETCALL,WHILE,RETURN,BREAK,FAILURE};
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ForType {
     NORMAL,
     PARALLEL {

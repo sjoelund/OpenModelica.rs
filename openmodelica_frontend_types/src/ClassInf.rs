@@ -46,7 +46,7 @@ use arcstr::{ArcStr, literal, format};
 use openmodelica_ast::Absyn;
 
 /// - Machine states, the string contains the classname.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum State {
     UNKNOWN {
         path: Arc<Absyn::Path>,
@@ -140,7 +140,7 @@ impl Default for State {
 pub use self::State::{UNKNOWN,OPTIMIZATION,MODEL,RECORD,BLOCK,CONNECTOR,TYPE,PACKAGE,FUNCTION,ENUMERATION,HAS_RESTRICTIONS,TYPE_INTEGER,TYPE_REAL,TYPE_STRING,TYPE_BOOL,TYPE_CLOCK,TYPE_ENUM,EXTERNAL_OBJ,META_TUPLE,META_LIST,META_OPTION,META_RECORD,META_UNIONTYPE,META_ARRAY,META_POLYMORPHIC};
 
 /// - Events
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Event {
     /// There are equations inside the current definition
     FOUND_EQUATION,

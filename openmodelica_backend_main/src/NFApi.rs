@@ -753,7 +753,7 @@ pub fn getNthInheritedClass(mut classPath: Arc<Path>, mut index: i32, mut progra
     Ok(result)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum InstanceTree {
     COMPONENT {
         node: Arc<InstNode::InstNode>,
@@ -2283,7 +2283,7 @@ pub fn modifierToJSON(mut modifier: ArcStr, mut prettyPrint: bool) -> Result<Arc
     Ok(jsonString)
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct MoveEnv {
     pub scope: Arc<InstNode::InstNode>,
     pub destinationPath: Arc<Path>,

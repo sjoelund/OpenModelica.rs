@@ -89,7 +89,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 pub mod SimVar {
     use super::*;
     /// Information about a variable in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SimVar {
         pub name: Arc<ComponentRef::NFComponentRef>,
         pub varKind: Arc<VariableKind::VariableKind>,
@@ -579,7 +579,7 @@ pub mod SimVar {
 
 pub mod Alias {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Alias {
         NO_ALIAS,
         /// General alias expression with a coefficent.
@@ -778,7 +778,7 @@ impl Default for Variability {
 pub mod SimVars {
     use super::*;
     /// Container for metadata about variables in a Modelica model.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SimVars {
         pub stateVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
         pub derivativeVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
@@ -1381,7 +1381,7 @@ impl Ord for VarType {
 // ToDo: PRE, OLD, RELATIONS...
 pub mod VarInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct VarInfo {
         pub numZeroCrossings: i32,
         pub numTimeEvents: i32,
@@ -1494,7 +1494,7 @@ pub mod VarInfo {
 
 pub mod ExtObjInfo {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct ExtObjInfo {
         pub objects: Arc<metamodelica::List<Arc<SimVar::SimVar>>>,
         pub aliases: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>,

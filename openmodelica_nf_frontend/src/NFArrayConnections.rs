@@ -86,7 +86,7 @@ use openmodelica_util_datatypes_basic::List;
 
 pub mod SetVertex {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SetVertex {
         pub name: Arc<Connector::NFConnector>,
         pub vs: Arc<SBSet::SBSet>,
@@ -122,7 +122,7 @@ pub mod SetVertex {
 
 pub mod SetEdge {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SetEdge {
         pub name: ArcStr,
         pub es1: Arc<SBPWLinearMap::SBPWLinearMap>,

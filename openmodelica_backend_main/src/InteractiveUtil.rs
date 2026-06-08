@@ -2675,7 +2675,7 @@ pub fn getBaseClassNameFromExtends(mut inElementSpec: Arc<Absyn::ElementSpec>) -
 
 pub mod ClassEntry {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct ClassEntry {
         pub path: Arc<Absyn::Path>,
         pub cls: Arc<Absyn::Class>,

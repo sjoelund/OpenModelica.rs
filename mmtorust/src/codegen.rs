@@ -745,14 +745,22 @@ impl GenCtx {
         // implement it. Unlike PartialEq it never locks a type out — its
         // field comparisons bottom out at allocation identity, which even
         // `Arc<dyn Fn>` callbacks support.
+        // `metamodelica::MetaCmp` supplies `PartialEq`/`PartialOrd`/`Ord` with
+        // an `Arc::ptr_eq` fast path on every `Arc<…>` field, mirroring the MMC
+        // `valueCompare` pointer-identity short-circuit. This is what lets the
+        // cyclic NF value graphs (`InstNode` ⇄ `Function` through the function
+        // cache) be compared without infinitely recursing; the fast path is
+        // result-preserving, so it is safe for every value type. `Eq`/`Hash`
+        // stay as builtin derives (they need no short-circuit and `Eq` is a
+        // marker requiring the `PartialEq` that `MetaCmp` provides).
         if self.types_directly_containing_dyn_fn.contains(qname) {
             "#[derive(Clone, metamodelica::ReferenceEq)]"
         } else if self.types_containing_mutable.contains(qname)
             || self.types_containing_array.contains(qname)
         {
-            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]"
+            "#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]"
         } else {
-            "#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]"
+            "#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]"
         }
     }
 

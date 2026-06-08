@@ -64,7 +64,7 @@ use openmodelica_util_datatypes_basic::List;
 
 ///
 /// Properties of a transition
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Transition {
     pub from: i32,
     pub to: i32,
@@ -95,7 +95,7 @@ pub type TRANSITION = Transition;
 ///
 /// Structure that combines states of flat state machine in
 /// canonical order with governing semantic equations.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FlatSmSemantics {
     pub ident: ArcStr,
     /// First element is the initial state

@@ -60,7 +60,7 @@ use openmodelica_util_datatypes_basic::List;
 
 /// rule to rewrite fromExp -> toExp,
 ///  there are FrontEnd and BackEnd rules
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Rule {
     /// rule to rewrite fromExp -> toExp, apply to FrontEnd AST exps
     FRONTEND_RULE {
@@ -78,7 +78,7 @@ pub use self::Rule::{FRONTEND_RULE,BACKEND_RULE};
 pub type Rules = Arc<metamodelica::List<Rule>>;
 
 /// a bind '$1' bound to an exp
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Bind {
     /// a bind '$1' bound to an exp (frontend)
     FRONTEND_BIND {

@@ -66,7 +66,7 @@ impl Default for EntryType {
     fn default() -> Self { Self::DUPLICATE }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Entry {
     pub entry: Arc<NFLookupTree::Entry::Entry>,
     pub node: Option<Arc<NFInstNode::InstNode::InstNode>>,
@@ -158,7 +158,7 @@ pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> 
 pub type Key = ArcStr;
 
 /// The binary tree data structure.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Tree {
     NODE {
         /// The key of the node.

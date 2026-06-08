@@ -60,7 +60,7 @@ use openmodelica_util::UnorderedSet;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum ConversionRule {
     /// convertClass
     CLASS {
@@ -97,7 +97,7 @@ pub mod ConversionRules {
     ///     element, and each node has a map of child nodes and a list of rules. So
     ///     e.g. convertClass('A.B', 'A.C') becomes
     ///     A(nodes = {B(nodes = {}, rules = {convertClass(A.C)})}, rules = {})
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct ConversionRules {
         pub nodes: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<ConversionRules>>>,
         pub rules: Arc<metamodelica::List<ConversionRule>>,
@@ -153,7 +153,7 @@ pub static CONVERT_MODIFIER_TYPE: std::sync::LazyLock<Arc<metamodelica::List<Arg
 pub static CONVERT_MESSAGE_TYPE: std::sync::LazyLock<Arc<metamodelica::List<ArgType>>> = std::sync::LazyLock::new(|| { list![ArgType::SCALAR.clone(), ArgType::SCALAR.clone(), ArgType::SCALAR.clone()] });
 
 /// Struct for storing import data.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ImportData {
     /// The import before conversion
     pub originalPath: Arc<Path>,
@@ -211,7 +211,7 @@ pub mod ImportTreeImpl {
     pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -881,7 +881,7 @@ pub mod ImportTreeImpl {
 
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Env {
     pub components: TypeTable,
     pub imports: ImportTree,

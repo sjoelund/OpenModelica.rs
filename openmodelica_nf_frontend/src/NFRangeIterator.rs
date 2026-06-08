@@ -49,7 +49,7 @@ use crate::NFType as Type;
 use openmodelica_util::Error;
 use openmodelica_util::Util;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum NFRangeIterator {
     INT_RANGE {
         current: i32,

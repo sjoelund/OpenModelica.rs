@@ -93,7 +93,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// package:     NBTearing
 /// description: This file contains the data-types used for tearing. It is a
 ///              uniontype and therefore also contains some structures for tearing.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct NBTearing {
     /// the variables used for iteration
     pub iteration_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>>,

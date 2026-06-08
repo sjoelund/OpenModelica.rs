@@ -61,7 +61,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 // where tabs will be converted where 1 tab = 4 spaces ??
 pub type Tokens = Arc<metamodelica::List<Arc<StringToken>>>;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Text {
     MEM_TEXT {
         tokens: Tokens,
@@ -87,7 +87,7 @@ pub use self::Text::{MEM_TEXT,FILE_TEXT};
 
 pub static emptyTxt: std::sync::LazyLock<Text> = std::sync::LazyLock::new(|| { Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct BlockTypeFileText {
     /// The block type
     pub bt: Arc<BlockType>,
@@ -102,7 +102,7 @@ pub struct BlockTypeFileText {
 pub type BT_FILE_TEXT = BlockTypeFileText;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum StringToken {
     /// Always outputs the new-line char.
     ST_NEW_LINE,
@@ -137,7 +137,7 @@ impl Default for StringToken {
 }
 pub use self::StringToken::{ST_NEW_LINE,ST_STRING,ST_LINE,ST_STRING_LIST,ST_BLOCK};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum BlockType {
     BT_TEXT,
     BT_INDENT {
@@ -171,7 +171,7 @@ impl Default for BlockType {
 }
 pub use self::BlockType::{BT_TEXT,BT_INDENT,BT_ABS_INDENT,BT_REL_INDENT,BT_ANCHOR,BT_ITER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct IterOptions {
     pub startIndex0: i32,
     pub empty: Option<Arc<StringToken>>,

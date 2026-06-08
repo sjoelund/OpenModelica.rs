@@ -47,7 +47,7 @@ use crate::IOStreamExt;
 use openmodelica_util_datatypes_basic::List;
 
 /// TODO! change these to X_TYPE
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IOStreamType {
     FILE {
         name: ArcStr,
@@ -60,7 +60,7 @@ impl Default for IOStreamType {
 }
 pub use self::IOStreamType::{FILE,LIST,BUFFER};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum IOStreamData {
     FILE_DATA {
         data: i32,
@@ -81,7 +81,7 @@ impl Default for IOStreamData {
 }
 pub use self::IOStreamData::{FILE_DATA,LIST_DATA,BUFFER_DATA};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct IOStream {
     pub name: ArcStr,
     pub ty: IOStreamType,

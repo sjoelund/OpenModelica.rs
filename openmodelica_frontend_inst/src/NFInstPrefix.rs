@@ -47,7 +47,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_types::DAE;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Prefix {
     EMPTY_PREFIX {
         /// The path of the class the prefix originates from.

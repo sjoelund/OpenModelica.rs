@@ -56,7 +56,7 @@ use openmodelica_util::UnorderedMap;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Mutable;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Entry {
     pub hasMatch: bool,
     pub r#mod: Arc<SCode::Mod>,
@@ -99,7 +99,7 @@ pub mod EntryTree {
     pub type Key = Arc<Absyn::ComponentRef>;
 
     /// The binary tree data structure.
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+    #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub enum Tree {
         NODE {
             /// The key of the node.
@@ -908,7 +908,7 @@ pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> 
 pub type Key = Arc<Absyn::ComponentRef>;
 
 /// The binary tree data structure.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum Tree {
     NODE {
         /// The key of the node.

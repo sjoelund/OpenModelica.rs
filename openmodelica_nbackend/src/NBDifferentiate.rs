@@ -123,7 +123,7 @@ impl Default for DifferentiationType {
 
 pub mod DifferentiationArguments {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct DifferentiationArguments {
         /// The input will be differentiated w.r.t. this cref (only SIMPLE).
         pub diffCref: Arc<ComponentRef::NFComponentRef>,

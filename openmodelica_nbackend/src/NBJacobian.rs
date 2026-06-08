@@ -309,7 +309,7 @@ pub type SparsityPatternRow = (Arc<ComponentRef::NFComponentRef>, Arc<metamodeli
 
 pub mod SparsityPattern {
     use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SparsityPattern {
         /// colum-wise sparsity pattern
         pub col_wise_pattern: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>>,
@@ -536,7 +536,7 @@ pub type SparsityColoringRow = Arc<metamodelica::List<Arc<ComponentRef::NFCompon
 pub mod SparsityColoring {
     use super::*;
     /// column wise coloring with extra row sparsity information
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
     pub struct SparsityColoring {
         pub cols: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>,
         pub rows: metamodelica::Array<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>,

@@ -77,7 +77,7 @@ use openmodelica_util_datatypes_basic::List;
 // ============================================================
 // Internal data types
 // ============================================================
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Transition {
     pub from: i32,
     pub to: i32,
@@ -105,7 +105,7 @@ impl Default for Transition {
 pub type TRANSITION = Transition;
 
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, metamodelica::ReferenceEq)]
+#[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FlatSmSemantics {
     /// Cref of the initial state (used as prefix for smOf vars)
     pub initStateRef: Arc<ComponentRef::NFComponentRef>,
