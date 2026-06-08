@@ -4523,12 +4523,11 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     let mut failed: bool = failed.clone();
                     let mut vars: BackendDAE::Variables = vars.clone();
                     (v, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
-                    if let Ok((__pa0, __pa1)) = updateStatesVar(vars.clone(), v.clone(), e1.clone()) {
-                        vars = __pa0.clone();
-                        e1 = __pa1.clone();
-                    } else {
+                    if '__try0: {
+                        (vars, e1) = unwrap_break_err!(updateStatesVar(vars.clone(), v.clone(), e1.clone()), '__try0);
+                        Ok::<(), anyhow::Error>(())
+                    }.is_err() {
                         failed = true;
-                        bail!("fail");
                     }
                     Ok(((e1.clone(), vars.clone()), failed.clone(), vars.clone()))
                 }
@@ -4540,7 +4539,6 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                 e1 @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut vars: BackendDAE::Variables = vars.clone();
-                    let false = (failed.clone()) else { bail!("pattern mismatch") };
                     (varlst, _) = BackendVariable::getVar(cr.clone(), vars.clone())?;
                     vars = updateStatesVars(vars.clone(), varlst.clone(), false)?;
                     Ok(((e1.clone(), vars.clone()), vars.clone()))
@@ -4554,7 +4552,6 @@ fn expandDerExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables, mut inS
                     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
                     let mut vars: BackendDAE::Variables = vars.clone();
-                    let false = (failed.clone()) else { bail!("pattern mismatch") };
                     (e2, shared) = Differentiate::differentiateExpTime(e1.clone(), vars.clone(), Mutable::access(inShared.clone()))?;
                     let false = (Expression::isZero(e2.clone())?) else { bail!("pattern mismatch") };
                     Mutable::update(inShared.clone(), shared.clone());
