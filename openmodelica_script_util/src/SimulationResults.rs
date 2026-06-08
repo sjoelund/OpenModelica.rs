@@ -184,6 +184,37 @@ static ERROR_PLT_INTERVAL_MISMATCH: ErrorTypes::Message = ErrorTypes::Message {
     severity: ErrorTypes::Severity::ERROR,
     message: Gettext::TranslatableContent::notrans { r#str: literal!("interval size not matching data size.") },
 };
+// filterSimulationResults messages, mirroring SimulationResults.c.
+static ERROR_FILTER_PARAM_CSV: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Could not filter parameter %s since the output format is CSV (only variables are allowed).") },
+};
+static ERROR_FILTER_FORMAT: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("filterSimulationResults not implemented for plot format: %s\n") },
+};
+static ERROR_FILTER_WRITE_FAILED: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Failed to write to file %s.") },
+};
+static NOTIFY_RESAMPLING: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::NOTIFICATION,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Resampling %s from %s points to %s points, removing %s events stored in %s points.\n") },
+};
+static ERROR_RESAMPLE_FAILED: ErrorTypes::Message = ErrorTypes::Message {
+    id: -1,
+    ty: ErrorTypes::MessageType::SCRIPTING,
+    severity: ErrorTypes::Severity::ERROR,
+    message: Gettext::TranslatableContent::gettext { msgid: literal!("Resampling %s failed to get variable %s at time %s.\n") },
+};
 
 /// The result-file reader behind every entry point, dispatched by file
 /// suffix exactly like `SimulationResultsImpl__openFile` (.mat / .plt /
@@ -2137,8 +2168,300 @@ pub fn diffSimulationResultsHtml(mut runningTestsuite: bool, mut filename: ArcSt
     Ok(ArcStr::from(html))
 }
 
+/// Metadata copied out of the reader for each requested variable, decoupling
+/// the (immutable) `allInfo` lookup from the later mutable trajectory reads.
+struct FilterVar {
+    name: String,
+    descr: String,
+    isParam: bool,
+    /// 1-based data_1 (param) / data_2 (var) index in the *input* file; the sign
+    /// selects the negated alias.
+    index: i32,
+}
+
+/// Append a MATLAB v4 matrix header (mirrors `writeMatVer4MatrixHeader`). The
+/// host is little-endian (the only build target), so the type's 1000s digit is
+/// 0; `elem_size` selects the element type: 1 = char (51), 4 = int32 (20),
+/// 8 = double (0).
+fn push_mat_header(out: &mut Vec<u8>, name: &str, rows: u32, cols: u32, elem_size: u32) {
+    let ty: u32 = match elem_size {
+        1 => 51,
+        4 => 20,
+        _ => 0,
+    };
+    let namelen = name.len() as u32 + 1;
+    for field in [ty, rows, cols, 0u32, namelen] {
+        out.extend_from_slice(&field.to_le_bytes());
+    }
+    out.extend_from_slice(name.as_bytes());
+    out.push(0); // NUL terminator (namelen counts it)
+}
+
+/// Append a fixed-width char matrix (`name`/`description`): `rows` strings each
+/// padded to `width` bytes, stored column-major (`buf[width*j..]` holds char `j`
+/// of every row) exactly like the C filter's transposed buffer.
+fn push_char_matrix(out: &mut Vec<u8>, name: &str, strings: &[&str], width: usize) {
+    push_mat_header(out, name, strings.len() as u32, width as u32, 1);
+    let rows = strings.len();
+    let mut buf = vec![0u8; rows * width];
+    for (i, s) in strings.iter().enumerate() {
+        for (j, &b) in s.as_bytes().iter().enumerate() {
+            buf[rows * j + i] = b;
+        }
+    }
+    out.extend_from_slice(&buf);
+}
+
 pub fn filterSimulationResults(mut inFile: ArcStr, mut outFile: ArcStr, mut vars: Arc<metamodelica::List<ArcStr>>, mut numberOfIntervals: i32, mut removeDescription: bool, mut hintReadAllVars: bool) -> Result<bool> {
-    // C: SimulationResults_filterSimulationResults — copy a result file
-    // keeping only the requested variables / intervals.
-    todo!("SimulationResults.filterSimulationResults: result filtering not yet ported")
+    // C: SimulationResults_filterSimulationResults — copy a result file keeping
+    // only the requested variables (optionally resampled to `numberOfIntervals`
+    // intervals). Only MATLAB v4 input is supported, matching the C switch.
+    //
+    // `hintReadAllVars` is a performance hint in the C reader (pre-read every
+    // column); the Rust reader always loads data_2 in one pass, so it is a no-op.
+    let mut reader = match ResultReader::open_reporting(&inFile)? {
+        Some(ResultReader::Mat(r)) => r,
+        Some(ResultReader::Csv(_)) => {
+            err(&ERROR_FILTER_FORMAT, [ArcStr::from("CSV")])?;
+            return Ok(false);
+        }
+        Some(ResultReader::Plt(_)) => {
+            err(&ERROR_FILTER_FORMAT, [ArcStr::from("PLT")])?;
+            return Ok(false);
+        }
+        None => return Ok(false),
+    };
+
+    // The C code prepends "time" to the requested variables.
+    let mut var_names: Vec<ArcStr> = Vec::with_capacity(1 + vars.as_ref().into_iter().count());
+    var_names.push(ArcStr::from("time"));
+    var_names.extend(vars.as_ref().into_iter().cloned());
+    let num_to_filter = var_names.len();
+
+    // Look up every requested variable up front (so the trajectory reads below
+    // can borrow the reader mutably).
+    let mut fvars: Vec<FilterVar> = Vec::with_capacity(num_to_filter);
+    for name in &var_names {
+        let Some(idx) = reader.find_var(name.as_str()) else {
+            err(&ERROR_COULD_NOT_READ_VAR, [name.clone(), openmodelica_util::System::basename(inFile.clone())])?;
+            return Ok(false);
+        };
+        let info = &reader.allInfo[idx];
+        fvars.push(FilterVar {
+            name: info.name.clone(),
+            descr: info.descr.clone(),
+            isParam: info.isParam,
+            index: info.index,
+        });
+    }
+
+    let start = reader.start_time();
+    let stop = reader.stop_time();
+
+    // CSV output: a plain text table; parameters are rejected.
+    if outFile.ends_with(".csv") {
+        let mut cols: Vec<Vec<f64>> = Vec::with_capacity(num_to_filter);
+        for fv in &fvars {
+            if fv.isParam {
+                err(&ERROR_FILTER_PARAM_CSV, [ArcStr::from(fv.name.as_str())])?;
+                return Ok(false);
+            }
+            let Some(vals) = reader.read_vals(fv.index) else {
+                err(&ERROR_COULD_NOT_READ_VAR, [ArcStr::from(fv.name.as_str()), openmodelica_util::System::basename(inFile.clone())])?;
+                return Ok(false);
+            };
+            cols.push(vals);
+        }
+        let mut text = String::from("time");
+        for fv in &fvars[1..] {
+            text.push_str(",\"");
+            text.push_str(&fv.name);
+            text.push('"');
+        }
+        text.push('\n');
+        for row in 0..reader.nrows {
+            text.push_str(&format_g_prec15(cols[0][row]));
+            for col in &cols[1..] {
+                text.push(',');
+                text.push_str(&format_g_prec15(col[row]));
+            }
+            text.push('\n');
+        }
+        if std::fs::write(outFile.as_str(), text.as_bytes()).is_err() {
+            err(&ERROR_FILTER_WRITE_FAILED, [outFile.clone()])?;
+            return Ok(false);
+        }
+        return Ok(true);
+    }
+
+    // MATLAB v4 output. Tally which input data_1/data_2 columns are referenced
+    // and build the old-index -> new-index remap, reserving data_1 column 1 for
+    // the synthetic time start/stop pair.
+    let nvar = reader.nvar;
+    let nparam = reader.nparam;
+    let mut indexes = vec![0i32; nvar];
+    let mut parameter_indexes = vec![0i32; nparam];
+    if nparam > 0 {
+        parameter_indexes[0] = 1; // data_1 column 1 = time interval (always present)
+    }
+    let mut num_unique = 0usize;
+    let mut num_unique_param = 1usize; // counts the reserved time column
+    let mut longest_name = 0usize;
+    let mut longest_desc = 0usize;
+    for fv in &fvars {
+        let slot = (fv.index.unsigned_abs() as usize) - 1;
+        if fv.isParam {
+            if parameter_indexes[slot] == 0 {
+                num_unique_param += 1;
+            }
+            parameter_indexes[slot] += 1;
+        } else {
+            if indexes[slot] == 0 {
+                num_unique += 1;
+            }
+            indexes[slot] += 1;
+        }
+        longest_name = longest_name.max(fv.name.len());
+        longest_desc = longest_desc.max(fv.descr.len());
+    }
+
+    // indexesToOutput[k] = old (1-based) column of the k-th distinct variable;
+    // `indexes` is then overwritten with the old->new lookup table.
+    let mut indexes_to_output: Vec<i32> = Vec::with_capacity(num_unique);
+    let mut j = 0i32;
+    for i in 0..nvar {
+        if indexes[i] != 0 {
+            indexes_to_output.push((i + 1) as i32);
+            j += 1;
+        }
+        indexes[i] = j;
+    }
+    let mut parameter_indexes_to_output: Vec<i32> = Vec::with_capacity(num_unique_param);
+    let mut j = 0i32;
+    for i in 0..nparam {
+        if parameter_indexes[i] != 0 {
+            parameter_indexes_to_output.push((i + 1) as i32);
+            j += 1;
+        }
+        parameter_indexes[i] = j;
+    }
+
+    let mut out: Vec<u8> = Vec::new();
+    // Aclass (binNormal): 4x11 char matrix, column 3 spelling "binNormal".
+    const ACLASS_NORMAL: &[u8] = b"A1 bt. ir1 na  Nj  oe  rc  mt  ao  lr   y   ";
+    debug_assert_eq!(ACLASS_NORMAL.len(), 4 * 11);
+    push_mat_header(&mut out, "Aclass", 4, 11, 1);
+    out.extend_from_slice(ACLASS_NORMAL);
+
+    // name matrix.
+    let names: Vec<&str> = fvars.iter().map(|f| f.name.as_str()).collect();
+    push_char_matrix(&mut out, "name", &names, longest_name);
+    // description matrix: removeDescription emits the same numToFilter rows but
+    // with zero-width (empty) entries, matching the C `width=0` header.
+    if removeDescription {
+        push_char_matrix(&mut out, "description", &vec![""; num_to_filter], 0);
+    } else {
+        let descrs: Vec<&str> = fvars.iter().map(|f| f.descr.as_str()).collect();
+        push_char_matrix(&mut out, "description", &descrs, longest_desc);
+    }
+
+    // dataInfo: numToFilter rows x 4 cols (isParam/index/interpolation/defined),
+    // written column-major (all of column k contiguously).
+    push_mat_header(&mut out, "dataInfo", num_to_filter as u32, 4, 4);
+    for fv in &fvars {
+        let x: i32 = if fv.isParam { 1 } else { 2 }; // data_1 vs data_2
+        out.extend_from_slice(&x.to_le_bytes());
+    }
+    for fv in &fvars {
+        let slot = (fv.index.unsigned_abs() as usize) - 1;
+        let new_index = if fv.isParam { parameter_indexes[slot] } else { indexes[slot] };
+        let x = if fv.index < 0 { -new_index } else { new_index };
+        out.extend_from_slice(&x.to_le_bytes());
+    }
+    for _ in &fvars {
+        out.extend_from_slice(&0i32.to_le_bytes()); // linear interpolation
+    }
+    for _ in &fvars {
+        out.extend_from_slice(&(-1i32).to_le_bytes()); // not defined outside interval
+    }
+
+    // data_1: 2 rows x numUniqueParam cols. Column 0 = {start, stop}; the rest
+    // are the constant parameter values (stored twice).
+    push_mat_header(&mut out, "data_1", 2, num_unique_param as u32, 8);
+    out.extend_from_slice(&start.to_le_bytes());
+    out.extend_from_slice(&stop.to_le_bytes());
+    for i in 1..num_unique_param {
+        let param_index = parameter_indexes_to_output[i];
+        let p = reader.params[(param_index.unsigned_abs() as usize) - 1];
+        out.extend_from_slice(&p.to_le_bytes());
+        out.extend_from_slice(&p.to_le_bytes());
+    }
+
+    // Optional resampling notification: count the events that fall away when
+    // re-gridding to numberOfIntervals equidistant points.
+    if numberOfIntervals != 0 {
+        let timevals = reader.read_vals(1).unwrap_or_default();
+        let mut nevents = 0i32;
+        let mut neventpoints = 0i32;
+        let mut k = 0usize;
+        for i in 1..numberOfIntervals {
+            let t = start + (stop - start) * (i as f64) / (numberOfIntervals as f64);
+            while k < timevals.len() && timevals[k] <= t {
+                if k + 1 < timevals.len() && timevals[k] == timevals[k + 1] {
+                    while k + 1 < timevals.len() && timevals[k] == timevals[k + 1] {
+                        k += 1;
+                        neventpoints += 1;
+                    }
+                    nevents += 1;
+                }
+                k += 1;
+            }
+        }
+        err(&NOTIFY_RESAMPLING, [
+            inFile.clone(),
+            ArcStr::from(reader.nrows.to_string()),
+            ArcStr::from(numberOfIntervals.to_string()),
+            ArcStr::from(nevents.to_string()),
+            ArcStr::from(neventpoints.to_string()),
+        ])?;
+    }
+
+    // data_2: (numberOfIntervals+1 | nrows) rows x numUnique cols, each column a
+    // variable trajectory written contiguously (column-major).
+    let out_rows = if numberOfIntervals != 0 { (numberOfIntervals + 1) as usize } else { reader.nrows };
+    push_mat_header(&mut out, "data_2", out_rows as u32, num_unique as u32, 8);
+    for &col in &indexes_to_output {
+        if numberOfIntervals != 0 {
+            for jj in 0..=numberOfIntervals {
+                let t = if jj == numberOfIntervals {
+                    stop
+                } else {
+                    start + (stop - start) * (jj as f64) / (numberOfIntervals as f64)
+                };
+                let Some(v) = reader.interp_val(col, t) else {
+                    err(&ERROR_RESAMPLE_FAILED, [
+                        inFile.clone(),
+                        ArcStr::from(col.to_string()),
+                        ArcStr::from(format_g_prec15(t)),
+                    ])?;
+                    return Ok(false);
+                };
+                out.extend_from_slice(&v.to_le_bytes());
+            }
+        } else {
+            let Some(vals) = reader.read_vals(col) else {
+                err(&ERROR_COULD_NOT_READ_VAR, [ArcStr::from("data_2"), openmodelica_util::System::basename(inFile.clone())])?;
+                return Ok(false);
+            };
+            for v in vals {
+                out.extend_from_slice(&v.to_le_bytes());
+            }
+        }
+    }
+
+    if std::fs::write(outFile.as_str(), &out).is_err() {
+        err(&ERROR_FILTER_WRITE_FAILED, [outFile.clone()])?;
+        return Ok(false);
+    }
+    Ok(true)
 }

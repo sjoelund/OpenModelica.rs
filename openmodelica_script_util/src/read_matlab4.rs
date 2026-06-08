@@ -34,6 +34,8 @@ pub struct MatReader {
     /// Variable/parameter descriptors, sorted by [`iws_cmp`] for binary search.
     pub allInfo: Vec<MatVariable>,
     pub params: Vec<f64>,
+    /// Number of parameter columns in data_1 (the C reader's `nparam`).
+    pub nparam: usize,
     pub nvar: usize,
     pub nrows: usize,
     /// File offset (bytes) where the data_2 payload begins.
@@ -240,6 +242,7 @@ impl MatReader {
             file: file.try_clone().map_err(|e| e.to_string())?,
             allInfo: Vec::new(),
             params: Vec::new(),
+            nparam: 0,
             nvar: 0,
             nrows: 0,
             var_offset: 0,
@@ -356,6 +359,8 @@ impl MatReader {
                     // data_1: parameter values (start/stop columns)
                     let mrows = hdr.mrows as usize;
                     let ncols = hdr.ncols as usize;
+                    // nparam = parameter count: rows in binTrans, columns in binNormal.
+                    reader.nparam = if binTrans { mrows } else { ncols };
                     if binTrans {
                         if (hdr.mrows != 0 || hdr.ncols != 0) && ncols != 2 && ncols != 1 {
                             return Err("data_1 matrix does not have 1 or 2 cols (or 0 rows/columns)".into());
@@ -524,6 +529,14 @@ impl MatReader {
         if time > self.stop_time() || time < self.start_time() {
             return None;
         }
+        self.interp_val(index, time)
+    }
+
+    /// Interpolate a data_2 column directly by its 1-based index (sign selects
+    /// the negated alias) at `time`, mirroring the variable branch of
+    /// `omc_matlab4_val`. Used by the resampling path of filterSimulationResults,
+    /// which works with raw column indices rather than `allInfo` entries.
+    pub fn interp_val(&mut self, index: i32, time: f64) -> Option<f64> {
         let timevec = self.read_vals(1)?;
         let (i1, w1, i2, w2) = find_closest_points(time, &timevec);
         if i2 < 0 {
