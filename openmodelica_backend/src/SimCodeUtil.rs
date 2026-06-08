@@ -12160,20 +12160,15 @@ fn traverseExpsEqSystems<A: Clone + 'static>(mut ieqs: Arc<metamodelica::List<Ar
     pub type Func<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
 
     let mut oeqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-    let mut oa: A;
-    (oeqs, oa) = (::match_deref::match_deref! { match &((ieqs.clone(), ia.clone())) {
-        (Deref @ metamodelica::List::Nil, a) => {
-            (acc.clone().reverse(), a.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: eq, tail: eqs }, a) => {
-            let mut eq = (*eq).clone();
-            let mut a = (*a).clone();
-            (eq, a) = traverseExpsEqSystem(eq.clone(), func.clone(), a.clone())?;
-            (oeqs, a) = traverseExpsEqSystems(eqs.clone(), func.clone(), a.clone(), metamodelica::cons(eq.clone(), acc.clone()))?;
-            (oeqs.clone(), a.clone())
-        },
-        _ => bail!("match: no arm matched"),
-    } });
+    let mut oa: A = ia.clone();
+    let mut teq: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
+    let mut racc: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = acc.clone();
+    for mut eq in &*ieqs.clone() {
+        let mut eq = eq.clone();
+        (teq, oa) = traverseExpsEqSystem(eq.clone(), func.clone(), oa.clone())?;
+        racc = metamodelica::cons(teq.clone(), racc.clone());
+    }
+    oeqs = racc.clone().reverse();
     Ok((oeqs, oa))
 }
 

@@ -867,22 +867,14 @@ fn markIndex(mut inIndex: i32, mut inArray: metamodelica::Array<i32>) -> metamod
 }
 
 fn selectSecondaryParameters(mut inOrdering: Arc<metamodelica::List<i32>>, mut inParameters: BackendDAE::Variables, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inSecondaryParams: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    '__tco: loop {
-        ::match_deref::match_deref! { match &(inOrdering.clone()) {
-        Deref @ metamodelica::List::Nil => {
-            return Ok(inSecondaryParams.clone())
-        },
-        Deref @ metamodelica::List::Cons { head: i, tail: rest } => {
-            let mut secondaryParams: metamodelica::Array<i32> = Default::default();
-            let mut param: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-            param = BackendVariable::getVarAt(inParameters.clone(), i.clone())?;
-            secondaryParams = if (if (BackendVariable::isVarAlg(param.clone())) {false} else {!(BackendVariable::varFixed(param.clone()))} || 1 == ({let __elt = inSecondaryParams.borrow()[(i.clone()-1) as usize].clone(); __elt})) {List::fold(({let __elt = inM.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(markIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), inSecondaryParams.clone())?} else {inSecondaryParams.clone()};
-            secondaryParams = selectSecondaryParameters(rest.clone(), inParameters.clone(), inM.clone(), secondaryParams.clone())?;
-            return Ok(secondaryParams.clone())
-        },
-        _ => return Err(anyhow::anyhow!("match: no arm matched")),
-    } }
+    let mut outSecondaryParams: metamodelica::Array<i32> = inSecondaryParams.clone();
+    let mut param: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+    for mut i in &*inOrdering.clone() {
+        let mut i = i.clone();
+        param = BackendVariable::getVarAt(inParameters.clone(), i.clone())?;
+        outSecondaryParams = if (if (BackendVariable::isVarAlg(param.clone())) {false} else {!(BackendVariable::varFixed(param.clone()))} || 1 == ({let __elt = outSecondaryParams.borrow()[(i.clone()-1) as usize].clone(); __elt})) {List::fold(({let __elt = inM.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(markIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), outSecondaryParams.clone())?} else {outSecondaryParams.clone()};
     }
+    Ok(outSecondaryParams)
 }
 
 pub fn flattenParamComp(mut paramIndices: Arc<metamodelica::List<i32>>, mut inAllParameters: BackendDAE::Variables) -> Result<i32> {
