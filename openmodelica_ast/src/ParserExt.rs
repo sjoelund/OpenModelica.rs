@@ -19,7 +19,7 @@
 //   3 = ParModelica    → `Grammar::MetaModelica`     (parmodelica keywords are
 //                        lexed by the MetaModelica lexer in mmwinnow)
 //   4 = Optimica       → `Grammar::Optimica`
-//   5 = PDEModelica    → `Grammar::Modelica3`        (no dedicated grammar yet)
+//   5 = PDEModelica    → `Grammar::PDEModelica`
 //
 // The interactive entry points (`parseexp`, `parsestringexp`, `stringPath`,
 // `stringCref`, `stringMod`, `stringEq`) forward to the corresponding
@@ -45,8 +45,10 @@ fn select_grammar(acceptedGram: i32, languageStandardInt: i32) -> Grammar {
     match acceptedGram {
         2 | 3 => Grammar::MetaModelica,
         4 => Grammar::Optimica,
-        // 1 = Modelica, 5 = PDEModelica, and anything unknown falls back
-        // to the Modelica grammar.  The language-standard integer follows
+        // 5 = PDEModelica: Modelica 3 plus the field/indomain extensions.
+        5 => Grammar::PDEModelica,
+        // 1 = Modelica, and anything unknown falls back to the Modelica
+        // grammar.  The language-standard integer follows
         // `Flags.LANGUAGE_STANDARD`: values 10/20 are Modelica 1.x / 2.x,
         // 30+ are Modelica 3.x.
         _ => {

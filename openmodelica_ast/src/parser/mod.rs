@@ -256,6 +256,10 @@ pub enum Grammar {
     Modelica3,
     MetaModelica,
     Optimica,
+    /// PDEModelica (`--grammar=PDEModelica`): Modelica 3 plus the `field` /
+    /// `nonfield` type prefixes, the `indomain` equation suffix and the `pder`
+    /// builtin. Mirrors the C lexer's `pdemodelica_enabled()` flag.
+    PDEModelica,
 }
 
 thread_local! {
@@ -322,6 +326,13 @@ fn pattern_expression(input: &mut TokenInput) -> ModalResult<Absyn::Exp> {
 /// Modelica-only grammar restrictions.
 fn metamodelica_enabled() -> bool {
     CURRENT_GRAMMAR.with(|g| g.get()) == Grammar::MetaModelica
+}
+
+/// `pdemodelica_enabled()` from `Modelica.g`: enables the PDEModelica
+/// extensions (the `indomain` equation suffix; `field`/`nonfield` are lexed as
+/// keywords in this grammar).
+fn pdemodelica_enabled() -> bool {
+    CURRENT_GRAMMAR.with(|g| g.get()) == Grammar::PDEModelica
 }
 
 /// `parse_expression_enabled()` from `Modelica.g`: interactive statement
@@ -1678,10 +1689,12 @@ fn type_prefix(input: &mut TokenInput) -> ModalResult<ElementAttributes> {
         (false, false) => Direction::BIDIR,
     };
 
+    // `field`/`nonfield` are keywords only in the PDEModelica grammar; the lexer
+    // emits them as `Ident` otherwise, so they stay valid type/component names.
     let is_field = try_tok(input, |k| match k {
-        TK::Ident(s) if s == "field"    => Some(IsField::FIELD),
-        TK::Ident(s) if s == "nonfield" => Some(IsField::NONFIELD),
-        _                                => None,
+        TK::Field    => Some(IsField::FIELD),
+        TK::Nonfield => Some(IsField::NONFIELD),
+        _            => None,
     }).unwrap_or(IsField::NONFIELD);
 
     Ok(ElementAttributes {
@@ -2267,9 +2280,19 @@ fn equality_or_noretcall_equation(input: &mut TokenInput) -> ModalResult<Equatio
                 ass_line, ass_col, ass_line, ass_col + 1,
             ));
         }
-        // NOTE: the `INDOMAIN component_reference2` suffix (PDEModelica,
-        // `Absyn.EQ_PDE`) is not implemented; the lexer has no `indomain`
-        // token either.
+        // PDEModelica `INDOMAIN component_reference2` suffix → `Absyn.EQ_PDE`
+        // (the `indomain` keyword only exists in the PDEModelica grammar).
+        if matches!(peek_kind(input), Some(TK::Indomain)) {
+            next_tok(input)?;
+            let domain = cut_err(component_reference2)
+                .context(StrContext::Label("domain of indomain equation"))
+                .parse_next(input)?;
+            return Ok(Equation::EQ_PDE {
+                leftSide: Arc::new(lhs),
+                rightSide: Arc::new(rhs),
+                domain: Arc::new(domain),
+            });
+        }
         Ok(Equation::EQ_EQUALS { leftSide: Arc::new(lhs), rightSide: Arc::new(rhs) })
     } else {
         match lhs {

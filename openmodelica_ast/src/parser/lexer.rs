@@ -132,6 +132,12 @@ pub enum TokenKind {
     Optimization,
     /// `constraint` — Optimica extension; treated as identifier in Modelica2.
     Constraint,
+    /// `field` — PDEModelica type prefix; identifier in other grammars.
+    Field,
+    /// `nonfield` — PDEModelica type prefix; identifier in other grammars.
+    Nonfield,
+    /// `indomain` — PDEModelica equation-domain suffix; identifier otherwise.
+    Indomain,
 
     // -----------------------------------------------------------------------
     // OpenModelica dollar-prefixed extensions
@@ -352,6 +358,9 @@ pub fn keyword_as_str(kind: &TokenKind) -> Option<&'static str> {
         TokenKind::Impure => Some("impure"),
         TokenKind::Optimization => Some("optimization"),
         TokenKind::Constraint => Some("constraint"),
+        TokenKind::Field => Some("field"),
+        TokenKind::Nonfield => Some("nonfield"),
+        TokenKind::Indomain => Some("indomain"),
         _ => None,
     }
 }
@@ -579,8 +588,11 @@ impl<'s> Lexer<'s> {
     /// taking the active grammar into account.
     fn keyword_or_ident(&self, word: &str) -> TokenKind {
         let meta = matches!(self.grammar, Grammar::MetaModelica);
-        let m3 = matches!(self.grammar, Grammar::Modelica3);
+        // PDEModelica is a Modelica 3 superset, so it gets the Modelica 3
+        // keywords (stream/pure/impure) too.
+        let m3 = matches!(self.grammar, Grammar::Modelica3 | Grammar::PDEModelica);
         let optimica = matches!(self.grammar, Grammar::Optimica);
+        let pde = matches!(self.grammar, Grammar::PDEModelica);
 
         match word {
             // ---- base keywords ----
@@ -686,6 +698,11 @@ impl<'s> Lexer<'s> {
             // ---- Optimica extensions (always enabled for now) ----
             "optimization" if optimica => TokenKind::Optimization,
             "constraint"   if optimica => TokenKind::Constraint,
+
+            // ---- PDEModelica extensions (BaseModelica_Lexer.g) ----
+            "field"    if pde => TokenKind::Field,
+            "nonfield" if pde => TokenKind::Nonfield,
+            "indomain" if pde => TokenKind::Indomain,
 
             _ => TokenKind::Ident(word.into()),
         }
