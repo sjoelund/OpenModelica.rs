@@ -432,6 +432,11 @@ pub fn initAssertionFunctions() {
     // the assertion fails. The message carries no source position, so it
     // renders as `Error: <msg>`, exactly like the C compiler.
     metamodelica::setAssertHook(add_runtime_error_message);
+    // Also request that the dlopened C runtime's `omc_assert` be rebound (see
+    // `dynload::ensure_runtime`), so assertions raised inside an evaluated
+    // external function reach the buffer instead of the default
+    // `omc_assert_function` stderr print.
+    ASSERT_FUNCTIONS_REGISTERED.store(true, std::sync::atomic::Ordering::Relaxed);
 }
 
 /// Append a positionless `RUNTIME`/`Error` message to the buffer — the analogue
@@ -452,6 +457,58 @@ fn add_runtime_error_message(msg: &str) {
         false,
         ArcStr::from(""),
         ArcStr::from(msg),
+        nil(),
+    );
+}
+
+/// Whether [`initAssertionFunctions`] ran and so the dlopened runtime's
+/// `omc_assert` should be rebound (the rebinding happens in
+/// `dynload::ensure_runtime`, once the runtime is loaded).
+static ASSERT_FUNCTIONS_REGISTERED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+/// Read by `dynload::ensure_runtime` to decide whether to rebind `omc_assert`.
+pub fn assertFunctionsRegistered() -> bool {
+    ASSERT_FUNCTIONS_REGISTERED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Exported for the C interception shim (`src/runtime_error_shim.c`): append an
+/// `omc_assert` message — carrying the assertion's source position — to the
+/// error buffer. An empty `filename` with zero positions renders as
+/// `Error: <msg>`.
+///
+/// # Safety
+/// `msg`/`filename` must be valid NUL-terminated C strings for the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn omrs_add_runtime_error_pos(
+    msg: *const std::os::raw::c_char,
+    filename: *const std::os::raw::c_char,
+    sline: std::os::raw::c_int,
+    scol: std::os::raw::c_int,
+    eline: std::os::raw::c_int,
+    ecol: std::os::raw::c_int,
+    read_only: std::os::raw::c_int,
+) {
+    if msg.is_null() {
+        return;
+    }
+    let text = unsafe { std::ffi::CStr::from_ptr(msg) }.to_string_lossy();
+    let file = if filename.is_null() {
+        ArcStr::from("")
+    } else {
+        ArcStr::from(unsafe { std::ffi::CStr::from_ptr(filename) }.to_string_lossy().as_ref())
+    };
+    addSourceMessage(
+        0,
+        MessageType::SIMULATION, // C `ErrorType_runtime` → prints as RUNTIME
+        Severity::ERROR,
+        sline,
+        scol,
+        eline,
+        ecol,
+        read_only != 0,
+        file,
+        ArcStr::from(text.as_ref()),
         nil(),
     );
 }

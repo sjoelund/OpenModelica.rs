@@ -68,6 +68,13 @@ unsafe extern "C" {
     /// function is reported to the error buffer before the runtime throws. See
     /// [`install_modelica_error_interception`].
     fn omrs_install_modelica_error(err_slot: *mut c_void, verr_slot: *mut c_void);
+
+    /// C shim: rebind the runtime's `omc_assert` function-pointer slot to a shim
+    /// that reports the assertion (with its source position) to the error buffer
+    /// and then throws via `throw_fn` (the runtime's `omc_throw`), without the
+    /// default `omc_assert_function` stderr print. The analogue of
+    /// `Error_initAssertionFunctions`. See [`install_omc_assert_interception`].
+    fn omrs_install_omc_assert(assert_slot: *mut c_void, throw_fn: *mut c_void);
 }
 
 /// Rebind the loaded runtime's `ModelicaError`/`ModelicaFormatError` hooks, the
@@ -88,6 +95,28 @@ fn install_modelica_error_interception(lib: usize) {
     if let (Some(err_slot), Some(verr_slot)) = (err_slot, verr_slot) {
         unsafe {
             omrs_install_modelica_error(err_slot as *mut c_void, verr_slot as *mut c_void);
+        }
+    }
+}
+
+/// Rebind the loaded runtime's `omc_assert`, the analogue of
+/// `Error_initAssertionFunctions`. Only takes effect when the host requested it
+/// via `ErrorExt::initAssertionFunctions`. `dlsym` resolves the `omc_assert`
+/// function-pointer variable's address and the `omc_throw` variable (whose
+/// current value is the runtime's clean, non-printing throw); the shim repoints
+/// `omc_assert` and uses `omc_throw` to throw after reporting the message.
+fn install_omc_assert_interception(lib: usize) {
+    if !crate::ErrorExt::assertFunctionsRegistered() {
+        return;
+    }
+    let assert_slot = dlsym_addr(lib, "omc_assert");
+    let throw_slot = dlsym_addr(lib, "omc_throw");
+    if let (Some(assert_slot), Some(throw_slot)) = (assert_slot, throw_slot) {
+        // `omc_throw` is itself a function-pointer variable; read its current
+        // value (the runtime's `omc_throw_function`) to hand the shim a throw.
+        let throw_fn = unsafe { *(throw_slot as *const usize) };
+        unsafe {
+            omrs_install_omc_assert(assert_slot as *mut c_void, throw_fn as *mut c_void);
         }
     }
 }
@@ -266,9 +295,11 @@ fn ensure_runtime(reg: &mut Registry) -> Result<()> {
         std::ptr::write_bytes(td as *mut u8, 0, THREADDATA_SIZE);
         reg.thread_data = td as usize;
     }
-    // The runtime that owns the `OpenModelica_Modelica*Error` pointers is now
-    // loaded; rebind them if the host asked for error-buffer interception.
+    // The runtime that owns the `OpenModelica_Modelica*Error` pointers and
+    // `omc_assert` is now loaded; rebind them if the host asked for
+    // error-buffer interception.
     install_modelica_error_interception(lib);
+    install_omc_assert_interception(lib);
     reg.inited = true;
     Ok(())
 }
