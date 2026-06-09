@@ -4,7 +4,7 @@ use std::env::args;
 use std::io::Write;
 use std::sync::Arc;
 
-/// Default worker-thread stack size: 512 MiB.
+/// Default worker-thread stack size: 4 MiB - use env. var to increase it.
 ///
 /// MMC's generated C code eliminates tail calls and uses small stack frames,
 /// so the C omc fits deep traversals into the default 8 MiB main stack. The
@@ -13,7 +13,7 @@ use std::sync::Arc;
 /// whole compiler sources overflow 8 MiB and Rust aborts (no recovery, unlike
 /// MMC's SEGV-handler unwind). The reservation is virtual address space only
 /// — Linux commits stack pages lazily — so the cost of the headroom is nil.
-const DEFAULT_STACK_SIZE: usize = 512 * 1024 * 1024;
+const DEFAULT_STACK_SIZE: usize = 4 * 1024 * 1024;
 
 fn run() -> i32 {
     if Main::main(Arc::new(args().skip(1).map(|e| ArcStr::from(e)).collect())).is_err() {

@@ -45,7 +45,6 @@ use arcstr::{ArcStr, literal, format};
 
 pub fn haveCorba() -> bool {
     let mut b: bool = false;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("Corba_haveCorba"), lang: Some("C"), output_: Some(CREF_IDENT { name: "b", subscripts: Nil }), args: Nil, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Library" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: ARRAY { arrayExp: Cons { head: STRING { value: "omcruntime" }, tail: Cons { head: STRING { value: "OpenModelicaCorba" }, tail: Nil } } }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 59, columnNumberStart: 55, lineNumberEnd: 59, columnNumberEnd: 92, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Corba.mo", isReadOnly: false, lineNumberStart: 59, columnNumberStart: 47, lineNumberEnd: 59, columnNumberEnd: 92, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     b
 }
 
