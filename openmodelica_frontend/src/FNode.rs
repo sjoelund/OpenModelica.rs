@@ -1189,8 +1189,7 @@ pub fn lookupRef_dispatch(mut inRef: Ref, mut inScope: Scope) -> Result<Ref> {
             let mut r = (*r).clone();
             n = (name(fromRef(r.clone())?)?).clone();
             r = child(inRef.clone(), (n.clone()).clone())?;
-            r = lookupRef_dispatch(r.clone(), rest.clone())?;
-            return Ok(r.clone())
+            { (inRef, inScope) = (r.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

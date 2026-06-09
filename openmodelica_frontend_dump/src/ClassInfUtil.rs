@@ -734,8 +734,7 @@ pub fn matchingState(mut inState: ClassInf::State, mut inStateLst: Arc<metamodel
         },
         (_, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
             let mut res: bool = false;
-            res = matchingState(inState.clone(), rest.clone())?;
-            return Ok(res.clone())
+            { (inState, inStateLst) = (inState.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

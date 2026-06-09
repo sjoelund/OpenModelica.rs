@@ -3306,23 +3306,21 @@ fn countMultiples2(mut rowIn: Arc<metamodelica::List<i32>>, mut valIn: (Arc<meta
 }
 
 fn countMultiples3(mut lstIn: Arc<metamodelica::List<i32>>, mut set: Arc<metamodelica::List<i32>>, mut valIn: Arc<metamodelica::List<i32>>, mut numIn: Arc<metamodelica::List<i32>>) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut valOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut numOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    (valOut, numOut) = (::match_deref::match_deref! { match &(set.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(set.clone()) {
         Deref @ metamodelica::List::Cons { head: value, tail: rest } => {
             let mut number: i32 = 0;
             let mut val: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut num: Arc<metamodelica::List<i32>> = metamodelica::nil();
             number = (lstIn.clone().len() as i32) - (List::removeOnTrue(value.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), lstIn.clone())?.len() as i32);
-            (val, num) = countMultiples3(lstIn.clone(), rest.clone(), metamodelica::cons(value.clone(), valIn.clone()), metamodelica::cons(number.clone(), numIn.clone()))?;
-            (val.clone(), num.clone())
+            { (lstIn, set, valIn, numIn) = (lstIn.clone(), rest.clone(), metamodelica::cons(value.clone(), valIn.clone()), metamodelica::cons(number.clone(), numIn.clone())); continue '__tco; }
         },
         _ => {
-            (valIn.clone(), numIn.clone())
+            return Ok((valIn.clone(), numIn.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((valOut, numOut))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn maxListInt(mut inList: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {

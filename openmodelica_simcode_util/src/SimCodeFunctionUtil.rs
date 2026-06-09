@@ -112,8 +112,7 @@ fn subsToScalar(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { .. }, tail: r } => {
             let mut b: bool = false;
-            b = subsToScalar(r.clone())?;
-            return Ok(b.clone())
+            { inExpSubscriptLst = r.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -626,14 +625,10 @@ fn isRecordDeclEqual(mut decl1: SimCodeFunction::RecordDeclaration, mut decl2: S
 }
 
 fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamodelica::List<DAE::Function>>, mut inFunctions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, mut inIncludes: Arc<metamodelica::List<ArcStr>>, mut inIncludeDirs: Arc<metamodelica::List<ArcStr>>, mut inLibs: Arc<metamodelica::List<ArcStr>>, mut inPaths: Arc<metamodelica::List<ArcStr>>, mut recDeclsMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SimCodeFunction::RecordDeclaration>>) -> Result<(Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> {
-    let mut outFunctions: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
-    let mut outIncludes: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outIncludeDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outLibs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outLibsPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    (outFunctions, outIncludes, outIncludeDirs, outLibs, outLibsPaths) = (::match_deref::match_deref! { match &((daeElements.clone(), inFunctions.clone(), inIncludes.clone(), inIncludeDirs.clone(), inLibs.clone(), inPaths.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((daeElements.clone(), inFunctions.clone(), inIncludes.clone(), inIncludeDirs.clone(), inLibs.clone(), inPaths.clone())) {
         (Deref @ metamodelica::List::Nil, accfns, includes, includeDirs, libs, libPaths) => {
-            (accfns.clone().reverse(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            return Ok((accfns.clone().reverse(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { type_: Deref @ DAE::Type::T_FUNCTION { functionAttributes: DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR { .. }, .. }, .. }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
@@ -641,8 +636,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
-            (fns, includes, includeDirs, libs, libPaths) = elaborateFunctions2(program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { partialPrefix: true, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
@@ -650,8 +644,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut includeDirs = (*includeDirs).clone();
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
-            (fns, includes, includeDirs, libs, libPaths) = elaborateFunctions2(program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), accfns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel @ DAE::Function::FUNCTION { path, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: DAE::ExternalDecl { name, language: Deref @ "builtin", .. }, .. }, tail: _ }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut b: bool = false;
@@ -667,8 +660,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             if !(b.clone()) {
                 (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
             }
-            (fns, includes, includeDirs, libs, libPaths) = elaborateFunctions2(program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel @ DAE::Function::FUNCTION { path, functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { externalDecl: DAE::ExternalDecl { name, language: Deref @ "C", .. }, .. }, tail: _ }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut b: bool = false;
@@ -684,8 +676,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             if !(b.clone()) {
                 (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
             }
-            (fns, includes, includeDirs, libs, libPaths) = elaborateFunctions2(program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), List::consOnTrue(!(b.clone()), r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: fel, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
@@ -695,12 +686,11 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
             let mut libs = (*libs).clone();
             let mut libPaths = (*libPaths).clone();
             (r#fn, includes, includeDirs, libs, libPaths) = elaborateFunction(program.clone(), fel.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns, includes, includeDirs, libs, libPaths) = elaborateFunctions2(program.clone(), rest.clone(), metamodelica::cons(r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone())?;
-            (fns.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
+            { (program, daeElements, inFunctions, inIncludes, inIncludeDirs, inLibs, inPaths, recDeclsMap) = (program.clone(), rest.clone(), metamodelica::cons(r#fn.clone(), accfns.clone()), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), recDeclsMap.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outFunctions, outIncludes, outIncludeDirs, outLibs, outLibsPaths))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 /* Does the actual work of transforming a DAE.FUNCTION to a SimCodeFunction.Function. */
@@ -2911,8 +2901,7 @@ fn getCalledFunctionsInFunctions(mut paths: Arc<metamodelica::List<Arc<Absyn::Pa
         (Deref @ metamodelica::List::Cons { head: path, tail: rest }, ht) => {
             let mut ht = (*ht).clone();
             ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), false, false)?, ht.clone(), funcs.clone())?;
-            ht = getCalledFunctionsInFunctions(rest.clone(), ht.clone(), funcs.clone())?;
-            return Ok(ht.clone())
+            { (paths, inHt, funcs) = (rest.clone(), ht.clone(), funcs.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

@@ -3315,8 +3315,7 @@ pub fn getElementsFromElement(mut inProgram: Arc<metamodelica::List<Arc<SCode::E
             let mut els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             e = getElementWithPath(inProgram.clone(), p.clone())?;
-            els = getElementsFromElement(inProgram.clone(), e.clone())?;
-            return Ok(els.clone())
+            { (inProgram, inElement) = (inProgram.clone(), e.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3351,16 +3350,14 @@ pub fn getElementWithPath(mut inProgram: Arc<metamodelica::List<Arc<SCode::Eleme
         },
         Deref @ Absyn::Path::IDENT { name: i } => {
             let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            e = getElementWithId(inProgram.clone(), (i.clone()).clone())?;
-            return Ok(e.clone())
+            return Ok(getElementWithId(inProgram.clone(), (i.clone()).clone())?)
         },
         Deref @ Absyn::Path::QUALIFIED { name: i, path: p } => {
             let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut e: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             e = getElementWithId(inProgram.clone(), (i.clone()).clone())?;
             sp = getElementsFromElement(inProgram.clone(), e.clone())?;
-            e = getElementWithPath(sp.clone(), p.clone())?;
-            return Ok(e.clone())
+            { (inProgram, inPath) = (sp.clone(), p.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

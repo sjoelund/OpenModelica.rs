@@ -2081,15 +2081,13 @@ fn generateConstEqs(mut lhsLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhsL
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, tail: lrest }, Deref @ metamodelica::List::Cons { head: _, tail: rrest }) => {
             let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-            eqs = generateConstEqs(lrest.clone(), rrest.clone(), eqsIn.clone())?;
-            return Ok(eqs.clone())
+            { (lhsLst, rhsLst, eqsIn) = (lrest.clone(), rrest.clone(), eqsIn.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: lhs, tail: lrest }, Deref @ metamodelica::List::Cons { head: rhs, tail: rrest }) => {
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             eq = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-            eqs = generateConstEqs(lrest.clone(), rrest.clone(), metamodelica::cons(eq.clone(), eqsIn.clone()))?;
-            return Ok(eqs.clone())
+            { (lhsLst, rhsLst, eqsIn) = (lrest.clone(), rrest.clone(), metamodelica::cons(eq.clone(), eqsIn.clone())); continue '__tco; }
         },
         _ => {
             metamodelica::print((literal!("generateConstEqs failed!\n")).clone());
@@ -2762,23 +2760,19 @@ fn getStatementLHS(mut stmt: Arc<DAE::Statement>, mut expsIn: Arc<metamodelica::
             stmtLstLst = getDAEelseStatemntLsts(else_.clone(), metamodelica::nil());
             stmtLst2 = List::flatten(stmtLstLst.clone())?;
             stmtLst2 = listAppend(stmtLst1.clone(), stmtLst2.clone());
-            expLst = List::fold(stmtLst2.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            return Ok(expLst.clone())
+            return Ok(List::fold(stmtLst2.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?)
         },
         Deref @ DAE::Statement::STMT_FOR { statementLst: stmtLst1, .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            expLst = List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            return Ok(expLst.clone())
+            return Ok(List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?)
         },
         Deref @ DAE::Statement::STMT_PARFOR { statementLst: stmtLst1, .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            expLst = List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            return Ok(expLst.clone())
+            return Ok(List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?)
         },
         Deref @ DAE::Statement::STMT_WHILE { statementLst: stmtLst1, .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            expLst = List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            return Ok(expLst.clone())
+            return Ok(List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?)
         },
         Deref @ DAE::Statement::STMT_WHEN { statementLst: stmtLst1, elseWhen: Some(stmt1), .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2786,16 +2780,14 @@ fn getStatementLHS(mut stmt: Arc<DAE::Statement>, mut expsIn: Arc<metamodelica::
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" check getStatementLHS for WHEN!\n")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone());
             }
             expLst = List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            expLst = getStatementLHS(stmt1.clone(), expLst.clone())?;
-            return Ok(expLst.clone())
+            { (stmt, expsIn) = (stmt1.clone(), expLst.clone()); continue '__tco; }
         },
         Deref @ DAE::Statement::STMT_WHEN { statementLst: stmtLst1, elseWhen: None, .. } => {
             let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             if Flags::isSet(Flags::EVAL_FUNC_DUMP.clone())? {
                 metamodelica::print(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" check getStatementLHS for WHEN!\n")); __mm_s.push_str(&*DAEDump::ppStatementStr(stmt.clone())?); ArcStr::from(__mm_s) }).clone());
             }
-            expLst = List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?;
-            return Ok(expLst.clone())
+            return Ok(List::fold(stmtLst1.clone(), (std::sync::Arc::new(getStatementLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), expsIn.clone())?)
         },
         Deref @ DAE::Statement::STMT_ASSERT { .. } => {
             return Ok(expsIn.clone())
@@ -2927,13 +2919,11 @@ fn getDAEelseStatemntLsts(mut elseIn: Arc<DAE::Else>, mut stmtLstsIn: Arc<metamo
         Deref @ DAE::Else::ELSEIF { statementLst: stmts, else_: else1, .. } => {
             let mut stmtsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>> = metamodelica::nil();
             stmtsLst = metamodelica::cons(stmts.clone(), stmtLstsIn.clone());
-            stmtsLst = getDAEelseStatemntLsts(else1.clone(), stmtsLst.clone());
-            return stmtsLst.clone()
+            { (elseIn, stmtLstsIn) = (else1.clone(), stmtsLst.clone()); continue '__tco; }
         },
         Deref @ DAE::Else::ELSE { statementLst: stmts } => {
             let mut stmtsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Statement>>>>> = metamodelica::nil();
-            stmtsLst = metamodelica::cons(stmts.clone(), stmtLstsIn.clone());
-            return stmtsLst.clone()
+            return metamodelica::cons(stmts.clone(), stmtLstsIn.clone())
         },
         _ => {
             return stmtLstsIn.clone()

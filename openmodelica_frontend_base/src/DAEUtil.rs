@@ -5831,11 +5831,10 @@ fn sortDAEElementsInModelicaCodeOrder(mut inElements: Arc<metamodelica::List<(Ar
 }
 
 fn splitVariableNamed(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inName: ArcStr, mut inAccNamed: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inAccRest: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
-    let mut outNamed: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut outRest: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    (outNamed, outRest) = (::match_deref::match_deref! { match &((inElementLst.clone(), inAccNamed.clone(), inAccRest.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inElementLst.clone(), inAccNamed.clone(), inAccRest.clone())) {
         (Deref @ metamodelica::List::Nil, _, _) => {
-            (inAccNamed.clone().reverse(), inAccRest.clone().reverse())
+            return Ok((inAccNamed.clone().reverse(), inAccRest.clone().reverse()))
         },
         (Deref @ metamodelica::List::Cons { head: x @ Deref @ DAE::Element::VAR { componentRef: cr, .. }, tail: lst }, accNamed, accRest) => {
             let mut equal: bool = false;
@@ -5844,18 +5843,16 @@ fn splitVariableNamed(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
             equal = stringEq((ComponentReferenceBasics::crefFirstIdent(cr.clone())?).clone(), (inName.clone()).clone());
             accNamed = List::consOnTrue(equal.clone(), x.clone(), accNamed.clone());
             accRest = List::consOnTrue(boolNot(equal.clone()), x.clone(), accRest.clone());
-            (accNamed, accRest) = splitVariableNamed(lst.clone(), (inName.clone()).clone(), accNamed.clone(), accRest.clone())?;
-            (accNamed.clone(), accRest.clone())
+            { (inElementLst, inName, inAccNamed, inAccRest) = (lst.clone(), (inName.clone()).clone(), accNamed.clone(), accRest.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: x, tail: lst }, accNamed, accRest) => {
             let mut accNamed = (*accNamed).clone();
             let mut accRest = (*accRest).clone();
-            (accNamed, accRest) = splitVariableNamed(lst.clone(), (inName.clone()).clone(), accNamed.clone(), metamodelica::cons(x.clone(), accRest.clone()))?;
-            (accNamed.clone(), accRest.clone())
+            { (inElementLst, inName, inAccNamed, inAccRest) = (lst.clone(), (inName.clone()).clone(), accNamed.clone(), metamodelica::cons(x.clone(), accRest.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outNamed, outRest))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn daeDescription(mut inDAE: DAE::DAElist) -> ArcStr {
@@ -6354,8 +6351,7 @@ pub fn getParameters(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut a
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { dAElist: celts, .. }, tail: rest } => {
             let mut a: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             a = getParameters(celts.clone(), acc.clone());
-            a = getParameters(rest.clone(), a.clone());
-            return a.clone()
+            { (elts, acc) = (rest.clone(), a.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e @ Deref @ DAE::Element::VAR { .. }, tail: rest } => {
             if (isParameterOrConstant(e.clone())) {return metamodelica::cons(e.clone(), getParameters(rest.clone(), acc.clone()))} else {{ (elts, acc) = (rest.clone(), acc.clone()); continue '__tco; }}

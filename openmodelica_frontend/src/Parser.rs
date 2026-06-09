@@ -290,26 +290,24 @@ fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
 }
 
 fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
-    license = (::match_deref::match_deref! { match &(eltArgs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (literal!(""), literal!(""))
+            return Ok((literal!(""), literal!("")))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "License" }, modification: r#mod, .. }, tail: _ } => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
             let mut licenseFile: ArcStr = arcstr::literal!("");
-            (libraryKey, licenseFile) = getLicenseAnnotationTuple(r#mod.clone())?;
-            (libraryKey.clone(), licenseFile.clone())
+            return Ok(getLicenseAnnotationTuple(r#mod.clone())?)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
             let mut licenseFile: ArcStr = arcstr::literal!("");
-            (libraryKey, licenseFile) = getLicenseAnnotationWork2(xs.clone())?;
-            (libraryKey.clone(), licenseFile.clone())
+            { eltArgs = xs.clone(); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(license)
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
@@ -338,8 +336,7 @@ fn getLicenseAnnotationLibraryKey(mut eltArgs: Arc<metamodelica::List<Arc<Absyn:
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut s: ArcStr = arcstr::literal!("");
-            s = (getLicenseAnnotationLibraryKey(xs.clone())).clone();
-            return s.clone()
+            { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -357,8 +354,7 @@ fn getLicenseAnnotationLicenseFile(mut eltArgs: Arc<metamodelica::List<Arc<Absyn
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut s: ArcStr = arcstr::literal!("");
-            s = (getLicenseAnnotationLicenseFile(xs.clone())).clone();
-            return s.clone()
+            { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -392,13 +388,11 @@ fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), .. }, tail: _ } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            featuresList = List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?;
-            return Ok(featuresList.clone())
+            return Ok(List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            featuresList = getFeaturesAnnotationList2(xs.clone())?;
-            return Ok(featuresList.clone())
+            { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

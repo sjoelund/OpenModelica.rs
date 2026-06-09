@@ -1338,8 +1338,7 @@ fn isLayerAnnInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: bool = false;
-            res = isLayerAnnInList(rest.clone());
-            return res.clone()
+            { inList = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -1826,119 +1825,102 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) if (!(isGradientInList(listAppend(rest.clone(), resultList.clone()))) && !(isFillPatternInList(listAppend(rest.clone(), resultList.clone())))) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = insertFillPatternInList(resultList.clone());
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillColor" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "fillPattern" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Bitmap", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, .. }, tail: rest }, resultList, context) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::INTEGER { value: 0 }, .. }, .. }), .. }, tail: rest }, resultList, context) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Rectangle", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
@@ -1950,8 +1932,7 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             resultList = setDefaultLineInList(resultList.clone());
             (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone())?;
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "gradient" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Ellipse", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
@@ -1963,48 +1944,41 @@ fn cleanStyleAttrs2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>,
             resultList = setDefaultLineInList(resultList.clone());
             (rest, resultList) = setDefaultFillColor(rest.clone(), resultList.clone())?;
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "smooth" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Polygon", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "smooth" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "arrow" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "textStyle" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: arg @ Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "font" }, .. }, tail: rest }, resultList, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Text", tail: _ }) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut resultList = (*resultList).clone();
             resultList = List::appendElt(arg.clone(), resultList.clone());
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, resultList, context) => {
             let mut outList: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            outList = cleanStyleAttrs2(rest.clone(), resultList.clone(), context.clone())?;
-            return Ok(outList.clone())
+            { (inArgs, inResultList, inCon) = (rest.clone(), resultList.clone(), context.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2035,8 +2009,7 @@ fn isGradientInList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: bool = false;
-            res = isGradientInList(rest.clone());
-            return res.clone()
+            { inArgs = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -2054,8 +2027,7 @@ fn isFillPatternInList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: bool = false;
-            res = isFillPatternInList(rest.clone());
-            return res.clone()
+            { inArgs = rest.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -2135,13 +2107,11 @@ fn setDefaultLineInList(mut inList: Arc<metamodelica::List<Arc<Absyn::ElementArg
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "thickness" }, modification: Some(Deref @ Absyn::Modification { .. }), .. }, tail: rest } => {
             let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            lst = setDefaultLineInList(rest.clone());
-            return lst.clone()
+            { inList = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pattern" }, modification: Some(Deref @ Absyn::Modification { .. }), .. }, tail: rest } => {
             let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            lst = setDefaultLineInList(rest.clone());
-            return lst.clone()
+            { inList = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fi, eachPrefix: e, path: Deref @ Absyn::Path::IDENT { name: Deref @ "color" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), comment: com, info }, tail: rest } => {
             let mut lst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();

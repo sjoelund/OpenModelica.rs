@@ -5491,24 +5491,23 @@ fn dimensionSliceInRange(mut arr: Arc<Values::Value>, mut dimSize: i32) -> Resul
 }
 
 fn cevalReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut opPath: Arc<Absyn::Path>, mut inCurValue: Option<Arc<Values::Value>>, mut exp: Arc<DAE::Exp>, mut exprType: Arc<DAE::Type>, mut foldName: ArcStr, mut resultName: ArcStr, mut foldExp: Option<Arc<DAE::Exp>>, mut iteratorNames: Arc<metamodelica::List<ArcStr>>, mut inValueMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>>, mut iterTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut r#impl: bool, mut msg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Option<Arc<Values::Value>>)> {
-    let mut newCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut result: Option<Arc<Values::Value>> = None;
-    (newCache, result) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), opPath.clone(), inCurValue.clone(), inValueMatrix.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), opPath.clone(), inCurValue.clone(), inValueMatrix.clone())) {
         (cache, _, Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, Some(Deref @ Values::Value::LIST { valueLst: vals }), Deref @ metamodelica::List::Nil) => {
             let mut vals = (*vals).clone();
             vals = vals.clone().reverse();
-            (cache.clone(), Some(Arc::new(Values::Value::LIST { valueLst: vals.clone() })))
+            return Ok((cache.clone(), Some(Arc::new(Values::Value::LIST { valueLst: vals.clone() }))))
         },
         (cache, _, Deref @ Absyn::Path::IDENT { name: Deref @ "listReverse" }, Some(Deref @ Values::Value::LIST { valueLst: _ }), Deref @ metamodelica::List::Nil) => {
-            (cache.clone(), inCurValue.clone())
+            return Ok((cache.clone(), inCurValue.clone()))
         },
         (cache, _, Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, Some(Deref @ Values::Value::ARRAY { valueLst: vals, dimLst: dims }), Deref @ metamodelica::List::Nil) => {
             let mut vals = (*vals).clone();
             vals = vals.clone().reverse();
-            (cache.clone(), Some(Arc::new(Values::Value::ARRAY { valueLst: vals.clone(), dimLst: dims.clone() })))
+            return Ok((cache.clone(), Some(Arc::new(Values::Value::ARRAY { valueLst: vals.clone(), dimLst: dims.clone() }))))
         },
         (cache, _, _, curValue, Deref @ metamodelica::List::Nil) => {
-            (cache.clone(), curValue.clone())
+            return Ok((cache.clone(), curValue.clone()))
         },
         (cache, env, _, curValue, Deref @ metamodelica::List::Cons { head: vals, tail: valueMatrix }) => {
             let mut new_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -5516,12 +5515,11 @@ fn cevalReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut opPath
             let mut curValue = (*curValue).clone();
             new_env = extendFrameForIterators(env.clone(), iteratorNames.clone(), vals.clone(), iterTypes.clone())?;
             (cache, curValue) = cevalReductionEvalAndFold(cache.clone(), new_env.clone(), opPath.clone(), curValue.clone(), exp.clone(), exprType.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), foldExp.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?;
-            (cache, curValue) = cevalReduction(cache.clone(), env.clone(), opPath.clone(), curValue.clone(), exp.clone(), exprType.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), foldExp.clone(), iteratorNames.clone(), valueMatrix.clone(), iterTypes.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
-            (cache.clone(), curValue.clone())
+            { (inCache, inEnv, opPath, inCurValue, exp, exprType, foldName, resultName, foldExp, iteratorNames, inValueMatrix, iterTypes, r#impl, msg, numIter) = (cache.clone(), env.clone(), opPath.clone(), curValue.clone(), exp.clone(), exprType.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), foldExp.clone(), iteratorNames.clone(), valueMatrix.clone(), iterTypes.clone(), r#impl.clone(), msg.clone(), numIter.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((newCache, result))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn cevalReductionEvalAndFold(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut opPath: Arc<Absyn::Path>, mut inCurValue: Option<Arc<Values::Value>>, mut exp: Arc<DAE::Exp>, mut exprType: Arc<DAE::Type>, mut foldName: ArcStr, mut resultName: ArcStr, mut foldExp: Option<Arc<DAE::Exp>>, mut r#impl: bool, mut msg: Absyn::Msg, mut numIter: i32) -> Result<(FCore::Cache, Option<Arc<Values::Value>>)> {
@@ -5679,8 +5677,7 @@ fn extendFrameForIterators(mut inEnv: FCore::Graph, mut inNames: Arc<metamodelic
         (env, Deref @ metamodelica::List::Cons { head: name, tail: names }, Deref @ metamodelica::List::Cons { head: val, tail: vals }, Deref @ metamodelica::List::Cons { head: ty, tail: tys }) => {
             let mut env = (*env).clone();
             env = FGraph::addForIterator(env.clone(), (name.clone()).clone(), ty.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: val.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), openmodelica_frontend_types::SCode::Variability::VAR, Some(openmodelica_frontend_types::DAE::Const::C_CONST))?;
-            env = extendFrameForIterators(env.clone(), names.clone(), vals.clone(), tys.clone())?;
-            return Ok(env.clone())
+            { (inEnv, inNames, inVals, inTys) = (env.clone(), names.clone(), vals.clone(), tys.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -5723,8 +5720,7 @@ fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value
         ::match_deref::match_deref! { match &((inVals.clone(), inDims.clone())) {
         (vals, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }) => {
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-            value = makeSequence(vals.clone())?;
-            return Ok(value.clone())
+            return Ok(makeSequence(vals.clone())?)
         },
         (vals, Deref @ metamodelica::List::Cons { head: dim, tail: dims }) => {
             let mut valMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
@@ -5732,8 +5728,7 @@ fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value
             let mut vals = (*vals).clone();
             valMatrix = List::partition(vals.clone(), dim.clone())?;
             vals = List::map(valMatrix.clone(), makeSequence.clone())?;
-            value = backpatchArrayReduction3(vals.clone(), dims.clone(), makeSequence.clone())?;
-            return Ok(value.clone())
+            { (inVals, inDims, makeSequence) = (vals.clone(), dims.clone(), makeSequence.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

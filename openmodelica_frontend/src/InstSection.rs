@@ -2569,12 +2569,8 @@ fn instIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
 }
 
 fn instIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inBranches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>>, mut inImpl: bool, mut inAccumEqs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, ClassInf::State, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outEquations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
-    (outCache, outEnv, outIH, outState, outEquations) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inBranches.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inBranches.clone())) {
         (cache, env, ih, state, Deref @ metamodelica::List::Cons { head: seq, tail: rest_seq }) => {
             let mut deq: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
@@ -2583,15 +2579,14 @@ fn instIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
             let mut ih = (*ih).clone();
             let mut state = (*state).clone();
             (cache, env, ih, state, deq) = instIfEqBranch(cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), seq.clone(), inImpl.clone())?;
-            (cache, env, ih, state, branches) = instIfEqBranches(cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), rest_seq.clone(), inImpl.clone(), metamodelica::cons(deq.clone(), inAccumEqs.clone()))?;
-            (cache.clone(), env.clone(), ih.clone(), state.clone(), branches.clone())
+            { (inCache, inEnv, inIH, inPrefix, inState, inBranches, inImpl, inAccumEqs) = (cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), rest_seq.clone(), inImpl.clone(), metamodelica::cons(deq.clone(), inAccumEqs.clone())); continue '__tco; }
         },
         (_, _, _, _, Deref @ metamodelica::List::Nil) => {
-            (inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inAccumEqs.clone().reverse())
+            return Ok((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inAccumEqs.clone().reverse()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outIH, outState, outEquations))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn instInitialIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inImpl: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, ClassInf::State, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
@@ -2614,12 +2609,8 @@ fn instInitialIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn instInitialIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inState: ClassInf::State, mut inBranches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>>, mut inImpl: bool, mut inAccumEqs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, ClassInf::State, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
-    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
-    let mut outEquations: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
-    (outCache, outEnv, outIH, outState, outEquations) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inBranches.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inBranches.clone())) {
         (cache, env, ih, state, Deref @ metamodelica::List::Cons { head: seq, tail: rest_seq }) => {
             let mut deq: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             let mut branches: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
@@ -2628,15 +2619,14 @@ fn instInitialIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             let mut ih = (*ih).clone();
             let mut state = (*state).clone();
             (cache, env, ih, state, deq) = instInitialIfEqBranch(cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), seq.clone(), inImpl.clone())?;
-            (cache, env, ih, state, branches) = instInitialIfEqBranches(cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), rest_seq.clone(), inImpl.clone(), metamodelica::cons(deq.clone(), inAccumEqs.clone()))?;
-            (cache.clone(), env.clone(), ih.clone(), state.clone(), branches.clone())
+            { (inCache, inEnv, inIH, inPrefix, inState, inBranches, inImpl, inAccumEqs) = (cache.clone(), env.clone(), ih.clone(), inPrefix.clone(), state.clone(), rest_seq.clone(), inImpl.clone(), metamodelica::cons(deq.clone(), inAccumEqs.clone())); continue '__tco; }
         },
         (_, _, _, _, Deref @ metamodelica::List::Nil) => {
-            (inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inAccumEqs.clone().reverse())
+            return Ok((inCache.clone(), inEnv.clone(), inIH.clone(), inState.clone(), inAccumEqs.clone().reverse()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outIH, outState, outEquations))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn checkForConnectInIfBranch(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> {
@@ -3456,8 +3446,7 @@ fn daeDeclareList(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut 
             let mut daeExpandable: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             daeExpandable = InstDAE::daeDeclare(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), cref.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), None, metamodelica::nil(), None, None, Some(Arc::new(SCode::Comment { annotation_: None, comment: Some((literal!("virtual variable in expandable connector")).clone()) })), io.clone(), openmodelica_frontend_types::SCode::Final::NOT_FINAL, source.clone(), true)?;
             daeExpandable = DAEUtil::joinDaes(daeExpandable.clone(), acc.clone())?;
-            daeExpandable = daeDeclareList(inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), lst.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), io.clone(), source.clone(), daeExpandable.clone())?;
-            return Ok(daeExpandable.clone())
+            { (inCache, inParentEnv, inClassEnv, crefs, state, ty, attrs, vis, io, source, acc) = (inCache.clone(), inParentEnv.clone(), inClassEnv.clone(), lst.clone(), state.clone(), ty.clone(), attrs.clone(), vis.clone(), io.clone(), source.clone(), daeExpandable.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3473,8 +3462,7 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             let mut forLoopScope: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
             (realEnv, forLoopScope) = FGraph::splitGraphScope(topEnv.clone())?;
             updatedEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
-            updatedEnv = FGraph::pushScope(updatedEnv.clone(), forLoopScope.clone())?;
-            return Ok(updatedEnv.clone())
+            return Ok(FGraph::pushScope(updatedEnv.clone(), forLoopScope.clone())?)
         },
         (cache, topEnv, veCref @ Deref @ DAE::ComponentRef::CREF_QUAL { .. }, veAttr, veTy, veBinding, veCnstForRange, veEnv) => {
             let mut qualCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3494,8 +3482,7 @@ fn updateEnvComponentsOnQualPath(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             (realEnv, forLoopScope) = FGraph::splitGraphScope(currentEnv.clone())?;
             currentEnv = FGraph::updateComp(realEnv.clone(), Arc::new(DAE::Var { name: (currentName.clone()).clone(), attributes: veAttr.clone(), ty: veTy.clone(), binding: veBinding.clone(), bind_from_outside: false, constOfForIteratorRange: veCnstForRange.clone() }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, veEnv.clone())?;
             currentEnv = FGraph::pushScope(currentEnv.clone(), forLoopScope.clone())?;
-            updatedEnv = updateEnvComponentsOnQualPath(cache.clone(), topEnv.clone(), qualCref.clone(), currentAttr.clone(), currentTy.clone(), currentBinding.clone(), currentCnstForRange.clone(), currentEnv.clone())?;
-            return Ok(updatedEnv.clone())
+            { (inCache, inEnv, virtualExpandableCref, virtualExpandableAttr, virtualExpandableTy, virtualExpandableBinding, virtualExpandableCnstForRange, virtualExpandableEnv) = (cache.clone(), topEnv.clone(), qualCref.clone(), currentAttr.clone(), currentTy.clone(), currentBinding.clone(), currentCnstForRange.clone(), currentEnv.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

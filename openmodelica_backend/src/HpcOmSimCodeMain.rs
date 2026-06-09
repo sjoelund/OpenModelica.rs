@@ -453,8 +453,7 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
                 bigTaskExecTime = metamodelica::OrderedFloat(0.0_f64);
             }
             tmpContractedLevelfixTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), 500, sortedHeadArray.clone(), 1, (metamodelica::arrayLength(sortedHeadArray.clone()), metamodelica::nil(), bigTaskExecTime.clone()), iContractedLevelfixTasks.clone())?;
-            tmpContractedLevelfixTasks = applyGRSForLevelFixScheduler(iTaskGraphMeta.clone(), iContractedTasks.clone(), rest.clone(), tmpContractedLevelfixTasks.clone())?;
-            return Ok(tmpContractedLevelfixTasks.clone())
+            { (iTaskGraphMeta, iContractedTasks, iLevelNodes, iContractedLevelfixTasks) = (iTaskGraphMeta.clone(), iContractedTasks.clone(), rest.clone(), tmpContractedLevelfixTasks.clone()); continue '__tco; }
         },
         _ => return Ok(iContractedLevelfixTasks.clone()),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

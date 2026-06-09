@@ -232,13 +232,11 @@ pub fn dumpClassDefSpacing(mut in_txt: Tpl::Text, mut in_a_classDef: Arc<SCode::
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_classDef.clone())) {
         (txt, Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: i_composition, .. }) => {
             let mut txt = (*txt).clone();
-            txt = dumpClassDefSpacing(txt.clone(), i_composition.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_classDef) = (txt.clone(), i_composition.clone()); continue '__tco; }
         },
         (txt, Deref @ SCode::ClassDef::PARTS { elementLst: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?)
         },
         (txt, _) => {
             return Ok(txt.clone())

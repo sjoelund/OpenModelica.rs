@@ -2780,18 +2780,15 @@ pub fn underscorePath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) ->
             let mut txt = (*txt).clone();
             txt = replaceDotAndUnderscore(txt.clone(), (i_name.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = underscorePath(txt.clone(), i_path.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_path) = (txt.clone(), i_path.clone()); continue '__tco; }
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name_1 }) => {
             let mut txt = (*txt).clone();
-            txt = replaceDotAndUnderscore(txt.clone(), (i_name_1.clone()).clone())?;
-            return Ok(txt.clone())
+            return Ok(replaceDotAndUnderscore(txt.clone(), (i_name_1.clone()).clone())?)
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
-            txt = underscorePath(txt.clone(), i_path.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_path) = (txt.clone(), i_path.clone()); continue '__tco; }
         },
         (txt, _) => {
             return Ok(txt.clone())

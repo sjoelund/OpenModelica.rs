@@ -494,11 +494,8 @@ fn lookupClass1(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: 
 }
 
 fn lookupClass2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>, mut inInfo: Option<SourceInfo>) -> Result<(FCore::Cache, Arc<SCode::Element>, FCore::Graph, Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-    (outCache, outClass, outEnv, outPrevFrames) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inPath.clone(), inPrevFrames.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inPath.clone(), inPrevFrames.clone())) {
         (cache, env, Deref @ Absyn::Path::FULLYQUALIFIED { path }, Deref @ metamodelica::List::Nil) => {
             let mut r: metamodelica::Array<FCore::Node> = Default::default();
             let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -514,8 +511,7 @@ fn lookupClass2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: 
             prevFrames = __pa1.clone();
             Mutable::update(inState.clone(), true);
             env = FGraph::setScope(env.clone(), list![r.clone()])?;
-            (cache, c, env_1, prevFrames) = lookupClass2(cache.clone(), env.clone(), path.clone(), prevFrames.clone(), inState.clone(), inInfo.clone())?;
-            (cache.clone(), c.clone(), env_1.clone(), prevFrames.clone())
+            { (inCache, inEnv, inPath, inPrevFrames, inState, inInfo) = (cache.clone(), env.clone(), path.clone(), prevFrames.clone(), inState.clone(), inInfo.clone()); continue '__tco; }
         },
         (cache, env, Deref @ Absyn::Path::QUALIFIED { name: pack, path }, prevFrames) => {
             let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -524,20 +520,18 @@ fn lookupClass2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: 
             let mut cache = (*cache).clone();
             let mut prevFrames = (*prevFrames).clone();
             (optFrame, prevFrames) = lookupPrevFrames((pack.clone()).clone(), prevFrames.clone())?;
-            (cache, c, env_2, prevFrames) = lookupClassQualified(cache.clone(), env.clone(), (pack.clone()).clone(), path.clone(), optFrame.clone(), prevFrames.clone(), inState.clone(), inInfo.clone())?;
-            (cache.clone(), c.clone(), env_2.clone(), prevFrames.clone())
+            return Ok(lookupClassQualified(cache.clone(), env.clone(), (pack.clone()).clone(), path.clone(), optFrame.clone(), prevFrames.clone(), inState.clone(), inInfo.clone())?)
         },
         (cache, env, Deref @ Absyn::Path::IDENT { name: id }, prevFrames) => {
             let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             let mut prevFrames = (*prevFrames).clone();
-            (cache, c, env_1, prevFrames) = lookupClassInEnv(cache.clone(), env.clone(), (id.clone()).clone(), prevFrames.clone(), inState.clone(), inInfo.clone())?;
-            (cache.clone(), c.clone(), env_1.clone(), prevFrames.clone())
+            return Ok(lookupClassInEnv(cache.clone(), env.clone(), (id.clone()).clone(), prevFrames.clone(), inState.clone(), inInfo.clone())?)
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outClass, outEnv, outPrevFrames))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lookupClassQualified(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut id: ArcStr, mut path: Arc<Absyn::Path>, mut inOptFrame: Option<metamodelica::Array<FCore::Node>>, mut inPrevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>, mut inState: Mutable::Mutable<bool>, mut inInfo: Option<SourceInfo>) -> Result<(FCore::Cache, Arc<SCode::Element>, FCore::Graph, Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>)> {

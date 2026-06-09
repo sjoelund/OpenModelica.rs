@@ -1877,20 +1877,17 @@ pub fn nthnthArrayelt(mut inLst: Arc<metamodelica::List<Arc<Values::Value>>>, mu
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: n }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(n.clone())?;
-            res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            return Ok(res.clone())
+            { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { index: n, .. }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(n.clone())?;
-            res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            return Ok(res.clone())
+            { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: vlst2 }, Deref @ Values::Value::ARRAY { valueLst: vlst, .. }, _) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             res = (vlst.clone()).get(if (b.clone()) {2} else {1})?;
-            res = nthnthArrayelt(vlst2.clone(), res.clone(), res.clone())?;
-            return Ok(res.clone())
+            { (inLst, inValue, lastValue) = (vlst2.clone(), res.clone(), res.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

@@ -15592,18 +15592,15 @@ pub fn crefType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> R
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = CodegenCFunctions::expTypeModelica(txt.clone(), i_identType.clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenCFunctions::expTypeModelica(txt.clone(), i_identType.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefType(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -15615,18 +15612,15 @@ pub fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>)
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = CodegenCFunctions::expTypeShort(txt.clone(), i_identType.clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenCFunctions::expTypeShort(txt.clone(), i_identType.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefShortType(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

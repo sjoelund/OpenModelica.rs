@@ -3333,8 +3333,7 @@ pub fn dumpCompWithSplitElementsStream(mut inCompLst: Arc<metamodelica::List<Arc
             r#str = IOStream::append(r#str.clone(), (if (co.clone().is_empty()) {literal!("")} else {literal!("constraint\n")}).clone())?;
             r#str = dumpConstraintStream(co.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("end ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*cstr.clone()); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone())?;
-            r#str = dumpCompWithSplitElementsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inCompLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3434,16 +3433,14 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s1 = (ExpressionBasics::printExpStr(e1.clone())?).clone();
             s2 = (ExpressionBasics::printExpStr(e2.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
             let mut r#str = (*r#str).clone();
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
             r#str = IOStream::append(r#str.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr1.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr2.clone())?); __mm_s.push_str(&*sourceStr.clone()); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone())?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ARRAY_EQUATION { dimension: dims, exp: e1, array: e2, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3457,8 +3454,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s3 = (if (Config::typeinfo()?) {TypesDump::printDimensionsStr(dims.clone())?} else {literal!("")}).clone();
             s3 = (if (Config::typeinfo()?) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" /* array equation [")); __mm_s.push_str(&*s3.clone()); __mm_s.push_str(&*literal!("] */")); ArcStr::from(__mm_s) }} else {literal!("")}).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMPLEX_EQUATION { lhs: e1, rhs: e2, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3469,8 +3465,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s1 = (ExpressionBasics::printExpStr(e1.clone())?).clone();
             s2 = (ExpressionBasics::printExpStr(e2.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { componentRef: c, exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3481,8 +3476,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s1 = (ComponentReferenceBasics::printComponentRefStr(c.clone())?).clone();
             s2 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  ")).clone(), (s1.clone()).clone(), (literal!(" = ")).clone(), (s2.clone()).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::ASSERT { condition: e1, message: e2, level: Deref @ DAE::Exp::ENUM_LITERAL { index: 1, .. }, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3493,8 +3487,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s1 = (ExpressionBasics::printExpStr(e1.clone())?).clone();
             s2 = (ExpressionBasics::printExpStr(e2.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  assert(")).clone(), (s1.clone()).clone(), (literal!(",")).clone(), (s2.clone()).clone(), (literal!(")")).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::TERMINATE { message: e1, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3503,8 +3496,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
             s1 = (ExpressionBasics::printExpStr(e1.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  terminate(")).clone(), (s1.clone()).clone(), (literal!(")")).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::FOR_EQUATION { iter: s, range: e1, equations: xs1, source: src, .. }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3514,8 +3506,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  for ")).clone(), (s.clone()).clone(), (literal!(" in ")).clone(), (s1.clone()).clone(), (literal!(" loop\n")).clone()])?;
             r#str = dumpEquationsStream(xs1.clone(), r#str.clone())?;
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  end for;\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Nil, equations2: Deref @ metamodelica::List::Nil, equations3: Deref @ metamodelica::List::Nil, .. }, tail: _ }, r#str) => {
             return Ok(r#str.clone())
@@ -3531,8 +3522,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = dumpIfEquationsStream(conds.clone(), tb.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), (literal!("  end if")).clone())?;
             r#str = IOStream::append(r#str.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*sourceStr.clone()); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone())?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::IF_EQUATION { condition1: Deref @ metamodelica::List::Cons { head: e, tail: conds }, equations2: Deref @ metamodelica::List::Cons { head: xs1, tail: tb }, equations3: xs2, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3546,8 +3536,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = IOStream::append(r#str.clone(), (literal!("  else\n")).clone())?;
             r#str = dumpEquationsStream(xs2.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  end if")); __mm_s.push_str(&*sourceStr.clone()); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone())?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e, equations: xs1, elsewhen_: Some(el), source: src }, tail: xs }, r#str) => {
             let mut r#str = (*r#str).clone();
@@ -3557,8 +3546,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = IOStream::append(r#str.clone(), (literal!(" then\n")).clone())?;
             r#str = dumpEquationsStream(xs1.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), (literal!(" else")).clone())?;
-            r#str = dumpEquationsStream(metamodelica::cons(el.clone(), xs.clone()), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (metamodelica::cons(el.clone(), xs.clone()), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { condition: e, equations: xs1, elsewhen_: None, source: src }, tail: xs }, r#str) => {
             let mut sourceStr: ArcStr = arcstr::literal!("");
@@ -3569,8 +3557,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = IOStream::append(r#str.clone(), (literal!(" then\n")).clone())?;
             r#str = dumpEquationsStream(xs1.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  end when")); __mm_s.push_str(&*sourceStr.clone()); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone())?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::REINIT { componentRef: cr, exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3581,8 +3568,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             s = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  reinit(")).clone(), (s.clone()).clone(), (literal!(",")).clone(), (s1.clone()).clone(), (literal!(")")).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::NORETCALL { exp: e, source: src }, tail: xs }, r#str) => {
             let mut s1: ArcStr = arcstr::literal!("");
@@ -3591,14 +3577,12 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             sourceStr = (getSourceInformationStr(src.clone())?).clone();
             s1 = (ExpressionBasics::printExpStr(e.clone())?).clone();
             r#str = IOStream::appendList(r#str.clone(), list![(literal!("  ")).clone(), (s1.clone()).clone(), (sourceStr.clone()).clone(), (literal!(";\n")).clone()])?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: xs }, r#str) => {
             let mut r#str = (*r#str).clone();
             r#str = IOStream::append(r#str.clone(), (literal!("  /* unhandled equation in DAEDump.dumpEquationsStream FIXME! */\n")).clone())?;
-            r#str = dumpEquationsStream(xs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, inStream) = (xs.clone(), r#str.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3617,8 +3601,7 @@ fn dumpIfEquationsStream(mut iconds: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
             r#str = IOStream::append(r#str.clone(), (ExpressionBasics::printExpStr(c.clone())?).clone())?;
             r#str = IOStream::append(r#str.clone(), (literal!(" then\n")).clone())?;
             r#str = dumpEquationsStream(tb.clone(), r#str.clone())?;
-            r#str = dumpIfEquationsStream(conds.clone(), tbs.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (iconds, itbs, inStream) = (conds.clone(), tbs.clone(), r#str.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3854,8 +3837,7 @@ pub fn dumpVarsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>
         (Deref @ metamodelica::List::Cons { head: first, tail: rest }, r#str) => {
             let mut r#str = (*r#str).clone();
             r#str = dumpVarStream(first.clone(), printTypeDimension.clone(), r#str.clone())?;
-            r#str = dumpVarsStream(rest.clone(), printTypeDimension.clone(), r#str.clone())?;
-            return Ok(r#str.clone())
+            { (inElementLst, printTypeDimension, inStream) = (rest.clone(), printTypeDimension.clone(), r#str.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

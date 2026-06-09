@@ -876,9 +876,8 @@ fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
 }
 
 fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Item, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    (outItem, outEnv) = (::match_deref::match_deref! { match &(inName.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inName.clone()) {
         Deref @ Absyn::Path::IDENT { name } => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
@@ -888,7 +887,7 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
             } };
             item = __pa0.clone();
             env = __pa1.clone();
-            (item.clone(), env.clone())
+            return Ok((item.clone(), env.clone()))
         },
         Deref @ Absyn::Path::QUALIFIED { name, path: rest_path } => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -900,12 +899,11 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
             item = __pa0.clone();
             env = __pa1.clone();
             env = NFSCodeEnv::mergeItemEnv(item.clone(), env.clone());
-            (item, env) = lookupFullyQualified2(rest_path.clone(), env.clone(), inExtendsTable.clone())?;
-            (item.clone(), env.clone())
+            { (inName, inEnv, inExtendsTable) = (rest_path.clone(), env.clone(), inExtendsTable.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outItem, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn createExtendsTable(mut inSize: i32) -> ExtendsTableArray {

@@ -486,45 +486,41 @@ fn inlineWhenForInitializationWhenEquation(mut inWEqn: Arc<BackendDAE::WhenEquat
 }
 
 fn inlineWhenForInitializationWhenAlgorithm(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inAcc: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inLeftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> {
-    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outLeftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
-    (outStmts, outLeftCrs) = (::match_deref::match_deref! { match &(inStmts.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inStmts.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inAcc.clone().reverse(), inLeftCrs.clone())
+            return Ok((inAcc.clone().reverse(), inLeftCrs.clone()))
         },
         Deref @ metamodelica::List::Cons { head: stmt @ Deref @ DAE::Statement::STMT_WHEN { .. }, tail: rest } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             (stmts, leftCrs) = inlineWhenForInitializationWhenStmt(stmt.clone(), inLeftCrs.clone(), inAcc.clone())?;
-            (stmts, leftCrs) = inlineWhenForInitializationWhenAlgorithm(rest.clone(), stmts.clone(), leftCrs.clone())?;
-            (stmts.clone(), leftCrs.clone())
+            { (inStmts, inAcc, inLeftCrs) = (rest.clone(), stmts.clone(), leftCrs.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => {
             let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
-            (stmts, leftCrs) = inlineWhenForInitializationWhenAlgorithm(rest.clone(), metamodelica::cons(stmt.clone(), inAcc.clone()), inLeftCrs.clone())?;
-            (stmts.clone(), leftCrs.clone())
+            { (inStmts, inAcc, inLeftCrs) = (rest.clone(), metamodelica::cons(stmt.clone(), inAcc.clone()), inLeftCrs.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outStmts, outLeftCrs))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn inlineWhenForInitializationWhenStmt(mut inWhenStatement: Arc<DAE::Statement>, mut inLeftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), mut inAcc: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> {
-    let mut outStmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut outLeftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
-    (outStmts, outLeftCrs) = (::match_deref::match_deref! { match &(inWhenStatement.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inWhenStatement.clone()) {
         Deref @ DAE::Statement::STMT_WHEN { exp: condition, statementLst: stmts, .. } if (Expression::containsInitialCall(condition.clone())?) => {
             let mut stmts = (*stmts).clone();
             stmts = List::foldr(stmts.clone(), std::sync::Arc::new(fnptr!(List::consr, _, _)), inAcc.clone())?;
-            (stmts.clone(), inLeftCrs.clone())
+            return Ok((stmts.clone(), inLeftCrs.clone()))
         },
         Deref @ DAE::Statement::STMT_WHEN { statementLst: stmts, elseWhen: None, .. } => {
             let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut leftCrs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             crefLst = CheckModel::algorithmStatementListOutputs(stmts.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
             leftCrs = List::fold(crefLst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs.clone())?;
-            (inAcc.clone(), leftCrs.clone())
+            return Ok((inAcc.clone(), leftCrs.clone()))
         },
         Deref @ DAE::Statement::STMT_WHEN { statementLst: stmts, elseWhen: Some(stmt), .. } => {
             let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -532,16 +528,15 @@ fn inlineWhenForInitializationWhenStmt(mut inWhenStatement: Arc<DAE::Statement>,
             let mut stmts = (*stmts).clone();
             crefLst = CheckModel::algorithmStatementListOutputs(stmts.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
             leftCrs = List::fold(crefLst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), inLeftCrs.clone())?;
-            (stmts, leftCrs) = inlineWhenForInitializationWhenStmt(stmt.clone(), leftCrs.clone(), inAcc.clone())?;
-            (stmts.clone(), leftCrs.clone())
+            { (inWhenStatement, inLeftCrs, inAcc) = (stmt.clone(), leftCrs.clone(), inAcc.clone()); continue '__tco; }
         },
         _ => {
             Error::addInternalError((literal!("function inlineWhenForInitializationWhenStmt failed")).clone(), metamodelica::sourceInfo!("BackEnd/Initialization.mo"))?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outStmts, outLeftCrs))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn generateInactiveWhenEquationForInitialization(mut inCrLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inSource: Arc<DAE::ElementSource>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
@@ -1005,18 +1000,15 @@ fn preBalanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut initVa
 }
 
 fn preBalanceInitialSystem1(mut n: i32, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inVars: BackendDAE::Variables, mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut initVars: BackendDAE::Variables, mut isLambda0: bool, mut inB: bool, mut inDumpVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Variables, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, bool, Arc<metamodelica::List<BackendDAE::Var>>)> {
-    let mut outVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut outEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut outB: bool = false;
-    let mut outDumpVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    (outVars, outEqs, outB, outDumpVars) = (match (n.clone(), inB.clone()) {
+    '__tco: loop {
+        match (n.clone(), inB.clone()) {
         (0, false) => {
-            (inVars.clone(), inEqs.clone(), false, inDumpVars.clone())
+            return Ok((inVars.clone(), inEqs.clone(), false, inDumpVars.clone()))
         },
         (0, true) => {
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             vars = BackendVariable::listVar1(BackendVariable::varList(inVars.clone())?)?;
-            (vars.clone(), inEqs.clone(), true, inDumpVars.clone())
+            return Ok((vars.clone(), inEqs.clone(), true, inDumpVars.clone()))
         },
         _ => {
             let mut b: bool = false;
@@ -1025,11 +1017,10 @@ fn preBalanceInitialSystem1(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
             let mut dumpVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let true = (n.clone() > 0) else { bail!("pattern mismatch") };
             (vars, eqs, b, dumpVars) = preBalanceInitialSystem2(n.clone(), mt.clone(), inVars.clone(), inEqs.clone(), initVars.clone(), isLambda0.clone(), inB.clone(), inDumpVars.clone())?;
-            (vars, eqs, b, dumpVars) = preBalanceInitialSystem1(n.clone() - 1, mt.clone(), vars.clone(), eqs.clone(), initVars.clone(), isLambda0.clone(), b.clone(), dumpVars.clone())?;
-            (vars.clone(), eqs.clone(), b.clone(), dumpVars.clone())
+            { (n, mt, inVars, inEqs, initVars, isLambda0, inB, inDumpVars) = (n.clone() - 1, mt.clone(), vars.clone(), eqs.clone(), initVars.clone(), isLambda0.clone(), b.clone(), dumpVars.clone()); continue '__tco; }
         },
-    });
-    Ok((outVars, outEqs, outB, outDumpVars))
+    }
+    }
 }
 
 fn preBalanceInitialSystem2(mut n: i32, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inVars: BackendDAE::Variables, mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut initVars: BackendDAE::Variables, mut isLambda0: bool, mut inB: bool, mut inDumpVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(BackendDAE::Variables, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, bool, Arc<metamodelica::List<BackendDAE::Var>>)> {
@@ -1650,8 +1641,7 @@ fn isVarExplicitSolvable(mut inElem: Arc<metamodelica::List<(i32, BackendDAE::So
         },
         Deref @ metamodelica::List::Cons { head: (_, _, _), tail: elem } => {
             let mut b: bool = false;
-            b = isVarExplicitSolvable(elem.clone(), inVarID.clone());
-            return b.clone()
+            { (inElem, inVarID) = (elem.clone(), inVarID.clone()); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }

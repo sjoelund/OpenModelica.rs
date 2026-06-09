@@ -143,8 +143,7 @@ pub fn crefLastIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcSt
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             let mut res: ArcStr = arcstr::literal!("");
-            res = (crefLastIdent(cr.clone())?).clone();
-            return Ok(res.clone())
+            { inComponentRef = cr.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -159,8 +158,7 @@ pub fn crefLastCref(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<Arc<DA
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr, .. } => {
             let mut res: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            res = crefLastCref(cr.clone())?;
-            return Ok(res.clone())
+            { inComponentRef = cr.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -910,8 +908,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
         (_, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n1, componentRef: cr1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { ident: n2, componentRef: cr2, .. }) => {
             let mut r: bool = false;
             r = stringEq((n1.clone()).clone(), (n2.clone()).clone());
-            r = if (r.clone()) {crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone())} else {false};
-            return r.clone()
+            if (r.clone()) {{ (refEq, icr1, icr2) = (referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone()); continue '__tco; }} else {return false}
         },
         _ => {
             return false

@@ -383,11 +383,10 @@ fn evaluateExtOutputArg(mut inArg: DAE::ExtArg) -> Result<Arc<DAE::ComponentRef>
 }
 
 fn assignExtOutputs(mut inArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    (outCache, outEnv) = (::match_deref::match_deref! { match &((inArgs.clone(), inValues.clone(), inCache.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inArgs.clone(), inValues.clone(), inCache.clone(), inEnv.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, _) => {
-            (inCache.clone(), inEnv.clone())
+            return Ok((inCache.clone(), inEnv.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: arg, tail: rest_args }, Deref @ metamodelica::List::Cons { head: val, tail: rest_vals }, cache, env) => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -397,12 +396,11 @@ fn assignExtOutputs(mut inArgs: Arc<metamodelica::List<DAE::ExtArg>>, mut inValu
             cr = evaluateExtOutputArg(arg.clone())?;
             val = unliftExtOutputValue(cr.clone(), val.clone(), env.clone())?;
             (cache, env) = assignVariable(cr.clone(), val.clone(), cache.clone(), env.clone())?;
-            (cache, env) = assignExtOutputs(rest_args.clone(), rest_vals.clone(), cache.clone(), env.clone())?;
-            (cache.clone(), env.clone())
+            { (inArgs, inValues, inCache, inEnv) = (rest_args.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn unliftExtOutputValue(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<Arc<Values::Value>> {
@@ -1083,27 +1081,24 @@ fn evaluateExternalFunc(mut inFuncName: ArcStr, mut inFuncArgs: Arc<metamodelica
 }
 
 fn evaluateElements(mut inElements: Arc<metamodelica::List<Arc<DAE::Element>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outLoopControl: LoopControl = LoopControl::BREAK;
-    (outCache, outEnv, outLoopControl) = (::match_deref::match_deref! { match &((inElements.clone(), inLoopControl.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inElements.clone(), inLoopControl.clone())) {
         (_, LoopControl::RETURN { .. }) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            (inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT)
+            return Ok((inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT))
         },
         (Deref @ metamodelica::List::Cons { head: elem, tail: rest_elems }, _) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut loop_ctrl: LoopControl = LoopControl::BREAK;
             (cache, env, loop_ctrl) = evaluateElement(elem.clone(), inCache.clone(), inEnv.clone())?;
-            (cache, env, loop_ctrl) = evaluateElements(rest_elems.clone(), cache.clone(), env.clone(), loop_ctrl.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            { (inElements, inCache, inEnv, inLoopControl) = (rest_elems.clone(), cache.clone(), env.clone(), loop_ctrl.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outLoopControl))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn evaluateElement(mut inElement: Arc<DAE::Element>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
@@ -1264,30 +1259,27 @@ fn evaluateStatements(mut inStatement: Arc<metamodelica::List<Arc<DAE::Statement
 }
 
 fn evaluateStatements2(mut inStatement: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outLoopControl: LoopControl = LoopControl::BREAK;
-    (outCache, outEnv, outLoopControl) = (::match_deref::match_deref! { match &((inStatement.clone(), inLoopControl.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inStatement.clone(), inLoopControl.clone())) {
         (_, LoopControl::BREAK { .. }) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (_, LoopControl::RETURN { .. }) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (Deref @ metamodelica::List::Nil, _) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: stmt, tail: rest_stmts }, LoopControl::NEXT { .. }) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut loop_ctrl: LoopControl = LoopControl::BREAK;
             (cache, env, loop_ctrl) = evaluateStatement(stmt.clone(), inCache.clone(), inEnv.clone())?;
-            (cache, env, loop_ctrl) = evaluateStatements2(rest_stmts.clone(), cache.clone(), env.clone(), loop_ctrl.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            { (inStatement, inCache, inEnv, inLoopControl) = (rest_stmts.clone(), cache.clone(), env.clone(), loop_ctrl.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outLoopControl))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn evaluateTupleAssignStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
@@ -1339,23 +1331,19 @@ fn evaluateIfStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore:
 }
 
 fn evaluateIfStatement2(mut inCondition: bool, mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inElse: Arc<DAE::Else>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outLoopControl: LoopControl = LoopControl::BREAK;
-    (outCache, outEnv, outLoopControl) = (::match_deref::match_deref! { match &((inCondition.clone(), inStatements.clone(), inElse.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCondition.clone(), inStatements.clone(), inElse.clone(), inEnv.clone())) {
         (true, statements, _, env) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut loop_ctrl: LoopControl = LoopControl::BREAK;
             let mut env = (*env).clone();
-            (cache, env, loop_ctrl) = evaluateStatements(statements.clone(), inCache.clone(), env.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            return Ok(evaluateStatements(statements.clone(), inCache.clone(), env.clone())?)
         },
         (false, _, Deref @ DAE::Else::ELSE { statementLst: statements }, env) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut loop_ctrl: LoopControl = LoopControl::BREAK;
             let mut env = (*env).clone();
-            (cache, env, loop_ctrl) = evaluateStatements(statements.clone(), inCache.clone(), env.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            return Ok(evaluateStatements(statements.clone(), inCache.clone(), env.clone())?)
         },
         (false, _, Deref @ DAE::Else::ELSEIF { exp: condition, statementLst: statements, else_: else_branch }, env) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -1368,15 +1356,14 @@ fn evaluateIfStatement2(mut inCondition: bool, mut inStatements: Arc<metamodelic
             } };
             cache = __pa0.clone();
             bool_condition = __pa1.clone();
-            (cache, env, loop_ctrl) = evaluateIfStatement2(bool_condition.clone(), statements.clone(), else_branch.clone(), cache.clone(), env.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            { (inCondition, inStatements, inElse, inCache, inEnv) = (bool_condition.clone(), statements.clone(), else_branch.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
         (false, _, Deref @ DAE::Else::NOELSE { .. }, _) => {
-            (inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT)
+            return Ok((inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outLoopControl))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn evaluateForStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
@@ -1424,18 +1411,16 @@ fn evaluateForStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore
 }
 
 fn evaluateForLoopArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIter: Arc<DAE::ComponentRef>, mut inIterType: Arc<DAE::Type>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outLoopControl: LoopControl = LoopControl::BREAK;
-    (outCache, outEnv, outLoopControl) = (::match_deref::match_deref! { match &((inEnv.clone(), inValues.clone(), inLoopControl.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inEnv.clone(), inValues.clone(), inLoopControl.clone())) {
         (_, _, LoopControl::BREAK { .. }) => {
-            (inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT)
+            return Ok((inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT))
         },
         (_, _, LoopControl::RETURN { .. }) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (_, Deref @ metamodelica::List::Nil, _) => {
-            (inCache.clone(), inEnv.clone(), inLoopControl.clone())
+            return Ok((inCache.clone(), inEnv.clone(), inLoopControl.clone()))
         },
         (env, Deref @ metamodelica::List::Cons { head: value, tail: rest_vals }, LoopControl::NEXT { .. }) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -1443,12 +1428,11 @@ fn evaluateForLoopArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             let mut env = (*env).clone();
             env = updateVariableBinding(inIter.clone(), env.clone(), inIterType.clone(), value.clone())?;
             (cache, env, loop_ctrl) = evaluateStatements(inStatements.clone(), inCache.clone(), env.clone())?;
-            (cache, env, loop_ctrl) = evaluateForLoopArray(cache.clone(), env.clone(), inIter.clone(), inIterType.clone(), rest_vals.clone(), inStatements.clone(), loop_ctrl.clone())?;
-            (cache.clone(), env.clone(), loop_ctrl.clone())
+            { (inCache, inEnv, inIter, inIterType, inValues, inStatements, inLoopControl) = (cache.clone(), env.clone(), inIter.clone(), inIterType.clone(), rest_vals.clone(), inStatements.clone(), loop_ctrl.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv, outLoopControl))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn evaluateWhileStatement(mut inCondition: Arc<DAE::Exp>, mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inLoopControl: LoopControl) -> Result<(FCore::Cache, FCore::Graph, LoopControl)> {
@@ -1527,22 +1511,20 @@ fn setupFunctionEnvironment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 }
 
 fn extendEnvWithFunctionVars(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFuncParams: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    (outCache, outEnv) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inFuncParams.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inFuncParams.clone())) {
         (_, _, Deref @ metamodelica::List::Nil) => {
-            (inCache.clone(), inEnv.clone())
+            return Ok((inCache.clone(), inEnv.clone()))
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: param, tail: rest_params }) => {
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
             (cache, env) = extendEnvWithFunctionVar(cache.clone(), env.clone(), param.clone())?;
-            (cache, env) = extendEnvWithFunctionVars(cache.clone(), env.clone(), rest_params.clone())?;
-            (cache.clone(), env.clone())
+            { (inCache, inEnv, inFuncParams) = (cache.clone(), env.clone(), rest_params.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn extendEnvWithFunctionVar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFuncParam: FunctionVar) -> Result<(FCore::Cache, FCore::Graph)> {
@@ -1962,22 +1944,20 @@ fn assignVariable(mut inCref: Arc<DAE::ComponentRef>, mut inNewValue: Arc<Values
 }
 
 fn assignTuple(mut inLhsCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inRhsValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    (outCache, outEnv) = (::match_deref::match_deref! { match &((inLhsCrefs.clone(), inRhsValues.clone(), inCache.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inLhsCrefs.clone(), inRhsValues.clone(), inCache.clone(), inEnv.clone())) {
         (Deref @ metamodelica::List::Nil, _, cache, env) => {
-            (cache.clone(), env.clone())
+            return Ok((cache.clone(), env.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: cr, tail: rest_crefs }, Deref @ metamodelica::List::Cons { head: value, tail: rest_vals }, cache, env) => {
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
             (cache, env) = assignVariable(cr.clone(), value.clone(), cache.clone(), env.clone())?;
-            (cache, env) = assignTuple(rest_crefs.clone(), rest_vals.clone(), cache.clone(), env.clone())?;
-            (cache.clone(), env.clone())
+            { (inLhsCrefs, inRhsValues, inCache, inEnv) = (rest_crefs.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn assignRecord(mut inType: Arc<DAE::Type>, mut inValue: Arc<Values::Value>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
@@ -1996,11 +1976,10 @@ fn assignRecord(mut inType: Arc<DAE::Type>, mut inValue: Arc<Values::Value>, mut
 }
 
 fn assignRecordComponents(mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, FCore::Graph)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    (outCache, outEnv) = (::match_deref::match_deref! { match &((inVars.clone(), inValues.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inVars.clone(), inValues.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            (inCache.clone(), inEnv.clone())
+            return Ok((inCache.clone(), inEnv.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name, ty, .. }, tail: rest_vars }, Deref @ metamodelica::List::Cons { head: val, tail: rest_vals }) => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2008,12 +1987,11 @@ fn assignRecordComponents(mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>>, mu
             let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             cr = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), ty.clone(), metamodelica::nil());
             (cache, env) = assignVariable(cr.clone(), val.clone(), inCache.clone(), inEnv.clone())?;
-            (cache, env) = assignRecordComponents(rest_vars.clone(), rest_vals.clone(), cache.clone(), env.clone())?;
-            (cache.clone(), env.clone())
+            { (inVars, inValues, inCache, inEnv) = (rest_vars.clone(), rest_vals.clone(), cache.clone(), env.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn assignVector(mut inNewValue: Arc<Values::Value>, mut inOldValue: Arc<Values::Value>, mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph) -> Result<(FCore::Cache, Arc<Values::Value>)> {

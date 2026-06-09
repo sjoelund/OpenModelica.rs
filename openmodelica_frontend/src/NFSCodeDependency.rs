@@ -134,26 +134,24 @@ fn lookupClass(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossib
 }
 
 fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossible: bool, mut inInfo: SourceInfo, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    (outItem, outEnv) = (::match_deref::match_deref! { match &((inPath.clone(), inEnv.clone(), inBuiltinPossible.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inPath.clone(), inEnv.clone(), inBuiltinPossible.clone())) {
         (Deref @ Absyn::Path::IDENT { .. }, _, true) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilent(inPath.clone(), inEnv.clone(), inInfo.clone())?;
-            (item.clone(), env.clone())
+            return Ok((item.clone(), env.clone()))
         },
         (Deref @ Absyn::Path::IDENT { .. }, _, false) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilentNoBuiltin(inPath.clone(), inEnv.clone(), inInfo.clone())?;
-            (item.clone(), env.clone())
+            return Ok((item.clone(), env.clone()))
         },
         (Deref @ Absyn::Path::QUALIFIED { name: Deref @ "$ce", path: Deref @ Absyn::Path::IDENT { name: id } }, Deref @ metamodelica::List::Cons { head: _, tail: env }, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env = (*env).clone();
-            (item, env) = NFSCodeLookup::lookupInheritedName((id.clone()).clone(), env.clone())?;
-            (item.clone(), env.clone())
+            return Ok(NFSCodeLookup::lookupInheritedName((id.clone()).clone(), env.clone())?)
         },
         (Deref @ Absyn::Path::QUALIFIED { name: id, path: rest_path }, _, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -161,27 +159,24 @@ fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossi
             (item, _, env) = NFSCodeLookup::lookupNameSilent(Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), inEnv.clone(), inInfo.clone())?;
             (item, env, _) = NFSCodeEnv::resolveRedeclaredItem(item.clone(), env.clone());
             analyseItem(item.clone(), env.clone())?;
-            (item, env) = lookupNameInItem(rest_path.clone(), item.clone(), env.clone(), inErrorType.clone())?;
-            (item.clone(), env.clone())
+            return Ok(lookupNameInItem(rest_path.clone(), item.clone(), env.clone(), inErrorType.clone())?)
         },
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path }, _, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
-            (item, env) = lookupClass2(rest_path.clone(), env.clone(), false, inInfo.clone(), inErrorType.clone())?;
-            (item.clone(), env.clone())
+            { (inPath, inEnv, inBuiltinPossible, inInfo, inErrorType) = (rest_path.clone(), env.clone(), false, inInfo.clone(), inErrorType.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outItem, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: Env, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    (outItem, outEnv) = (::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
-            (inItem.clone(), inEnv.clone())
+            return Ok((inItem.clone(), inEnv.clone()))
         },
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: type_path, .. }, modifications: mods, info, .. }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
@@ -192,19 +187,17 @@ fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: E
             let true = (NFSCodeEnv::isClassItem(item.clone())) else { bail!("pattern mismatch") };
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
             (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
-            (item, env) = lookupNameInItem(inName.clone(), item.clone(), type_env.clone(), inErrorType.clone())?;
-            (item.clone(), env.clone())
+            { (inName, inItem, inEnv, inErrorType) = (inName.clone(), item.clone(), type_env.clone(), inErrorType.clone()); continue '__tco; }
         },
         (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, .. }, env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
-            (item, env) = lookupClass(inName.clone(), env.clone(), false, info.clone(), inErrorType.clone())?;
-            (item.clone(), env.clone())
+            return Ok(lookupClass(inName.clone(), env.clone(), false, info.clone(), inErrorType.clone())?)
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outItem, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn checkItemIsClass(mut inItem: Item) -> Result<()> {

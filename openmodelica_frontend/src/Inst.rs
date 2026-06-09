@@ -4330,12 +4330,10 @@ fn instClassAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 }
 
 fn instClassAttributes2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPrefix: DAE::Prefix, mut inAttrs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inInfo: SourceInfo, mut inClsAttrs: DAE::DAElist) -> Result<(FCore::Cache, FCore::Graph, DAE::DAElist)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    let mut outDae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    (outCache, outEnv, outDae) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inPrefix.clone(), inAttrs.clone(), inImplicit.clone(), inClsAttrs.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inPrefix.clone(), inAttrs.clone(), inImplicit.clone(), inClsAttrs.clone())) {
         (cache, env, _, Deref @ metamodelica::List::Nil, _, clsAttrs) => {
-            (cache.clone(), env.clone(), clsAttrs.clone())
+            return Ok((cache.clone(), env.clone(), clsAttrs.clone()))
         },
         (cache, env, pre, Deref @ metamodelica::List::Cons { head: na, tail: rest }, r#impl, clsAttrs) => {
             let mut env_2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -4352,16 +4350,15 @@ fn instClassAttributes2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             attrExp = __pa1.clone();
             (cache, outExp, _) = Static::elabExp(cache.clone(), env.clone(), attrExp.clone(), r#impl.clone(), false, pre.clone(), inInfo.clone())?;
             clsAttrs = insertClassAttribute(clsAttrs.clone(), (attrName.clone()).clone(), outExp.clone())?;
-            (cache, env_2, clsAttrs) = instClassAttributes2(cache.clone(), env.clone(), pre.clone(), rest.clone(), r#impl.clone(), inInfo.clone(), clsAttrs.clone())?;
-            (cache.clone(), env_2.clone(), clsAttrs.clone())
+            { (inCache, inEnv, inPrefix, inAttrs, inImplicit, inInfo, inClsAttrs) = (cache.clone(), env.clone(), pre.clone(), rest.clone(), r#impl.clone(), inInfo.clone(), clsAttrs.clone()); continue '__tco; }
         },
         _ => {
             Error::addMessage(Error::OPTIMICA_ERROR.clone(), list![(literal!("Class Attributes allowed only for Optimization classes.")).clone()])?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outCache, outEnv, outDae))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn insertClassAttribute(mut inAttrs: DAE::DAElist, mut attrName: ArcStr, mut inAttrExp: Arc<DAE::Exp>) -> Result<DAE::DAElist> {

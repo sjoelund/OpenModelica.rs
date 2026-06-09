@@ -76,10 +76,8 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut inProp2: DAE::Properties, mut inExp2: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut AbExp2: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
-    (outCache, outExp, outProp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), inProp2.clone(), inExp2.clone())) {
         (_, _, _, props1 @ DAE::Properties::PROP_TUPLE { .. }, _, DAE::Properties::PROP { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
             let mut type1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -89,8 +87,7 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
             type1 = __pa0.clone();
             prop = __pa1.clone();
             exp = Arc::new(DAE::Exp::TSUB { exp: inExp1.clone(), ix: 1, ty: type1.clone() });
-            (cache, exp, prop) = binary(inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), inProp2.clone(), inExp2.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone())?;
-            (cache.clone(), exp.clone(), prop.clone())
+            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), prop.clone(), exp.clone(), inProp2.clone(), inExp2.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
         },
         (_, _, _, DAE::Properties::PROP { .. }, _, props2 @ DAE::Properties::PROP_TUPLE { .. }, _) if (!(Config::acceptMetaModelicaGrammar()?)) => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -101,8 +98,7 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
             type2 = __pa0.clone();
             prop = __pa1.clone();
             exp = Arc::new(DAE::Exp::TSUB { exp: inExp2.clone(), ix: 1, ty: type2.clone() });
-            (cache, exp, prop) = binary(inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone())?;
-            (cache.clone(), exp.clone(), prop.clone())
+            { (inCache, inEnv, inOperator1, inProp1, inExp1, inProp2, inExp2, AbExp, AbExp1, AbExp2, inImpl, inPre, inInfo) = (inCache.clone(), inEnv.clone(), inOperator1.clone(), inProp1.clone(), inExp1.clone(), prop.clone(), exp.clone(), AbExp.clone(), AbExp1.clone(), AbExp2.clone(), inImpl.clone(), inPre.clone(), inInfo.clone()); continue '__tco; }
         },
         (cache, env, aboper, DAE::Properties::PROP { type_: type1, constFlag: const1 }, exp1, DAE::Properties::PROP { type_: type2, constFlag: const2 }, exp2) => {
             let mut opList: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
@@ -146,11 +142,11 @@ pub fn binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator
                 prop = DAE::Properties::PROP { type_: otype.clone(), constFlag: r#const.clone() };
                 warnUnsafeRelations(inEnv.clone(), AbExp.clone(), r#const.clone(), type1.clone(), type2.clone(), exp1.clone(), exp2.clone(), oper.clone(), inPre.clone(), inInfo.clone())?;
             }
-            (cache.clone(), exp.clone(), prop.clone())
+            return Ok((cache.clone(), exp.clone(), prop.clone()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCache, outExp, outProp))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOperator1: Absyn::Operator, mut inProp1: DAE::Properties, mut inExp1: Arc<DAE::Exp>, mut AbExp: Arc<Absyn::Exp>, mut AbExp1: Arc<Absyn::Exp>, mut inImpl: bool, mut inPre: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
@@ -406,8 +402,7 @@ fn deoverloadBinaryUserdefNoConstructorListLhs(mut types: Arc<metamodelica::List
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest }, acc) => {
             let mut acc = (*acc).clone();
             acc = deoverloadBinaryUserdefNoConstructor(types.clone(), lhs.clone(), inRhs.clone(), Expression::r#typeof(lhs.clone())?, rhsType.clone(), acc.clone())?;
-            acc = deoverloadBinaryUserdefNoConstructorListLhs(types.clone(), rest.clone(), inRhs.clone(), rhsType.clone(), acc.clone())?;
-            return Ok(acc.clone())
+            { (types, inLhs, inRhs, rhsType, inAcc) = (types.clone(), rest.clone(), inRhs.clone(), rhsType.clone(), acc.clone()); continue '__tco; }
         },
         _ => {
             return Ok(inAcc.clone())
@@ -423,8 +418,7 @@ fn deoverloadBinaryUserdefNoConstructorListRhs(mut types: Arc<metamodelica::List
         (Deref @ metamodelica::List::Cons { head: rhs, tail: rest }, acc) => {
             let mut acc = (*acc).clone();
             acc = deoverloadBinaryUserdefNoConstructor(types.clone(), inLhs.clone(), rhs.clone(), lhsType.clone(), Expression::r#typeof(rhs.clone())?, acc.clone())?;
-            acc = deoverloadBinaryUserdefNoConstructorListRhs(types.clone(), inLhs.clone(), rest.clone(), lhsType.clone(), acc.clone())?;
-            return Ok(acc.clone())
+            { (types, inLhs, inRhs, lhsType, inAcc) = (types.clone(), inLhs.clone(), rest.clone(), lhsType.clone(), acc.clone()); continue '__tco; }
         },
         _ => {
             return Ok(inAcc.clone())
@@ -3642,8 +3636,7 @@ fn nDims(mut inType: Arc<DAE::Type>) -> Result<i32> {
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
             let mut ns: i32 = 0;
-            ns = nDims(t.clone())?;
-            return Ok(ns.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3673,13 +3666,11 @@ fn elementType(mut inType: Arc<DAE::Type>) -> Result<Arc<DAE::Type>> {
         },
         Deref @ DAE::Type::T_ARRAY { ty: t, .. } => {
             let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            t_1 = elementType(t.clone())?;
-            return Ok(t_1.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, .. } => {
             let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            t_1 = elementType(t.clone())?;
-            return Ok(t_1.clone())
+            { inType = t.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

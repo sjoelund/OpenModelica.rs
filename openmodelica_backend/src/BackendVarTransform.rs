@@ -1626,23 +1626,21 @@ pub fn replaceEquations(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equat
 }
 
 fn replaceEquations2(mut inBackendDAEEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iReplacementPerformed: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
-    let mut outBackendDAEEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut replacementPerformed: bool = false;
-    (outBackendDAEEquationLst, replacementPerformed) = (::match_deref::match_deref! { match &(inBackendDAEEquationLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inBackendDAEEquationLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inAcc.clone().reverse(), iReplacementPerformed.clone())
+            return Ok((inAcc.clone().reverse(), iReplacementPerformed.clone()))
         },
         Deref @ metamodelica::List::Cons { head: a, tail: es } => {
             let mut acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut b: bool = false;
             let mut es = (*es).clone();
             (acc, b) = replaceEquation(a.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone(), inAcc.clone(), iReplacementPerformed.clone())?;
-            (es, b) = replaceEquations2(es.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone(), acc.clone(), b.clone())?;
-            (es.clone(), b.clone())
+            { (inBackendDAEEquationLst, inVariableReplacements, inFuncTypeExpExpToBooleanOption, inAcc, iReplacementPerformed) = (es.clone(), inVariableReplacements.clone(), inFuncTypeExpExpToBooleanOption.clone(), acc.clone(), b.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outBackendDAEEquationLst, replacementPerformed))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn replaceEquation(mut inBackendDAEEquation: Arc<BackendDAE::Equation>, mut inVariableReplacements: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut inAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iReplacementPerformed: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
@@ -1979,11 +1977,10 @@ fn replaceWhenEquation(mut whenEqn: Arc<BackendDAE::WhenEquation>, mut repl: Var
 }
 
 fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>, mut repl: VariableReplacements, mut inFuncTypeExpExpToBooleanOption: Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>, mut replacementPerformed: bool, mut iAcc: Arc<metamodelica::List<BackendDAE::WhenOperator>>) -> Result<(Arc<metamodelica::List<BackendDAE::WhenOperator>>, bool)> {
-    let mut oReinitStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
-    let mut oReplacementPerformed: bool = false;
-    (oReinitStmtLst, oReplacementPerformed) = (::match_deref::match_deref! { match &(inReinitStmtLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inReinitStmtLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), replacementPerformed.clone())
+            return Ok((iAcc.clone().reverse(), replacementPerformed.clone()))
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::ASSIGN { left: cre @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, right: exp, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2002,8 +1999,7 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), exp.clone(), exp1.clone())?;
             b = b1.clone() || b2.clone();
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::ASSIGN { left: cre1.clone(), right: exp1.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::ASSIGN { left: cre, right: exp, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2021,8 +2017,7 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), exp.clone(), exp1.clone())?;
             b = b1.clone() || b2.clone();
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::ASSIGN { left: cre1.clone(), right: exp1.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::REINIT { stateVar: cr, value: cond, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2044,8 +2039,7 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             source = ElementSource::addSymbolicTransformationSubstitution(b2.clone(), source.clone(), cond.clone(), cond1.clone())?;
             b = b1.clone() || b2.clone();
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::REINIT { stateVar: cr1.clone(), value: cond1.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::ASSERT { condition: cond, message: exp, level, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2062,8 +2056,7 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             b = b1.clone() || b2.clone();
             source = ElementSource::addSymbolicTransformationSubstitution(b.clone(), source.clone(), cond.clone(), cond1.clone())?;
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::ASSERT { condition: cond1.clone(), message: exp1.clone(), level: level.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::TERMINATE { message: exp, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2074,8 +2067,7 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             (exp1, b) = replaceExp(exp.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone())?;
             source = ElementSource::addSymbolicTransformationSubstitution(b.clone(), source.clone(), exp.clone(), exp1.clone())?;
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::TERMINATE { message: exp1.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: wop @ BackendDAE::WhenOperator::NORETCALL { exp, source }, tail: res } => {
             let mut res1: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
@@ -2087,12 +2079,11 @@ fn replaceWhenOperator(mut inReinitStmtLst: Arc<metamodelica::List<BackendDAE::W
             (exp1, _) = ExpressionSimplify::condsimplify(b.clone(), exp1.clone())?;
             source = ElementSource::addSymbolicTransformationSubstitution(b.clone(), source.clone(), exp.clone(), exp1.clone())?;
             wop1 = if (b.clone()) {BackendDAE::WhenOperator::NORETCALL { exp: exp1.clone(), source: source.clone() }} else {wop.clone()};
-            (res1, b) = replaceWhenOperator(res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone()))?;
-            (res1.clone(), b.clone())
+            { (inReinitStmtLst, repl, inFuncTypeExpExpToBooleanOption, replacementPerformed, iAcc) = (res.clone(), repl.clone(), inFuncTypeExpExpToBooleanOption.clone(), replacementPerformed.clone() || b.clone(), metamodelica::cons(wop1.clone(), iAcc.clone())); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((oReinitStmtLst, oReplacementPerformed))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 /* ********************************************************/

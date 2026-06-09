@@ -6121,24 +6121,22 @@ pub fn matchTypes(mut iexps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut itys: A
 }
 
 fn matchTypes_tail(mut iexps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut itys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut expected: Arc<DAE::Type>, mut printFailtrace: bool, mut inAccumExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAccumTypes: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Type>>>)> {
-    let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outTys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-    (outExps, outTys) = (::match_deref::match_deref! { match &((iexps.clone(), itys.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((iexps.clone(), itys.clone())) {
         (Deref @ metamodelica::List::Cons { head: e, tail: exps }, Deref @ metamodelica::List::Cons { head: ty, tail: tys }) => {
             let mut e = (*e).clone();
             let mut exps = (*exps).clone();
             let mut ty = (*ty).clone();
             let mut tys = (*tys).clone();
             (e, ty) = matchTypes2(e.clone(), ty.clone(), expected.clone(), printFailtrace.clone())?;
-            (exps, tys) = matchTypes_tail(exps.clone(), tys.clone(), expected.clone(), printFailtrace.clone(), metamodelica::cons(e.clone(), inAccumExps.clone()), metamodelica::cons(ty.clone(), inAccumTypes.clone()))?;
-            (exps.clone(), tys.clone())
+            { (iexps, itys, expected, printFailtrace, inAccumExps, inAccumTypes) = (exps.clone(), tys.clone(), expected.clone(), printFailtrace.clone(), metamodelica::cons(e.clone(), inAccumExps.clone()), metamodelica::cons(ty.clone(), inAccumTypes.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            (inAccumExps.clone().reverse(), inAccumTypes.clone().reverse())
+            return Ok((inAccumExps.clone().reverse(), inAccumTypes.clone().reverse()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outExps, outTys))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn matchTypes2(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inExpected: Arc<DAE::Type>, mut inPrintFailtrace: bool) -> Result<(Arc<DAE::Exp>, Arc<DAE::Type>)> {
@@ -7345,8 +7343,7 @@ fn subtypePolymorphicList(mut actual: Arc<metamodelica::List<Arc<DAE::Type>>>, m
         (Deref @ metamodelica::List::Cons { head: ty1, tail: tList1 }, Deref @ metamodelica::List::Cons { head: ty2, tail: tList2 }, bindings) => {
             let mut bindings = (*bindings).clone();
             bindings = subtypePolymorphic(ty1.clone(), ty2.clone(), envPath.clone(), bindings.clone())?;
-            bindings = subtypePolymorphicList(tList1.clone(), tList2.clone(), envPath.clone(), bindings.clone())?;
-            return Ok(bindings.clone())
+            { (actual, expected, envPath, ibindings) = (tList1.clone(), tList2.clone(), envPath.clone(), bindings.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

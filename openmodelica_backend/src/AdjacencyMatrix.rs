@@ -86,11 +86,10 @@ fn traverseAdjacencyMatrix1<T: Clone + 'static>(mut inM: metamodelica::Array<Arc
 fn traverseAdjacencyMatrix2<T: Clone + 'static>(mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut pos: i32, mut len: i32, mut stop: bool, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>;
 
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut outTypeA: T;
-    (outM, outTypeA) = (match stop.clone() {
+    '__tco: loop {
+        match stop.clone() {
         true => {
-            (inM.clone(), inTypeA.clone())
+            return Ok((inM.clone(), inTypeA.clone()))
         },
         false => {
             let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
@@ -103,11 +102,10 @@ fn traverseAdjacencyMatrix2<T: Clone + 'static>(mut inM: metamodelica::Array<Arc
             (eqns, extArg) = func(({let __elt = inM.borrow()[(pos.clone()-1) as usize].clone(); __elt}), pos.clone(), inTypeA.clone())?;
             eqns1 = List::removeOnTrue(pos.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), eqns.clone())?;
             (m1, extArg1) = traverseAdjacencyMatrixList(eqns1.clone(), inM.clone(), func.clone(), metamodelica::arrayLength(inM.clone()), pos.clone(), extArg.clone())?;
-            (m2, extArg2) = traverseAdjacencyMatrix2(m1.clone(), func.clone(), pos.clone() + 1, len.clone(), intGt(pos.clone() + 1, len.clone()), extArg1.clone())?;
-            (m2.clone(), extArg2.clone())
+            { (inM, func, pos, len, stop, inTypeA) = (m1.clone(), func.clone(), pos.clone() + 1, len.clone(), intGt(pos.clone() + 1, len.clone()), extArg1.clone()); continue '__tco; }
         },
-    });
-    Ok((outM, outTypeA))
+    }
+    }
 }
 
 fn traverseAdjacencyMatrixList<T: Clone + 'static>(mut inLst: Arc<metamodelica::List<i32>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, T) -> Result<(Arc<metamodelica::List<i32>>, T)> + 'static>, mut len: i32, mut maxpos: i32, mut inTypeA: T) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, T)> {

@@ -894,19 +894,16 @@ fn tokFile(mut file: File::File, mut inStringToken: Arc<StringToken>, mut nchars
 }
 
 fn stringListString(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool, i32)> {
-    let mut outActualPositionOnLine: i32 = 0;
-    let mut outAtStartOfLine: bool = false;
-    let mut outAfterNewLineIndent: i32 = 0;
-    (outActualPositionOnLine, outAtStartOfLine, outAfterNewLineIndent) = (::match_deref::match_deref! { match &((inStringList.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inStringList.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
         (Deref @ metamodelica::List::Nil, _, isstart, aind) => {
-            (aind.clone(), isstart.clone(), aind.clone())
+            return Ok((aind.clone(), isstart.clone(), aind.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strLst }, nchars, isstart, aind) => {
             let mut nchars = (*nchars).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
-            (nchars, isstart, aind) = stringListString(strLst.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
-            (nchars.clone(), isstart.clone(), aind.clone())
+            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), isstart.clone(), aind.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, nchars, true, aind) => {
             let mut blen: i32 = 0;
@@ -920,8 +917,7 @@ fn stringListString(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inAct
             blen = Print::getBufLength() - blen.clone();
             hasNL = Print::hasBufNewLineAtEnd();
             nchars = if (hasNL.clone()) {aind.clone()} else {blen.clone()};
-            (nchars, isstart, aind) = stringListString(strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone())?;
-            (nchars.clone(), isstart.clone(), aind.clone())
+            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, nchars, false, aind) => {
             let mut blen: i32 = 0;
@@ -934,17 +930,16 @@ fn stringListString(mut inStringList: Arc<metamodelica::List<ArcStr>>, mut inAct
             blen = Print::getBufLength() - blen.clone();
             hasNL = Print::hasBufNewLineAtEnd();
             nchars = if (hasNL.clone()) {aind.clone()} else {nchars.clone() + blen.clone()};
-            (nchars, isstart, aind) = stringListString(strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone())?;
-            (nchars.clone(), isstart.clone(), aind.clone())
+            { (inStringList, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone()); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("-!!!Tpl.stringListString failed.\n")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outActualPositionOnLine, outAtStartOfLine, outAfterNewLineIndent))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn stringListFile(mut file: File::File, mut inStringList: Arc<metamodelica::List<ArcStr>>, mut nchars: i32, mut isstart: bool, mut aind: i32) -> Result<(i32, bool, i32)> {
@@ -1343,11 +1338,10 @@ fn blockFile(mut file: File::File, mut inBlockType: Arc<BlockType>, mut inTokens
 }
 
 fn iterSeparatorFile(mut file: File::File, mut inTokens: Tokens, mut inSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool)> {
-    let mut outActualPositionOnLine: i32 = 0;
-    let mut outAtStartOfLine: bool = false;
-    (outActualPositionOnLine, outAtStartOfLine) = (::match_deref::match_deref! { match &((inTokens.clone(), inSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTokens.clone(), inSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
         (Deref @ metamodelica::List::Nil, _, pos, isstart, _) => {
-            (pos.clone(), isstart.clone())
+            return Ok((pos.clone(), isstart.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, septok, pos, isstart, aind) => {
             let mut pos = (*pos).clone();
@@ -1355,12 +1349,11 @@ fn iterSeparatorFile(mut file: File::File, mut inTokens: Tokens, mut inSeparator
             let mut aind = (*aind).clone();
             (pos, isstart, aind) = tokFile(file.clone(), septok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
             (pos, isstart, aind) = tokFile(file.clone(), tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterSeparatorFile(file.clone(), toks.clone(), septok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
+            { (file, inTokens, inSeparator, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (file.clone(), toks.clone(), septok.clone(), pos.clone(), isstart.clone(), aind.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outActualPositionOnLine, outAtStartOfLine))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn iterSeparatorAlignWrapFile(mut file: File::File, mut inTokens: Tokens, mut inSeparator: Arc<StringToken>, mut inActualIndex: i32, mut inAlignNum: i32, mut inAlignSeparator: Arc<StringToken>, mut inWrapWidth: i32, mut inWrapSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool)> {
@@ -1398,11 +1391,10 @@ fn iterSeparatorAlignWrapFile(mut file: File::File, mut inTokens: Tokens, mut in
 }
 
 fn iterAlignWrapFile(mut file: File::File, mut inTokens: Tokens, mut inActualIndex: i32, mut inAlignNum: i32, mut inAlignSeparator: Arc<StringToken>, mut inWrapWidth: i32, mut inWrapSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool)> {
-    let mut outActualPositionOnLine: i32 = 0;
-    let mut outAtStartOfLine: bool = false;
-    (outActualPositionOnLine, outAtStartOfLine) = (::match_deref::match_deref! { match &((inTokens.clone(), inActualIndex.clone(), inAlignNum.clone(), inAlignSeparator.clone(), inWrapWidth.clone(), inWrapSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inTokens.clone(), inActualIndex.clone(), inAlignNum.clone(), inAlignSeparator.clone(), inWrapWidth.clone(), inWrapSeparator.clone(), inActualPositionOnLine.clone(), inAtStartOfLine.clone(), inAfterNewLineIndent.clone())) {
         (Deref @ metamodelica::List::Nil, _, _, _, _, _, pos, isstart, _) => {
-            (pos.clone(), isstart.clone())
+            return Ok((pos.clone(), isstart.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) if (idx.clone() > 0 && intMod(idx.clone(), anum.clone()) == 0) => {
             let mut pos = (*pos).clone();
@@ -1411,8 +1403,7 @@ fn iterAlignWrapFile(mut file: File::File, mut inTokens: Tokens, mut inActualInd
             (pos, isstart, aind) = tokFile(file.clone(), asep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
             (pos, isstart, aind) = tryWrapFile(file.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
             (pos, isstart, aind) = tokFile(file.clone(), tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapFile(file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
+            { (file, inTokens, inActualIndex, inAlignNum, inAlignSeparator, inWrapWidth, inWrapSeparator, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) if (wwidth.clone() > 0 && pos.clone() >= wwidth.clone()) => {
             let mut pos = (*pos).clone();
@@ -1420,25 +1411,23 @@ fn iterAlignWrapFile(mut file: File::File, mut inTokens: Tokens, mut inActualInd
             let mut aind = (*aind).clone();
             (pos, isstart, aind) = tokFile(file.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
             (pos, isstart, aind) = tokFile(file.clone(), tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapFile(file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
+            { (file, inTokens, inActualIndex, inAlignNum, inAlignSeparator, inWrapWidth, inWrapSeparator, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: tok, tail: toks }, idx, anum, asep, wwidth, wsep, pos, isstart, aind) => {
             let mut pos = (*pos).clone();
             let mut isstart = (*isstart).clone();
             let mut aind = (*aind).clone();
             (pos, isstart, aind) = tokFile(file.clone(), tok.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos, isstart) = iterAlignWrapFile(file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone())?;
-            (pos.clone(), isstart.clone())
+            { (file, inTokens, inActualIndex, inAlignNum, inAlignSeparator, inWrapWidth, inWrapSeparator, inActualPositionOnLine, inAtStartOfLine, inAfterNewLineIndent) = (file.clone(), toks.clone(), idx.clone() + 1, anum.clone(), asep.clone(), wwidth.clone(), wsep.clone(), pos.clone(), isstart.clone(), aind.clone()); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("-!!!Tpl.iterAlignWrapString failed.\n")).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outActualPositionOnLine, outAtStartOfLine))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn tryWrapFile(mut file: File::File, mut inWrapWidth: i32, mut inWrapSeparator: Arc<StringToken>, mut inActualPositionOnLine: i32, mut inAtStartOfLine: bool, mut inAfterNewLineIndent: i32) -> Result<(i32, bool, i32)> {

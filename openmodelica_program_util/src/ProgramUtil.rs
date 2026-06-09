@@ -106,8 +106,7 @@ pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>
             let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut newp_1: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             newp = insertClassInProgram(c1.clone(), w.clone(), p2.clone(), mergeAST.clone())?;
-            newp_1 = updateProgram2(c2.clone(), w.clone(), newp.clone(), mergeAST.clone())?;
-            return Ok(newp_1.clone())
+            { (inNewClasses, w, inOldProgram, mergeAST) = (c2.clone(), w.clone(), newp.clone(), mergeAST.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -629,8 +628,7 @@ pub fn deletePublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absy
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            res = deletePublicList(xs.clone());
-            return res.clone()
+            { inAbsynClassPartLst = xs.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -650,8 +648,7 @@ pub fn deleteProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<A
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            res = deleteProtectedList(xs.clone());
-            return res.clone()
+            { inAbsynClassPartLst = xs.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: x, tail: xs } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
@@ -673,13 +670,11 @@ pub fn getPublicList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn::
             let mut res2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             res2 = getPublicList(rest.clone());
-            res = listAppend(res1.clone(), res2.clone());
-            return res.clone()
+            return listAppend(res1.clone(), res2.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-            ys = getPublicList(xs.clone());
-            return ys.clone()
+            { inAbsynClassPartLst = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -696,13 +691,11 @@ pub fn getProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absy
             let mut res2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut res: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             res2 = getProtectedList(rest.clone());
-            res = listAppend(res1.clone(), res2.clone());
-            return res.clone()
+            return listAppend(res1.clone(), res2.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-            ys = getProtectedList(xs.clone());
-            return ys.clone()
+            { inAbsynClassPartLst = xs.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -1076,8 +1069,7 @@ pub fn excludeElementsFromFile(mut inFile: ArcStr, mut inEls: Arc<metamodelica::
         },
         (file, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::LEXER_COMMENT { comment: _ }, tail: rest }) => {
             let mut filtered: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-            filtered = excludeElementsFromFile((file.clone()).clone(), rest.clone())?;
-            return Ok(filtered.clone())
+            { (inFile, inEls) = ((file.clone()).clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

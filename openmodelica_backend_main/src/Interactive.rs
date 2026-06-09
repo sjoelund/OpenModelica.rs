@@ -3928,13 +3928,11 @@ pub fn isModifierfinal(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absy
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: name1 }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { name: name2, path: p2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut f: bool = false;
-            f = isModifierfinal(args.clone(), p2.clone())?;
-            return Ok(f.clone())
+            { (inAbsynElementArgLst, inPath) = (args.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
             let mut f: bool = false;
-            f = isModifierfinal(rest.clone(), inPath.clone())?;
-            return Ok(f.clone())
+            { (inAbsynElementArgLst, inPath) = (rest.clone(), inPath.clone()); continue '__tco; }
         },
         _ => {
             return Ok(false)
@@ -4107,13 +4105,11 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: name1 }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { name: name2, path: p2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut res: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-            res = getModificationValues(args.clone(), p2.clone())?;
-            return Ok(res.clone())
+            { (inAbsynElementArgLst, inPath) = (args.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
             let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-            r#mod = getModificationValues(rest.clone(), inPath.clone())?;
-            return Ok(r#mod.clone())
+            { (inAbsynElementArgLst, inPath) = (rest.clone(), inPath.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -5484,8 +5480,7 @@ pub fn isPrimitiveClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn::Pr
             let mut res: bool = false;
             inmodel = AbsynUtil::crefToPath(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (cname.clone()).clone(), subscripts: metamodelica::nil() }))?;
             (cdef, _) = lookupClassdef(path.clone(), inmodel.clone(), p.clone())?;
-            res = isPrimitiveClass(cdef.clone(), p.clone())?;
-            return Ok(res.clone())
+            { (inClass, inProgram) = (cdef.clone(), p.clone()); continue '__tco; }
         },
         _ => {
             return Ok(false)
@@ -6671,8 +6666,7 @@ fn useQuotes(mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>
         },
         Deref @ metamodelica::List::Cons { head: _, tail: al } => {
             let mut res: bool = false;
-            res = useQuotes(al.clone());
-            return res.clone()
+            { inAbsynNamedArgLst = al.clone(); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -7810,8 +7804,7 @@ fn getUsesAnnotationString2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Eleme
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ss: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>> = metamodelica::nil();
-            ss = getUsesAnnotationString2(xs.clone(), (classOrigin.clone()).clone())?;
-            return Ok(ss.clone())
+            { (eltArgs, classOrigin) = (xs.clone(), (classOrigin.clone()).clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -9134,8 +9127,7 @@ fn getConnectionsInEquations(mut inAbsynEquationItemLst: Arc<metamodelica::List<
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut eqlist1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-            eqlist1 = getConnectionsInEquations(xs.clone());
-            return eqlist1.clone()
+            { inAbsynEquationItemLst = xs.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             return metamodelica::nil()
@@ -10858,13 +10850,11 @@ fn getAccessAnnotationString2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "access" }, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::CREF { componentRef: cref }, .. }, .. }), .. }, tail: _ } => {
             let mut name: ArcStr = arcstr::literal!("");
-            name = (Dump::printComponentRefStr(cref.clone())?).clone();
-            return Ok(name.clone())
+            return Ok(Dump::printComponentRefStr(cref.clone())?)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut name: ArcStr = arcstr::literal!("");
-            name = (getAccessAnnotationString2(xs.clone())?).clone();
-            return Ok(name.clone())
+            { eltArgs = xs.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

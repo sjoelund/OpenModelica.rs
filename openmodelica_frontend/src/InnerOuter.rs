@@ -898,8 +898,7 @@ pub fn updateInstHierarchy(mut inIH: InstHierarchy, mut inPrefix: DAE::Prefix, m
             ht = emptyInstHierarchyHashTable();
             sm = HashSet::emptyHashSet();
             tih = TopInstance { path: None, ht: ht.clone(), outerPrefixes: emptyOuterPrefixes().clone(), sm: sm.clone() };
-            ih = updateInstHierarchy(list![tih.clone()], inPrefix.clone(), inInnerOuter.clone(), inInstInner.clone())?;
-            return Ok(ih.clone())
+            { (inIH, inPrefix, inInnerOuter, inInstInner) = (list![tih.clone()], inPrefix.clone(), inInnerOuter.clone(), inInstInner.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: TopInstance { path: pathOpt, ht, outerPrefixes, sm }, tail: restIH }, InstInner { name, .. }) => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);

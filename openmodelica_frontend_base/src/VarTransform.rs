@@ -1107,8 +1107,7 @@ fn makeTransitive12(mut lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mu
             crDst = BaseHashTable::get(cr.clone(), ht.clone())?;
             (crDst, _) = replaceExp(crDst.clone(), singleRepl.clone(), None)?;
             repl1 = addReplacementNoTransitive(repl.clone(), cr.clone(), crDst.clone())?;
-            repl2 = makeTransitive12(crs.clone(), repl1.clone(), singleRepl.clone())?;
-            return Ok(repl2.clone())
+            { (lst, repl, singleRepl) = (crs.clone(), repl1.clone(), singleRepl.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

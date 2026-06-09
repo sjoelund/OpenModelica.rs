@@ -1755,32 +1755,28 @@ fn insertUnitInEquation(mut inEq: Arc<DAE::Exp>, mut inTpl: ((metamodelica::Arra
 }
 
 fn getNamedUnitlist(mut instring: ArcStr, mut inargs: Arc<metamodelica::List<Functionargs>>) -> (Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>) {
-    let mut outargs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outargs2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outargs3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut outargs4: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    (outargs, outargs2, outargs3, outargs4) = (::match_deref::match_deref! { match &((instring.clone(), inargs.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((instring.clone(), inargs.clone())) {
         (fnname, Deref @ metamodelica::List::Cons { head: Functionargs { name: fnname1, invars, outvars, inunits: inunitlist, outunits: outunitlist }, tail: _ }) if (stringEq((fnname.clone()).clone(), (fnname1.clone()).clone())) => {
             let mut inunitlist = (*inunitlist).clone();
             let mut outunitlist = (*outunitlist).clone();
             inunitlist = inunitlist.clone();
             outunitlist = outunitlist.clone();
-            (invars.clone(), outvars.clone(), inunitlist.clone(), outunitlist.clone())
+            return (invars.clone(), outvars.clone(), inunitlist.clone(), outunitlist.clone())
         },
         (fnname, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
             let mut invars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut inunitlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut outunitlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut outvars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            (invars, outvars, inunitlist, outunitlist) = getNamedUnitlist((fnname.clone()).clone(), rest.clone());
-            (invars.clone(), outvars.clone(), inunitlist.clone(), outunitlist.clone())
+            { (instring, inargs) = ((fnname.clone()).clone(), rest.clone()); continue '__tco; }
         },
         (_, _) => {
-            (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())
+            return (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    (outargs, outargs2, outargs3, outargs4)
+        _ => unreachable!("tail-call lowered match: no arm matched"),
+    } }
+    }
 }
 
 fn UnitTypesEqual(mut inut: Unit::Unit, mut inut2: Unit::Unit, mut inHtCr2U: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>))) -> Result<(bool, Unit::Unit, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Unit::Unit)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit::Unit) -> Result<ArcStr> + 'static>)))> {
@@ -2111,13 +2107,11 @@ fn parseVarList(mut invarlist: Arc<metamodelica::List<Arc<DAE::Var>>>) -> ArcStr
         ::match_deref::match_deref! { match &(invarlist.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Var { name, binding: eqbind, .. }, tail: _ } if (stringEq((name.clone()).clone(), (literal!("unit")).clone())) => {
             let mut s: ArcStr = arcstr::literal!("");
-            s = (getStringFromExp(eqbind.clone())).clone();
-            return s.clone()
+            return getStringFromExp(eqbind.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: varlist } => {
             let mut s: ArcStr = arcstr::literal!("");
-            s = (parseVarList(varlist.clone())).clone();
-            return s.clone()
+            { invarlist = varlist.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             return literal!("None")

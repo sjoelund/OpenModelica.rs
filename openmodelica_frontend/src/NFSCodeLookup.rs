@@ -371,15 +371,13 @@ pub fn lookupInClass(mut inName: ArcStr, mut inEnv: Env) -> Result<(Item, Env)> 
 }
 
 pub fn resolveAlias(mut inItem: Item, mut inEnv: Env) -> Result<(Item, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    (outItem, outEnv) = (::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
         (Deref @ NFSCodeEnv::Item::ALIAS { name, path: None, .. }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ }) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             item = NFSCodeEnv::EnvTree::get(tree.clone(), (name.clone()).clone())?;
-            (item, env) = resolveAlias(item.clone(), inEnv.clone())?;
-            (item.clone(), env.clone())
+            { (inItem, inEnv) = (item.clone(), inEnv.clone()); continue '__tco; }
         },
         (Deref @ NFSCodeEnv::Item::ALIAS { name, path: Some(path), .. }, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
@@ -393,15 +391,14 @@ pub fn resolveAlias(mut inItem: Item, mut inEnv: Env) -> Result<(Item, Env)> {
             } };
             tree = __pa0.clone();
             item = NFSCodeEnv::EnvTree::get(tree.clone(), (name.clone()).clone())?;
-            (item, env) = resolveAlias(item.clone(), env.clone())?;
-            (item.clone(), env.clone())
+            { (inItem, inEnv) = (item.clone(), env.clone()); continue '__tco; }
         },
         _ => {
-            (inItem.clone(), inEnv.clone())
+            return Ok((inItem.clone(), inEnv.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outItem, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn lookupInBaseClasses(mut inName: ArcStr, mut inEnv: Env, mut inReplaceRedeclares: RedeclareReplaceStrategy, mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>) -> Result<(Option<Arc<NFSCodeEnv::Item>>, Option<Arc<Absyn::Path>>, Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>>)> {
@@ -764,10 +761,8 @@ pub fn lookupCrefInPackage(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env)
 }
 
 pub fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut outEnv: Env = metamodelica::nil();
-    (outItem, outPath, outEnv) = (::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { typeSpec: type_spec, modifications: mods, info, .. }, .. }, env) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -777,33 +772,29 @@ pub fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEn
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), env.clone(), info.clone())?;
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
             (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
-            (item, path, env) = lookupNameInItem(inName.clone(), item.clone(), type_env.clone())?;
-            (item.clone(), path.clone(), env.clone())
+            { (inName, inItem, inEnv) = (inName.clone(), item.clone(), type_env.clone()); continue '__tco; }
         },
         (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. }, _) => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
-            (item, path, env) = lookupNameInPackage(inName.clone(), env.clone())?;
-            (item.clone(), path.clone(), env.clone())
+            return Ok(lookupNameInPackage(inName.clone(), env.clone())?)
         },
         (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env }, _) => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut item = (*item).clone();
             let mut env = (*env).clone();
-            (item, path, env) = lookupNameInItem(inName.clone(), item.clone(), env.clone())?;
-            (item.clone(), path.clone(), env.clone())
+            { (inName, inItem, inEnv) = (inName.clone(), item.clone(), env.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outItem, outPath, outEnv))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn lookupCrefInItem(mut inCref: Arc<Absyn::ComponentRef>, mut inItem: Item, mut inEnv: Env) -> Result<(Item, Arc<Absyn::ComponentRef>)> {
-    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
-    let mut outCref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    (outItem, outCref) = (::match_deref::match_deref! { match &(inItem.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { typeSpec: type_spec, modifications: mods, info, .. }, .. } => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -812,26 +803,23 @@ pub fn lookupCrefInItem(mut inCref: Arc<Absyn::ComponentRef>, mut inItem: Item, 
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), inEnv.clone(), info.clone())?;
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
             (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
-            (item, cref) = lookupCrefInItem(inCref.clone(), item.clone(), type_env.clone())?;
-            (item.clone(), cref.clone())
+            { (inCref, inItem, inEnv) = (inCref.clone(), item.clone(), type_env.clone()); continue '__tco; }
         },
         Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
-            (item, cref) = lookupCrefInPackage(inCref.clone(), env.clone())?;
-            (item.clone(), cref.clone())
+            return Ok(lookupCrefInPackage(inCref.clone(), env.clone())?)
         },
         Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { item, declaredEnv: env } => {
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut item = (*item).clone();
-            (item, cref) = lookupCrefInItem(inCref.clone(), item.clone(), env.clone())?;
-            (item.clone(), cref.clone())
+            { (inCref, inItem, inEnv) = (inCref.clone(), item.clone(), env.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outItem, outCref))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn lookupBaseClasses(mut inName: ArcStr, mut inEnv: Env) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {

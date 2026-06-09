@@ -279,8 +279,7 @@ pub fn mkSubMods(mut inSubMod: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut 
         (Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: id, r#mod: m }, tail: rest }, g) => {
             let mut g = (*g).clone();
             g = mkModNode((id.clone()).clone(), m.clone(), inModScope.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = mkSubMods(rest.clone(), inModScope.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inSubMod, inModScope, inParentRef, inKind, inGraph) = (rest.clone(), inModScope.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -506,16 +505,14 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
             g = mkExpressionNode((name.clone()).clone(), openmodelica_ast::Absyn::Exp::interned_END(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inStartWith, inArrayDims, inParentRef, inKind, inGraph) = (i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e }, tail: rest }, g) => {
             let mut name: Name = arcstr::literal!("");
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
             g = mkExpressionNode((name.clone()).clone(), e.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = mkDimsNode_helper(i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inStartWith, inArrayDims, inParentRef, inKind, inGraph) = (i.clone() + 1, rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -615,8 +612,7 @@ pub fn mkCrefsNodes(mut inCrefs: Arc<metamodelica::List<Arc<Absyn::ComponentRef>
         (Deref @ metamodelica::List::Cons { head: cr, tail: rest }, g) => {
             let mut g = (*g).clone();
             g = mkCrefNode(cr.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = mkCrefsNodes(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inCrefs, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -794,8 +790,7 @@ pub fn mkCrefsFromExps(mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut
             let mut g = (*g).clone();
             crefs = AbsynUtil::getCrefFromExp(e.clone(), true, true)?;
             g = mkCrefsNodes(crefs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = mkCrefsFromExps(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inExps, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1000,8 +995,7 @@ pub fn addIterators_helper(mut inIterators: Arc<metamodelica::List<Arc<Absyn::Fo
             (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::FI { fi: i.clone() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
-            g = addIterators_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inIterators, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1037,13 +1031,11 @@ pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::El
             let mut g = (*g).clone();
             el = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
             g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
-            g = addMatchScope_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inElements, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, g) => {
             let mut g = (*g).clone();
-            g = addMatchScope_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
-            return Ok(g.clone())
+            { (inElements, inParentRef, inKind, inGraph) = (rest.clone(), inParentRef.clone(), inKind.clone(), g.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

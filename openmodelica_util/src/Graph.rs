@@ -81,11 +81,10 @@ pub fn topologicalSort<NodeType: Clone + 'static>(mut inGraph: Arc<metamodelica:
 fn topologicalSort2<NodeType: Clone + 'static>(mut inStartNodes: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inRestNodes: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>, mut inAccumNodes: Arc<metamodelica::List<NodeType>>, mut inEqualFunc: Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>) -> Result<(Arc<metamodelica::List<NodeType>>, Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>>)> {
     pub type EqualFunc<NodeType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(NodeType, NodeType) -> Result<bool> + 'static>;
 
-    let mut outNodes: Arc<metamodelica::List<NodeType>> = metamodelica::nil();
-    let mut outRemainingGraph: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>> = metamodelica::nil();
-    (outNodes, outRemainingGraph) = (::match_deref::match_deref! { match &((inStartNodes.clone(), inRestNodes.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inStartNodes.clone(), inRestNodes.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
-            (inAccumNodes.clone().reverse(), inRestNodes.clone())
+            return Ok((inAccumNodes.clone().reverse(), inRestNodes.clone()))
         },
         (rest_start, Deref @ metamodelica::List::Nil) => {
             let mut node1: NodeType;
@@ -101,7 +100,7 @@ fn topologicalSort2<NodeType: Clone + 'static>(mut inStartNodes: Arc<metamodelic
                 result = metamodelica::cons(node1.clone(), result.clone());
             }
             result = result.clone().reverse();
-            (result.clone(), metamodelica::nil())
+            return Ok((result.clone(), metamodelica::nil()))
         },
         (Deref @ metamodelica::List::Cons { head: (node1, Deref @ metamodelica::List::Nil), tail: rest_start }, rest_rest) => {
             let mut rest_start_: Arc<metamodelica::List<(NodeType, Arc<metamodelica::List<NodeType>>)>> = metamodelica::nil();
@@ -111,12 +110,11 @@ fn topologicalSort2<NodeType: Clone + 'static>(mut inStartNodes: Arc<metamodelic
             rest_rest = List::map2(rest_rest.clone(), (std::sync::Arc::new(removeEdge) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>), node1.clone(), inEqualFunc.clone())?;
             (rest_rest, new_start) = List::splitOnTrue(rest_rest.clone(), std::sync::Arc::new(fnptr!(hasOutgoingEdges, _)))?;
             rest_start_ = listAppend(rest_start.clone(), new_start.clone());
-            (result, rest_rest) = topologicalSort2(rest_start_.clone(), rest_rest.clone(), metamodelica::cons(node1.clone(), inAccumNodes.clone()), inEqualFunc.clone())?;
-            (result.clone(), rest_rest.clone())
+            { (inStartNodes, inRestNodes, inAccumNodes, inEqualFunc) = (rest_start_.clone(), rest_rest.clone(), metamodelica::cons(node1.clone(), inAccumNodes.clone()), inEqualFunc.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outNodes, outRemainingGraph))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn hasOutgoingEdges<NodeType: Clone + 'static>(mut inNode: (NodeType, Arc<metamodelica::List<NodeType>>)) -> bool {

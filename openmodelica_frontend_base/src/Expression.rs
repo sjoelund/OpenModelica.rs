@@ -782,8 +782,7 @@ pub fn expAbs(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
         },
         Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e } => {
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            e_1 = expAbs(e.clone());
-            return e_1.clone()
+            { inExp = e.clone(); continue '__tco; }
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 } => {
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -1306,8 +1305,7 @@ pub fn unliftArrayTypeWithSubs(mut subs: Arc<metamodelica::List<Arc<DAE::Subscri
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, ty) => {
             let mut ty = (*ty).clone();
             ty = unliftArray(ty.clone())?;
-            ty = unliftArrayTypeWithSubs(rest.clone(), ty.clone())?;
-            return Ok(ty.clone())
+            { (subs, ity) = (rest.clone(), ty.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1930,13 +1928,11 @@ pub fn expLastSubs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Ar
         ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            subs = ComponentReference::crefLastSubs(cr.clone())?;
-            return Ok(subs.clone())
+            return Ok(ComponentReference::crefLastSubs(cr.clone())?)
         },
         Deref @ DAE::Exp::UNARY { exp: e, .. } => {
             let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-            subs = expLastSubs(e.clone())?;
-            return Ok(subs.clone())
+            { inExp = e.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2762,13 +2758,11 @@ pub fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE:
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             rellst1 = getRelations(e1.clone());
             rellst2 = getRelations(e2.clone());
-            rellst = listAppend(rellst1.clone(), rellst2.clone());
-            return rellst.clone()
+            return listAppend(rellst1.clone(), rellst2.clone())
         },
         Deref @ DAE::Exp::LUNARY { exp: e, .. } => {
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            rellst = getRelations(e.clone());
-            return rellst.clone()
+            { inExp = e.clone(); continue '__tco; }
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, exp2: e2, .. } => {
             let mut rellst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2776,8 +2770,7 @@ pub fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE:
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             rellst1 = getRelations(e1.clone());
             rellst2 = getRelations(e2.clone());
-            rellst = listAppend(rellst1.clone(), rellst2.clone());
-            return rellst.clone()
+            return listAppend(rellst1.clone(), rellst2.clone())
         },
         Deref @ DAE::Exp::IFEXP { expCond: cond, expThen: tb, expElse: fb } => {
             let mut rellst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2789,13 +2782,11 @@ pub fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE:
             rellst2 = getRelations(tb.clone());
             rellst3 = getRelations(fb.clone());
             rellst4 = listAppend(rellst1.clone(), rellst2.clone());
-            rellst = listAppend(rellst3.clone(), rellst4.clone());
-            return rellst.clone()
+            return listAppend(rellst3.clone(), rellst4.clone())
         },
         Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            rellst = getRelations(e.clone());
-            return rellst.clone()
+            { inExp = e.clone(); continue '__tco; }
         },
         Deref @ DAE::Exp::ARRAY { ty: t, scalar: sc, array: Deref @ metamodelica::List::Cons { head: e, tail: xs } } => {
             let mut rellst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2803,13 +2794,11 @@ pub fn getRelations(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE:
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             rellst1 = getRelations(Arc::new(DAE::Exp::ARRAY { ty: t.clone(), scalar: sc.clone(), array: xs.clone() }));
             rellst2 = getRelations(e.clone());
-            rellst = listAppend(rellst1.clone(), rellst2.clone());
-            return rellst.clone()
+            return listAppend(rellst1.clone(), rellst2.clone())
         },
         Deref @ DAE::Exp::UNARY { exp: e, .. } => {
             let mut rellst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            rellst = getRelations(e.clone());
-            return rellst.clone()
+            { inExp = e.clone(); continue '__tco; }
         },
         _ => {
             return metamodelica::nil()
@@ -3388,14 +3377,12 @@ fn terms2(mut inExp: Arc<DAE::Exp>, mut inAcc: Arc<metamodelica::List<Arc<DAE::E
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::ADD { .. }, exp2: e2 }, acc, _) => {
             let mut acc = (*acc).clone();
             acc = terms2(e2.clone(), acc.clone(), neg.clone())?;
-            acc = terms2(e1.clone(), acc.clone(), neg.clone())?;
-            return Ok(acc.clone())
+            { (inExp, inAcc, neg) = (e1.clone(), acc.clone(), neg.clone()); continue '__tco; }
         },
         (Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::SUB { .. }, exp2: e2 }, acc, _) => {
             let mut acc = (*acc).clone();
             acc = terms2(e2.clone(), acc.clone(), !(neg.clone()))?;
-            acc = terms2(e1.clone(), acc.clone(), neg.clone())?;
-            return Ok(acc.clone())
+            { (inExp, inAcc, neg) = (e1.clone(), acc.clone(), neg.clone()); continue '__tco; }
         },
         (e, acc, true) => {
             let mut e = (*e).clone();
@@ -4097,13 +4084,11 @@ pub fn generateCrefsExpLstFromExp(mut inExp: Arc<DAE::Exp>, mut inCrefPrefix: Op
         ::match_deref::match_deref! { match &((inExp.clone(), inCrefPrefix.clone())) {
         (Deref @ DAE::Exp::TUPLE { PR: explst }, _) => {
             let mut explst = (*explst).clone();
-            explst = List::flatten(List::map1(explst.clone(), (std::sync::Arc::new(generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), inCrefPrefix.clone())?)?;
-            return Ok(explst.clone())
+            return Ok(List::flatten(List::map1(explst.clone(), (std::sync::Arc::new(generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), inCrefPrefix.clone())?)?)
         },
         (Deref @ DAE::Exp::ARRAY { array: explst, .. }, _) => {
             let mut explst = (*explst).clone();
-            explst = List::flatten(List::map1(explst.clone(), (std::sync::Arc::new(generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), inCrefPrefix.clone())?)?;
-            return Ok(explst.clone())
+            return Ok(List::flatten(List::map1(explst.clone(), (std::sync::Arc::new(generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), inCrefPrefix.clone())?)?)
         },
         (Deref @ DAE::Exp::CALL { path: p1, expLst: explst, attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: p2 }, .. }, .. } }, _) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
             return Ok(List::flatten(List::map1(explst.clone(), (std::sync::Arc::new(generateCrefsExpLstFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<DAE::ComponentRef>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> + 'static>), inCrefPrefix.clone())?)?)
@@ -4630,8 +4615,7 @@ pub fn expPow(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
         (Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::DIV { .. }, exp2: e4 }, Deref @ DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { .. }, exp: e5 }) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e = makeDiv(e4.clone(), e3.clone())?;
-            e = expPow(e.clone(), e5.clone())?;
-            return Ok(e.clone())
+            { (e1, e2) = (e.clone(), e5.clone()); continue '__tco; }
         },
         (Deref @ DAE::Exp::BINARY { exp1: e3, operator: DAE::Operator::DIV { .. }, exp2: e4 }, _) if (isNegativeOrZero(e2.clone())?) => {
             { (e1, e2) = (makeDiv(e4.clone(), e3.clone())?, negate(e2.clone())?); continue '__tco; }
@@ -5279,8 +5263,7 @@ fn arrayFill2(mut iDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inExp
         Deref @ metamodelica::List::Cons { head: d, tail: dims } => {
             let mut arrexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             arrexp = arrayFill2(list![d.clone()], inExp.clone())?;
-            arrexp = arrayFill2(dims.clone(), arrexp.clone())?;
-            return Ok(arrexp.clone())
+            { (iDims, inExp) = (dims.clone(), arrexp.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -7772,8 +7755,7 @@ pub fn isOne(mut inExp: Arc<DAE::Exp>) -> bool {
         },
         Deref @ DAE::Exp::CAST { exp: e, .. } => {
             let mut res: bool = false;
-            res = isOne(e.clone());
-            return res.clone()
+            { inExp = e.clone(); continue '__tco; }
         },
         _ => {
             return false
@@ -8987,8 +8969,7 @@ pub fn containVectorFunctioncall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
             let mut res: bool = false;
             let mut flatexplst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             flatexplst = List::flatten(explst.clone())?;
-            res = List::any(flatexplst.clone(), (std::sync::Arc::new(containVectorFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
-            return Ok(res.clone())
+            return Ok(List::any(flatexplst.clone(), (std::sync::Arc::new(containVectorFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?)
         },
         Deref @ DAE::Exp::RANGE { start: e1, .. } if (containVectorFunctioncall(e1.clone())?) => {
             return Ok(true)
@@ -9036,8 +9017,7 @@ pub fn containFunctioncall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
         },
         Deref @ DAE::Exp::PARTEVALFUNCTION { expList: elst, .. } => {
             let mut res: bool = false;
-            res = List::any(elst.clone(), (std::sync::Arc::new(containFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
-            return Ok(res.clone())
+            return Ok(List::any(elst.clone(), (std::sync::Arc::new(containFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?)
         },
         Deref @ DAE::Exp::BINARY { exp1: e1, .. } if (containFunctioncall(e1.clone())?) => {
             return Ok(true)
@@ -9079,8 +9059,7 @@ pub fn containFunctioncall(mut inExp: Arc<DAE::Exp>) -> Result<bool> {
             let mut res: bool = false;
             let mut flatexplst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             flatexplst = List::flatten(explst.clone())?;
-            res = List::any(flatexplst.clone(), (std::sync::Arc::new(containFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
-            return Ok(res.clone())
+            return Ok(List::any(flatexplst.clone(), (std::sync::Arc::new(containFunctioncall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?)
         },
         Deref @ DAE::Exp::RANGE { start: e1, .. } if (containFunctioncall(e1.clone())?) => {
             return Ok(true)
@@ -9459,65 +9438,55 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
             let mut b: bool = false;
             b = operatorEqual(op1.clone(), op2.clone())?;
             b = if (b.clone()) {expStructuralEqual(e11.clone(), e21.clone())?} else {b.clone()};
-            b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e12.clone(), e22.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::LBINARY { exp1: e11, operator: op1, exp2: e12 }, Deref @ DAE::Exp::LBINARY { exp1: e21, operator: op2, exp2: e22 }) => {
             let mut b: bool = false;
             b = operatorEqual(op1.clone(), op2.clone())?;
             b = if (b.clone()) {expStructuralEqual(e11.clone(), e21.clone())?} else {b.clone()};
-            b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e12.clone(), e22.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::UNARY { operator: op1, exp: e1 }, Deref @ DAE::Exp::UNARY { operator: op2, exp: e2 }) => {
             let mut b: bool = false;
             b = operatorEqual(op1.clone(), op2.clone())?;
-            b = if (b.clone()) {expStructuralEqual(e1.clone(), e2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e1.clone(), e2.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::LUNARY { operator: op1, exp: e1 }, Deref @ DAE::Exp::LUNARY { operator: op2, exp: e2 }) => {
             let mut b: bool = false;
             b = operatorEqual(op1.clone(), op2.clone())?;
-            b = if (b.clone()) {expStructuralEqual(e1.clone(), e2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e1.clone(), e2.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::RELATION { exp1: e11, operator: op1, exp2: e12, .. }, Deref @ DAE::Exp::RELATION { exp1: e21, operator: op2, exp2: e22, .. }) => {
             let mut b: bool = false;
             b = operatorEqual(op1.clone(), op2.clone())?;
             b = if (b.clone()) {expStructuralEqual(e11.clone(), e21.clone())?} else {b.clone()};
-            b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e12.clone(), e22.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::IFEXP { expCond: e11, expThen: e12, expElse: e13 }, Deref @ DAE::Exp::IFEXP { expCond: e21, expThen: e22, expElse: e23 }) => {
             let mut b: bool = false;
             b = expStructuralEqual(e11.clone(), e21.clone())?;
             b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            b = if (b.clone()) {expStructuralEqual(e13.clone(), e23.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e13.clone(), e23.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::CALL { path: path1, expLst: expl1, .. }, Deref @ DAE::Exp::CALL { path: path2, expLst: expl2, .. }) => {
             let mut b: bool = false;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
-            b = if (b.clone()) {expStructuralEqualList(expl1.clone(), expl2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::RECORD { path: path1, exps: expl1, .. }, Deref @ DAE::Exp::RECORD { path: path2, exps: expl2, .. }) => {
             let mut b: bool = false;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
-            b = if (b.clone()) {expStructuralEqualList(expl1.clone(), expl2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::PARTEVALFUNCTION { path: path1, expList: expl1, .. }, Deref @ DAE::Exp::PARTEVALFUNCTION { path: path2, expList: expl2, .. }) => {
             let mut b: bool = false;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
-            b = if (b.clone()) {expStructuralEqualList(expl1.clone(), expl2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::ARRAY { ty: tp1, array: expl1, .. }, Deref @ DAE::Exp::ARRAY { ty: tp2, array: expl2, .. }) => {
             let mut b: bool = false;
             b = tp1.clone() == tp2.clone();
-            b = if (b.clone()) {expStructuralEqualList(expl1.clone(), expl2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::MATRIX { matrix: explstlst1, .. }, Deref @ DAE::Exp::MATRIX { matrix: explstlst2, .. }) => {
             return Ok(expStructuralEqualListLst(explstlst1.clone(), explstlst2.clone())?)
@@ -9525,15 +9494,13 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         (Deref @ DAE::Exp::RANGE { start: e11, step: None, stop: e13, .. }, Deref @ DAE::Exp::RANGE { start: e21, step: None, stop: e23, .. }) => {
             let mut b: bool = false;
             b = expStructuralEqual(e11.clone(), e21.clone())?;
-            b = if (b.clone()) {expStructuralEqual(e13.clone(), e23.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e13.clone(), e23.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::RANGE { start: e11, step: Some(e12), stop: e13, .. }, Deref @ DAE::Exp::RANGE { start: e21, step: Some(e22), stop: e23, .. }) => {
             let mut b: bool = false;
             b = expStructuralEqual(e11.clone(), e21.clone())?;
             b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            b = if (b.clone()) {expStructuralEqual(e13.clone(), e23.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e13.clone(), e23.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::TUPLE { PR: expl1 }, Deref @ DAE::Exp::TUPLE { PR: expl2 }) => {
             return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)
@@ -9541,8 +9508,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         (Deref @ DAE::Exp::CAST { ty: tp1, exp: e1 }, Deref @ DAE::Exp::CAST { ty: tp2, exp: e2 }) => {
             let mut b: bool = false;
             b = tp1.clone() == tp2.clone();
-            b = if (b.clone()) {expStructuralEqual(e1.clone(), e2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e1.clone(), e2.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::ASUB { exp: e1, sub: subs1 }, Deref @ DAE::Exp::ASUB { sub: subs2, .. }) => {
             let mut b: bool = false;
@@ -9565,8 +9531,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         __acc.reverse()
     });
             b = expStructuralEqual(e1.clone(), e1.clone())?;
-            b = if (b.clone()) {expStructuralEqualList(ae1.clone(), ae2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(ae1.clone(), ae2.clone())?)} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::SIZE { exp: e1, sz: None }, Deref @ DAE::Exp::SIZE { exp: e2, sz: None }) => {
             { (inExp1, inExp2) = (e1.clone(), e2.clone()); continue '__tco; }
@@ -9574,8 +9539,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         (Deref @ DAE::Exp::SIZE { exp: e1, sz: Some(e11) }, Deref @ DAE::Exp::SIZE { exp: e2, sz: Some(e22) }) => {
             let mut b: bool = false;
             b = expStructuralEqual(e1.clone(), e2.clone())?;
-            b = if (b.clone()) {expStructuralEqual(e11.clone(), e22.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e11.clone(), e22.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::CODE { .. }, Deref @ DAE::Exp::CODE { .. }) => {
             Debug::trace((literal!("exp_equal on CODE not impl.\n")).clone())?;
@@ -9583,8 +9547,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         },
         (Deref @ DAE::Exp::REDUCTION { .. }, Deref @ DAE::Exp::REDUCTION { .. }) => {
             let mut res: bool = false;
-            res = inExp1.clone() == inExp2.clone();
-            return Ok(res.clone())
+            return Ok(inExp1.clone() == inExp2.clone())
         },
         (Deref @ DAE::Exp::LIST { valList: expl1 }, Deref @ DAE::Exp::LIST { valList: expl2 }) => {
             return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)
@@ -9592,8 +9555,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         (Deref @ DAE::Exp::CONS { car: e11, cdr: e12 }, Deref @ DAE::Exp::CONS { car: e21, cdr: e22 }) => {
             let mut b: bool = false;
             b = expStructuralEqual(e11.clone(), e21.clone())?;
-            b = if (b.clone()) {expStructuralEqual(e12.clone(), e22.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {{ (inExp1, inExp2) = (e12.clone(), e22.clone()); continue '__tco; }} else {return Ok(b.clone())}
         },
         (Deref @ DAE::Exp::META_TUPLE { listExp: expl1 }, Deref @ DAE::Exp::META_TUPLE { listExp: expl2 }) => {
             return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)
@@ -9607,8 +9569,7 @@ pub fn expStructuralEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) 
         (Deref @ DAE::Exp::METARECORDCALL { path: path1, args: expl1, .. }, Deref @ DAE::Exp::METARECORDCALL { path: path2, args: expl2, .. }) => {
             let mut b: bool = false;
             b = AbsynUtil::pathEqual(path1.clone(), path2.clone());
-            b = if (b.clone()) {expStructuralEqualList(expl1.clone(), expl2.clone())?} else {b.clone()};
-            return Ok(b.clone())
+            if (b.clone()) {return Ok(expStructuralEqualList(expl1.clone(), expl2.clone())?)} else {return Ok(b.clone())}
         },
         (e1 @ Deref @ DAE::Exp::MATCHEXPRESSION { .. }, e2 @ Deref @ DAE::Exp::MATCHEXPRESSION { .. }) => {
             return Ok(e1.clone() == e2.clone())
@@ -10062,8 +10023,7 @@ pub fn isNotComplex(mut e: Arc<DAE::Exp>) -> bool {
         },
         Deref @ DAE::Exp::CAST { exp: e2, .. } => {
             let mut b2: bool = false;
-            b2 = isNotComplex(e2.clone());
-            return b2.clone()
+            { e = e2.clone(); continue '__tco; }
         },
         _ => {
             return true
@@ -10284,25 +10244,21 @@ pub fn subscriptContain(mut issl1: Arc<metamodelica::List<Arc<DAE::Subscript>>>,
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: ssl2 }) => {
             let mut b: bool = false;
-            b = subscriptContain(ssl1.clone(), ssl2.clone())?;
-            return Ok(b.clone())
+            { (issl1, issl2) = (ssl1.clone(), ssl2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLE_NONEXP { exp: _ }, tail: ssl2 }) => {
             let mut b: bool = false;
-            b = subscriptContain(ssl1.clone(), ssl2.clone())?;
-            return Ok(b.clone())
+            { (issl1, issl2) = (ssl1.clone(), ssl2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: i } }, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: expl } }, tail: ssl2 }) => {
             let mut b: bool = false;
             let true = (subscriptContain2(i.clone(), expl.clone())) else { bail!("pattern mismatch") };
-            b = subscriptContain(ssl1.clone(), ssl2.clone())?;
-            return Ok(b.clone())
+            { (issl1, issl2) = (ssl1.clone(), ssl2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: ss1, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: ss2, tail: ssl2 }) => {
             let mut b: bool = false;
             let true = (ExpressionBasics::subscriptEqual(list![ss1.clone()], list![ss2.clone()])?) else { bail!("pattern mismatch") };
-            b = subscriptContain(ssl1.clone(), ssl2.clone())?;
-            return Ok(b.clone())
+            { (issl1, issl2) = (ssl1.clone(), ssl2.clone()); continue '__tco; }
         },
         _ => {
             return Ok(false)
@@ -10325,8 +10281,7 @@ fn subscriptContain2(mut inInt: i32, mut inExp2: Arc<metamodelica::List<Arc<DAE:
             let mut b: bool = false;
             let mut b2: bool = false;
             b = subscriptContain2(i.clone(), expl2.clone());
-            b2 = if (b.clone()) {true} else {subscriptContain2(i.clone(), expl.clone())};
-            return b2.clone()
+            if (b.clone()) {return true} else {{ (inInt, inExp2) = (i.clone(), expl.clone()); continue '__tco; }}
         },
         _ => {
             return false
@@ -12145,11 +12100,10 @@ pub fn makeFraction(mut iExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::
 }
 
 fn moveDivToMul(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpLstAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpMuls: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> {
-    let mut oExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut oExpMuls: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    (oExpLst, oExpMuls) = (::match_deref::match_deref! { match &(iExpLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(iExpLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iExpLstAcc.clone(), iExpMuls.clone())
+            return Ok((iExpLstAcc.clone(), iExpMuls.clone()))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::UNARY { operator: _, exp: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV { .. }, exp2: e2 } }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -12159,8 +12113,7 @@ fn moveDivToMul(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpLst
             acc = List::map1(iExpLstAcc.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = List::map1(rest.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = ExpressionSimplify::simplifyList(rest.clone())?;
-            (elst, elst1) = moveDivToMul(rest.clone(), metamodelica::cons(negate(e1.clone())?, acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone()))?;
-            (elst.clone(), elst1.clone())
+            { (iExpLst, iExpLstAcc, iExpMuls) = (rest.clone(), metamodelica::cons(negate(e1.clone())?, acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::UNARY { operator: _, exp: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARRAY_SCALAR { .. }, exp2: e2 } }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -12170,8 +12123,7 @@ fn moveDivToMul(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpLst
             acc = List::map1(iExpLstAcc.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = List::map1(rest.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = ExpressionSimplify::simplifyList(rest.clone())?;
-            (elst, elst1) = moveDivToMul(rest.clone(), metamodelica::cons(negate(e1.clone())?, acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone()))?;
-            (elst.clone(), elst1.clone())
+            { (iExpLst, iExpLstAcc, iExpMuls) = (rest.clone(), metamodelica::cons(negate(e1.clone())?, acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV { .. }, exp2: e2 }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -12181,8 +12133,7 @@ fn moveDivToMul(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpLst
             acc = List::map1(iExpLstAcc.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = List::map1(rest.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = ExpressionSimplify::simplifyList(rest.clone())?;
-            (elst, elst1) = moveDivToMul(rest.clone(), metamodelica::cons(e1.clone(), acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone()))?;
-            (elst.clone(), elst1.clone())
+            { (iExpLst, iExpLstAcc, iExpMuls) = (rest.clone(), metamodelica::cons(e1.clone(), acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::BINARY { exp1: e1, operator: DAE::Operator::DIV_ARRAY_SCALAR { .. }, exp2: e2 }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -12192,18 +12143,16 @@ fn moveDivToMul(mut iExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iExpLst
             acc = List::map1(iExpLstAcc.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = List::map1(rest.clone(), (std::sync::Arc::new(expMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), e2.clone())?;
             rest = ExpressionSimplify::simplifyList(rest.clone())?;
-            (elst, elst1) = moveDivToMul(rest.clone(), metamodelica::cons(e1.clone(), acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone()))?;
-            (elst.clone(), elst1.clone())
+            { (iExpLst, iExpLstAcc, iExpMuls) = (rest.clone(), metamodelica::cons(e1.clone(), acc.clone()), metamodelica::cons(e2.clone(), iExpMuls.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
             let mut elst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut elst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            (elst, elst1) = moveDivToMul(rest.clone(), metamodelica::cons(e.clone(), iExpLstAcc.clone()), iExpMuls.clone())?;
-            (elst.clone(), elst1.clone())
+            { (iExpLst, iExpLstAcc, iExpMuls) = (rest.clone(), metamodelica::cons(e.clone(), iExpLstAcc.clone()), iExpMuls.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((oExpLst, oExpMuls))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn createResidualExp2(mut iExp1: Arc<DAE::Exp>, mut iExp2: Arc<DAE::Exp>) -> Result<(Arc<DAE::Exp>, Arc<DAE::Exp>)> {

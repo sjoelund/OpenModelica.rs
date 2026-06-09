@@ -3835,16 +3835,22 @@ fn exp_has_tail_self_call(exp: &TypedExp, self_short_name: &str) -> bool {
 ///
 /// Two shapes can carry a tail self-call:
 ///   * `then <expr>;` — the result expression itself contains a self-call;
-///   * `algorithm <stmts>; then <var>;` where the last statement of `<stmts>`
-///     is `<var> := <expr>;` and `<expr>` contains a tail self-call. In that
-///     case `<expr>` is what the case yields, so it *is* in tail position
-///     even though `result` is just a variable reference.
+///   * `algorithm <stmts>; then <var-or-tuple>;` where the last statement of
+///     `<stmts>` assigns exactly that same var (or tuple of vars), so its RHS
+///     is what the case yields and is therefore in tail position even though
+///     `result` is just a (possibly multi-output) variable reference. This is
+///     the `listKeys` single-output shape and its multi-output generalisation
+///     (`(es, b) := f(…); then (es, b);`, e.g. `replaceEquations2`).
+/// `case_algo_tail_rhs` recognises both single-var and tuple forms and must
+/// be the same predicate the emission (line ~13000) and the exhaustiveness
+/// check use, so the detection gate and the lowering agree on which cases
+/// carry a tail expression.
 fn case_tail_has_self_call(case: &TypedCase, self_short_name: &str) -> bool {
-    if let TypedExp::Var { name: result_name, .. } = &case.result
-        && let Some(typedexp::TypedStmt::Assign { lhs: TypedPat::Var(asg_name), rhs }) = case.stmts.last()
-            && asg_name == result_name && exp_has_tail_self_call(rhs, self_short_name) {
-                return true;
-            }
+    if let Some(rhs) = case_algo_tail_rhs(case)
+        && exp_has_tail_self_call(rhs, self_short_name)
+    {
+        return true;
+    }
     exp_has_tail_self_call(&case.result, self_short_name)
 }
 
@@ -4508,18 +4514,30 @@ fn pat_all_var_names(p: &TypedPat) -> Option<Vec<&str>> {
     }
 }
 
+/// If `e` is a *plain scalar* variable reference, return its name. A plain
+/// reference is one that names a local/output directly with no field access or
+/// subscripting: either `segments` is empty, or it holds exactly one segment
+/// (the cref's own name) that carries no subscripts. A typed `Var` for a bare
+/// `es` carries the latter shape (`segments = [CrefSegment { name: "es",
+/// subscripts: [] }]`), so requiring `segments.is_empty()` would wrongly reject
+/// every bare variable. Anything with multiple segments (`a.b`) or a subscript
+/// (`a[i]`) is *not* a plain reference and yields `None`.
+fn exp_plain_var_name(e: &TypedExp) -> Option<&str> {
+    let TypedExp::Var { name, segments, .. } = e else { return None; };
+    match segments.as_slice() {
+        [] => Some(name.as_str()),
+        [seg] if seg.subscripts.is_empty() => Some(name.as_str()),
+        _ => None,
+    }
+}
+
 /// Names read by an expression that is a bare var (`Var` → `[n]`) or a tuple of
 /// bare vars (`Tuple([Var,…])` → each name). `None` otherwise. Used to match a
 /// match-case `then (a, b)` against an algorithm-side `(a, b) := rhs;`.
 fn exp_all_var_names(e: &TypedExp) -> Option<Vec<&str>> {
     match e {
-        TypedExp::Var { name, segments, .. } if segments.is_empty() => Some(vec![name.as_str()]),
-        TypedExp::Tuple(es) => es.iter()
-            .map(|e| match e {
-                TypedExp::Var { name, segments, .. } if segments.is_empty() => Some(name.as_str()),
-                _ => None,
-            })
-            .collect(),
+        TypedExp::Var { .. } => exp_plain_var_name(e).map(|n| vec![n]),
+        TypedExp::Tuple(es) => es.iter().map(exp_plain_var_name).collect(),
         _ => None,
     }
 }

@@ -16055,9 +16055,8 @@ pub fn literalExpConstBoxedVal(mut txt: Tpl::Text, mut a_lit: Arc<DAE::Exp>, mut
 }
 
 pub fn literalExpConstBoxedValPreLit(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>, mut in_a_index: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_index: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    (out_txt, out_a_index) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone(), in_a_index.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_lit.clone(), in_a_index.clone())) {
         (txt, Deref @ DAE::Exp::RCONST { real: i_lit_real }, a_index) => {
             let mut l_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_tmp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -16076,20 +16075,19 @@ pub fn literalExpConstBoxedValPreLit(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DA
             txt = Tpl::writeText(txt.clone(), l_tmp.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt = Tpl::writeTok(txt.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            (txt.clone(), a_index.clone())
+            return Ok((txt.clone(), a_index.clone()))
         },
         (txt, Deref @ DAE::Exp::BOX { exp: i_lit_exp }, a_index) => {
             let mut txt = (*txt).clone();
             let mut a_index = (*a_index).clone();
-            (txt, a_index) = literalExpConstBoxedValPreLit(txt.clone(), i_lit_exp.clone(), a_index.clone())?;
-            (txt.clone(), a_index.clone())
+            { (in_txt, in_a_lit, in_a_index) = (txt.clone(), i_lit_exp.clone(), a_index.clone()); continue '__tco; }
         },
         (txt, _, a_index) => {
-            (txt.clone(), a_index.clone())
+            return Ok((txt.clone(), a_index.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((out_txt, out_a_index))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn literalExpConstArrayVal(mut in_txt: Tpl::Text, mut in_a_lit: Arc<DAE::Exp>) -> Result<Tpl::Text> {
@@ -16479,22 +16477,19 @@ pub fn crefToOMSICStr(mut in_txt: Tpl::Text, mut in_a_cref: Arc<DAE::ComponentRe
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cref.clone(), in_a_hashTable.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$START", componentRef: i_componentRef, .. }, a_hashTable) => {
             let mut txt = (*txt).clone();
-            txt = crefToOMSICStr(txt.clone(), i_componentRef.clone(), a_hashTable.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cref, in_a_hashTable) = (txt.clone(), i_componentRef.clone(), a_hashTable.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", componentRef: i_componentRef, .. }, a_hashTable) => {
             let mut ret_0: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_0 = SimCodeUtil::localCref2SimVar(i_componentRef.clone(), a_hashTable.clone())?;
-            txt = fun_625(txt.clone(), ret_0.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_625(txt.clone(), ret_0.clone(), i_componentRef.clone())?)
         },
         (txt, i_cref, a_hashTable) => {
             let mut ret_1: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = SimCodeUtil::localCref2SimVar(i_cref.clone(), a_hashTable.clone())?;
-            txt = fun_627(txt.clone(), ret_1.clone(), i_cref.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_627(txt.clone(), ret_1.clone(), i_cref.clone())?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -16578,117 +16573,95 @@ pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("integer")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("integer")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("real")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("real")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("boolean")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("boolean")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_ENUMERATION { index: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("integer")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("integer")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: i_complexType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = expTypeShort(txt.clone(), i_complexType.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_type) = (txt.clone(), i_complexType.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, .. }) => {
             let mut txt = (*txt).clone();
-            txt = expTypeShort(txt.clone(), i_ty.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_type) = (txt.clone(), i_ty.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: _ }, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
             let mut ret_0: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_0 = ClassInfUtil::getStateName(i_complexClassType.clone());
-            txt = CodegenUtil::underscorePath(txt.clone(), ret_0.clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenUtil::underscorePath(txt.clone(), ret_0.clone())?)
         },
         (txt, Deref @ DAE::Type::T_METAUNIONTYPE { paths: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METAARRAY { ty: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METALIST { ty: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METATUPLE { types: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METAOPTION { ty: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METAPOLYMORPHIC { name: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METATYPE { ty: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_METABOXED { ty: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("metatype")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_FUNCTION { funcArg: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_UNKNOWN { .. }) => {
             let mut ret_1: bool = false;
             let mut txt = (*txt).clone();
             ret_1 = Config::acceptMetaModelicaGrammar()?;
-            txt = fun_630(txt.clone(), ret_1.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_630(txt.clone(), ret_1.clone())?)
         },
         (txt, Deref @ DAE::Type::T_ANYTYPE { anyClassType: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?)
         },
         (txt, i_type) => {
             let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -16697,8 +16670,7 @@ pub fn expTypeShort(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> Res
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("expTypeShort: ")).clone() }))?;
             ret_2 = (TypesDump::unparseType(i_type.clone())?).clone();
             txt_2 = Tpl::writeStr(txt_2.clone(), (ret_2.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4233, 14), (Tpl::textString(txt_2.clone())?).clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4233, 14), (Tpl::textString(txt_2.clone())?).clone())?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -17235,183 +17207,149 @@ pub fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_flag.clone())) {
         (txt, Deref @ DAE::Exp::ICONST { integer: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_649(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_649(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RCONST { real: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_650(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_650(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::SCONST { string: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_651(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_651(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::BCONST { bool: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_652(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_652(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { name: _, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_653(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_653(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::BINARY { operator: i_e_operator, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::UNARY { operator: i_e_operator, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::LBINARY { operator: i_e_operator, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::LUNARY { operator: i_e_operator, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFromOpFlag(txt.clone(), i_e_operator.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RELATION { exp1: _, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_654(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_654(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::IFEXP { expThen: i_expThen, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromExpFlag(txt.clone(), i_expThen.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_exp, in_a_flag) = (txt.clone(), i_expThen.clone(), a_flag.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: i_attr_ty, .. }, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_attr_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_attr_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RECORD { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::ARRAY { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::MATRIX { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RANGE { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::CAST { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::TSUB { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::CREF { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::CODE { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, i_c @ Deref @ DAE::Exp::ASUB { exp: _, .. }, a_flag) => {
             let mut ret_0: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut txt = (*txt).clone();
             ret_0 = Expression::r#typeof(i_c.clone())?;
-            txt = expTypeFlag(txt.clone(), ret_0.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), ret_0.clone(), a_flag.clone())?)
         },
         (txt, i_exp @ Deref @ DAE::Exp::REDUCTION { reductionInfo: _, .. }, a_flag) => {
             let mut ret_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut txt = (*txt).clone();
             ret_1 = Expression::r#typeof(i_exp.clone())?;
-            txt = expTypeFlag(txt.clone(), ret_1.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), ret_1.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::CONS { car: _, .. }, a_flag) => {
             let mut ret_2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut txt = (*txt).clone();
             ret_2 = Expression::r#typeof(i_e.clone())?;
-            txt = expTypeFlag(txt.clone(), ret_2.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), ret_2.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::LIST { valList: _ }, a_flag) => {
             let mut ret_3: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut txt = (*txt).clone();
             ret_3 = Expression::r#typeof(i_e.clone())?;
-            txt = expTypeFlag(txt.clone(), ret_3.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), ret_3.clone(), a_flag.clone())?)
         },
         (txt, i_e @ Deref @ DAE::Exp::SIZE { exp: _, .. }, a_flag) => {
             let mut ret_4: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut txt = (*txt).clone();
             ret_4 = Expression::r#typeof(i_e.clone())?;
-            txt = expTypeFlag(txt.clone(), ret_4.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), ret_4.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RSUB { ix: (-1), ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::META_TUPLE { listExp: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_655(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_655(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::META_OPTION { exp: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_656(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_656(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::MATCHEXPRESSION { matchType: _, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_657(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_657(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::METARECORDCALL { path: _, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_658(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_658(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::RSUB { exp: _, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_659(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_659(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::BOX { exp: _ }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = fun_660(txt.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(fun_660(txt.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::UNBOX { ty: i_c_ty, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeFlag(txt.clone(), i_c_ty.clone(), a_flag.clone())?)
         },
         (txt, Deref @ DAE::Exp::SHARED_LITERAL { exp: i_c_exp, .. }, a_flag) => {
             let mut txt = (*txt).clone();
-            txt = expTypeFromExpFlag(txt.clone(), i_c_exp.clone(), a_flag.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_exp, in_a_flag) = (txt.clone(), i_c_exp.clone(), a_flag.clone()); continue '__tco; }
         },
         (txt, i_exp, a_flag) => {
             let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -17420,8 +17358,7 @@ pub fn expTypeFromExpFlag(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mu
             txt_5 = Tpl::writeStr(txt_5.clone(), (intString(a_flag.clone())).clone())?;
             txt_5 = Tpl::writeTok(txt_5.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("):")).clone() }))?;
             txt_5 = ExpressionDumpTpl::dumpExp(txt_5.clone(), i_exp.clone(), (literal!("\"")).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4391, 14), (Tpl::textString(txt_5.clone())?).clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4391, 14), (Tpl::textString(txt_5.clone())?).clone())?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -18229,14 +18166,10 @@ fn lm_682(mut txt: Tpl::Text, mut items: Arc<metamodelica::List<Arc<DAE::Pattern
 }
 
 pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut in_a_rhs: Tpl::Text, mut in_a_onPatternFail: Tpl::Text, mut in_a_varDecls: Tpl::Text, mut in_a_assignments: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_rhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_onPatternFail: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_assignments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    (out_txt, out_a_rhs, out_a_onPatternFail, out_a_varDecls, out_a_assignments) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_pat.clone(), in_a_rhs.clone(), in_a_onPatternFail.clone(), in_a_varDecls.clone(), in_a_assignments.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_pat.clone(), in_a_rhs.clone(), in_a_onPatternFail.clone(), in_a_varDecls.clone(), in_a_assignments.clone())) {
         (txt, Deref @ DAE::Pattern::PAT_WILD { .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_CONSTANT { ty: i_p_ty, exp: i_p_exp }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut l_urhs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -18247,7 +18180,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             (l_urhs, a_varDecls, l_unboxBuf) = fun_672(Tpl::emptyTxt.clone(), i_p_ty.clone(), a_varDecls.clone(), l_unboxBuf.clone(), a_rhs.clone())?;
             txt = Tpl::writeText(txt.clone(), l_unboxBuf.clone())?;
             txt = fun_673(txt.clone(), i_p_exp.clone(), a_onPatternFail.clone(), l_urhs.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_SOME { pat: i_p_pat }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut l_tvar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -18266,7 +18199,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt = Tpl::writeText(txt.clone(), a_rhs.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("), 1));\n")).clone() }))?;
             (txt, l_tvar, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_p_pat.clone(), l_tvar.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_CONS { head: i_head, tail: i_tail }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut l_tvarTail: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -18292,7 +18225,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(");\n")).clone() }))?;
             (txt, l_tvarHead, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_head.clone(), l_tvarHead.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
             (txt, l_tvarTail, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_tail.clone(), l_tvarTail.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: i_patterns }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18302,7 +18235,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_assignments, a_onPatternFail, a_varDecls) = lm_675(txt.clone(), i_patterns.clone(), a_assignments.clone(), a_onPatternFail.clone(), a_rhs.clone(), a_varDecls.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns: i_patterns }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18312,7 +18245,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_assignments, a_varDecls, a_onPatternFail) = lm_677(txt.clone(), i_patterns.clone(), a_assignments.clone(), a_varDecls.clone(), a_onPatternFail.clone(), a_rhs.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_CALL_NAMED { patterns: i_patterns_1, .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18320,7 +18253,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_assignments = (*a_assignments).clone();
             (txt, a_assignments, a_onPatternFail, a_varDecls) = lm_679(txt.clone(), i_patterns_1.clone(), a_assignments.clone(), a_onPatternFail.clone(), a_rhs.clone(), a_varDecls.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_CALL { knownSingleton: i_knownSingleton, index: i_index, patterns: i_patterns, .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18331,7 +18264,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 2, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: None, alignNum: 0, alignOfset: 0, alignSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE(), wrapWidth: 0, wrapSeparator: openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE() }))?;
             (txt, a_assignments, a_onPatternFail, a_varDecls) = lm_682(txt.clone(), i_patterns.clone(), a_assignments.clone(), a_onPatternFail.clone(), a_rhs.clone(), a_varDecls.clone())?;
             txt = Tpl::popIter(txt.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
         (txt, Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { id: i_p_id, pat: i_p_pat }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18345,8 +18278,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             a_assignments = Tpl::writeText(a_assignments.clone(), a_rhs.clone())?;
             a_assignments = Tpl::writeTok(a_assignments.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             a_assignments = Tpl::writeTok(a_assignments.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            (txt, a_rhs, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            { (in_txt, in_a_pat, in_a_rhs, in_a_onPatternFail, in_a_varDecls, in_a_assignments) = (txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Pattern::PAT_AS { ty: None, id: i_p_id, pat: i_p_pat, .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt = (*txt).clone();
@@ -18360,8 +18292,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             a_assignments = Tpl::writeText(a_assignments.clone(), a_rhs.clone())?;
             a_assignments = Tpl::writeTok(a_assignments.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             a_assignments = Tpl::writeTok(a_assignments.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
-            (txt, a_rhs, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            { (in_txt, in_a_pat, in_a_rhs, in_a_onPatternFail, in_a_varDecls, in_a_assignments) = (txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Pattern::PAT_AS { ty: Some(i_et), id: i_p_id, pat: i_p_pat, .. }, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut ret_5: ArcStr = arcstr::literal!("");
@@ -18383,8 +18314,7 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             a_assignments = Tpl::writeTok(a_assignments.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = Tpl::writeText(txt.clone(), l_unboxBuf.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            (txt, a_rhs, a_onPatternFail, a_varDecls, a_assignments) = patternMatch(txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            { (in_txt, in_a_pat, in_a_rhs, in_a_onPatternFail, in_a_varDecls, in_a_assignments) = (txt.clone(), i_p_pat.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()); continue '__tco; }
         },
         (txt, _, a_rhs, a_onPatternFail, a_varDecls, a_assignments) => {
             let mut txt_6: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -18394,11 +18324,11 @@ pub fn patternMatch(mut in_txt: Tpl::Text, mut in_a_pat: Arc<DAE::Pattern>, mut 
             txt_6 = Tpl::writeTok(txt_6.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" */")).clone() }))?;
             txt_6 = Tpl::writeTok(txt_6.clone(), openmodelica_susan::Tpl::StringToken::interned_ST_NEW_LINE())?;
             txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4595, 14), (Tpl::textString(txt_6.clone())?).clone())?;
-            (txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone())
+            return Ok((txt.clone(), a_rhs.clone(), a_onPatternFail.clone(), a_varDecls.clone(), a_assignments.clone()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((out_txt, out_a_rhs, out_a_onPatternFail, out_a_varDecls, out_a_assignments))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fun_684(mut in_txt: Tpl::Text, mut in_a_isReadOnly: bool) -> Result<Tpl::Text> {
@@ -19717,30 +19647,27 @@ fn fun_730(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar, mut in_a_cr: 
 }
 
 pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mut in_a_ix: i32, mut in_a_isPre: bool, mut in_a_isStart: bool, mut in_a_sub: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    let mut out_a_sub: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    (out_txt, out_a_sub) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_ix.clone(), in_a_isPre.clone(), in_a_isStart.clone(), in_a_sub.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone(), in_a_ix.clone(), in_a_isPre.clone(), in_a_isStart.clone(), in_a_sub.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "time", .. }, _, _, _, a_sub) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("data->localData[0]->timeValue")).clone() }))?;
-            (txt.clone(), a_sub.clone())
+            return Ok((txt.clone(), a_sub.clone()))
         },
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "$DAE_CJ", .. }, _, _, _, a_sub) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jacobian->dae_cj")).clone() }))?;
-            (txt.clone(), a_sub.clone())
+            return Ok((txt.clone(), a_sub.clone()))
         },
         (txt, i_cr @ Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$PRE", subscriptLst: Deref @ metamodelica::List::Nil, componentRef: i_componentRef, .. }, a_ix, a_isPre, a_isStart, a_sub) => {
             let mut txt = (*txt).clone();
             let mut a_sub = (*a_sub).clone();
-            (txt, a_sub) = fun_727(txt.clone(), a_isPre.clone(), i_cr.clone(), a_sub.clone(), a_isStart.clone(), a_ix.clone(), i_componentRef.clone())?;
-            (txt.clone(), a_sub.clone())
+            return Ok(fun_727(txt.clone(), a_isPre.clone(), i_cr.clone(), a_sub.clone(), a_isStart.clone(), a_ix.clone(), i_componentRef.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: Deref @ "$START", componentRef: i_componentRef, .. }, a_ix, a_isPre, _, a_sub) => {
             let mut txt = (*txt).clone();
             let mut a_sub = (*a_sub).clone();
-            (txt, a_sub) = crefToCStr(txt.clone(), i_componentRef.clone(), a_ix.clone(), a_isPre.clone(), true, a_sub.clone())?;
-            (txt.clone(), a_sub.clone())
+            { (in_txt, in_a_cr, in_a_ix, in_a_isPre, in_a_isStart, in_a_sub) = (txt.clone(), i_componentRef.clone(), a_ix.clone(), a_isPre.clone(), true, a_sub.clone()); continue '__tco; }
         },
         (txt, i_cr, a_ix, a_isPre, a_isStart, a_sub) => {
             let mut ret_1: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
@@ -19749,12 +19676,11 @@ pub fn crefToCStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>, mu
             let mut a_sub = (*a_sub).clone();
             ret_0 = SimCodeUtil::getSimCode()?;
             ret_1 = SimCodeUtil::cref2simvar(i_cr.clone(), ret_0.clone())?;
-            (txt, a_sub) = fun_730(txt.clone(), ret_1.clone(), i_cr.clone(), a_isStart.clone(), a_isPre.clone(), a_ix.clone(), a_sub.clone())?;
-            (txt.clone(), a_sub.clone())
+            return Ok(fun_730(txt.clone(), ret_1.clone(), i_cr.clone(), a_isStart.clone(), a_isPre.clone(), a_ix.clone(), a_sub.clone())?)
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((out_txt, out_a_sub))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn fun_732(mut in_txt: Tpl::Text, mut in_mArg: SimCodeVar::SimVar) -> Result<Tpl::Text> {
@@ -19787,18 +19713,15 @@ pub fn crefTypeOMSIC(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>)
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefTypeNameOMSIC(txt.clone(), i_identType.clone())?;
-            return Ok(txt.clone())
+            return Ok(crefTypeNameOMSIC(txt.clone(), i_identType.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefTypeOMSIC(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -19810,50 +19733,41 @@ pub fn crefTypeNameOMSIC(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ints")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ints")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_REAL { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reals")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("reals")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("strings")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("strings")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_BOOL { varLst: _ }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bools")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bools")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_ENUMERATION { index: _, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ints")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ints")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: i_complexType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefTypeNameOMSIC(txt.clone(), i_complexType.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_type) = (txt.clone(), i_complexType.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_ty, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefTypeNameOMSIC(txt.clone(), i_ty.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_type) = (txt.clone(), i_ty.clone()); continue '__tco; }
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: _ }, .. }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("complex")).clone() }))?)
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
             let mut ret_0: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_0 = ClassInfUtil::getStateName(i_complexClassType.clone());
-            txt = CodegenUtil::underscorePath(txt.clone(), ret_0.clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenUtil::underscorePath(txt.clone(), ret_0.clone())?)
         },
         (txt, i_type) => {
             let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -19862,8 +19776,7 @@ pub fn crefTypeNameOMSIC(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefTypeNameOMSIC: ")).clone() }))?;
             ret_1 = (TypesDump::unparseType(i_type.clone())?).clone();
             txt_1 = Tpl::writeStr(txt_1.clone(), (ret_1.clone()).clone())?;
-            txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4996, 26), (Tpl::textString(txt_1.clone())?).clone())?;
-            return Ok(txt.clone())
+            return Ok(CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenCFunctions.tpl")).clone(), 4996, 26), (Tpl::textString(txt_1.clone())?).clone())?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -19906,8 +19819,7 @@ pub fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) 
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, componentRef: i_componentRef, .. }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
@@ -19915,13 +19827,11 @@ pub fn arrayCrefStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) 
             ret_1 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("._")).clone() }))?;
-            txt = arrayCrefStr(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -19937,8 +19847,7 @@ pub fn crefFunctionName(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             ret_1 = (System::stringReplace((ret_0.clone()).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
-            txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, componentRef: i_componentRef, .. }) => {
             let mut ret_3: ArcStr = arcstr::literal!("");
@@ -19948,8 +19857,7 @@ pub fn crefFunctionName(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRe
             ret_3 = (System::stringReplace((ret_2.clone()).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_3.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
-            txt = crefFunctionName(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             return Ok(txt.clone())
@@ -21506,8 +21414,7 @@ pub fn crefToMStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) ->
             let mut txt = (*txt).clone();
             ret_0 = (System::unquoteIdentifier((i_ident.clone()).clone())).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_0.clone()).clone())?;
-            txt = subscriptsToMStr(txt.clone(), i_subscriptLst.clone())?;
-            return Ok(txt.clone())
+            return Ok(subscriptsToMStr(txt.clone(), i_subscriptLst.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { ident: i_ident, subscriptLst: i_subscriptLst, componentRef: i_componentRef, .. }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
@@ -21516,13 +21423,11 @@ pub fn crefToMStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) ->
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = subscriptsToMStr(txt.clone(), i_subscriptLst.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("P")).clone() }))?;
-            txt = crefToMStr(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CREF_NOT_IDENT_OR_QUAL")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -36827,18 +36732,15 @@ pub fn crefShortType(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>)
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_cr.clone())) {
         (txt, Deref @ DAE::ComponentRef::CREF_IDENT { identType: i_identType, .. }) => {
             let mut txt = (*txt).clone();
-            txt = expTypeShort(txt.clone(), i_identType.clone())?;
-            return Ok(txt.clone())
+            return Ok(expTypeShort(txt.clone(), i_identType.clone())?)
         },
         (txt, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_componentRef, .. }) => {
             let mut txt = (*txt).clone();
-            txt = crefShortType(txt.clone(), i_componentRef.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_cr) = (txt.clone(), i_componentRef.clone()); continue '__tco; }
         },
         (txt, _) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("crefType:ERROR")).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

@@ -2577,13 +2577,11 @@ fn hasAlgebraicOperationsOnly(mut exp: Arc<DAE::Exp>) -> bool {
         Deref @ DAE::Exp::BINARY { exp1: e1, operator: _, exp2: e2 } => {
             let mut b: bool = false;
             b = hasAlgebraicOperationsOnly(e1.clone());
-            b = b.clone() && hasAlgebraicOperationsOnly(e2.clone());
-            return b.clone()
+            return b.clone() && hasAlgebraicOperationsOnly(e2.clone())
         },
         Deref @ DAE::Exp::UNARY { operator: _, exp: e1 } => {
             let mut b: bool = false;
-            b = hasAlgebraicOperationsOnly(e1.clone());
-            return b.clone()
+            { exp = e1.clone(); continue '__tco; }
         },
         _ => {
             return false

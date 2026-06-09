@@ -1172,11 +1172,10 @@ fn getLinkPosition1(mut orphans: Arc<metamodelica::List<i32>>, mut m: metamodeli
 }
 
 fn getOrphansOrderEdvanced5(mut linklst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut imark: i32, mut rowmarks: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, i32)> {
-    let mut oAcc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut omark: i32 = 0;
-    (oAcc, omark) = (::match_deref::match_deref! { match &(linklst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(linklst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), imark.clone())
+            return Ok((iAcc.clone().reverse(), imark.clone()))
         },
         Deref @ metamodelica::List::Cons { head: links, tail: rest } => {
             let mut mark: i32 = 0;
@@ -1185,12 +1184,11 @@ fn getOrphansOrderEdvanced5(mut linklst: Arc<metamodelica::List<Arc<metamodelica
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             lst = mergeOrphanParents(links.clone(), m.clone(), metamodelica::nil())?;
             childs = getLinkPosition(lst.clone(), m.clone(), mt.clone(), imark.clone(), rowmarks.clone(), metamodelica::nil())?;
-            (acc, mark) = getOrphansOrderEdvanced5(rest.clone(), m.clone(), mt.clone(), imark.clone() + 1, rowmarks.clone(), metamodelica::cons(childs.clone(), iAcc.clone()))?;
-            (acc.clone(), mark.clone())
+            { (linklst, m, mt, imark, rowmarks, iAcc) = (rest.clone(), m.clone(), mt.clone(), imark.clone() + 1, rowmarks.clone(), metamodelica::cons(childs.clone(), iAcc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((oAcc, omark))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getOrphansOrderEdvanced6(mut linklst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut childslst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
@@ -2523,8 +2521,7 @@ fn getBorderElements(mut elements: Arc<metamodelica::List<i32>>, mut m: metamode
             metamodelica::arrayUpdate(m.clone(), elem.clone(), lst1.clone())?;
             lst = List::select2(lst.clone(), (std::sync::Arc::new(fnptr!(unmarked, i32, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), arr.clone(), mark.clone() + 1)?;
             List::map2_0(lst.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), arr.clone(), mark.clone() + 1)?;
-            lst = getBorderElements(rest.clone(), m.clone(), mark.clone(), arr.clone(), listAppend(lst.clone(), iAcc.clone()))?;
-            return Ok(lst.clone())
+            { (elements, m, mark, arr, iAcc) = (rest.clone(), m.clone(), mark.clone(), arr.clone(), listAppend(lst.clone(), iAcc.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2864,16 +2861,14 @@ fn addCrefandParentsToSet(mut inCref: Arc<DAE::ComponentRef>, mut ihs: (metamode
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut set: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             crlst = ComponentReference::expandCref(cr.clone(), true)?;
-            set = List::fold(metamodelica::cons(cr.clone(), crlst.clone()), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ihs.clone())?;
-            return Ok(set.clone())
+            return Ok(List::fold(metamodelica::cons(cr.clone(), crlst.clone()), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ihs.clone())?)
         },
         (cr @ Deref @ DAE::ComponentRef::CREF_IDENT { .. }, Some(precr)) => {
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut set: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
             crlst = ComponentReference::expandCref(cr.clone(), true)?;
             crlst = List::map1r(metamodelica::cons(cr.clone(), crlst.clone()), (std::sync::Arc::new(ComponentReference::joinCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), precr.clone())?;
-            set = List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ihs.clone())?;
-            return Ok(set.clone())
+            return Ok(List::fold(crlst.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ihs.clone())?)
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { ident, identType: ty, subscriptLst, componentRef: subcr }, None) => {
             let mut idcr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);

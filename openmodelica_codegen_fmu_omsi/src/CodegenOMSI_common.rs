@@ -186,18 +186,15 @@ pub fn lastIdentOfPath(mut in_txt: Tpl::Text, mut in_a_modelName: Arc<Absyn::Pat
         ::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelName.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, .. }) => {
             let mut txt = (*txt).clone();
-            txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_modelName) = (txt.clone(), i_path.clone()); continue '__tco; }
         },
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
             let mut txt = (*txt).clone();
-            txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
-            return Ok(txt.clone())
+            return Ok(Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?)
         },
         (txt, Deref @ Absyn::Path::FULLYQUALIFIED { path: i_path }) => {
             let mut txt = (*txt).clone();
-            txt = lastIdentOfPath(txt.clone(), i_path.clone())?;
-            return Ok(txt.clone())
+            { (in_txt, in_a_modelName) = (txt.clone(), i_path.clone()); continue '__tco; }
         },
         (txt, _) => {
             return Ok(txt.clone())

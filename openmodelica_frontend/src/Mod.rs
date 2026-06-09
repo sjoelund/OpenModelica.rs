@@ -701,23 +701,21 @@ fn elabSubmods(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
 }
 
 fn elabSubmods2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inImpl: bool, mut inInfo: SourceInfo, mut inAccumMods: Arc<metamodelica::List<Arc<DAE::SubMod>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::SubMod>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outSubMods: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
-    (outCache, outSubMods) = (::match_deref::match_deref! { match &((inCache.clone(), inSubMods.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inCache.clone(), inSubMods.clone())) {
         (cache, Deref @ metamodelica::List::Cons { head: smod, tail: rest_smods }) => {
             let mut dmod: Arc<DAE::SubMod> = Arc::new(<DAE::SubMod as ::std::default::Default>::default());
             let mut accum_mods: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
             (cache, dmod) = elabSubmod(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), smod.clone(), inImpl.clone(), inInfo.clone())?;
-            (cache, accum_mods) = elabSubmods2(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_smods.clone(), inImpl.clone(), inInfo.clone(), metamodelica::cons(dmod.clone(), inAccumMods.clone()))?;
-            (cache.clone(), accum_mods.clone())
+            { (inCache, inEnv, inIH, inPrefix, inSubMods, inImpl, inInfo, inAccumMods) = (cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_smods.clone(), inImpl.clone(), inInfo.clone(), metamodelica::cons(dmod.clone(), inAccumMods.clone())); continue '__tco; }
         },
         _ => {
-            (inCache.clone(), inAccumMods.clone().reverse())
+            return Ok((inCache.clone(), inAccumMods.clone().reverse()))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outCache, outSubMods))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn compactSubMods(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>, mut inModScope: ModScope) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {

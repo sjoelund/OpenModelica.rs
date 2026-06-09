@@ -616,8 +616,7 @@ fn unparsePrimType(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) 
         ::match_deref::match_deref! { match &(inValueLst.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: elts, .. }, tail: _ } => {
             let mut res: ArcStr = arcstr::literal!("");
-            res = (unparsePrimType(elts.clone())).clone();
-            return res.clone()
+            { inValueLst = elts.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { .. }, tail: _ } => {
             return literal!("i")

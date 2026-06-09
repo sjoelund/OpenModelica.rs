@@ -2245,16 +2245,12 @@ fn getLevelNodes0(mut iTaskGraph: TaskGraph, mut iRefCounter: metamodelica::Arra
         let mut tmpLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         let mut zeroRefNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
         ::match_deref::match_deref! { match &(iNodesWithRefZero.clone()) {
-        Deref @ metamodelica::List::Nil => {
-            tmpLevelNodes = iLevelNodes.clone().reverse();
-            return Ok(tmpLevelNodes.clone())
-        },
+        Deref @ metamodelica::List::Nil => return Ok(iLevelNodes.clone().reverse()),
         __esc_zeroRefNodes => {
             zeroRefNodes = (*__esc_zeroRefNodes).clone();
             tmpLevelNodes = metamodelica::cons(zeroRefNodes.clone(), iLevelNodes.clone());
             zeroRefNodes = List::fold2(zeroRefNodes.clone(), (std::sync::Arc::new(getLevelNodes1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iTaskGraph.clone(), iRefCounter.clone(), metamodelica::nil())?;
-            tmpLevelNodes = getLevelNodes0(iTaskGraph.clone(), iRefCounter.clone(), zeroRefNodes.clone(), tmpLevelNodes.clone())?;
-            return Ok(tmpLevelNodes.clone())
+            { (iTaskGraph, iRefCounter, iNodesWithRefZero, iLevelNodes) = (iTaskGraph.clone(), iRefCounter.clone(), zeroRefNodes.clone(), tmpLevelNodes.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2326,8 +2322,7 @@ fn createRefCounter0(mut iChildNodes: Arc<metamodelica::List<i32>>, mut iRefCoun
             tail = (*__esc_tail).clone();
             counter = metamodelica::arrayGet(iRefCounter.clone(), head.clone())? + 1;
             tmpRefCounter = metamodelica::arrayUpdate(iRefCounter.clone(), head.clone(), counter.clone())?;
-            tmpRefCounter = createRefCounter0(tail.clone(), tmpRefCounter.clone())?;
-            return Ok(tmpRefCounter.clone())
+            { (iChildNodes, iRefCounter) = (tail.clone(), tmpRefCounter.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -5288,8 +5283,7 @@ fn validateTaskGraphMeta0(mut iEqSysMapping: metamodelica::Array<(Arc<BackendDAE
             iCompEqSysMapping = (*__esc_iCompEqSysMapping).clone();
             (_, eqSysIdx) = metamodelica::arrayGet(iEqSysMapping.clone(), currentIdx.clone())?;
             oCompEqSysMapping = metamodelica::cons((head.clone(), eqSysIdx.clone()), iCompEqSysMapping.clone());
-            tmpCompsTpl = validateTaskGraphMeta0(iEqSysMapping.clone(), (currentIdx.clone() + 1, rest.clone(), oCompEqSysMapping.clone()))?;
-            return Ok(tmpCompsTpl.clone())
+            { (iEqSysMapping, iCompsTpl) = (iEqSysMapping.clone(), (currentIdx.clone() + 1, rest.clone(), oCompEqSysMapping.clone())); continue '__tco; }
         },
         _ => return Ok(iCompsTpl.clone()),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
@@ -5748,8 +5742,7 @@ fn addUpExeCostsForNode(mut iNodeComps: Arc<metamodelica::List<i32>>, mut iExeCo
             rest = (*__esc_rest).clone();
             (_, cost) = metamodelica::arrayGet(iExeCosts.clone(), head.clone())?;
             cost = (cost.clone()) + (iExeCost.clone());
-            cost = addUpExeCostsForNode(rest.clone(), iExeCosts.clone(), cost.clone())?;
-            return Ok(cost.clone())
+            { (iNodeComps, iExeCosts, iExeCost) = (rest.clone(), iExeCosts.clone(), cost.clone()); continue '__tco; }
         },
         _ => return Ok(iExeCost.clone()),
         _ => return Err(anyhow::anyhow!("match: no arm matched")),

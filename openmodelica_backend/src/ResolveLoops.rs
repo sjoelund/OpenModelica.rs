@@ -727,8 +727,7 @@ fn getShortPathsBetweenEqCrossNodes(mut eqCrossLstIn: Arc<metamodelica::List<i32
                     }
                 }
             }
-            paths = getShortPathsBetweenEqCrossNodes(rest.clone(), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), listAppend(paths.clone(), pathsIn.clone()), findExactlyOneLoop.clone())?;
-            return Ok(paths.clone())
+            { (eqCrossLstIn, eqCrossSet, mIn, mTIn, pathsIn, findExactlyOneLoop) = (rest.clone(), eqCrossSet.clone(), mIn.clone(), mTIn.clone(), listAppend(paths.clone(), pathsIn.clone()), findExactlyOneLoop.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             return Ok(pathsIn.clone())
@@ -837,11 +836,10 @@ fn connectPathsToOneLoop(mut allPathsIn: Arc<metamodelica::List<Arc<metamodelica
 }
 
 fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut eqCrossLstIn: Arc<metamodelica::List<i32>>, mut varCrossLstIn: Arc<metamodelica::List<i32>>, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mTIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut eqMap: metamodelica::Array<i32>, mut varMap: metamodelica::Array<i32>, mut daeEqsIn: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut daeVarsIn: BackendDAE::Variables, mut replEqsIn: Arc<metamodelica::List<i32>>) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<i32>>)> {
-    let mut daeEqsOut: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut replEqsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    (daeEqsOut, replEqsOut) = (::match_deref::match_deref! { match &((loopsIn.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((loopsIn.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone())) {
         (Deref @ metamodelica::List::Nil, _, _) => {
-            (daeEqsIn.clone(), replEqsIn.clone())
+            return Ok((daeEqsIn.clone(), replEqsIn.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: loop1, tail: rest }, Deref @ metamodelica::List::Cons { head: _, tail: crossEqs }, Deref @ metamodelica::List::Nil) => {
             let mut pos: i32 = 0;
@@ -886,8 +884,7 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
-            (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
-            (daeEqs.clone(), replEqs.clone())
+            { (loopsIn, eqCrossLstIn, varCrossLstIn, mIn, mTIn, eqMap, varMap, daeEqsIn, daeVarsIn, replEqsIn) = (rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: loop1, tail: rest }, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: _, tail: crossVars }) => {
             let mut pos: i32 = 0;
@@ -928,8 +925,7 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
-            (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
-            (daeEqs.clone(), replEqs.clone())
+            { (loopsIn, eqCrossLstIn, varCrossLstIn, mIn, mTIn, eqMap, varMap, daeEqsIn, daeVarsIn, replEqsIn) = (rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: loop1, tail: rest }, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             let mut pos: i32 = 0;
@@ -957,8 +953,7 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
             metamodelica::arrayUpdate(mIn.clone(), pos.clone(), m_row.clone())?;
             pos = metamodelica::arrayGet(eqMap.clone(), pos.clone())?;
             daeEqs = BackendEquation::setAtIndex(daeEqsIn.clone(), pos.clone(), resolvedEq.clone())?;
-            (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
-            (daeEqs.clone(), replEqs.clone())
+            { (loopsIn, eqCrossLstIn, varCrossLstIn, mIn, mTIn, eqMap, varMap, daeEqsIn, daeVarsIn, replEqsIn) = (rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: loop1, tail: rest }, Deref @ metamodelica::List::Cons { head: _, tail: _ }, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
             let mut pos: i32 = 0;
@@ -992,12 +987,11 @@ fn resolveLoops_resolveAndReplace(mut loopsIn: Arc<metamodelica::List<Arc<metamo
                 replEqs = replEqsIn.clone();
                 daeEqs = daeEqsIn.clone();
             }
-            (daeEqs, replEqs) = resolveLoops_resolveAndReplace(rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone())?;
-            (daeEqs.clone(), replEqs.clone())
+            { (loopsIn, eqCrossLstIn, varCrossLstIn, mIn, mTIn, eqMap, varMap, daeEqsIn, daeVarsIn, replEqsIn) = (rest.clone(), eqCrossLstIn.clone(), varCrossLstIn.clone(), mIn.clone(), mTIn.clone(), eqMap.clone(), varMap.clone(), daeEqs.clone(), daeVarsIn.clone(), replEqs.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((daeEqsOut, replEqsOut))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn eqIsConst(mut eq: Arc<BackendDAE::Equation>) -> bool {

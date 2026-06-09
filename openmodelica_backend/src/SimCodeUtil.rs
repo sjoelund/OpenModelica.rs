@@ -3131,11 +3131,10 @@ fn dimsToAllIndexes2(mut i: i32, mut iIndex: Arc<metamodelica::List<Arc<metamode
 }
 
 fn createTmpCrefs(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut iuniqueEqIndex: i32, mut inCrefsAcc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut iRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendVarTransform::VariableReplacements)> {
-    let mut outCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut oRepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    (outCrefs, oRepl) = (::match_deref::match_deref! { match &(inCrefs.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCrefs.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inCrefsAcc.clone().reverse(), iRepl.clone())
+            return Ok((inCrefsAcc.clone().reverse(), iRepl.clone()))
         },
         Deref @ metamodelica::List::Cons { head: cref, tail: rest } => {
             let mut crtmp: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -3147,12 +3146,11 @@ fn createTmpCrefs(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, 
             tp = Types::arrayElementType(ComponentReference::crefLastType(cref.clone())?);
             crtmp = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$TMP_")); __mm_s.push_str(&*ident.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(iuniqueEqIndex.clone())); ArcStr::from(__mm_s) }).clone(), tp.clone(), metamodelica::nil());
             repl = BackendVarTransform::addReplacement(iRepl.clone(), cref.clone(), Arc::new(DAE::Exp::CREF { componentRef: crtmp.clone(), ty: tp.clone() }), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
-            (result, repl) = createTmpCrefs(rest.clone(), iuniqueEqIndex.clone(), metamodelica::cons(crtmp.clone(), inCrefsAcc.clone()), repl.clone())?;
-            (result.clone(), repl.clone())
+            { (inCrefs, iuniqueEqIndex, inCrefsAcc, iRepl) = (rest.clone(), iuniqueEqIndex.clone(), metamodelica::cons(crtmp.clone(), inCrefsAcc.clone()), repl.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outCrefs, oRepl))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn makeSES_RESIDUAL(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>, mut eqAttr: BackendDAE::EquationAttributes, mut idx_tpl: (i32, i32)) -> (Arc<SimCode::SimEqSystem>, (i32, i32)) {
@@ -11546,20 +11544,17 @@ fn getFilesFromFunctions(mut functions: Arc<metamodelica::List<Arc<SimCodeFuncti
         (Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::FUNCTION { info, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromAbsynInfo(info.clone(), files.clone());
-            files = getFilesFromFunctions(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (functions, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { info, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromAbsynInfo(info.clone(), files.clone());
-            files = getFilesFromFunctions(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (functions, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { info, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromAbsynInfo(info.clone(), files.clone());
-            files = getFilesFromFunctions(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (functions, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -11672,13 +11667,11 @@ fn getFilesFromStatementsElse(mut inElse: Arc<DAE::Else>, mut inFiles: Arc<metam
         (Deref @ DAE::Else::ELSEIF { statementLst: stmts, else_: elsePart, .. }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            files = getFilesFromStatementsElse(elsePart.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inElse, inFiles) = (elsePart.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ DAE::Else::ELSE { statementLst: stmts }, files) => {
             let mut files = (*files).clone();
-            files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            return Ok(files.clone())
+            return Ok(getFilesFromStatements(stmts.clone(), files.clone())?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -11708,100 +11701,85 @@ fn getFilesFromStatements(mut inStatements: Arc<metamodelica::List<Arc<DAE::Stat
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN_ARR { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { source, statementLst: stmts, else_: elsePart, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
             files = getFilesFromStatementsElse(elsePart.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { source, statementLst: stmts, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_PARFOR { source, statementLst: stmts, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { source, statementLst: stmts, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { source, statementLst: stmts, elseWhen, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
             files = getFilesFromStatementsElseWhen(elseWhen.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSERT { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_TERMINATE { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_REINIT { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_NORETCALL { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_RETURN { source }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_BREAK { source }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FAILURE { source, body: stmts }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
             files = getFilesFromStatements(stmts.clone(), files.clone())?;
-            files = getFilesFromStatements(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inStatements, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -11817,32 +11795,27 @@ fn getFilesFromWhenOperators(mut inWhenOperators: Arc<metamodelica::List<Backend
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromWhenOperators(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inWhenOperators, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromWhenOperators(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inWhenOperators, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromWhenOperators(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inWhenOperators, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::TERMINATE { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromWhenOperators(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inWhenOperators, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::NORETCALL { source, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromDAEElementSource(source.clone(), files.clone());
-            files = getFilesFromWhenOperators(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inWhenOperators, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -11864,8 +11837,7 @@ fn getFilesFromJacobianMatrices(mut inJacobianMatrices: Arc<metamodelica::List<A
         (Deref @ metamodelica::List::Cons { head: Deref @ SimCode::JacobianMatrix { columns: onemat, .. }, tail: rest }, files) => {
             let mut files = (*files).clone();
             files = getFilesFromJacobianMatrix(onemat.clone(), files.clone())?;
-            files = getFilesFromJacobianMatrices(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inJacobianMatrices, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -11882,8 +11854,7 @@ fn getFilesFromJacobianMatrix(mut inJacobianMatrices: Arc<metamodelica::List<Arc
             let mut files = (*files).clone();
             files = getFilesFromSimEqSystems(list![systems.clone()], files.clone())?;
             (_, files) = List::mapFold(vars.clone(), (std::sync::Arc::new(fnptr!(getFilesFromSimVar, SimCodeVar::SimVar, Arc<metamodelica::List<SimCode::FileInfo>>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Arc<metamodelica::List<SimCode::FileInfo>>) -> Result<(SimCodeVar::SimVar, Arc<metamodelica::List<SimCode::FileInfo>>)> + 'static>), files.clone())?;
-            files = getFilesFromJacobianMatrix(rest.clone(), files.clone())?;
-            return Ok(files.clone())
+            { (inJacobianMatrices, inFiles) = (rest.clone(), files.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -12948,8 +12919,7 @@ fn makeVarMapTuple(mut sVar: Arc<metamodelica::List<i32>>, mut bVar: Arc<metamod
         },
         (Deref @ metamodelica::List::Cons { head: i1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: i2, tail: rest2 }) => {
             let mut fold: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
-            fold = makeVarMapTuple(rest1.clone(), rest2.clone(), metamodelica::cons((i1.clone(), i2.clone()), foldIn.clone()))?;
-            return Ok(fold.clone())
+            { (sVar, bVar, foldIn) = (rest1.clone(), rest2.clone(), metamodelica::cons((i1.clone(), i2.clone()), foldIn.clone())); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

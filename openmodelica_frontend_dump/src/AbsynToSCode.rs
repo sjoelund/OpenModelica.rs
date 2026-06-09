@@ -494,16 +494,14 @@ pub fn translateClassdefElements(mut inAbsynClassPartLst: Arc<metamodelica::List
             let mut es_1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             es_1 = translateEitemlist(es.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?;
             els = translateClassdefElements(rest.clone())?;
-            els = listAppend(es_1.clone(), els.clone());
-            return Ok(els.clone())
+            return Ok(listAppend(es_1.clone(), els.clone()))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ClassPart::PROTECTED { contents: es }, tail: rest } => {
             let mut els: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut es_1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             es_1 = translateEitemlist(es.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
             els = translateClassdefElements(rest.clone())?;
-            els = listAppend(es_1.clone(), els.clone());
-            return Ok(els.clone())
+            return Ok(listAppend(es_1.clone(), els.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             { inAbsynClassPartLst = rest.clone(); continue '__tco; }
@@ -525,13 +523,11 @@ fn translateClassdefEquations(mut inAbsynClassPartLst: Arc<metamodelica::List<Ar
             let mut eqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
             eql_1 = translateEquations(eql.clone(), false)?;
             eqs = translateClassdefEquations(rest.clone())?;
-            eqs_1 = listAppend(eqs.clone(), eql_1.clone());
-            return Ok(eqs_1.clone())
+            return Ok(listAppend(eqs.clone(), eql_1.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-            eqs = translateClassdefEquations(rest.clone())?;
-            return Ok(eqs.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -550,13 +546,11 @@ fn translateClassdefInitialequations(mut inAbsynClassPartLst: Arc<metamodelica::
             let mut eqs_1: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
             eql_1 = translateEquations(eql.clone(), true)?;
             eqs = translateClassdefInitialequations(rest.clone())?;
-            eqs_1 = listAppend(eqs.clone(), eql_1.clone());
-            return Ok(eqs_1.clone())
+            return Ok(listAppend(eqs.clone(), eql_1.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut eqs: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-            eqs = translateClassdefInitialequations(rest.clone())?;
-            return Ok(eqs.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -575,13 +569,11 @@ fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<A
             let mut al_1: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
             al_1 = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefAlgorithms(rest.clone())?;
-            als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: al_1.clone() }), als.clone());
-            return Ok(als_1.clone())
+            return Ok(metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: al_1.clone() }), als.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-            als = translateClassdefAlgorithms(rest.clone())?;
-            return Ok(als.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -603,13 +595,11 @@ fn translateClassdefConstraints(mut inAbsynClassPartLst: Arc<metamodelica::List<
             let mut cos: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             let mut cos_1: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             cos = translateClassdefConstraints(rest.clone())?;
-            cos_1 = metamodelica::cons(SCode::ConstraintSection { constraints: consts.clone() }, cos.clone());
-            return Ok(cos_1.clone())
+            return Ok(metamodelica::cons(SCode::ConstraintSection { constraints: consts.clone() }, cos.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut cos: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
-            cos = translateClassdefConstraints(rest.clone())?;
-            return Ok(cos.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -633,13 +623,11 @@ fn translateClassdefInitialalgorithms(mut inAbsynClassPartLst: Arc<metamodelica:
             let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
             stmts = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefInitialalgorithms(rest.clone())?;
-            als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: stmts.clone() }), als.clone());
-            return Ok(als_1.clone())
+            return Ok(metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: stmts.clone() }), als.clone()))
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut als: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
-            als = translateClassdefInitialalgorithms(rest.clone())?;
-            return Ok(als.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -799,8 +787,7 @@ fn translateClassdefExternaldecls(mut inAbsynClassPartLst: Arc<metamodelica::Lis
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             let mut res: Option<Arc<SCode::ExternalDecl>> = None;
-            res = translateClassdefExternaldecls(rest.clone())?;
-            return Ok(res.clone())
+            { inAbsynClassPartLst = rest.clone(); continue '__tco; }
         },
         Deref @ metamodelica::List::Nil => {
             return Ok(None)

@@ -227,8 +227,7 @@ pub fn addUniqueRoots(mut inGraph: ConnectionGraph, mut inRoots: Arc<DAE::Exp>, 
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectionGraph.addUniqueRoots(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(root.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inMessage.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
             }
             graph = ConnectionGraph { updateGraph: updateGraph.clone(), definiteRoots: definiteRoots.clone(), potentialRoots: potentialRoots.clone(), uniqueRoots: metamodelica::cons((root.clone(), inMessage.clone()), uniqueRoots.clone()), branches: branches.clone(), connections: connections.clone() };
-            graph = addUniqueRoots(graph.clone(), Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: rest.clone() }), inMessage.clone())?;
-            return Ok(graph.clone())
+            { (inGraph, inRoots, inMessage) = (graph.clone(), Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: scalar.clone(), array: rest.clone() }), inMessage.clone()); continue '__tco; }
         },
         (_, _) => {
             return Ok(inGraph.clone())
@@ -456,8 +455,7 @@ fn addRootsToTable(mut inTable: (metamodelica::Array<Arc<metamodelica::List<(Arc
         (table, Deref @ metamodelica::List::Cons { head: root, tail: tail }, firstRoot) => {
             let mut table = (*table).clone();
             table = BaseHashTable::add((root.clone(), firstRoot.clone()), table.clone())?;
-            table = addRootsToTable(table.clone(), tail.clone(), firstRoot.clone())?;
-            return Ok(table.clone())
+            { (inTable, inRoots, inFirstRoot) = (table.clone(), tail.clone(), firstRoot.clone()); continue '__tco; }
         },
         (table, Deref @ metamodelica::List::Nil, _) => {
             return Ok(table.clone())
@@ -484,8 +482,7 @@ fn addBranchesToTable(mut inTable: (metamodelica::Array<Arc<metamodelica::List<(
             let mut table1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
             let mut table2: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr));
             table1 = connectBranchComponents(table.clone(), ref1.clone(), ref2.clone())?;
-            table2 = addBranchesToTable(table1.clone(), tail.clone())?;
-            return Ok(table2.clone())
+            { (inTable, inBranches) = (table1.clone(), tail.clone()); continue '__tco; }
         },
         (table, Deref @ metamodelica::List::Nil) => {
             return Ok(table.clone())
@@ -1587,8 +1584,7 @@ fn removeFromConnects(mut inConnects: Arc<metamodelica::List<DAE::Connect::Conne
                 _ => bail!("pattern mismatch"),
             } };
             cset = __pa0.clone();
-            cset = removeFromConnects(cset.clone(), rest.clone())?;
-            return Ok(cset.clone())
+            { (inConnects, inToRemove) = (cset.clone(), rest.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

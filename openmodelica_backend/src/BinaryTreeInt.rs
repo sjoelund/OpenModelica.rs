@@ -164,8 +164,7 @@ pub fn treeAddList(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::
             let mut bt_1: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
             let mut bt_2: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
             bt_1 = treeAdd(bt.clone(), key.clone(), 0)?;
-            bt_2 = treeAddList(bt_1.clone(), res.clone())?;
-            return Ok(bt_2.clone())
+            { (inBinTree, inKeyLst) = (bt_1.clone(), res.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

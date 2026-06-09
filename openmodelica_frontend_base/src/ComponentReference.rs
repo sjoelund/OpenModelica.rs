@@ -991,9 +991,8 @@ fn crefTypeFullComputeDims(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension
 }
 
 pub fn crefTypeFull2(mut inCref: Arc<DAE::ComponentRef>, mut accumDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<(Arc<DAE::Type>, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
-    let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut outDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-    (outType, outDims) = (::match_deref::match_deref! { match &(inCref.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { identType: ty, subscriptLst: subs, .. } => {
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut ty = (*ty).clone();
@@ -1002,7 +1001,7 @@ pub fn crefTypeFull2(mut inCref: Arc<DAE::ComponentRef>, mut accumDims: Arc<meta
             if !(accumDims.clone().is_empty()) {
                 dims = List::append_reverse(dims.clone(), accumDims.clone()).reverse();
             }
-            (ty.clone(), dims.clone())
+            return Ok((ty.clone(), dims.clone()))
         },
         Deref @ DAE::ComponentRef::CREF_QUAL { identType: ty, subscriptLst: subs, componentRef: cr, .. } => {
             let mut basety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -1010,18 +1009,17 @@ pub fn crefTypeFull2(mut inCref: Arc<DAE::ComponentRef>, mut accumDims: Arc<meta
             let mut ty = (*ty).clone();
             (ty, dims) = TypesDump::flattenArrayType(ty.clone());
             dims = crefTypeFullComputeDims(dims.clone(), subs.clone())?;
-            (basety, dims) = crefTypeFull2(cr.clone(), List::append_reverse(dims.clone(), accumDims.clone()))?;
-            (basety.clone(), dims.clone())
+            { (inCref, accumDims) = (cr.clone(), List::append_reverse(dims.clone(), accumDims.clone())); continue '__tco; }
         },
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("ComponentReference.crefTypeFull2 failed on cref: ")).clone())?;
             Debug::traceln((ComponentReferenceBasics::printComponentRefStr(inCref.clone())?).clone())?;
-            bail!("fail")
+            return Ok(bail!("fail"))
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outType, outDims))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefTypeFull(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Type>> {
@@ -2548,8 +2546,7 @@ fn expandArrayCref1(mut inCr: Arc<DAE::ComponentRef>, mut inSubscripts: Arc<meta
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: sub, tail: subs }, tail: rest_subs } => {
             let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             crefs = expandArrayCref1(inCr.clone(), metamodelica::cons(subs.clone(), rest_subs.clone()), inAccumSubs.clone(), inAccumCrefs.clone())?;
-            crefs = expandArrayCref1(inCr.clone(), rest_subs.clone(), metamodelica::cons(sub.clone(), inAccumSubs.clone()), crefs.clone())?;
-            return Ok(crefs.clone())
+            { (inCr, inSubscripts, inAccumSubs, inAccumCrefs) = (inCr.clone(), rest_subs.clone(), metamodelica::cons(sub.clone(), inAccumSubs.clone()), crefs.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
             return Ok(inAccumCrefs.clone())

@@ -971,11 +971,10 @@ fn checkSimplify(mut check: bool, mut before: Arc<DAE::Exp>, mut after: Arc<DAE:
 }
 
 fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyTypes::Evaluate, mut n: i32, mut cont: bool, mut hasChanged: bool) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outHasChanged: bool = false;
-    (outExp, outHasChanged) = (::match_deref::match_deref! { match &((inExp.clone(), inOptions.clone(), n.clone(), cont.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inExp.clone(), inOptions.clone(), n.clone(), cont.clone())) {
         (exp, _, _, false) => {
-            (exp.clone(), hasChanged.clone())
+            return Ok((exp.clone(), hasChanged.clone()))
         },
         (exp, options, 0, _) => {
             let mut str1: ArcStr = arcstr::literal!("");
@@ -985,7 +984,7 @@ fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyType
             (exp, _) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), options.clone())?;
             str2 = (ExpressionBasics::printExpStr(exp.clone())?).clone();
             Error::addMessage(Error::SIMPLIFY_FIXPOINT_MAXIMUM.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()])?;
-            (exp.clone(), hasChanged.clone())
+            return Ok((exp.clone(), hasChanged.clone()))
         },
         (exp, options, _, true) => {
             let mut expAfterSimplify: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -999,39 +998,35 @@ fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyType
             } else {
                 ErrorExt::delCheckpoint((literal!("ExpressionSimplify")).clone());
             }
-            (expAfterSimplify, b) = simplify1FixP(expAfterSimplify.clone(), options.clone(), n.clone() - 1, b.clone(), b.clone() || hasChanged.clone())?;
-            (expAfterSimplify.clone(), b.clone())
+            { (inExp, inOptions, n, cont, hasChanged) = (expAfterSimplify.clone(), options.clone(), n.clone() - 1, b.clone(), b.clone() || hasChanged.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outExp, outHasChanged))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn simplifyReductionIterators(mut inIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut inAcc: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, mut inChange: bool) -> Result<(Arc<metamodelica::List<Arc<DAE::ReductionIterator>>>, bool)> {
-    let mut outIters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>> = metamodelica::nil();
-    let mut outChange: bool = false;
-    (outIters, outChange) = (::match_deref::match_deref! { match &((inIters.clone(), inAcc.clone(), inChange.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inIters.clone(), inAcc.clone(), inChange.clone())) {
         (Deref @ metamodelica::List::Nil, acc, change) => {
-            (acc.clone().reverse(), change.clone())
+            return Ok((acc.clone().reverse(), change.clone()))
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp, guardExp: Some(Deref @ DAE::Exp::BCONST { bool: true }), ty }, tail: iters }, acc, _) => {
             let mut change: bool = false;
             let mut iters = (*iters).clone();
-            (iters, change) = simplifyReductionIterators(iters.clone(), metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp.clone(), guardExp: None, ty: ty.clone() }), acc.clone()), true)?;
-            (iters.clone(), change.clone())
+            { (inIters, inAcc, inChange) = (iters.clone(), metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp.clone(), guardExp: None, ty: ty.clone() }), acc.clone()), true); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { id, exp: _, guardExp: Some(Deref @ DAE::Exp::BCONST { bool: false }), ty }, tail: _ }, _, _) => {
-            (list![Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: Arc::new(DAE::Exp::LIST { valList: metamodelica::nil() }), guardExp: None, ty: ty.clone() })], true)
+            return Ok((list![Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: Arc::new(DAE::Exp::LIST { valList: metamodelica::nil() }), guardExp: None, ty: ty.clone() })], true))
         },
         (Deref @ metamodelica::List::Cons { head: iter, tail: iters }, acc, change) => {
             let mut iters = (*iters).clone();
             let mut change = (*change).clone();
-            (iters, change) = simplifyReductionIterators(iters.clone(), metamodelica::cons(iter.clone(), acc.clone()), change.clone())?;
-            (iters.clone(), change.clone())
+            { (inIters, inAcc, inChange) = (iters.clone(), metamodelica::cons(iter.clone(), acc.clone()), change.clone()); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outIters, outChange))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn simplifyIfExp(mut origExp: Arc<DAE::Exp>, mut cond: Arc<DAE::Exp>, mut tb: Arc<DAE::Exp>, mut fb: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {

@@ -1635,13 +1635,11 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::UNARY { exp: e1, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-            res = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            return Ok(res.clone())
+            { (inExp, includeSubs, includeFunctions) = (e1.clone(), includeSubs.clone(), includeFunctions.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::LBINARY { exp1: e1, exp2: e2, .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1649,13 +1647,11 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::LUNARY { exp: e1, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-            res = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            return Ok(res.clone())
+            { (inExp, includeSubs, includeFunctions) = (e1.clone(), includeSubs.clone(), includeFunctions.clone()); continue '__tco; }
         },
         Deref @ Absyn::Exp::RELATION { exp1: e1, exp2: e2, .. } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1663,8 +1659,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::IFEXP { ifExp: e1, trueBranch: e2, elseBranch: e3, .. } => {
             return Ok(List::flatten(list![getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?, getCrefFromExp(e3.clone(), includeSubs.clone(), includeFunctions.clone())?])?)
@@ -1672,26 +1667,22 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
         Deref @ Absyn::Exp::CALL { function_: cr, functionArgs: farg, .. } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromFarg(farg.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = if (includeFunctions.clone()) {metamodelica::cons(cr.clone(), res.clone())} else {res.clone()};
-            return Ok(res.clone())
+            if (includeFunctions.clone()) {return Ok(metamodelica::cons(cr.clone(), res.clone()))} else {return Ok(res.clone())}
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr, functionArgs: farg } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             res = getCrefFromFarg(farg.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = if (includeFunctions.clone()) {metamodelica::cons(cr.clone(), res.clone())} else {res.clone()};
-            return Ok(res.clone())
+            if (includeFunctions.clone()) {return Ok(metamodelica::cons(cr.clone(), res.clone()))} else {return Ok(res.clone())}
         },
         Deref @ Absyn::Exp::ARRAY { arrayExp: expl } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut lstres1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             lstres1 = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
-            res = List::flatten(lstres1.clone())?;
-            return Ok(res.clone())
+            return Ok(List::flatten(lstres1.clone())?)
         },
         Deref @ Absyn::Exp::MATRIX { matrix: expll } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
-            res = List::flatten(List::flatten(List::map2List(expll.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?)?)?;
-            return Ok(res.clone())
+            return Ok(List::flatten(List::flatten(List::map2List(expll.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?)?)?)
         },
         Deref @ Absyn::Exp::RANGE { start: e1, step: Some(e3), stop: e2 } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1701,8 +1692,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = listAppend(l1.clone(), l2.clone());
             l1 = getCrefFromExp(e3.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::RANGE { start: e1, step: None, stop: e2 } => {
             let mut l1: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
@@ -1710,8 +1700,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::END { .. } => {
             return Ok(metamodelica::nil())
@@ -1720,8 +1709,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut crefll: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             crefll = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
-            res = List::flatten(crefll.clone())?;
-            return Ok(res.clone())
+            return Ok(List::flatten(crefll.clone())?)
         },
         Deref @ Absyn::Exp::CODE { .. } => {
             return Ok(metamodelica::nil())
@@ -1735,15 +1723,13 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             l1 = getCrefFromExp(e1.clone(), includeSubs.clone(), includeFunctions.clone())?;
             l2 = getCrefFromExp(e2.clone(), includeSubs.clone(), includeFunctions.clone())?;
-            res = listAppend(l1.clone(), l2.clone());
-            return Ok(res.clone())
+            return Ok(listAppend(l1.clone(), l2.clone()))
         },
         Deref @ Absyn::Exp::LIST { exps: expl } => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = metamodelica::nil();
             let mut crefll: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>>> = metamodelica::nil();
             crefll = List::map2(expl.clone(), (std::sync::Arc::new(getCrefFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, bool, bool) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> + 'static>), includeSubs.clone(), includeFunctions.clone())?;
-            res = List::flatten(crefll.clone())?;
-            return Ok(res.clone())
+            return Ok(List::flatten(crefll.clone())?)
         },
         Deref @ Absyn::Exp::MATCHEXP { .. } => {
             return Ok(bail!("fail"))
@@ -1956,27 +1942,25 @@ pub fn crefStripLast(mut inCref: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::
 }
 
 pub fn splitQualAndIdentPath(mut inPath: Arc<Absyn::Path>) -> Result<(Arc<Absyn::Path>, Arc<Absyn::Path>)> {
-    let mut outPath1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut outPath2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    (outPath1, outPath2) = (::match_deref::match_deref! { match &(inPath.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inPath.clone()) {
         Deref @ Absyn::Path::QUALIFIED { name: s1, path: Deref @ Absyn::Path::IDENT { name: s2 } } => {
-            (Arc::new(Absyn::Path::IDENT { name: (s1.clone()).clone() }), Arc::new(Absyn::Path::IDENT { name: (s2.clone()).clone() }))
+            return Ok((Arc::new(Absyn::Path::IDENT { name: (s1.clone()).clone() }), Arc::new(Absyn::Path::IDENT { name: (s2.clone()).clone() })))
         },
         Deref @ Absyn::Path::QUALIFIED { name: s1, path: qPath } => {
             let mut curPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut identPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             (curPath, identPath) = splitQualAndIdentPath(qPath.clone())?;
-            (Arc::new(Absyn::Path::QUALIFIED { name: (s1.clone()).clone(), path: curPath.clone() }), identPath.clone())
+            return Ok((Arc::new(Absyn::Path::QUALIFIED { name: (s1.clone()).clone(), path: curPath.clone() }), identPath.clone()))
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { path: qPath } => {
             let mut curPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut identPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            (curPath, identPath) = splitQualAndIdentPath(qPath.clone())?;
-            (curPath.clone(), identPath.clone())
+            { inPath = qPath.clone(); continue '__tco; }
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outPath1, outPath2))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn crefToPath(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::Path>> {
@@ -3267,26 +3251,24 @@ pub fn getExpsFromArrayDimOpt(mut inAdO: Option<Arc<metamodelica::List<Arc<Absyn
 }
 
 pub fn getExpsFromArrayDim_tail(mut inAd: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inAccumulator: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<(bool, Arc<metamodelica::List<Arc<Absyn::Exp>>>)> {
-    let mut hasUnknownDimensions: bool = false;
-    let mut outExps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
-    (hasUnknownDimensions, outExps) = (::match_deref::match_deref! { match &((inAd.clone(), inAccumulator.clone())) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &((inAd.clone(), inAccumulator.clone())) {
         (Deref @ metamodelica::List::Nil, acc) => {
-            (false, acc.clone().reverse())
+            return Ok((false, acc.clone().reverse()))
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e }, tail: rest }, acc) => {
             let mut exps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             let mut b: bool = false;
-            (b, exps) = getExpsFromArrayDim_tail(rest.clone(), metamodelica::cons(e.clone(), acc.clone()))?;
-            (b.clone(), exps.clone())
+            { (inAd, inAccumulator) = (rest.clone(), metamodelica::cons(e.clone(), acc.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: rest }, acc) => {
             let mut exps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             (_, exps) = getExpsFromArrayDim_tail(rest.clone(), acc.clone())?;
-            (true, exps.clone())
+            return Ok((true, exps.clone()))
         },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((hasUnknownDimensions, outExps))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn isInputOrOutput(mut direction: Absyn::Direction) -> Result<bool> {

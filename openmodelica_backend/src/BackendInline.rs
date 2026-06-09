@@ -342,43 +342,39 @@ pub fn inlineEq(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Arc<
 }
 
 fn inlineEqsLst(mut inEqnsList: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut inFunctions: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut iInlined: bool) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, bool)> {
-    let mut outEqnsList: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
-    let mut OInlined: bool = false;
-    (outEqnsList, OInlined) = (::match_deref::match_deref! { match &(inEqnsList.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqnsList.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), iInlined.clone())
+            return Ok((iAcc.clone().reverse(), iInlined.clone()))
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
             let mut inlined: bool = false;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEqs(eqn.clone(), inFunctions.clone(), metamodelica::nil(), false)?;
-            (acc, inlined) = inlineEqsLst(rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone())?;
-            (acc.clone(), inlined.clone())
+            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outEqnsList, OInlined))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn inlineEqs(mut inEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFunctions: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iInlined: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
-    let mut outEqnsList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut OInlined: bool = false;
-    (outEqnsList, OInlined) = (::match_deref::match_deref! { match &(inEqnsList.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqnsList.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), iInlined.clone())
+            return Ok((iAcc.clone().reverse(), iInlined.clone()))
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut inlined: bool = false;
             let mut eqn = (*eqn).clone();
             (eqn, inlined) = inlineEq(eqn.clone(), inFunctions.clone())?;
-            (acc, inlined) = inlineEqs(rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone())?;
-            (acc.clone(), inlined.clone())
+            { (inEqnsList, inFunctions, iAcc, iInlined) = (rest.clone(), inFunctions.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()), inlined.clone() || iInlined.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outEqnsList, OInlined))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn inlineWhenEq(mut inWhenEquation: Arc<BackendDAE::WhenEquation>, mut fns: (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<BackendDAE::WhenEquation>, Arc<DAE::ElementSource>, bool)> {

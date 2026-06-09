@@ -894,67 +894,61 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static + 
 fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static>(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
-    let mut outExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outTypeA: Type_a;
-    (outExps, outTypeA) = (::match_deref::match_deref! { match &(inExps.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inExps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), inTypeA.clone())
+            return Ok((iAcc.clone().reverse(), inTypeA.clone()))
         },
         Deref @ metamodelica::List::Cons { head: exp, tail: rest } => {
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut arg: Type_a;
             let mut exp = (*exp).clone();
             (exp, arg) = func(exp.clone(), inTypeA.clone())?;
-            (exps, arg) = traverseBackendDAEExpsLstEqnWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(exp.clone(), iAcc.clone()))?;
-            (exps.clone(), arg.clone())
+            { (inExps, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(exp.clone(), iAcc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outExps, outTypeA))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 pub fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>;
 
-    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outTypeA: Type_a;
-    (outEqns, outTypeA) = (::match_deref::match_deref! { match &(inEqns.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqns.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), inTypeA.clone())
+            return Ok((iAcc.clone().reverse(), inTypeA.clone()))
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
             let mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA.clone())?;
-            (eqns, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()))?;
-            (eqns.clone(), arg.clone())
+            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outEqns, outTypeA))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static + metamodelica::ReferenceEq>(mut inEqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>, mut inTypeA: Type_a, mut iAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>>, Type_a)> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, Type_a))> + 'static>;
 
-    let mut outEqns: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
-    let mut outTypeA: Type_a;
-    (outEqns, outTypeA) = (::match_deref::match_deref! { match &(inEqns.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqns.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (iAcc.clone().reverse(), inTypeA.clone())
+            return Ok((iAcc.clone().reverse(), inTypeA.clone()))
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: rest } => {
             let mut eqnslst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>> = metamodelica::nil();
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA.clone(), metamodelica::nil())?;
-            (eqnslst, arg) = traverseBackendDAEExpsEqnLstLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()))?;
-            (eqnslst.clone(), arg.clone())
+            { (inEqns, func, inTypeA, iAcc) = (rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone())); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outEqns, outTypeA))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn traverseBackendDAEExpsWhenOperatorWithSymbolicOperation<ArgT: Clone + 'static + metamodelica::ReferenceEq>(mut inStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, ArgT))> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<BackendDAE::WhenOperator>>, ArgT)> {

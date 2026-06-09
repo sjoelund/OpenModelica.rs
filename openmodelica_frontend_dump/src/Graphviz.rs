@@ -169,8 +169,7 @@ fn makeLabelReq(mut inStringLst: Arc<metamodelica::List<ArcStr>>, mut inString: 
             let mut s: Label = arcstr::literal!("");
             s = (stringAppend((inString.clone()).clone(), (s1.clone()).clone())).clone();
             s = (stringAppend((s.clone()).clone(), (literal!("\\n")).clone())).clone();
-            s = (stringAppend((s.clone()).clone(), (s2.clone()).clone())).clone();
-            return Ok(s.clone())
+            return Ok(stringAppend((s.clone()).clone(), (s2.clone()).clone()))
         },
         Deref @ metamodelica::List::Cons { head: s1, tail: rest } => {
             let mut s: Label = arcstr::literal!("");

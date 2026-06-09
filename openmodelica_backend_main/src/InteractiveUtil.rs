@@ -920,16 +920,14 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { path: Deref @ Absyn::Path::IDENT { name: name1 }, modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { name: name2, path: p2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut res: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-            res = getModificationValues(args.clone(), p2.clone())?;
-            return Ok(res.clone())
+            { (inAbsynElementArgLst, inPath) = (args.clone(), p2.clone()); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: elArg @ Deref @ Absyn::ElementArg::REDECLARATION { elementSpec: elSpec, .. }, tail: _ }, p1) if (AbsynUtil::pathFirstIdent(p1.clone())? == AbsynUtil::elementSpecName(elSpec.clone())?) => {
             return Ok(Arc::new(Absyn::Modification { elementArgLst: list![elArg.clone()], eqMod: openmodelica_ast::Absyn::EqMod::interned_NOMOD() }))
         },
         (Deref @ metamodelica::List::Cons { head: _, tail: rest }, _) => {
             let mut r#mod: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
-            r#mod = getModificationValues(rest.clone(), inPath.clone())?;
-            return Ok(r#mod.clone())
+            { (inAbsynElementArgLst, inPath) = (rest.clone(), inPath.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -2461,8 +2459,7 @@ pub fn getEquationList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absyn
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut ys: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
-            ys = getEquationList(xs.clone())?;
-            return Ok(ys.clone())
+            { inAbsynClassPartLst = xs.clone(); continue '__tco; }
         },
         _ => {
             return Ok(bail!("fail"))

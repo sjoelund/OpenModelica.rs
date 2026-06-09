@@ -1895,8 +1895,7 @@ pub fn getEnvPath(mut inEnv: Env) -> Result<Arc<Absyn::Path>> {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: rest } => {
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = getEnvPath(rest.clone())?;
-            path = AbsynUtil::joinPaths(path.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?;
-            return Ok(path.clone())
+            return Ok(AbsynUtil::joinPaths(path.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?)
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -1976,8 +1975,7 @@ pub fn envScopeNames2(mut inEnv: Env, mut inAccumNames: Arc<metamodelica::List<A
         ::match_deref::match_deref! { match &(inEnv.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: Some(name), .. }, tail: rest_env } => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            names = envScopeNames2(rest_env.clone(), metamodelica::cons((name.clone()).clone(), inAccumNames.clone()))?;
-            return Ok(names.clone())
+            { (inEnv, inAccumNames) = (rest_env.clone(), metamodelica::cons((name.clone()).clone(), inAccumNames.clone())); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Frame { name: None, .. }, tail: rest_env } => {
             { (inEnv, inAccumNames) = (rest_env.clone(), inAccumNames.clone()); continue '__tco; }

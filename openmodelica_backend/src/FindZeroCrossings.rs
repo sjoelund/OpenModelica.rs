@@ -598,14 +598,10 @@ fn findZeroCrossings1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
 }
 
 fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables, mut inEquationLst2: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inEqnCount: i32, mut inNumberOfMathFunctions: i32, mut inZeroCrossingLst: BackendDAE::ZeroCrossingSet, mut inRelationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut inSamplesLst: BackendDAE::ZeroCrossingSet, mut inEquationLstAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(BackendDAE::ZeroCrossingSet, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, i32, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet)> {
-    let mut outZeroCrossingLst: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
-    let mut outEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outNumberOfMathFunctions: i32 = 0;
-    let mut outRelationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing> = <DoubleEnded::MutableList<BackendDAE::ZeroCrossing> as ::std::default::Default>::default();
-    let mut outSamplesLst: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
-    (outZeroCrossingLst, outEquationLst, outNumberOfMathFunctions, outRelationsLst, outSamplesLst) = (::match_deref::match_deref! { match &(inEquationLst2.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEquationLst2.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inZeroCrossingLst.clone(), inEquationLstAccum.clone(), inNumberOfMathFunctions.clone(), inRelationsLst.clone(), inSamplesLst.clone())
+            return Ok((inZeroCrossingLst.clone(), inEquationLstAccum.clone(), inNumberOfMathFunctions.clone(), inRelationsLst.clone(), inSamplesLst.clone()))
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ALGORITHM { size, alg: Deref @ DAE::Algorithm { statementLst: stmts }, source: source_, expand, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -625,8 +621,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             sampleLst = __pa3.clone();
             countMathFunctions = __pa4.clone();
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ALGORITHM { size: size.clone(), alg: Arc::new(DAE::Algorithm { statementLst: stmts_1.clone() }), source: source_.clone(), expand: expand.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::WHEN_EQUATION { size, whenEquation: weqn, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -641,8 +636,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             eq_count = inEqnCount.clone() + 1;
             (weqn, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsWhenEqns(weqn.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: weqn.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source: source_, attr: eqAttr }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -660,8 +654,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { exp: eres1.clone(), scalar: eres2.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::COMPLEX_EQUATION { size, left: e1, right: e2, source, attr: eqAttr }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -679,8 +672,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::COMPLEX_EQUATION { size: size.clone(), left: eres1.clone(), right: eres2.clone(), source: source.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimsize, left: e1, right: e2, source, attr: eqAttr, recordSize }, tail: xs } => {
             let mut zcs1: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -698,8 +690,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             (eres1, countMathFunctions, zcs1, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             (eres2, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e2.clone(), zcs1.clone(), relationsLst.clone(), sampleLst.clone(), countMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: dimsize.clone(), left: eres1.clone(), right: eres2.clone(), source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref, exp: e1, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -712,8 +703,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eres1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (eres1, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), inEqnCount.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: eres1.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), inEqnCount.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), inEqnCount.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { exp: e1, source: source_, attr: eqAttr }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -728,8 +718,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             eq_count = inEqnCount.clone() + 1;
             (eres1, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossings3(e1.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(Arc::new(BackendDAE::Equation::RESIDUAL_EQUATION { exp: eres1.clone(), source: source_.clone(), attr: eqAttr.clone() }), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e @ Deref @ BackendDAE::Equation::IF_EQUATION { .. }, tail: xs } => {
             let mut res: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -744,8 +733,7 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             eq_count = inEqnCount.clone() + 1;
             (e, countMathFunctions, res, relationsLst, sampleLst) = findZeroCrossingsIfEqns(e.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), inNumberOfMathFunctions.clone(), eq_count.clone(), -1, inVariables1.clone(), globalKnownVars.clone())?;
             eqnsAccum = metamodelica::cons(e.clone(), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), countMathFunctions.clone(), res.clone(), relationsLst.clone(), sampleLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: e, tail: xs } => {
             let mut res1: BackendDAE::ZeroCrossingSet = <BackendDAE::ZeroCrossingSet as ::std::default::Default>::default();
@@ -757,12 +745,11 @@ fn findZeroCrossings2(mut inVariables1: BackendDAE::Variables, mut globalKnownVa
             let mut eqnsAccum: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             eq_count = inEqnCount.clone() + 1;
             eqnsAccum = metamodelica::cons(e.clone(), inEquationLstAccum.clone());
-            (res1, eq_reslst, countMathFunctions, relationsLst, sampleLst) = findZeroCrossings2(inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), inNumberOfMathFunctions.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), eqnsAccum.clone())?;
-            (res1.clone(), eq_reslst.clone(), countMathFunctions.clone(), relationsLst.clone(), sampleLst.clone())
+            { (inVariables1, globalKnownVars, inEquationLst2, inEqnCount, inNumberOfMathFunctions, inZeroCrossingLst, inRelationsLst, inSamplesLst, inEquationLstAccum) = (inVariables1.clone(), globalKnownVars.clone(), xs.clone(), eq_count.clone(), inNumberOfMathFunctions.clone(), inZeroCrossingLst.clone(), inRelationsLst.clone(), inSamplesLst.clone(), eqnsAccum.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outZeroCrossingLst, outEquationLst, outNumberOfMathFunctions, outRelationsLst, outSamplesLst))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn findZeroCrossingsWhenEqns(mut inWhenEqn: Arc<BackendDAE::WhenEquation>, mut inZeroCrossings: BackendDAE::ZeroCrossingSet, mut inrelationsinZC: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut inSamplesLst: BackendDAE::ZeroCrossingSet, mut incountMathFunctions: i32, mut counteq: i32, mut countwc: i32, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<(Arc<BackendDAE::WhenEquation>, i32, BackendDAE::ZeroCrossingSet, DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, BackendDAE::ZeroCrossingSet)> {

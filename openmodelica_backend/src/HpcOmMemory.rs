@@ -3350,8 +3350,7 @@ fn getCrefDims(mut iCref: Arc<DAE::ComponentRef>) -> i32 {
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: __esc_subscriptLst, .. } => {
             subscriptLst = (*__esc_subscriptLst).clone();
-            tmpDims = (subscriptLst.clone().len() as i32);
-            return tmpDims.clone()
+            return (subscriptLst.clone().len() as i32)
         },
         _ => {
             metamodelica::print((literal!("HpcOmMemory.getCrefDims failed!\n")).clone());

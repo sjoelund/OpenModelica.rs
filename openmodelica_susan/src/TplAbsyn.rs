@@ -726,15 +726,13 @@ pub fn transformTemplateDefs(mut inTemplateDefsRest: Arc<metamodelica::List<(Arc
             let mut mmDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
             let mut tplname = (*tplname).clone();
             tplname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*tplname.clone()); ArcStr::from(__mm_s) }).clone();
-            mmDecls = transformTemplateDefs(restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_STR_TOKEN_DECL { isPublic: true, name: (tplname.clone()).clone(), value: stvalue.clone() }, accMMDecls.clone()))?;
-            return Ok(mmDecls.clone())
+            { (inTemplateDefsRest, inTplPackage, inAccMMDecls) = (restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_STR_TOKEN_DECL { isPublic: true, name: (tplname.clone()).clone(), value: stvalue.clone() }, accMMDecls.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: (tplname, TemplateDef::LITERAL_DEF { value: svalue, litType }), tail: restTDefs }, tplPackage, accMMDecls) => {
             let mut mmDecls: Arc<metamodelica::List<MMDeclaration>> = metamodelica::nil();
             let mut tplname = (*tplname).clone();
             tplname = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(constantNamePrefix)); __mm_s.push_str(&*tplname.clone()); ArcStr::from(__mm_s) }).clone();
-            mmDecls = transformTemplateDefs(restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_LITERAL_DECL { isPublic: true, name: (tplname.clone()).clone(), value: (svalue.clone()).clone(), litType: litType.clone() }, accMMDecls.clone()))?;
-            return Ok(mmDecls.clone())
+            { (inTemplateDefsRest, inTplPackage, inAccMMDecls) = (restTDefs.clone(), tplPackage.clone(), metamodelica::cons(MMDeclaration::MM_LITERAL_DECL { isPublic: true, name: (tplname.clone()).clone(), value: (svalue.clone()).clone(), litType: litType.clone() }, accMMDecls.clone())); continue '__tco; }
         },
         (Deref @ metamodelica::List::Cons { head: (tplname, TemplateDef::TEMPLATE_DEF { args: targs, exp: texp, .. }), tail: restTDefs }, tplPackage, accMMDecls) => {
             let mut encArgs: TypedIdents = metamodelica::nil();

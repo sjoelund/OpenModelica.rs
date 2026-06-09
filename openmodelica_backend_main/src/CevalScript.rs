@@ -2566,8 +2566,7 @@ fn instantiateDaeFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut
             let mut cache = (*cache).clone();
             let (__pa0, Util::SUCCESS { .. }) = (Static::instantiateDaeFunctionForceInst(cache.clone(), env.clone(), path.clone(), false, None, true)?) else { bail!("pattern mismatch") };
             cache = __pa0.clone();
-            cache = instantiateDaeFunctions(cache.clone(), env.clone(), paths.clone())?;
-            return Ok(cache.clone())
+            { (icache, ienv, ipaths) = (cache.clone(), env.clone(), paths.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -3643,18 +3642,15 @@ fn removeThreadDataRecord(mut inRecs: Arc<metamodelica::List<SimCodeFunction::Re
         },
         Deref @ metamodelica::List::Cons { head: SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: Deref @ "OpenModelica_threadData_ThreadData", .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
-            acc = removeThreadDataRecord(rest.clone(), inAcc.clone());
-            return acc.clone()
+            { (inRecs, inAcc) = (rest.clone(), inAcc.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "OpenModelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "threadData", path: Deref @ Absyn::Path::IDENT { name: Deref @ "ThreadData" } } }, .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
-            acc = removeThreadDataRecord(rest.clone(), inAcc.clone());
-            return acc.clone()
+            { (inRecs, inAcc) = (rest.clone(), inAcc.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
             let mut acc: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
-            acc = removeThreadDataRecord(rest.clone(), metamodelica::cons(r.clone(), inAcc.clone()));
-            return acc.clone()
+            { (inRecs, inAcc) = (rest.clone(), metamodelica::cons(r.clone(), inAcc.clone())); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }
@@ -3669,13 +3665,11 @@ fn removeThreadDataFunction(mut inFuncs: Arc<metamodelica::List<Arc<SimCodeFunct
         },
         Deref @ metamodelica::List::Cons { head: Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { name: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "OpenModelica", path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "threadData", path: Deref @ Absyn::Path::IDENT { name: Deref @ "ThreadData" } } } }, .. }, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
-            acc = removeThreadDataFunction(rest.clone(), inAcc.clone());
-            return acc.clone()
+            { (inFuncs, inAcc) = (rest.clone(), inAcc.clone()); continue '__tco; }
         },
         Deref @ metamodelica::List::Cons { head: f, tail: rest } => {
             let mut acc: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
-            acc = removeThreadDataFunction(rest.clone(), metamodelica::cons(f.clone(), inAcc.clone()));
-            return acc.clone()
+            { (inFuncs, inAcc) = (rest.clone(), metamodelica::cons(f.clone(), inAcc.clone())); continue '__tco; }
         },
         _ => unreachable!("tail-call lowered match: no arm matched"),
     } }

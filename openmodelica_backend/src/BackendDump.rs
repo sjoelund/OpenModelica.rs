@@ -2349,15 +2349,13 @@ pub fn ifequationString(mut conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
         ::match_deref::match_deref! { match &((conditions.clone(), eqnstrue.clone(), eqnsfalse.clone())) {
         (Deref @ metamodelica::List::Nil, _, Deref @ metamodelica::List::Nil) => {
             let mut s: ArcStr = arcstr::literal!("");
-            s = stringAppendList(list![(iString.clone()).clone(), (literal!("\nend if")).clone()]);
-            return Ok(s.clone())
+            return Ok(stringAppendList(list![(iString.clone()).clone(), (literal!("\nend if")).clone()]))
         },
         (Deref @ metamodelica::List::Nil, _, _) => {
             let mut seqns: ArcStr = arcstr::literal!("");
             let mut s: ArcStr = arcstr::literal!("");
             seqns = stringDelimitList(List::map(eqnsfalse.clone(), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n  ")).clone());
-            s = stringAppendList(list![(iString.clone()).clone(), (literal!("\nelse\n  ")).clone(), (seqns.clone()).clone(), (literal!("\nend if")).clone()]);
-            return Ok(s.clone())
+            return Ok(stringAppendList(list![(iString.clone()).clone(), (literal!("\nelse\n  ")).clone(), (seqns.clone()).clone(), (literal!("\nend if")).clone()]))
         },
         (Deref @ metamodelica::List::Cons { head: e, tail: elst }, Deref @ metamodelica::List::Cons { head: eqns, tail: eqnslst }, _) => {
             let mut seqns: ArcStr = arcstr::literal!("");

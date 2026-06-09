@@ -2685,8 +2685,7 @@ fn makeReduceList(mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inLi
             let mut lst3: Arc<metamodelica::List<i32>> = metamodelica::nil();
             i = v.clone();
             lst2 = listAppend(lst.clone(), list![i.clone()]);
-            lst3 = makeReduceList(expLstRest.clone(), lst2.clone())?;
-            return Ok(lst3.clone())
+            { (expLst, inList) = (expLstRest.clone(), lst2.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }

@@ -113,22 +113,20 @@ pub fn getScalarArrayEqns(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::E
 }
 
 fn getScalarArrayEqns0(mut inEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inFound: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {
-    let mut outEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut outFound: bool = false;
-    (outEqnLst, outFound) = (::match_deref::match_deref! { match &(inEqnLst.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inEqnLst.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inAccEqnLst.clone().reverse(), inFound.clone())
+            return Ok((inAccEqnLst.clone().reverse(), inFound.clone()))
         },
         Deref @ metamodelica::List::Cons { head: eqn, tail: eqns } => {
             let mut eqns1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut b: bool = false;
             (eqns1, b) = getScalarArrayEqns1(eqn.clone(), inAccEqnLst.clone())?;
-            (eqns1, b) = getScalarArrayEqns0(eqns.clone(), eqns1.clone(), b.clone() || inFound.clone())?;
-            (eqns1.clone(), b.clone())
+            { (inEqnLst, inAccEqnLst, inFound) = (eqns.clone(), eqns1.clone(), b.clone() || inFound.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outEqnLst, outFound))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn getScalarArrayEqns1(mut inEqn: Arc<BackendDAE::Equation>, mut inAccEqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, bool)> {

@@ -11547,19 +11547,16 @@ pub fn absynCrefToComponentReference(mut inComponentRef: Arc<Absyn::ComponentRef
         ::match_deref::match_deref! { match &(inComponentRef.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name: i, subscripts: Deref @ metamodelica::List::Nil } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            cref = ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
-            return Ok(cref.clone())
+            return Ok(ComponentReferenceBasics::makeCrefIdent((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { name: i, subscripts: Deref @ metamodelica::List::Nil, componentRef: c } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cref = absynCrefToComponentReference(c.clone())?;
-            cref = ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), cref.clone());
-            return Ok(cref.clone())
+            return Ok(ComponentReferenceBasics::makeCrefQual((i.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil(), cref.clone()))
         },
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { componentRef: c } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            cref = absynCrefToComponentReference(c.clone())?;
-            return Ok(cref.clone())
+            { inComponentRef = c.clone(); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -12023,13 +12020,11 @@ fn subscriptCrefType2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Ar
         },
         (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. }, t) => {
             let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            t_1 = subscriptType(t.clone(), subs.clone())?;
-            return Ok(t_1.clone())
+            return Ok(subscriptType(t.clone(), subs.clone())?)
         },
         (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: c, .. }, t) => {
             let mut t_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            t_1 = subscriptCrefType2(c.clone(), t.clone())?;
-            return Ok(t_1.clone())
+            { (inComponentRef, inType) = (c.clone(), t.clone()); continue '__tco; }
         },
         _ => return Err(anyhow::anyhow!("match: no arm matched")),
     } }
@@ -12508,11 +12503,10 @@ pub fn elabArrayDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inC
 }
 
 fn elabArrayDims2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inDimensions: Arc<metamodelica::List<Arc<Absyn::Subscript>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut inElaboratedDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Dimension>>>)> {
-    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-    (outCache, outDimensions) = (::match_deref::match_deref! { match &(inDimensions.clone()) {
+    '__tco: loop {
+        ::match_deref::match_deref! { match &(inDimensions.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inCache.clone(), inElaboratedDims.clone().reverse())
+            return Ok((inCache.clone(), inElaboratedDims.clone().reverse()))
         },
         Deref @ metamodelica::List::Cons { head: dim, tail: rest_dims } => {
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -12520,12 +12514,11 @@ fn elabArrayDims2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref
             let mut elab_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             (cache, elab_dim) = elabArrayDim(inCache.clone(), inEnv.clone(), inCref.clone(), dim.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
             elab_dims = metamodelica::cons(elab_dim.clone(), inElaboratedDims.clone());
-            (cache, elab_dims) = elabArrayDims2(cache.clone(), inEnv.clone(), inCref.clone(), rest_dims.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone(), elab_dims.clone())?;
-            (cache.clone(), elab_dims.clone())
+            { (inCache, inEnv, inCref, inDimensions, inImplicit, inDoVect, inPrefix, inInfo, inElaboratedDims) = (cache.clone(), inEnv.clone(), inCref.clone(), rest_dims.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone(), elab_dims.clone()); continue '__tco; }
         },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok((outCache, outDimensions))
+        _ => return Err(anyhow::anyhow!("match: no arm matched")),
+    } }
+    }
 }
 
 fn elabArrayDim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inDimension: Arc<Absyn::Subscript>, mut inImpl: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Dimension>)> {
