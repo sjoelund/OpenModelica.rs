@@ -92,3 +92,92 @@ impl<T: Clone> metamodelica::ReferenceEq for Mutable<T> {
         referenceEq(self, other)
     }
 }
+
+// ── Gc-backed cell ────────────────────────────────────────────────────────────
+//
+// `Mutable<T>` above is an `Arc<Mutex<T>>`: cheap, but a cell updated with a
+// value that transitively contains the cell forms an `Arc` cycle that is
+// never deallocated (see `tests/mutable_cycle_drop_tests.rs`). `GcMutable` is
+// the cycle-collecting replacement: the cell is a `dumpster::unsync::Gc`
+// allocation, so once codegen also allocates the cycle-capable payload types
+// with `Gc`, the collector can trace through cells and free dead cycles.
+//
+// The two cell types coexist while the codegen migration is in progress;
+// codegen keeps `Mutable` for payload types that can never be cyclic.
+
+use metamodelica::gc::{dumpster::unsync::Gc, MMTrace, Traced};
+use std::cell::RefCell;
+
+pub struct GcMutable<T: MMTrace + 'static>(Gc<RefCell<Traced<T>>>);
+
+impl<T: MMTrace> Clone for GcMutable<T> {
+    fn clone(&self) -> Self {
+        GcMutable(Gc::clone(&self.0))
+    }
+}
+
+impl<T: MMTrace + std::fmt::Debug> std::fmt::Debug for GcMutable<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.0.try_borrow() {
+            Ok(v) => write!(f, "GcMutable({:?})", v.0),
+            Err(_) => write!(f, "GcMutable(<borrowed>)"),
+        }
+    }
+}
+
+/// Content-based equality, mirroring [`Mutable`]'s `PartialEq`. Unlike the
+/// `Mutex` cell (which self-deadlocks when comparing a cell against itself),
+/// two shared `RefCell` borrows are fine.
+impl<T: MMTrace + PartialEq> PartialEq for GcMutable<T> {
+    fn eq(&self, other: &Self) -> bool {
+        *self.0.borrow() == *other.0.borrow()
+    }
+}
+
+impl<T: MMTrace + Eq> Eq for GcMutable<T> {}
+
+impl<T: MMTrace + Default> Default for GcMutable<T> {
+    fn default() -> Self {
+        GcMutable(Gc::new(RefCell::new(Traced(T::default()))))
+    }
+}
+
+/// Cells are traced by handing the inner `Gc` to the collector's visitor;
+/// the payload is then traced through `Traced<T>`'s `TraceWith` bridge.
+impl<T: MMTrace> MMTrace for GcMutable<T> {
+    fn mm_accept<V: metamodelica::gc::dumpster::Visitor>(
+        &self,
+        visitor: &mut V,
+    ) -> Result<(), ()> {
+        visitor.visit_unsync(&self.0);
+        Ok(())
+    }
+}
+
+impl<T: MMTrace> GcMutable<T> {
+    pub fn create(data: T) -> GcMutable<T> {
+        GcMutable(Gc::new(RefCell::new(Traced(data))))
+    }
+
+    pub fn update(mutable: GcMutable<T>, data: T) {
+        mutable.0.borrow_mut().0 = data;
+    }
+
+    pub fn access(mutable: GcMutable<T>) -> T
+    where
+        T: Clone,
+    {
+        mutable.0.borrow().0.clone()
+    }
+
+    /// MetaModelica `referenceEq`: same cell allocation, contents irrelevant.
+    pub fn referenceEq(a: &GcMutable<T>, b: &GcMutable<T>) -> bool {
+        Gc::ptr_eq(&a.0, &b.0)
+    }
+}
+
+impl<T: MMTrace> metamodelica::ReferenceEq for GcMutable<T> {
+    fn reference_eq(&self, other: &Self) -> bool {
+        GcMutable::referenceEq(self, other)
+    }
+}
