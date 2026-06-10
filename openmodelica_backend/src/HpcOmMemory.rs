@@ -94,7 +94,7 @@ pub(crate) const VARTYPE_ALIAS: i32 = 4;
 pub(crate) const VARTYPE_OTHER: i32 = 5;
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum CacheMap {
+pub(crate) enum CacheMap {
     CACHEMAP {
         cacheLineSize: i32,
         cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>>,
@@ -137,7 +137,7 @@ impl Default for CacheMap {
         }
     }
 }
-pub use self::CacheMap::{CACHEMAP,UNIFORM_CACHEMAP};
+pub(crate) use self::CacheMap::{CACHEMAP,UNIFORM_CACHEMAP};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CacheLineMap {

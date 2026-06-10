@@ -684,7 +684,7 @@ pub(crate) fn extractClocks(mut exp: Arc<Expression::NFExpression>, mut clck_col
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ClusterElementType {
+pub(crate) enum ClusterElementType {
     EQUATION = 1,
     VARIABLE = 2,
 }
@@ -1149,7 +1149,7 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
 }
 
 fn sortAndMergeClockedPartitions(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
-    pub type SubMap = Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>;
+    pub(crate) type SubMap = Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>;
 
     let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
     let mut clocked_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>;

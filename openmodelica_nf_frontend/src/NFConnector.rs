@@ -96,7 +96,7 @@ pub type CONNECTOR = NFConnector;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Face {
+pub(crate) enum Face {
     INSIDE = 1,
     OUTSIDE = 2,
 }

@@ -86,7 +86,7 @@ pub(crate) const BORDER: &'static str = "***************************************
 pub(crate) const UNDERLINE: &'static str = "========================================";
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum TearingMethod {
+pub(crate) enum TearingMethod {
     /// Only tear discrete variables from loops
     MINIMAL_TEARING,
     OMC_TEARING,
@@ -108,7 +108,7 @@ impl metamodelica::gc::MMTrace for TearingMethod {
 impl Default for TearingMethod {
     fn default() -> Self { Self::MINIMAL_TEARING }
 }
-pub use self::TearingMethod::{MINIMAL_TEARING,OMC_TEARING,CELLIER_TEARING,TOTAL_TEARING,USER_DEFINED_TEARING};
+pub(crate) use self::TearingMethod::{MINIMAL_TEARING,OMC_TEARING,CELLIER_TEARING,TOTAL_TEARING,USER_DEFINED_TEARING};
 
 // =============================================================================
 // section for all public functions

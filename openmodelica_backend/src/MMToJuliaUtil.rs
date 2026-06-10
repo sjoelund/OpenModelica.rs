@@ -135,7 +135,7 @@ use openmodelica_util::Util;
 // end createPackageAroundUniontypeIfContainsFuncs;
 //TODO first figure out what we should rename
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Context {
+pub(crate) enum Context {
     FUNCTION {
         /// Contains return values
         retValsStr: ArcStr,
@@ -190,7 +190,7 @@ impl metamodelica::gc::MMTrace for Context {
 impl Default for Context {
     fn default() -> Self { Self::PACKAGE }
 }
-pub use self::Context::{FUNCTION,FUNCTION_RETURN_CONTEXT,PACKAGE,UNIONTYPE,NO_CONTEXT,INPUT_CONTEXT,MATCH_CONTEXT};
+pub(crate) use self::Context::{FUNCTION,FUNCTION_RETURN_CONTEXT,PACKAGE,UNIONTYPE,NO_CONTEXT,INPUT_CONTEXT,MATCH_CONTEXT};
 
 pub(crate) static packageContext: Context = crate::MMToJuliaUtil::Context::PACKAGE;
 

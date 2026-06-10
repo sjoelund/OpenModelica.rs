@@ -7921,7 +7921,7 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 }
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum ForceFunctionInst {
+pub(crate) enum ForceFunctionInst {
     /// Used when blocking function instantiation to instantiate the function anyway
     FORCE_FUNCTION_INST,
     /// Used when blocking function instantiation to instantiate the function anyway
@@ -7935,7 +7935,7 @@ impl metamodelica::gc::MMTrace for ForceFunctionInst {
         }
     }
 }
-pub use self::ForceFunctionInst::{FORCE_FUNCTION_INST,NORMAL_FUNCTION_INST};
+pub(crate) use self::ForceFunctionInst::{FORCE_FUNCTION_INST,NORMAL_FUNCTION_INST};
 
 pub fn instantiateDaeFunction(mut inCache: FCore::Cache, mut env: FCore::Graph, mut name: Arc<Absyn::Path>, mut builtin: bool, mut clOpt: Option<Arc<SCode::Element>>, mut printErrorMsg: bool) -> (FCore::Cache, Util::Status) {
     let mut outCache: FCore::Cache;

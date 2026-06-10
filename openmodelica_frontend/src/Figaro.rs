@@ -738,7 +738,7 @@ fn callFigaroProcessor(mut inFigaroProcessorFile: ArcStr, mut inArgumentFile: Ar
 
 /// An XML token.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Token {
+pub(crate) enum Token {
     OPENTAG {
         tagName: ArcStr,
     },
@@ -767,7 +767,7 @@ impl metamodelica::gc::MMTrace for Token {
         }
     }
 }
-pub use self::Token::{OPENTAG,CLOSETAG,TEXT};
+pub(crate) use self::Token::{OPENTAG,CLOSETAG,TEXT};
 
 fn interpret(mut inString: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringList: Arc<metamodelica::List<ArcStr>>;

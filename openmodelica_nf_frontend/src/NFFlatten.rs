@@ -890,7 +890,7 @@ pub type SETTINGS = FlattenSettings;
 pub mod Prefix {
     use super::*;
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Prefix {
+    pub(crate) enum Prefix {
         PREFIX {
             root: Arc<InstNode::InstNode>,
             prefix: Arc<ComponentRef::NFComponentRef>,
@@ -926,7 +926,7 @@ pub mod Prefix {
             }
         }
     }
-    pub use self::Prefix::{PREFIX,INDEXED_PREFIX};
+    pub(crate) use self::Prefix::{PREFIX,INDEXED_PREFIX};
     pub(crate) fn new(mut root: Arc<InstNode::InstNode>, mut indexed: bool) -> Arc<Prefix> {
         let mut prefix: Arc<Prefix>;
         prefix = if (indexed.clone()) {Arc::new(Prefix::INDEXED_PREFIX { root: root.clone(), prefix: crate::NFComponentRef::interned_EMPTY(), indexedPrefix: crate::NFComponentRef::interned_EMPTY() })} else {Arc::new(Prefix::PREFIX { root: root.clone(), prefix: crate::NFComponentRef::interned_EMPTY() })};
@@ -1347,7 +1347,7 @@ fn getComponentType(mut ty: Arc<Type::NFType>, mut settings: FlattenSettings) ->
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ComponentType {
+pub(crate) enum ComponentType {
     NORMAL = 1,
     COMPLEX = 2,
     RECORD = 3,
@@ -2244,7 +2244,7 @@ pub(crate) fn flattenCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut prefi
 }
 
 pub(crate) fn flattenCrefSplitSubscripts(mut cref: Arc<ComponentRef::NFComponentRef>, mut prefix: Arc<Prefix::Prefix>) -> Result<Arc<ComponentRef::NFComponentRef>> {
-    pub type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    pub(crate) type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
 
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>;

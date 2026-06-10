@@ -2059,7 +2059,7 @@ fn checkOp(mut inOp: DAE::Operator) -> bool {
 //
 // =============================================================================
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum CommonSubExp {
+pub(crate) enum CommonSubExp {
     ASSIGNMENT_CSE {
         eqIdcs: Arc<metamodelica::List<i32>>,
         sharedVars: Arc<metamodelica::List<i32>>,
@@ -2087,7 +2087,7 @@ impl metamodelica::gc::MMTrace for CommonSubExp {
         }
     }
 }
-pub use self::CommonSubExp::{ASSIGNMENT_CSE,SHORTCUT_CSE};
+pub(crate) use self::CommonSubExp::{ASSIGNMENT_CSE,SHORTCUT_CSE};
 
 pub(crate) fn commonSubExpressionReplacement(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut daeOut: Arc<BackendDAE::BackendDAE>;

@@ -487,7 +487,7 @@ pub(crate) fn subscriptBinding(mut exp: Arc<Expression::NFExpression>, mut cref:
 }
 
 pub(crate) fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>, mut evalSubscripts: bool, mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>) -> Result<(Arc<Expression::NFExpression>, Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>)> {
-    pub type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+    pub(crate) type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
 
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> = subMap;

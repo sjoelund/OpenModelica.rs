@@ -157,7 +157,7 @@ pub(crate) fn EMPTY() -> NFOCConnectionGraph { __EMPTY_TLS.with(|__t| __t.clone(
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ConnectionsOperator {
+pub(crate) enum ConnectionsOperator {
     BRANCH = 1,
     ROOT = 2,
     POTENTIAL_ROOT = 3,

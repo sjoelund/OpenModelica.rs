@@ -1438,7 +1438,7 @@ pub(crate) fn addNomod(mut inElements: Arc<metamodelica::List<Arc<SCode::Element
 }
 
 pub(crate) fn sortElementList(mut inElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut inEnv: FCore::Graph, mut isFunctionScope: bool) -> Result<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>> {
-    pub type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
+    pub(crate) type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
 
     let mut inElements: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = inElements;
     let mut outE: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
@@ -1454,7 +1454,7 @@ pub(crate) fn sortElementList(mut inElements: Arc<metamodelica::List<(Arc<SCode:
 }
 
 fn printGraph(mut env: FCore::Graph, mut g: Arc<metamodelica::List<((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>)>>, mut order: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, mut cycles: Arc<metamodelica::List<((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>)>>) -> Result<()> {
-    pub type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
+    pub(crate) type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
 
     let () = 'mc: {
         let __mc_input = g.clone();
@@ -1874,7 +1874,7 @@ fn getExpsFromDefaults(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>, 
 }
 
 fn getElementDependenciesTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool)) -> (Arc<Absyn::Exp>, (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool)) {
-    pub type ElementList = Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+    pub(crate) type ElementList = Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
 
     let mut outExp: Arc<Absyn::Exp>;
     let mut outTuple: (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool);
@@ -1926,7 +1926,7 @@ fn getElementDependenciesTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple:
 }
 
 fn getElementDependenciesTraverserExit(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool)) -> (Arc<Absyn::Exp>, (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool)) {
-    pub type ElementList = Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
+    pub(crate) type ElementList = Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>;
 
     let mut outExp: Arc<Absyn::Exp>;
     let mut outTuple: (Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>>>, Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>, bool);
@@ -1991,7 +1991,7 @@ fn isElementEqual(mut inElement1: (Arc<SCode::Element>, Arc<DAE::Mod>), mut inEl
 }
 
 fn checkCyclicalComponents(mut inCycles: Arc<metamodelica::List<((Arc<SCode::Element>, Arc<DAE::Mod>), Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>>)>>, mut inEnv: FCore::Graph) -> Result<()> {
-    pub type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
+    pub(crate) type Element = (Arc<SCode::Element>, Arc<DAE::Mod>);
 
     let () = 'mc: {
         let __mc_input = inCycles.clone();

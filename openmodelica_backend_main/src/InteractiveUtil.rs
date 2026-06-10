@@ -101,7 +101,7 @@ pub type AnnotationType = Interactive::AnnotationType;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Visibility {
+pub(crate) enum Visibility {
     PUBLIC = 1,
     PROTECTED = 2,
     ANY = 3,

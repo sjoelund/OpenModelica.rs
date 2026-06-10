@@ -71,7 +71,7 @@ use openmodelica_util_datatypes_basic::List;
 //  Visualization types
 //----------------------------
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Visualization {
+pub(crate) enum Visualization {
     SHAPE {
         ident: Arc<DAE::ComponentRef>,
         shapeType: Arc<DAE::Exp>,
@@ -173,7 +173,7 @@ impl Default for Visualization {
         }
     }
 }
-pub use self::Visualization::{SHAPE,VECTOR,SURFACE};
+pub(crate) use self::Visualization::{SHAPE,VECTOR,SURFACE};
 
 //-------------------------
 // dump visualization xml

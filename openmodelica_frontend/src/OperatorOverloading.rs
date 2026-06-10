@@ -1455,7 +1455,7 @@ pub mod AvlTreePathPathEnv {
 
     /// The binary tree data structure.
     #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Tree {
+    pub(crate) enum Tree {
         NODE {
             /// The key of the node.
             key: Key,
@@ -1504,7 +1504,7 @@ pub mod AvlTreePathPathEnv {
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
-    pub use self::Tree::{NODE,LEAF,EMPTY};
+    pub(crate) use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type ValueNode = Arc<Absyn::Path>;
 
@@ -2174,7 +2174,7 @@ pub mod AvlTreePathOperatorTypes {
 
     /// The binary tree data structure.
     #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Tree {
+    pub(crate) enum Tree {
         NODE {
             /// The key of the node.
             key: Key,
@@ -2225,7 +2225,7 @@ pub mod AvlTreePathOperatorTypes {
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
-    pub use self::Tree::{NODE,LEAF,EMPTY};
+    pub(crate) use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type ValueNode = Arc<Absyn::Path>;
 

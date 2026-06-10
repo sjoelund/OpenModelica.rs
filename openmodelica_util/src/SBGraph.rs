@@ -66,7 +66,7 @@ pub type VertexDescriptor = i32;
 // E - edge set
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SetType {
+pub(crate) enum SetType {
     V = 1,
     F = 2,
     U = 3,
@@ -143,7 +143,7 @@ pub mod IncidenceList {
     pub type INCIDENCE_LIST<VertexT, EdgeT> = IncidenceList<VertexT, EdgeT>;
 
     pub fn new<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<IncidenceList<VertexT, EdgeT>> {
-        pub type Indices = Arc<metamodelica::List<i32>>;
+        pub(crate) type Indices = Arc<metamodelica::List<i32>>;
 
         let mut il: Arc<IncidenceList<VertexT, EdgeT>>;
         il = Arc::new(IncidenceList { vertices: Vector::new(0), edges: Vector::new(0), graph: Vector::new(0), vertEqFn: vertexEq.clone(), edgeEqFn: edgeEq.clone(), vertToString: vertexStr.clone(), edgeToString: edgeStr.clone() });
@@ -325,7 +325,7 @@ pub mod BipartiteIncidenceList {
     pub type BIPARTITE_INCIDENCE_LIST<VertexT, EdgeT> = BipartiteIncidenceList<VertexT, EdgeT>;
 
     pub(crate) fn new<VertexT: Clone + 'static + metamodelica::gc::MMTrace, EdgeT: Clone + 'static + metamodelica::gc::MMTrace>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<BipartiteIncidenceList<VertexT, EdgeT>> {
-        pub type Indices = Arc<metamodelica::List<i32>>;
+        pub(crate) type Indices = Arc<metamodelica::List<i32>>;
 
         let mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>;
         il = Arc::new(BipartiteIncidenceList { F_vertices: Vector::new(0), U_vertices: Vector::new(0), edges: Vector::new(0), graph: Vector::new(0), vertEqFn: vertexEq.clone(), edgeEqFn: edgeEq.clone(), vertToString: vertexStr.clone(), edgeToString: edgeStr.clone() });

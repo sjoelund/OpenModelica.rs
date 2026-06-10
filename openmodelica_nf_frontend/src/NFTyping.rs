@@ -107,7 +107,7 @@ use openmodelica_util_datatypes_basic::Mutable;
 pub mod TypingError {
     use super::*;
     #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum TypingError {
+    pub(crate) enum TypingError {
         NO_ERROR,
         OUT_OF_BOUNDS {
             upperBound: i32,
@@ -134,7 +134,7 @@ pub mod TypingError {
     impl Default for TypingError {
         fn default() -> Self { Self::NO_ERROR }
     }
-    pub use self::TypingError::{NO_ERROR,OUT_OF_BOUNDS};
+    pub(crate) use self::TypingError::{NO_ERROR,OUT_OF_BOUNDS};
     pub(crate) fn isError(mut error: Arc<TypingError>) -> bool {
         let mut isError: bool;
         isError = (::match_deref::match_deref! { match &(error.clone()) {

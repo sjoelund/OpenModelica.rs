@@ -143,7 +143,7 @@ pub type TYPED_ARG = TypedArg;
 /// Determines which type of argument a slot accepts.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SlotType {
+pub(crate) enum SlotType {
     /// Only accepts positional arguments.
     POSITIONAL = 1,
     /// Only accepts named argument.
@@ -166,7 +166,7 @@ impl Default for SlotType {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SlotEvalStatus {
+pub(crate) enum SlotEvalStatus {
     NOT_EVALUATED = 1,
     EVALUATING = 2,
     EVALUATED = 3,

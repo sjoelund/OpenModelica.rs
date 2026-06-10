@@ -130,7 +130,7 @@ pub const fn SECOND() -> Unit { Unit::UNIT { s: 1, m: 0, g: 0, A: 0, K: 0, mol: 
 
 //public constant Unit THRICE = ?
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Token {
+pub(crate) enum Token {
     T_NUMBER {
         number: i32,
     },
@@ -160,7 +160,7 @@ impl metamodelica::gc::MMTrace for Token {
         }
     }
 }
-pub use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
+pub(crate) use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
 
 thread_local! { static __UPDATECREF_TLS: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::NFComponentRef::CREF { node: Arc::new(InstNode::InstNode::NAME_NODE { name: (literal!("jhagemann")).clone() }), subscripts: metamodelica::nil(), ty: crate::NFType::interned_UNKNOWN(), origin: ComponentRef::Origin::CREF.clone(), restCref: crate::NFComponentRef::interned_EMPTY() }); }
 pub(crate) fn UPDATECREF() -> Arc<ComponentRef::NFComponentRef> { __UPDATECREF_TLS.with(|__t| __t.clone()) }

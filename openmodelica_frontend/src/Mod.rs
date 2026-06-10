@@ -121,7 +121,7 @@ pub use self::ModScope::{COMPONENT,EXTENDS,DERIVED};
 
 /// used for error reporting
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum FullMod {
+pub(crate) enum FullMod {
     /// the fully qualified cref and the mod, only used for redeclare
     MOD {
         cref: Arc<DAE::ComponentRef>,
@@ -157,7 +157,7 @@ impl Default for FullMod {
         }
     }
 }
-pub use self::FullMod::{MOD,SUB_MOD};
+pub(crate) use self::FullMod::{MOD,SUB_MOD};
 
 pub type SubMod = Arc<DAE::SubMod>;
 

@@ -79,7 +79,7 @@ use openmodelica_util::UnorderedMap;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum MatchType {
+pub(crate) enum MatchType {
     FOUND = 1,
     NOT_FOUND = 2,
     PARTIAL = 3,

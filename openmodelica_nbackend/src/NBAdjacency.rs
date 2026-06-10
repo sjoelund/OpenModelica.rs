@@ -651,7 +651,7 @@ pub mod Matrix {
     }
 
     pub(crate) fn fullToSparsity(mut full: Arc<Matrix>, mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>) -> Result<Arc<Matrix>> {
-        pub type Dependencies = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
+        pub(crate) type Dependencies = Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>;
 
         let mut sparse: Arc<Matrix>;
         sparse = ({
@@ -1919,7 +1919,7 @@ pub mod Dependency {
 
     #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
-    pub enum Kind {
+    pub(crate) enum Kind {
         REGULAR = 1,
         REDUCTION = 2,
     }

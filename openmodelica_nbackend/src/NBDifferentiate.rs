@@ -105,7 +105,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // ================================
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum DifferentiationType {
+pub(crate) enum DifferentiationType {
     TIME = 1,
     SIMPLE = 2,
     FUNCTION = 3,

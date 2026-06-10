@@ -166,7 +166,7 @@ pub type TypeTable = Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Path>>>;
 // Used to specify which arguments to the conversion functions can be vectorized.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ArgType {
+pub(crate) enum ArgType {
     SCALAR = 1,
     ARRAY = 2,
 }
@@ -1824,7 +1824,7 @@ fn isEqualNameMod(mut mod1: Arc<Absyn::ElementArg>, mut mod2: Arc<Absyn::Element
 }
 
 fn makePlaceholderTable(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<UnorderedMap::UnorderedMap<ArcStr, Option<Arc<Absyn::Exp>>>>> {
-    pub type OptExp = Option<Arc<Absyn::Exp>>;
+    pub(crate) type OptExp = Option<Arc<Absyn::Exp>>;
 
     let mut placeholders: Arc<UnorderedMap::UnorderedMap<ArcStr, Option<Arc<Absyn::Exp>>>>;
     placeholders = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);

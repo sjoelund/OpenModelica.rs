@@ -72,7 +72,7 @@ pub type FrameType = NFSCodeEnv::FrameType;
 pub type Import = Absyn::Import;
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum RedeclareReplaceStrategy {
+pub(crate) enum RedeclareReplaceStrategy {
     INSERT_REDECLARES,
     IGNORE_REDECLARES,
 }
@@ -84,10 +84,10 @@ impl metamodelica::gc::MMTrace for RedeclareReplaceStrategy {
         }
     }
 }
-pub use self::RedeclareReplaceStrategy::{INSERT_REDECLARES,IGNORE_REDECLARES};
+pub(crate) use self::RedeclareReplaceStrategy::{INSERT_REDECLARES,IGNORE_REDECLARES};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum LookupStrategy {
+pub(crate) enum LookupStrategy {
     NO_BUILTIN_TYPES,
     LOOKUP_ANY,
 }
@@ -99,7 +99,7 @@ impl metamodelica::gc::MMTrace for LookupStrategy {
         }
     }
 }
-pub use self::LookupStrategy::{NO_BUILTIN_TYPES,LOOKUP_ANY};
+pub(crate) use self::LookupStrategy::{NO_BUILTIN_TYPES,LOOKUP_ANY};
 
 // Default parts of the declarations for builtin elements and types.
 pub(crate) static BUILTIN_PREFIXES: std::sync::LazyLock<Arc<SCode::Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: openmodelica_frontend_types::SCode::Replaceable::interned_NOT_REPLACEABLE() }) });

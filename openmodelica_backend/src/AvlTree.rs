@@ -129,7 +129,7 @@ pub type TREE<Key, Val> = Tree<Key, Val>;
 
 /// The binary tree data structure
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Node<Key, Val> {
+pub(crate) enum Node<Key, Val> {
     NODE {
         /// Val
         item: Item<Key, Val>,
@@ -157,11 +157,11 @@ impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTr
         }
     }
 }
-pub use self::Node::{NODE,NO_NODE};
+pub(crate) use self::Node::{NODE,NO_NODE};
 
 /// Each node in the binary tree can have an item associated with it.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Item<Key, Val> {
+pub(crate) enum Item<Key, Val> {
     ITEM {
         /// Key
         key: Key,
@@ -183,7 +183,7 @@ impl<Key: Clone + metamodelica::gc::MMTrace, Val: Clone + metamodelica::gc::MMTr
         }
     }
 }
-pub use self::Item::{ITEM,NO_ITEM};
+pub(crate) use self::Item::{ITEM,NO_ITEM};
 
 pub(crate) fn name<Key: Clone + 'static + metamodelica::gc::MMTrace, Val: Clone + 'static + metamodelica::gc::MMTrace>(mut tree: Tree<Key, Val>) -> Result<ArcStr> {
     let mut name: ArcStr;

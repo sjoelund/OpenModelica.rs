@@ -116,7 +116,7 @@ impl metamodelica::gc::MMTrace for Status {
 // TRUE -> relation must be inverted, FALSE -> relation must not be inverted, UNKNOWN -> TODO: make relation depend on derivative of the expr
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum RelationInversion {
+pub(crate) enum RelationInversion {
     TRUE = 1,
     FALSE = 2,
     UNKNOWN = 3,
@@ -144,7 +144,7 @@ pub(crate) fn statusString(mut status: Status) -> ArcStr {
 }
 
 pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
-    pub type StrongComponentLst = Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+    pub(crate) type StrongComponentLst = Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
 
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut implicit_index_ptr: Pointer::Pointer<i32> = Pointer::create(1);
@@ -233,7 +233,7 @@ pub(crate) fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<Backend
 }
 
 pub(crate) fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut implicit_index_ptr: Pointer::Pointer<i32>, mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<Arc<Partition::Partition>> {
-    pub type EquationPointerList = Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    pub(crate) type EquationPointerList = Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
 
     let mut partition: Arc<Partition::Partition> = partition;
     let mut kind: BPartition::Kind = BPartition::Partition::getKind(partition.clone());

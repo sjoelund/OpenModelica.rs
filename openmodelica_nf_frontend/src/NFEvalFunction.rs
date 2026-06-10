@@ -89,7 +89,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum FlowControl {
+pub(crate) enum FlowControl {
     NEXT = 1,
     CONTINUE = 2,
     BREAK = 3,

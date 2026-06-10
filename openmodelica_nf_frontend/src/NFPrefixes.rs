@@ -415,7 +415,7 @@ impl metamodelica::gc::MMTrace for AccessLevel {
 }
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Replaceable {
+pub(crate) enum Replaceable {
     REPLACEABLE {
         constrainingClass: Option<Arc<InstNode::InstNode>>,
     },
@@ -435,7 +435,7 @@ impl metamodelica::gc::MMTrace for Replaceable {
 impl Default for Replaceable {
     fn default() -> Self { Self::NOT_REPLACEABLE }
 }
-pub use self::Replaceable::{REPLACEABLE,NOT_REPLACEABLE};
+pub(crate) use self::Replaceable::{REPLACEABLE,NOT_REPLACEABLE};
 
 pub(crate) fn parallelismFromSCode(mut scodePar: SCode::Parallelism) -> Result<Parallelism> {
     let mut par: Parallelism;

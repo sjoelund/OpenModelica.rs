@@ -62,7 +62,7 @@ use openmodelica_util_datatypes_basic::List;
 pub type HashTable = (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Absyn::Program)>>), i32, (HashTableStringToProgram::FuncHashCref, HashTableStringToProgram::FuncCrefEqual, HashTableStringToProgram::FuncCrefStr, HashTableStringToProgram::FuncExpStr));
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum PackageOrder {
+pub(crate) enum PackageOrder {
     CLASSPART {
         cp: Arc<Absyn::ClassPart>,
     },
@@ -101,10 +101,10 @@ impl Default for PackageOrder {
         }
     }
 }
-pub use self::PackageOrder::{CLASSPART,ELEMENT,CLASSLOAD};
+pub(crate) use self::PackageOrder::{CLASSPART,ELEMENT,CLASSLOAD};
 
 #[derive(Clone, metamodelica::ReferenceEq)]
-pub enum LoadFileStrategy {
+pub(crate) enum LoadFileStrategy {
     STRATEGY_HASHTABLE {
         ht: HashTable,
     },
@@ -175,7 +175,7 @@ impl std::fmt::Debug for LoadFileStrategy {
     }
 }
 
-pub use self::LoadFileStrategy::{STRATEGY_HASHTABLE,STRATEGY_ON_DEMAND};
+pub(crate) use self::LoadFileStrategy::{STRATEGY_HASHTABLE,STRATEGY_ON_DEMAND};
 
 pub fn loadClass(mut inPath: Arc<Absyn::Path>, mut priorityList: Arc<metamodelica::List<ArcStr>>, mut modelicaPath: ArcStr, mut encoding: Option<ArcStr>, mut requireExactVersion: bool, mut encrypted: bool) -> Result<Absyn::Program> {
     let mut outProgram: Absyn::Program;

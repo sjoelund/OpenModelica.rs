@@ -50,7 +50,7 @@ use openmodelica_util::Error;
 use openmodelica_util::Util;
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum NFRangeIterator {
+pub(crate) enum NFRangeIterator {
     INT_RANGE {
         current: i32,
         last: i32,
@@ -114,7 +114,7 @@ impl Default for NFRangeIterator {
         }
     }
 }
-pub use self::NFRangeIterator::{INT_RANGE,INT_STEP_RANGE,REAL_RANGE,ARRAY_RANGE,INVALID_RANGE};
+pub(crate) use self::NFRangeIterator::{INT_RANGE,INT_STEP_RANGE,REAL_RANGE,ARRAY_RANGE,INVALID_RANGE};
 pub(crate) fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
     let mut isValid: bool;
     isValid = (::match_deref::match_deref! { match &(iterator.clone()) {

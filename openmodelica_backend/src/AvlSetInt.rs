@@ -61,7 +61,7 @@ pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
 
 /// The binary tree data structure.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Tree {
+pub(crate) enum Tree {
     NODE {
         /// The key of the node.
         key: Key,
@@ -106,7 +106,7 @@ pub fn interned_EMPTY() -> Arc<Tree> { Tree::interned_EMPTY() }
 impl Default for Tree {
     fn default() -> Self { Self::EMPTY }
 }
-pub use self::Tree::{NODE,LEAF,EMPTY};
+pub(crate) use self::Tree::{NODE,LEAF,EMPTY};
 
 pub type ValueNode = i32;
 

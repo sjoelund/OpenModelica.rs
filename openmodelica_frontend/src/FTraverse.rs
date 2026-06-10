@@ -67,7 +67,7 @@ pub type Visited = FCore::Visited;
 pub type Graph = FCore::Graph;
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum WalkOptions {
+pub(crate) enum WalkOptions {
     /// breadth first search
     BFS,
     /// depth first search
@@ -81,10 +81,10 @@ impl metamodelica::gc::MMTrace for WalkOptions {
         }
     }
 }
-pub use self::WalkOptions::{BFS,DFS};
+pub(crate) use self::WalkOptions::{BFS,DFS};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum VisitOptions {
+pub(crate) enum VisitOptions {
     /// mark node as visited and report an error if already visited
     VISIT,
     /// do not mark as visited
@@ -98,10 +98,10 @@ impl metamodelica::gc::MMTrace for VisitOptions {
         }
     }
 }
-pub use self::VisitOptions::{VISIT,NO_VISIT};
+pub(crate) use self::VisitOptions::{VISIT,NO_VISIT};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Options {
+pub(crate) enum Options {
     NO_OPTIONS,
     OPTIONS {
         ws: WalkOptions,
@@ -120,7 +120,7 @@ impl metamodelica::gc::MMTrace for Options {
         }
     }
 }
-pub use self::Options::{NO_OPTIONS,OPTIONS};
+pub(crate) use self::Options::{NO_OPTIONS,OPTIONS};
 
 pub(crate) fn walk<Extra: Clone + 'static + metamodelica::gc::MMTrace>(mut inGraph: Graph, mut inWalker: Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>, mut inExtra: Extra, mut inOptions: Options) -> (Graph, Extra) {
     pub type Walker<Extra: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn((FCore::Graph, metamodelica::Array<FCore::Node>, Extra)) -> Result<(FCore::Graph, metamodelica::Array<FCore::Node>, Extra)> + 'static>;

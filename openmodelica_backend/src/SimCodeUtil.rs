@@ -8139,7 +8139,7 @@ fn getStateInfo(mut idx: i32, mut vars: BackendDAE::Variables, mut stateInfoIn: 
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SimVarsIndex {
+pub(crate) enum SimVarsIndex {
     state = 1,
     derivative = 2,
     alg = 3,

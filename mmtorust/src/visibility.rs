@@ -139,6 +139,32 @@ fn import_item_targets(import: &Absyn::Import) -> Vec<String> {
     }
 }
 
+/// Record that a reference (resolved to `target`/`node`) appearing in crate
+/// `ref_crate` keeps its target public when it lives in another crate. Covers
+/// both the directly-narrowable target (a function or constant) and the nominal
+/// *types* the target's resolved type names — so a constructor or enum-variant
+/// reference used as a value (`Op.ADD`, `SomeRecord(...)`) keeps the backing
+/// enum/struct public even though it is named only in expression position.
+fn keep_ref_target(
+    target: &str,
+    node: &NameNode<'_>,
+    ref_crate: &str,
+    crate_map: &BTreeMap<&str, &str>,
+    keep_public: &mut BTreeSet<String>,
+) {
+    let crate_of = |q: &str| crate_map.get(q.split('.').next().unwrap_or(q)).copied();
+    if is_narrowable_item(node) && crate_of(target).is_some_and(|c| c != ref_crate) {
+        keep_public.insert(target.to_owned());
+    }
+    let mut tys: Vec<String> = Vec::new();
+    ty_referenced_qnames(&node.ty, &mut tys);
+    for u in tys {
+        if crate_of(&u).is_some_and(|c| c != ref_crate) {
+            keep_public.insert(u);
+        }
+    }
+}
+
 /// Compute the cross-crate visibility classification for every function.
 pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
     let top_level = &hier.top_level;
@@ -166,14 +192,12 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
         let Some(ref_crate) = crate_of(qname) else { continue };
 
         // Direct references in the body and in component default expressions: a
-        // narrowable target (function or constant) resolving into another crate
-        // keeps it pub.
+        // narrowable target (function/constant) — or a type named through a
+        // constructor / enum-variant value — resolving into another crate keeps
+        // it pub.
         for raw in &RefScan::scan_class(class).refs {
-            if let Some((target, n)) = resolve_call_node(raw, top_level, qname)
-                && is_narrowable_item(n)
-                && crate_of(&target).is_some_and(|def_crate| def_crate != ref_crate)
-            {
-                keep_public.insert(target);
+            if let Some((target, n)) = resolve_call_node(raw, top_level, qname) {
+                keep_ref_target(&target, n, ref_crate, &crate_map, &mut keep_public);
             }
         }
 
@@ -226,7 +250,144 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> VisibilityInfo {
         keep_public.insert(q.to_owned());
     }
 
+    // ── Types ────────────────────────────────────────────────────────────────
+    // A generated type (record / uniontype / enumeration / type alias) is kept
+    // `pub` when either:
+    //   (a) it is referenced from another crate — directly named in a
+    //       signature, field, local, alias target, … (the seed walk below), or
+    //   (b) it is exposed through the public interface of a kept-public item:
+    //       a `pub fn`'s signature types, a `pub` constant's type, a `pub`
+    //       record's field types, a `pub` uniontype's variant field types, a
+    //       `pub` alias's target — Rust's `private_interfaces` rule. This is a
+    //       fixpoint: a type kept public by (b) in turn exposes its own
+    //       interface types. (Single-record uniontypes stay `pub` regardless —
+    //       see `Ty::AliasTo` handling — so this pass never narrows them.)
+    seed_cross_crate_types(top_level, top_level, "", &crate_map, &mut keep_public);
+
+    let mut worklist: Vec<String> = keep_public.iter().cloned().collect();
+    while let Some(q) = worklist.pop() {
+        let Some(node) = crate::hierarchy::lookup_node(&q, top_level) else { continue };
+        let mut refs: Vec<String> = Vec::new();
+        interface_qnames(node, &mut refs);
+        for u in refs {
+            // Only narrowable *types* are kept here; functions/constants are
+            // already resolved above. `lookup_node` confirms `u` names a type
+            // node (it always should, coming from `ty_referenced_qnames`).
+            if keep_public.insert(u.clone()) {
+                worklist.push(u);
+            }
+        }
+    }
+
     VisibilityInfo { keep_public }
+}
+
+/// The nominal type FQNs a resolved [`Ty`] names. Containers/tuples/function
+/// types are walked transitively. `Ty::AliasTo` (single-record uniontypes) is
+/// skipped: those stay `pub` unconditionally, so a reference to one never
+/// forces anything to stay public — which also sidesteps that variant carrying
+/// only a simple (non-qualified) name.
+fn ty_referenced_qnames(ty: &Ty, out: &mut Vec<String>) {
+    match ty {
+        Ty::RustStruct(q) | Ty::RustEnum(q) | Ty::Enumeration(q) | Ty::ExternalObject(q) => {
+            out.push(q.clone());
+        }
+        Ty::UnionTypeVariant(union_q, _) => out.push(union_q.clone()),
+        Ty::Generic(name, args) => {
+            if name.contains('.') { out.push(name.clone()); }
+            for a in args { ty_referenced_qnames(a, out); }
+        }
+        Ty::List(t) | Ty::Array(t) | Ty::Option(t) | Ty::Range(t) => ty_referenced_qnames(t, out),
+        Ty::Tuple(ts) => for t in ts { ty_referenced_qnames(t, out); },
+        Ty::Function { inputs, output, .. } => {
+            for i in inputs { ty_referenced_qnames(&i.ty, out); }
+            ty_referenced_qnames(output, out);
+        }
+        // Scalars, type vars, AliasTo, FunctionAlias, Unit, Unknown — no
+        // narrowable nominal type to keep.
+        _ => {}
+    }
+}
+
+/// The type FQNs exposed through the public interface of `node`: a function's
+/// signature, a constant's type, a record's field types, a uniontype's variant
+/// field types, or a type alias's target.
+fn interface_qnames(node: &NameNode<'_>, out: &mut Vec<String>) {
+    match &node.kind {
+        NodeKind::Class(c) => {
+            use Absyn::Restriction::*;
+            match &c.restriction {
+                // Function: inputs + output (carried by the resolved `Function`
+                // type). Protected locals are *not* part of the interface.
+                R_FUNCTION { .. } => ty_referenced_qnames(&node.ty, out),
+                // Uniontype: every variant record's fields.
+                R_UNIONTYPE => {
+                    for rec in node.children.values() {
+                        if let NodeKind::Class(_) = &rec.kind {
+                            for field in rec.children.values() {
+                                if matches!(&field.kind, NodeKind::Component(_)) {
+                                    ty_referenced_qnames(&field.ty, out);
+                                }
+                            }
+                        }
+                    }
+                }
+                // Record / metarecord: own fields.
+                R_RECORD | R_METARECORD { .. } => {
+                    for field in node.children.values() {
+                        if matches!(&field.kind, NodeKind::Component(_)) {
+                            ty_referenced_qnames(&field.ty, out);
+                        }
+                    }
+                }
+                // Type alias / enumeration / everything else: the resolved type
+                // (alias target; enumerations expose nothing).
+                _ => ty_referenced_qnames(&node.ty, out),
+            }
+        }
+        // A constant component exposes its type.
+        NodeKind::Component(_) => ty_referenced_qnames(&node.ty, out),
+        _ => {}
+    }
+}
+
+/// Seed `keep_public` with every type referenced across a crate boundary: walk
+/// every node and, for each nominal type its resolved type names, keep that
+/// type `pub` when it lives in a different crate than the referencing node.
+fn seed_cross_crate_types<'a>(
+    nodes: &BTreeMap<String, NameNode<'a>>,
+    top_level: &BTreeMap<String, NameNode<'a>>,
+    prefix: &str,
+    crate_map: &BTreeMap<&str, &str>,
+    keep_public: &mut BTreeSet<String>,
+) {
+    let crate_of = |qname: &str| -> Option<&str> {
+        crate_map.get(qname.split('.').next().unwrap_or(qname)).copied()
+    };
+    for (name, node) in nodes {
+        let qname = if prefix.is_empty() { name.clone() } else { format!("{prefix}.{name}") };
+        if let Some(ref_crate) = crate_of(&qname) {
+            let mut refs: Vec<String> = Vec::new();
+            ty_referenced_qnames(&node.ty, &mut refs);
+            for u in refs {
+                if crate_of(&u).is_some_and(|c| c != ref_crate) {
+                    keep_public.insert(u);
+                }
+            }
+            // A derived type alias (`type X = Y`) is kept `pub` unconditionally:
+            // codegen emits the *alias name* at use sites (via the syntactic
+            // `TypeSpec`, recovered by `field_type_alias_name`) while the
+            // resolved `Ty` shows only the underlying type, so a cross-crate
+            // alias reference is invisible to this resolved-type analysis.
+            // Keeping aliases public avoids that gap; the fixpoint then keeps the
+            // alias target public too (no `private_interfaces`). Aliases are few,
+            // so the lost narrowing is negligible.
+            if matches!(&node.kind, NodeKind::Class(c) if matches!(&c.body, MM::ClassDef::Derived { .. })) {
+                keep_public.insert(qname.clone());
+            }
+        }
+        seed_cross_crate_types(&node.children, top_level, &qname, crate_map, keep_public);
+    }
 }
 
 fn scan_component_defaults<'a>(
@@ -250,11 +411,8 @@ fn scan_component_defaults<'a>(
             let mut scan = RefScan::default();
             scan.scan_exp(exp);
             for raw in &scan.refs {
-                if let Some((target, n)) = resolve_call_node(raw, top_level, prefix)
-                    && is_narrowable_item(n)
-                    && crate_of(&target).is_some_and(|def_crate| def_crate != ref_crate)
-                {
-                    keep_public.insert(target);
+                if let Some((target, n)) = resolve_call_node(raw, top_level, prefix) {
+                    keep_ref_target(&target, n, ref_crate, crate_map, keep_public);
                 }
             }
         }
@@ -280,11 +438,8 @@ fn scan_imports<'a>(
             for target in import_item_targets(&m.import) {
                 // Resolve in the importing scope (handles relative imports and
                 // import-alias chains, same as codegen's `use`-line emission).
-                if let Some((q, n)) = resolve_call_node(&target, top_level, prefix)
-                    && is_narrowable_item(n)
-                    && crate_of(&q).is_some_and(|def_crate| def_crate != ref_crate)
-                {
-                    keep_public.insert(q);
+                if let Some((q, n)) = resolve_call_node(&target, top_level, prefix) {
+                    keep_ref_target(&q, n, ref_crate, crate_map, keep_public);
                 }
             }
         }

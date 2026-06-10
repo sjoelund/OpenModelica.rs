@@ -201,7 +201,7 @@ pub type TASKGRAPHMETA = TaskGraphMeta;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum VariableType {
+pub(crate) enum VariableType {
     INTEGER = 1,
     REAL = 2,
     BOOLEAN = 3,

@@ -141,7 +141,7 @@ pub type PREFERRED = Preferred;
 
 /// internal client list representation
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Client_e {
+pub(crate) enum Client_e {
     CLIENT_E {
         components: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
         typeSpec: TypeSpec,
@@ -177,7 +177,7 @@ impl Client_e {
     }
 }
 pub fn interned_NO_PRED() -> Arc<Client_e> { Client_e::interned_NO_PRED() }
-pub use self::Client_e::{CLIENT_E,NO_PRED};
+pub(crate) use self::Client_e::{CLIENT_E,NO_PRED};
 
 pub fn inferBindings(mut model_path: Path, mut env: Absyn::Program) -> Result<Absyn::Program> {
     let mut out_model_def: Absyn::Program;

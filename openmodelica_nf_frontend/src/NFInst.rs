@@ -1123,7 +1123,7 @@ pub(crate) fn modifyExtends(mut extendsNode: Arc<InstNode::InstNode>, mut scope:
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ExtendsVisibility {
+pub(crate) enum ExtendsVisibility {
     PUBLIC = 1,
     DERIVED_PROTECTED = 2,
     PROTECTED = 3,

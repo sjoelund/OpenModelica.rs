@@ -1518,7 +1518,7 @@ impl Default for Parallelism {
 pub use self::Parallelism::{PARGLOBAL,PARLOCAL,NON_PARALLEL};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum FlowStream {
+pub(crate) enum FlowStream {
     FLOW,
     STREAM,
     NOT_FLOW_STREAM,
@@ -1532,7 +1532,7 @@ impl metamodelica::gc::MMTrace for FlowStream {
         }
     }
 }
-pub use self::FlowStream::{FLOW,STREAM,NOT_FLOW_STREAM};
+pub(crate) use self::FlowStream::{FLOW,STREAM,NOT_FLOW_STREAM};
 
 /// Variability
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]

@@ -103,7 +103,7 @@ pub type IMPORT_TABLE = ImportTable;
 ///  used, i.e. when replacements are done, and converted into PROCESSED_MODIFIERs
 ///  which are environment items ready to be replaced in the environment.
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Redeclaration {
+pub(crate) enum Redeclaration {
     RAW_MODIFIER {
         modifier: Arc<SCode::Element>,
     },
@@ -132,7 +132,7 @@ impl Default for Redeclaration {
         }
     }
 }
-pub use self::Redeclaration::{RAW_MODIFIER,PROCESSED_MODIFIER};
+pub(crate) use self::Redeclaration::{RAW_MODIFIER,PROCESSED_MODIFIER};
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Extends {
@@ -370,7 +370,7 @@ pub mod EnvTree {
 
     /// The binary tree data structure.
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Tree {
+    pub(crate) enum Tree {
         NODE {
             /// The key of the node.
             key: Key,
@@ -419,7 +419,7 @@ pub mod EnvTree {
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
-    pub use self::Tree::{NODE,LEAF,EMPTY};
+    pub(crate) use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type ValueNode = ArcStr;
 

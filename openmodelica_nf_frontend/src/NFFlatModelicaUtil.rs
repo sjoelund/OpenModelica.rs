@@ -59,7 +59,7 @@ use openmodelica_util::Util;
 // filtering out specific annotations for dumping.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ElementType {
+pub(crate) enum ElementType {
     ROOT_CLASS = 1,
     CLASS = 2,
     FUNCTION = 3,

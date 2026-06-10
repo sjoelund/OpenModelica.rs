@@ -191,7 +191,7 @@ pub fn crefFirstIdent(mut inComponentRef: Arc<DAE::ComponentRef>) -> Result<ArcS
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum CompareWithSubsType {
+pub(crate) enum CompareWithSubsType {
     WithoutSubscripts = 1,
     WithGenericSubscript = 2,
     WithGenericSubscriptNotAlphabetic = 3,

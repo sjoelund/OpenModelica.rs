@@ -47,7 +47,7 @@ use openmodelica_util::Flags;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ScalarizeMode {
+pub(crate) enum ScalarizeMode {
     SCALARIZED = 1,
     PARTIALLY_SCALARIZED = 2,
     NOT_SCALARIZED = 3,
@@ -67,7 +67,7 @@ impl Default for ScalarizeMode {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum RecordMode {
+pub(crate) enum RecordMode {
     WITH_RECORDS = 1,
     WITHOUT_RECORDS = 2,
 }

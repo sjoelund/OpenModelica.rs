@@ -862,7 +862,7 @@ pub mod Iterator {
     }
 
     pub(crate) fn simplifyRangeCondition(mut iter: Arc<Iterator>, mut condition: Arc<Expression::NFExpression>) -> Result<(Arc<Iterator>, Solve::Status)> {
-        pub type IterOpt = Option<Arc<Iterator>>;
+        pub(crate) type IterOpt = Option<Arc<Iterator>>;
 
         let mut iter: Arc<Iterator> = iter;
         let mut status: Solve::Status = Solve::Status::UNPROCESSED;

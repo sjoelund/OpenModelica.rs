@@ -412,7 +412,7 @@ pub fn valueArray<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'st
 }
 
 pub(crate) fn toVector<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
-    pub type EntryT<K, V> = (K, V);
+    pub(crate) type EntryT<K, V> = (K, V);
 
     let mut entries: Arc<Vector::Vector<(K, V)>>;
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();

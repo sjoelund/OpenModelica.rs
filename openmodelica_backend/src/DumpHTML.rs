@@ -72,7 +72,7 @@ pub type STYLE = Style;
 
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Tag {
+pub(crate) enum Tag {
     HEADING {
         stage: i32,
         text: ArcStr,
@@ -158,7 +158,7 @@ impl Default for Tag {
         }
     }
 }
-pub use self::Tag::{HEADING,HYPERLINK,ANKER,LINE,DIVISION,SCRIPT,SCRIPT_BODY,CANVAS};
+pub(crate) use self::Tag::{HEADING,HYPERLINK,ANKER,LINE,DIVISION,SCRIPT,SCRIPT_BODY,CANVAS};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct Document {

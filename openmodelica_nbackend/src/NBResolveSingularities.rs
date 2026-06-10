@@ -85,7 +85,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NB imports
 // util imports
 pub(crate) fn indexReduction(mut adj: Arc<Adjacency::Matrix::Matrix>, mut full: Arc<Adjacency::Matrix::Matrix>, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: NBPartition::Kind, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<NFFunction::Function::Function>>>, mut matching: Arc<Matching::NBMatching>, mut mapping_opt: Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> {
-    pub type SliceSet = Arc<UnorderedSet::UnorderedSet<i32>>;
+    pub(crate) type SliceSet = Arc<UnorderedSet::UnorderedSet<i32>>;
 
     let mut adj: Arc<Adjacency::Matrix::Matrix> = adj;
     let mut full: Arc<Adjacency::Matrix::Matrix> = full;

@@ -89,7 +89,7 @@ pub type FunctionVar = (Arc<DAE::Element>, Option<Arc<Values::Value>>);
 // situations. All evaluation functions returns a LoopControl variable that
 // tells the caller whether it should continue evaluating or not.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum LoopControl {
+pub(crate) enum LoopControl {
     /// Continue to the next statement.
     NEXT,
     /// Exit the current loop.
@@ -109,7 +109,7 @@ impl metamodelica::gc::MMTrace for LoopControl {
 impl Default for LoopControl {
     fn default() -> Self { Self::NEXT }
 }
-pub use self::LoopControl::{NEXT,BREAK,RETURN};
+pub(crate) use self::LoopControl::{NEXT,BREAK,RETURN};
 
 // [EVAL]  Constant evaluation functions.
 pub fn evaluate(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFunction: DAE::Function, mut inFunctionArguments: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
@@ -2486,7 +2486,7 @@ fn sortFunctionVarsByDependency(mut inFuncVars: Arc<metamodelica::List<(Arc<DAE:
 }
 
 fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>> {
-    pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
+    pub(crate) type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outDependencies: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>;
     outDependencies = 'mc: {
@@ -2531,7 +2531,7 @@ fn getElementDependencies(mut inElement: FunctionVar, mut inAllElements: Arc<met
 }
 
 fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> (Arc<DAE::Dimension>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) {
-    pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
+    pub(crate) type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outDimension: Arc<DAE::Dimension>;
     let mut outArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
@@ -2563,7 +2563,7 @@ fn getElementDependenciesFromDims(mut inDimension: Arc<DAE::Dimension>, mut inAr
 }
 
 fn getElementDependenciesTraverserEnter(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> (Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) {
-    pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
+    pub(crate) type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outExp: Arc<DAE::Exp>;
     let mut outArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
@@ -2618,7 +2618,7 @@ fn getElementDependenciesTraverserEnter(mut inExp: Arc<DAE::Exp>, mut inArg: (Ar
 }
 
 fn getElementDependenciesTraverserExit(mut inExp: Arc<DAE::Exp>, mut inArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>))> {
-    pub type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
+    pub(crate) type Arg = (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);
 
     let mut outExp: Arc<DAE::Exp>;
     let mut outArg: (Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>, Arc<metamodelica::List<ArcStr>>);

@@ -136,7 +136,7 @@ use openmodelica_util_datatypes_basic::List;
 
 /* used for new backend */
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum TranslateModelKind {
+pub(crate) enum TranslateModelKind {
     NORMAL,
     XML,
     FMU {
@@ -157,7 +157,7 @@ impl metamodelica::gc::MMTrace for TranslateModelKind {
         }
     }
 }
-pub use self::TranslateModelKind::{NORMAL,XML,FMU};
+pub(crate) use self::TranslateModelKind::{NORMAL,XML,FMU};
 
 pub(crate) fn createSimulationSettings(mut startTime: metamodelica::Real, mut stopTime: metamodelica::Real, mut inumberOfIntervals: i32, mut tolerance: metamodelica::Real, mut method: ArcStr, mut options: ArcStr, mut outputFormat: ArcStr, mut variableFilter: ArcStr, mut cflags: ArcStr, mut simflags: ArcStr) -> SimCode::SimulationSettings {
     let mut simSettings: SimCode::SimulationSettings;

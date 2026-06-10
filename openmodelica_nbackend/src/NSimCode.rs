@@ -1019,7 +1019,7 @@ pub mod DaeModeData {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum DaeModeConfig {
+pub(crate) enum DaeModeConfig {
     ALL = 1,
     DYNAMIC = 2,
 }

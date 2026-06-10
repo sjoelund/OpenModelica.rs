@@ -2834,7 +2834,7 @@ pub use self::Dimension::{DIM_INTEGER,DIM_BOOLEAN,DIM_ENUM,DIM_EXP,DIM_UNKNOWN};
 //        this should be used for typechecking with unknown dimensions
 //        when running checkModel. the binding acts like a type variable.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum DimensionBinding {
+pub(crate) enum DimensionBinding {
     /// dimension is not bound
     DIM_UNBOUND,
     /// dimension is bound to an expression with constrains
@@ -2857,7 +2857,7 @@ impl metamodelica::gc::MMTrace for DimensionBinding {
         }
     }
 }
-pub use self::DimensionBinding::{DIM_UNBOUND,DIM_BOUND};
+pub(crate) use self::DimensionBinding::{DIM_UNBOUND,DIM_BOUND};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct FuncArg {

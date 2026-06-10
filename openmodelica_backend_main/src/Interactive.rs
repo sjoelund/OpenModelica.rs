@@ -178,7 +178,7 @@ pub use self::GraphicEnvCache::{GRAPHIC_ENV_NO_CACHE,GRAPHIC_ENV_PARTIAL_CACHE,G
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Access {
+pub(crate) enum Access {
     hide = 1,
     icon = 2,
     documentation = 3,
@@ -7758,7 +7758,7 @@ pub(crate) fn getNamedAnnotationValueInClass(mut classPath: Arc<Absyn::Path>, mu
 pub(crate) static USES_PATH: std::sync::LazyLock<Arc<Absyn::Path>> = std::sync::LazyLock::new(|| { Arc::new(Absyn::Path::IDENT { name: (literal!("uses")).clone() }) });
 
 pub(crate) fn getUsesAnnotation(mut program: Absyn::Program) -> Result<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>> {
-    pub type Annotation = (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool);
+    pub(crate) type Annotation = (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool);
 
     let mut outUses: Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>> = metamodelica::nil();
     let mut opt_uses: Option<Arc<metamodelica::List<(Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List<ArcStr>>, bool)>>>;

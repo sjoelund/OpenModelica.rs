@@ -401,7 +401,7 @@ pub(crate) fn mergeScalars3(mut elements: Arc<metamodelica::List<Arc<SCode::Elem
 }
 
 pub(crate) fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>>, Arc<metamodelica::List<Arc<SCode::Element>>>)> {
-    pub type ElementList = Arc<metamodelica::List<Arc<SCode::Element>>>;
+    pub(crate) type ElementList = Arc<metamodelica::List<Arc<SCode::Element>>>;
 
     fn append_merge(mut oldValue: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>, mut elem: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
         let mut newValue: Arc<metamodelica::List<Arc<SCode::Element>>>;

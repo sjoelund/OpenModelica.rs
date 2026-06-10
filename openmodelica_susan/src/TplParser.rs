@@ -83,7 +83,7 @@ pub mod CacheTree {
 
     /// The binary tree data structure.
     #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Tree {
+    pub(crate) enum Tree {
         NODE {
             /// The key of the node.
             key: Key,
@@ -132,7 +132,7 @@ pub mod CacheTree {
     impl Default for Tree {
         fn default() -> Self { Self::EMPTY }
     }
-    pub use self::Tree::{NODE,LEAF,EMPTY};
+    pub(crate) use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type ValueNode = ArcStr;
 

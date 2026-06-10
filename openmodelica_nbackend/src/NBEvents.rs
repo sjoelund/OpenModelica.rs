@@ -318,7 +318,7 @@ pub mod EventInfo {
 pub mod TimeEvent {
     use super::*;
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum TimeEvent {
+    pub(crate) enum TimeEvent {
         /// e.g. time > 0.5
         SINGLE {
             /// unique sample index
@@ -368,7 +368,7 @@ pub mod TimeEvent {
             }
         }
     }
-    pub use self::TimeEvent::{SINGLE,SAMPLE};
+    pub(crate) use self::TimeEvent::{SINGLE,SAMPLE};
     pub(crate) fn toString(mut timeEvent: Arc<TimeEvent>, mut printIndex: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         let mut iter: Arc<Iterator::Iterator>;

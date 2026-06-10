@@ -453,7 +453,7 @@ fn resolveAux(mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc
 fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut aux_index: Pointer::Pointer<i32>, mut eqn_index: Pointer::Pointer<i32>, mut init: bool) -> Result<Arc<Equation::Equation>> {
     #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
-    pub enum Depth {
+    pub(crate) enum Depth {
         FULL = 1,
         CONDITION = 2,
         STOP = 3,
@@ -740,7 +740,7 @@ fn replaceException(mut r#fn: Arc<Function::Function>) -> Result<bool> {
 }
 
 fn filterFrames(mut exp: Arc<Expression::NFExpression>, mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>>) -> Result<Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>> {
-    pub type FrameTuple = (Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>);
+    pub(crate) type FrameTuple = (Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>);
 
     fn collectFrames(mut exp: Arc<Expression::NFExpression>, mut frame_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, (Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut new_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, (Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;

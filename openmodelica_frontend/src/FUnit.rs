@@ -116,7 +116,7 @@ impl Default for Unit {
 pub use self::Unit::{UNIT,MASTER,UNKNOWN};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Token {
+pub(crate) enum Token {
     T_NUMBER {
         number: i32,
     },
@@ -146,7 +146,7 @@ impl metamodelica::gc::MMTrace for Token {
         }
     }
 }
-pub use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
+pub(crate) use self::Token::{T_NUMBER,T_UNIT,T_MUL,T_DIV,T_LPAREN,T_RPAREN};
 
 thread_local! { static __UPDATECREF_TLS: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("jhagemann")).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }); }
 pub(crate) fn UPDATECREF() -> Arc<DAE::ComponentRef> { __UPDATECREF_TLS.with(|__t| __t.clone()) }

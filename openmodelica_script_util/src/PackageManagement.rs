@@ -1626,7 +1626,7 @@ pub(crate) static supportLevels: std::sync::LazyLock<Arc<metamodelica::List<ArcS
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SupportLevel {
+pub(crate) enum SupportLevel {
     noSupport = 1,
     unknown = 2,
     obsolete = 3,

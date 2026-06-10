@@ -614,7 +614,7 @@ pub mod SimVar {
 pub mod Alias {
     use super::*;
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Alias {
+    pub(crate) enum Alias {
         NO_ALIAS,
         /// General alias expression with a coefficent.
         ///      var := gain * alias + offset
@@ -652,7 +652,7 @@ pub mod Alias {
     impl Default for Alias {
         fn default() -> Self { Self::NO_ALIAS }
     }
-    pub use self::Alias::{NO_ALIAS,ALIAS};
+    pub(crate) use self::Alias::{NO_ALIAS,ALIAS};
     pub(crate) fn fromBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Alias>> {
         let mut alias: Arc<Alias>;
         alias = (::match_deref::match_deref! { match &(binding.clone()) {
@@ -765,7 +765,7 @@ pub mod Alias {
 // kabdelhak: i don't like "CALCULATED_PARAMETER", is there a better way to describe it?
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Causality {
+pub(crate) enum Causality {
     NONE = 1,
     OUTPUT = 2,
     INPUT = 3,
@@ -789,7 +789,7 @@ impl Default for Causality {
 // kabdelhak: where is the difference between approx and calculated?
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Initial {
+pub(crate) enum Initial {
     NONE = 1,
     EXACT = 2,
     APPROX = 3,
@@ -811,7 +811,7 @@ impl Default for Initial {
 // kabdelhak: i don't like "TUNABLE" -> just "VARIABLE"?
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum Variability {
+pub(crate) enum Variability {
     CONSTANT = 1,
     FIXED = 2,
     TUNABLE = 3,
@@ -1447,7 +1447,7 @@ pub(crate) fn emptySimVars() -> Arc<SimVars::SimVars> { __emptySimVars_TLS.with(
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum SplitType {
+pub(crate) enum SplitType {
     NONE = 1,
     TYPE = 2,
 }
@@ -1463,7 +1463,7 @@ impl metamodelica::gc::MMTrace for SplitType {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum VarType {
+pub(crate) enum VarType {
     SIMULATION = 1,
     PARAMETER = 2,
     ALIAS = 3,

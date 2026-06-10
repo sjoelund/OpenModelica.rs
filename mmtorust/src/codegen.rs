@@ -398,6 +398,11 @@ struct GenCtx {
     /// `pub(crate)`. Populated by [`crate::visibility::analyze`]; consulted by
     /// [`emit_function`] when choosing the visibility keyword.
     keep_public: BTreeSet<String>,
+    /// While true, [`Self::type_vis`] forces `pub` regardless of the analysis.
+    /// Set around emitting a single-record uniontype's backing struct, whose
+    /// `pub type <record> = <struct>;` alias is always emitted `pub`: a
+    /// `pub(crate)` struct under a `pub` alias would trip `private_interfaces`.
+    force_pub_type: bool,
     /// Per-function set of type parameter names that need a `+ PartialEq`
     /// bound. Populated by [`analyze_partial_eq`] and consulted by
     /// [`emit_function`] when formatting the signature's type parameters.
@@ -647,6 +652,7 @@ impl GenCtx {
             variant_shapes: HashMap::new(),
             fallible_functions,
             keep_public: BTreeSet::new(),
+            force_pub_type: false,
             partial_eq_required,
             reference_eq_required,
             default_required,
@@ -683,6 +689,40 @@ impl GenCtx {
     /// signature regardless of its semantic fallibility classification.
     fn is_fallible_user_fn(&self, qname: &str) -> bool {
         self.fallible_functions.contains(qname)
+    }
+
+    /// Fully-qualified MetaModelica name of an item `name` declared in the
+    /// current emission scope (top package + nested-package path). Matches the
+    /// FQN convention used by [`crate::visibility::analyze`] and the constant /
+    /// function `keep_public` lookups.
+    fn item_qname(&self, name: &str) -> String {
+        if self.current_path.is_empty() {
+            format!("{}.{}", self.top_name, name)
+        } else {
+            format!("{}.{}.{}", self.top_name, self.current_path.join("."), name)
+        }
+    }
+
+    /// Visibility keyword (`"pub "` / `"pub(crate) "`) for a generated item with
+    /// fully-qualified name `qname`: full `pub` only when the visibility
+    /// analysis kept it public, otherwise `pub(crate)`.
+    fn vis_for_qname(&self, qname: &str) -> &'static str {
+        if self.keep_public.contains(qname) { "pub " } else { "pub(crate) " }
+    }
+
+    /// Visibility keyword for a generated *type*. The canonical FQN is taken
+    /// from the node's resolved type when it is a nominal type (`RustStruct` /
+    /// `RustEnum` / `Enumeration` / `ExternalObject` all carry it) — an absolute
+    /// path immune to the `current_path` rewriting that wrapping a uniontype in
+    /// a `pub mod` performs. Falls back to the scope-relative `item_qname(name)`
+    /// for type aliases and other shapes that don't embed a name.
+    fn type_vis(&self, node: &NameNode<'_>, name: &str) -> &'static str {
+        if self.force_pub_type { return "pub "; }
+        let qname = match &node.ty {
+            Ty::RustStruct(q) | Ty::RustEnum(q) | Ty::Enumeration(q) | Ty::ExternalObject(q) => q.clone(),
+            _ => self.item_qname(name),
+        };
+        self.vis_for_qname(&qname)
     }
 
     /// True when `qname` is a *known user-defined function* (present in the
@@ -2547,7 +2587,8 @@ fn emit_external_object<'a>(
     writeln!(out, "{indent}/// representation; this struct exists only to give the type a").unwrap();
     writeln!(out, "{indent}/// nominal identity in Rust so call sites type-check.").unwrap();
     writeln!(out, "{indent}#[derive(Clone, Debug, metamodelica::ReferenceEq)]").unwrap();
-    writeln!(out, "{indent}pub struct {ename} {{").unwrap();
+    let vis = ctx.type_vis(node, name);
+    writeln!(out, "{indent}{vis}struct {ename} {{").unwrap();
     writeln!(out, "{indent}    _opaque: std::sync::Arc<std::sync::Mutex<()>>,").unwrap();
     writeln!(out, "{indent}}}").unwrap();
     writeln!(out).unwrap();
@@ -2695,7 +2736,8 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
             let mut mm_variants: Vec<(String, Vec<String>)> = Vec::new();
             emit_doc_comment(out, &inner, class_doc(c));
             writeln!(out, "{inner}{}", ctx.derives_for(qname)).unwrap();
-            writeln!(out, "{inner}pub enum {ename}{type_params} {{").unwrap();
+            let vis = ctx.vis_for_qname(qname);
+            writeln!(out, "{inner}{vis}enum {ename}{type_params} {{").unwrap();
             let variant_indent = format!("{inner}    ");
             for rec_name in &records_in_order(c) {
                 let Some(rec_node) = node.children.get(rec_name) else { continue };
@@ -2891,7 +2933,10 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
             // `mod Entry` and `enum Entry` are in scope, but
             // `self::Entry::{CLASS,...}` resolves uniquely to the inner
             // type because `self::` skips the value namespace altogether.
-            writeln!(out, "{inner}pub use self::{ename}::{{{variant_list}}};").unwrap();
+            // The re-export must match the enum's visibility: re-exporting the
+            // variants of a `pub(crate)` enum with `pub use` is rejected (E0365).
+            let vis = ctx.vis_for_qname(qname);
+            writeln!(out, "{inner}{vis}use self::{ename}::{{{variant_list}}};").unwrap();
         }
         Ty::AliasTo(_) => {
             // Single-record uniontype: emit one struct named after the uniontype.
@@ -2906,7 +2951,11 @@ fn emit_uniontype<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM:
             emit_doc_comment(out, &inner, class_doc(c));
             if let Some(rec_node) = node.children.get(&rec_name)
                 && let NodeKind::Class(rc) = &rec_node.kind {
+                    // The backing struct is re-exported under the record name via
+                    // a `pub type` alias below, so it must stay `pub`.
+                    let saved = std::mem::replace(&mut ctx.force_pub_type, true);
                     emit_struct(out, name, rec_node, rc, &inner, &mut *ctx, top_level);
+                    ctx.force_pub_type = saved;
                 }
             // Emit a type alias from the record name to the struct so that code
             // written as `RECORD_NAME { field: ... }` or `let RECORD_NAME { field } = ...`
@@ -3037,11 +3086,12 @@ fn emit_struct<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cl
     };
     emit_doc_comment(out, indent, class_doc(c));
     writeln!(out, "{derives}").unwrap();
+    let vis = ctx.type_vis(node, name);
     if fields.is_empty() {
-        writeln!(out, "{indent}pub struct {ename}{type_params};").unwrap();
+        writeln!(out, "{indent}{vis}struct {ename}{type_params};").unwrap();
     } else {
         let scope = current_scope_children(ctx, top_level);
-        writeln!(out, "{indent}pub struct {ename}{type_params} {{").unwrap();
+        writeln!(out, "{indent}{vis}struct {ename}{type_params} {{").unwrap();
         for (fname, fty, fspec) in &fields {
             let ty_str = scope
                 .and_then(|sc| field_type_alias_name(fspec, sc))
@@ -3781,7 +3831,8 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
             collect_type_vars_in_ty(&node.ty, &mut type_vars);
             let type_params = if type_vars.is_empty() { String::new() } else { format!("<{}>", type_vars.join(", ")) };
             emit_doc_comment(out, indent, class_doc(c));
-            writeln!(out, "{indent}pub type {}{type_params} = {};", escape_ident(name), fmt_ty(&node.ty, &mut *ctx)).unwrap();
+            let vis = ctx.type_vis(node, name);
+            writeln!(out, "{indent}{vis}type {}{type_params} = {};", escape_ident(name), fmt_ty(&node.ty, &mut *ctx)).unwrap();
             writeln!(out).unwrap();
         }
         MM::ClassDef::Enumeration { enum_literals, .. } => {
@@ -3809,7 +3860,8 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
                 emit_doc_comment(out, indent, class_doc(c));
                 writeln!(out, "{indent}#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]").unwrap();
                 writeln!(out, "{indent}#[repr(i32)]").unwrap();
-                writeln!(out, "{indent}pub enum {ename} {{").unwrap();
+                let vis = ctx.type_vis(node, name);
+                writeln!(out, "{indent}{vis}enum {ename} {{").unwrap();
                 let lit_indent = format!("{indent}    ");
                 let mut i: i32 = 0;
                 for lit in &**enumLiterals {

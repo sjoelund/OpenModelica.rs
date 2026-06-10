@@ -404,7 +404,7 @@ fn serializeOperation(mut file: File::File, mut op: Arc<DAE::SymbolicOperation>)
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum AssignType {
+pub(crate) enum AssignType {
     NORMAL = 1,
     TORN = 2,
     JACOBIAN = 3,

@@ -483,7 +483,7 @@ impl Default for MatchingExp {
 pub use self::MatchingExp::{BIND_AS_MATCH,BIND_MATCH,RECORD_MATCH,SOME_MATCH,NONE_MATCH,TUPLE_MATCH,LIST_MATCH,LIST_CONS_MATCH,STRING_MATCH,LITERAL_MATCH,REST_MATCH};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum TypeInfo {
+pub(crate) enum TypeInfo {
     TI_UNION_TYPE {
         recTags: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<TypeSignature>)>>)>>,
     },
@@ -539,7 +539,7 @@ impl Default for TypeInfo {
         }
     }
 }
-pub use self::TypeInfo::{TI_UNION_TYPE,TI_RECORD_TYPE,TI_ALIAS_TYPE,TI_FUN_TYPE,TI_CONST_TYPE};
+pub(crate) use self::TypeInfo::{TI_UNION_TYPE,TI_RECORD_TYPE,TI_ALIAS_TYPE,TI_FUN_TYPE,TI_CONST_TYPE};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct ASTDef {
@@ -601,7 +601,7 @@ pub type TEMPL_PACKAGE = TemplPackage;
 
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum TemplateDef {
+pub(crate) enum TemplateDef {
     STR_TOKEN_DEF {
         value: StringToken,
     },
@@ -645,7 +645,7 @@ impl Default for TemplateDef {
         }
     }
 }
-pub use self::TemplateDef::{STR_TOKEN_DEF,LITERAL_DEF,TEMPLATE_DEF};
+pub(crate) use self::TemplateDef::{STR_TOKEN_DEF,LITERAL_DEF,TEMPLATE_DEF};
 
 /* Output AST */
 //type MMPublic = Boolean;
@@ -678,7 +678,7 @@ pub type MM_PACKAGE = MMPackage;
 
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum MMDeclaration {
+pub(crate) enum MMDeclaration {
     MM_IMPORT {
         isPublic: bool,
         packageName: Arc<PathIdent>,
@@ -747,7 +747,7 @@ impl Default for MMDeclaration {
         }
     }
 }
-pub use self::MMDeclaration::{MM_IMPORT,MM_STR_TOKEN_DECL,MM_LITERAL_DECL,MM_FUN};
+pub(crate) use self::MMDeclaration::{MM_IMPORT,MM_STR_TOKEN_DECL,MM_LITERAL_DECL,MM_FUN};
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub enum MMExp {
@@ -1039,7 +1039,7 @@ pub type MAP_CONTEXT = MapContext;
 
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum GenInfo {
+pub(crate) enum GenInfo {
     GI_TEMPL_FUN,
     GI_MATCH_FUN,
     GI_MAP_FUN {
@@ -1060,7 +1060,7 @@ impl metamodelica::gc::MMTrace for GenInfo {
         }
     }
 }
-pub use self::GenInfo::{GI_TEMPL_FUN,GI_MATCH_FUN,GI_MAP_FUN};
+pub(crate) use self::GenInfo::{GI_TEMPL_FUN,GI_MATCH_FUN,GI_MAP_FUN};
 
 // *** functions ***
 pub(crate) fn transformAST(mut inTplPackage: TemplPackage) -> Result<MMPackage> {

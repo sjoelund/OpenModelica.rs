@@ -754,7 +754,7 @@ pub(crate) fn getNthInheritedClass(mut classPath: Arc<Path>, mut index: i32, mut
 }
 
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum InstanceTree {
+pub(crate) enum InstanceTree {
     COMPONENT {
         node: Arc<InstNode::InstNode>,
         binding: Option<Arc<Binding::NFBinding>>,
@@ -805,7 +805,7 @@ pub fn interned_EMPTY() -> Arc<InstanceTree> { InstanceTree::interned_EMPTY() }
 impl Default for InstanceTree {
     fn default() -> Self { Self::EMPTY }
 }
-pub use self::InstanceTree::{COMPONENT,CLASS,BUILTIN_BASE_CLASS,EMPTY};
+pub(crate) use self::InstanceTree::{COMPONENT,CLASS,BUILTIN_BASE_CLASS,EMPTY};
 
 thread_local! { static __ENUM_BASE_TLS: Arc<InstanceTree> = Arc::new(InstanceTree::BUILTIN_BASE_CLASS { name: (literal!("enumeration")).clone() }); }
 pub(crate) fn ENUM_BASE() -> Arc<InstanceTree> { __ENUM_BASE_TLS.with(|__t| __t.clone()) }

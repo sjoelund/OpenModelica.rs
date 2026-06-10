@@ -73,7 +73,7 @@ impl Default for IOStreamType {
 pub use self::IOStreamType::{FILE,LIST,BUFFER};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum IOStreamData {
+pub(crate) enum IOStreamData {
     FILE_DATA {
         data: i32,
     },
@@ -109,7 +109,7 @@ impl Default for IOStreamData {
         }
     }
 }
-pub use self::IOStreamData::{FILE_DATA,LIST_DATA,BUFFER_DATA};
+pub(crate) use self::IOStreamData::{FILE_DATA,LIST_DATA,BUFFER_DATA};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct IOStream {

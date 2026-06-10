@@ -589,7 +589,7 @@ pub(crate) fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
 /* the paper example */
 /// Algorithmic stmts
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Statement {
+pub(crate) enum Statement {
     /// An assignment stmt
     ASSIGN {
         lhs: Arc<Exp>,
@@ -617,11 +617,11 @@ impl metamodelica::gc::MMTrace for Statement {
         }
     }
 }
-pub use self::Statement::{ASSIGN,WHILE};
+pub(crate) use self::Statement::{ASSIGN,WHILE};
 
 /// Expression nodes
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Exp {
+pub(crate) enum Exp {
     /// Integer constant value
     ICONST {
         value: i32,
@@ -657,10 +657,10 @@ impl metamodelica::gc::MMTrace for Exp {
         }
     }
 }
-pub use self::Exp::{ICONST,VARIABLE,BINARY};
+pub(crate) use self::Exp::{ICONST,VARIABLE,BINARY};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Operator {
+pub(crate) enum Operator {
     PLUS,
     TIMES,
     LESS,
@@ -674,7 +674,7 @@ impl metamodelica::gc::MMTrace for Operator {
         }
     }
 }
-pub use self::Operator::{PLUS,TIMES,LESS};
+pub(crate) use self::Operator::{PLUS,TIMES,LESS};
 
 fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statement>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;

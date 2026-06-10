@@ -107,7 +107,7 @@ pub type SYMBOLTABLE = SymbolTable;
 pub(crate) const AST_CACHE_MAX_SIZE: i32 = 1000;
 
 pub fn reset() -> Result<()> {
-    pub type Program = Absyn::Program;
+    pub(crate) type Program = Absyn::Program;
 
     { let __v = Arc::new(SymbolTable { ast: Absyn::Program { classes: metamodelica::nil(), within_: openmodelica_ast::Absyn::Within::TOP }, explodedAst: None, vars: metamodelica::nil(), cachedAsts: Vector::new(0), cacheIndex: 0 }); crate::Globals::symbolTable.with(|__root| *__root.borrow_mut() = __v) };
     updateUriMapping(metamodelica::nil())?;

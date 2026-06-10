@@ -195,7 +195,7 @@ pub use self::FlagData::{EMPTY_FLAG,BOOL_FLAG,INT_FLAG,INT_LIST_FLAG,REAL_FLAG,S
 
 /// This uniontype is used to specify the visibility of a configuration flag.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum FlagVisibility {
+pub(crate) enum FlagVisibility {
     /// An internal flag that is hidden to the user.
     INTERNAL,
     /// An external flag that is visible to the user.
@@ -212,7 +212,7 @@ impl metamodelica::gc::MMTrace for FlagVisibility {
 impl Default for FlagVisibility {
     fn default() -> Self { Self::INTERNAL }
 }
-pub use self::FlagVisibility::{INTERNAL,EXTERNAL};
+pub(crate) use self::FlagVisibility::{INTERNAL,EXTERNAL};
 
 /// The structure which stores the flags.
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
@@ -242,7 +242,7 @@ pub use self::Flag::{FLAGS,NO_FLAGS};
 
 /// Specifies valid options for a flag.
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum ValidOptions {
+pub(crate) enum ValidOptions {
     STRING_OPTION {
         /// Options for a string flag.
         options: Arc<metamodelica::List<ArcStr>>,
@@ -273,7 +273,7 @@ impl Default for ValidOptions {
         }
     }
 }
-pub use self::ValidOptions::{STRING_OPTION,STRING_DESC_OPTION};
+pub(crate) use self::ValidOptions::{STRING_OPTION,STRING_DESC_OPTION};
 
 // Change this to a proper enum when we have support for them.
 pub const MODELICA: i32 = 1;

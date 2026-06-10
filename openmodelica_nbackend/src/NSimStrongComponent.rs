@@ -671,7 +671,7 @@ pub mod Block {
     }
 
     pub(crate) fn createClockedBlocks(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>, mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Block>>>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<(Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>, Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
-        pub type SimPartitions = Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>;
+        pub(crate) type SimPartitions = Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>;
 
         let mut baseParts: Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>;
         let mut eventClocks: Arc<metamodelica::List<Arc<Block>>>;

@@ -113,7 +113,7 @@ pub type FUNCINFO = FuncInfo;
 
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum Variability {
+pub(crate) enum Variability {
     CONST,
     VARIABLE,
 }
@@ -128,7 +128,7 @@ impl metamodelica::gc::MMTrace for Variability {
 impl Default for Variability {
     fn default() -> Self { Self::CONST }
 }
-pub use self::Variability::{CONST,VARIABLE};
+pub(crate) use self::Variability::{CONST,VARIABLE};
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
 pub struct CallSignature {

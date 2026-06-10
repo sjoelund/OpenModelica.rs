@@ -4047,7 +4047,7 @@ fn traverseDAEElement<ArgT: Clone + 'static + metamodelica::gc::MMTrace>(mut ele
 }
 
 #[derive(Clone, Debug, Eq, Hash, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum TraverseStatementsOptions {
+pub(crate) enum TraverseStatementsOptions {
     TRAVERSE_ALL,
     TRAVERSE_RHS_ONLY,
 }
@@ -4059,7 +4059,7 @@ impl metamodelica::gc::MMTrace for TraverseStatementsOptions {
         }
     }
 }
-pub use self::TraverseStatementsOptions::{TRAVERSE_ALL,TRAVERSE_RHS_ONLY};
+pub(crate) use self::TraverseStatementsOptions::{TRAVERSE_ALL,TRAVERSE_RHS_ONLY};
 
 pub fn traverseAlgorithmExps<Type_a: Clone + 'static + metamodelica::gc::MMTrace>(mut inAlgorithm: Arc<DAE::Algorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, mut inTypeA: Type_a) -> Result<Type_a> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;

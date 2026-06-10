@@ -105,7 +105,7 @@ impl Default for Kind {
 pub mod Association {
     use super::*;
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum Association {
+    pub(crate) enum Association {
         CONTINUOUS {
             kind: Kind,
             /// Analytic jacobian for the integrator
@@ -159,7 +159,7 @@ pub mod Association {
             }
         }
     }
-    pub use self::Association::{CONTINUOUS,CLOCKED};
+    pub(crate) use self::Association::{CONTINUOUS,CLOCKED};
     pub(crate) fn toStringShort(mut association: Arc<Association>) -> Result<ArcStr> {
         let mut r#str: ArcStr;
         r#str = ((::match_deref::match_deref! { match &(association.clone()) {

@@ -864,7 +864,7 @@ pub mod VariableAttributes {
     pub use self::VariableAttributes::{VAR_ATTR_REAL,VAR_ATTR_INT,VAR_ATTR_BOOL,VAR_ATTR_CLOCK,VAR_ATTR_STRING,VAR_ATTR_ENUMERATION,VAR_ATTR_RECORD};
     #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
     #[repr(i32)]
-    pub enum VarType {
+    pub(crate) enum VarType {
         ENUMERATION = 1,
         CLOCK = 2,
         STRING = 3,

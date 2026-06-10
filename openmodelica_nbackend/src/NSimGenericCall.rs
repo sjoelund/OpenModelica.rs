@@ -68,7 +68,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 /// package:     NSimGenericCall
 /// description: This file contains the data types and functions for generic for loop calls.
 #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-pub enum NSimGenericCall {
+pub(crate) enum NSimGenericCall {
     SINGLE_GENERIC_CALL {
         index: i32,
         iters: Arc<metamodelica::List<Arc<SimIterator::SimIterator>>>,
@@ -127,7 +127,7 @@ impl Default for NSimGenericCall {
         }
     }
 }
-pub use self::NSimGenericCall::{SINGLE_GENERIC_CALL,IF_GENERIC_CALL,WHEN_GENERIC_CALL};
+pub(crate) use self::NSimGenericCall::{SINGLE_GENERIC_CALL,IF_GENERIC_CALL,WHEN_GENERIC_CALL};
 pub(crate) fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NSimGenericCall>> {
     pub type mapExp = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
@@ -465,7 +465,7 @@ pub type DependentIterator = (Arc<ComponentRef::NFComponentRef>, metamodelica::A
 pub mod SimBranch {
     use super::*;
     #[derive(Clone, Debug, Eq, metamodelica::MetaCmp, metamodelica::ReferenceEq)]
-    pub enum SimBranch {
+    pub(crate) enum SimBranch {
         SIM_BRANCH {
             condition: Arc<Expression::NFExpression>,
             body: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)>>,
@@ -499,7 +499,7 @@ pub mod SimBranch {
             }
         }
     }
-    pub use self::SimBranch::{SIM_BRANCH,SIM_BRANCH_STMT};
+    pub(crate) use self::SimBranch::{SIM_BRANCH,SIM_BRANCH_STMT};
     pub(crate) fn mapShallow(mut branch: Arc<SimBranch>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<SimBranch>> {
         type mapExp = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 

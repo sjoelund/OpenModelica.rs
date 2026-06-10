@@ -390,7 +390,7 @@ fn isValidReplacement(mut cref: Arc<ComponentRef::NFComponentRef>, mut exp: Arc<
 // different kinds of exceptions
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, metamodelica::ReferenceEq)]
 #[repr(i32)]
-pub enum ExceptionKind {
+pub(crate) enum ExceptionKind {
     NO_ALIAS = 1,
     CREF_ALIAS = 2,
 }
