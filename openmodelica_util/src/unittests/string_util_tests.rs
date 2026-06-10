@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::StringUtil
+// Tests for crate::StringUtil
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/StringUtil.mo
@@ -8,7 +8,7 @@
 
 use anyhow::Result;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::StringUtil as S;
+use crate::StringUtil as S;
 
 // ── constants ────────────────────────────────────────────────────────────────
 

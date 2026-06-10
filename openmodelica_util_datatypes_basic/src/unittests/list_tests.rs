@@ -2,7 +2,7 @@ use anyhow::{Result, bail};
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::ArcStr;
-use openmodelica_util_datatypes_basic::List as L;
+use crate::List as L;
 
 // ── helper predicates (must be fn pointers) ──
 fn is_positive(x: i32) -> Result<bool> { Ok(x > 0) }

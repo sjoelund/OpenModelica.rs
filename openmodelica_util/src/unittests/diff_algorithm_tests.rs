@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::DiffAlgorithm
+// Tests for crate::DiffAlgorithm
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/DiffAlgorithm.mo
@@ -17,7 +17,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::ArcStr;
-use openmodelica_util::DiffAlgorithm::{self, Diff};
+use crate::DiffAlgorithm::{self, Diff};
 
 // ---------------------------------------------------------------------------
 // helper function types

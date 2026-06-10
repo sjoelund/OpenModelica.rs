@@ -1,4 +1,4 @@
-// Tests for openmodelica_frontend_dump::Dump::unparseStr
+// Tests for crate::Dump::unparseStr
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/ModelicaBuiltin.mo (and AbsynDumpTpl.tpl)
@@ -14,7 +14,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use openmodelica_ast::parser::{parse, Grammar};
-use openmodelica_frontend_dump::Dump;
+use crate::Dump;
 use openmodelica_util::{FlagsUtil, Flags};
 
 // ---------------------------------------------------------------------------

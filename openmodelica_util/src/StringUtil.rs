@@ -95,7 +95,7 @@ pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut 
     outIndex
 }
 
-pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
+pub(crate) fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
@@ -111,7 +111,7 @@ pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut
     outIndex
 }
 
-pub fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
+pub(crate) fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
@@ -127,7 +127,7 @@ pub fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, m
     outIndex
 }
 
-pub fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
+pub(crate) fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut inEndPos: i32) -> i32 {
     let mut outIndex: i32 = NO_POS.clone();
     let len: i32 = ((inString.clone()).clone().len() as i32);
     let mut start_pos: i32;
@@ -143,7 +143,7 @@ pub fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, 
     outIndex
 }
 
-pub fn isAlpha(mut inChar: i32) -> bool {
+pub(crate) fn isAlpha(mut inChar: i32) -> bool {
     let mut outIsAlpha: bool = inChar.clone() >= 65 && inChar.clone() <= 90 || inChar.clone() >= 97 && inChar.clone() <= 122;
     outIsAlpha
 }
@@ -226,7 +226,7 @@ pub fn quote(mut inString: ArcStr) -> ArcStr {
     outString
 }
 
-pub fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
+pub(crate) fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
     let mut b: bool;
     let mut j: i32 = 1;
     b = true;

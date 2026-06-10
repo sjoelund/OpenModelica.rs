@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::AvlTreeString
+// Tests for crate::AvlTreeString
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/AvlTreeString.mo  (extends BaseAvlTree)
@@ -19,7 +19,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::AvlTreeString as T;
+use crate::AvlTreeString as T;
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 

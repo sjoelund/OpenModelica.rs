@@ -984,12 +984,12 @@ fn compareSubscriptList(mut subs1: Arc<metamodelica::List<Arc<DAE::Subscript>>>,
     Ok(comp)
 }
 
-pub fn subscriptInt(mut inSubscript: Arc<DAE::Subscript>) -> Result<i32> {
+pub(crate) fn subscriptInt(mut inSubscript: Arc<DAE::Subscript>) -> Result<i32> {
     let mut outInteger: i32 = expArrayIndex(subscriptIndexExp(inSubscript.clone())?)?;
     Ok(outInteger)
 }
 
-pub fn subscriptsInt(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<metamodelica::List<i32>>> {
+pub(crate) fn subscriptsInt(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outIntegers: Arc<metamodelica::List<i32>>;
     outIntegers = List::map(inSubscripts.clone(), (std::sync::Arc::new(subscriptInt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<i32> + 'static>))?;
     Ok(outIntegers)

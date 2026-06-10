@@ -1,4 +1,4 @@
-// Tests for openmodelica_frontend_dump::AbsynUtil::pathString
+// Tests for crate::AbsynUtil::pathString
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/FrontEnd/AbsynUtil.mo
@@ -15,7 +15,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use arcstr::literal;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend_dump::AbsynUtil;
+use crate::AbsynUtil;
 
 fn ident(name: &str) -> Arc<Absyn::Path> {
     Arc::new(Absyn::Path::IDENT { name: arcstr::ArcStr::from(name) })

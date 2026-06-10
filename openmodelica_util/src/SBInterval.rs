@@ -124,12 +124,12 @@ pub fn newEmpty() -> Arc<SBInterval> {
     int
 }
 
-pub fn newUnit() -> Arc<SBInterval> {
+pub(crate) fn newUnit() -> Arc<SBInterval> {
     let mut int: Arc<SBInterval> = Arc::new(SBInterval { lo: 1, step: 1, hi: 1 });
     int
 }
 
-pub fn newFull() -> Arc<SBInterval> {
+pub(crate) fn newFull() -> Arc<SBInterval> {
     let mut int: Arc<SBInterval> = Arc::new(SBInterval { lo: 1, step: 1, hi: System::intMaxLit() });
     int
 }
@@ -157,7 +157,7 @@ pub(crate) fn crop(mut int: Arc<SBInterval>) -> Arc<SBInterval> {
     int
 }
 
-pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc<SBInterval> {
+pub(crate) fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc<SBInterval> {
     let mut int: Arc<SBInterval>;
     let mut new_lo: i32;
     let mut new_step: i32;
@@ -272,12 +272,12 @@ pub(crate) fn affine(mut int: Arc<SBInterval>, mut gain: metamodelica::Real, mut
     Ok(res)
 }
 
-pub fn cardinality(mut int: Arc<SBInterval>) -> i32 {
+pub(crate) fn cardinality(mut int: Arc<SBInterval>) -> i32 {
     let mut card: i32 = ((intReal(int.hi.clone() - int.lo.clone()) / intReal(int.step.clone())).0.floor() as i32);
     card
 }
 
-pub fn contains(mut c: i32, mut int: Arc<SBInterval>) -> bool {
+pub(crate) fn contains(mut c: i32, mut int: Arc<SBInterval>) -> bool {
     let mut res: bool;
     res = !(isEmpty(int.clone())) && c.clone() >= int.lo.clone() && c.clone() <= int.hi.clone() && intMod(c.clone() - int.lo.clone(), int.step.clone()) == 0;
     res
@@ -293,7 +293,7 @@ pub fn size(mut int: Arc<SBInterval>) -> i32 {
     res
 }
 
-pub fn isEqual(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> bool {
+pub(crate) fn isEqual(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> bool {
     let mut equal: bool;
     equal = int1.lo.clone() == int2.lo.clone() && int1.step.clone() == int2.step.clone() && int1.hi.clone() == int2.hi.clone();
     equal
@@ -304,7 +304,7 @@ pub(crate) fn hash(mut int: Arc<SBInterval>) -> i32 {
     hash
 }
 
-pub fn toString(mut interval: Arc<SBInterval>) -> ArcStr {
+pub(crate) fn toString(mut interval: Arc<SBInterval>) -> ArcStr {
     let mut r#str: ArcStr;
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.lo.clone()))); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.step.clone()))); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", interval.hi.clone()))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
     r#str

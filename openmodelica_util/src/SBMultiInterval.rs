@@ -84,7 +84,7 @@ pub(crate) fn copy(mut mi: Arc<SBMultiInterval>) -> Arc<SBMultiInterval> {
     outMI
 }
 
-pub fn fromList(mut ints: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> Result<Arc<SBMultiInterval>> {
+pub(crate) fn fromList(mut ints: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> Result<Arc<SBMultiInterval>> {
     let mut outMI: Arc<SBMultiInterval>;
     if List::any(ints.clone(), (std::sync::Arc::new(fnptr!(SBInterval::isEmpty, Arc<SBInterval::SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<bool> + 'static>))? {
         outMI = newEmpty();
@@ -110,7 +110,7 @@ pub fn isEmpty(mut mi: Arc<SBMultiInterval>) -> bool {
     empty
 }
 
-pub fn contains(mut vals: metamodelica::Array<i32>, mut mi: Arc<SBMultiInterval>) -> Result<bool> {
+pub(crate) fn contains(mut vals: metamodelica::Array<i32>, mut mi: Arc<SBMultiInterval>) -> Result<bool> {
     let mut res: bool;
     if metamodelica::arrayLength(vals.clone()) != mi.ndim.clone() {
         res = false;
@@ -197,7 +197,7 @@ pub(crate) fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInte
     Ok(res)
 }
 
-pub fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<Arc<SBMultiInterval>> {
+pub(crate) fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<Arc<SBMultiInterval>> {
     let mut res: Arc<SBMultiInterval>;
     let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
     ints = Array::join(mi1.intervals.clone(), mi2.intervals.clone())?;
@@ -205,7 +205,7 @@ pub fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -
     Ok(res)
 }
 
-pub fn cardinality(mut mi: Arc<SBMultiInterval>) -> i32 {
+pub(crate) fn cardinality(mut mi: Arc<SBMultiInterval>) -> i32 {
     let mut card: i32 = 0;
     for mut i in 1..=mi.ndim.clone() {
         card = card.clone() + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}));
@@ -249,7 +249,7 @@ pub(crate) fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut mi: 
     Ok(res)
 }
 
-pub fn isEqual(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<bool> {
+pub(crate) fn isEqual(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -> Result<bool> {
     let mut equal: bool;
     equal = Array::isEqualOnTrue(mi1.intervals.clone(), mi2.intervals.clone(), (std::sync::Arc::new(fnptr!(SBInterval::isEqual, Arc<SBInterval::SBInterval>, Arc<SBInterval::SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>, Arc<SBInterval::SBInterval>) -> Result<bool> + 'static>))?;
     Ok(equal)

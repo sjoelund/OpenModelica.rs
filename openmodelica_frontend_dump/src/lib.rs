@@ -30,3 +30,4 @@ pub mod TypesDump;
 pub mod ValuesDump;
 pub mod ValuesMake;
 pub mod Globals;
+#[cfg(test)] mod unittests;

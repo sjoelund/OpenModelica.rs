@@ -353,7 +353,7 @@ pub fn contains<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'stat
     Ok(res)
 }
 
-pub fn first<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
+pub(crate) fn first<K: Clone + 'static + metamodelica::gc::MMTrace, V: Clone + 'static + metamodelica::gc::MMTrace>(mut map: Arc<UnorderedMap<K, V>>) -> Result<V> {
     let mut value: V = Vector::get(map.values.clone(), 1)?;
     Ok(value)
 }

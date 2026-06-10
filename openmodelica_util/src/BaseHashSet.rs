@@ -239,7 +239,7 @@ pub fn hasAll<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut keys: Arc<me
     Ok(b)
 }
 
-pub fn get<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<Option<Key>> {
+pub(crate) fn get<Key: Clone + 'static + metamodelica::gc::MMTrace>(mut key: Key, mut hashSet: HashSet<Key>) -> Result<Option<Key>> {
     let mut okey: Option<Key>;
     (okey, _) = get1(key.clone(), hashSet.clone())?;
     Ok(okey)

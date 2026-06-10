@@ -99,7 +99,7 @@ fn downheap(mut inArray: metamodelica::Array<i32>, mut n: i32, mut vIn: i32) -> 
     inArray
 }
 
-pub fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
+pub(crate) fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
     let mut inArray: metamodelica::Array<i32> = inArray;
     let mut n: i32 = metamodelica::arrayLength(inArray.clone());
     let mut tmp: i32;
@@ -123,7 +123,7 @@ pub fn heapSort(mut inArray: metamodelica::Array<i32>) -> metamodelica::Array<i3
     inArray
 }
 
-pub fn findFirstOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metamodelica::Array<T>, mut inPredicate: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<Option<T>> {
+pub(crate) fn findFirstOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inArray: metamodelica::Array<T>, mut inPredicate: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<Option<T>> {
     pub type FuncType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut outElement: Option<T>;
@@ -618,7 +618,7 @@ pub fn isLess<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr1: metamode
     Ok(res)
 }
 
-pub fn insertList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut lst: Arc<metamodelica::List<T>>, mut startPos: i32) -> metamodelica::Array<T> {
+pub(crate) fn insertList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut lst: Arc<metamodelica::List<T>>, mut startPos: i32) -> metamodelica::Array<T> {
     let mut arr: metamodelica::Array<T> = arr;
     let mut i: i32 = startPos.clone();
     for mut e in &*lst.clone() {
@@ -633,7 +633,7 @@ pub fn insertList<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metam
     arr
 }
 
-pub fn remove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut index: i32) -> Result<metamodelica::Array<T>> {
+pub(crate) fn remove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut arr: metamodelica::Array<T>, mut index: i32) -> Result<metamodelica::Array<T>> {
     let mut outArr: metamodelica::Array<T>;
     let mut len: i32 = metamodelica::arrayLength(arr.clone());
     let true = (index.clone() <= len.clone() && index.clone() >= 1) else { bail!("pattern mismatch") };

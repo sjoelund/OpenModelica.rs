@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util_datatypes_basic::Array;
+use crate::Array;
 
 // ── helper predicates ──
 

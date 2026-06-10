@@ -2,7 +2,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use metamodelica::*;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend_dump::Dump;
+use crate::Dump;
 use openmodelica_util::{FlagsUtil, Flags};
 
 // Initialize flags with default values for the current thread.

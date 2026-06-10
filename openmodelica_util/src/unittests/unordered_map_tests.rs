@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::UnorderedMap.
+// Tests for crate::UnorderedMap.
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/UnorderedMap.mo
@@ -12,7 +12,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::UnorderedMap as UM;
+use crate::UnorderedMap as UM;
 
 // ── hash / eq helpers ────────────────────────────────────────────────────────
 

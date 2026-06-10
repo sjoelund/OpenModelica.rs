@@ -25,9 +25,9 @@
 use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
-use openmodelica_util::SBInterval;
-use openmodelica_util::SBMultiInterval;
-use openmodelica_util::SBAtomicSet;
+use crate::SBInterval;
+use crate::SBMultiInterval;
+use crate::SBAtomicSet;
 
 // ===========================================================================
 // SBInterval

@@ -124,7 +124,7 @@ pub fn length<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: Mutable
     length
 }
 
-pub fn pop_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>) -> Result<T> {
+pub(crate) fn pop_front<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>) -> Result<T> {
     let mut elt: T;
     let mut length: i32 = Mutable::access(delst.length.clone());
     let mut lst: Arc<metamodelica::List<T>>;
@@ -269,7 +269,7 @@ pub fn toListNoCopyNoClear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut d
     res
 }
 
-pub fn clear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>) -> () {
+pub(crate) fn clear<T: Clone + 'static + metamodelica::gc::MMTrace>(mut delst: MutableList<T>) -> () {
     let mut lst: Arc<metamodelica::List<T>>;
     lst = Mutable::access(delst.front.clone());
     Mutable::update(delst.back.clone(), metamodelica::nil());

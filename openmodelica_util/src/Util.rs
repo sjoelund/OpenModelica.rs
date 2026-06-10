@@ -115,7 +115,7 @@ pub fn isIntGreater(mut lhs: i32, mut rhs: i32) -> bool {
     b
 }
 
-pub fn isRealGreater(mut lhs: metamodelica::Real, mut rhs: metamodelica::Real) -> bool {
+pub(crate) fn isRealGreater(mut lhs: metamodelica::Real, mut rhs: metamodelica::Real) -> bool {
     let mut b: bool = lhs.clone() > rhs.clone();
     b
 }
@@ -146,7 +146,7 @@ pub fn flagValue(mut flag: ArcStr, mut arguments: Arc<metamodelica::List<ArcStr>
     Ok(flagVal)
 }
 
-pub fn selectFirstNonEmptyString(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
+pub(crate) fn selectFirstNonEmptyString(mut inStrings: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
     let mut outResult: ArcStr;
     for mut e in &*inStrings.clone() {
         let mut e = e.clone();
@@ -314,7 +314,7 @@ pub fn tuple62<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'sta
     outValue
 }
 
-pub fn stringContainsChar(mut r#str: ArcStr, mut char: ArcStr) -> Result<bool> {
+pub(crate) fn stringContainsChar(mut r#str: ArcStr, mut char: ArcStr) -> Result<bool> {
     let mut res: bool = false;
     let mut ch: i32;
     ch = stringCharInt((char.clone()).clone())?;
@@ -601,7 +601,7 @@ pub fn makeOption<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue: T
     outOption
 }
 
-pub fn makeOptionOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inCondition: bool, mut inValue: T) -> Option<T> {
+pub(crate) fn makeOptionOnTrue<T: Clone + 'static + metamodelica::gc::MMTrace>(mut inCondition: bool, mut inValue: T) -> Option<T> {
     let mut outOption: Option<T> = if (inCondition.clone()) {Some(inValue.clone())} else {None};
     outOption
 }
@@ -629,7 +629,7 @@ pub fn getOptionOrDefault<T: Clone + 'static + metamodelica::gc::MMTrace>(mut in
     outValue
 }
 
-pub fn intGreaterZero(mut v: i32) -> bool {
+pub(crate) fn intGreaterZero(mut v: i32) -> bool {
     let mut res: bool = v.clone() > 0;
     res
 }
@@ -639,7 +639,7 @@ pub fn intPositive(mut v: i32) -> bool {
     res
 }
 
-pub fn intNegative(mut v: i32) -> bool {
+pub(crate) fn intNegative(mut v: i32) -> bool {
     let mut res: bool = v.clone() < 0;
     res
 }
@@ -666,7 +666,7 @@ pub fn intPow(mut base: i32, mut exponent: i32) -> Result<i32> {
     Ok(result)
 }
 
-pub fn realNegative(mut v: metamodelica::Real) -> bool {
+pub(crate) fn realNegative(mut v: metamodelica::Real) -> bool {
     let mut res: bool = v.clone() < metamodelica::OrderedFloat((0) as f64);
     res
 }
@@ -788,7 +788,7 @@ pub fn makeTuple<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 's
     outTuple
 }
 
-pub fn makeTupleR<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: T1, mut inValue2: T2) -> (T2, T1) {
+pub(crate) fn makeTupleR<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + 'static + metamodelica::gc::MMTrace>(mut inValue1: T1, mut inValue2: T2) -> (T2, T1) {
     let mut outTuple: (T2, T1) = (inValue2.clone(), inValue1.clone());
     outTuple
 }
@@ -798,7 +798,7 @@ pub fn make3Tuple<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clone + '
     outTuple
 }
 
-pub fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>, mut inAccum: i32) -> Result<i32> {
+pub(crate) fn mulListIntegerOpt(mut inList: Arc<metamodelica::List<Option<i32>>>, mut inAccum: i32) -> Result<i32> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(inList.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -966,7 +966,7 @@ pub fn boolInt(mut inBoolean: bool) -> i32 {
     outInteger
 }
 
-pub fn intBool(mut inInteger: i32) -> bool {
+pub(crate) fn intBool(mut inInteger: i32) -> bool {
     let mut outBoolean: bool = inInteger.clone() > 0;
     outBoolean
 }
@@ -1037,7 +1037,7 @@ pub fn stringPadLeft(mut inString: ArcStr, mut inPadWidth: i32, mut inPadString:
     outString
 }
 
-pub fn intProduct(mut lst: Arc<metamodelica::List<i32>>) -> Result<i32> {
+pub(crate) fn intProduct(mut lst: Arc<metamodelica::List<i32>>) -> Result<i32> {
     let mut i: i32 = List::fold(lst.clone(), (std::sync::Arc::new(fnptr!(intMul, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 1)?;
     Ok(i)
 }
@@ -1070,7 +1070,7 @@ fn nextPrime_isPrime(mut inN: i32) -> bool {
     outIsPrime
 }
 
-pub fn anyToEmptyString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut a: T) -> ArcStr {
+pub(crate) fn anyToEmptyString<T: Clone + 'static + metamodelica::gc::MMTrace>(mut a: T) -> ArcStr {
     let mut empty: ArcStr = literal!("");
     empty
 }
@@ -1167,7 +1167,7 @@ pub fn createDirectoryTree(mut inString: ArcStr) -> bool {
     outBool
 }
 
-pub fn nextPowerOf2(mut i: i32) -> i32 {
+pub(crate) fn nextPowerOf2(mut i: i32) -> i32 {
     let mut v: i32;
     v = i.clone() - 1;
     v = intBitOr(v.clone(), intBitRShift(v.clone(), 1));
@@ -1392,19 +1392,19 @@ pub fn referenceCompare<T1: Clone + 'static + metamodelica::gc::MMTrace, T2: Clo
     result
 }
 
-pub fn gcd(mut a: i32, mut b: i32) -> i32 {
+pub(crate) fn gcd(mut a: i32, mut b: i32) -> i32 {
     '__tco: loop {
         if (b.clone() == 0) {return a.clone()} else {{ (a, b) = (b.clone(), intMod(a.clone(), b.clone())); continue '__tco; }}
     }
 }
 
-pub fn lcm(mut a: i32, mut b: i32) -> i32 {
+pub(crate) fn lcm(mut a: i32, mut b: i32) -> i32 {
     let mut res: i32;
     res = if (a.clone() < 0 || b.clone() < 0) {-1} else {intDiv(a.clone() * b.clone(), gcd(a.clone(), b.clone()))};
     res
 }
 
-pub fn msb(mut n: i32) -> i32 {
+pub(crate) fn msb(mut n: i32) -> i32 {
     let mut res: i32 = 0;
     let mut i: i32 = n.clone();
     while i.clone() > 0 {

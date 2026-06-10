@@ -47,13 +47,13 @@ use crate::BaseAvlSet;
 
 pub type Key = ArcStr;
 
-pub fn keyStr(mut inKey: Key) -> ArcStr {
+pub(crate) fn keyStr(mut inKey: Key) -> ArcStr {
     let mut outString: ArcStr;
     outString = (inKey.clone()).clone();
     outString
 }
 
-pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
+pub(crate) fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> i32 {
     let mut outResult: i32;
     outResult = stringCompare((inKey1.clone()).clone(), (inKey2.clone()).clone());
     outResult
@@ -237,7 +237,7 @@ fn height(mut inNode: Arc<Tree>) -> i32 {
     outHeight
 }
 
-pub fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<Tree>, Arc<Tree>, Arc<Tree>)> {
+pub(crate) fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<Tree>, Arc<Tree>, Arc<Tree>)> {
     let mut intersect: Arc<Tree> = crate::AvlSetString::Tree::interned_EMPTY();
     let mut rest1: Arc<Tree> = crate::AvlSetString::Tree::interned_EMPTY();
     let mut rest2: Arc<Tree> = crate::AvlSetString::Tree::interned_EMPTY();
@@ -370,7 +370,7 @@ pub fn listKeys(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>)
     lst
 }
 
-pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
+pub(crate) fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
@@ -391,7 +391,7 @@ pub fn new() -> Arc<Tree> {
     outTree
 }
 
-pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
+pub(crate) fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     outString = ((::match_deref::match_deref! { match &(inNode.clone()) {
         Deref @ Tree::NODE { .. } => keyStr((var_field!((*inNode).key, Tree::NODE).clone()).clone()),
@@ -401,7 +401,7 @@ pub fn printNodeStr(mut inNode: Arc<Tree>) -> Result<ArcStr> {
     Ok(outString)
 }
 
-pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
+pub(crate) fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
     let mut outString: ArcStr;
     let mut left: Arc<Tree> = Arc::new(Tree::EMPTY);
     let mut right: Arc<Tree> = Arc::new(Tree::EMPTY);
@@ -495,7 +495,7 @@ pub(crate) fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut rig
     Ok(res)
 }
 
-pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
+pub(crate) fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
     '__tco: loop {
         ::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => return Ok(var_field!((*tree).key, Tree::NODE).clone()),

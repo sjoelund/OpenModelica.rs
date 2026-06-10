@@ -729,7 +729,7 @@ pub fn crefPrefixOfIgnoreSubscripts(mut prefixCref: Arc<DAE::ComponentRef>, mut 
     outPrefixOf
 }
 
-pub fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
+pub(crate) fn crefNotPrefixOf(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut outBoolean: bool;
     outBoolean = (::match_deref::match_deref! { match &((cr1.clone(), cr2.clone())) {
         (Deref @ DAE::ComponentRef::CREF_QUAL { .. }, Deref @ DAE::ComponentRef::CREF_IDENT { .. }) => true,

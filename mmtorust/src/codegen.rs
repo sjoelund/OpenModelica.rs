@@ -1658,6 +1658,15 @@ fn generate_lib_file(hier: &InstanceHierarchy<'_>, this_dir: &str, default_dir: 
             writeln!(out, "pub mod {module};").unwrap();
         }
     }
+    // Hand-written, test-only unit tests live in `src/unittests/` (declared by
+    // its own `mod.rs`). Unlike `tests/*.rs` integration tests — which compile
+    // as a *separate* crate and so can only reach `pub` items — these are an
+    // in-crate module and can exercise `pub(crate)` helpers, so the functions
+    // they test need not be kept `pub`. Declared `#[cfg(test)]` so they are
+    // compiled only for `cargo test`.
+    if std::path::Path::new(&format!("{this_dir}/unittests/mod.rs")).exists() {
+        writeln!(out, "#[cfg(test)] mod unittests;").unwrap();
+    }
     out
 }
 

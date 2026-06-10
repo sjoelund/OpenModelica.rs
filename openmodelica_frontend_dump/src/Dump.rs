@@ -726,7 +726,7 @@ fn isNonAssociativeOp(mut operator: Absyn::Operator) -> bool {
     isNonAssociative
 }
 
-pub fn expPriority(mut inExp: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<i32> {
+pub(crate) fn expPriority(mut inExp: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<i32> {
     let mut outPriority: i32;
     outPriority = (::match_deref::match_deref! { match &((inExp.clone(), inLhs.clone())) {
         (Deref @ Absyn::Exp::BINARY { op, .. }, false) => {

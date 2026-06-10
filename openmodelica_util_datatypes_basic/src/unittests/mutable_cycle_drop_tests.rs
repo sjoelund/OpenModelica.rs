@@ -13,7 +13,7 @@
 //! that increments a shared counter, plus a `Weak` handle to the payload.
 
 use metamodelica::gc::{collect, MMTrace, MMVisitor};
-use openmodelica_util_datatypes_basic::Mutable;
+use crate::Mutable;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Weak};
 

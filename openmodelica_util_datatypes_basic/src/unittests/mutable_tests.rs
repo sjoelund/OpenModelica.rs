@@ -1,4 +1,4 @@
-use openmodelica_util_datatypes_basic::Mutable;
+use crate::Mutable;
 
 #[test]
 fn test_create() {

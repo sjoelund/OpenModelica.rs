@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::AvlSetString
+// Tests for crate::AvlSetString
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/AvlSetString.mo  (extends BaseAvlSet)
@@ -10,7 +10,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::AvlSetString as S;
+use crate::AvlSetString as S;
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 

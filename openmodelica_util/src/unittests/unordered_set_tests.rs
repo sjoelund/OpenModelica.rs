@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::UnorderedSet.
+// Tests for crate::UnorderedSet.
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/UnorderedSet.mo
@@ -12,7 +12,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::UnorderedSet as US;
+use crate::UnorderedSet as US;
 
 // ── hash / eq helpers ────────────────────────────────────────────────────────
 

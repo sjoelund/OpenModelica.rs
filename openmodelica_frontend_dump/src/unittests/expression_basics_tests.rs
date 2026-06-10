@@ -3,7 +3,7 @@ use anyhow::Result;
 use arcstr::literal;
 use metamodelica::*;
 use openmodelica_frontend_types::DAE;
-use openmodelica_frontend_dump::ExpressionBasics;
+use crate::ExpressionBasics;
 use openmodelica_util::{FlagsUtil, Flags};
 
 // Initialize flags with default values for the current thread.

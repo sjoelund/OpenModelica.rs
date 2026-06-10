@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::HashSetString (backed by BaseHashSet).
+// Tests for crate::HashSetString (backed by BaseHashSet).
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/HashSetString.mo
@@ -21,8 +21,8 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::HashSetString as HS;
-use openmodelica_util::BaseHashSet;
+use crate::HashSetString as HS;
+use crate::BaseHashSet;
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 

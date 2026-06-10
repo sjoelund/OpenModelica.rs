@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::FlagsUtil
+// Tests for crate::FlagsUtil
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/FlagsUtil.mo
@@ -16,7 +16,7 @@
 
 use metamodelica::nil;
 use arcstr::literal;
-use openmodelica_util::{Flags, FlagsUtil, Global};
+use crate::{Flags, FlagsUtil, Global};
 
 /// `loadFlags(true)` on a fresh (never-initialised) flags root must create the
 /// flags structure and return a `FLAGS(..)` value, not the `NO_FLAGS` sentinel.

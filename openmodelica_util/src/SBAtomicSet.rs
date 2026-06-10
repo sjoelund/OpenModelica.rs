@@ -77,34 +77,34 @@ pub fn new(mut mi: Arc<SBMultiInterval::SBMultiInterval>) -> Arc<SBAtomicSet> {
     set
 }
 
-pub fn newEmpty() -> Arc<SBAtomicSet> {
+pub(crate) fn newEmpty() -> Arc<SBAtomicSet> {
     let mut set: Arc<SBAtomicSet>;
     set = Arc::new(SBAtomicSet { aset: SBMultiInterval::newEmpty(), ndim: 0 });
     set
 }
 
-pub fn copy(mut set: Arc<SBAtomicSet>) -> Arc<SBAtomicSet> {
+pub(crate) fn copy(mut set: Arc<SBAtomicSet>) -> Arc<SBAtomicSet> {
     let mut outSet: Arc<SBAtomicSet>;
     outSet = Arc::new(SBAtomicSet { aset: SBMultiInterval::copy(set.aset.clone()), ndim: set.ndim.clone() });
     outSet
 }
 
-pub fn ndim(mut set: Arc<SBAtomicSet>) -> i32 {
+pub(crate) fn ndim(mut set: Arc<SBAtomicSet>) -> i32 {
     let mut ndim: i32 = set.ndim.clone();
     ndim
 }
 
-pub fn isEmpty(mut set: Arc<SBAtomicSet>) -> bool {
+pub(crate) fn isEmpty(mut set: Arc<SBAtomicSet>) -> bool {
     let mut empty: bool = SBMultiInterval::isEmpty(set.aset.clone());
     empty
 }
 
-pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBAtomicSet>) -> Result<bool> {
+pub(crate) fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBAtomicSet>) -> Result<bool> {
     let mut res: bool = SBMultiInterval::contains(vals.clone(), set.aset.clone())?;
     Ok(res)
 }
 
-pub fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
+pub(crate) fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
     let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::intersection(set1.aset.clone(), set2.aset.clone())?);
     Ok(res)
@@ -130,7 +130,7 @@ pub(crate) fn crossProd(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) 
     Ok(res)
 }
 
-pub fn cardinality(mut set: Arc<SBAtomicSet>, mut card: i32) -> i32 {
+pub(crate) fn cardinality(mut set: Arc<SBAtomicSet>, mut card: i32) -> i32 {
     let mut card: i32 = card;
     card = card.clone() + SBMultiInterval::cardinality(set.aset.clone());
     card
@@ -146,13 +146,13 @@ pub(crate) fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i
     Ok(res)
 }
 
-pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
+pub(crate) fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
     let mut res: Arc<SBAtomicSet>;
     res = new(SBMultiInterval::replace(i.clone(), dim.clone(), set.aset.clone())?);
     Ok(res)
 }
 
-pub fn isEqual(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<bool> {
+pub(crate) fn isEqual(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<bool> {
     let mut equal: bool = SBMultiInterval::isEqual(set1.aset.clone(), set2.aset.clone())?;
     Ok(equal)
 }
@@ -162,7 +162,7 @@ pub(crate) fn hash(mut set1: Arc<SBAtomicSet>) -> i32 {
     hash
 }
 
-pub fn toString(mut set: Arc<SBAtomicSet>) -> ArcStr {
+pub(crate) fn toString(mut set: Arc<SBAtomicSet>) -> ArcStr {
     let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*SBMultiInterval::toString(set.aset.clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) };
     r#str
 }

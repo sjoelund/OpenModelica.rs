@@ -183,13 +183,13 @@ pub fn remove<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut se
     Ok(removed)
 }
 
-pub fn get<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<Option<T>> {
+pub(crate) fn get<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<Option<T>> {
     let mut outKey: Option<T>;
     (outKey, _) = find(key.clone(), set.clone())?;
     Ok(outKey)
 }
 
-pub fn getOrFail<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<T> {
+pub(crate) fn getOrFail<T: Clone + 'static + metamodelica::gc::MMTrace>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> Result<T> {
     let mut outKey: T;
     let mut okey: Option<T>;
     (okey, _) = find(key.clone(), set.clone())?;
@@ -344,7 +344,7 @@ pub fn all<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<Unordere
     Ok(res)
 }
 
-pub fn any<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn any<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -366,7 +366,7 @@ pub fn any<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<Unordere
     Ok(res)
 }
 
-pub fn none<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
+pub(crate) fn none<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool;
@@ -439,7 +439,7 @@ pub(crate) fn loadFactor<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set
     load
 }
 
-pub fn rehash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
+pub(crate) fn rehash<T: Clone + 'static + metamodelica::gc::MMTrace>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     let mut old_buckets: metamodelica::Array<Arc<metamodelica::List<T>>> = Mutable::access(set.buckets.clone());
     let mut new_buckets: metamodelica::Array<Arc<metamodelica::List<T>>>;
     let mut bucket_count: i32;

@@ -9,8 +9,8 @@
 // pathStringWork (forward and reverse segment order).
 
 use arcstr::{ArcStr, literal};
-use openmodelica_util::StringUtil;
-use openmodelica_util::System;
+use crate::StringUtil;
+use crate::System;
 
 fn result_string(sa: System::StringAllocator) -> ArcStr {
     System::stringAllocatorResult(sa, literal!(""))

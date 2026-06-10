@@ -59,3 +59,4 @@ pub mod Vector;
 pub mod ZeroMQ;
 pub mod Globals;
 pub mod dynload;
+#[cfg(test)] mod unittests;

@@ -6,3 +6,4 @@ pub mod GCExt;
 pub mod List;
 pub mod Mutable;
 pub mod Pointer;
+#[cfg(test)] mod unittests;

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
-use openmodelica_util_datatypes_basic::DoubleEnded;
+use crate::DoubleEnded;
 
 #[test]
 fn test_new() {

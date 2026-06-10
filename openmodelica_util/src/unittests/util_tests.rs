@@ -1,4 +1,4 @@
-// Tests for openmodelica_util::Util
+// Tests for crate::Util
 //
 // The Rust source is auto-generated from:
 //   ~/OpenModelica/OMCompiler/Compiler/Util/Util.mo
@@ -13,7 +13,7 @@ use anyhow::Result;
 use std::sync::Arc;
 use metamodelica::*;
 use arcstr::{ArcStr, literal};
-use openmodelica_util::Util as U;
+use crate::Util as U;
 
 // ── boolInt ───────────────────────────────────────────────────────────────────
 
